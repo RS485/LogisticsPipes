@@ -1,14 +1,15 @@
 package net.minecraft.src.buildcraft.logisticspipes;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.krapht.gui.GuiChassiPipe;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiChassiPipeGuiHandler;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IModuleGuiHandler;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleGuiHandler;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -63,11 +64,10 @@ public class ChassiModule implements ILogisticsModule{
 	}
 
 	@Override
-	public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui) {
-		ModLoader.openGUI(entityplayer, new GuiChassiPipe(entityplayer, _parentPipe, previousGui));
-		return true;
+	public IModuleGuiHandler getGuiHandler() {
+		return new GuiChassiPipeGuiHandler(_parentPipe);
 	}
-
+	
 	@Override
 	public ILogisticsModule getSubModule(int slot) {
 		if (slot < 0 || slot >= _modules.length) return null;
@@ -104,4 +104,5 @@ public class ChassiModule implements ILogisticsModule{
 			module.tick();
 		}
 	}
+
 }

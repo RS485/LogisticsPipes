@@ -18,7 +18,6 @@ import net.minecraft.src.buildcraft.krapht.LogisticsTransaction;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
-import net.minecraft.src.buildcraft.logisticspipes.GuiID;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 
 import net.minecraft.src.krapht.CroppedInventory;
@@ -64,16 +63,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule{
 
 	}
 
-	public GuiID getGuiID() {
-		//TODO
-		return null;
+	@Override
+	public ModuleGuiHandler getGuiHandler() {
+		return ModuleGuiHandler.GuiProvider;
 	}
-	
-	/*@Override
-	public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiProvider(entityplayer.inventory, this, previousGui));
-		return true;
-	}*/
 
 	@Override	public SinkReply sinksItem(ItemIdentifier item) {return null;}
 

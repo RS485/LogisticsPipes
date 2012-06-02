@@ -87,7 +87,12 @@ public class GuiChassiPipe extends GuiContainer{
 		if (guibutton.id >= 0 && guibutton.id <= 7){
 			ILogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null){
-				module.displayGui(_player, this);
+				if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+					module.getGuiHandler().displayGui(_player, module, this);
+					//module.displayGui(_player, this);
+				} else {
+					//TODO Send To Server
+				}
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
@@ -48,9 +47,8 @@ public class ModuleExtractor implements ILogisticsModule {
 	}
 
 	@Override
-	public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiExtractor(entityplayer.inventory, this, previousGui));
-		return true;
+	public IModuleGuiHandler getGuiHandler() {
+		return ModuleGuiHandler.GuiExtractor;
 	}
 
 	@Override

@@ -1,7 +1,6 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
@@ -41,9 +40,10 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
 
-	@Override
-	public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui) {return false;}
 
+	@Override
+	public ModuleGuiHandler getGuiHandler() {return null;}
+	
 	@Override
 	public ILogisticsModule getSubModule(int slot) {return null;}
 

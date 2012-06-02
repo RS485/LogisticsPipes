@@ -1,7 +1,6 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
@@ -29,11 +28,12 @@ public class ModuleTerminus implements ILogisticsModule {
     	_filterInventory.writeToNBT(nbttagcompound, "");
     }
 
+
 	@Override
-	public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiTerminus(entityplayer.inventory, this, previousGui));
-		return true;
+	public ModuleGuiHandler getGuiHandler() {
+		return ModuleGuiHandler.GuiTerminus;
 	}
+
 
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item) {

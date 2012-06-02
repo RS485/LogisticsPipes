@@ -1,14 +1,15 @@
-package net.minecraft.src.buildcraft.logisticspipes;
+package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import java.util.ArrayList;
 
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
@@ -38,54 +39,6 @@ public class ItemModule extends LogisticsItem{
 	public ItemModule(int i) {
 		super(i);
 		this.hasSubtypes = true;
-	}
-	
-	@Override
-	public int getIconFromDamage(int i) {
-
-		if (i >= 500){
-			return 5 * 16 + (i - 500);
-		}
-		
-		if (i >= 100){
-			return 3 * 16 + (i - 100);
-		}
-			
-		return 2 * 16 + i;
-	}
-	
-	@Override
-	public String getItemDisplayName(ItemStack itemstack) {
-		switch(itemstack.getItemDamage()){
-			case BLANK:
-				return "Blank module";
-				
-			//PASSIVE
-			case ITEMSINK:
-				return "ItemSink module";
-			case PASSIVE_SUPPLIER:
-				return "Passive Supplier module";
-			case EXTRACTOR:
-				return "Extractor module";
-			case POLYMORPHIC_ITEMSINK: 
-				return "Polymorphic ItemSink module";
-			case QUICKSORT:
-				return "QuickSort module";
-			case TERMINUS:
-				return "Terminus module";
-				
-			//PASSIVE MK2
-			case EXTRACTOR_MK2:
-				return "Extractor MK2 module";
-				
-			//ACTIVE
-			case PROVIDER:
-				return "Provider module";
-				
-				
-			default:
-				return ""; 
-		}
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

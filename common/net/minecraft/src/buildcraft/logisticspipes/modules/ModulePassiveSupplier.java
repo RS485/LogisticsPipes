@@ -1,7 +1,6 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
@@ -44,11 +43,10 @@ public class ModulePassiveSupplier implements ILogisticsModule {
 	}
 
 	@Override
-	public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiPassiveSupplier(entityplayer.inventory, this, previousGui));
-		return true;
+	public ModuleGuiHandler getGuiHandler() {
+		return ModuleGuiHandler.GuiPassiveSupplier;
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
 		_filterInventory.readFromNBT(nbttagcompound, "");

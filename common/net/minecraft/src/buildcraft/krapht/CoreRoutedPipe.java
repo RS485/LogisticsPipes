@@ -254,7 +254,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
 			if (getLogisticsModule() != null){
-				boolean guiDisplayed = getLogisticsModule().displayGui(entityplayer, null); 		
+				boolean guiDisplayed = getLogisticsModule().getGuiHandler().displayGui(entityplayer, getLogisticsModule(), null); 		
 				if (guiDisplayed) return true;
 			}
 		}

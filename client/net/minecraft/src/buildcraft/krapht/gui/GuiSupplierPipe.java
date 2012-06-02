@@ -86,7 +86,6 @@ public class GuiSupplierPipe extends GuiContainer{
 	
 	@Override
 	public void onGuiClosed() {
-		// TODO Auto-generated method stub
 		super.onGuiClosed();
 		logic.pause = false;
 		

@@ -23,7 +23,6 @@ import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
-import net.minecraft.src.buildcraft.krapht.gui.GuiCraftingPipe;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -146,7 +145,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiCraftingPipe(entityplayer.inventory, _dummyInventory, this));
+		GuiProxy.openGuiCraftingPipe(entityplayer.inventory, _dummyInventory, this);
 	}
 
 	

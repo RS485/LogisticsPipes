@@ -67,13 +67,13 @@ public final class ItemIdentifier {
 		return "<item not found>";
 	}
 	
-	/*public String getFriendlyName() {
+	public String getFriendlyName() {
 		if (Item.itemsList[itemID]!= null) {
-			return Item.itemsList[itemID].getItemDisplayName(this.makeNormalStack(1));
+			return Item.itemsList[itemID].getItemName();
 			//return Item.itemsList[itemID].func_40397_d(this.makeNormalStack(1));
 		}
 		return "<Item name not found>";
-	}*/
+	}
 	
 	public ItemIdentifierStack makeStack(int stackSize){
 		return new ItemIdentifierStack(this, stackSize);

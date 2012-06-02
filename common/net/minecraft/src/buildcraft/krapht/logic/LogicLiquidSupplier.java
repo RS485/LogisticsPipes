@@ -26,8 +26,6 @@ import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.krapht.gui.GuiLiquidSupplierPipe;
-import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsBuilderSupplierLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsLiquidSupplier;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -183,6 +181,6 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		pause = true; //Pause until GUI is closed
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiLiquidSupplierPipe(entityplayer.inventory, dummyInventory, this));
+		GuiProxy.openGuiLiquidSupplierPipe(entityplayer.inventory, dummyInventory, this);
 	}
 }

@@ -23,7 +23,6 @@ import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
-import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
@@ -63,7 +62,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		pause = true; //Pause until GUI is closed
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiSupplierPipe(entityplayer.inventory, dummyInventory, this));
+		GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 	}
 	
 	

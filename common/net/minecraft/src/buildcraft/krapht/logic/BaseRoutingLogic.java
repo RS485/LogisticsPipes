@@ -8,16 +8,12 @@
 
 package net.minecraft.src.buildcraft.krapht.logic;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
-import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
-import net.minecraft.src.buildcraft.krapht.gui.GuiRoutingStats;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.transport.PipeLogic;
@@ -57,20 +53,20 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	@Override
 	public boolean blockActivated(EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() == null)	{
-			if (!(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return false;
+			if (!entityplayer.isSneaking()) return false;
 			getRouter().displayRoutes();
 			if (core_LogisticsPipes.DEBUG) {
 				doDebugStuff(entityplayer);
 			}
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == core_LogisticsPipes.LogisticsNetworkMonitior){
-			ModLoader.getMinecraftInstance().displayGuiScreen(new GuiRoutingStats(getRouter()));
+			GuiProxy.openGuiRoutingStats(getRouter());
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == net.minecraft.src.BuildCraftCore.wrenchItem){
 			onWrenchClicked(entityplayer);
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == core_LogisticsPipes.LogisticsRemoteOrderer) {
-			ModLoader.getMinecraftInstance().displayGuiScreen(new GuiOrderer(this.getRoutedPipe(), entityplayer));
+			GuiProxy.openGuiOrderer(this.getRoutedPipe(), entityplayer);
 			return true;
 		}
 		return super.blockActivated(entityplayer);

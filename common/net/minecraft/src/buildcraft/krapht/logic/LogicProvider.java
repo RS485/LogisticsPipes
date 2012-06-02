@@ -11,7 +11,6 @@ package net.minecraft.src.buildcraft.krapht.logic;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.InventoryUtilFactory;
@@ -42,7 +41,7 @@ public class LogicProvider extends BaseRoutingLogic{
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiProviderPipe(entityplayer.inventory, dummyInventory, this));	
+		GuiProxy.openGuiProviderPipe(entityplayer.inventory, dummyInventory, this);	
 	}
 	
 	@Override

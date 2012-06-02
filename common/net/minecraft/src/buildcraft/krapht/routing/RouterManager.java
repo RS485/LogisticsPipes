@@ -29,10 +29,10 @@ public class RouterManager implements IRouterManager{
 	}
 
 	@Override
-	public IRouter getOrCreateRouter(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord, World world) {
+	public IRouter getOrCreateRouter(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord) {
 		IRouter r = this.getRouter(id);
 		if (r == null){
-			r = new Router(id, dimensionId, xCoord, yCoord, zCoord, world);
+			r = new Router(id, dimensionId, xCoord, yCoord, zCoord);
 			_routers.put(id, (Router)r);
 		}
 		return r;

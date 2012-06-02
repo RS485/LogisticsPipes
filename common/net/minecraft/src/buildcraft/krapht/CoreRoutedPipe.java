@@ -154,7 +154,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void destroy() {
 		super.destroy();
-		router.destroy();
+		getRouter().destroy();
 		if (logic instanceof BaseRoutingLogic){
 			((BaseRoutingLogic)logic).destroy();
 		}
@@ -225,7 +225,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (routerId == null || routerId == ""){
 				routerId = UUID.randomUUID().toString();
 			}
-			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj.getWorldInfo().getDimension(), xCoord, yCoord, zCoord, worldObj);
+			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj.getWorldInfo().getDimension(), xCoord, yCoord, zCoord);
 		}
 		return router;
 	}

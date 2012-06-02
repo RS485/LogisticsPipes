@@ -63,7 +63,6 @@ public class Router implements IRouter{
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
-	private final World _world;
 	
 	public static void ResetStatics(){
 		SharedLSADatabase.clear();
@@ -71,13 +70,12 @@ public class Router implements IRouter{
 		_laser = new RouteLaser();
 	}
 	
-	public Router(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord, World world){
+	public Router(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord){
 		this.id = id;
 		this._dimensionId = dimensionId;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
-		this._world = world;
 		_myLsa = new LSA();
 		_myLsa.source = this;
 		_myLsa.neighboursWithMetric = new HashMap<Router, Integer>();
@@ -86,8 +84,9 @@ public class Router implements IRouter{
 	
 	@Deprecated
 	public CoreRoutedPipe getPipe(){
-		//TileEntity tile = WorldProvider.getProviderForDimension(_dimensionId).worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
-		TileEntity tile = _world.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		//TODO Check if this works
+		TileEntity tile = WorldProvider.getProviderForDimension(_dimensionId).worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		//TileEntity tile = ModLoader.getMinecraftServerInstance().getWorldManager(par1).getBlockTileEntity(_xCoord, _yCoord, _zCoord);
 		if (!(tile instanceof TileGenericPipe)) return null;
 		TileGenericPipe pipe = (TileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;

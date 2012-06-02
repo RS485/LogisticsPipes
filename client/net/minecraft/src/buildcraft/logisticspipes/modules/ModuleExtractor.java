@@ -9,6 +9,7 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.api.ISpecialInventory;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
+import net.minecraft.src.buildcraft.logisticspipes.GuiID;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.forge.ISidedInventory;

@@ -296,8 +296,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen{
 		} else if (guibutton.id == 7) {
 			requestCount+=10;
 		} else if (guibutton.id == 8 && selectedItem != null) {
-			PipeItemsRequestLogistics requestPipe = (PipeItemsRequestLogistics)_itemRequester;
-			ModLoader.openGUI(_entityPlayer, new GuiStatistics(requestPipe.getHistory(), selectedItem, this, _entityPlayer));
+			if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+				PipeItemsRequestLogistics requestPipe = (PipeItemsRequestLogistics)_itemRequester;
+				ModLoader.openGUI(_entityPlayer, new GuiStatistics(requestPipe.getHistory(), selectedItem, this, _entityPlayer));
+			} else {
+				// send To Server
+			}
 		} else if (guibutton.id == 9) {
 			String displayString = "";
 			switch (displayOptions){

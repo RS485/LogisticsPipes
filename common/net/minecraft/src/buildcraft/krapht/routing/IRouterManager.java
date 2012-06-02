@@ -10,10 +10,12 @@ package net.minecraft.src.buildcraft.krapht.routing;
 
 import java.util.UUID;
 
+import net.minecraft.src.World;
+
 
 public interface IRouterManager {
 
-	public IRouter getOrCreateRouter(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord);
+	public IRouter getOrCreateRouter(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord, World world);
 	public IRouter getRouter(UUID id);
 	public boolean isRouter(UUID id);
 }

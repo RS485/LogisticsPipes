@@ -79,6 +79,8 @@ public class GuiExtractor extends GuiContainer{
 			break;
 		}
 		
+		//Send To Server
+		
 		refreshButtons();
 		super.actionPerformed(guibutton);
 	}

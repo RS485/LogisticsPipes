@@ -8,7 +8,8 @@ import net.minecraft.src.krapht.ItemIdentifier;
 public class MessageManager {
 	
 	public static void overflow(EntityPlayer player, ItemIdentifier item) {
-		player.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName() + " !! ABORTING !!");
+		//TODO Send Client
+		//player.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName() + " !! ABORTING !!");
 	}
 	
 }

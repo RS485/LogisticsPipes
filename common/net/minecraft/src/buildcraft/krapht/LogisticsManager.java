@@ -133,9 +133,9 @@ public class LogisticsManager implements ILogisticsManager {
 //		return count;
 //	}
 	
-	//public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors){
-	//	return Request(originalRequest, validDestinations, errors, null);
-	//}
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors){
+		return Request(originalRequest, validDestinations, errors, null);
+	}
 	
 	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);

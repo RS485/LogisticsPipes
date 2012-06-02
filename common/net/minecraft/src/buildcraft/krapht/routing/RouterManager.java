@@ -11,6 +11,8 @@ package net.minecraft.src.buildcraft.krapht.routing;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.minecraft.src.World;
+
 
 public class RouterManager implements IRouterManager{
 	private final static HashMap<UUID, Router> _routers = new HashMap<UUID, Router>();
@@ -27,10 +29,10 @@ public class RouterManager implements IRouterManager{
 	}
 
 	@Override
-	public IRouter getOrCreateRouter(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord) {
+	public IRouter getOrCreateRouter(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord, World world) {
 		IRouter r = this.getRouter(id);
 		if (r == null){
-			r = new Router(id, dimensionId, xCoord, yCoord, zCoord);
+			r = new Router(id, dimensionId, xCoord, yCoord, zCoord, world);
 			_routers.put(id, (Router)r);
 		}
 		return r;

@@ -15,7 +15,6 @@ import java.util.UUID;
 
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.PlayerControllerSP;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.WorldProvider;
 import net.minecraft.src.core_LogisticsPipes;

@@ -14,8 +14,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.src.BuildCraftCore;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
@@ -254,7 +252,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		
-		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))){
+		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
 			if (getLogisticsModule() != null){
 				boolean guiDisplayed = getLogisticsModule().displayGui(entityplayer, null); 		
 				if (guiDisplayed) return true;

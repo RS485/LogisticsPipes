@@ -264,17 +264,21 @@ public class GuiOrderer extends KraphtBaseGuiScreen{
 		clickWasButton = true;
 		
 		if (guibutton.id == 0 && selectedItem != null){
-			LogisticsRequest request = new LogisticsRequest(selectedItem, requestCount, this._itemRequester);
-			LinkedList<String> errors = new LinkedList<String>();
-			boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors);
-			if (!result){
-				for (String error : errors){
-					_entityPlayer.addChatMessage("Missing: " + error);
+			if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+				LogisticsRequest request = new LogisticsRequest(selectedItem, requestCount, this._itemRequester);
+				LinkedList<String> errors = new LinkedList<String>();
+				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);
+				if (!result){
+					for (String error : errors){
+						_entityPlayer.addChatMessage("Missing: " + error);
+					}
 				}
-			}
-			else{
-				_entityPlayer.addChatMessage("Request successful!");
-				refreshItems();
+				else{
+					_entityPlayer.addChatMessage("Request successful!");
+					refreshItems();
+				}
+			} else {
+				//TODO sendRequestToServer();
 			}
 			
 		} else if (guibutton.id == 1){

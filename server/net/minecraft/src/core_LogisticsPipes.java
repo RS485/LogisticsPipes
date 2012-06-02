@@ -276,7 +276,6 @@ import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
-import net.minecraft.src.forge.MinecraftForgeClient;
 import net.minecraft.src.forge.Property;
 import net.minecraft.src.krapht.InventoryUtilFactory;
 
@@ -660,25 +659,13 @@ public abstract class core_LogisticsPipes extends BaseMod{
 		Item res =  BlockGenericPipe.registerPipe (defaultID, clas);
 		res.setItemName(clas.getSimpleName());
 		CoreProxy.addName(res, descr);
-		MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, mod_BuildCraftTransport.instance);
 	
 		return res;
 	}
 
 	@Override
 	public void load() {
-		MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
-		MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
-		
-//		
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
+	
 	}
 	
 	public String getLogisticsVersion(){

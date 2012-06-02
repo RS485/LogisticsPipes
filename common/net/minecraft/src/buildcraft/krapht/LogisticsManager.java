@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
@@ -21,6 +22,7 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
+import net.minecraft.src.buildcraft.logisticspipes.MessageManager;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class LogisticsManager implements ILogisticsManager {
@@ -131,7 +133,11 @@ public class LogisticsManager implements ILogisticsManager {
 //		return count;
 //	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors){
+	//public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors){
+	//	return Request(originalRequest, validDestinations, errors, null);
+	//}
+	
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);
 		
 		//First check all crafters
@@ -181,8 +187,9 @@ public class LogisticsManager implements ILogisticsManager {
 							HashMap<ItemIdentifier, Integer> totalPromised = transaction.getTotalPromised(crafter);
 							if (totalPromised.containsKey(ResultItem)){
 								int promisedCount = totalPromised.get(ResultItem);
-								if (promisedCount > 800){
-										ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + ResultItem.getFriendlyName() + " !! ABORTING !!");
+								if (promisedCount > 800){ //TODO Make Settings File for this
+									if(player != null)
+										MessageManager.overflow(player, ResultItem);
 									break outer;
 								}
 							}

@@ -268,7 +268,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, i, j, k, entityplayer);
 		
 		if (entityplayer.getCurrentEquippedItem().getItem() == net.minecraft.src.BuildCraftCore.wrenchItem){
-			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+			if (entityplayer.isSneaking()){
 				((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				return true;
 			}

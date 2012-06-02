@@ -22,7 +22,6 @@ import net.minecraft.src.buildcraft.transport.IItemTravelingHook;
 import net.minecraft.src.buildcraft.transport.PipeTransportItems;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.ForgeHooks;
-import net.minecraft.src.forge.ForgeHooksClient;
 
 public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems, IItemTravelingHook{
 

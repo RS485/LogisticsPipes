@@ -14,15 +14,18 @@ import java.util.LinkedList;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketSimpleGuiInteract;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -33,7 +36,7 @@ import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.WorldUtil;
 
-public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport{
+public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
 	private final SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
 	private final InventoryUtilFactory _invUtilFactory;
@@ -76,10 +79,22 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 	
 	public void setNextSatellite(){
 		SatelliteId = getNextConnectSatelliteId(false);
+		
+		if(APIProxy.isRemote()) {
+			// Using existing BuildCraft packet system
+			PacketSimpleGuiInteract packet = new PacketSimpleGuiInteract(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE);
+			CoreProxy.sendToServer(packet.getPacket());
+		}
 	}
 	
 	public void setPrevSatellite(){
 		SatelliteId = getNextConnectSatelliteId(true);
+
+		if(APIProxy.isRemote()) {
+			// Using existing BuildCraft packet system
+			PacketSimpleGuiInteract packet = new PacketSimpleGuiInteract(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE);
+			CoreProxy.sendToServer(packet.getPacket());
+		}
 	}
 	
 	public boolean isSatelliteConnected(){
@@ -108,6 +123,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		
 		this.getRouter().displayRouteTo(satelliteRouter);
 		
+		// No need for networking here
 	}
 	
 	

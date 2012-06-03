@@ -8,10 +8,6 @@ import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.core.network.PacketCoordinates;
-import net.minecraft.src.buildcraft.core.network.PacketIds;
-import net.minecraft.src.buildcraft.core.network.PacketSlotChange;
-import net.minecraft.src.buildcraft.core.network.PacketUpdate;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.transport.PipeLogicDiamond;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -29,13 +25,21 @@ public class PacketHandler implements IPacketHandler {
 			switch (packetID) {
 
 			case NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE:
-				PacketSimpleGuiInteract packet = new PacketSimpleGuiInteract(packetID); // TODO server - packetID ?!
+				PacketCoordinates packet = new PacketCoordinates();
+				// DEBUG
+				System.out.println("[BCLP] debug: PacketCoordinates CRAFTING_PIPE_NEXT_SATELLITE ");
+				System.out.print(bytes);
+				// DEBUG
 				packet.readData(data);
 				onCraftingPipeNextSatellite(net.getPlayerEntity(), packet);
 				break;
 				
 			case NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE:
-				PacketSimpleGuiInteract packetA = new PacketSimpleGuiInteract(packetID); // TODO server - packetID ?!
+				PacketCoordinates packetA = new PacketCoordinates();
+				// DEBUG
+				System.out.println("[BCLP] debug: PacketCoordinates CRAFTING_PIPE_PREV_SATELLITE ");
+				System.out.print(bytes);
+				// DEBUG
 				packetA.readData(data);
 				onCraftingPipePrevSatellite(net.getPlayerEntity(), packetA);
 				break;
@@ -45,7 +49,7 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
-	private void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketSimpleGuiInteract packet) {
+	private void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null)
 			return;
@@ -56,7 +60,7 @@ public class PacketHandler implements IPacketHandler {
 		((LogicCrafting) pipe.pipe.logic).setNextSatellite(player);
 	}
 
-	private void onCraftingPipePrevSatellite(EntityPlayerMP player, PacketSimpleGuiInteract packet) {
+	private void onCraftingPipePrevSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null)
 			return;

@@ -27,7 +27,6 @@ import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCraftingPipeSatelliteId;
-import net.minecraft.src.buildcraft.krapht.network.PacketSimpleGuiInteract;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -83,7 +82,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		SatelliteId = getNextConnectSatelliteId(false);
 
 		// Using existing BuildCraft packet system
-		PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId(SatelliteId);
+		PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId(xCoord, yCoord, zCoord, SatelliteId);
 		CoreProxy.sendToPlayer((EntityPlayer) player, packet);
 	}
 	
@@ -91,7 +90,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		SatelliteId = getNextConnectSatelliteId(true);
 
 		// Using existing BuildCraft packet system
-		PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId(SatelliteId);
+		PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId(xCoord, yCoord, zCoord, SatelliteId);
 		CoreProxy.sendToPlayer((EntityPlayer) player, packet);
 	}
 	

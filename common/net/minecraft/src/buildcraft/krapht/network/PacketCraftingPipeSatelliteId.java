@@ -5,15 +5,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
-	private int packetId = NetworkConstants.CRAFTING_PIPE_SATELLITE_ID;
 	public int satelliteId;
 	
 	public PacketCraftingPipeSatelliteId() {
 		super();
 	}
 
-	public PacketCraftingPipeSatelliteId(int satelliteId) { // TODO Coordinates
-		super();
+	public PacketCraftingPipeSatelliteId(int x, int y, int z, int satelliteId) { // TODO Coordinates
+		super(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, x, y, z);
 		this.satelliteId = satelliteId;
 	}
 
@@ -21,8 +20,9 @@ public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
 		
-		if(satelliteId < 0)
+		if(satelliteId < 0) {
 			satelliteId = 0;
+		}
 		
 		data.write(this.satelliteId);
 	}
@@ -32,10 +32,5 @@ public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
 		super.readData(data);
 		
 		this.satelliteId = data.readInt();
-	}
-
-	@Override
-	public int getID() {
-		return packetId;
 	}
 }

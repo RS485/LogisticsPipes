@@ -2,6 +2,7 @@ package net.minecraft.src.buildcraft.krapht.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.util.logging.Logger;
 
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetClientHandler;
@@ -26,6 +27,10 @@ public class PacketHandler implements IPacketHandler {
 			switch (packetID) {
 			case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID:
 				PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId();
+				// DEBUG
+				System.out.println("[BCLP] debug: PacketCraftingPipeSatelliteId CRAFTING_PIPE_SATELLITE_ID ");
+				System.out.print(bytes);
+				// DEBUG
 				packet.readData(data);
 				onCraftingPipeSetSatellite(packet);
 				break;

@@ -25,7 +25,7 @@ import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
-import net.minecraft.src.buildcraft.krapht.network.PacketSimpleGuiInteract;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -82,7 +82,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		
 		if(APIProxy.isRemote()) {
 			// Using existing BuildCraft packet system
-			PacketSimpleGuiInteract packet = new PacketSimpleGuiInteract(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE);
+			PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
 			CoreProxy.sendToServer(packet.getPacket());
 		}
 	}
@@ -92,7 +92,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 
 		if(APIProxy.isRemote()) {
 			// Using existing BuildCraft packet system
-			PacketSimpleGuiInteract packet = new PacketSimpleGuiInteract(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE);
+			PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE, xCoord, yCoord, zCoord);
 			CoreProxy.sendToServer(packet.getPacket());
 		}
 	}

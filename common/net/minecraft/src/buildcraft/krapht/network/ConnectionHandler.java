@@ -2,7 +2,6 @@ package net.minecraft.src.buildcraft.krapht.network;
 
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet1Login;
-import net.minecraft.src.buildcraft.silicon.network.PacketHandler;
 import net.minecraft.src.forge.IConnectionHandler;
 import net.minecraft.src.forge.MessageManager;
 

@@ -79,7 +79,7 @@ public class GuiCraftingPipe extends GuiContainer {
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		inventorySlots.onCraftGuiClosed(mc.thePlayer);
+		inventorySlots.onCraftGuiClosed(mc.thePlayer); // TODO NullPointerException thePlayer == null
 	}
 
 	@Override

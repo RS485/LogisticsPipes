@@ -7,7 +7,7 @@ import java.io.IOException;
 public class PacketSimpleGuiInteract extends PacketCoordinates {
 	private int packetId = 0;
 
-	public PacketSimpleGuiInteract(int packetId) {
+	public PacketSimpleGuiInteract(int packetId) { // TODO Coordinates
 		super();
 		this.packetId = packetId;
 	}

@@ -7,8 +7,12 @@ import java.io.IOException;
 public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
 	private int packetId = NetworkConstants.CRAFTING_PIPE_SATELLITE_ID;
 	public int satelliteId;
+	
+	public PacketCraftingPipeSatelliteId() {
+		super();
+	}
 
-	public PacketCraftingPipeSatelliteId(int satelliteId) {
+	public PacketCraftingPipeSatelliteId(int satelliteId) { // TODO Coordinates
 		super();
 		this.satelliteId = satelliteId;
 	}
@@ -25,7 +29,9 @@ public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
-		// We do not accept a satellite id from the client
+		super.readData(data);
+		
+		this.satelliteId = data.readInt();
 	}
 
 	@Override

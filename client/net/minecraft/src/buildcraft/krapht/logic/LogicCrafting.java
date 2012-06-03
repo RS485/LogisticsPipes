@@ -96,6 +96,11 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 			CoreProxy.sendToServer(packet.getPacket());
 		}
 	}
+
+	// This is called by the packet PacketCraftingPipeSatelliteId
+	public void setSatelliteId(int satelliteId) {
+		this.SatelliteId = satelliteId;
+	}
 	
 	public boolean isSatelliteConnected(){
 		for (LogicSatellite satellite : LogicSatellite.AllSatellites){
@@ -241,8 +246,4 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 	public ItemStack getMaterials(int slotnr){
 		return _dummyInventory.getStackInSlot(slotnr);
 	}
-
-
-	
-	
 }

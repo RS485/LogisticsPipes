@@ -166,7 +166,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		GuiProxy.openGuiCraftingPipe(entityplayer.inventory, _dummyInventory, this);
+		GuiProxy.openGuiCraftingPipe(entityplayer, _dummyInventory, this);
 	}
 
 	

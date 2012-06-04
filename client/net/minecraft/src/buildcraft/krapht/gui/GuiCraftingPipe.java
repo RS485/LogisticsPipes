@@ -8,6 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht.gui;
 
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
@@ -23,11 +24,12 @@ import org.lwjgl.opengl.GL11;
 public class GuiCraftingPipe extends GuiContainer {
 
 	private final LogicCrafting _logic;
+	private final EntityPlayer _player;
 	
-	public GuiCraftingPipe(InventoryPlayer inventoryplayer, IInventory dummyInventory, LogicCrafting logic) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, LogicCrafting logic) {
 		super(null);
-		
-		DummyContainer dummy = new DummyContainer(inventoryplayer, dummyInventory);
+		_player = player;
+		DummyContainer dummy = new DummyContainer(player.inventory, dummyInventory);
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
 
 		//Input slots
@@ -79,7 +81,7 @@ public class GuiCraftingPipe extends GuiContainer {
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		inventorySlots.onCraftGuiClosed(mc.thePlayer); // TODO NullPointerException thePlayer == null
+		inventorySlots.onCraftGuiClosed(_player); // TODO NullPointerException thePlayer == null
 	}
 
 	@Override

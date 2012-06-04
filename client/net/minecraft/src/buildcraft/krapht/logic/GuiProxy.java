@@ -24,8 +24,8 @@ public class GuiProxy {
 		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiOrderer(routedPipe, entityplayer));
 	}
 
-	public static void openGuiCraftingPipe(InventoryPlayer inventory, SimpleInventory _dummyInventory, LogicCrafting logicCrafting) {
-		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiCraftingPipe(inventory, _dummyInventory, logicCrafting));
+	public static void openGuiCraftingPipe(EntityPlayer player, SimpleInventory _dummyInventory, LogicCrafting logicCrafting) {
+		ModLoader.getMinecraftInstance().displayGuiScreen(new GuiCraftingPipe(player, _dummyInventory, logicCrafting));
 	}
 
 	public static void openGuiLiquidSupplierPipe(InventoryPlayer inventory, SimpleInventory dummyInventory, LogicLiquidSupplier logicLiquidSupplier) {

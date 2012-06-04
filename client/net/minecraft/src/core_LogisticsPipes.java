@@ -254,14 +254,18 @@ import java.io.File;
 import java.lang.reflect.Method;
 
 import net.minecraft.src.buildcraft.core.CoreProxy;
+<<<<<<< HEAD
 import net.minecraft.src.buildcraft.core.network.ConnectionHandler;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
+=======
+>>>>>>> remotes/origin/master
 import net.minecraft.src.buildcraft.krapht.IBuildCraftProxy;
 import net.minecraft.src.buildcraft.krapht.ILogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.logistics.LogisticsManagerV2;
+import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsBasicLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;

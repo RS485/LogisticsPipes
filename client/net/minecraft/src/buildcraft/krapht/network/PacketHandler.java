@@ -4,12 +4,16 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.logging.Logger;
 
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetClientHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.buildcraft.core.network.PacketSlotChange;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
+import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.transport.PipeLogicDiamond;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 
@@ -26,13 +30,19 @@ public class PacketHandler implements IPacketHandler {
 			int packetID = data.read();
 			switch (packetID) {
 			case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID:
-				PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId();
-				// DEBUG
-				System.out.println("[BCLP] debug: PacketCraftingPipeSatelliteId CRAFTING_PIPE_SATELLITE_ID ");
-				System.out.print(bytes);
-				// DEBUG
+				PacketPipeInteger packet = new PacketPipeInteger();
 				packet.readData(data);
 				onCraftingPipeSetSatellite(packet);
+				break;
+			case NetworkConstants.CRAFTING_PIPE_IMPORT_BACK:
+				PacketInventoryChange packetA = new PacketInventoryChange();
+				packetA.readData(data);
+				onCraftingPipeSetImport(packetA);
+				break;
+			case NetworkConstants.SATELLITE_PIPE_SATELLITE_ID:
+				PacketPipeInteger packetB = new PacketPipeInteger();
+				packetB.readData(data);
+				onSatellitePipeSetSatellite(packetB);
 				break;
 			}
 		} catch(Exception ex) {
@@ -40,16 +50,40 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 	
-	private void onCraftingPipeSetSatellite(PacketCraftingPipeSatelliteId packet) {
-		World world = ModLoader.getMinecraftInstance().theWorld;
-		TileGenericPipe pipe = getPipe(world, packet.posX, packet.posY, packet.posZ);
+	private void onCraftingPipeSetSatellite(PacketPipeInteger packet) {
+		TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null)
 			return;
 		
 		if(!(pipe.pipe.logic instanceof LogicCrafting))
 			return;
 		
-		((LogicCrafting) pipe.pipe.logic).setSatelliteId(packet.satelliteId);
+		((LogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer);
+	}
+
+	private void onCraftingPipeSetImport(PacketInventoryChange packet) {
+		TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null)
+			return;
+
+		if(!(pipe.pipe.logic instanceof LogicCrafting))
+			return;
+		
+		LogicCrafting craftingPipe = (LogicCrafting) pipe.pipe.logic;
+		for(int i=0; i < packet.itemStacks.size(); i++) {
+			craftingPipe.setDummyInventorySlot(i, packet.itemStacks.get(i));
+		}
+	}
+	
+	private void onSatellitePipeSetSatellite(PacketPipeInteger packet) {
+		TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null)
+			return;
+		
+		if(!(pipe.pipe.logic instanceof LogicSatellite))
+			return;
+		
+		((LogicSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
 	}
 
 	// BuildCraft method

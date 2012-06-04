@@ -13,6 +13,9 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
@@ -60,13 +63,17 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			}
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == core_LogisticsPipes.LogisticsNetworkMonitior){
-			GuiProxy.openGuiRoutingStats(getRouter());
+			if(!APIProxy.isClient(entityplayer.worldObj)) {
+				entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, worldObj, xCoord, yCoord, zCoord);
+			}
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == net.minecraft.src.BuildCraftCore.wrenchItem){
 			onWrenchClicked(entityplayer);
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == core_LogisticsPipes.LogisticsRemoteOrderer) {
-			GuiProxy.openGuiOrderer(this.getRoutedPipe(), entityplayer);
+			if(!APIProxy.isClient(entityplayer.worldObj)) {
+				entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Orderer_ID, worldObj, xCoord, yCoord, zCoord);
+			}
 			return true;
 		}
 		return super.blockActivated(entityplayer);

@@ -14,11 +14,14 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.energy.Engine;
 import net.minecraft.src.buildcraft.energy.EngineWood;
 import net.minecraft.src.buildcraft.energy.TileEngine;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
@@ -61,11 +64,18 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		pause = true; //Pause until GUI is closed
-		GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
+		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
+		if(!APIProxy.isClient(entityplayer.worldObj)) {
+			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
+			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
+		}
 	}
 	
-	
+	/*** GUI ***/
+	public SimpleInventory getDummyInventory() {
+		return dummyInventory;
+	}
+
 	@Override
 	public void throttledUpdateEntity() {
 		

@@ -33,8 +33,11 @@ public class mod_LogisticsPipes extends core_LogisticsPipes{
 	
 	public mod_LogisticsPipes() {
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy3());
+		instance = this;
 	}
 
+	public static mod_LogisticsPipes instance;
+	
 	public static Trigger LogisticsFailedTrigger;
 	
 	public static Action LogisticsDisableAction;

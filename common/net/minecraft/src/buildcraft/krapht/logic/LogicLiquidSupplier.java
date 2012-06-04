@@ -16,11 +16,14 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.BuildCraftAPI;
 import net.minecraft.src.buildcraft.api.ILiquidContainer;
 import net.minecraft.src.buildcraft.api.LiquidSlot;
 import net.minecraft.src.buildcraft.builders.TileBuilder;
 import net.minecraft.src.buildcraft.core.Utils;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
@@ -180,7 +183,15 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		pause = true; //Pause until GUI is closed
-		GuiProxy.openGuiLiquidSupplierPipe(entityplayer.inventory, dummyInventory, this);
+		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
+		if(!APIProxy.isClient(entityplayer.worldObj)) {
+			//GuiProxy.openGuiLiquidSupplierPipe(entityplayer.inventory, dummyInventory, this);
+			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_LiquidSupplier_ID, worldObj, xCoord, yCoord, zCoord);
+		}
+	}
+	
+	/*** GUI ***/
+	public SimpleInventory getDummyInventory() {
+		return dummyInventory;
 	}
 }

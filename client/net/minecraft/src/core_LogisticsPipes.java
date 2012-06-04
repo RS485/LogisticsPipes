@@ -255,6 +255,7 @@ import java.lang.reflect.Method;
 
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.network.ConnectionHandler;
+import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.IBuildCraftProxy;
 import net.minecraft.src.buildcraft.krapht.ILogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
@@ -670,6 +671,8 @@ public abstract class core_LogisticsPipes extends BaseMod{
 	@Override
 	public void load() {
 		MinecraftForge.registerConnectionHandler(new ConnectionHandler());
+		
+		MinecraftForge.setGuiHandler(this,new GuiHandler());
 		
 		MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
 		MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);

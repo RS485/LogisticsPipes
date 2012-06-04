@@ -26,20 +26,12 @@ public class PacketHandler implements IPacketHandler {
 
 			case NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE:
 				PacketCoordinates packet = new PacketCoordinates();
-				// DEBUG
-				System.out.println("[BCLP] debug: PacketCoordinates CRAFTING_PIPE_NEXT_SATELLITE ");
-				System.out.print(bytes);
-				// DEBUG
 				packet.readData(data);
 				onCraftingPipeNextSatellite(net.getPlayerEntity(), packet);
 				break;
 				
 			case NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE:
 				PacketCoordinates packetA = new PacketCoordinates();
-				// DEBUG
-				System.out.println("[BCLP] debug: PacketCoordinates CRAFTING_PIPE_PREV_SATELLITE ");
-				System.out.print(bytes);
-				// DEBUG
 				packetA.readData(data);
 				onCraftingPipePrevSatellite(net.getPlayerEntity(), packetA);
 				break;

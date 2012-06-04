@@ -77,7 +77,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		
 	}
 	
-	public void setNextSatellite(){
+	public void setNextSatellite() {
 		SatelliteId = getNextConnectSatelliteId(false);
 		
 		if(APIProxy.isRemote()) {
@@ -87,7 +87,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		}
 	}
 	
-	public void setPrevSatellite(){
+	public void setPrevSatellite() {
 		SatelliteId = getNextConnectSatelliteId(true);
 
 		if(APIProxy.isRemote()) {

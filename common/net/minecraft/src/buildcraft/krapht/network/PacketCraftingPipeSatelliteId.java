@@ -13,6 +13,11 @@ public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
 
 	public PacketCraftingPipeSatelliteId(int x, int y, int z, int satelliteId) { // TODO Coordinates
 		super(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, x, y, z);
+		
+		if(satelliteId < 0) {
+			satelliteId = 0;
+		}
+		
 		this.satelliteId = satelliteId;
 	}
 
@@ -20,11 +25,7 @@ public class PacketCraftingPipeSatelliteId extends PacketCoordinates {
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
 		
-		if(satelliteId < 0) {
-			satelliteId = 0;
-		}
-		
-		data.write(this.satelliteId);
+		data.writeInt(this.satelliteId);
 	}
 
 	@Override

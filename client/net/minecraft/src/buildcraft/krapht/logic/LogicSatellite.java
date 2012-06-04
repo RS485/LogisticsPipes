@@ -15,14 +15,11 @@ import java.util.LinkedList;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
-<<<<<<< HEAD
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
-=======
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.CoreProxy;
->>>>>>> remotes/origin/master
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;

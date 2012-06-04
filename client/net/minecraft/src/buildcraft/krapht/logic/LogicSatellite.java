@@ -15,11 +15,15 @@ import java.util.LinkedList;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.ItemIdentifier;
 
@@ -79,11 +83,27 @@ public class LogicSatellite extends BaseRoutingLogic implements IRequireReliable
     public void setNextId(){
     	satelliteId = findId(1);
     	ensureAllSatelliteStatus();
+
+		if(APIProxy.isRemote()) {
+			// Using existing BuildCraft packet system
+			PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_NEXT, xCoord, yCoord, zCoord);
+			CoreProxy.sendToServer(packet.getPacket());
+		}
     }
     
     public void setPrevId(){
     	satelliteId = findId(-1);
     	ensureAllSatelliteStatus();
+
+		if(APIProxy.isRemote()) {
+			// Using existing BuildCraft packet system
+			PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_PREV, xCoord, yCoord, zCoord);
+			CoreProxy.sendToServer(packet.getPacket());
+		}
+    }
+    
+    public void setSatelliteId(int satelliteId) {
+    	this.satelliteId = satelliteId;
     }
 
 	@Override

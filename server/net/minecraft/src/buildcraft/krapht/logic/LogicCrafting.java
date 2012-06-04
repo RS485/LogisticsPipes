@@ -26,7 +26,9 @@ import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
-import net.minecraft.src.buildcraft.krapht.network.PacketCraftingPipeSatelliteId;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
+import net.minecraft.src.buildcraft.krapht.network.PacketInventoryChange;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -82,7 +84,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		SatelliteId = getNextConnectSatelliteId(false);
 
 		// Using existing BuildCraft packet system
-		PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId(xCoord, yCoord, zCoord, SatelliteId);
+		PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, SatelliteId);
 		CoreProxy.sendToPlayer((EntityPlayer) player, packet);
 	}
 	
@@ -90,7 +92,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		SatelliteId = getNextConnectSatelliteId(true);
 
 		// Using existing BuildCraft packet system
-		PacketCraftingPipeSatelliteId packet = new PacketCraftingPipeSatelliteId(xCoord, yCoord, zCoord, SatelliteId);
+		PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, SatelliteId);
 		CoreProxy.sendToPlayer((EntityPlayer) player, packet);
 	}
 	
@@ -185,7 +187,7 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		_lostItems.add(item);
 	}
 	
-	public void importFromCraftingTable() {
+	public void importFromCraftingTable(EntityPlayerMP player) {
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
 		TileAutoWorkbench bench = null;
@@ -229,6 +231,10 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		
 		_dummyInventory.setInventorySlotContents(9, bench.findRecipe());
 		
+		// Send inventory as packet
+		// Using existing BuildCraft packet system
+		PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord, _dummyInventory);
+		CoreProxy.sendToServer(packet.getPacket());
 	}
 	
 	/*** INTERFACE TO PIPE ***/
@@ -239,8 +245,4 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 	public ItemStack getMaterials(int slotnr){
 		return _dummyInventory.getStackInSlot(slotnr);
 	}
-
-
-	
-	
 }

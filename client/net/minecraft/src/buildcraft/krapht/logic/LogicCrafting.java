@@ -236,6 +236,16 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		
 		_dummyInventory.setInventorySlotContents(9, bench.findRecipe());
 		
+		// Send packet asking for import
+		if(APIProxy.isRemote()) {
+			// Using existing BuildCraft packet system
+			PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord);
+			CoreProxy.sendToServer(packet.getPacket());
+		}
+	}
+
+	public void setDummyInventorySlot(int slot, ItemStack itemstack) {
+		_dummyInventory.setInventorySlotContents(slot, itemstack);
 	}
 	
 	/*** INTERFACE TO PIPE ***/

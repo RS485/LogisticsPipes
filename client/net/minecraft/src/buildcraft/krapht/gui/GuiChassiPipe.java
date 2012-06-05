@@ -19,9 +19,13 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.forge.ForgeHooks;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.gui.DummyContainer;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
@@ -92,7 +96,7 @@ public class GuiChassiPipe extends GuiContainer{
 				if(!APIProxy.isClient(_player.worldObj)) {
 					_player.openGui(mod_LogisticsPipes.instance, module.getGuiHandlerID(), _chassiPipe.worldObj, _chassiPipe.xCoord, _chassiPipe.yCoord, _chassiPipe.zCoord);	
 				} else {
-					//TODO Send To Server
+					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID,_chassiPipe.xCoord,_chassiPipe.yCoord,_chassiPipe.zCoord,guibutton.id).getPacket());
 				}
 			}
 		}

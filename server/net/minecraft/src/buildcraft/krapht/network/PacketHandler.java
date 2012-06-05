@@ -8,8 +8,10 @@ import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.transport.PipeLogicDiamond;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
@@ -51,10 +53,28 @@ public class PacketHandler implements IPacketHandler {
 				packetD.readData(data);
 				onSatellitePipePrev(net.getPlayerEntity(), packetD);
 				break;
+			case NetworkConstants.CHASSI_GUI_PACKET_ID:
+				PacketPipeInteger packetE = new PacketPipeInteger();
+				packetE.readData(data);
+				onModuleGuiOpen(net.getPlayerEntity(), packetE);
+				break;
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private void onModuleGuiOpen(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null)
+			return;
+		
+		if(!(pipe.pipe instanceof PipeLogisticsChassi))
+			return;
+		
+		PipeLogisticsChassi cassiPipe = (PipeLogisticsChassi) pipe.pipe;
+		
+		player.openGui(mod_LogisticsPipes.instance, cassiPipe.getLogisticsModule().getSubModule(packet.integer).getGuiHandlerID(), player.worldObj, packet.posX, packet.posY, packet.posZ);
 	}
 
 	private void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {

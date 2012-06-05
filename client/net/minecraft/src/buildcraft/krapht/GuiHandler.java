@@ -1,8 +1,11 @@
 package net.minecraft.src.buildcraft.krapht;
 
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.GuiScreen;
+import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.buildcraft.krapht.gui.GuiChassiPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiCraftingPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiLiquidSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
@@ -16,11 +19,24 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiLiquidSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiPassiveSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiTerminus;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleLiquidSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {
-
+	
 	@Override
 	public Object getGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 
@@ -55,12 +71,36 @@ public class GuiHandler implements IGuiHandler {
 			if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicSupplier)) return null;
 			return new GuiSupplierPipe(player.inventory, ((LogicSupplier)pipe.pipe.logic).getDummyInventory(), (LogicSupplier)pipe.pipe.logic);
 			
-			
 			/*** Modules ***/
 		case GuiIDs.GUI_Module_Extractor_ID:
-			return null;
+			if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleExtractor)) return null;
+			return new GuiExtractor(player.inventory, (ModuleExtractor) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen);
 			
+		case GuiIDs.GUI_Module_ItemSink_ID:
+			if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink)) return null;
+			return new GuiItemSink(player.inventory, (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen);
 			
+		case GuiIDs.GUI_Module_LiquidSupplier_ID:
+			if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleLiquidSupplier)) return null;
+			return new GuiLiquidSupplier(player.inventory, (ModuleLiquidSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen);
+			
+		case GuiIDs.GUI_Module_PassiveSupplier_ID:
+			if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModulePassiveSupplier)) return null;
+			return new GuiPassiveSupplier(player.inventory, (ModulePassiveSupplier) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen);
+			
+		case GuiIDs.GUI_Module_Provider_ID:
+			if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleProvider)) return null;
+			return new GuiProvider(player.inventory, (ModuleProvider) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen);
+			
+		case GuiIDs.GUI_Module_Terminus_ID:
+			if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleTerminus)) return null;
+			return new GuiTerminus(player.inventory, (ModuleTerminus) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen);
+			
+		case GuiIDs.GUI_ChassiModule_ID:
+			if(pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
+			return new GuiChassiPipe(player, (PipeLogisticsChassi)pipe.pipe);
+			
+			/*** Basic ***/
 		case GuiIDs.GUI_RoutingStats_ID:
 			if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 			return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRouter());

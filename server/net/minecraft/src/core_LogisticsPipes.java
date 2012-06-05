@@ -254,6 +254,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.IBuildCraftProxy;
 import net.minecraft.src.buildcraft.krapht.ILogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
@@ -278,10 +279,11 @@ import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
 import net.minecraft.src.forge.MinecraftForge;
+import net.minecraft.src.forge.NetworkMod;
 import net.minecraft.src.forge.Property;
 import net.minecraft.src.krapht.InventoryUtilFactory;
 
-public abstract class core_LogisticsPipes extends BaseMod{
+public abstract class core_LogisticsPipes extends NetworkMod {
 	
 	public static boolean DEBUG = false;
 	
@@ -668,6 +670,8 @@ public abstract class core_LogisticsPipes extends BaseMod{
 	@Override
 	public void load() {
 		MinecraftForge.registerConnectionHandler(new ConnectionHandler());
+
+		MinecraftForge.setGuiHandler(this,new GuiHandler());
 	}
 	
 	public String getLogisticsVersion(){

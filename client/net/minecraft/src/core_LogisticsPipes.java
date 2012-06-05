@@ -280,10 +280,11 @@ import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
 import net.minecraft.src.forge.MinecraftForge;
 import net.minecraft.src.forge.MinecraftForgeClient;
+import net.minecraft.src.forge.NetworkMod;
 import net.minecraft.src.forge.Property;
 import net.minecraft.src.krapht.InventoryUtilFactory;
 
-public abstract class core_LogisticsPipes extends BaseMod{
+public abstract class core_LogisticsPipes extends NetworkMod {
 	
 	public static boolean DEBUG = false;
 	

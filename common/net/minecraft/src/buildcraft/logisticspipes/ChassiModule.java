@@ -4,12 +4,10 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
-import net.minecraft.src.buildcraft.logisticspipes.modules.GuiChassiPipeGuiHandler;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import net.minecraft.src.buildcraft.logisticspipes.modules.IModuleGuiHandler;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleGuiHandler;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -63,9 +61,10 @@ public class ChassiModule implements ILogisticsModule{
 		return null;
 	}
 
+
 	@Override
-	public IModuleGuiHandler getGuiHandler() {
-		return new GuiChassiPipeGuiHandler(_parentPipe);
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_ChassiModule_ID;
 	}
 	
 	@Override

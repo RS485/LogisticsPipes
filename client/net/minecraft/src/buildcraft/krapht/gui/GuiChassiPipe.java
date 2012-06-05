@@ -17,6 +17,8 @@ import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
@@ -29,17 +31,17 @@ public class GuiChassiPipe extends GuiContainer{
 	private final PipeLogisticsChassi _chassiPipe;
 	private final EntityPlayer _player;
 	private final IInventory _moduleInventory;
-	private final GuiScreen _previousGui;
+	//private final GuiScreen _previousGui;
 	
 	private int left;
 	private int top;
 	
-	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi, GuiScreen previousGui) {
+	public GuiChassiPipe(EntityPlayer player, PipeLogisticsChassi chassi) { //, GuiScreen previousGui) {
 		super(null);
 		_player = player;
 		_chassiPipe = chassi;
 		_moduleInventory = chassi.getModuleInventory();
-		_previousGui = previousGui;
+		//_previousGui = previousGui;
 		
 		
 		DummyContainer dummy = new DummyContainer(_player.inventory, _moduleInventory);
@@ -87,9 +89,8 @@ public class GuiChassiPipe extends GuiContainer{
 		if (guibutton.id >= 0 && guibutton.id <= 7){
 			ILogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null){
-				if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
-					module.getGuiHandler().displayGui(_player, module, this);
-					//module.displayGui(_player, this);
+				if(!APIProxy.isClient(_player.worldObj)) {
+					_player.openGui(mod_LogisticsPipes.instance, module.getGuiHandlerID(), _chassiPipe.worldObj, _chassiPipe.xCoord, _chassiPipe.yCoord, _chassiPipe.zCoord);	
 				} else {
 					//TODO Send To Server
 				}

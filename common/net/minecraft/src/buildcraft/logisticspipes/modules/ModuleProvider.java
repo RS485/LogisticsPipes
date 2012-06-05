@@ -9,6 +9,7 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IProvideItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsOrderManager;
@@ -64,10 +65,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule{
 	}
 
 	@Override
-	public ModuleGuiHandler getGuiHandler() {
-		return ModuleGuiHandler.GuiProvider;
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_Module_Provider_ID;
 	}
-
+	
 	@Override	public SinkReply sinksItem(ItemIdentifier item) {return null;}
 
 	@Override	public ILogisticsModule getSubModule(int slot) {return null;}

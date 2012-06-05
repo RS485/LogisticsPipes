@@ -7,6 +7,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.api.ISpecialInventory;
 import net.minecraft.src.buildcraft.api.Orientations;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.GuiID;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
@@ -47,8 +48,8 @@ public class ModuleExtractor implements ILogisticsModule {
 	}
 
 	@Override
-	public IModuleGuiHandler getGuiHandler() {
-		return ModuleGuiHandler.GuiExtractor;
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_Module_Extractor_ID;
 	}
 
 	@Override

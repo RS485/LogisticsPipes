@@ -4,6 +4,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply.FixedPriority;
@@ -43,8 +44,8 @@ public class ModulePassiveSupplier implements ILogisticsModule {
 	}
 
 	@Override
-	public ModuleGuiHandler getGuiHandler() {
-		return ModuleGuiHandler.GuiPassiveSupplier;
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_Module_PassiveSupplier_ID;
 	}
 	
 	@Override

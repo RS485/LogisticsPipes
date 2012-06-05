@@ -55,6 +55,12 @@ public class GuiHandler implements IGuiHandler {
 			if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicSupplier)) return null;
 			return new GuiSupplierPipe(player.inventory, ((LogicSupplier)pipe.pipe.logic).getDummyInventory(), (LogicSupplier)pipe.pipe.logic);
 			
+			
+			/*** Modules ***/
+		case GuiIDs.GUI_Module_Extractor_ID:
+			return null;
+			
+			
 		case GuiIDs.GUI_RoutingStats_ID:
 			if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 			return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRouter());

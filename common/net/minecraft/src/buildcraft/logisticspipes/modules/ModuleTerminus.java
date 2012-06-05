@@ -4,6 +4,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply.FixedPriority;
 import net.minecraft.src.krapht.InventoryUtil;
@@ -28,13 +29,11 @@ public class ModuleTerminus implements ILogisticsModule {
     	_filterInventory.writeToNBT(nbttagcompound, "");
     }
 
-
 	@Override
-	public ModuleGuiHandler getGuiHandler() {
-		return ModuleGuiHandler.GuiTerminus;
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_Module_Terminus_ID;
 	}
-
-
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item) {
 		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(_filterInventory);

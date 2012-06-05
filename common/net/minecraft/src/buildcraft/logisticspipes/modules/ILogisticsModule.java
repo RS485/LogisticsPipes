@@ -8,7 +8,7 @@ import net.minecraft.src.krapht.ItemIdentifier;
 public interface ILogisticsModule extends ISaveState{
 	
 	//public boolean displayGui(EntityPlayer entityplayer, GuiScreen previousGui);
-	public IModuleGuiHandler getGuiHandler();
+	public int getGuiHandlerID();
 	public SinkReply sinksItem(ItemIdentifier item);
 	public ILogisticsModule getSubModule(int slot);
 	public void tick();

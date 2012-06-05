@@ -22,6 +22,8 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
@@ -253,12 +255,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		
 		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
-			if (getLogisticsModule() != null){
-				boolean guiDisplayed = getLogisticsModule().getGuiHandler().displayGui(entityplayer, getLogisticsModule(), null); 		
-				if (guiDisplayed) return true;
+			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
+				if(!APIProxy.isClient(entityplayer.worldObj)) {
+					entityplayer.openGui(mod_LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);	
+					return true;
+				} else {
+					//TODO need 'return true;' here ???
+				}
 			}
 		}
-			
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
 	

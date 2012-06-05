@@ -4,6 +4,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply.FixedPriority;
 import net.minecraft.src.krapht.InventoryUtil;
@@ -49,8 +50,8 @@ public class ModuleItemSink implements ILogisticsModule{
 	}
 
 	@Override
-	public ModuleGuiHandler getGuiHandler() {
-		return ModuleGuiHandler.GuiItemSink;
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_Module_ItemSink_ID;
 	}
 	
 	@Override

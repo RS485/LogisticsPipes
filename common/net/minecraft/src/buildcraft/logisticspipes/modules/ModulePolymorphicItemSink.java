@@ -3,6 +3,7 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply.FixedPriority;
@@ -40,9 +41,10 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
 
-
 	@Override
-	public ModuleGuiHandler getGuiHandler() {return null;}
+	public int getGuiHandlerID() {
+		return -1;
+	}
 	
 	@Override
 	public ILogisticsModule getSubModule(int slot) {return null;}

@@ -4,6 +4,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -31,10 +32,10 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
 
 	@Override
-	public ModuleGuiHandler getGuiHandler() {
-		return null;
+	public int getGuiHandlerID() {
+		return -1;
 	}
-
+	
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item) {
 		return null;

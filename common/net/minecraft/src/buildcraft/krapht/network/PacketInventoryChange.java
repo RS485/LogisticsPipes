@@ -27,7 +27,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 		super.writeData(data);
 		
 		for(int i=0; i < inventory.getSizeInventory(); i++) {
-			data.write(i);
+			data.writeInt(i);
 			
 			ItemStack itemstack = inventory.getStackInSlot(i);
 			
@@ -38,7 +38,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 			} else
 				data.writeInt(0);
 		}
-		data.write(-1); // mark packet end
+		data.writeInt(-1); // mark packet end
 	}
 	
 	@Override
@@ -50,7 +50,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 		
 		while(data.readInt() != -1) { // read until the end
 			int itemID = data.readInt();
-			if(itemID != 0) {
+			if(itemID == 0) {
 				itemStacks.add(null);
 			} else {
 				itemStacks.add(new ItemStack(itemID, data.readInt(), data.readInt()));

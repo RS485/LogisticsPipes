@@ -238,8 +238,8 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 		
 		// Send inventory as packet
 		// Using existing BuildCraft packet system
-		PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord, _dummyInventory);
-		CoreProxy.sendToServer(packet.getPacket());
+		PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
+		CoreProxy.sendToPlayer((EntityPlayer) player, packet);
 	}
 	
 	/*** INTERFACE TO PIPE ***/

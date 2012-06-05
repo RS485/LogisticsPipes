@@ -2,6 +2,7 @@ package net.minecraft.src.buildcraft.krapht.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.minecraft.src.EntityPlayer;

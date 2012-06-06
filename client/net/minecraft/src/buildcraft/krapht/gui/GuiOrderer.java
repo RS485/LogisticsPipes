@@ -19,10 +19,13 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.RenderItem;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
@@ -31,7 +34,7 @@ import net.minecraft.src.krapht.gui.SmallGuiButton;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
-public class GuiOrderer extends KraphtBaseGuiScreen{
+public class GuiOrderer extends KraphtBaseGuiScreen {
 
 	private enum DisplayOptions {
 		Both,
@@ -296,12 +299,13 @@ public class GuiOrderer extends KraphtBaseGuiScreen{
 		} else if (guibutton.id == 7) {
 			requestCount+=10;
 		} else if (guibutton.id == 8 && selectedItem != null) {
-			if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+			//if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
 				PipeItemsRequestLogistics requestPipe = (PipeItemsRequestLogistics)_itemRequester;
-				ModLoader.openGUI(_entityPlayer, new GuiStatistics(requestPipe.getHistory(), selectedItem, this, _entityPlayer));
-			} else {
-				// send To Server
-			}
+				//_entityPlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_OrdererStats_ID, requestPipe.worldObj, requestPipe.xCoord, requestPipe.yCoord, requestPipe.zCoord);
+				ModLoader.openGUI(_entityPlayer, new GuiStatistics(requestPipe.getHistory(), selectedItem, this, _entityPlayer, requestPipe));
+			//} else {
+				//TODO send To Server
+			//}
 		} else if (guibutton.id == 9) {
 			String displayString = "";
 			switch (displayOptions){
@@ -346,5 +350,10 @@ public class GuiOrderer extends KraphtBaseGuiScreen{
 		} else {
 			super.keyTyped(c, 1);
 		}
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_Orderer_ID;
 	}
 }

@@ -6,20 +6,21 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
-public class GuiProvider extends GuiContainer{
+public class GuiProvider extends GuiWithPreviousGuiContainer {
 	
 	private final IInventory _playerInventory;
 	private final ModuleProvider _provider;
-	private final GuiScreen _previousGui;
 
 
-	public GuiProvider(IInventory playerInventory, ModuleProvider provider, GuiScreen previousGui) {
-		super(null);
+	public GuiProvider(IInventory playerInventory, Pipe pipe, ModuleProvider provider, GuiScreen previousGui) {
+		super(null,pipe,previousGui);
 		_playerInventory = playerInventory;
 		_provider = provider;
-		_previousGui = previousGui;
 		
 		DummyContainer dummy = new DummyContainer(_playerInventory, _provider.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
@@ -94,17 +95,9 @@ public class GuiProvider extends GuiContainer{
 		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
 		fontRenderer.drawString("Mode: " + getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
-	
-	@Override
-	protected void keyTyped(char c, int i) {
-		if (i == 1 || c == 'e'){
-			if (_previousGui != null){
-				_previousGui.initGui();
-				mc.currentScreen = _previousGui;
-			} else {
-				super.keyTyped(c, i);
-			}
-		}
-	}
 
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_Module_Provider_ID;
+	}
 }

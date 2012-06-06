@@ -13,4 +13,5 @@ public class NetworkConstants {
 	public static final int SATELLITE_PIPE_PREV = 7;
 	public static final int SATELLITE_PIPE_SATELLITE_ID = 8;
 	public static final int CHASSI_GUI_PACKET_ID = 9;
+	public static final int GUI_BACK_PACKET = 10;
 }

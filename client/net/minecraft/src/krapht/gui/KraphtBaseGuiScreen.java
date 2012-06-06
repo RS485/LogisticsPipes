@@ -9,8 +9,9 @@
 package net.minecraft.src.krapht.gui;
 
 import net.minecraft.src.GuiScreen;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 
-public abstract class KraphtBaseGuiScreen extends GuiScreen{
+public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHandlerProvider {
 	
 	public enum Colors
 	{

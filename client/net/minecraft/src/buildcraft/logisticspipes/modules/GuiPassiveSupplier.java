@@ -13,21 +13,22 @@ import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiPassiveSupplier extends GuiContainer {
+public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 
 	private final IInventory _playerInventory;
-	private final GuiScreen _previousGui;
 	private final ModulePassiveSupplier _supplier;
 	
 	
-	public GuiPassiveSupplier(IInventory playerInventory, ModulePassiveSupplier supplier, GuiScreen previousGui) {
-		super(null);
+	public GuiPassiveSupplier(IInventory playerInventory, Pipe pipe, ModulePassiveSupplier supplier, GuiScreen previousGui) {
+		super(null,pipe,previousGui);
 		_supplier = supplier;
-		_previousGui = previousGui;
 		DummyContainer dummy = new DummyContainer(playerInventory, _supplier.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
@@ -58,16 +59,9 @@ public class GuiPassiveSupplier extends GuiContainer {
 		int k = (height - ySize) / 2;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
-	
+
 	@Override
-	protected void keyTyped(char c, int i) {
-		if (i == 1 || c == 'e'){
-			if (_previousGui != null){
-				_previousGui.initGui();
-				mc.currentScreen = _previousGui;
-			} else {
-				super.keyTyped(c, i);
-			}
-		}
+	public int getGuiID() {
+		return GuiIDs.GUI_Module_PassiveSupplier_ID;
 	}
 }

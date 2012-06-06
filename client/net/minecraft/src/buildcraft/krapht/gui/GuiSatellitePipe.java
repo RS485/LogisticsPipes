@@ -14,11 +14,13 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.Slot;
 import net.minecraft.src.buildcraft.core.BuildCraftContainer;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSatellitePipe extends GuiContainer{
+public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private LogicSatellite _satellite;
 	
@@ -73,6 +75,11 @@ public class GuiSatellitePipe extends GuiContainer{
 		int k = (height - ySize) / 2;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_SatelitePipe_ID;
 	}
 
 }

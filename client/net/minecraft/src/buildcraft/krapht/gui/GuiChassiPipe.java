@@ -20,17 +20,19 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.forge.ForgeHooks;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.gui.DummyContainer;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
-public class GuiChassiPipe extends GuiContainer{
+public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private final PipeLogisticsChassi _chassiPipe;
 	private final EntityPlayer _player;
@@ -134,5 +136,10 @@ public class GuiChassiPipe extends GuiContainer{
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_ChassiModule_ID;
 	}
 }

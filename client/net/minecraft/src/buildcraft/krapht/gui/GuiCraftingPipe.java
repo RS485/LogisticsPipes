@@ -14,14 +14,16 @@ import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.InventoryPlayer;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.forge.MinecraftForgeClient;
 import net.minecraft.src.krapht.gui.DummyContainer;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiCraftingPipe extends GuiContainer {
+public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvider {
 
 	private final LogicCrafting _logic;
 	private final EntityPlayer _player;
@@ -130,6 +132,11 @@ public class GuiCraftingPipe extends GuiContainer {
 		
 		drawRect(400, 400, 0, 0, 0x404040);
 		
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_CRAFTINGPIPE_ID;
 	}
 
 }

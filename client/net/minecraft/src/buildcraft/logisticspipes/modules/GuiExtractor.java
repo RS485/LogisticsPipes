@@ -12,22 +12,25 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
+import net.minecraft.src.buildcraft.core.GuiIds;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiExtractor extends GuiContainer{
+public class GuiExtractor extends GuiWithPreviousGuiContainer {
 
 	//private final SneakyPipe _pipe;
 	
 	private final ModuleExtractor _extractor;
-	private final GuiScreen _previousGui;
 	
-	public GuiExtractor(IInventory playerInventory, ModuleExtractor extractor, GuiScreen previousGui) {
-		super(new DummyContainer(playerInventory, null));
+	public GuiExtractor(IInventory playerInventory, Pipe pipe, ModuleExtractor extractor, GuiScreen previousGui) {
+		super(new DummyContainer(playerInventory, null),pipe,previousGui);
 		this._extractor = extractor;
-		this._previousGui = previousGui;
 		xSize = 160;
 		ySize = 200;
 	}
@@ -111,23 +114,16 @@ public class GuiExtractor extends GuiContainer{
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 
-	@Override
-	protected void keyTyped(char c, int i) {
-		if (i == 1 || c == 'e'){
-			if (_previousGui != null){
-				_previousGui.initGui();
-				mc.currentScreen = _previousGui;
-			} else {
-				super.keyTyped(c, i);
-			}
-		}
-	}
-
 	private String getButtonText(boolean checked){
 		return checked ? "[X]" : "[ ]";
 	}
 
 	private String isExtract(SneakyOrientation o){
 		return getButtonText(o == _extractor.getSneakyOrientation());
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_Module_Extractor_ID;
 	}
 }

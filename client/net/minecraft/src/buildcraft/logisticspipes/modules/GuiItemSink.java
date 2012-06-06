@@ -13,15 +13,17 @@ import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiItemSink extends GuiContainer {
+public class GuiItemSink extends GuiWithPreviousGuiContainer {
 
 	private final IInventory _playerInventory;
 	private final ModuleItemSink _itemSink;
-	private final GuiScreen _previousGui;
 	
 	
 	@Override
@@ -44,10 +46,9 @@ public class GuiItemSink extends GuiContainer {
 		
 	}
 	
-	public GuiItemSink(IInventory playerInventory, ModuleItemSink itemSink, GuiScreen previousGui) {
-		super(null);
+	public GuiItemSink(IInventory playerInventory, Pipe pipe, ModuleItemSink itemSink, GuiScreen previousGui) {
+		super(null,pipe,previousGui);
 		_itemSink = itemSink;
-		_previousGui = previousGui;
 		DummyContainer dummy = new DummyContainer(playerInventory, _itemSink.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
@@ -79,18 +80,11 @@ public class GuiItemSink extends GuiContainer {
 		int k = (height - ySize) / 2;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
-	
-	@Override
-	protected void keyTyped(char c, int i) {
-		if (i == 1 || c == 'e'){
-			if (_previousGui != null){
-				_previousGui.initGui();
-				mc.currentScreen = _previousGui;
-			} else {
-				super.keyTyped(c, i);
-			}
-		}
-	}
 
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_Module_ItemSink_ID;
+	}
+	
 	//int inventoryRows = 1;
 }

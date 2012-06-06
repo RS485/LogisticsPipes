@@ -58,10 +58,26 @@ public class PacketHandler implements IPacketHandler {
 				packetE.readData(data);
 				onModuleGuiOpen(net.getPlayerEntity(), packetE);
 				break;
+			case NetworkConstants.GUI_BACK_PACKET:
+				PacketPipeInteger packetF = new PacketPipeInteger();
+				packetF.readData(data);
+				onGuiBackOpen(net.getPlayerEntity(), packetF);
+				break;
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private void onGuiBackOpen(EntityPlayerMP player,PacketPipeInteger packet) {
+		TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null)
+			return;
+		
+		if(!(pipe.pipe instanceof PipeLogisticsChassi))
+			return;
+		
+		player.openGui(mod_LogisticsPipes.instance, packet.integer, player.worldObj, packet.posX, packet.posY, packet.posZ);
 	}
 
 	private void onModuleGuiOpen(EntityPlayerMP player, PacketPipeInteger packet) {

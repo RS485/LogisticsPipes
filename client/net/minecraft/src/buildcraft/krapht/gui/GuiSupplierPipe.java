@@ -11,12 +11,14 @@ package net.minecraft.src.buildcraft.krapht.gui;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiSupplierPipe extends GuiContainer{
+public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private IInventory playerInventory;
 	private IInventory dummyInventory;
@@ -89,6 +91,11 @@ public class GuiSupplierPipe extends GuiContainer{
 		super.onGuiClosed();
 		logic.pause = false;
 		
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_SupplierPipe_ID;
 	}
 
 }

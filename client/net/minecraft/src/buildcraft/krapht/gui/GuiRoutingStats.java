@@ -9,12 +9,13 @@
 package net.minecraft.src.buildcraft.krapht.gui;
 
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 
-public class GuiRoutingStats extends KraphtBaseGuiScreen{ //GuiScreen{
+public class GuiRoutingStats extends KraphtBaseGuiScreen { //GuiScreen{
 	
 	private IRouter _router;
 	public GuiRoutingStats(IRouter router) {
@@ -121,6 +122,11 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen{ //GuiScreen{
 	@Override
 	public boolean doesGuiPauseGame() {
 		return false;
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_RoutingStats_ID;
 	}
 
 }

@@ -12,22 +12,53 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.Tessellator;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
+import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 
-public class GuiStatistics extends KraphtBaseGuiScreen{
+public class GuiStatistics extends KraphtBaseGuiScreen {
 
 	private final LinkedList<HashMap<ItemIdentifier, Integer>> _stats;
 	private final ItemIdentifier _targetItem;
 	private final GuiScreen _previousGui;
 	private final EntityPlayer _player;
+	private int prevGuiID = -1;
+	private Pipe pipe;
 	
-	public GuiStatistics(LinkedList<HashMap<ItemIdentifier, Integer>> stats, ItemIdentifier targetItem, GuiScreen previousGui, EntityPlayer player) {
+	public GuiStatistics(LinkedList<HashMap<ItemIdentifier, Integer>> stats, ItemIdentifier targetItem, GuiScreen previousGui, EntityPlayer player, Pipe pipe) {
 		super(250, 200, 0, 0);
 		_targetItem = targetItem;
 		_stats = stats;
 		_previousGui = previousGui;
 		_player = player;
+		
+		if(previousGui instanceof IGuiIDHandlerProvider) {
+			this.prevGuiID = ((IGuiIDHandlerProvider)previousGui).getGuiID();
+		}
+		if(pipe == null) {
+			throw new NullPointerException("A pipe can't be null");
+		}
+		this.pipe = pipe;
+	}
+	
+	@Override
+	protected void keyTyped(char c, int i) {
+		if (i == 1 || c == 'e'){
+			if (prevGuiID != -1){
+				if(!APIProxy.isClient(mc.theWorld)) {
+					_player.openGui(mod_LogisticsPipes.instance, prevGuiID, mc.theWorld, pipe.xCoord, pipe.yCoord, pipe.zCoord);
+				} else {
+					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID).getPacket());
+				}
+			}
+		}
 	}
 	
 	@Override
@@ -39,16 +70,7 @@ public class GuiStatistics extends KraphtBaseGuiScreen{
 	public boolean doesGuiPauseGame() {
 		return false;
 	}
-	
-	@Override
-	protected void keyTyped(char c, int i) {
-		if (i == 1 || c == 'e'){
-			_previousGui.initGui();
-			ModLoader.openGUI(_player, _previousGui);
-		}
-	}
-	
-	
+
 	@Override
 	public void drawScreen(int i, int j, float f) {
 		drawGuiBackGround();
@@ -109,6 +131,11 @@ public class GuiStatistics extends KraphtBaseGuiScreen{
 			y = y1;
 		}
 		drawRect(x-1, y-1, x+2, y+2, Colors.Black);
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_OrdererStats_ID;
 	}
 	
 	

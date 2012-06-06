@@ -11,12 +11,14 @@ package net.minecraft.src.buildcraft.krapht.gui;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;
 
-public class GuiProviderPipe extends GuiContainer{
+public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvider{
 	private IInventory playerInventory;
 	private IInventory dummyInventory;
 	private LogicProvider logic; 
@@ -97,6 +99,11 @@ public class GuiProviderPipe extends GuiContainer{
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
+	}
+
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_ProviderPipe_ID;
 	}
 	
 }

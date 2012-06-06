@@ -20,10 +20,16 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.RenderItem;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.krapht.network.PacketRequestSubmit;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
@@ -72,44 +78,63 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	}
 	
 	private void refreshItems(){
-		if (displayOptions == DisplayOptions.SupplyOnly || displayOptions == DisplayOptions.Both){
-			_availableItems = core_LogisticsPipes.logisticsManager.getAvailableItems(_itemRequester.getRouter().getRouteTable().keySet());
-		} else {
-			_availableItems = new HashMap<ItemIdentifier, Integer>();
-		}
-		if (displayOptions == DisplayOptions.CraftOnly || displayOptions == DisplayOptions.Both){
-			_craftableItems = core_LogisticsPipes.logisticsManager.getCraftableItems(_itemRequester.getRouter().getRouteTable().keySet());
-		} else {
-			_craftableItems = new LinkedList<ItemIdentifier>();
-		}
-		_allItems.clear();
-		
-		outer:
-		for (ItemIdentifier item : _availableItems.keySet()){
-			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
-					_allItems.add(i, item);
-					continue outer;
-				}
+		if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+			if (displayOptions == DisplayOptions.SupplyOnly || displayOptions == DisplayOptions.Both){
+				_availableItems = core_LogisticsPipes.logisticsManager.getAvailableItems(_itemRequester.getRouter().getRouteTable().keySet());
+			} else {
+				_availableItems = new HashMap<ItemIdentifier, Integer>();
 			}
-			_allItems.addLast(item);
-		}
-		
-		outer:
-		for (ItemIdentifier item : _craftableItems){
-			if (_allItems.contains(item)) continue;
-			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
-					_allItems.add(i, item);
-					continue outer;
-				}
+			if (displayOptions == DisplayOptions.CraftOnly || displayOptions == DisplayOptions.Both){
+				_craftableItems = core_LogisticsPipes.logisticsManager.getCraftableItems(_itemRequester.getRouter().getRouteTable().keySet());
+			} else {
+				_craftableItems = new LinkedList<ItemIdentifier>();
 			}
-			_allItems.addLast(item);
-		}
-		
-		maxPage = (int) Math.floor((_allItems.size() - 1)  / 70F);
-		if (page > maxPage){
-			page = maxPage;
+			_allItems.clear();
+			
+			outer:
+			for (ItemIdentifier item : _availableItems.keySet()){
+				for (int i = 0; i <_allItems.size(); i++){
+					if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
+						_allItems.add(i, item);
+						continue outer;
+					}
+				}
+				_allItems.addLast(item);
+			}
+			
+			outer:
+			for (ItemIdentifier item : _craftableItems){
+				if (_allItems.contains(item)) continue;
+				for (int i = 0; i <_allItems.size(); i++){
+					if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
+						_allItems.add(i, item);
+						continue outer;
+					}
+				}
+				_allItems.addLast(item);
+			}
+			
+			maxPage = (int) Math.floor((_allItems.size() - 1)  / 70F);
+			if (page > maxPage){
+				page = maxPage;
+			}
+		} else {
+			CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
+			int integer;
+			switch(displayOptions) {
+			case Both:
+				integer = 0;
+				break;
+			case SupplyOnly:
+				integer = 1;
+				break;
+			case CraftOnly:
+				integer = 2;
+				break;
+			default: 
+				integer = 3;
+			}
+			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,integer).getPacket());
 		}
 	}
 	
@@ -120,12 +145,14 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		controlList.add(new SmallGuiButton(1, right - 15, top + 5, 10 ,10 ,">")); // Next page
 		controlList.add(new SmallGuiButton(2, right - 90, top + 5, 10, 10, "<")); // Prev page
 		controlList.add(new GuiButton(3, left + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
-		controlList.add(new SmallGuiButton(4, xCenter - 38, bottom - 20, 15, 10, "--")); // -10
-		controlList.add(new SmallGuiButton(5, xCenter - 22, bottom - 20, 10, 10, "-")); // -1
-		controlList.add(new SmallGuiButton(6, xCenter + 11, bottom - 20, 10, 10, "+")); // +1
-		controlList.add(new SmallGuiButton(7, xCenter + 23, bottom - 20, 15, 10, "++")); // +1
+		controlList.add(new SmallGuiButton(10, xCenter - 41, bottom - 15, 26, 10, "---")); // -64
+		controlList.add(new SmallGuiButton(4, xCenter - 41, bottom - 26, 15, 10, "--")); // -10
+		controlList.add(new SmallGuiButton(5, xCenter - 25, bottom - 26, 10, 10, "-")); // -1
+		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
+		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
+		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
 		if (_itemRequester instanceof PipeItemsRequestLogistics){
-			controlList.add(new SmallGuiButton(8, left + 10, bottom - 40, 30, 10, "Stats")); // +1
+			controlList.add(new SmallGuiButton(8, left + 10, bottom - 40, 30, 10, "Stats")); // Stats
 		}
 		controlList.add(new SmallGuiButton(9, right - 45, bottom - 40, 40, 10, "Both"));
 	}
@@ -143,8 +170,11 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
 		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , top + 6 , 0x404040);
 		
-		fontRenderer.drawString("Request number", xCenter - fontRenderer.getStringWidth("Request number") / 2, bottom - 28, 0x404040);
-		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 18, 0x404040);
+		String StackrequestCount = ""+(requestCount/64) + "+" + (requestCount % 64);
+		
+		fontRenderer.drawString("Request number", xCenter - fontRenderer.getStringWidth("Request number") / 2, bottom - 34, 0x404040);
+		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 24, 0x404040);
+		fontRenderer.drawString(StackrequestCount + "", xCenter - fontRenderer.getStringWidth(StackrequestCount+"") / 2, bottom - 14, 0x404040);
 		if (core_LogisticsPipes.DEBUG){
 			fontRenderer.drawString(i+","+j, 10, 10, 0xFFFFFF);
 			fontRenderer.drawString(lastClickedx+","+lastClickedy, 10, 30, 0xFFFFFF);
@@ -224,13 +254,14 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	@Override
 	public void handleMouseInput() {
 		boolean isShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
+		boolean isControl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 		int wheel = org.lwjgl.input.Mouse.getDWheel() / 120;
 		if (wheel == 0){
 			super.handleMouseInput();
 			return;
 		}
 		
-		if (isShift){
+		if (isShift && !isControl){
 			if (wheel > 0){
 				if (!core_LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					prevPage();
@@ -244,7 +275,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					prevPage();
 				}
 			}
-		} else {
+		} else if(!isControl) {
 			if (wheel > 0){
 				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel);
@@ -256,6 +287,38 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					requestCount+= -wheel;	
 				} else {
 					requestCount = Math.max(1, requestCount + wheel);
+				}
+			}
+		} else if(isControl && !isShift) {
+			if (wheel > 0){
+				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					requestCount = Math.max(1, requestCount - wheel*10);
+				} else {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= wheel*10;
+				}
+			} else {
+				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= -wheel*10;	
+				} else {
+					requestCount = Math.max(1, requestCount + wheel*10);
+				}
+			}
+		} else if(isControl && isShift) {
+			if (wheel > 0){
+				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					requestCount = Math.max(1, requestCount - wheel*64);
+				} else {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= wheel*64;
+				}
+			} else {
+				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= -wheel*64;	
+				} else {
+					requestCount = Math.max(1, requestCount + wheel*64);
 				}
 			}
 		}
@@ -281,15 +344,17 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					refreshItems();
 				}
 			} else {
-				//TODO sendRequestToServer();
+				CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
+				CoreProxy.sendToServer(new PacketRequestSubmit(requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,selectedItem,requestCount).getPacket());
 			}
-			
 		} else if (guibutton.id == 1){
 			nextPage();
 		} else if (guibutton.id == 2) {
 			prevPage();
 		} else if (guibutton.id == 3) {
 			refreshItems();
+		} else if (guibutton.id == 10) {
+			requestCount = Math.max(1, requestCount - 64);
 		} else if (guibutton.id == 4) {
 			requestCount = Math.max(1, requestCount - 10);
 		} else if (guibutton.id == 5) {
@@ -297,14 +362,22 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		} else if (guibutton.id == 6) {
 			requestCount+=1;
 		} else if (guibutton.id == 7) {
+			if(requestCount == 1) {
+				requestCount-=1;
+			}
 			requestCount+=10;
+		} else if (guibutton.id == 11) {
+			if(requestCount == 1) {
+				requestCount-=1;
+			}
+			requestCount+=64;
 		} else if (guibutton.id == 8 && selectedItem != null) {
 			//if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
 				PipeItemsRequestLogistics requestPipe = (PipeItemsRequestLogistics)_itemRequester;
 				//_entityPlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_OrdererStats_ID, requestPipe.worldObj, requestPipe.xCoord, requestPipe.yCoord, requestPipe.zCoord);
 				ModLoader.openGUI(_entityPlayer, new GuiStatistics(requestPipe.getHistory(), selectedItem, this, _entityPlayer, requestPipe));
 			//} else {
-				//TODO send To Server
+				//TODo send To Server
 			//}
 		} else if (guibutton.id == 9) {
 			String displayString = "";
@@ -346,6 +419,8 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	protected void keyTyped(char c, int i) {
 		// Any key close GUI
 		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+			super.keyTyped(c, i);
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)){
 			super.keyTyped(c, i);
 		} else {
 			super.keyTyped(c, 1);

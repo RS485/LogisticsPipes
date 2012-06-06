@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
@@ -111,7 +112,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					_orderManager.sendSuccessfull(1);
 				}else{
 					_extras--;
-					System.out.println("Extra dropped, " + _extras + " remaining");
+					if(mod_LogisticsPipes.DisplayRequests)System.out.println("Extra dropped, " + _extras + " remaining");
 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
@@ -210,7 +211,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	@Override
 	public void registerExtras(int count) {
 		_extras += count;
-		System.out.println(count + " extras registered");
+		if(mod_LogisticsPipes.DisplayRequests)System.out.println(count + " extras registered");
 	}
 
 	@Override

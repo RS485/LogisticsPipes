@@ -8,6 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht;
 
+import java.io.PipedReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,8 +17,10 @@ import java.util.UUID;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
@@ -222,25 +225,25 @@ public class LogisticsManager implements ILogisticsManager {
 		}
 
 		if (transaction.getRequests().getFirst() != null){
-			System.out.println("*** START REQUEST FOR " + transaction.getRequests().getFirst().numberLeft() + " " + transaction.getRequests().getFirst().getItem().getFriendlyName() + " ***");			
+			if(mod_LogisticsPipes.DisplayRequests)System.out.println("*** START REQUEST FOR " + transaction.getRequests().getFirst().numberLeft() + " " + transaction.getRequests().getFirst().getItem().getFriendlyName() + " ***");			
 		}
 		for (LogisticsRequest request : transaction.getRequests()){
-			System.out.println("\tRequest for " + request.numberLeft() + " " + request.getItem().getFriendlyName());
+			if(mod_LogisticsPipes.DisplayRequests)System.out.println("\tRequest for " + request.numberLeft() + " " + request.getItem().getFriendlyName());
 			for(LogisticsPromise promise : request.getPromises()) {
 				promise.sender.fullFill(promise, request.getDestination());
-				System.out.println("\t\t" + getBetterRouterName(promise.sender.getRouter()) +  "\tSENDING " +promise.numberOfItems + " " + promise.item.getFriendlyName() + " to " + getBetterRouterName(request.getDestination().getRouter()));
+				if(mod_LogisticsPipes.DisplayRequests)System.out.println("\t\t" + getBetterRouterName(promise.sender.getRouter()) +  "\tSENDING " +promise.numberOfItems + " " + promise.item.getFriendlyName() + " to " + getBetterRouterName(request.getDestination().getRouter()));
 				if (promise.extra){
-					System.out.println("\t\t\t--Used extras from previous request");
+					if(mod_LogisticsPipes.DisplayRequests)System.out.println("\t\t\t--Used extras from previous request");
 				}
 			}
 
 			for (LogisticsPromise promise : request.getExtras()){
-				System.out.println("\t\t\t--EXTRAS: " + promise.numberOfItems + " " + promise.item.getFriendlyName());
+				if(mod_LogisticsPipes.DisplayRequests)System.out.println("\t\t\t--EXTRAS: " + promise.numberOfItems + " " + promise.item.getFriendlyName());
 				//Register extras that can be used in later requests
 				((ICraftItems)promise.sender).registerExtras(promise.numberOfItems);
 			}
 		}
-		System.out.println("*** END REQUEST ***");
+		if(mod_LogisticsPipes.DisplayRequests)System.out.println("*** END REQUEST ***");
 		
 //		for (LogisticsPromise promise : transaction.Promises()){
 //			promise.sender.fullFill(promise, request.getDestination());
@@ -264,6 +267,9 @@ public class LogisticsManager implements ILogisticsManager {
 		
 		if (r.getPipe() instanceof PipeLogisticsChassi) {
 			return "Chassis";
+		}
+		if (r.getPipe() instanceof PipeItemsRequestLogistics) {
+			return "Request";
 		}
  
 		return r.getId().toString();
@@ -292,7 +298,6 @@ public class LogisticsManager implements ILogisticsManager {
 
 	@Override
 	public LinkedList<ItemIdentifier> getCraftableItems(Set<Router> validDestinations) {
-		// TODO Auto-generated method stub
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
 		for (Router r : validDestinations){
 			if (!(r.getPipe() instanceof ICraftItems)) continue;

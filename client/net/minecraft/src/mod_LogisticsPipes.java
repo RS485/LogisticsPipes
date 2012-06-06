@@ -54,6 +54,9 @@ public class mod_LogisticsPipes extends core_LogisticsPipes{
 	public static int LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE		= 0;
 	public static int LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= 0;
 	
+	//Log Requests
+	public static boolean DisplayRequests;
+	
 	//Texture files
 	public static final String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipebuildersupplier.png";
 	public static final String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipeliquidsupplier.png";

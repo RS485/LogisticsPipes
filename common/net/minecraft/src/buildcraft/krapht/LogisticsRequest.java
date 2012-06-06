@@ -10,6 +10,7 @@ package net.minecraft.src.buildcraft.krapht;
 
 import java.util.LinkedList;
 
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class LogisticsRequest {
@@ -61,7 +62,7 @@ public class LogisticsRequest {
 	}
 	
 	public void addPromise(LogisticsPromise promise){
-		System.out.println("Adding promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
+		if(mod_LogisticsPipes.DisplayRequests)System.out.println("Adding promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
 		if (promise.numberOfItems < 1)
 			return;
 		//Ensure promise never exceeds what we need
@@ -72,8 +73,8 @@ public class LogisticsRequest {
 			extrasPromise.sender = promise.sender;
 			promise.numberOfItems = notYetAllocated();
 			_extraPromises.add(extrasPromise);
-			System.out.println("\treduced promise to " + promise.numberOfItems);
-			System.out.println("\tAdding EXTRA promise of " + extrasPromise.numberOfItems + " " + extrasPromise.item.getFriendlyName());
+			if(mod_LogisticsPipes.DisplayRequests)System.out.println("\treduced promise to " + promise.numberOfItems);
+			if(mod_LogisticsPipes.DisplayRequests)System.out.println("\tAdding EXTRA promise of " + extrasPromise.numberOfItems + " " + extrasPromise.item.getFriendlyName());
 		}
 		_promises.add(promise);
 	}
@@ -97,7 +98,7 @@ public class LogisticsRequest {
 	
 	public void usePromise(LogisticsPromise promise){
 		if (_extraPromises.contains(promise)){
-			System.out.println("\tUsing promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
+			if(mod_LogisticsPipes.DisplayRequests)System.out.println("\tUsing promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
 			_extraPromises.remove(promise);
 		}
 	}

@@ -16,4 +16,5 @@ public class NetworkConstants {
 	public static final int GUI_BACK_PACKET = 10;
 	public static final int REQUEST_SUBMIT = 11;
 	public static final int ORDERER_REFRESH_REQUEST = 12;
+	public static final int ORDERER_CONTENT_ANSWER = 13;
 }

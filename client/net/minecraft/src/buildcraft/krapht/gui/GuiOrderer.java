@@ -29,6 +29,7 @@ import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.krapht.network.PacketRequestGuiContent;
 import net.minecraft.src.buildcraft.krapht.network.PacketRequestSubmit;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
@@ -135,6 +136,18 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				integer = 3;
 			}
 			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,integer).getPacket());
+		}
+	}
+	
+	public void handlePacket(PacketRequestGuiContent packet) {
+		_availableItems = packet._availableItems;
+		_craftableItems = packet._craftableItems;
+		_allItems.clear();
+		_allItems.addAll(packet._allItems);
+
+		maxPage = (int) Math.floor((_allItems.size() - 1)  / 70F);
+		if (page > maxPage){
+			page = maxPage;
 		}
 	}
 	

@@ -12,6 +12,7 @@ import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.core.network.PacketSlotChange;
+import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.transport.PipeLogicDiamond;
@@ -45,6 +46,10 @@ public class PacketHandler implements IPacketHandler {
 				packetB.readData(data);
 				onSatellitePipeSetSatellite(packetB);
 				break;
+			case NetworkConstants.ORDERER_CONTENT_ANSWER:
+				PacketRequestGuiContent packetC = new PacketRequestGuiContent();
+				packetC.readData(data);
+				onOrdererRefreshAnswer(packetC);
 			}
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -85,6 +90,12 @@ public class PacketHandler implements IPacketHandler {
 			return;
 		
 		((LogicSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
+	}
+
+	private void onOrdererRefreshAnswer(PacketRequestGuiContent packet) {
+		if(ModLoader.getMinecraftInstance().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)ModLoader.getMinecraftInstance().currentScreen).handlePacket(packet);
+		}
 	}
 
 	// BuildCraft method

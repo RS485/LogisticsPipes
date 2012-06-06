@@ -5,9 +5,11 @@ import java.util.LinkedList;
 
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
+import net.minecraft.src.buildcraft.krapht.network.PacketRequestGuiContent;
 import net.minecraft.src.buildcraft.krapht.network.PacketRequestSubmit;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.MessageManager;
@@ -72,7 +74,6 @@ public class OrdererRequests {
 			}
 			_allItems.addLast(item);
 		}
-		//TODO Send Response
-		System.out.print("Finished");
+		CoreProxy.sendToPlayer(player, new PacketRequestGuiContent(_availableItems, _craftableItems, _allItems));
 	}
 }

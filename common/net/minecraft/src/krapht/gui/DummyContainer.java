@@ -8,8 +8,6 @@
 
 package net.minecraft.src.krapht.gui;
 
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.src.Container;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
@@ -99,8 +97,6 @@ public class DummyContainer extends Container{
 		Slot slot = (Slot)inventorySlots.get(slotId);
 		if (slot == null || !(slot instanceof DummySlot)) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 
-		isShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
-		
 		InventoryPlayer inventoryplayer = entityplayer.inventory;
 		
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();

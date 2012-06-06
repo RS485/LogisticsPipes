@@ -94,7 +94,7 @@ public class GuiChassiPipe extends GuiContainer{
 			ILogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null){
 				if(!APIProxy.isClient(_player.worldObj)) {
-					_player.openGui(mod_LogisticsPipes.instance, module.getGuiHandlerID(), _chassiPipe.worldObj, _chassiPipe.xCoord, _chassiPipe.yCoord, _chassiPipe.zCoord);	
+					_player.openGui(mod_LogisticsPipes.instance, module.getGuiHandlerID() + (100 * (guibutton.id + 1)), _chassiPipe.worldObj, _chassiPipe.xCoord, _chassiPipe.yCoord, _chassiPipe.zCoord);	
 				} else {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID,_chassiPipe.xCoord,_chassiPipe.yCoord,_chassiPipe.zCoord,guibutton.id).getPacket());
 				}

@@ -170,6 +170,10 @@ public class LogicCrafting extends BaseRoutingLogic implements IRequireReliableT
 	}
 
 	
+	public SimpleInventory get_dummyInventory() {
+		return _dummyInventory;
+	}
+
 	@Override
 	public void throttledUpdateEntity() {
 		super.throttledUpdateEntity();

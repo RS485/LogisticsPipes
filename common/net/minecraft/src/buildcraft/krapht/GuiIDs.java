@@ -20,4 +20,7 @@ public class GuiIDs {
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;
 	public static final int GUI_Orderer_ID = 31;
+	
+	//SubModules 
+	//All IDS above 120 and so on...
 }

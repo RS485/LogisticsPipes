@@ -74,7 +74,7 @@ public class PacketHandler implements IPacketHandler {
 		
 		PipeLogisticsChassi cassiPipe = (PipeLogisticsChassi) pipe.pipe;
 		
-		player.openGui(mod_LogisticsPipes.instance, cassiPipe.getLogisticsModule().getSubModule(packet.integer).getGuiHandlerID(), player.worldObj, packet.posX, packet.posY, packet.posZ);
+		player.openGui(mod_LogisticsPipes.instance, cassiPipe.getLogisticsModule().getSubModule(packet.integer).getGuiHandlerID()  + (100 * (packet.integer + 1)), player.worldObj, packet.posX, packet.posY, packet.posZ);
 	}
 
 	private void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {

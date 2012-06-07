@@ -47,7 +47,7 @@ public class GuiHandler implements IGuiHandler {
 			
 			case GuiIDs.GUI_CRAFTINGPIPE_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicCrafting)) return null;
-				dummy = new DummyContainer(player.inventory, ((LogicCrafting)pipe.pipe.logic).get_dummyInventory());
+				dummy = new DummyContainer(player.inventory, ((LogicCrafting)pipe.pipe.logic).getDummyInventory());
 				dummy.addNormalSlotsForPlayerInventory(18, 97);
 				//Input slots
 		        for(int l = 0; l < 9; l++) {

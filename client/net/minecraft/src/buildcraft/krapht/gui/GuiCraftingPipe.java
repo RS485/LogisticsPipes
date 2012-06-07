@@ -99,7 +99,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		fontRenderer.drawString("Satellite", 132, 7, 0x404040);
 		
 		
-		if (_logic.SatelliteId == 0){
+		if (_logic.satelliteId == 0){
 			fontRenderer.drawString("Off", 144, 52, 0x404040);
 			return;
 		}
@@ -112,7 +112,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
 		MinecraftForgeClient.unbindTexture();
-		fontRenderer.drawString(""+_logic.SatelliteId , 155 - fontRenderer.getStringWidth(""+_logic.SatelliteId) , 52, 0x404040);
+		fontRenderer.drawString(""+_logic.satelliteId , 155 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
 
 		
 	}

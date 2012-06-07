@@ -14,13 +14,12 @@ public class ConnectionHandler implements IConnectionHandler {
 
 	@Override
 	public void onLogin(NetworkManager network, Packet1Login login) {
-		
+
 	}
 
 	@Override
-	public void onDisconnect(NetworkManager network, String message,
-			Object[] args) {
-		
+	public void onDisconnect(NetworkManager network, String message, Object[] args) {
+
 	}
 
 }

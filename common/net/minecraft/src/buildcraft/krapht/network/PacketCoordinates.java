@@ -7,7 +7,7 @@ import java.io.IOException;
 public class PacketCoordinates extends LogisticsPipesPacket {
 
 	private int id;
-	
+
 	public int posX;
 	public int posY;
 	public int posZ;
@@ -15,23 +15,23 @@ public class PacketCoordinates extends LogisticsPipesPacket {
 	public PacketCoordinates() {
 		super();
 	}
-	
+
 	public PacketCoordinates(int id, int x, int y, int z) {
 		super();
-		
+
 		this.id = id;
-		
-		this.posX = x;
-		this.posY = y;
-		this.posZ = z;
+
+		posX = x;
+		posY = y;
+		posZ = z;
 	}
 
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 
-        data.writeInt(posX);
-        data.writeInt(posY);
-        data.writeInt(posZ);
+		data.writeInt(posX);
+		data.writeInt(posY);
+		data.writeInt(posZ);
 	}
 
 	@Override

@@ -55,6 +55,13 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	private LinkedList<ItemIdentifier> _craftableItems;
 	private ItemIdentifier selectedItem = null;
 	private final LinkedList<ItemIdentifier>_allItems = new LinkedList<ItemIdentifier>(); 
+	private String searchinput1 = "";
+	private String searchinput2 = "";
+	private boolean editsearch = false;
+	private boolean editsearchb = false;
+	private boolean displaycursor = true;
+	private long oldSystemTime = 0;
+	private static int searchWidth = 150;
 	
 	private RenderItem renderItem = new RenderItem();
 	
@@ -72,7 +79,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	private DisplayOptions displayOptions = DisplayOptions.Both;
 	
 	public GuiOrderer(IRequestItems itemRequester, EntityPlayer entityPlayer) {
-		super(220,200,0,0);
+		super(220,220,0,0);
 		_itemRequester = itemRequester;
 		_entityPlayer = entityPlayer;
 		refreshItems();
@@ -114,11 +121,6 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				}
 				_allItems.addLast(item);
 			}
-			
-			maxPage = (int) Math.floor((_allItems.size() - 1)  / 70F);
-			if (page > maxPage){
-				page = maxPage;
-			}
 		} else {
 			CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
 			int integer;
@@ -144,11 +146,6 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		_craftableItems = packet._craftableItems;
 		_allItems.clear();
 		_allItems.addAll(packet._allItems);
-
-		maxPage = (int) Math.floor((_allItems.size() - 1)  / 70F);
-		if (page > maxPage){
-			page = maxPage;
-		}
 	}
 	
 	@Override
@@ -178,6 +175,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	@Override
 	public void drawScreen(int i, int j, float f) {
 		drawGuiBackGround();
+
+		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
+		if(maxPage == -1) maxPage = 0;
+		if (page > maxPage){
+			page = maxPage;
+		}
 		
 		fontRenderer.drawString(_title, left + fontRenderer.getStringWidth(_title) / 2, top + 6, 0x404040);
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
@@ -185,13 +188,39 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		
 		String StackrequestCount = ""+(requestCount/64) + "+" + (requestCount % 64);
 		
-		fontRenderer.drawString("Request number", xCenter - fontRenderer.getStringWidth("Request number") / 2, bottom - 34, 0x404040);
+		//fontRenderer.drawString("Request number", xCenter - fontRenderer.getStringWidth("Request number") / 2, bottom - 34, 0x404040);
 		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 24, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", xCenter - fontRenderer.getStringWidth(StackrequestCount+"") / 2, bottom - 14, 0x404040);
 		if (core_LogisticsPipes.DEBUG){
 			fontRenderer.drawString(i+","+j, 10, 10, 0xFFFFFF);
 			fontRenderer.drawString(lastClickedx+","+lastClickedy, 10, 30, 0xFFFFFF);
 		}
+		
+		//SearchInput
+		drawRect(left + 30, bottom - 60, right - 28, bottom - 43, Colors.Black);
+		drawRect(left + 31, bottom - 59, right - 29, bottom - 44, Colors.White);
+		drawRect(left + 32, bottom - 58, right - 30, bottom - 45, Colors.DarkGrey);
+		
+		fontRenderer.drawString(searchinput1 + searchinput2, left + 35, bottom - 55, 0xFFFFFF);
+		if(editsearch) {
+			int linex = left + 35 + fontRenderer.getStringWidth(searchinput1);
+			if(System.currentTimeMillis() - oldSystemTime > 500) {
+				displaycursor = !displaycursor;
+				oldSystemTime = System.currentTimeMillis();
+			}
+			if(displaycursor) {
+				drawRect(linex, bottom - 57, linex + 1, bottom - 46, Colors.White);
+			}
+		}
+		
+		
+		if (lastClickedx >= left + 32 && lastClickedx < right - 28 &&
+				lastClickedy >= bottom - 60 && lastClickedy < bottom - 43){
+			editsearch = true;
+		} else {
+			editsearch = false;
+		}
+		
 		
 		int ppi = 0;
 		int row = 0;
@@ -202,12 +231,13 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 
 		if (selectedItem != null){
 			String friendlyName = selectedItem.getFriendlyName();
-			fontRenderer.drawString(friendlyName, xCenter - fontRenderer.getStringWidth(friendlyName) / 2, bottom - 42, 0x404040);
+			fontRenderer.drawString(friendlyName, xCenter - fontRenderer.getStringWidth(friendlyName) / 2, bottom - 39, 0x404040);
 		}
 		
-		drawRect(left + 6, top + 16, right - 12, bottom - 44, Colors.MiddleGrey);
+		drawRect(left + 6, top + 16, right - 12, bottom - 64, Colors.MiddleGrey);
 		
 		for(ItemIdentifier item : _allItems) {
+			if(!itemSearched(item)) continue;
 			ppi++;
 			
 			if (ppi <= 70 * page) continue;
@@ -253,11 +283,42 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		super.drawScreen(i, j, f);
 	}
 	
+	private boolean itemSearched(ItemIdentifier item) {
+		if(searchinput1 == "" && searchinput2 == "") return true;
+		if(isSearched(item.getFriendlyName().toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;
+		if(isSearched(String.valueOf(item.itemID),(searchinput1 + searchinput2))) return true;
+		return false;
+	}
+	
+	private boolean isSearched(String value, String search) {
+		boolean flag = true;
+		for(String s:search.split(" ")) {
+			if(!value.contains(s)) {
+				flag = false;
+			}
+		}
+		return flag;
+	}
+	
+	private int getSearchedItemNumber() {
+		int count = 0;
+		for(ItemIdentifier item : _allItems) {
+			if(itemSearched(item)) {
+				count++;
+			}
+		}
+		return count;
+	}
+	
 	@Override
 	protected void mouseClicked(int i, int j, int k) {
 		clickWasButton = false;
+		editsearchb = true;
 		super.mouseClicked(i, j, k);
-		if (!clickWasButton & i > left + 9 & i < right - 9 && j > top + 15 && j < bottom - 42){
+		if ((!clickWasButton & i > left + 9 & i < right - 9 && j > top + 15 && j < bottom - 42) || editsearch){
+			if(!editsearchb) {
+				editsearch = false;
+			}
 			selectedItem = null;
 			lastClickedx = i;
 			lastClickedy = j;
@@ -340,6 +401,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
+		if(editsearch) {
+			editsearchb = false;
+		}
 		clickWasButton = true;
 		
 		if (guibutton.id == 0 && selectedItem != null){
@@ -419,19 +483,47 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	private void nextPage(){
 		if (page < maxPage){
 			page++;
-		}		
+		} else {
+			page = 0;
+		}
 	}
 	
 	private void prevPage(){
 		if (page > 0){
 			page--;
+		} else {
+			page = maxPage;
 		}
 	}
 	
 	@Override
 	protected void keyTyped(char c, int i) {
 		// Any key close GUI
-		if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+		if(editsearch) {
+			if (c == 13) {
+				editsearch = false;
+				return;
+			} else if (c == 8) {
+				if (searchinput1.length() > 0)
+					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
+					return;
+			} else if (Character.isLetterOrDigit(c) || c == ' ') {
+				if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
+					searchinput1 += c;
+				}
+				return;
+			} else if(i == 203) { // Left
+				if(searchinput1.length() > 0) {
+					searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
+					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
+				}
+			} else if(i == 205) { // Right
+				if(searchinput2.length() > 0) {
+					searchinput1 += searchinput2.substring(0,1);
+					searchinput2 = searchinput2.substring(1);
+				}
+			}
+		} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 			super.keyTyped(c, i);
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)){
 			super.keyTyped(c, i);

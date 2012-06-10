@@ -92,7 +92,6 @@ public class LogisticsRequest {
 	}
 
 	public LinkedList<LogisticsPromise> getExtras() {
-		// TODO Auto-generated method stub
 		return (LinkedList<LogisticsPromise>) _extraPromises.clone();
 	}
 	

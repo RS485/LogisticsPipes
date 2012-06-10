@@ -14,7 +14,7 @@ import net.minecraft.src.buildcraft.transport.Pipe;
 public abstract class GuiWithPreviousGuiContainer extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private int prevGuiID = -1;
-	private Pipe pipe;
+	protected Pipe pipe;
 	
 	public GuiWithPreviousGuiContainer(Container par1Container, Pipe pipe, GuiScreen prevGuiID) {
 		super(par1Container);

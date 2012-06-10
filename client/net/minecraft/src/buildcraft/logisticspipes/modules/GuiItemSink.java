@@ -13,8 +13,12 @@ import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
@@ -24,6 +28,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 
 	private final IInventory _playerInventory;
 	private final ModuleItemSink _itemSink;
+	private final int slot;
 	
 	
 	@Override
@@ -41,14 +46,18 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
+				if(APIProxy.isClient(mc.theWorld)) {
+					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
+				}
 				break;
 		}
 		
 	}
 	
-	public GuiItemSink(IInventory playerInventory, Pipe pipe, ModuleItemSink itemSink, GuiScreen previousGui) {
+	public GuiItemSink(IInventory playerInventory, Pipe pipe, ModuleItemSink itemSink, GuiScreen previousGui, int slot) {
 		super(null,pipe,previousGui);
 		_itemSink = itemSink;
+		this.slot = slot;
 		DummyContainer dummy = new DummyContainer(playerInventory, _itemSink.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
@@ -84,6 +93,11 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_ItemSink_ID;
+	}
+	
+	public void handleDefaultRoutePackage(PacketPipeInteger packet) {
+		_itemSink.setDefaultRoute((packet.integer % 10) == 1);
+		((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
 	}
 	
 	//int inventoryRows = 1;

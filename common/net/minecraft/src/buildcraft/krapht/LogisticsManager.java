@@ -18,6 +18,7 @@ import java.util.UUID;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
@@ -136,11 +137,11 @@ public class LogisticsManager implements ILogisticsManager {
 //		return count;
 //	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors){
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ErrorMessage> errors){
 		return Request(originalRequest, validDestinations, errors, null);
 	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<String> errors, EntityPlayer player){
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ErrorMessage> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);
 		
 		//First check all crafters
@@ -219,7 +220,7 @@ public class LogisticsManager implements ILogisticsManager {
 				}
 			}
 			for (ItemIdentifier item : remaining.keySet()){
-				errors.add(remaining.get(item) + " " + item.getFriendlyName());
+				errors.add(new ErrorMessage(item.itemID,item.itemDamage,remaining.get(item)));
 			}
 			return false;
 		}

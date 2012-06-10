@@ -17,4 +17,8 @@ public class NetworkConstants {
 	public static final int REQUEST_SUBMIT = 11;
 	public static final int ORDERER_REFRESH_REQUEST = 12;
 	public static final int ORDERER_CONTENT_ANSWER = 13;
+	public static final int MISSING_ITEMS = 14;
+	public static final int CRAFTING_LOOP = 15;
+	public static final int ITEM_SINK_DEFAULT = 16;
+	public static final int ITEM_SINK_STATUS = 17;
 }

@@ -4,17 +4,20 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import net.minecraft.src.EntityPlayerMP;
+import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.OrdererRequests;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 
@@ -73,6 +76,11 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetH = new PacketPipeInteger();
 					packetH.readData(data);
 					onRefreshRequest(net.getPlayerEntity(), packetH);
+					break;
+				case NetworkConstants.ITEM_SINK_DEFAULT:
+					final PacketPipeInteger packetI = new PacketPipeInteger();
+					packetI.readData(data);
+					onItemSinkDefault(net.getPlayerEntity(), packetI);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -159,6 +167,9 @@ public class PacketHandler implements IPacketHandler {
 
 		player.openGui(mod_LogisticsPipes.instance, cassiPipe.getLogisticsModule().getSubModule(packet.integer).getGuiHandlerID()
 				+ (100 * (packet.integer + 1)), player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
+			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ, (((ModuleItemSink)cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isDefaultRoute() ? 1 : 0)));
+		}
 	}
 
 	private void onGuiBackOpen(EntityPlayerMP player, PacketPipeInteger packet) {
@@ -214,6 +225,40 @@ public class PacketHandler implements IPacketHandler {
 		}
 
 		OrdererRequests.refresh(player, (CoreRoutedPipe) pipe.pipe, option);
+	}
+
+	private void onItemSinkDefault(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		
+		CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+		
+		int value = packet.integer % 10;
+		int slot = packet.integer / 10;
+		
+		if(piperouted.getLogisticsModule() == null) {
+			return;
+		}
+		
+		if(slot <= 0) {
+			if(piperouted.getLogisticsModule() instanceof ModuleItemSink) {
+				ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
+				module.setDefaultRoute(value == 1);
+				return;
+			}
+		} else {
+			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleItemSink) {
+				ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
+				module.setDefaultRoute(value == 1);
+				return;
+			}
+		}
 	}
 
 	// BuildCraft method

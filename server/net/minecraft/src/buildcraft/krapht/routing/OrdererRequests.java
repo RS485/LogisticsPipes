@@ -7,6 +7,7 @@ import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
+import net.minecraft.src.buildcraft.krapht.ErrorMessage;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.network.PacketRequestGuiContent;
@@ -25,7 +26,7 @@ public class OrdererRequests {
 	
 	public static void request(EntityPlayerMP player, PacketRequestSubmit packet, PipeItemsRequestLogistics pipe) {
 		LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID,packet.dataValue), packet.amount, pipe);
-		LinkedList<String> errors = new LinkedList<String>();
+		LinkedList<ErrorMessage> errors = new LinkedList<ErrorMessage>();
 		boolean result = LogisticsManager.Request(request, pipe.getRouter().getRoutersByCost(), errors, player);
 		if (!result){
 			MessageManager.errors(player, errors);

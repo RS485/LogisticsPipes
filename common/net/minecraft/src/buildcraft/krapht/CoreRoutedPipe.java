@@ -27,8 +27,11 @@ import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
 import net.minecraft.src.buildcraft.logisticspipes.IAdjacentWorldAccess;
@@ -38,6 +41,7 @@ import net.minecraft.src.buildcraft.logisticspipes.PipeTransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.RouteLayer;
 import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.transport.IPipeTransportItemsHook;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.buildcraft.transport.PipeTransportItems;
@@ -257,7 +261,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
 			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
 				if(!APIProxy.isClient(entityplayer.worldObj)) {
-					entityplayer.openGui(mod_LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);	
+					entityplayer.openGui(mod_LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);
+					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleItemSink) {
+						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, ((ModuleItemSink)getLogisticsModule()).isDefaultRoute() ? 1 : 0));
+					}
 					return true;
 				} else {
 					//TODO need 'return true;' here ???

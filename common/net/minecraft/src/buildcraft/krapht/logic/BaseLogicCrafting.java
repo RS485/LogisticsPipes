@@ -7,11 +7,8 @@ import java.util.LinkedList;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
-import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
@@ -129,9 +126,6 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (!APIProxy.isClient(entityplayer.worldObj)) {
-			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
-		}
 	}
 
 	@Override

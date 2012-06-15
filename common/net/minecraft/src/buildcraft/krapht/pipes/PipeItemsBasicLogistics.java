@@ -14,7 +14,7 @@ import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 
-public class PipeItemsBasicLogistics extends RoutedPipe{
+public class PipeItemsBasicLogistics extends RoutedPipe {
 	
 	private ModuleItemSink itemSinkModule;
 

@@ -13,9 +13,6 @@ import java.util.LinkedList;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
@@ -94,10 +91,6 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
-		if (!APIProxy.isClient(entityplayer.worldObj)) {
-			// GuiProxy.GuiSatellitePipe(this);
-			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
-		}
 	}
 
 	@Override

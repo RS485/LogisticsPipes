@@ -28,7 +28,7 @@ import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.WorldUtil;
 
-public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport{
+public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport {
 	
 	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
 	

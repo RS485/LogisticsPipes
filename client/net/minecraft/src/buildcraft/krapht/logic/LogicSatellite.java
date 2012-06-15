@@ -7,8 +7,11 @@
 
 package net.minecraft.src.buildcraft.krapht.logic;
 
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 
@@ -40,5 +43,12 @@ public class LogicSatellite extends BaseLogicSatellite {
 
 	public void setSatelliteId(int satelliteId) {
 		this.satelliteId = satelliteId;
+	}
+
+	@Override
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		if (!APIProxy.isRemote()) {
+			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
+		}
 	}
 }

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
@@ -167,8 +166,9 @@ public class PacketHandler implements IPacketHandler {
 
 		player.openGui(mod_LogisticsPipes.instance, cassiPipe.getLogisticsModule().getSubModule(packet.integer).getGuiHandlerID()
 				+ (100 * (packet.integer + 1)), player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if(cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
-			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ, (((ModuleItemSink)cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isDefaultRoute() ? 1 : 0)));
+		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
+			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ,
+					(((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isDefaultRoute() ? 1 : 0)));
 		}
 	}
 
@@ -236,25 +236,25 @@ public class PacketHandler implements IPacketHandler {
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
-		
-		CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
-		
-		int value = packet.integer % 10;
-		int slot = packet.integer / 10;
-		
-		if(piperouted.getLogisticsModule() == null) {
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		final int value = packet.integer % 10;
+		final int slot = packet.integer / 10;
+
+		if (piperouted.getLogisticsModule() == null) {
 			return;
 		}
-		
-		if(slot <= 0) {
-			if(piperouted.getLogisticsModule() instanceof ModuleItemSink) {
-				ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
+
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleItemSink) {
+				final ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
 				module.setDefaultRoute(value == 1);
 				return;
 			}
 		} else {
-			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleItemSink) {
-				ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleItemSink) {
+				final ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
 				module.setDefaultRoute(value == 1);
 				return;
 			}

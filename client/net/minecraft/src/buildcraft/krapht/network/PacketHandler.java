@@ -7,15 +7,11 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.ErrorMessage;
-import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
-import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -71,7 +67,7 @@ public class PacketHandler implements IPacketHandler {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private void onCraftingPipeSetSatellite(PacketPipeInteger packet) {
 		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
@@ -121,19 +117,20 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	private void onMissingItems(PacketMissingItems packet) {
-		for (ErrorMessage error : packet.errors){
+		for (final ErrorMessage error : packet.errors) {
 			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + error);
 		}
 	}
-	
+
 	private void onCraftingLoop(PacketCraftingLoop packet) {
-		ItemIdentifier item = packet.errors.get(0).getItemIdentifier();
-		ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName() + " !! ABORTING !!");
+		final ItemIdentifier item = packet.errors.get(0).getItemIdentifier();
+		ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName()
+				+ " !! ABORTING !!");
 	}
 
 	private void onItemSinkStatusRecive(PacketPipeInteger packet) {
-		if(ModLoader.getMinecraftInstance().currentScreen instanceof GuiItemSink) {
-			((GuiItemSink)ModLoader.getMinecraftInstance().currentScreen).handleDefaultRoutePackage(packet);
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiItemSink) {
+			((GuiItemSink) ModLoader.getMinecraftInstance().currentScreen).handleDefaultRoutePackage(packet);
 		}
 	}
 

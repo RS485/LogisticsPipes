@@ -7,9 +7,12 @@
 
 package net.minecraft.src.buildcraft.krapht.logic;
 
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
@@ -64,7 +67,8 @@ public class LogicCrafting extends BaseLogicCrafting {
 
 	/* ** GUI ** */
 
-	public SimpleInventory get_dummyInventory() {
+	@Override
+	public SimpleInventory getDummyInventory() {
 		return _dummyInventory;
 	}
 
@@ -77,5 +81,13 @@ public class LogicCrafting extends BaseLogicCrafting {
 		}
 
 		getRouter().displayRouteTo(satelliteRouter);
+	}
+
+	@Override
+	public void onWrenchClicked(EntityPlayer player) {
+		// Open the gui, when not multiplayer
+		if (!APIProxy.isRemote()) {
+			player.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
+		}
 	}
 }

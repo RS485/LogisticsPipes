@@ -17,7 +17,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 		super();
 	}
 
-	public PacketInventoryChange(int id, int x, int y, int z, IInventory inventory) {
+	public PacketInventoryChange(int id, int x, int y, int z, IInventory inventory) { // TODO Add constructor with Map<slotid, ItemStack>
 		super(id, x, y, z);
 		this.inventory = inventory;
 	}
@@ -28,7 +28,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 		super.writeData(data);
 
 		for (int i = 0; i < inventory.getSizeInventory(); i++) {
-			data.writeInt(i);
+			data.writeByte(i);
 
 			final ItemStack itemstack = inventory.getStackInSlot(i);
 
@@ -40,7 +40,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 				data.writeInt(0);
 			}
 		}
-		data.writeInt(-1); // mark packet end
+		data.writeByte(-1); // mark packet end
 	}
 
 	@Override
@@ -48,9 +48,11 @@ public class PacketInventoryChange extends PacketCoordinates {
 
 		super.readData(data);
 
-		itemStacks = new ArrayList<ItemStack>();
+		itemStacks = new ArrayList<ItemStack>(); // TODO ... => Map<slotid, ItemStack>
+		
+		byte index = data.readByte();
 
-		while (data.readInt() != -1) { // read until the end
+		while (index != -1) { // read until the end
 			final int itemID = data.readInt();
 			if (itemID == 0) {
 				itemStacks.add(null);

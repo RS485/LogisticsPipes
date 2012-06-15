@@ -57,7 +57,7 @@ public class GuiHandler implements IGuiHandler {
 			
 			case GuiIDs.GUI_CRAFTINGPIPE_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicCrafting)) return null;
-				return new GuiCraftingPipe(player, ((LogicCrafting)pipe.pipe.logic).get_dummyInventory(), (LogicCrafting)pipe.pipe.logic);
+				return new GuiCraftingPipe(player, ((LogicCrafting)pipe.pipe.logic).getDummyInventory(), (LogicCrafting)pipe.pipe.logic);
 			
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;
@@ -113,7 +113,7 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new GuiOrderer(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe(), player);
 				
-			//Should be able to be handled Cliendside
+			// TODO To be client-sided
 				/*case GuiIDs.GUI_OrdererStats_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogistics)) return null;
 				return new GuiStatistics(((PipeItemsRequestLogistics)pipe.pipe).getHistory(), selectedItem, ModLoader.getMinecraftInstance().currentScreen, _entityPlayer)

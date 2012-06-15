@@ -49,7 +49,7 @@ import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.Pair;
 import net.minecraft.src.krapht.WorldUtil;
 
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics{
+public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics {
 
 	private IRouter router;
 	private String routerId;

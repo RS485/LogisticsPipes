@@ -26,7 +26,7 @@ import net.minecraft.src.buildcraft.transport.ActionSignalOutput;
 import net.minecraft.src.buildcraft.transport.Pipe;
 //import net.minecraft.src.buildcraft.transport.Pipe.GateKind;
 
-public abstract class RoutedPipe extends CoreRoutedPipe{
+public abstract class RoutedPipe extends CoreRoutedPipe {
 	
 	public RoutedPipe(BaseRoutingLogic logic, int itemID) {
 		super(logic, itemID);

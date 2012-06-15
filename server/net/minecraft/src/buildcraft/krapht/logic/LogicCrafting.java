@@ -7,8 +7,11 @@
 
 package net.minecraft.src.buildcraft.krapht.logic;
 
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EntityPlayerMP;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketInventoryChange;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
@@ -40,5 +43,14 @@ public class LogicCrafting extends BaseLogicCrafting {
 		// Using existing BuildCraft packet system
 		final PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
 		CoreProxy.sendToPlayer(player, packet);
+	}
+
+	@Override
+	public void onWrenchClicked(EntityPlayer player) {
+		// Send the satellite id when opening gui
+		// Using existing BuildCraft packet system
+		final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+		CoreProxy.sendToPlayer(player, packet);
+		player.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 	}
 }

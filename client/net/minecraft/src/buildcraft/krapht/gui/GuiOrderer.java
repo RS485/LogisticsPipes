@@ -12,7 +12,7 @@ import java.io.Console;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import net.java.games.input.Mouse;
+import org.lwjgl.input.Mouse;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;
@@ -41,6 +41,7 @@ import net.minecraft.src.krapht.gui.SmallGuiButton;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
+import org.omg.CORBA._PolicyStub;
 
 public class GuiOrderer extends KraphtBaseGuiScreen {
 
@@ -175,6 +176,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	@Override
 	public void drawScreen(int i, int j, float f) {
+		drawDefaultBackground();
 		drawGuiBackGround();
 
 		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
@@ -198,8 +200,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		}
 		
 		//SearchInput
-		drawRect(left + 30, bottom - 60, right - 28, bottom - 43, Colors.Black);
-		drawRect(left + 31, bottom - 59, right - 29, bottom - 44, Colors.White);
+		if(editsearch) {
+			drawRect(left + 30, bottom - 60, right - 28, bottom - 43, Colors.Black);
+			drawRect(left + 31, bottom - 59, right - 29, bottom - 44, Colors.White);
+		} else {
+			drawRect(left + 31, bottom - 59, right - 29, bottom - 44, Colors.Black);
+		}
 		drawRect(left + 32, bottom - 58, right - 30, bottom - 45, Colors.DarkGrey);
 		
 		fontRenderer.drawString(searchinput1 + searchinput2, left + 35, bottom - 55, 0xFFFFFF);
@@ -214,12 +220,15 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			}
 		}
 		
-		
-		if (lastClickedx >= left + 32 && lastClickedx < right - 28 &&
-				lastClickedy >= bottom - 60 && lastClickedy < bottom - 43){
-			editsearch = true;
-		} else {
-			editsearch = false;
+		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
+			if (lastClickedx >= left + 32 && lastClickedx < right - 28 &&
+					lastClickedy >= bottom - 60 && lastClickedy < bottom - 43){
+				editsearch = true;
+				lastClickedx = -10000000;
+				lastClickedy = -10000000;
+			} else {
+				editsearch = false;
+			}
 		}
 		
 		
@@ -248,6 +257,15 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			int y = top + 18 + panelySize * row;
 
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
+			int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
+            int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+			
+			if (mouseX >= x && mouseX < x + panelxSize &&
+					mouseY >= y && mouseY < y + panelySize) {
+				drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
+				drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+			}
+			
 			if (lastClickedx >= x && lastClickedx < x + panelxSize &&
 					lastClickedy >= y && lastClickedy < y + panelySize){
 				selectedItem = item;
@@ -499,15 +517,16 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	@Override
 	protected void keyTyped(char c, int i) {
-		// Any key close GUI
 		if(editsearch) {
 			if (c == 13) {
 				editsearch = false;
 				return;
+			} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				searchinput1 = searchinput1 + getClipboardString();
 			} else if (c == 8) {
 				if (searchinput1.length() > 0)
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
-					return;
+				return;
 			} else if (Character.isLetterOrDigit(c) || c == ' ') {
 				if (fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= searchWidth) {
 					searchinput1 += c;
@@ -523,6 +542,19 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					searchinput1 += searchinput2.substring(0,1);
 					searchinput2 = searchinput2.substring(1);
 				}
+			} else if(i == 1) { //ESC
+				editsearch = false;
+			} else if(i == 28) { //Enter
+				editsearch = false;
+			} else if(i == 199) { //Pos
+				searchinput2 = searchinput1 + searchinput2;
+				searchinput1 = "";
+			} else if(i == 207) { //Ende
+				searchinput1 = searchinput1 + searchinput2;
+				searchinput2 = "";
+			} else if(i == 211) { //Entf
+				if (searchinput2.length() > 0)
+					searchinput2 = searchinput2.substring(1);
 			}
 		} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 			super.keyTyped(c, i);

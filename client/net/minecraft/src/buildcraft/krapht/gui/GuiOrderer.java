@@ -532,12 +532,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					searchinput1 += c;
 				}
 				return;
-			} else if(i == 203) { // Left
+			} else if(i == 203) { //Left
 				if(searchinput1.length() > 0) {
 					searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
 					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
 				}
-			} else if(i == 205) { // Right
+			} else if(i == 205) { //Right
 				if(searchinput2.length() > 0) {
 					searchinput1 += searchinput2.substring(0,1);
 					searchinput2 = searchinput2.substring(1);

@@ -203,6 +203,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
+		if (routerId == null || routerId == ""){
+			routerId = UUID.randomUUID().toString();
+		}
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);

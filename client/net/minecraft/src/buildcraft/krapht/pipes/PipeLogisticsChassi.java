@@ -55,7 +55,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
 	private boolean switchOrientationOnTick = false;
-
+	private long tick = 0;
 	
 	public PipeLogisticsChassi(int itemID) {
 		super(new TemporaryLogic(), itemID);
@@ -242,9 +242,15 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		tick++;
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
 			nextOrientation();
+		}
+		if(tick%5 == 0) {
+			if(worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == 0) {
+				nextOrientation();
+			}
 		}
 	}
 	

@@ -688,8 +688,4 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 //		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
 //		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
 	}
-	
-	public String getLogisticsVersion(){
-		return "0.2.5B";
-	}
 }

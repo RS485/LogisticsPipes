@@ -674,7 +674,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		MinecraftForge.setGuiHandler(this,new GuiHandler());
 	}
 	
-	public String getLogisticsVersion(){
-		return "0.2.5B";
-	}
+	public boolean clientSideRequired() {
+        return true;
+    }
 }

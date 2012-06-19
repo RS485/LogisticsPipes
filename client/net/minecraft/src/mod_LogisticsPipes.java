@@ -170,9 +170,9 @@ public class mod_LogisticsPipes extends core_LogisticsPipes{
 		//BuildCraftCore.itemBptProps[core_LogisticsPipes.LogisticsBasicPipe.shiftedIndex] = new bptItemBasicLogisticsPipe();
 
 	}
-	
+
 	@Override
-	public String getVersion() {
-		return super.getLogisticsVersion() + " (built with Minecraft 1.2.5, Buildcraft 3.1.5, Forge 3.1.2.90)";
+	public String getVersion(){
+		return "0.2.5B";
 	}
 }

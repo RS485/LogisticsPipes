@@ -173,6 +173,6 @@ public class mod_LogisticsPipes extends core_LogisticsPipes{
 
 	@Override
 	public String getVersion(){
-		return "0.2.5B";
+		return "0.3.1";
 	}
 }

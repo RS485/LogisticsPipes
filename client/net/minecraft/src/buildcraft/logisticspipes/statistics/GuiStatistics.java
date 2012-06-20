@@ -56,6 +56,7 @@ public class GuiStatistics extends KraphtBaseGuiScreen {
 					_player.openGui(mod_LogisticsPipes.instance, prevGuiID, mc.theWorld, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 				} else {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID).getPacket());
+					super.keyTyped(c, i);
 				}
 			}
 		}

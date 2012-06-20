@@ -19,7 +19,10 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.OrdererRequests;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
+import net.minecraft.src.buildcraft.logisticspipes.modules.SneakyOrientation;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 
@@ -98,6 +101,21 @@ public class PacketHandler implements IPacketHandler {
 					final PacketCoordinates packetL = new PacketCoordinates();
 					packetL.readData(data);
 					onSupplierModeChange(net.getPlayerEntity(), packetL);
+					break;
+				case NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET:
+					final PacketPipeInteger packetM = new PacketPipeInteger();
+					packetM.readData(data);
+					onExtractorModeChange(net.getPlayerEntity(), packetM);
+					break;
+				case NetworkConstants.PROVIDER_MODULE_NEXT_MODE:
+					final PacketPipeInteger packetN = new PacketPipeInteger();
+					packetN.readData(data);
+					onProviderModuleModeChange(net.getPlayerEntity(), packetN);
+					break;
+				case NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE:
+					final PacketPipeInteger packetO = new PacketPipeInteger();
+					packetO.readData(data);
+					onProviderModuleIncludeChange(net.getPlayerEntity(), packetO);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -187,6 +205,14 @@ public class PacketHandler implements IPacketHandler {
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
 			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ,
 					(((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isDefaultRoute() ? 1 : 0)));
+		}
+		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleExtractor) {
+			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ,
+					(((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getSneakyOrientation().ordinal())));
+		}
+		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleProvider) {
+			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, (((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isExcludeFilter() ? 1 : 0)));
+			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, (((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getExtractionMode().ordinal())));
 		}
 	}
 
@@ -322,7 +348,152 @@ public class PacketHandler implements IPacketHandler {
 		logic.setRequestingPartials(!logic.isRequestingPartials());
 		CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, packet.posX, packet.posY, packet.posZ, logic.isRequestingPartials() ? 1 : 0));
 	}
-	
+
+	private void onExtractorModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		final int value = packet.integer % 10;
+		final int slot = packet.integer / 10;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleExtractor) {
+				final ModuleExtractor module = (ModuleExtractor) piperouted.getLogisticsModule();
+				switch (value){
+				case 0:
+					module.setSneakyOrientation(SneakyOrientation.Top);
+					break;
+				
+				case 1:
+					module.setSneakyOrientation(SneakyOrientation.Side);
+					break;
+				
+				case 2:
+					module.setSneakyOrientation(SneakyOrientation.Bottom);
+					break;
+					
+				case 3:
+					module.setSneakyOrientation(SneakyOrientation.Default);
+					break;
+				}
+				CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, module.getSneakyOrientation().ordinal()));
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleExtractor) {
+				final ModuleExtractor module = (ModuleExtractor) piperouted.getLogisticsModule().getSubModule(slot - 1);
+				switch (value){
+				case 0:
+					module.setSneakyOrientation(SneakyOrientation.Top);
+					break;
+				
+				case 1:
+					module.setSneakyOrientation(SneakyOrientation.Side);
+					break;
+				
+				case 2:
+					module.setSneakyOrientation(SneakyOrientation.Bottom);
+					break;
+					
+				case 3:
+					module.setSneakyOrientation(SneakyOrientation.Default);
+					break;
+				}
+				CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, module.getSneakyOrientation().ordinal()));
+				return;
+			}
+		}
+	}
+
+	private void onProviderModuleModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		final int slot = packet.integer;
+		
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+		
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleProvider) {
+				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule();
+				module.nextExtractionMode();
+				CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, module.getExtractionMode().ordinal()));
+				System.out.println("Recived ModuleModeChange: "+module.getExtractionMode().ordinal());
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleProvider) {
+				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				module.nextExtractionMode();
+				CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, module.getExtractionMode().ordinal()));
+				System.out.println("Recived ModuleModeChange: "+module.getExtractionMode().ordinal());
+				return;
+			}
+		}
+	}
+
+	private void onProviderModuleIncludeChange(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		final int slot = packet.integer;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+		
+		
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleProvider) {
+				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule();
+				module.setFilterExcluded(!module.isExcludeFilter());
+				CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, module.isExcludeFilter() ? 1 : 0));
+				System.out.println("Recived ModuleIncludeChange: "+(module.isExcludeFilter() ? 1 : 0));
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleProvider) {
+				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				module.setFilterExcluded(!module.isExcludeFilter());
+				CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, (module.isExcludeFilter() ? 1 : 0)));
+				System.out.println("Recived ModuleIncludeChange: "+(module.isExcludeFilter() ? 1 : 0));
+				return;
+			}
+		}
+	}
+
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

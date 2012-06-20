@@ -14,9 +14,12 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.GuiIds;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
@@ -27,12 +30,16 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	//private final SneakyPipe _pipe;
 	
 	private final ModuleExtractor _extractor;
+	private int slot;
+	private Pipe pipe;
 	
-	public GuiExtractor(IInventory playerInventory, Pipe pipe, ModuleExtractor extractor, GuiScreen previousGui) {
+	public GuiExtractor(IInventory playerInventory, Pipe pipe, ModuleExtractor extractor, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(playerInventory, null),pipe,previousGui);
 		this._extractor = extractor;
 		xSize = 160;
 		ySize = 200;
+		this.pipe = pipe;
+		this.slot = slot;
 	}
 	
 	@Override
@@ -82,7 +89,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 			break;
 		}
 		
-		//Send To Server
+		CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
 		
 		refreshButtons();
 		super.actionPerformed(guibutton);
@@ -125,5 +132,12 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Extractor_ID;
+	}
+
+	public void handlePackat(PacketPipeInteger packet) {
+		if(packet.posX == pipe.xCoord && packet.posY == pipe.yCoord && packet.posZ == pipe.zCoord) {
+			_extractor.setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
+			refreshButtons();
+		}
 	}
 }

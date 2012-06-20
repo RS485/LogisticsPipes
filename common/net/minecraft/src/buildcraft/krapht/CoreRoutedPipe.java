@@ -45,6 +45,7 @@ import net.minecraft.src.buildcraft.logisticspipes.PipeTransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.RouteLayer;
 import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.transport.IPipeTransportItemsHook;
 import net.minecraft.src.buildcraft.transport.Pipe;
@@ -256,7 +257,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void onBlockPlaced() {
-		// TODO Auto-generated method stub
 		super.onBlockPlaced();
 	}
 	
@@ -272,9 +272,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleItemSink) {
 						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, ((ModuleItemSink)getLogisticsModule()).isDefaultRoute() ? 1 : 0));
 					}
+					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleExtractor) {
+						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, ((ModuleExtractor)getLogisticsModule()).getSneakyOrientation().ordinal()));
+					}
 					return true;
 				} else {
-					//TODO need 'return true;' here ???
+					return false;
 				}
 			}
 		}

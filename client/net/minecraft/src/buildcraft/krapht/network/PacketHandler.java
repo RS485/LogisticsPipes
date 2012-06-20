@@ -16,7 +16,9 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -81,6 +83,21 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetI = new PacketPipeInteger();
 					packetI.readData(data);
 					onSupplierPipeRecive(packetI);
+					break;
+				case NetworkConstants.EXTRACTOR_MODULE_RESPONSE:
+					final PacketPipeInteger packetJ = new PacketPipeInteger();
+					packetJ.readData(data);
+					onModulePipeRecive(packetJ);
+					break;
+				case NetworkConstants.PROVIDER_MODULE_MODE_CONTENT:
+					final PacketPipeInteger packetK = new PacketPipeInteger();
+					packetK.readData(data);
+					onProviderModuleModeRecive(packetK);
+					break;
+				case NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT:
+					final PacketPipeInteger packetL = new PacketPipeInteger();
+					packetL.readData(data);
+					onProviderModuleIncludeRecive(packetL);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -168,7 +185,7 @@ public class PacketHandler implements IPacketHandler {
 		int modeint = mode.ordinal();
 		while(modeint != packet.integer) {
 			((LogicProvider) pipe.pipe.logic).nextExtractionMode();
-			modeint = mode.ordinal();
+			modeint = ((LogicProvider) pipe.pipe.logic).getExtractionMode().ordinal();
 			if(mode.ordinal() == modeint) {
 				//loop break
 				break;
@@ -208,6 +225,23 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
+	private void onModulePipeRecive(PacketPipeInteger packet) {
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiExtractor) {
+			((GuiExtractor) ModLoader.getMinecraftInstance().currentScreen).handlePackat(packet);
+		}
+	}
+
+	private void onProviderModuleModeRecive(PacketPipeInteger packet) {
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProvider) {
+			((GuiProvider) ModLoader.getMinecraftInstance().currentScreen).handleModuleModeRecive(packet);
+		}
+	}
+
+	private void onProviderModuleIncludeRecive(PacketPipeInteger packet) {
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProvider) {
+			((GuiProvider) ModLoader.getMinecraftInstance().currentScreen).handleModuleIncludeRecive(packet);
+		}
+	}
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

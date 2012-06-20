@@ -27,4 +27,10 @@ public class NetworkConstants {
 	public static final int PROVIDER_PIPE_INCLUDE_CONTENT = 21;
 	public static final int SUPPLIER_PIPE_MODE_CHANGE = 22;
 	public static final int SUPPLIER_PIPE_MODE_RESPONSE = 23;
+	public static final int EXTRACTOR_MODULE_DIRECTION_SET = 24;
+	public static final int EXTRACTOR_MODULE_RESPONSE = 25;
+	public static final int PROVIDER_MODULE_NEXT_MODE = 26;
+	public static final int PROVIDER_MODULE_CHANGE_INCLUDE = 27;
+	public static final int PROVIDER_MODULE_MODE_CONTENT = 28;
+	public static final int PROVIDER_MODULE_INCLUDE_CONTENT = 29;
 }

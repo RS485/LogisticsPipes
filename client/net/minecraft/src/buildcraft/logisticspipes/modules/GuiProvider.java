@@ -6,21 +6,34 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.ModLoader;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.buildcraft.transport.Pipe;
+import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 public class GuiProvider extends GuiWithPreviousGuiContainer {
 	
 	private final IInventory _playerInventory;
 	private final ModuleProvider _provider;
+	private final Pipe _pipe;
+	private final int _slot;
 
 
-	public GuiProvider(IInventory playerInventory, Pipe pipe, ModuleProvider provider, GuiScreen previousGui) {
+	public GuiProvider(IInventory playerInventory, Pipe pipe, ModuleProvider provider, GuiScreen previousGui, int slot) {
 		super(null,pipe,previousGui);
 		_playerInventory = playerInventory;
 		_provider = provider;
+		_pipe = pipe;
+		_slot = slot;
 		
 		DummyContainer dummy = new DummyContainer(_playerInventory, _provider.getFilterInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
@@ -54,8 +67,10 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
+			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();
+			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
 		}
 		super.actionPerformed(guibutton);
 	}
@@ -99,5 +114,27 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Provider_ID;
+	}
+
+	public void handleModuleModeRecive(PacketPipeInteger packet) {
+		ExtractionMode mode = _provider.getExtractionMode();
+		int modeint = mode.ordinal();
+		while(modeint != packet.integer) {
+			_provider.nextExtractionMode();
+			modeint = _provider.getExtractionMode().ordinal();
+			if(mode.ordinal() == modeint) {
+				//loop break
+				break;
+			}
+		}
+	}
+
+	public void refreshInclude() {
+		((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
+	}
+	
+	public void handleModuleIncludeRecive(PacketPipeInteger packet) {
+		_provider.setFilterExcluded(packet.integer == 1);
+		refreshInclude();
 	}
 }

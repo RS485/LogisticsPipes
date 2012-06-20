@@ -272,13 +272,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleItemSink) {
 						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, ((ModuleItemSink)getLogisticsModule()).isDefaultRoute() ? 1 : 0));
 					}
-					if(APIProxy.isServerSide() && this instanceof PipeItemsProviderLogistics) {
-						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, xCoord, yCoord, zCoord, ((LogicProvider)logic).getExtractionMode().ordinal()));
-						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, xCoord, yCoord, zCoord, ((LogicProvider)logic).isExcludeFilter() ? 1 : 0));
-					}
-					if(APIProxy.isServerSide() && this instanceof PipeItemsSupplierLogistics) {
-						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, ((LogicSupplier)logic).isRequestingPartials() ? 1 : 0));
-					}
 					return true;
 				} else {
 					//TODO need 'return true;' here ???

@@ -16,6 +16,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.energy.Engine;
 import net.minecraft.src.buildcraft.energy.EngineWood;
@@ -26,6 +27,8 @@ import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
@@ -68,6 +71,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if(!APIProxy.isClient(entityplayer.worldObj)) {
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
+			CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0));
 		}
 	}
 	

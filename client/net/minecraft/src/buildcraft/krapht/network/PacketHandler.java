@@ -9,8 +9,11 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.ErrorMessage;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
+import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
+import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
@@ -61,6 +64,16 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetH = new PacketPipeInteger();
 					packetH.readData(data);
 					onItemSinkStatusRecive(packetH);
+					break;
+				case NetworkConstants.PROVIDER_PIPE_MODE_CONTENT:
+					final PacketPipeInteger packetF = new PacketPipeInteger();
+					packetF.readData(data);
+					onProviderPipeModeRecive(packetF);
+					break;
+				case NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT:
+					final PacketPipeInteger packetG = new PacketPipeInteger();
+					packetG.readData(data);
+					onProviderPipeIncludeRecive(packetG);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -131,6 +144,44 @@ public class PacketHandler implements IPacketHandler {
 	private void onItemSinkStatusRecive(PacketPipeInteger packet) {
 		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiItemSink) {
 			((GuiItemSink) ModLoader.getMinecraftInstance().currentScreen).handleDefaultRoutePackage(packet);
+		}
+	}
+
+	private void onProviderPipeModeRecive(PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof LogicProvider)) {
+			return;
+		}
+		
+		ExtractionMode mode = ((LogicProvider) pipe.pipe.logic).getExtractionMode();
+		int modeint = mode.ordinal();
+		while(modeint != packet.integer) {
+			((LogicProvider) pipe.pipe.logic).nextExtractionMode();
+			modeint = mode.ordinal();
+			if(mode.ordinal() == modeint) {
+				//loop break
+				break;
+			}
+		}
+	}
+
+	private void onProviderPipeIncludeRecive(PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof LogicProvider)) {
+			return;
+		}
+		((LogicProvider) pipe.pipe.logic).setFilterExcluded(packet.integer == 1);
+		
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProviderPipe) {
+			((GuiProviderPipe) ModLoader.getMinecraftInstance().currentScreen).refreshInclude();
 		}
 	}
 

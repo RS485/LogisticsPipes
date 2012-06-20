@@ -21,4 +21,8 @@ public class NetworkConstants {
 	public static final int CRAFTING_LOOP = 15;
 	public static final int ITEM_SINK_DEFAULT = 16;
 	public static final int ITEM_SINK_STATUS = 17;
+	public static final int PROVIDER_PIPE_NEXT_MODE = 18;
+	public static final int PROVIDER_PIPE_CHANGE_INCLUDE = 19;
+	public static final int PROVIDER_PIPE_MODE_CONTENT = 20;
+	public static final int PROVIDER_PIPE_INCLUDE_CONTENT = 21;
 }

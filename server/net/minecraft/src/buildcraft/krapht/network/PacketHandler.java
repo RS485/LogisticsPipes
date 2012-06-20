@@ -12,7 +12,9 @@ import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
+import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.OrdererRequests;
@@ -81,12 +83,22 @@ public class PacketHandler implements IPacketHandler {
 					packetI.readData(data);
 					onItemSinkDefault(net.getPlayerEntity(), packetI);
 					break;
+				case NetworkConstants.PROVIDER_PIPE_NEXT_MODE:
+					final PacketCoordinates packetJ = new PacketCoordinates();
+					packetJ.readData(data);
+					onProviderModeChange(net.getPlayerEntity(), packetJ);
+					break;
+				case NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE:
+					final PacketCoordinates packetK = new PacketCoordinates();
+					packetK.readData(data);
+					onProviderIncludeChange(net.getPlayerEntity(), packetK);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	private void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
@@ -254,11 +266,41 @@ public class PacketHandler implements IPacketHandler {
 			}
 		} else {
 			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleItemSink) {
-				final ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule();
+				final ModuleItemSink module = (ModuleItemSink) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setDefaultRoute(value == 1);
 				return;
 			}
 		}
+	}
+
+	private void onProviderModeChange(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof PipeItemsProviderLogistics)) {
+			return;
+		}
+		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
+		final LogicProvider logic = (LogicProvider)providerpipe.logic;
+		logic.nextExtractionMode();
+		CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.getExtractionMode().ordinal()));
+	}
+
+	private void onProviderIncludeChange(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof PipeItemsProviderLogistics)) {
+			return;
+		}
+		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
+		final LogicProvider logic = (LogicProvider)providerpipe.logic;
+		logic.setFilterExcluded(!logic.isExcludeFilter());
+		CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.isExcludeFilter() ? 1 : 0));
 	}
 
 	// BuildCraft method

@@ -82,7 +82,8 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if (!((CoreRoutedPipe)this.container.pipe).isEnabled()){
 			return;
 		}
-				
+		
+		if(APIProxy.isClient(worldObj)) return;
 		if (pause) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);

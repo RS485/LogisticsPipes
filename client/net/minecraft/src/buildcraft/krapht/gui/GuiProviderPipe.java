@@ -11,8 +11,11 @@ package net.minecraft.src.buildcraft.krapht.gui;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
@@ -60,10 +63,16 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
+			CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
+			CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
+	}
+	
+	public void refreshInclude() {
+		((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
 	}
 	
 	private String getExtractionModeString(){

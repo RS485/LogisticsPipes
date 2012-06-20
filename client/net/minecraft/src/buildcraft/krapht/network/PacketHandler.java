@@ -10,9 +10,11 @@ import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.ErrorMessage;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
+import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -74,6 +76,11 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetG = new PacketPipeInteger();
 					packetG.readData(data);
 					onProviderPipeIncludeRecive(packetG);
+					break;
+				case NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE:
+					final PacketPipeInteger packetI = new PacketPipeInteger();
+					packetI.readData(data);
+					onSupplierPipeRecive(packetI);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -182,6 +189,22 @@ public class PacketHandler implements IPacketHandler {
 		
 		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProviderPipe) {
 			((GuiProviderPipe) ModLoader.getMinecraftInstance().currentScreen).refreshInclude();
+		}
+	}
+
+	private void onSupplierPipeRecive(PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof LogicSupplier)) {
+			return;
+		}
+		((LogicSupplier) pipe.pipe.logic).setRequestingPartials(packet.integer == 1);
+		
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiSupplierPipe) {
+			((GuiSupplierPipe) ModLoader.getMinecraftInstance().currentScreen).refreshMode();
 		}
 	}
 

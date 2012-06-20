@@ -11,8 +11,11 @@ package net.minecraft.src.buildcraft.krapht.gui;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
@@ -81,9 +84,14 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+			CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		
+	}
+	
+	public void refreshMode() {
+		((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
 	}
 	
 	@Override

@@ -30,8 +30,12 @@ import net.minecraft.src.buildcraft.api.Position;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
+import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
+import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
 import net.minecraft.src.buildcraft.logisticspipes.IAdjacentWorldAccess;
@@ -267,6 +271,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					entityplayer.openGui(mod_LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);
 					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleItemSink) {
 						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, ((ModuleItemSink)getLogisticsModule()).isDefaultRoute() ? 1 : 0));
+					}
+					if(APIProxy.isServerSide() && this instanceof PipeItemsProviderLogistics) {
+						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, xCoord, yCoord, zCoord, ((LogicProvider)logic).getExtractionMode().ordinal()));
+						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, xCoord, yCoord, zCoord, ((LogicProvider)logic).isExcludeFilter() ? 1 : 0));
+					}
+					if(APIProxy.isServerSide() && this instanceof PipeItemsSupplierLogistics) {
+						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, ((LogicSupplier)logic).isRequestingPartials() ? 1 : 0));
 					}
 					return true;
 				} else {

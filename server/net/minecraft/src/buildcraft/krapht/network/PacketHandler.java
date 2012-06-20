@@ -14,6 +14,7 @@ import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
+import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
@@ -92,6 +93,11 @@ public class PacketHandler implements IPacketHandler {
 					final PacketCoordinates packetK = new PacketCoordinates();
 					packetK.readData(data);
 					onProviderIncludeChange(net.getPlayerEntity(), packetK);
+					break;
+				case NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE:
+					final PacketCoordinates packetL = new PacketCoordinates();
+					packetL.readData(data);
+					onSupplierModeChange(net.getPlayerEntity(), packetL);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -303,6 +309,20 @@ public class PacketHandler implements IPacketHandler {
 		CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.isExcludeFilter() ? 1 : 0));
 	}
 
+	private void onSupplierModeChange(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof LogicSupplier)) {
+			return;
+		}
+		final LogicSupplier logic = (LogicSupplier) pipe.pipe.logic;
+		logic.setRequestingPartials(!logic.isRequestingPartials());
+		CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, packet.posX, packet.posY, packet.posZ, logic.isRequestingPartials() ? 1 : 0));
+	}
+	
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

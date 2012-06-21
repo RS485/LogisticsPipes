@@ -25,4 +25,6 @@ Right now you can only take the source code, compile it and go that way. You nee
 
 ##Branches
 
-`master` => BC 3.x.x
+- `master` => Vanilla + BC 3.1.x
+- `BC2` => Vanilla + BC 2.2.x
+- `BC2-bukkit` => Bukkit + BC 2.2.x

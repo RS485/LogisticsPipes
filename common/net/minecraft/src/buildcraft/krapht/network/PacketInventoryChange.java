@@ -59,6 +59,8 @@ public class PacketInventoryChange extends PacketCoordinates {
 			} else {
 				itemStacks.add(new ItemStack(itemID, data.readInt(), data.readInt()));
 			}
+			
+			index = data.readByte(); // read the next slot
 		}
 	}
 

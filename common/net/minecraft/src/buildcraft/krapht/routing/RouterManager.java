@@ -18,7 +18,7 @@ public class RouterManager implements IRouterManager{
 	private final static HashMap<UUID, Router> _routers = new HashMap<UUID, Router>();
 	
 	//DO ONLY USE FROM PURE ROUTER OBJECTS!
-	static Router get(UUID id){
+	public static Router get(UUID id){
 		return _routers.get(id);
 	}
 	

@@ -15,16 +15,25 @@ import java.util.UUID;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
+import net.minecraft.src.BuildCraftCore;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
+import net.minecraft.src.Packet;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_BuildCraftTransport;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
+import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.core.DefaultProps;
 import net.minecraft.src.buildcraft.core.Utils;
+import net.minecraft.src.buildcraft.core.network.PacketIds;
+import net.minecraft.src.buildcraft.core.network.PacketPipeTransportContent;
 //import net.minecraft.src.buildcraft.krapht.logistics.ResolvedDestination;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeLogisticsContent;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
@@ -112,8 +121,16 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			_pipe = (RoutedPipe) container.pipe;
 		}
 		
+		boolean newItem = false;
+		if(!SimpleServiceLocator.buildCraftProxy.isRoutedItem(data.item)) {
+			newItem = true;
+		}
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(_pipe.worldObj, data);
 		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem); 
+		if(newItem && APIProxy.isServerSide()) {
+			//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
+				CoreProxy.sendToPlayers(createItemPacket(routedItem.getEntityPassiveItem(), value), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftTransport.instance);
+		}
 		if (value == null) {
 			System.out.println("THIS IS NOT SUPPOSED TO HAPPEN!");
 		}
@@ -247,7 +264,77 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			item.speed = Math.max(item.speed, Utils.pipeNormalSpeed * defaultBoost);
 		}
 	}
-	
+
+	/**
+	 * Handles a packet describing a stack of items inside a pipe.
+	 * 
+	 * @param packet
+	 */
+	@Override
+	public void handleItemPacket(PacketPipeTransportContent packet) {
+		if (packet.getID() != PacketIds.PIPE_CONTENTS)
+			return;
+		
+		if(!PacketPipeLogisticsContent.isPacket(packet)) {
+			super.handleItemPacket(packet);
+			return;
+		}
+		
+		EntityPassiveItem item = EntityPassiveItem.getOrCreate(worldObj, packet.getEntityId());
+
+		item.item = new ItemStack(packet.getItemId(), packet.getStackSize(), packet.getItemDamage());
+
+		item.setPosition(packet.getPosX(), packet.getPosY(), packet.getPosZ());
+		item.speed = packet.getSpeed();
+		item.deterministicRandomization = packet.getRandomization();
+
+		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)) {
+			if (item.container != this.container || !travelingEntities.containsKey(item.entityId)) {
+				if (item.container != null) {
+					((PipeTransportItems) ((TileGenericPipe) item.container).pipe.transport).scheduleRemoval(item);
+				}
+				travelingEntities.put(new Integer(item.entityId), new EntityData(item, packet.getOrientation()));
+				item.container = container;
+			} else {
+				travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
+			}
+			return;
+		}
+		PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
+		IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.worldObj,item);
+		routed.setSource(newpacket.getSourceUUID(this.worldObj));
+		routed.setDestination(newpacket.getDestUUID(this.worldObj));
+		item = routed.getEntityPassiveItem();
+		if (item.container != this.container || !travelingEntities.containsKey(item.entityId)) {
+			if (item.container != null) {
+				((PipeTransportItems) ((TileGenericPipe) item.container).pipe.transport).scheduleRemoval(item);
+			}
+			travelingEntities.put(new Integer(item.entityId), new EntityData(item, packet.getOrientation()));
+			item.container = container;
+		} else {
+			travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
+		}
+	}
+
+	/**
+	 * Creates a packet describing a stack of items inside a pipe.
+	 * 
+	 * @param item
+	 * @param orientation
+	 * @return
+	 */
+	@Override
+	public Packet createItemPacket(EntityPassiveItem item, Orientations orientation) {
+		if(item instanceof RoutedEntityItem) {
+			item.deterministicRandomization += worldObj.rand.nextInt(6);
+			PacketPipeLogisticsContent packet = new PacketPipeLogisticsContent(container.xCoord, container.yCoord, container.zCoord, (RoutedEntityItem)item, orientation);
+
+			return packet.getPacket();
+		} else {
+			return super.createItemPacket(item, orientation);
+		}
+	}
+
 	/*	private Orientations destinationReached(RoutedEntityItem item) {
 //		item.arrived = true;
 //		if (item.sourceUUID != null && SimpleServiceLocator.routerManager.getRouter(item.sourceUUID) != null){

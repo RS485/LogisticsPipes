@@ -163,8 +163,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}	
 	
 	@Override
-	public void destroy() {
-		super.destroy();
+	public void onBlockRemoval() {
+		super.onBlockRemoval();
 		getRouter().destroy();
 		if (logic instanceof BaseRoutingLogic){
 			((BaseRoutingLogic)logic).destroy();

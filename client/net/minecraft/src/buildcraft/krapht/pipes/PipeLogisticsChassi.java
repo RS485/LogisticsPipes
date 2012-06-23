@@ -204,8 +204,8 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	public void destroy() {
-		super.destroy();
+	public void onBlockRemoval() {
+		super.onBlockRemoval();
 		_moduleInventory.removeListener(this);
 		_moduleInventory.dropContents(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 	}

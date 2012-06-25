@@ -33,4 +33,7 @@ public class NetworkConstants {
 	public static final int PROVIDER_MODULE_CHANGE_INCLUDE = 27;
 	public static final int PROVIDER_MODULE_MODE_CONTENT = 28;
 	public static final int PROVIDER_MODULE_INCLUDE_CONTENT = 29;
+	public static final int ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET = 30;
+	public static final int ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE = 31;
+	public static final int ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI = 32;
 }

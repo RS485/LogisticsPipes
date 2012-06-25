@@ -15,7 +15,7 @@ import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.ItemIdentifier;
 
-public class ModuleExtractor implements ILogisticsModule {
+public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationreceiver {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
@@ -28,11 +28,14 @@ public class ModuleExtractor implements ILogisticsModule {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}
-	
+
 	protected int ticksToAction(){
 		return 100;
 	}
-	
+
+	protected int itemsToExtract(){
+		return 1;
+	}
 	
 	public SneakyOrientation getSneakyOrientation(){
 		return _sneakyOrientation;
@@ -109,13 +112,13 @@ public class ModuleExtractor implements ILogisticsModule {
 			
 			if (!this.shouldSend(stackToSend)) continue;
 			
-			stackToSend = targetInventory.decrStackSize(i, 1);
+			stackToSend = targetInventory.decrStackSize(i, itemsToExtract());
 			_itemSender.sendStack(stackToSend);
 			break;
 		}
 	}
 	
-	private boolean shouldSend(ItemStack stack){
+	protected boolean shouldSend(ItemStack stack){
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getSourceUUID(), true);
 	}
 }

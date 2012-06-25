@@ -15,11 +15,13 @@ public abstract class GuiWithPreviousGuiContainer extends GuiContainer implement
 	
 	private int prevGuiID = -1;
 	protected Pipe pipe;
+	private GuiScreen prevGui;
 	
-	public GuiWithPreviousGuiContainer(Container par1Container, Pipe pipe, GuiScreen prevGuiID) {
+	public GuiWithPreviousGuiContainer(Container par1Container, Pipe pipe, GuiScreen prevGui) {
 		super(par1Container);
-		if(prevGuiID instanceof IGuiIDHandlerProvider) {
-			this.prevGuiID = ((IGuiIDHandlerProvider)prevGuiID).getGuiID();
+		this.prevGui = prevGui;
+		if(prevGui instanceof IGuiIDHandlerProvider) {
+			this.prevGuiID = ((IGuiIDHandlerProvider)prevGui).getGuiID();
 		}
 		if(pipe == null) {
 			throw new NullPointerException("A pipe can't be null");
@@ -27,15 +29,19 @@ public abstract class GuiWithPreviousGuiContainer extends GuiContainer implement
 		this.pipe = pipe;
 	}
 	
+	public GuiScreen getprevGui() {
+		return prevGui;
+	}
+	
 	@Override
 	protected void keyTyped(char c, int i) {
 		if (i == 1 || c == 'e') {
 			if (prevGuiID != -1) {
 				if(!APIProxy.isClient(mc.theWorld)) {
-					mc.thePlayer.openGui(mod_LogisticsPipes.instance, prevGuiID, mc.theWorld, pipe.xCoord, pipe.yCoord, pipe.zCoord);
+					mc.thePlayer.openGui(mod_LogisticsPipes.instance, prevGuiID + 10000, mc.theWorld, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 				} else {
 					super.keyTyped(c,i);
-					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID).getPacket());
+					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID + 10000).getPacket());
 				}
 			} else {
 				super.keyTyped(c, i);

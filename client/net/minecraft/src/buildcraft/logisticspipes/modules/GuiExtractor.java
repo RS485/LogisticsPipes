@@ -29,16 +29,14 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 
 	//private final SneakyPipe _pipe;
 	
-	private final ModuleExtractor _extractor;
+	private final ISneakyOrientationreceiver _orientationReceiver;
 	private int slot;
-	private Pipe pipe;
 	
-	public GuiExtractor(IInventory playerInventory, Pipe pipe, ModuleExtractor extractor, GuiScreen previousGui, int slot) {
+	public GuiExtractor(IInventory playerInventory, Pipe pipe, ISneakyOrientationreceiver orientationReceiver, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(playerInventory, null),pipe,previousGui);
-		this._extractor = extractor;
+		_orientationReceiver = orientationReceiver;
 		xSize = 160;
 		ySize = 200;
-		this.pipe = pipe;
 		this.slot = slot;
 	}
 	
@@ -73,23 +71,25 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton guibutton) {
 		switch (guibutton.id){
 		case 0:
-			_extractor.setSneakyOrientation(SneakyOrientation.Top);
+			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Top);
 			break;
 		
 		case 1:
-			_extractor.setSneakyOrientation(SneakyOrientation.Side);
+			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Side);
 			break;
 		
 		case 2:
-			_extractor.setSneakyOrientation(SneakyOrientation.Bottom);
+			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Bottom);
 			break;
 			
 		case 3:
-			_extractor.setSneakyOrientation(SneakyOrientation.Default);
+			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Default);
 			break;
 		}
 		
-		CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
+		if(APIProxy.isRemote()) {
+			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
+		}
 		
 		refreshButtons();
 		super.actionPerformed(guibutton);
@@ -126,7 +126,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	}
 
 	private String isExtract(SneakyOrientation o){
-		return getButtonText(o == _extractor.getSneakyOrientation());
+		return getButtonText(o == _orientationReceiver.getSneakyOrientation());
 	}
 
 	@Override
@@ -136,7 +136,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 
 	public void handlePackat(PacketPipeInteger packet) {
 		if(packet.posX == pipe.xCoord && packet.posY == pipe.yCoord && packet.posZ == pipe.zCoord) {
-			_extractor.setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
+			_orientationReceiver.setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
 			refreshButtons();
 		}
 	}

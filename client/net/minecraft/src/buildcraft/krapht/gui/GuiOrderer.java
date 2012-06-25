@@ -163,9 +163,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
 		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
-		if (_itemRequester instanceof PipeItemsRequestLogistics){
-			controlList.add(new SmallGuiButton(8, left + 10, bottom - 40, 30, 10, "Stats")); // Stats
-		}
+		//if (_itemRequester instanceof PipeItemsRequestLogistics){
+			//controlList.add(new SmallGuiButton(8, left + 10, bottom - 40, 30, 10, "Stats")); // Stats
+		//}
 		controlList.add(new SmallGuiButton(9, right - 45, bottom - 40, 40, 10, "Both"));
 	}
 	
@@ -442,6 +442,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			} else {
 				CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
 				CoreProxy.sendToServer(new PacketRequestSubmit(requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,selectedItem,requestCount).getPacket());
+				refreshItems();
 			}
 		} else if (guibutton.id == 1){
 			nextPage();

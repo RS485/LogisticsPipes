@@ -6,7 +6,11 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK2;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK3;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk2;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk3;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
@@ -26,9 +30,15 @@ public class ItemModule extends LogisticsItem{
 	public static final int POLYMORPHIC_ITEMSINK = 4;
 	public static final int QUICKSORT = 5;
 	public static final int TERMINUS = 6;
-	
+	public static final int ADVANCED_EXTRACTOR = 7;
+
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
+	public static final int ADVANCED_EXTRACTOR_MK2 = 100 + ADVANCED_EXTRACTOR;
+	
+	//PASSIVE MK 2
+	public static final int EXTRACTOR_MK3 = 200 + EXTRACTOR;
+	public static final int ADVANCED_EXTRACTOR_MK3 = 200 + ADVANCED_EXTRACTOR;
 	
 	
 	//ACTIVE MODULES
@@ -45,6 +55,10 @@ public class ItemModule extends LogisticsItem{
 
 		if (i >= 500){
 			return 5 * 16 + (i - 500);
+		}
+		
+		if (i >= 200){
+			return 4 * 16 + (i - 200);
 		}
 		
 		if (i >= 100){
@@ -73,10 +87,20 @@ public class ItemModule extends LogisticsItem{
 				return "QuickSort module";
 			case TERMINUS:
 				return "Terminus module";
+			case ADVANCED_EXTRACTOR:
+				return "Advanced Extractor module";
 				
 			//PASSIVE MK2
 			case EXTRACTOR_MK2:
 				return "Extractor MK2 module";
+			case ADVANCED_EXTRACTOR_MK2:
+				return "Advanced Extractor MK2";
+				
+			//PASSIVE MK3
+			case EXTRACTOR_MK3:
+				return "Extractor MK3 module";
+			case ADVANCED_EXTRACTOR_MK3:
+				return "Advanced Extractor MK3";
 				
 			//ACTIVE
 			case PROVIDER:
@@ -91,13 +115,15 @@ public class ItemModule extends LogisticsItem{
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addCreativeItems(ArrayList itemList) {
-		for (int i = 0; i <= 6; i++){
+		for (int i = 0; i <= 7; i++){
 			itemList.add(new ItemStack(this, 1, i));
 		}
+
+		itemList.add(new ItemStack(this, 1, 103));
+		itemList.add(new ItemStack(this, 1, 107));
 		
-		for (int i = 103; i <= 103; i++){
-			itemList.add(new ItemStack(this, 1, i));
-		}
+		itemList.add(new ItemStack(this, 1, 203));
+		itemList.add(new ItemStack(this, 1, 207));
 		
 		for (int i = 500; i <= 500; i++){
 			itemList.add(new ItemStack(this, 1, i));
@@ -119,7 +145,6 @@ public class ItemModule extends LogisticsItem{
 				return new ModulePassiveSupplier(invProvider);
 			case EXTRACTOR:
 				if (currentModule != null && currentModule.getClass().equals(ModuleExtractor.class)) return currentModule; 
-				//currentModule instanceof ModuleExtractor && !(currentModule instanceof ModuleExtractorMk2)) return currentModule;
 				return new ModuleExtractor(invProvider, itemSender);
 			case POLYMORPHIC_ITEMSINK:
 				if (currentModule instanceof ModulePolymorphicItemSink) return currentModule;
@@ -130,13 +155,28 @@ public class ItemModule extends LogisticsItem{
 			case TERMINUS:
 				if (currentModule instanceof ModuleTerminus) return currentModule;
 				return new ModuleTerminus();
+			case ADVANCED_EXTRACTOR:
+				if (currentModule != null && currentModule.getClass().equals(ModuleAdvancedExtractor.class)) return currentModule; 
+				return new ModuleAdvancedExtractor(invProvider, itemSender);
 				
 			//PASSIVE MK2
 			case EXTRACTOR_MK2:
 				if (currentModule != null && currentModule.getClass().equals(ModuleExtractorMk2.class)) return currentModule;
-				//if (currentModule instanceof ModuleExtractorMk2 && !(currentModule instanceof ModuleExtractor)) return currentModule;
 				return new ModuleExtractorMk2(invProvider, itemSender);
+			
+			case ADVANCED_EXTRACTOR_MK2:
+				if (currentModule != null && currentModule.getClass().equals(ModuleAdvancedExtractorMK2.class)) return currentModule;
+				return new ModuleAdvancedExtractorMK2(invProvider, itemSender);
 				
+			//PASSIVE MK2
+			case EXTRACTOR_MK3:
+				if (currentModule != null && currentModule.getClass().equals(ModuleExtractorMk3.class)) return currentModule;
+				return new ModuleExtractorMk3(invProvider, itemSender);
+			
+			case ADVANCED_EXTRACTOR_MK3:
+				if (currentModule != null && currentModule.getClass().equals(ModuleAdvancedExtractorMK3.class)) return currentModule;
+				return new ModuleAdvancedExtractorMK3(invProvider, itemSender);
+					
 			//ACTIVE
 			case PROVIDER:
 				if (currentModule instanceof ModuleProvider) return currentModule;

@@ -16,6 +16,7 @@ public class GuiIDs {
 	public static final int GUI_Module_Provider_ID = 24;
 	public static final int GUI_Module_Terminus_ID = 25;
 	public static final int GUI_ChassiModule_ID = 26;
+	public static final int GUI_Module_Advanced_Extractor_ID = 27;
 	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;

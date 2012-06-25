@@ -16,6 +16,7 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
@@ -98,6 +99,11 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetL = new PacketPipeInteger();
 					packetL.readData(data);
 					onProviderModuleIncludeRecive(packetL);
+					break;
+				case NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE:
+					final PacketPipeInteger packetM = new PacketPipeInteger();
+					packetM.readData(data);
+					onAdvancedExtractorModuleIncludeRecive(packetM);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -242,6 +248,13 @@ public class PacketHandler implements IPacketHandler {
 			((GuiProvider) ModLoader.getMinecraftInstance().currentScreen).handleModuleIncludeRecive(packet);
 		}
 	}
+
+	private void onAdvancedExtractorModuleIncludeRecive(PacketPipeInteger packet) {
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiAdvancedExtractor) {
+			((GuiAdvancedExtractor) ModLoader.getMinecraftInstance().currentScreen).handleIncludeRoutePackage(packet);
+		}
+	}
+	
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

@@ -600,6 +600,11 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 									Character.valueOf('r'), Item.redstone, 
 									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
+
+		//Advanced Extractor module
+		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR), new Object[] {"U", "B",
+									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR),
+									Character.valueOf('U'), Item.redstone});
 		
 		//ChestItemSink
 		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.POLYMORPHIC_ITEMSINK), new Object[] { "CGC", "rBr", "CrC", 
@@ -622,13 +627,31 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 									Character.valueOf('r'), Item.redstone, 
 									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		
+
 		//PASSIVE MK 2
+		//Extractor module MK 2
 		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK2), new Object[] {"U", "B",
 									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR),
 									Character.valueOf('U'), BuildCraftCore.goldGearItem});
 		
+		//Advanced Extractor module MK 2
+		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2), new Object[] {"U", "B",
+									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR),
+									Character.valueOf('U'), BuildCraftCore.goldGearItem});
 		
+
+		//PASSIVE MK 3
+		//Extractor module MK 3
+		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK3), new Object[] {"U", "B",
+									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK2),
+									Character.valueOf('U'), BuildCraftCore.diamondGearItem});
+		
+		//Advanced Extractor module MK 3
+		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK3), new Object[] {"U", "B",
+									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2),
+									Character.valueOf('U'), BuildCraftCore.diamondGearItem});
+		
+
 		//ACTIVE
 		
 		//Supplier module

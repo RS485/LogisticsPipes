@@ -15,6 +15,8 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleLiquidSupplier;
@@ -42,6 +44,10 @@ public class GuiHandler implements IGuiHandler {
 		DummyContainer dummy;
 		int xOffset;
 		int yOffset;
+		
+		if(ID > 10000) {
+			ID -= 10000;
+		}
 		
 		if(ID < 120) {
 			switch(ID) {
@@ -115,7 +121,7 @@ public class GuiHandler implements IGuiHandler {
 				
 				/*** Modules ***/
 			case GuiIDs.GUI_Module_Extractor_ID:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleExtractor)) return null;
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyOrientationreceiver)) return null;
 				return new DummyContainer(player.inventory, null);
 				
 			case GuiIDs.GUI_Module_ItemSink_ID:
@@ -232,7 +238,7 @@ public class GuiHandler implements IGuiHandler {
 			switch(ID % 100) {
 			/*** Modules ***/
 			case GuiIDs.GUI_Module_Extractor_ID:
-				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleExtractor)) return null;
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ISneakyOrientationreceiver)) return null;
 				return new DummyContainer(player.inventory, null);
 				
 			case GuiIDs.GUI_Module_ItemSink_ID:
@@ -296,8 +302,20 @@ public class GuiHandler implements IGuiHandler {
 			    }
 			    
 			    return dummy;
-			    default:
-			    	return null;
+
+			case GuiIDs.GUI_Module_Advanced_Extractor_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleAdvancedExtractor)) return null;
+				dummy = new DummyContainer(player.inventory, ((ModuleAdvancedExtractor)(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot))).getFilterInventory());
+				dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+				//Pipe slots
+			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+			    }
+			    return dummy;
+			    
+			default:
+			    return null;
 			}
 		}
 	}

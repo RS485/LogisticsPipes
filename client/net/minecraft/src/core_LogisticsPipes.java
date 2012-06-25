@@ -264,8 +264,10 @@ import net.minecraft.src.buildcraft.krapht.logistics.LogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsBasicLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogisticsMK2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMK2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSatelliteLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassiMk1;
@@ -300,6 +302,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsChassiPipe3;
 	public static Item LogisticsChassiPipe4;
 	public static Item LogisticsChassiPipe5;
+	public static Item LogisticsCraftingPipeMK2;
+	public static Item LogisticsRequestPipeMK2;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -327,6 +331,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_CHASSI4_ID						= 6884;
 	public static int LOGISTICSPIPE_CHASSI5_ID						= 6885;
 																	// 6886 - 3.x LiquidSupplier;
+	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
+	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6887;
 	
 	
 	
@@ -351,6 +357,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_CHASSI3_TEXTURE					= 0;
 	public static int LOGISTICSPIPE_CHASSI4_TEXTURE					= 0;
 	public static int LOGISTICSPIPE_CHASSI5_TEXTURE					= 0;
+	public static int LOGISTICSPIPE_CRAFTERMK2_TEXTURE				= 0;
+	public static int LOGISTICSPIPE_REQUESTERMK2_TEXTURE			= 0;
 	
 		
 	//Texture files
@@ -374,6 +382,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi3.png";
 	public static final String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi4.png";
 	public static final String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi5.png";
+	public static final String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipecrafterMK2.png";
+	public static final String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		= "/net/minecraft/src/buildcraft/krapht/gui/logisticspiperequesterMK2.png";
 	
 	//Configrables
 	public static int LOGISTICS_DETECTION_LENGTH	= 50;
@@ -467,6 +477,12 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticPipeChassi5IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi5.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI5_ID);
 		logisticPipeChassi5IdProperty.comment = "The item id for the chassi5";
 
+		Property logisticPipeCraftingMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeCraftingMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK2_ID);
+		logisticPipeCraftingMK2IdProperty.comment = "The item id for the crafting logistics pipe MK2";
+		
+		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
+		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
+		
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
@@ -506,6 +522,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_CHASSI3_ID		= Integer.parseInt(logisticPipeChassi3IdProperty.value);
 		LOGISTICSPIPE_CHASSI4_ID		= Integer.parseInt(logisticPipeChassi4IdProperty.value);
 		LOGISTICSPIPE_CHASSI5_ID		= Integer.parseInt(logisticPipeChassi5IdProperty.value);
+		LOGISTICSPIPE_CRAFTING_MK2_ID	= Integer.parseInt(logisticPipeCraftingMK2IdProperty.value);
+		LOGISTICSPIPE_REQUEST_MK2_ID	= Integer.parseInt(logisticPipeRequesterMK2IdProperty.value);
 		LOGISTICS_DETECTION_LENGTH		= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT		= Integer.parseInt(detectionCount.value);
 		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
@@ -531,6 +549,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_NOTROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_SATELLITE_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
 		LOGISTICSPIPE_SUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTERMK2_TEXTURE	= CoreProxy.addCustomTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_REQUESTERMK2_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
 		
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
@@ -553,6 +573,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsChassiPipe3 = createPipe(LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3");
 		LogisticsChassiPipe4 = createPipe(LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4");
 		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5");
+		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMK2.class, "Crafting Logistics Pipe MK2");
+		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMK2.class, "Request Logistics Pipe MK2");
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
@@ -569,12 +591,15 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		craftingmanager.addRecipe(new ItemStack(LogisticsCraftingPipe, 1), new Object[] { "dPd", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('d'), Item.lightStoneDust});
 		craftingmanager.addRecipe(new ItemStack(LogisticsSatellitePipe, 1), new Object[] { "rPr", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('r'), Item.redstone});
 		craftingmanager.addRecipe(new ItemStack(LogisticsSupplierPipe, 1), new Object[] { "lPl", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4)});
-		
+			
 		craftingmanager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.redstone});
 		craftingmanager.addRecipe(new ItemStack(LogisticsChassiPipe2, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotIron});
 		craftingmanager.addRecipe(new ItemStack(LogisticsChassiPipe3, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotGold});
 		craftingmanager.addRecipe(new ItemStack(LogisticsChassiPipe4, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.diamond});
 		craftingmanager.addRecipe(new ItemStack(LogisticsChassiPipe5, 1), new Object[] { "gig", "iPi", "gig", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Block.blockDiamond, Character.valueOf('g'), Block.blockGold});
+		
+		craftingmanager.addRecipe(new ItemStack(LogisticsCraftingPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsCraftingPipe, Character.valueOf('U'), BuildCraftCore.goldGearItem});
+		craftingmanager.addRecipe(new ItemStack(LogisticsRequestPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsRequestPipe, Character.valueOf('U'), BuildCraftCore.diamondGearItem});
 		
 		craftingmanager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingmanager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});

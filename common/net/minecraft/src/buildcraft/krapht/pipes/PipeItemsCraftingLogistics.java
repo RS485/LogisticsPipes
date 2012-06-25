@@ -43,15 +43,15 @@ import net.minecraft.src.krapht.WorldUtil;
 
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
 
-	private LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
-	private int _extras;
+	protected int _extras;
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new LogicCrafting(), itemID);
 	}
 	
-	private LinkedList<AdjacentTile> locateCrafters()	{
+	protected LinkedList<AdjacentTile> locateCrafters()	{
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities()){
@@ -62,11 +62,11 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return crafters;
 	}
 	
-	private ItemStack extractFromAutoWorkbench(TileAutoWorkbench workbench){
+	protected ItemStack extractFromAutoWorkbench(TileAutoWorkbench workbench){
 		return workbench.extractItem(true, Orientations.Unknown);
 	}
 	
-	private ItemStack extractFromIInventory(IInventory inv){
+	protected ItemStack extractFromIInventory(IInventory inv){
 		
 		InventoryUtil invUtil = new InventoryUtil(inv, false);
 		LogicCrafting craftingLogic = (LogicCrafting) this.logic;

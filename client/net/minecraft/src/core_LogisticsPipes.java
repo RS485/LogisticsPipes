@@ -429,7 +429,16 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 			ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
 
 		} catch (Exception e) {
-			ModLoader.getLogger().fine("Additional pipes not detected: " + e.getMessage());
+			try {
+				//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
+				PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
+				teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
+				teleportPipeDetected = true;
+				ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
+
+			} catch (Exception e1) {
+				ModLoader.getLogger().fine("Additional pipes not detected: " + e1.getMessage());
+			}
 		}
 		BuildCraftCore.initialize();
 		BuildCraftTransport.initialize();

@@ -36,14 +36,14 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 	@Override
 	public boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
-		Pair<UUID, SinkReply> search = getBestReply(ItemIdentifier.get(stack), SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource);
+		Pair<UUID, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource);
 		
 		if (search.getValue2() == null) return false;
 		
 		return (allowDefault || !search.getValue2().isDefault);
 	}
 	
-	private Pair<UUID, SinkReply> getBestReply(ItemIdentifier item, IRouter sourceRouter, boolean excludeSource){
+	private Pair<UUID, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource){
 		UUID potentialDestination = null;
 		SinkReply bestReply = null;
 		
@@ -93,7 +93,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 //		UUID potentialDestination = null;
 //		SinkReply bestReply = null;
 		
-		Pair<UUID, SinkReply> bestReply = getBestReply(ItemIdentifier.get(item.getItemStack()), sourceRouter, excludeSource);
+		Pair<UUID, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource);
 		
 //		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
 //			if (excludeSource && candidateRouter.getId().equals(sourceRouterUUID)) continue;

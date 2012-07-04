@@ -46,7 +46,7 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item) {
+	public SinkReply sinksItem(ItemStack item) {
 		return null;
 	}
 

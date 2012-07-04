@@ -2,6 +2,7 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
@@ -19,12 +20,12 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item) {
+	public SinkReply sinksItem(ItemStack item) {
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
 		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		if (!invUtil.containsItem(item)) return null;
+		if (!invUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
 		SinkReply reply = new SinkReply();
 		reply.fixedPriority = FixedPriority.ItemSink;

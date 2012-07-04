@@ -16,6 +16,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.World;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.ISaveState;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
@@ -111,7 +112,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 	}
 
 	public void dropContents(World worldObj, int xCoord, int yCoord, int zCoord) {
-		SimpleServiceLocator.buildCraftProxy.dropItems(worldObj, this, xCoord, yCoord, zCoord);
+		if(!APIProxy.isRemote()) {
+			SimpleServiceLocator.buildCraftProxy.dropItems(worldObj, this, xCoord, yCoord, zCoord);
+			for(int i=0;i<_contents.length;i++) {
+				_contents[i] = null;
+			}
+		}
 	}
 	
 	public void addListener(ISimpleInventoryEventHandler listner){

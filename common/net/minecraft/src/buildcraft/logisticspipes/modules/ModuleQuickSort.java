@@ -37,7 +37,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item) {
+	public SinkReply sinksItem(ItemStack item) {
 		return null;
 	}
 

@@ -331,7 +331,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_CHASSI5_ID						= 6885;
 																	// 6886 - 3.x LiquidSupplier;
 	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
-	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6887;
+	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
 	
 	
 	

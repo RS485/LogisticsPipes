@@ -63,7 +63,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item) {
+	public SinkReply sinksItem(ItemStack item) {
 		return null;
 	}
 
@@ -76,8 +76,8 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 		return 100;
 	}
 
-	protected int itemsToExtract(){
-		return 64;
+	protected int itemsToExtract() {
+		return 1;
 	}
 	
 	public boolean connectedToSidedInventory() {

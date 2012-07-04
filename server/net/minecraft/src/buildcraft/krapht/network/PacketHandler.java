@@ -8,8 +8,10 @@ import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.mod_BuildCraftCore;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.core.DefaultProps;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
@@ -129,6 +131,11 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetQ = new PacketPipeInteger();
 					packetQ.readData(data);
 					onAdvancedExtractorModuleGuiSneaky(net.getPlayerEntity(), packetQ);
+					break;
+				case NetworkConstants.REQUEST_PIPE_UPDATE:
+					final PacketCoordinates packetR = new PacketCoordinates();
+					packetR.readData(data);
+					onPipeUpdateRequest(net.getPlayerEntity(), packetR);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -576,6 +583,14 @@ public class PacketHandler implements IPacketHandler {
 				return;
 			}
 		}
+	}
+
+	private void onPipeUpdateRequest(EntityPlayerMP playerEntity, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(playerEntity.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		playerEntity.playerNetServerHandler.sendPacket(pipe.getUpdatePacket());
 	}
 
 	// BuildCraft method

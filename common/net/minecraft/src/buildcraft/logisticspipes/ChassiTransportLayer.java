@@ -28,7 +28,7 @@ public class ChassiTransportLayer extends TransportLayer{
 		ILogisticsModule module = _chassiPipe.getLogisticsModule();
 		if (module == null) return false;
 		if (!_chassiPipe.isEnabled()) return false;
-		SinkReply reply = module.sinksItem(ItemIdentifier.get(item.getItemStack()));
+		SinkReply reply = module.sinksItem(item.getItemStack());
 		if (reply == null) return false;
 		
 		if (reply.maxNumberOfItems != 0 && item.getItemStack().stackSize > reply.maxNumberOfItems){
@@ -39,7 +39,7 @@ public class ChassiTransportLayer extends TransportLayer{
 			return false;
 		}
 		
-		return module.sinksItem(ItemIdentifier.get(item.getItemStack())) != null;	
+		return module.sinksItem(item.getItemStack()) != null;	
 	}
 
 }

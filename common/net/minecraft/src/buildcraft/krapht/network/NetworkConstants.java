@@ -36,4 +36,5 @@ public class NetworkConstants {
 	public static final int ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET = 30;
 	public static final int ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE = 31;
 	public static final int ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI = 32;
+	public static final int REQUEST_PIPE_UPDATE = 33;
 }

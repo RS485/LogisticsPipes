@@ -19,17 +19,25 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_BuildCraftCore;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
+import net.minecraft.src.buildcraft.api.TileNetworkData;
+import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.core.DefaultProps;
 import net.minecraft.src.buildcraft.core.Utils;
+import net.minecraft.src.buildcraft.core.network.ISynchronizedTile;
 import net.minecraft.src.buildcraft.krapht.IProvideItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsPromise;
 import net.minecraft.src.buildcraft.krapht.LogisticsTransaction;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.krapht.gui.GuiChassiPipe;
+import net.minecraft.src.buildcraft.krapht.logic.BaseChassiLogic;
 import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.logisticspipes.ChassiModule;
 import net.minecraft.src.buildcraft.logisticspipes.ChassiTransportLayer;
@@ -48,52 +56,37 @@ import net.minecraft.src.krapht.ISimpleInventoryEventHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
-import org.lwjgl.input.Keyboard;
-
 public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems{
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
 	private boolean switchOrientationOnTick = false;
+	private boolean init = false;
 	private long tick = 0;
-	
+	BaseChassiLogic ChassiLogic;
+
 	public PipeLogisticsChassi(int itemID) {
-		super(new TemporaryLogic(), itemID);
+		super(new BaseChassiLogic(), itemID);
+		ChassiLogic = (BaseChassiLogic) logic;
 		_moduleInventory = new SimpleInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
 		_module = new ChassiModule(getChassiSize(), this);
 	}
 	
 	public Orientations getPointedOrientation(){
-		int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		if (meta >= Orientations.values().length) return null;
-		return Orientations.values()[meta];
+		return ChassiLogic.orientation;
 	}
 	
 	public TileEntity getPointedTileEntity(){
-		int meta = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		if (meta >= Orientations.values().length) return null;
-		
-		Position pos = new Position(xCoord, yCoord, zCoord, Orientations.values()[meta]);
+		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
 		pos.moveForwards(1.0);
 		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 	}
 	
 	public void nextOrientation() {
-		int metadata = worldObj.getBlockMetadata(xCoord, yCoord, zCoord);
-		
-		int nextMetadata = metadata;
-		
 		for (int l = 0; l < 6; ++l) {
-			nextMetadata++;
-			
-			if (nextMetadata > 5) {
-				nextMetadata = 0;
-			}
-			if (!isValidOrientation(Orientations.values()[nextMetadata])) continue;
-			worldObj.setBlockMetadata(xCoord, yCoord, zCoord, nextMetadata);
-			worldObj.markBlockAsNeedsUpdate(xCoord, yCoord, zCoord);
-			//System.out.println("orientation:" + nextMetadata);
+			ChassiLogic.orientation = Orientations.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
+			if (!isValidOrientation(ChassiLogic.orientation)) continue;
 			return;
 		}
 	}
@@ -124,7 +117,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	@Override
 	public int getNonRoutedTexture(Orientations connection) {
-		if (connection == Orientations.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord)]){
+		if (connection == ChassiLogic.orientation){
 			return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
 		return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
@@ -132,7 +125,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	@Override
 	public void onNeighborBlockChange_Logistics() {
-		if (!isValidOrientation(Orientations.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord)])){
+		if (!isValidOrientation(ChassiLogic.orientation)){
 			nextOrientation();
 		}
 	};
@@ -189,25 +182,29 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	
-	public void readFromNBT(net.minecraft.src.NBTTagCompound nbttagcompound) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 		InventoryChanged(_moduleInventory);
 		_module.readFromNBT(nbttagcompound, "");
-	};
+		ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 6];
+	}
 	
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound, "");
+		nbttagcompound.setInteger("Orientation", ChassiLogic.orientation.ordinal());
 	}
 
 	@Override
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
 		_moduleInventory.removeListener(this);
-		_moduleInventory.dropContents(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		if(!APIProxy.isRemote()) {
+			_moduleInventory.dropContents(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		}
 	}
 
 	@Override
@@ -233,23 +230,24 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 		if (reInitGui){
-			if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiChassiPipe){
-				ModLoader.getMinecraftInstance().currentScreen.initGui();
-			}
+			ChassiPipeProxy.refreshGui();
 		}
 	}
 
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		tick++;
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
-			nextOrientation();
-		}
-		if(tick%5 == 0) {
-			if(worldObj.getBlockMetadata(xCoord, yCoord, zCoord) == 0) {
+			if(!APIProxy.isRemote()) {
 				nextOrientation();
+				CoreProxy.sendToPlayers(container.getUpdatePacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
+			}
+		}
+		if(!init) {
+			init = true;
+			if(APIProxy.isRemote()) {
+				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.REQUEST_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
 			}
 		}
 	}

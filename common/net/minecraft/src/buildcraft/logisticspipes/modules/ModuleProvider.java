@@ -69,7 +69,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule{
 		return GuiIDs.GUI_Module_Provider_ID;
 	}
 	
-	@Override	public SinkReply sinksItem(ItemIdentifier item) {return null;}
+	@Override	public SinkReply sinksItem(ItemStack item) {return null;}
 
 	@Override	public ILogisticsModule getSubModule(int slot) {return null;}
 

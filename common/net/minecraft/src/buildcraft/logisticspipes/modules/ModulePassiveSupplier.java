@@ -2,6 +2,7 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
@@ -26,16 +27,16 @@ public class ModulePassiveSupplier implements ILogisticsModule {
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item) {
+	public SinkReply sinksItem(ItemStack item) {
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
 		InventoryUtil filterUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(_filterInventory);
-		if (!filterUtil.containsItem(item)) return null;
+		if (!filterUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
-		int targetCount = filterUtil.getItemCount(item);
+		int targetCount = filterUtil.getItemCount(ItemIdentifier.get(item));
 		InventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		if (targetCount <= targetUtil.getItemCount(item)) return null;
+		if (targetCount <= targetUtil.getItemCount(ItemIdentifier.get(item))) return null;
 		
 		SinkReply reply = new SinkReply();
 		reply.fixedPriority = FixedPriority.PassiveSupplier;

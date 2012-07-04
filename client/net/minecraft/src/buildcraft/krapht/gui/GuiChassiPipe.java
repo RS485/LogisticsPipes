@@ -16,6 +16,7 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
@@ -108,10 +109,26 @@ public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider
 	@Override
 	protected void drawGuiContainerForegroundLayer() {
 		super.drawGuiContainerForegroundLayer();
-		if (_chassiPipe.getChassiSize() > 0) fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
-		if (_chassiPipe.getChassiSize() > 1) fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
-		if (_chassiPipe.getChassiSize() > 2) fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
-		if (_chassiPipe.getChassiSize() > 3) fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
+		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
+			ItemStack module = _moduleInventory.getStackInSlot(i);
+			if(module == null) {
+				((SmallGuiButton)controlList.get(i)).drawButton = false;
+			} else {
+				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).getGuiHandlerID() != -1;
+			}
+		}
+		if (_chassiPipe.getChassiSize() > 0) {
+			fontRenderer.drawString(getModuleName(0), 40, 14, 0x404040);
+		}
+		if (_chassiPipe.getChassiSize() > 1) {
+			fontRenderer.drawString(getModuleName(1), 40, 34, 0x404040);
+		}
+		if (_chassiPipe.getChassiSize() > 2) {
+			fontRenderer.drawString(getModuleName(2), 40, 54, 0x404040);
+		}
+		if (_chassiPipe.getChassiSize() > 3) {
+			fontRenderer.drawString(getModuleName(3), 40, 74, 0x404040);
+		}
 		if (_chassiPipe.getChassiSize() > 4) {
 			fontRenderer.drawString(getModuleName(4), 40, 94, 0x404040);
 			fontRenderer.drawString(getModuleName(5), 40, 114, 0x404040);

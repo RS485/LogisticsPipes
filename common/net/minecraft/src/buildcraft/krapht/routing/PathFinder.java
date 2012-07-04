@@ -95,28 +95,30 @@ class PathFinder {
 			return foundPipes;
 		}
 		
-		//Special check for teleport pipes
-		if (core_LogisticsPipes.teleportPipeDetected && core_LogisticsPipes.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
-			
-			try {
-				LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) core_LogisticsPipes.teleportPipeMethod.invoke(startPipe.pipe, false);
-				for (Pipe telepipe : pipez){
-					HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)telepipe.container), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
-					for(RoutedPipe pipe : result.keySet()) 	{
-						result.get(pipe).exitOrientation = Orientations.Unknown;
-						if (!foundPipes.containsKey(pipe)) {  
-							// New path
-							foundPipes.put(pipe, result.get(pipe));
-						}
-						else if (result.get(pipe).metric < foundPipes.get(pipe).metric)	{ 
-							//If new path is better, replace old path, otherwise do nothing
-							foundPipes.put(pipe, result.get(pipe));
+		if(startPipe.pipe != null && core_LogisticsPipes.PipeItemTeleport != null) {
+			//Special check for teleport pipes
+			if (core_LogisticsPipes.teleportPipeDetected && core_LogisticsPipes.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
+				
+				try {
+					LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) core_LogisticsPipes.teleportPipeMethod.invoke(startPipe.pipe, false);
+					for (Pipe telepipe : pipez){
+						HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)telepipe.container), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
+						for(RoutedPipe pipe : result.keySet()) 	{
+							result.get(pipe).exitOrientation = Orientations.Unknown;
+							if (!foundPipes.containsKey(pipe)) {  
+								// New path
+								foundPipes.put(pipe, result.get(pipe));
+							}
+							else if (result.get(pipe).metric < foundPipes.get(pipe).metric)	{ 
+								//If new path is better, replace old path, otherwise do nothing
+								foundPipes.put(pipe, result.get(pipe));
+							}
 						}
 					}
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 		

@@ -8,16 +8,13 @@
 
 package net.minecraft.src.buildcraft.krapht.routing;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.WorldProvider;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
@@ -26,12 +23,12 @@ import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.PipeTransportLogistics;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import net.minecraft.src.forge.DimensionManager;
 import net.minecraft.src.krapht.ItemIdentifier;
 
-public class Router implements IRouter{
+public class Router implements IRouter {
 
 	public class LSA {
 		public Router source;
@@ -59,7 +56,7 @@ public class Router implements IRouter{
 	private boolean _blockNeedsUpdate;
 	
 	public final UUID id;
-	private final int _dimensionId;
+	private final World worldObj;
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
@@ -70,9 +67,9 @@ public class Router implements IRouter{
 		_laser = new RouteLaser();
 	}
 	
-	public Router(UUID id, int dimensionId, int xCoord, int yCoord, int zCoord){
+	public Router(UUID id, World worldObj, int xCoord, int yCoord, int zCoord){
 		this.id = id;
-		this._dimensionId = dimensionId;
+		this.worldObj = worldObj;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
@@ -82,11 +79,11 @@ public class Router implements IRouter{
 		SharedLSADatabase.add(_myLsa);
 	}
 	
+	@Override
 	@Deprecated
 	public CoreRoutedPipe getPipe(){
-		//TODO Check if this works
-		TileEntity tile = WorldProvider.getProviderForDimension(_dimensionId).worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
-		//TileEntity tile = ModLoader.getMinecraftServerInstance().getWorldManager(par1).getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		TileEntity tile = worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		
 		if (!(tile instanceof TileGenericPipe)) return null;
 		TileGenericPipe pipe = (TileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;
@@ -166,6 +163,7 @@ public class Router implements IRouter{
 		return _externalRoutersByCost;
 	}
 	
+	@Override
 	public UUID getId() {
 		return this.id;
 	}
@@ -265,7 +263,7 @@ public class Router implements IRouter{
 			candidatesCost.remove(lowestCostCandidateRouter);
 			
 			//Add new candidates from the newly approved route
-			for (LSA lsa : this.SharedLSADatabase){
+			for (LSA lsa : Router.SharedLSADatabase){
 				if (lsa.source != lowestCostCandidateRouter) continue;				
 				for (Router newCandidate: lsa.neighboursWithMetric.keySet()){
 					if (tree.containsKey(newCandidate)) continue;
@@ -308,6 +306,7 @@ public class Router implements IRouter{
 		}
 	}
 
+	@Override
 	public LinkedList<Orientations> GetNonRoutedExits()	{
 		LinkedList<Orientations> ret = new LinkedList<Orientations>();
 		
@@ -326,10 +325,12 @@ public class Router implements IRouter{
 		return ret;
 	}
 	
+	@Override
 	public void displayRoutes(){
 		_laser.displayRoute(this);
 	}
 	
+	@Override
 	public void displayRouteTo(IRouter r){
 		_laser.displayRoute(this, r);
 	}
@@ -344,24 +345,28 @@ public class Router implements IRouter{
 		return _outboundItems.size();
 	}
 	
+	@Override
 	public void startTrackingRoutedItem(RoutedEntityItem routedEntityItem){
 		if(!_outboundItems.contains(routedEntityItem)){
 			_outboundItems.add(routedEntityItem);
 		}
 	}
 
+	@Override
 	public void startTrackingInboundItem(RoutedEntityItem routedEntityItem){
 		if (!_inboundItems.contains(routedEntityItem)){
 			_inboundItems.add(routedEntityItem);
 		}
 	}
 	
+	@Override
 	public void outboundItemArrived(RoutedEntityItem routedEntityItem){
 		if (_outboundItems.contains(routedEntityItem)){
 			_outboundItems.remove(routedEntityItem);
 		}
 	}
 	
+	@Override
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem){
 		if (_inboundItems.contains(routedEntityItem)){
 			_inboundItems.remove(routedEntityItem);
@@ -374,6 +379,7 @@ public class Router implements IRouter{
 		}
 	}
 
+	@Override
 	public void itemDropped(RoutedEntityItem routedEntityItem) {
 		if (_outboundItems.contains(routedEntityItem)){
 			_outboundItems.remove(routedEntityItem);
@@ -419,6 +425,7 @@ public class Router implements IRouter{
 		
 	}
 
+	@Override
 	public boolean isRoutedExit(Orientations o){
 		return !GetNonRoutedExits().contains(o);
 	}

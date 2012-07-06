@@ -41,9 +41,9 @@ import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.WorldUtil;
 
-public class PipeItemsCraftingLogisticsMK2 extends PipeItemsCraftingLogistics{
+public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	
-	public PipeItemsCraftingLogisticsMK2(int itemID) {
+	public PipeItemsCraftingLogisticsMk2(int itemID) {
 		super(itemID);
 	}
 	

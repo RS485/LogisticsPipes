@@ -1,0 +1,23 @@
+[
+{
+  "modid" : "mod_LogisticsPipes",
+  "name" : "Logistics Pipes",
+  "description" : "This is the unofficial SMP version with additional features for the minecraft modification Logistics Pipes.",
+  "version" : "0.3.1",
+  "credits" : "All credits from the original mod go to Krapth. Thanks!",
+  "authors" : [
+    "davboecki",
+    "theZorro266"
+  ],
+  "logoFile" : "",
+  "url" : "https://github.com/RS485/LogisticsPipes",
+  "updateUrl" : "",
+  "parent" : "",
+  "screenshots" : [
+  ],
+  "dependencies" : [
+     "mod_MinecraftForge",
+     "mod_BuildCraftCore"
+  ]
+}
+]

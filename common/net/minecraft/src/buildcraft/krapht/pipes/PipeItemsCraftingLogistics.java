@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.TileEntity;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
@@ -32,6 +33,7 @@ import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
+import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.transport.PipeTransportItems;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -44,6 +46,7 @@ import net.minecraft.src.krapht.WorldUtil;
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
 
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsTileEntiy signEntity;
 	
 	protected int _extras;
 	
@@ -133,7 +136,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public int getCenterTexture() {
-		// TODO Auto-generated method stub
 		return core_LogisticsPipes.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}
 	
@@ -199,7 +201,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public int getAvailableItemCount(ItemIdentifier item) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -229,7 +230,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	public boolean isAttachedSign(TileEntity entity) {
+		return entity == signEntity;
 	}
 }

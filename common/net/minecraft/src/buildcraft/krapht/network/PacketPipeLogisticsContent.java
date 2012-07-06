@@ -68,8 +68,10 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 			return null;
 		}
 		TileGenericPipe tile = getPipe(world,payload.intPayload[6],payload.intPayload[7],payload.intPayload[8]);
-		if(tile.pipe instanceof CoreRoutedPipe) {
-			return ((CoreRoutedPipe)tile.pipe).getRouter().getId();
+		if(tile != null) {
+			if(tile.pipe instanceof CoreRoutedPipe) {
+				return ((CoreRoutedPipe)tile.pipe).getRouter().getId();
+			}
 		}
 		return null;
 	}
@@ -79,8 +81,10 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 			return null;
 		}
 		TileGenericPipe tile = getPipe(world,payload.intPayload[9],payload.intPayload[10],payload.intPayload[11]);
-		if(tile.pipe instanceof CoreRoutedPipe) {
-			return ((CoreRoutedPipe)tile.pipe).getRouter().getId();
+		if(tile != null) {
+			if(tile.pipe instanceof CoreRoutedPipe) {
+				return ((CoreRoutedPipe)tile.pipe).getRouter().getId();
+			}
 		}
 		return null;
 	}

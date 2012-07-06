@@ -29,6 +29,7 @@ import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import net.minecraft.src.forge.DimensionManager;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class Router implements IRouter{
@@ -85,7 +86,7 @@ public class Router implements IRouter{
 	@Deprecated
 	public CoreRoutedPipe getPipe(){
 		//TODO Check if this works
-		TileEntity tile = WorldProvider.getProviderForDimension(_dimensionId).worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
+		TileEntity tile = DimensionManager.getProvider(_dimensionId).worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
 		//TileEntity tile = ModLoader.getMinecraftServerInstance().getWorldManager(par1).getBlockTileEntity(_xCoord, _yCoord, _zCoord);
 		if (!(tile instanceof TileGenericPipe)) return null;
 		TileGenericPipe pipe = (TileGenericPipe) tile;

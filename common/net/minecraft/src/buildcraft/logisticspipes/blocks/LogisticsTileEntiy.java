@@ -3,8 +3,10 @@ package net.minecraft.src.buildcraft.logisticspipes.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 
 public class LogisticsTileEntiy extends TileEntity {
@@ -30,4 +32,15 @@ public class LogisticsTileEntiy extends TileEntity {
 		return list.toArray(new CoreRoutedPipe[]{});
 	}
 	
+
+	public PipeItemsCraftingLogistics getAttachedSignOwnerPipe() {
+		for(CoreRoutedPipe pipe:this.getNearRoutingPipes()) {
+			if(pipe instanceof PipeItemsCraftingLogistics) {
+				if(((PipeItemsCraftingLogistics)pipe).isAttachedSign(this)) {
+					return (PipeItemsCraftingLogistics)pipe;
+				}
+			}
+		}
+		return null;
+	}
 }

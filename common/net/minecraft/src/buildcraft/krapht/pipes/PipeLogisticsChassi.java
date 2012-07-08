@@ -183,11 +183,15 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		_moduleInventory.readFromNBT(nbttagcompound, "chassi");
-		InventoryChanged(_moduleInventory);
-		_module.readFromNBT(nbttagcompound, "");
-		ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 6];
+		try {
+			super.readFromNBT(nbttagcompound);
+			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
+			InventoryChanged(_moduleInventory);
+			_module.readFromNBT(nbttagcompound, "");
+			ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 6];
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

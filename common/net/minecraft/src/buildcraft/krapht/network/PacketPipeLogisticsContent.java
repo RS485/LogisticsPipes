@@ -53,7 +53,22 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 		additions.intPayload[3] = pipeDest.xCoord;
 		additions.intPayload[4] = pipeDest.yCoord;
 		additions.intPayload[5] = pipeDest.zCoord;
-		this.payload.append(additions);
+		if(super.payload == null) {
+			super.payload = new PacketPayload(6, 4, 0);
+
+			payload.intPayload[0] = item.entityId;
+			payload.intPayload[1] = orientation.ordinal();
+			payload.intPayload[2] = item.item.itemID;
+			payload.intPayload[3] = item.item.stackSize;
+			payload.intPayload[4] = item.item.getItemDamage();
+			payload.intPayload[5] = item.deterministicRandomization;
+
+			payload.floatPayload[0] = (float) item.posX;
+			payload.floatPayload[1] = (float) item.posY;
+			payload.floatPayload[2] = (float) item.posZ;
+			payload.floatPayload[3] = item.speed;
+		}
+		super.payload.append(additions);
 	}
 	
 	public static boolean isPacket(PacketPipeTransportContent packet) {

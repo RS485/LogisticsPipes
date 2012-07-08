@@ -1,5 +1,6 @@
 package net.minecraft.src.buildcraft.logisticspipes.blocks;
 
+import net.minecraft.src.BlockLog;
 import net.minecraft.src.ModelSign;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.TileEntitySign;
@@ -13,6 +14,8 @@ public class LogisticsBlockRenderer extends TileEntitySpecialRenderer
 	
     public void renderTileEntityAt(TileEntity par1TileEntity, double par2, double par4, double par6, float par8)
     {
-    	signRenderer.renderTileEntityAt(par1TileEntity, par2, par4, par6, par8);
+    	if(par1TileEntity.worldObj.getBlockMetadata(par1TileEntity.xCoord, par1TileEntity.yCoord, par1TileEntity.zCoord) == LogisticsBlock.SignBlockID) {
+    		signRenderer.renderTileEntityAt(par1TileEntity, par2, par4, par6, par8);
+    	}
     }
 }

@@ -4,17 +4,27 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.TileEntity;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
+import net.minecraft.src.buildcraft.api.TileNetworkData;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
+import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
+import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.InventoryUtilFactory;
@@ -24,12 +34,22 @@ import net.minecraft.src.krapht.WorldUtil;
 
 public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
+	@TileNetworkData
 	protected final SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
 	protected final InventoryUtilFactory _invUtilFactory;
 	protected final InventoryUtil _dummyInvUtil;
+	
+	@TileNetworkData
+	public int signEntityX = 0;
+	@TileNetworkData
+	public int signEntityY = 0;
+	@TileNetworkData
+	public int signEntityZ = 0;
+	//public LogisticsTileEntiy signEntity;
 
 	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
 
+	@TileNetworkData
 	public int satelliteId = 0;
 
 	public BaseLogicCrafting() {
@@ -111,6 +131,9 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 		super.readFromNBT(nbttagcompound);
 		_dummyInventory.readFromNBT(nbttagcompound, "");
 		satelliteId = nbttagcompound.getInteger("satelliteid");
+		signEntityX = nbttagcompound.getInteger("CraftingSignEntityX");
+		signEntityY = nbttagcompound.getInteger("CraftingSignEntityY");
+		signEntityZ = nbttagcompound.getInteger("CraftingSignEntityZ");
 	}
 
 	@Override
@@ -118,10 +141,20 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 		super.writeToNBT(nbttagcompound);
 		_dummyInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setInteger("satelliteid", satelliteId);
+		
+		nbttagcompound.setInteger("CraftingSignEntityX", signEntityX);
+		nbttagcompound.setInteger("CraftingSignEntityY", signEntityY);
+		nbttagcompound.setInteger("CraftingSignEntityZ", signEntityZ);
 	}
 
 	@Override
 	public void destroy() {
+		if(signEntityX != 0 && signEntityY != 0 && signEntityZ != 0) {
+			worldObj.setBlockWithNotify(signEntityX, signEntityY, signEntityZ, 0);
+			signEntityX = 0;
+			signEntityY = 0;
+			signEntityZ = 0;
+		}
 	}
 
 	@Override
@@ -151,6 +184,32 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 	@Override
 	public void itemLost(ItemIdentifier item) {
 		_lostItems.add(item);
+	}
+
+	public void openAttachedGui(EntityPlayer player) {
+		if (APIProxy.isRemote()) {
+			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
+			CoreProxy.sendToServer(packet.getPacket());
+		}
+		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
+			if (tile.tile instanceof TileAutoWorkbench) {
+				Block block = worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
+				if(block != null) {
+					if(block.blockActivated(worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player)){
+						break;
+					}
+				}
+			}
+			if (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe)) {
+				Block block = worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
+				if(block != null) {
+					if(block.blockActivated(worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player)){
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	public void importFromCraftingTable() {

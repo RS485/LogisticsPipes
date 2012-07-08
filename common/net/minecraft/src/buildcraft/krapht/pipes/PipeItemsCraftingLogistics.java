@@ -16,9 +16,11 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.CraftingTemplate;
@@ -31,6 +33,8 @@ import net.minecraft.src.buildcraft.krapht.LogisticsTransaction;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
@@ -46,9 +50,9 @@ import net.minecraft.src.krapht.WorldUtil;
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
 
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
-	protected LogisticsTileEntiy signEntity;
 	
 	protected int _extras;
+	private boolean init = false;
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new LogicCrafting(), itemID);
@@ -85,6 +89,12 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		if(!init) {
+			init = true;
+			if(APIProxy.isRemote()) {
+				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
+			}
+		}
 		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
 		
 		LinkedList<AdjacentTile> crafters = locateCrafters();
@@ -234,6 +244,24 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 	
 	public boolean isAttachedSign(TileEntity entity) {
-		return entity == signEntity;
+		return entity.xCoord == ((LogicCrafting)logic).signEntityX && entity.yCoord == ((LogicCrafting)logic).signEntityY && entity.zCoord == ((LogicCrafting)logic).signEntityZ;
+	}
+	
+	public void addSign(LogisticsTileEntiy entity) {
+		if(((LogicCrafting)logic).signEntityX == 0 && ((LogicCrafting)logic).signEntityY == 0 && ((LogicCrafting)logic).signEntityZ == 0) {
+			((LogicCrafting)logic).signEntityX = entity.xCoord;
+			((LogicCrafting)logic).signEntityY = entity.yCoord;
+			((LogicCrafting)logic).signEntityZ = entity.zCoord;
+		}
+	}
+	
+	public boolean canRegisterSign() {
+		return ((LogicCrafting)logic).signEntityX == 0 && ((LogicCrafting)logic).signEntityY == 0 && ((LogicCrafting)logic).signEntityZ == 0;
+	}
+	
+	public void removeRegisteredSign() {
+		((LogicCrafting)logic).signEntityX = 0;
+		((LogicCrafting)logic).signEntityY = 0;
+		((LogicCrafting)logic).signEntityZ = 0;
 	}
 }

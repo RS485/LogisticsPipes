@@ -147,7 +147,7 @@ public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		
-		int i = mc.renderEngine.getTexture("/net/minecraft/src/buildcraft/logisticspipes/gui/pipechassi"+ _chassiPipe.getChassiSize() +".png");
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/chassipipe_size"+ _chassiPipe.getChassiSize() +".png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
 		int j = (width - xSize) / 2;

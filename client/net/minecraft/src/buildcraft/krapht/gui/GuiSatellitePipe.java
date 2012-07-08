@@ -67,7 +67,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/net/minecraft/src/buildcraft/krapht/gui/satellitegui.png");
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/satellite.png");
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);

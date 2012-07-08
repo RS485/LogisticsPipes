@@ -88,11 +88,6 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 
 	@Override
 	protected void drawGuiContainerForegroundLayer() {
-//		int i = mc.renderEngine.getTexture("/net/minecraft/src/buildcraft/krapht/gui/crafting.png");
-//		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-//		mc.renderEngine.bindTexture(i);
-//		drawTexturedModalRect(0, 0, 0, 0, xSize, ySize);
-
 		fontRenderer.drawString("Inputs", 18, 7, 0x404040);
 		fontRenderer.drawString("Output", 48, 67, 0x404040);
 		fontRenderer.drawString("Inventory", 18, 86, 0x404040);
@@ -113,30 +108,23 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
 		MinecraftForgeClient.unbindTexture();
 		fontRenderer.drawString(""+_logic.satelliteId , 155 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
-
-		
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/net/minecraft/src/buildcraft/krapht/gui/crafting.png");
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/crafting.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
 		int j = (width - xSize) / 2;
 		int k = (height - ySize) / 2;
-//		//
-//		//mc.renderEngine.bindTexture(mod_LogisticsPipes.)
-//		//mc.renderEngine.bindTexture(BuildCraftCore.redLaserTexture);
+
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
-		
-		
+
 		drawRect(400, 400, 0, 0, 0x404040);
-		
 	}
 
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_CRAFTINGPIPE_ID;
 	}
-
 }

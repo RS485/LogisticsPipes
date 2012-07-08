@@ -111,7 +111,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/net/minecraft/src/buildcraft/logisticspipes/modules/gui/GuiExtractor.png");
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/extractor.png");
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);

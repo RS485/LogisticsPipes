@@ -58,7 +58,7 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/net/minecraft/src/buildcraft/krapht/gui/suppliergui.png");
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
 				
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);

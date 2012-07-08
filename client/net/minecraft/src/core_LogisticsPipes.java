@@ -349,31 +349,39 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_REQUESTERMK2_TEXTURE			= 0;
 	
 		
-	//Texture files
+	// ** Texture files **
 	
-	public static final String LOGISTICSITEMS_TEXTURE_FILE = "/net/minecraft/src/buildcraft/krapht/gui/item_textures.png";
-	public static final String LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/net/minecraft/src/buildcraft/krapht/gui/actiontriggers_textures.png";
+	// Misc
+	public static final String LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures.png";
+	public static final String LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures.png";
 	
-	public static final String LOGISTICSPIPE_TEXTURE_FILE					= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipe.png";
-	public static final String LOGISTICSPIPE_PROVIDER_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipeprovider.png";
-	public static final String LOGISTICSPIPE_REQUESTER_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspiperequester.png";
-	public static final String LOGISTICSPIPE_CRAFTER_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipecrafter.png";
-	public static final String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipesatellite.png";
-	public static final String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipesupplier.png";
-	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspiperouted.png";
-	public static final String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipenotrouted.png";
-	public static final String LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE		= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassirouted.png";
-	public static final String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassinotrouted.png";
-	public static final String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassidirection.png";
-	public static final String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi1.png";
-	public static final String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi2.png";
-	public static final String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi3.png";
-	public static final String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi4.png";
-	public static final String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipechassi5.png";
-	public static final String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		= "/net/minecraft/src/buildcraft/krapht/gui/logisticspipecrafterMK2.png";
-	public static final String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		= "/net/minecraft/src/buildcraft/krapht/gui/logisticspiperequesterMK2.png";
+	// Standalone pipes
+	public static final String LOGISTICSPIPE_TEXTURE_FILE					= "/logisticspipes/pipes/basic.png";
+	public static final String LOGISTICSPIPE_PROVIDER_TEXTURE_FILE			= "/logisticspipes/pipes/provider.png";
+	public static final String LOGISTICSPIPE_REQUESTER_TEXTURE_FILE			= "/logisticspipes/pipes/request.png";
+	public static final String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/request_mk2.png";
+	public static final String LOGISTICSPIPE_CRAFTER_TEXTURE_FILE			= "/logisticspipes/pipes/crafting.png";
+	public static final String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/crafting_mk2.png";
+	public static final String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE			= "/logisticspipes/pipes/satellite.png";
+	public static final String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE			= "/logisticspipes/pipes/supplier.png";
 	
-	//Configrables
+	// Status overlay
+	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
+	public static final String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/not_routed.png";
+	
+	// Chassi pipes
+	public static final String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk1.png";
+	public static final String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk2.png";
+	public static final String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk3.png";
+	public static final String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk4.png";
+	public static final String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk5.png";
+	
+	// Chassi status overlay
+	public static final String LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE		= "/logisticspipes/pipes/chassi/status_overlay/routed.png";
+	public static final String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	= "/logisticspipes/pipes/chassi/status_overlay/not_routed.png";
+	public static final String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	= "/logisticspipes/pipes/chassi/status_overlay/direction.png";
+	
+	// Configrables
 	public static int LOGISTICS_DETECTION_LENGTH	= 50;
 	public static int LOGISTICS_DETECTION_COUNT		= 100;
 	public static int LOGISTICS_DETECTION_FREQUENCY = 20;

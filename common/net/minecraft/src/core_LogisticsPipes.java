@@ -253,6 +253,15 @@ package net.minecraft.src;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import net.minecraft.src.Block;
+import net.minecraft.src.BuildCraftCore;
+import net.minecraft.src.BuildCraftTransport;
+import net.minecraft.src.CraftingManager;
+import net.minecraft.src.Item;
+import net.minecraft.src.ItemBlock;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.ModLoader;
+import net.minecraft.src.mod_BuildCraftTransport;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.IBuildCraftProxy;
@@ -265,11 +274,14 @@ import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
 import net.minecraft.src.buildcraft.krapht.pipes.*;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
+import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
+import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
+import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
+import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreater;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
 import net.minecraft.src.forge.MinecraftForge;
-import net.minecraft.src.forge.MinecraftForgeClient;
 import net.minecraft.src.forge.NetworkMod;
 import net.minecraft.src.forge.Property;
 import net.minecraft.src.krapht.InventoryUtilFactory;
@@ -296,6 +308,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
+	public static Item LogisticsCraftingSignCreater;
 	
 	public static Item ModuleItem;
 	
@@ -321,6 +334,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 																	// 6886 - 3.x LiquidSupplier;
 	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
 	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
+	
+	public static int LOGISTICSCRAFTINGSIGNCREATER_ID				= 6900;
 	
 	
 	
@@ -392,6 +407,13 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
 	
 	protected static Configuration configuration;
+	
+	//Blocks
+	Block logisticsBlock;
+	
+	//BlockID
+	
+	public static int LOGISTICS_BLOCK_ID = 201;
 	
 	/** stuff for testing **/
 	
@@ -487,9 +509,12 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
-		
+
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
+
+		Property logisticCraftingSignCreaterIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreater.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATER_ID);
+		logisticCraftingSignCreaterIdProperty.comment = "The item id for the crafting sign creater";
 
 		
 		
@@ -506,9 +531,15 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		Property countInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererCountInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_COUNT_INVERTWHEEL);
 		countInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order number of items"; 
-		
+
 		Property pageInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererPageInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_PAGE_INVERTWHEEL);
 		pageInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order pages";
+
+		
+		
+		
+		Property logisticsBlockId = configuration.getOrCreateIntProperty("logisticsBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_BLOCK_ID);
+		logisticsBlockId.comment = "The ID of the LogisticsPipes Block (0 if you don't want any block)";
 				
 		configuration.save();
 		
@@ -534,15 +565,21 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
 		LOGISTICS_ORDERER_COUNT_INVERTWHEEL = Boolean.parseBoolean(countInvertWheelProperty.value);
 		LOGISTICS_ORDERER_PAGE_INVERTWHEEL = Boolean.parseBoolean(pageInvertWheelProperty.value);
+		LOGISTICS_BLOCK_ID = Integer.parseInt(logisticsBlockId.value);
 		
+		LOGISTICSCRAFTINGSIGNCREATER_ID		= Integer.parseInt(logisticCraftingSignCreaterIdProperty.value);
 		
 		LogisticsNetworkMonitior = new LogisticsItem(LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
-		
+
 		LogisticsRemoteOrderer = new LogisticsItem(LOGISTICSREMOTEORDERER_ID);
 		LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
 		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
+
+		LogisticsCraftingSignCreater = new CraftingSignCreater(LOGISTICSCRAFTINGSIGNCREATER_ID);
+		LogisticsCraftingSignCreater.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
+		LogisticsCraftingSignCreater.setItemName("CraftingSignCreater");
 		
 		ModuleItem						= new ItemModule(ItemModuleId).setItemName("itemModule");
 		
@@ -578,11 +615,12 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsChassiPipe3 = createPipe(LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3");
 		LogisticsChassiPipe4 = createPipe(LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4");
 		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5");
-		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe Mk2");
-		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe Mk2");
+		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2");
+		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2");
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
+		ModLoader.addName(LogisticsCraftingSignCreater, "Crafting Sign Creater");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		
 		CraftingManager craftingmanager = CraftingManager.getInstance();
@@ -608,6 +646,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		craftingmanager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingmanager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+		if(LOGISTICS_BLOCK_ID != 0) {
+			craftingmanager.addRecipe(new ItemStack(LogisticsCraftingSignCreater, 1), new Object[] {"gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+		}
 		
 		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.BLANK), new Object[] { "prp", "prp", "pgp", Character.valueOf('p'), Item.paper, Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
 		
@@ -708,37 +749,26 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 			craftingmanager.addRecipe(new ItemStack(LogisticsSupplierPipe, 64), new Object[] { "d", "d", "d", Character.valueOf('d'), Block.dirt});
 			craftingmanager.addRecipe(new ItemStack(Item.diamond, 39), new Object[] {"s", Character.valueOf('s'), Block.sand});
 		}
+		
+		//Blocks
+		if(LOGISTICS_BLOCK_ID != 0) {
+			logisticsBlock = new LogisticsBlock(LOGISTICS_BLOCK_ID);
+			ModLoader.registerBlock(logisticsBlock, ItemBlock.class);
+		
+			ModLoader.registerTileEntity(LogisticsTileEntiy.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new LogisticsBlockRenderer());
+		
+			craftingmanager.addRecipe(new ItemStack(logisticsBlock,1), new Object[] {"d", Character.valueOf('d'), Block.dirt});
+		}
+		
 	}
 	
-	protected static Item createPipe (int defaultID, Class <? extends Pipe> clas, String descr) {
-//		String name = Character.toLowerCase(clas.getSimpleName().charAt(0))
-//				+ clas.getSimpleName().substring(1);
-		
-		Item res =  BlockGenericPipe.registerPipe (defaultID, clas);
-		res.setItemName(clas.getSimpleName());
-		CoreProxy.addName(res, descr);
-		MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, mod_BuildCraftTransport.instance);
+	protected abstract Item createPipe (int defaultID, Class <? extends Pipe> clas, String descr);
 	
-		return res;
-	}
-
-	@Override
-	public void load() {
-		MinecraftForge.registerConnectionHandler(new ConnectionHandler());
-		
-		MinecraftForge.setGuiHandler(this,new GuiHandler());
-		
-		MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
-		MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
-		
-//		
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-//		MinecraftForgeClient.preloadTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
-	}
+	public boolean clientSideRequired() {
+        return true;
+    }
+	
+	public boolean serverSideRequired() {
+        return false;
+    }
 }

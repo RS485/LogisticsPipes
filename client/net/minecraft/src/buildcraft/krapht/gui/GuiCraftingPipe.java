@@ -56,6 +56,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		controlList.add(new SmallGuiButton(1, (width-xSize) / 2 + 129, (height - ySize) / 2 + 50, 10,10, "<"));
 		controlList.add(new SmallGuiButton(2, (width-xSize) / 2 + 138, (height - ySize) / 2 + 75, 30,10, "Paint"));
 		controlList.add(new SmallGuiButton(3, (width-xSize) / 2 + 47, (height - ySize) / 2 + 50, 37,10, "Import"));
+		controlList.add(new SmallGuiButton(4, (width-xSize) / 2 + 15, (height - ySize) / 2 + 50, 28,10, "Open"));
 	}
 	
 	
@@ -73,6 +74,9 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			return;
 		case 3:
 			_logic.importFromCraftingTable();
+			return;
+		case 4:
+			_logic.openAttachedGui(_player);
 			return;
 		default:
 			super.actionPerformed(guibutton);

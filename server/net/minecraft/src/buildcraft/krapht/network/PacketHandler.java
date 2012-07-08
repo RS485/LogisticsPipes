@@ -18,6 +18,7 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
@@ -136,6 +137,16 @@ public class PacketHandler implements IPacketHandler {
 					final PacketCoordinates packetR = new PacketCoordinates();
 					packetR.readData(data);
 					onPipeUpdateRequest(net.getPlayerEntity(), packetR);
+					break;
+				case NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE:
+					final PacketCoordinates packetS = new PacketCoordinates();
+					packetS.readData(data);
+					onCraftingPipeUpdateRequest(net.getPlayerEntity(), packetS);
+					break;
+				case NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI:
+					final PacketCoordinates packetT = new PacketCoordinates();
+					packetT.readData(data);
+					onCraftingPipeOpenConnectedGui(net.getPlayerEntity(), packetT);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -591,6 +602,32 @@ public class PacketHandler implements IPacketHandler {
 			return;
 		}
 		playerEntity.playerNetServerHandler.sendPacket(pipe.getUpdatePacket());
+	}
+
+	private void onCraftingPipeUpdateRequest(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		player.playerNetServerHandler.sendPacket(pipe.getUpdatePacket());
+		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
+			if(pipe.pipe.logic instanceof LogicCrafting) {
+				final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((LogicCrafting)pipe.pipe.logic).getDummyInventory());
+				CoreProxy.sendToPlayer(player, newpacket);
+			}
+		}
+	}
+
+	private void onCraftingPipeOpenConnectedGui(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
+			if(pipe.pipe.logic instanceof LogicCrafting) {
+				((LogicCrafting)pipe.pipe.logic).openAttachedGui(player);
+			}
+		}
 	}
 
 	// BuildCraft method

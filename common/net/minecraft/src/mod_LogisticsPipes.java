@@ -25,10 +25,11 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsBuilderSupplierLogisti
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsLiquidSupplier;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
+import net.minecraft.src.buildcraft.logisticspipes.ModTextureProxy;
 import net.minecraft.src.forge.Configuration;
 import net.minecraft.src.forge.Property;
 
-public class mod_LogisticsPipes extends core_LogisticsPipes{
+public class mod_LogisticsPipes extends ModTextureProxy {
 	//Triggers
 	
 	public mod_LogisticsPipes() {

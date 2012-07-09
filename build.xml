@@ -75,12 +75,14 @@
         
         <!-- Update mcp -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
-            <arg line="/c updatemd5.bat -f"/>
+            <arg line="/c updatemcp.bat -f"/>
         </exec>
         
         <exec dir="${mcp.dir}" executable="sh" osfamily="unix">
-            <arg value="updatemd5.sh -f" />
+            <arg value="updatemcp.sh -f" />
         </exec>
+		
+		<echo message="Updated MCP"/>
 		
         <!-- Install forge -->
         <exec dir="${forge.dir}" executable="cmd" osfamily="windows">

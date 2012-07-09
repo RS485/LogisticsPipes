@@ -79,12 +79,6 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		return super.blockActivated(entityplayer);
 	}
 	
-	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
-		// TODO Auto-generated method stub
-		return true;
-	}
-
 	private void doDebugStuff(EntityPlayer entityplayer){
 		entityplayer.worldObj.setWorldTime(4951);
 		System.out.println("***");

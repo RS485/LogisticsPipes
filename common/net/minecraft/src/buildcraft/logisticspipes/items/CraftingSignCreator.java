@@ -17,9 +17,9 @@ import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.buildcraft.transport.PipeLogic;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 
-public class CraftingSignCreater extends LogisticsItem {
+public class CraftingSignCreator extends LogisticsItem {
 
-	public CraftingSignCreater(int i) {
+	public CraftingSignCreator(int i) {
 		super(i);
 		this.setMaxStackSize(1);
 	}

@@ -277,7 +277,7 @@ import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
-import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreater;
+import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
@@ -308,7 +308,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
-	public static Item LogisticsCraftingSignCreater;
+	public static Item LogisticsCraftingSignCreator;
 	
 	public static Item ModuleItem;
 	
@@ -335,7 +335,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
 	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
 	
-	public static int LOGISTICSCRAFTINGSIGNCREATER_ID				= 6900;
+	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
 	
 	
@@ -343,6 +343,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	
 	public static final int LOGISTICSNETWORKMONITOR_ICONINDEX = 0 * 16 + 0;
 	public static final int LOGISTICSREMOTEORDERER_ICONINDEX = 0 * 16 + 1;
+	public static final int LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX = 0 * 16 + 2;
 	
 	public static int LOGISTICSPIPE_TEXTURE							= 0;
 	public static int LOGISTICSPIPE_PROVIDER_TEXTURE				= 0;
@@ -513,8 +514,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
-		Property logisticCraftingSignCreaterIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreater.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATER_ID);
-		logisticCraftingSignCreaterIdProperty.comment = "The item id for the crafting sign creater";
+		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
+		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
 
 		
 		
@@ -567,7 +568,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICS_ORDERER_PAGE_INVERTWHEEL = Boolean.parseBoolean(pageInvertWheelProperty.value);
 		LOGISTICS_BLOCK_ID = Integer.parseInt(logisticsBlockId.value);
 		
-		LOGISTICSCRAFTINGSIGNCREATER_ID		= Integer.parseInt(logisticCraftingSignCreaterIdProperty.value);
+		LOGISTICSCRAFTINGSIGNCREATOR_ID		= Integer.parseInt(logisticCraftingSignCreatorIdProperty.value);
 		
 		LogisticsNetworkMonitior = new LogisticsItem(LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
@@ -577,9 +578,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
 		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
 
-		LogisticsCraftingSignCreater = new CraftingSignCreater(LOGISTICSCRAFTINGSIGNCREATER_ID);
-		LogisticsCraftingSignCreater.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
-		LogisticsCraftingSignCreater.setItemName("CraftingSignCreater");
+		LogisticsCraftingSignCreator = new CraftingSignCreator(LOGISTICSCRAFTINGSIGNCREATOR_ID);
+		LogisticsCraftingSignCreator.setIconIndex(LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
+		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
 		
 		ModuleItem						= new ItemModule(ItemModuleId).setItemName("itemModule");
 		
@@ -620,7 +621,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
-		ModLoader.addName(LogisticsCraftingSignCreater, "Crafting Sign Creater");
+		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creater");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		
 		CraftingManager craftingmanager = CraftingManager.getInstance();
@@ -647,7 +648,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		craftingmanager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingmanager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		if(LOGISTICS_BLOCK_ID != 0) {
-			craftingmanager.addRecipe(new ItemStack(LogisticsCraftingSignCreater, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('S'), Item.sign, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+			craftingmanager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('S'), Item.sign, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		}
 		
 		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.BLANK), new Object[] { "prp", "prp", "pgp", Character.valueOf('p'), Item.paper, Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});

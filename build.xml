@@ -36,7 +36,7 @@
         
         <mkdir dir="${download.dir}"/>
         
-        <get src="http://mcp.ocean-labs.de/files/mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+        <get src="https://dl.dropbox.com/u/33855125/LogisticsPipes/mcp/mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True"/>
         <get src="https://dl.dropbox.com/u/33855125/LogisticsPipes/forge/minecraftforge-src-${forge.version}.zip" 
             dest="${download.dir}" usetimestamp="True"/>
         <get src="https://dl.dropbox.com/u/33855125/LogisticsPipes/buildcraft/buildcraft-src-${bc.version}.zip"
@@ -74,17 +74,6 @@
         <chmod file="${mcp.dir}/reobfuscate.sh" perm="+x"/>
         <chmod file="${forge.dir}/install.sh" perm="+x"/>
         
-        <!-- Update mcp -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
-            <arg line="/c updatemcp.bat -f"/>
-        </exec>
-        
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix">
-            <arg line="updatemcp.sh -f" />
-        </exec>
-		
-		<echo message="Updated MCP"/>
-		
         <!-- Install forge -->
         <exec dir="${forge.dir}" executable="cmd" osfamily="windows">
             <arg line="/c install.cmd"/>

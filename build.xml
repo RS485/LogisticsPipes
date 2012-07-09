@@ -24,7 +24,7 @@
 	<property name="lp.version"          value="0.4.0"/>
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}"/>
     
-    <echo message="Starting build for ${bc.version.full}"/>
+    <echo message="Starting build for ${lp.version.full}"/>
 	
     <!-- Targets -->
     

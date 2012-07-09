@@ -49,15 +49,28 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	
 	@Override
 	protected ItemStack extractFromIInventory(IInventory inv){
+		ItemStack items = null;
+		for(int i=0; i < 64;i++) {
+			InventoryUtil invUtil = new InventoryUtil(inv, false);
+			LogicCrafting craftingLogic = (LogicCrafting) this.logic;
+			ItemStack itemstack = craftingLogic.getCraftedItem();
+			if (itemstack == null) return null;
 		
-		InventoryUtil invUtil = new InventoryUtil(inv, false);
-		LogicCrafting craftingLogic = (LogicCrafting) this.logic;
-		ItemStack itemstack = craftingLogic.getCraftedItem();
-		if (itemstack == null) return null;
-		
-		ItemIdentifierStack targetItemStack = ItemIdentifierStack.GetFromStack(itemstack);
-		return invUtil.getMultipleItems(targetItemStack.getItem(), targetItemStack.stackSize);
-		//return invUtil.getSingleItem(targetItemStack.getItem());
+			ItemIdentifierStack targetItemStack = ItemIdentifierStack.GetFromStack(itemstack);
+			if(items == null) {
+				items = invUtil.getSingleItem(targetItemStack.getItem());
+				if(items == null) {
+					break;
+				}
+			} else {
+				if(invUtil.getSingleItem(targetItemStack.getItem())!= null) {
+					items.stackSize++;
+				} else {
+					break;
+				}
+			}
+		}
+		return items;
 	}
 
 	@Override

@@ -122,11 +122,6 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 	}
 
 	@Override
-	public boolean canInteractWith(EntityPlayer entityplayer) {
-		return true;
-	}
-
-	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		_dummyInventory.readFromNBT(nbttagcompound, "");

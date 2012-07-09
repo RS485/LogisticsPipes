@@ -188,7 +188,9 @@ public class mod_LogisticsPipes extends ModTextureProxy {
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe3, 1), new Object[] { " i ","iPi", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe4, 1), new Object[] { " i ","iPi", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
 
-		
+		if(LOGISTICS_BLOCK_ID != 0) {
+			craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreater, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('S'), Item.sign, Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
+		}
 		
 		//BuildCraftCore.itemBptProps[core_LogisticsPipes.LogisticsBasicPipe.shiftedIndex] = new bptItemBasicLogisticsPipe();
 

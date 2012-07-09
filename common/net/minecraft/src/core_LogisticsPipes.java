@@ -647,7 +647,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		craftingmanager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingmanager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		if(LOGISTICS_BLOCK_ID != 0) {
-			craftingmanager.addRecipe(new ItemStack(LogisticsCraftingSignCreater, 1), new Object[] {"gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+			craftingmanager.addRecipe(new ItemStack(LogisticsCraftingSignCreater, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('S'), Item.sign, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		}
 		
 		craftingmanager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.BLANK), new Object[] { "prp", "prp", "pgp", Character.valueOf('p'), Item.paper, Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
@@ -756,8 +756,6 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 			ModLoader.registerBlock(logisticsBlock, ItemBlock.class);
 		
 			ModLoader.registerTileEntity(LogisticsTileEntiy.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new LogisticsBlockRenderer());
-		
-			craftingmanager.addRecipe(new ItemStack(logisticsBlock,1), new Object[] {"d", Character.valueOf('d'), Block.dirt});
 		}
 		
 	}

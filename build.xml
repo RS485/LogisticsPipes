@@ -69,6 +69,7 @@
         </copy>
         
         <chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
+        <chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
         <chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
         <chmod file="${mcp.dir}/reobfuscate.sh" perm="+x"/>
         <chmod file="${forge.dir}/install.sh" perm="+x"/>
@@ -79,7 +80,7 @@
         </exec>
         
         <exec dir="${mcp.dir}" executable="sh" osfamily="unix">
-            <arg value="updatemcp.sh -f" />
+            <arg line="updatemcp.sh -f" />
         </exec>
 		
 		<echo message="Updated MCP"/>

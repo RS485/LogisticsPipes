@@ -298,6 +298,10 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			} else {
 				travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
 			}
+			PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
+			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.worldObj,item);
+			routed.setSource(newpacket.getSourceUUID(this.worldObj));
+			routed.setDestination(newpacket.getDestUUID(this.worldObj));
 			return;
 		}
 		PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
@@ -312,6 +316,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			travelingEntities.put(new Integer(item.entityId), new EntityData(item, packet.getOrientation()));
 			item.container = container;
 		} else {
+			travelingEntities.get(new Integer(item.entityId)).item = item;
 			travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
 		}
 	}

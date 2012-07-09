@@ -128,9 +128,6 @@
         </copy>
         <copy todir="${clientsrc.dir}">
             <fileset dir="${src.dir}/common"/>
-            <filterset>
-                <filter token="VERSION" value="${bc.version}" />
-            </filterset>
         </copy>
         
         <copy todir="${serversrc.dir}">
@@ -138,16 +135,13 @@
         </copy>
         <copy todir="${serversrc.dir}">
             <fileset dir="${src.dir}/common"/>
-            <filterset>
-                <filter token="VERSION" value="${bc.version}" />
-            </filterset>
         </copy>
         
     </target>
     
     <target name="compile" depends="setup">
         
-		<echo message="Compiling version ${bc.version.full}"/>
+		<echo message="Compiling version ${lp.version.full}"/>
 	
         <!-- Recompile -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
@@ -191,10 +185,10 @@
     
     <target name="package" depends="compile">
         
-		<echo message="Packing version ${bc.version.full}"/>
+		<echo message="Packing version ${lp.version.full}"/>
 	
-        <jar destfile="${jar.dir}/LogisticsPipes-client-${bc.version.full}.jar" basedir="${classes.dir}/client"/>
-        <jar destfile="${jar.dir}/LogisticsPipes-server-${bc.version.full}.jar" basedir="${classes.dir}/server"/>
+        <jar destfile="${jar.dir}/LogisticsPipes-client-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
+        <jar destfile="${jar.dir}/LogisticsPipes-server-${lp.version.full}.jar" basedir="${classes.dir}/server"/>
         
 		<echo message="Packing finished"/>
 	

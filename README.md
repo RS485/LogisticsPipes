@@ -6,7 +6,23 @@ Logistics Pipes is copyrighted by [Krapht](https://github.com/Krapht "Krapht Git
 
 #Release
 
-**There will be a beta release in the next few days. Be prepared!**
+###BuildCraft 3
+
+Client v0.4.0.48 [LogisticsPipes-client-bc3-0.4.0.48.jar](https://github.com/downloads/RS485/LogisticsPipes/LogisticsPipes-client-bc3-0.4.0.48.jar) *mirror by GitHub*
+
+Server v0.4.0.48 [LogisticsPipes-server-bc3-0.4.0.48.jar](https://github.com/downloads/RS485/LogisticsPipes/LogisticsPipes-server-bc3-0.4.0.48.jar) *mirror by GitHub*
+
+###BuildCraft 3 Bukkit Server
+
+...
+
+###BuildCraft 2
+
+...
+
+###BuildCraft 2 Bukkit Server
+
+...
 
 ##More Description
 

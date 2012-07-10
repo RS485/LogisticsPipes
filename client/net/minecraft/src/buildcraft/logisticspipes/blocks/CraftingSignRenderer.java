@@ -215,7 +215,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		            {
 		                for (int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14)
 		                {
-		                    int var15 = item.func_46057_a(itemstack.getItemDamage(), var14);
+		                    int var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
 		                    renderItem(var15);
 		                }
 		            }

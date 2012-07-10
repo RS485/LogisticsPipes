@@ -13,6 +13,8 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
@@ -29,8 +31,22 @@ import net.minecraft.src.krapht.gui.DummyContainer;
 
 public class GuiHandler implements IGuiHandler {
 	
+	class NONContainerGUI {
+		
+	}
+	
 	@Override
 	public Object getGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+		Object gui = getGuiElementNative(ID,player,world,x,y,z);
+		if(gui instanceof NONContainerGUI) {
+			CoreProxy.sendToPlayer(player, new PacketPipeInteger(NetworkConstants.NON_CONTAINER_GUI,x,y,z,ID));
+			return null;
+		} else {
+			return gui;
+		}
+	}
+	
+	public Object getGuiElementNative(int ID, EntityPlayer player, World world, int x, int y, int z) {
 
 		if(!world.blockExists(x, y, z))
 			return null;
@@ -97,12 +113,7 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_SatelitePipe_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicSatellite)) return null;
-				return new Container(){
-					@Override
-					public boolean canInteractWith(EntityPlayer entityplayer) {
-						return true;
-					}
-				};
+				return new NONContainerGUI();
 				
 			case GuiIDs.GUI_SupplierPipe_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicSupplier)) return null;
@@ -145,7 +156,7 @@ public class GuiHandler implements IGuiHandler {
 			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 			    }
 			    
-			    return null;
+			    return dummy;
 				
 			case GuiIDs.GUI_Module_PassiveSupplier_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModulePassiveSupplier)) return null;
@@ -213,22 +224,11 @@ public class GuiHandler implements IGuiHandler {
 				/*** Basic ***/
 			case GuiIDs.GUI_RoutingStats_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
-				return new Container(){
-					@Override
-					public boolean canInteractWith(EntityPlayer entityplayer) {
-						return true;
-					}
-				};
+				return new NONContainerGUI();
 				
 			case GuiIDs.GUI_Orderer_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
-				return new Container(){
-					@Override
-					public boolean canInteractWith(EntityPlayer entityplayer) {
-						return true;
-					}
-				};
-				
+				return new NONContainerGUI();
 			default:
 				return null;
 			}
@@ -262,7 +262,7 @@ public class GuiHandler implements IGuiHandler {
 			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 			    }
 			    
-			    return null;
+			    return dummy;
 				
 			case GuiIDs.GUI_Module_PassiveSupplier_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModulePassiveSupplier)) return null;

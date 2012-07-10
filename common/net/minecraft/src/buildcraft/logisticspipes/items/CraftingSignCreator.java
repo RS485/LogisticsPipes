@@ -26,7 +26,10 @@ public class CraftingSignCreator extends LogisticsItem {
 
 	@Override
 	public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput)
-    {
+    {	
+		if(itemStack.getItemDamage() < 1) {
+			return false;
+		}
 		int side = sideinput % 10;
 		boolean selfcalled = sideinput > 10;
 		TileEntity tile = world.getBlockTileEntity(x, y, z);

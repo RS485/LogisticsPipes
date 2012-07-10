@@ -221,7 +221,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		            }
 		            else
 		            {
-		            	renderItem(item.getIconIndex(new ItemStack(item,1)));
+		            	renderItem(item.getIconIndex(itemstack));
 		            }
 			        
 			        GL11.glTranslatef(-0.6F, 0.2F, 0.0F);
@@ -246,7 +246,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 				    GL11.glScalef(var12, var12, var12);
 		        }
 		        try {
-		        	name = item.getItemDisplayName(new ItemStack(item,1));
+		        	name = item.getItemDisplayName(itemstack);
 		        } catch(Exception e) {
 		        	try {
 		        		name = item.getItemName();

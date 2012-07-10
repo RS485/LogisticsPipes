@@ -3,11 +3,14 @@ package net.minecraft.src.buildcraft.krapht.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import net.minecraft.src.Gui;
+import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.ErrorMessage;
+import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
@@ -105,6 +108,12 @@ public class PacketHandler implements IPacketHandler {
 					packetM.readData(data);
 					onAdvancedExtractorModuleIncludeRecive(packetM);
 					break;
+				case NetworkConstants.NON_CONTAINER_GUI:
+					final PacketPipeInteger packetN = new PacketPipeInteger();
+					packetN.readData(data);
+					handleNonContainerGui(packetN);
+					break;
+					
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -254,7 +263,14 @@ public class PacketHandler implements IPacketHandler {
 			((GuiAdvancedExtractor) ModLoader.getMinecraftInstance().currentScreen).handleIncludeRoutePackage(packet);
 		}
 	}
-	
+
+	private void handleNonContainerGui(PacketPipeInteger packet) {
+		Object gui = new GuiHandler().getGuiElement(packet.integer, ModLoader.getMinecraftInstance().thePlayer, ModLoader.getMinecraftInstance().theWorld,packet.posX,packet.posY,packet.posZ);
+		if(gui instanceof GuiScreen) {
+			ModLoader.openGUI(ModLoader.getMinecraftInstance().thePlayer, (GuiScreen)gui);
+		}
+	}
+
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

@@ -64,6 +64,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	private boolean init = false;
 	private long tick = 0;
 	BaseChassiLogic ChassiLogic;
+	private boolean convertFromMeta = false;
 
 	public PipeLogisticsChassi(int itemID) {
 		super(new BaseChassiLogic(), itemID);
@@ -117,7 +118,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	@Override
 	public int getNonRoutedTexture(Orientations connection) {
-		if (connection == ChassiLogic.orientation){
+		if (connection.equals(ChassiLogic.orientation)){
 			return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
 		return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
@@ -189,6 +190,9 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound, "");
 			ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 6];
+			if(nbttagcompound.getInteger("Orientation") == 0) {
+				convertFromMeta = true;
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -247,6 +251,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				nextOrientation();
 				CoreProxy.sendToPlayers(container.getUpdatePacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
 			}
+		}
+		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
+			ChassiLogic.orientation = Orientations.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord) % 6];
+			worldObj.setBlockMetadata(xCoord, yCoord, zCoord, 0);
 		}
 		if(!init) {
 			init = true;

@@ -198,6 +198,6 @@ public class mod_LogisticsPipes extends ModTextureProxy {
 
 	@Override
 	public String getVersion(){
-		return "0.4.1";
+		return "0.4.2";
 	}
 }

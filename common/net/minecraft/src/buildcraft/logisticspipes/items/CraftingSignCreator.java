@@ -27,7 +27,7 @@ public class CraftingSignCreator extends LogisticsItem {
 	@Override
 	public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput)
     {	
-		if(itemStack.getItemDamage() < 1) {
+		if(itemStack.getItemDamage() > this.getMaxDamage()) {
 			return false;
 		}
 		int side = sideinput % 10;

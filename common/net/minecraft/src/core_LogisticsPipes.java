@@ -621,7 +621,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
-		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creater");
+		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		
 		CraftingManager craftingmanager = CraftingManager.getInstance();

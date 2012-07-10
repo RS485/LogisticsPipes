@@ -6,23 +6,7 @@ Logistics Pipes is copyrighted by [Krapht](https://github.com/Krapht "Krapht Git
 
 #Release
 
-###BuildCraft 3
-
-Client v0.4.0.48 [LogisticsPipes-client-bc3-0.4.0.48.jar](https://github.com/downloads/RS485/LogisticsPipes/LogisticsPipes-client-bc3-0.4.0.48.jar) *mirror by GitHub*
-
-Server v0.4.0.48 [LogisticsPipes-server-bc3-0.4.0.48.jar](https://github.com/downloads/RS485/LogisticsPipes/LogisticsPipes-server-bc3-0.4.0.48.jar) *mirror by GitHub*
-
-###BuildCraft 3 Bukkit Server
-
-...
-
-###BuildCraft 2
-
-...
-
-###BuildCraft 2 Bukkit Server
-
-...
+[Wiki](https://github.com/RS485/LogisticsPipes/wiki/Download)
 
 ##More Description
 
@@ -37,10 +21,5 @@ Krapht's Logistics Pipes is an extensive overhaul of the Buildcraft pipe system.
 - `BC2-bukkit` => Bukkit + BC 2.2.x
 
 ##Added Features
-- Multiplayer functionality
-- RequestPipe GUI
- - Added stack number with --- / +++ buttons
- - Added `strg + shift + mousewheel` for scrolling the request number by 64
- - Added `strg + mousewheel` for scrolling the request number by 10
- - Added improvement for buttons
- - Added search input to search for an item with it's name or id
+
+[Wiki](https://github.com/RS485/LogisticsPipes/wiki/Added-Features)

@@ -27,6 +27,7 @@ import net.minecraft.src.TileEntitySpecialRenderer;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
+import net.minecraft.src.forge.ForgeHooksClient;
 import net.minecraft.src.forge.IItemRenderer;
 import net.minecraft.src.forge.MinecraftForgeClient;
 
@@ -116,20 +117,71 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		        
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, INVENTORY);
 		        
-		        if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.shiftedIndex].getRenderType())) {
-		            GL11.glScalef(0.20F, -0.20F, 0.00F);
+				ForgeHooksClient.overrideTexture(itemstack.getItem());
+		        
+				if(customRenderer != null) {
+			        	if(customRenderer.shouldUseRenderHelper(INVENTORY, itemstack, INVENTORY_BLOCK)) {
+			        		GL11.glScalef(0.20F, -0.20F, -0.01F);
+			                
+			    	        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
+			    	        GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
+			    	
+			    	        GL11.glDisable(GL11.GL_LIGHTING);
+			    	        GL11.glDisable(GL11.GL_LIGHT0);
+			    	        GL11.glDisable(GL11.GL_LIGHT1);
+			    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+			    	        
+			    	        //renderBlocks.useInventoryTint = false;
+			    	        
+			    	        customRenderer.renderItem(INVENTORY, itemstack, renderBlocks);
+			    	        
+			    	        GL11.glEnable(GL11.GL_LIGHTING);
+			    	        GL11.glEnable(GL11.GL_LIGHT0);
+			    	        GL11.glEnable(GL11.GL_LIGHT1);
+			    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+			
+			    	        GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+			    	        GL11.glRotatef(-210.0F, 1.0F, 0.0F, 0.0F);
+			                
+			    	        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
+			    	        GL11.glDepthMask(false);
+			    	
+			    	        GL11.glTranslatef(2.5F, 0.0F, 0.0F);
+			    	
+			    	        GL11.glScalef(5.0F, 5.0F, 1.0F);
+			    	
+			    	        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
+			    	        
+			    		    GL11.glScalef(var12, var12, var12);
+			        	} else {
+			        		GL11.glDisable(GL11.GL_LIGHTING);
+			    	        GL11.glDisable(GL11.GL_LIGHT0);
+			    	        GL11.glDisable(GL11.GL_LIGHT1);
+			    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+			    	        
+			    	        //renderBlocks.useInventoryTint = false;
+			    	        
+			    	        customRenderer.renderItem(INVENTORY, itemstack, renderBlocks);
+			    	        
+			    	        GL11.glEnable(GL11.GL_LIGHTING);
+			    	        GL11.glEnable(GL11.GL_LIGHT0);
+			    	        GL11.glEnable(GL11.GL_LIGHT1);
+			    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+			        	}
+			   } else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.shiftedIndex].getRenderType())) {
+		            GL11.glScalef(0.20F, -0.20F, -0.01F);
 		            
 			        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
 			        GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
 			
-			        renderBlocks.useInventoryTint = false;
+			        //renderBlocks.useInventoryTint = false;
 			        
 			        GL11.glDisable(GL11.GL_LIGHTING);
 			        GL11.glDisable(GL11.GL_LIGHT0);
 			        GL11.glDisable(GL11.GL_LIGHT1);
 			        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 			        
-			        renderBlocks.renderBlockAsItem(Block.blocksList[item.shiftedIndex], /* Damage */ 0, 1.0F);
+			        renderBlocks.renderBlockAsItem(Block.blocksList[item.shiftedIndex], itemstack.getItemDamage(), 1.0F);
 			        
 			        GL11.glEnable(GL11.GL_LIGHTING);
 			        GL11.glEnable(GL11.GL_LIGHT0);
@@ -149,57 +201,8 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
 			        
 				    GL11.glScalef(var12, var12, var12);
-		        } else if(customRenderer != null) {
-		        	if(customRenderer.shouldUseRenderHelper(INVENTORY, itemstack, INVENTORY_BLOCK)) {
-		        		GL11.glScalef(0.20F, -0.20F, 0.00F);
-		                
-		    	        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-		    	        GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-		    	
-		    	        GL11.glDisable(GL11.GL_LIGHTING);
-		    	        GL11.glDisable(GL11.GL_LIGHT0);
-		    	        GL11.glDisable(GL11.GL_LIGHT1);
-		    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-		    	        
-		    	        renderBlocks.useInventoryTint = false;
-		    	        
-		    	        customRenderer.renderItem(INVENTORY, itemstack, renderBlocks);
-		    	        
-		    	        GL11.glEnable(GL11.GL_LIGHTING);
-		    	        GL11.glEnable(GL11.GL_LIGHT0);
-		    	        GL11.glEnable(GL11.GL_LIGHT1);
-		    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		
-		    	        GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-		    	        GL11.glRotatef(-210.0F, 1.0F, 0.0F, 0.0F);
-		                
-		    	        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
-		    	        GL11.glDepthMask(false);
-		    	
-		    	        GL11.glTranslatef(2.5F, 0.0F, 0.0F);
-		    	
-		    	        GL11.glScalef(5.0F, 5.0F, 1.0F);
-		    	
-		    	        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
-		    	        
-		    		    GL11.glScalef(var12, var12, var12);
-		        	} else {
-		        		GL11.glDisable(GL11.GL_LIGHTING);
-		    	        GL11.glDisable(GL11.GL_LIGHT0);
-		    	        GL11.glDisable(GL11.GL_LIGHT1);
-		    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-		    	        
-		    	        renderBlocks.useInventoryTint = false;
-		    	        
-		    	        customRenderer.renderItem(INVENTORY, itemstack, renderBlocks);
-		    	        
-		    	        GL11.glEnable(GL11.GL_LIGHTING);
-		    	        GL11.glEnable(GL11.GL_LIGHT0);
-		    	        GL11.glEnable(GL11.GL_LIGHT1);
-		    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		        	}
 		        } else {
-		        	GL11.glScalef(0.25F, -0.25F, 0.00F);
+		        	GL11.glScalef(0.25F, -0.25F, -0.01F);
 		            
 			        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
 			        GL11.glRotatef(0.0F, 0.0F, 1.0F, 0.0F);

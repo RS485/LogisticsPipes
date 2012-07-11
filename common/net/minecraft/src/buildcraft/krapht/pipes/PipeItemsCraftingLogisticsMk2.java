@@ -47,6 +47,24 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 		super(itemID);
 	}
 	
+	private boolean combinable(ItemStack stack1, ItemStack stack2) {
+		return stack1.itemID == stack2.itemID && stack1.getItemDamage() == stack2.getItemDamage() && (stack1.stackSize + stack2.stackSize) < stack1.getMaxStackSize();
+	}
+	
+	@Override
+	protected ItemStack extractFromAutoWorkbench(TileAutoWorkbench workbench){
+		ItemStack stack = workbench.extractItem(true, Orientations.Unknown);
+		if(stack != null) {
+			for(int i = 1;i < 64;i++) {
+				if(combinable(workbench.extractItem(false, Orientations.Unknown),stack)) {
+					ItemStack stack2 = workbench.extractItem(true, Orientations.Unknown);
+					stack.stackSize += stack2.stackSize;
+				}
+			}
+		}
+		return stack;
+	}
+	
 	@Override
 	protected ItemStack extractFromIInventory(IInventory inv){
 		ItemStack items = null;

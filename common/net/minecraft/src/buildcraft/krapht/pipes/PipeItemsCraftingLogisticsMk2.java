@@ -48,6 +48,9 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	}
 	
 	private boolean combinable(ItemStack stack1, ItemStack stack2) {
+		if(stack1 == null || stack2 == null) {
+			return false;
+		}
 		return stack1.itemID == stack2.itemID && stack1.getItemDamage() == stack2.getItemDamage() && (stack1.stackSize + stack2.stackSize) < stack1.getMaxStackSize();
 	}
 	

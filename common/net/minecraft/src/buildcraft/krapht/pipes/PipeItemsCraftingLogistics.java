@@ -85,6 +85,9 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return invUtil.getSingleItem(targetItemStack.getItem());
 	}
 	
+	public void enableUpdateRequest() {
+		init = false;
+	}
 	
 	@Override
 	public void updateEntity() {

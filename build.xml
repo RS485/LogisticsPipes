@@ -21,7 +21,7 @@
     <property name="mcp.version"         value="62"/>
     <property name="forge.version"       value="3.3.8.152"/>
     <property name="bc.version"          value="3.1.6.23"/>
-	<property name="lp.version"          value="0.4.3"/>
+	<property name="lp.version"          value="0.4.4"/>
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}"/>
     
     <echo message="Starting build for ${lp.version.full}"/>

@@ -8,6 +8,7 @@
 
 package net.minecraft.src.buildcraft.logisticspipes;
 
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
@@ -31,6 +32,10 @@ public class RouteLayer {
 	
 	public Orientations getOrientationForItem(IRoutedItem item){
 
+		if(item.getDestination() == null && APIProxy.isRemote()) {
+			return null;
+		}
+		
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
 		if (item.getDestination() == null){
 			if (item.getSource() != null) return Orientations.Unknown;

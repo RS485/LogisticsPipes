@@ -16,17 +16,20 @@ import java.util.UUID;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import net.minecraft.src.BuildCraftCore;
+import net.minecraft.src.BuildCraftTransport;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.Packet;
 import net.minecraft.src.TileEntity;
+import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_BuildCraftTransport;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
+import net.minecraft.src.buildcraft.api.SafeTimeTracker;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.core.DefaultProps;
 import net.minecraft.src.buildcraft.core.Utils;
@@ -110,8 +113,15 @@ public class PipeTransportLogistics extends PipeTransportItems {
 //		 if (!SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)){
 //			 SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 //		 }
-
+		 
+		 SafeTimeTracker save = item.synchroTracker;
+		 item.synchroTracker = new SafeTimeTracker() {
+			 public boolean markTimeIfDelay(World world, long delay) {
+				 return false;
+			 }
+		 };
 		 super.entityEntering(item, orientation);
+		 item.synchroTracker = save;
 	}
 	
 	@Override
@@ -121,20 +131,20 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			_pipe = (RoutedPipe) container.pipe;
 		}
 		
-		boolean newItem = false;
-		if(!SimpleServiceLocator.buildCraftProxy.isRoutedItem(data.item)) {
-			newItem = true;
-		}
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(_pipe.worldObj, data);
-		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem); 
-		if(newItem && APIProxy.isServerSide()) {
-			//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
-				CoreProxy.sendToPlayers(createItemPacket(routedItem.getEntityPassiveItem(), value), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftTransport.instance);
-		}
-		if (value == null) {
+		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem);
+		if (value == null && APIProxy.isRemote()) {
+			routedItem.getItemStack().stackSize = 0;
+			return Orientations.Unknown;
+		} else if (value == null) {
 			System.out.println("THIS IS NOT SUPPOSED TO HAPPEN!");
+			return Orientations.Unknown;
 		}
 		if (value == Orientations.Unknown && !routedItem.getDoNotBuffer()){
+			if(APIProxy.isServerSide()) {
+				//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
+					CoreProxy.sendToPlayers(createItemPacket(routedItem.getEntityPassiveItem(), value), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftTransport.instance);
+			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
 			scheduleRemoval(data.item);			
@@ -142,6 +152,11 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		
 		readjustSpeed(routedItem.getEntityPassiveItem());
+		
+		if(APIProxy.isServerSide()) {
+			//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
+				CoreProxy.sendToPlayers(createItemPacket(routedItem.getEntityPassiveItem(), value), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftTransport.instance);
+		}
 		
 		if (value == Orientations.Unknown ){ 
 			//Reduce the speed of items being dropped so they don't go all over the place
@@ -296,10 +311,11 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				travelingEntities.put(new Integer(item.entityId), new EntityData(item, packet.getOrientation()));
 				item.container = container;
 			} else {
+				travelingEntities.get(new Integer(item.entityId)).item = item;
 				travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
 			}
 			PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
-			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.worldObj,item);
+			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
 			routed.setSource(newpacket.getSourceUUID(this.worldObj));
 			routed.setDestination(newpacket.getDestUUID(this.worldObj));
 			return;

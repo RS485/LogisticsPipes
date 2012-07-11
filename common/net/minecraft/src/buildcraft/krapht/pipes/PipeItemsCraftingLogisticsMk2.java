@@ -59,6 +59,9 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 		ItemStack stack = workbench.extractItem(true, Orientations.Unknown);
 		if(stack != null) {
 			for(int i = 1;i < 64;i++) {
+				if(_orderManager.getNextRequest().numberLeft() <= stack.stackSize) {
+					break;
+				}
 				if(combinable(workbench.extractItem(false, Orientations.Unknown),stack)) {
 					ItemStack stack2 = workbench.extractItem(true, Orientations.Unknown);
 					stack.stackSize += stack2.stackSize;
@@ -72,6 +75,11 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	protected ItemStack extractFromIInventory(IInventory inv){
 		ItemStack items = null;
 		for(int i=0; i < 64;i++) {
+			if(items != null) {
+				if(_orderManager.getNextRequest().numberLeft() <= items.stackSize) {
+					break;
+				}
+			}
 			InventoryUtil invUtil = new InventoryUtil(inv, false);
 			LogicCrafting craftingLogic = (LogicCrafting) this.logic;
 			ItemStack itemstack = craftingLogic.getCraftedItem();

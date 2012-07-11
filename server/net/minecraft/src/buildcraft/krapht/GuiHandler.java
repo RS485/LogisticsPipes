@@ -6,6 +6,7 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
@@ -207,15 +208,15 @@ public class GuiHandler implements IGuiHandler {
 				} else {
 					dummy.addNormalSlotsForPlayerInventory(18, 174);
 				}
-				if (_chassiPipe.getChassiSize() > 0) dummy.addNormalSlot(0, _moduleInventory, 19, 9);
-				if (_chassiPipe.getChassiSize() > 1) dummy.addNormalSlot(1, _moduleInventory, 19, 29);
-				if (_chassiPipe.getChassiSize() > 2) dummy.addNormalSlot(2, _moduleInventory, 19, 49);
-				if (_chassiPipe.getChassiSize() > 3) dummy.addNormalSlot(3, _moduleInventory, 19, 69);
+				if (_chassiPipe.getChassiSize() > 0) dummy.addRestrictedSlot(0, _moduleInventory, 19, 9, mod_LogisticsPipes.ItemModuleId + 256);
+				if (_chassiPipe.getChassiSize() > 1) dummy.addRestrictedSlot(1, _moduleInventory, 19, 29, mod_LogisticsPipes.ItemModuleId + 256);
+				if (_chassiPipe.getChassiSize() > 2) dummy.addRestrictedSlot(2, _moduleInventory, 19, 49, mod_LogisticsPipes.ItemModuleId + 256);
+				if (_chassiPipe.getChassiSize() > 3) dummy.addRestrictedSlot(3, _moduleInventory, 19, 69, mod_LogisticsPipes.ItemModuleId + 256);
 				if (_chassiPipe.getChassiSize() > 4) {
-					dummy.addNormalSlot(4, _moduleInventory, 19, 89);
-					dummy.addNormalSlot(5, _moduleInventory, 19, 109);
-					dummy.addNormalSlot(6, _moduleInventory, 19, 129);
-					dummy.addNormalSlot(7, _moduleInventory, 19, 149);
+					dummy.addRestrictedSlot(4, _moduleInventory, 19, 89, mod_LogisticsPipes.ItemModuleId + 256);
+					dummy.addRestrictedSlot(5, _moduleInventory, 19, 109, mod_LogisticsPipes.ItemModuleId + 256);
+					dummy.addRestrictedSlot(6, _moduleInventory, 19, 129, mod_LogisticsPipes.ItemModuleId + 256);
+					dummy.addRestrictedSlot(7, _moduleInventory, 19, 149, mod_LogisticsPipes.ItemModuleId + 256);
 				}
 				
 				

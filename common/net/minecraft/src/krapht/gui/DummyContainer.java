@@ -68,6 +68,9 @@ public class DummyContainer extends Container{
 		addSlot(new Slot(inventory, slotId, xCoord, yCoord));
 	}
 	
+	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID) {
+		addSlot(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
+	}
 	
 	/**
 	 * Disable whatever this is 

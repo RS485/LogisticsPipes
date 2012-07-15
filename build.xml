@@ -21,7 +21,7 @@
     <property name="mcp.version"         value="62"/>
     <property name="forge.version"       value="3.3.8.152"/>
     <property name="bc.version"          value="3.1.6.23"/>
-	<property name="lp.version"          value="0.4.5"/>
+	  <property name="lp.version"          value="0.5/>
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}"/>
     
     <echo message="Starting build for ${lp.version.full}"/>
@@ -172,11 +172,15 @@
         
         <!-- Copy resoucres -->
         <copy todir="${classes.dir}/client">
-            <fileset dir="${src.dir}/resources"/>
+            <fileset dir="${src.dir}/resources">
+                <exclude name="mod_LogisticsPipes.info"/>
+            </fileset>
         </copy>
         <copy todir="${classes.dir}/server">
             <fileset dir="${src.dir}/resources">
-                <exclude name="logisticspipes/*"/>
+                <exclude name="mod_LogisticsPipes.info"/>
+                <exclude name="logisticspipes"/>
+                <exclude name="lang"/>
             </fileset>
         </copy>
         

@@ -15,6 +15,7 @@ import net.minecraft.src.buildcraft.api.BuildCraftAPI;
 import net.minecraft.src.buildcraft.api.Trigger;
 //import net.minecraft.src.buildcraft.core.Action;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.core.utils.Localization;
 import net.minecraft.src.buildcraft.krapht.ActionDisableLogistics;
 import net.minecraft.src.buildcraft.krapht.BuildCraftProxy3;
 import net.minecraft.src.buildcraft.krapht.IBuildCraftProxy;
@@ -90,6 +91,8 @@ public class mod_LogisticsPipes extends ModTextureProxy {
 		
 		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
+		
+		Localization.addLocalization("/lang/logisticspipes/", "en_US");
 		
 		LogisticsBuilderSupplierPipe = createPipe(LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe");
 		LogisticsLiquidSupplierPipe = createPipe(LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe");
@@ -198,6 +201,6 @@ public class mod_LogisticsPipes extends ModTextureProxy {
 
 	@Override
 	public String getVersion(){
-		return "0.4.5";
+		return "0.5";
 	}
 }

@@ -48,19 +48,19 @@
 		
         <unzip dest="${mcp.dir}">
             <fileset dir="${download.dir}">
-                <include name="mcp*.zip"/>
+                <include name="mcp${mcp.version}.zip"/>
             </fileset>
         </unzip>
         
         <unzip dest="${mcp.dir}">
             <fileset dir="${download.dir}">
-                <include name="minecraftforge-src-*.zip"/>
+                <include name="minecraftforge-src-${forge.version}.zip"/>
             </fileset>
         </unzip>
         
         <unzip dest="${buildcraft.dir}">
             <fileset dir="${download.dir}">
-                <include name="buildcraft-src-*.zip"/>
+                <include name="buildcraft-src-${bc.version}.zip"/>
             </fileset>
         </unzip>
         

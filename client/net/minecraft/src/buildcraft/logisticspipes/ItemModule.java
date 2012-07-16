@@ -36,7 +36,7 @@ public class ItemModule extends LogisticsItem{
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
 	public static final int ADVANCED_EXTRACTOR_MK2 = 100 + ADVANCED_EXTRACTOR;
 	
-	//PASSIVE MK 2
+	//PASSIVE MK 3
 	public static final int EXTRACTOR_MK3 = 200 + EXTRACTOR;
 	public static final int ADVANCED_EXTRACTOR_MK3 = 200 + ADVANCED_EXTRACTOR;
 	

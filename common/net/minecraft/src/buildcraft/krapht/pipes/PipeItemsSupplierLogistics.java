@@ -43,7 +43,11 @@ public class PipeItemsSupplierLogistics extends RoutedPipe implements IRequestIt
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
 	}
 }

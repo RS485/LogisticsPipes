@@ -55,4 +55,9 @@ public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRe
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
+	}
 }

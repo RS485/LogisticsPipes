@@ -75,6 +75,11 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		return _history;
 	}
 
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
+	}
+
 //	@Override
 //	public Router getRouter() {
 //		return router;

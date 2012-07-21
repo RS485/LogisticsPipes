@@ -56,6 +56,11 @@ import net.minecraft.src.krapht.WorldUtil;
 
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics {
 
+	protected enum ItemSendMode {
+		Normal,
+		Fast
+	}
+	
 	private IRouter router;
 	private String routerId;
 	private static int pipecount = 0;
@@ -147,15 +152,27 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		stat_session_sent++;
 	}
 	
+	public abstract ItemSendMode getItemSendMode();
+	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
 		getRouter().update(worldObj.getWorldTime() % core_LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
-			Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
-			sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
-			_sendQueue.removeFirst();
+			if(getItemSendMode() == ItemSendMode.Normal) {
+				Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
+				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
+				_sendQueue.removeFirst();
+			} else if(getItemSendMode() == ItemSendMode.Fast) {
+				for(int i=0;i<64;i++) {
+					if (!_sendQueue.isEmpty()){
+						Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
+						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
+						_sendQueue.removeFirst();
+					}
+				}
+			}
 		}
 		if (getLogisticsModule() == null) return;
 		if (!isEnabled()) return;

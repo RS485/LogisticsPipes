@@ -98,6 +98,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
 			}
 		}
+		if(this instanceof PipeItemsCraftingLogisticsMk2) {
+			return;
+		}
+		
 		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
 		
 		LinkedList<AdjacentTile> crafters = locateCrafters();
@@ -266,5 +270,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		((LogicCrafting)logic).signEntityX = 0;
 		((LogicCrafting)logic).signEntityY = 0;
 		((LogicCrafting)logic).signEntityZ = 0;
+	}
+
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
 	}
 }

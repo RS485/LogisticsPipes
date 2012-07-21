@@ -32,4 +32,9 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	public ILogisticsModule getLogisticsModule() {
 		return itemSinkModule;
 	}
+
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
+	}
 }

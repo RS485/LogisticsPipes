@@ -76,5 +76,8 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	@Override
 	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 	
-
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
+	}
 }

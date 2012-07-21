@@ -304,6 +304,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsChassiPipe5;
 	public static Item LogisticsCraftingPipeMK2;
 	public static Item LogisticsRequestPipeMK2;
+	public static Item LogisticsProviderPipeMK2;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -334,6 +335,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 																	// 6886 - 3.x LiquidSupplier;
 	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
 	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
+																	// 6889 - Branche: Remote Orderer
+	public static int LOGISTICSPIPE_PROVIDER_MK2_ID					= 6890;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -363,6 +366,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_CHASSI5_TEXTURE					= 0;
 	public static int LOGISTICSPIPE_CRAFTERMK2_TEXTURE				= 0;
 	public static int LOGISTICSPIPE_REQUESTERMK2_TEXTURE			= 0;
+	public static int LOGISTICSPIPE_PROVIDERMK2_TEXTURE				= 0;
 	
 		
 	// ** Texture files **
@@ -374,6 +378,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	// Standalone pipes
 	public static final String LOGISTICSPIPE_TEXTURE_FILE					= "/logisticspipes/pipes/basic.png";
 	public static final String LOGISTICSPIPE_PROVIDER_TEXTURE_FILE			= "/logisticspipes/pipes/provider.png";
+	public static final String LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/provider_mk2.png";
 	public static final String LOGISTICSPIPE_REQUESTER_TEXTURE_FILE			= "/logisticspipes/pipes/request.png";
 	public static final String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/request_mk2.png";
 	public static final String LOGISTICSPIPE_CRAFTER_TEXTURE_FILE			= "/logisticspipes/pipes/crafting.png";
@@ -511,6 +516,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
 
+		Property logisticPipeProviderMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeProviderMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_MK2_ID);
+		logisticPipeProviderMK2IdProperty.comment = "The item id for the provider logistics pipe MK2";
+
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
@@ -561,6 +569,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_CHASSI5_ID		= Integer.parseInt(logisticPipeChassi5IdProperty.value);
 		LOGISTICSPIPE_CRAFTING_MK2_ID	= Integer.parseInt(logisticPipeCraftingMK2IdProperty.value);
 		LOGISTICSPIPE_REQUEST_MK2_ID	= Integer.parseInt(logisticPipeRequesterMK2IdProperty.value);
+		LOGISTICSPIPE_PROVIDER_MK2_ID	= Integer.parseInt(logisticPipeProviderMK2IdProperty.value);
 		LOGISTICS_DETECTION_LENGTH		= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT		= Integer.parseInt(detectionCount.value);
 		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
@@ -594,6 +603,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_SUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK2_TEXTURE	= CoreProxy.addCustomTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTERMK2_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_PROVIDERMK2_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
 		
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
@@ -618,6 +628,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5");
 		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2");
 		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2");
+		LogisticsProviderPipeMK2 = createPipe(LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2");
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");

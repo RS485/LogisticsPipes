@@ -38,7 +38,7 @@ import net.minecraft.src.krapht.ItemIdentifier;
 
 public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems{
 
-	private LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	//private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
 		
 	public PipeItemsProviderLogistics(int itemID) {
@@ -81,7 +81,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return count;
 	}
 
-	private int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
+	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
 		int sent = 0;
 		for (Orientations o : Orientations.values()){
 			Position p = new Position(xCoord, yCoord, zCoord, o);
@@ -234,7 +234,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Normal;
 	}
 }

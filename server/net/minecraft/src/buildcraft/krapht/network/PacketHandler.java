@@ -269,11 +269,11 @@ public class PacketHandler implements IPacketHandler {
 			return;
 		}
 
-		if (!(pipe.pipe instanceof PipeItemsRequestLogistics)) {
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
 
-		OrdererRequests.request(player, packet, (PipeItemsRequestLogistics) pipe.pipe);
+		OrdererRequests.request(player, packet, (CoreRoutedPipe) pipe.pipe);
 	}
 
 	private void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {

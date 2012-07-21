@@ -24,7 +24,7 @@ public class OrdererRequests {
 		CraftOnly;
 	}
 	
-	public static void request(EntityPlayerMP player, PacketRequestSubmit packet, PipeItemsRequestLogistics pipe) {
+	public static void request(EntityPlayerMP player, PacketRequestSubmit packet, CoreRoutedPipe pipe) {
 		LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID,packet.dataValue), packet.amount, pipe);
 		LinkedList<ErrorMessage> errors = new LinkedList<ErrorMessage>();
 		boolean result = LogisticsManager.Request(request, pipe.getRouter().getRoutersByCost(), errors, player);

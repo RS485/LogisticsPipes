@@ -29,7 +29,17 @@ public class RemoteOrderer extends Item implements ITextureProvider {
 	public String getTextureFile() {
 		return core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
 	}
-	
+
+	//Client
+    public boolean func_46056_k() {
+        return true;
+    }
+
+	//Server
+    public boolean func_46003_i() {
+        return true;
+    }
+    
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {	
 		if(par1ItemStack == null) {

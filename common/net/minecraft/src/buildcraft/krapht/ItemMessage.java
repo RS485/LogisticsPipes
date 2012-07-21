@@ -2,14 +2,14 @@ package net.minecraft.src.buildcraft.krapht;
 
 import net.minecraft.src.krapht.ItemIdentifier;
 
-public class ErrorMessage {
+public class ItemMessage {
 
 	public int id = 0;
 	public int data = 0;
 	public int amount = 0;
 
-	public ErrorMessage() {}
-	public ErrorMessage(int id,int data,int amount) {
+	public ItemMessage() {}
+	public ItemMessage(int id,int data,int amount) {
 		this.id = id;
 		this.data = data;
 		this.amount = amount;

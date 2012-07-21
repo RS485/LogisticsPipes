@@ -9,7 +9,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.krapht.ErrorMessage;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
@@ -169,7 +169,7 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	private void onMissingItems(PacketMissingItems packet) {
-		for (final ErrorMessage error : packet.errors) {
+		for (final ItemMessage error : packet.errors) {
 			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + error);
 		}
 	}

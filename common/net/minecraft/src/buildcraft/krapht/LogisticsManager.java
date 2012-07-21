@@ -137,11 +137,11 @@ public class LogisticsManager implements ILogisticsManager {
 //		return count;
 //	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ErrorMessage> errors){
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ItemMessage> errors){
 		return Request(originalRequest, validDestinations, errors, null);
 	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ErrorMessage> errors, EntityPlayer player){
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ItemMessage> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);
 		
 		//First check all crafters
@@ -220,7 +220,7 @@ public class LogisticsManager implements ILogisticsManager {
 				}
 			}
 			for (ItemIdentifier item : remaining.keySet()){
-				errors.add(new ErrorMessage(item.itemID,item.itemDamage,remaining.get(item)));
+				errors.add(new ItemMessage(item.itemID,item.itemDamage,remaining.get(item)));
 			}
 			return false;
 		}

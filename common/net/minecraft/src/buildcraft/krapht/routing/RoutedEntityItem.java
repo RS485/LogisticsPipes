@@ -207,4 +207,18 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public TransportMode getTransportMode() {
 		return this._transportMode;
 	}
+	
+	public boolean hasContributions() {
+		//prevent groupEntities()
+		try {
+			@SuppressWarnings("restriction")
+			final Class<?> caller = sun.reflect.Reflection.getCallerClass(3);
+			if(caller.equals(PipeTransportItems.class)) {
+				return true;
+			}
+			return super.hasContributions();
+		} catch(Exception e) {
+			return true;
+		}
+	}
 }

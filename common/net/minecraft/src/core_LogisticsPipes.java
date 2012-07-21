@@ -278,6 +278,8 @@ import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
+import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
+import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrdererClientInformation;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
@@ -304,6 +306,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsChassiPipe5;
 	public static Item LogisticsCraftingPipeMK2;
 	public static Item LogisticsRequestPipeMK2;
+	public static Item LogisticsRemoteOrdererPipe;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -334,6 +337,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 																	// 6886 - 3.x LiquidSupplier;
 	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
 	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
+	public static int LOGISTICSPIPE_REMOTE_ORDERER_ID				= 6889;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -363,6 +367,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_CHASSI5_TEXTURE					= 0;
 	public static int LOGISTICSPIPE_CRAFTERMK2_TEXTURE				= 0;
 	public static int LOGISTICSPIPE_REQUESTERMK2_TEXTURE			= 0;
+	public static int LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE			= 0;
 	
 		
 	// ** Texture files **
@@ -380,6 +385,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/crafting_mk2.png";
 	public static final String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE			= "/logisticspipes/pipes/satellite.png";
 	public static final String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE			= "/logisticspipes/pipes/supplier.png";
+	public static final String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	= "/logisticspipes/pipes/remote_orderer.png";
 	
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
@@ -511,6 +517,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
 
+		Property logisticPipeRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REMOTE_ORDERER_ID);
+		logisticPipeRemoteOrdererIdProperty.comment = "The item id for the remote orderer logistics pipe";
+
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
@@ -561,6 +570,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_CHASSI5_ID		= Integer.parseInt(logisticPipeChassi5IdProperty.value);
 		LOGISTICSPIPE_CRAFTING_MK2_ID	= Integer.parseInt(logisticPipeCraftingMK2IdProperty.value);
 		LOGISTICSPIPE_REQUEST_MK2_ID	= Integer.parseInt(logisticPipeRequesterMK2IdProperty.value);
+		LOGISTICSPIPE_REMOTE_ORDERER_ID	= Integer.parseInt(logisticPipeRemoteOrdererIdProperty.value);
 		LOGISTICS_DETECTION_LENGTH		= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT		= Integer.parseInt(detectionCount.value);
 		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
@@ -574,8 +584,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsNetworkMonitior.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 
-		LogisticsRemoteOrderer = new LogisticsItem(LOGISTICSREMOTEORDERER_ID);
-		LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
+		LogisticsRemoteOrderer = new RemoteOrdererClientInformation(LOGISTICSREMOTEORDERER_ID);
+		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
 		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
 
 		LogisticsCraftingSignCreator = new CraftingSignCreator(LOGISTICSCRAFTINGSIGNCREATOR_ID);
@@ -594,6 +604,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_SUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK2_TEXTURE	= CoreProxy.addCustomTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTERMK2_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
 		
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
@@ -618,6 +629,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5");
 		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2");
 		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2");
+		LogisticsRemoteOrdererPipe = createPipe(LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe");
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");

@@ -436,6 +436,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					}
 				}
 				else{
+					_entityPlayer.addChatMessage("Requested: " + new ItemMessage(selectedItem, requestCount));
 					_entityPlayer.addChatMessage("Request successful!");
 					refreshItems();
 				}

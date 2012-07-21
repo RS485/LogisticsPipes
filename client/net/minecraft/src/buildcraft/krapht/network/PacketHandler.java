@@ -61,7 +61,7 @@ public class PacketHandler implements IPacketHandler {
 				case NetworkConstants.MISSING_ITEMS:
 					final PacketItems packetD = new PacketItems();
 					packetD.readData(data);
-					onMissingItems(packetD);
+					onItemsResponse(packetD);
 					break;
 				case NetworkConstants.CRAFTING_LOOP:
 					final PacketCraftingLoop packetE = new PacketCraftingLoop();
@@ -168,9 +168,16 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
-	private void onMissingItems(PacketItems packet) {
-		for (final ItemMessage error : packet.items) {
-			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + error);
+	private void onItemsResponse(PacketItems packet) {
+		if(packet.error) {
+			for (final ItemMessage items : packet.items) {
+				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + items);
+			}
+		} else {
+			for (final ItemMessage items : packet.items) {
+				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Requested: " + items);
+			}
+			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Request successful!");
 		}
 	}
 

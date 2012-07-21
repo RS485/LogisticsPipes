@@ -15,6 +15,10 @@ public class ItemMessage {
 		this.amount = amount;
 	}
 	
+	public ItemMessage(ItemIdentifier selectedItem, int requestCount) {
+		this(selectedItem.itemID,selectedItem.itemDamage,requestCount);
+	}
+	
 	public String toString() {
 		return amount + " " + ItemIdentifier.get(id,data).getFriendlyName();
 	}

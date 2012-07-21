@@ -24,5 +24,9 @@ public class MessageManager {
 	public static void errors(EntityPlayer player, LinkedList<ItemMessage> errors) {
 		CoreProxy.sendToPlayer(player, new PacketItems(errors));
 	}
+
+	public static void requested(EntityPlayer player, LinkedList<ItemMessage> items) {
+		CoreProxy.sendToPlayer(player, new PacketItems(items));
+	}
 	
 }

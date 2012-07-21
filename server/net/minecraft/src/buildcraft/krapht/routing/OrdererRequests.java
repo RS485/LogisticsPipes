@@ -32,7 +32,9 @@ public class OrdererRequests {
 			MessageManager.errors(player, errors);
 		}
 		else{
-			player.addChatMessage("Request successful!");
+			LinkedList list = new LinkedList<ItemMessage>();
+			list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount));
+			MessageManager.requested(player, list);
 		}
 	}
 	

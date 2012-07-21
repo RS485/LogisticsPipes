@@ -10,7 +10,7 @@ import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.network.PacketCraftingLoop;
-import net.minecraft.src.buildcraft.krapht.network.PacketMissingItems;
+import net.minecraft.src.buildcraft.krapht.network.PacketItems;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class MessageManager {
@@ -22,7 +22,7 @@ public class MessageManager {
 	}
 
 	public static void errors(EntityPlayer player, LinkedList<ItemMessage> errors) {
-		CoreProxy.sendToPlayer(player, new PacketMissingItems(errors));
+		CoreProxy.sendToPlayer(player, new PacketItems(errors));
 	}
 	
 }

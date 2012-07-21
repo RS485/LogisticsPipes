@@ -59,7 +59,7 @@ public class PacketHandler implements IPacketHandler {
 					onOrdererRefreshAnswer(packetC);
 					break;
 				case NetworkConstants.MISSING_ITEMS:
-					final PacketMissingItems packetD = new PacketMissingItems();
+					final PacketItems packetD = new PacketItems();
 					packetD.readData(data);
 					onMissingItems(packetD);
 					break;
@@ -168,14 +168,14 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
-	private void onMissingItems(PacketMissingItems packet) {
-		for (final ItemMessage error : packet.errors) {
+	private void onMissingItems(PacketItems packet) {
+		for (final ItemMessage error : packet.items) {
 			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + error);
 		}
 	}
 
 	private void onCraftingLoop(PacketCraftingLoop packet) {
-		final ItemIdentifier item = packet.errors.get(0).getItemIdentifier();
+		final ItemIdentifier item = packet.items.get(0).getItemIdentifier();
 		ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName()
 				+ " !! ABORTING !!");
 	}

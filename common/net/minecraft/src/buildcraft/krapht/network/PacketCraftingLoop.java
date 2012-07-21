@@ -4,7 +4,7 @@ import java.util.LinkedList;
 
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
 
-public class PacketCraftingLoop extends PacketMissingItems {
+public class PacketCraftingLoop extends PacketItems {
 
 	public PacketCraftingLoop() {
 		super();

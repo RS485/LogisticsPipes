@@ -657,6 +657,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		craftingmanager.addRecipe(new ItemStack(LogisticsCraftingPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsCraftingPipe, Character.valueOf('U'), BuildCraftCore.goldGearItem});
 		craftingmanager.addRecipe(new ItemStack(LogisticsRequestPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsRequestPipe, Character.valueOf('U'), BuildCraftCore.diamondGearItem});
 		
+		craftingmanager.addRecipe(new ItemStack(LogisticsRemoteOrdererPipe, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsRequestPipe, Character.valueOf('U'), Item.enderPearl});
+		
 		craftingmanager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingmanager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		if(LOGISTICS_BLOCK_ID != 0) {

@@ -14,6 +14,8 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.InventoryPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.Slot;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class DummyContainer extends Container{
@@ -72,6 +74,10 @@ public class DummyContainer extends Container{
 		addSlot(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
 	}
 	
+	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
+		addSlot(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
+	}
+	
 	/**
 	 * Disable whatever this is 
 	 **/
@@ -98,7 +104,14 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, boolean isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || !(slot instanceof DummySlot)) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
+		if (slot == null || !(slot instanceof DummySlot)) {
+			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
+			ItemStack stack2 = slot.getStack();
+			if(stack2 != null && stack2.getItem().shiftedIndex == mod_LogisticsPipes.ItemModuleId + 256) {
+				DummyContainerSlopUpdateHelper.update(this,slotId,stack2,entityplayer);
+			}
+			return stack1;
+		}
 
 		InventoryPlayer inventoryplayer = entityplayer.inventory;
 		

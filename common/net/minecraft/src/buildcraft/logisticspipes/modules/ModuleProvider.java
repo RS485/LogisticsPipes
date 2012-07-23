@@ -1,7 +1,9 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 import net.minecraft.src.EntityPlayer;
@@ -26,7 +28,7 @@ import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
-public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule{
+public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider {
 
 	
 	private final IInventoryProvider _invProvider;
@@ -229,5 +231,16 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule{
 
 	public void nextExtractionMode() {
 		_extractionMode = _extractionMode.next();
+	}
+
+	@Override
+	public List<String> getClientInformation() {
+		List<String> list = new ArrayList<String>();
+		list.add(!isExcludeFilter ? "Included" : "Excluded");
+		list.add("Mode: " + _extractionMode.getExtractionModeString());
+		list.add("Filter: ");
+		list.add("<inventory>");
+		list.add("<that>");
+		return list;
 	}
 }

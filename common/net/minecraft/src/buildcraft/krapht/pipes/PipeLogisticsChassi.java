@@ -44,6 +44,7 @@ import net.minecraft.src.buildcraft.logisticspipes.ChassiTransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
+import net.minecraft.src.buildcraft.logisticspipes.ItemModuleInformationManager;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
@@ -211,6 +212,11 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		super.onBlockRemoval();
 		_moduleInventory.removeListener(this);
 		if(!APIProxy.isRemote()) {
+			for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
+				if(_moduleInventory.getStackInSlot(i) != null) {
+					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i));
+				}
+			}
 			_moduleInventory.dropContents(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		}
 	}
@@ -233,7 +239,8 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this);
 				if (current != next){
 					_module.installModule(i, next);
-					
+					ItemModuleInformationManager.readInformation(stack, next);
+					ItemModuleInformationManager.removeInformation(stack);
 				}
 			}
 		}

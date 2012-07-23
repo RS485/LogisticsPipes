@@ -1,5 +1,8 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -13,7 +16,7 @@ import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
-public class ModulePassiveSupplier implements ILogisticsModule {
+public class ModulePassiveSupplier implements ILogisticsModule, IClientInformationProvider {
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 64);
 	private final IInventoryProvider _invProvider;
@@ -65,4 +68,12 @@ public class ModulePassiveSupplier implements ILogisticsModule {
 	@Override
 	public void tick() {}
 
+	@Override
+	public List<String> getClientInformation() {
+		List<String> list = new ArrayList<String>();
+		list.add("Supplied: ");
+		list.add("<inventory>");
+		list.add("<that>");
+		return list;
+	}
 }

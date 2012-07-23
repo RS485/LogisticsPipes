@@ -208,15 +208,15 @@ public class GuiHandler implements IGuiHandler {
 				} else {
 					dummy.addNormalSlotsForPlayerInventory(18, 174);
 				}
-				if (_chassiPipe.getChassiSize() > 0) dummy.addRestrictedSlot(0, _moduleInventory, 19, 9, mod_LogisticsPipes.ItemModuleId + 256);
-				if (_chassiPipe.getChassiSize() > 1) dummy.addRestrictedSlot(1, _moduleInventory, 19, 29, mod_LogisticsPipes.ItemModuleId + 256);
-				if (_chassiPipe.getChassiSize() > 2) dummy.addRestrictedSlot(2, _moduleInventory, 19, 49, mod_LogisticsPipes.ItemModuleId + 256);
-				if (_chassiPipe.getChassiSize() > 3) dummy.addRestrictedSlot(3, _moduleInventory, 19, 69, mod_LogisticsPipes.ItemModuleId + 256);
+				if (_chassiPipe.getChassiSize() > 0) dummy.addModuleSlot(0, _moduleInventory, 19, 9, _chassiPipe);
+				if (_chassiPipe.getChassiSize() > 1) dummy.addModuleSlot(1, _moduleInventory, 19, 29, _chassiPipe);
+				if (_chassiPipe.getChassiSize() > 2) dummy.addModuleSlot(2, _moduleInventory, 19, 49, _chassiPipe);
+				if (_chassiPipe.getChassiSize() > 3) dummy.addModuleSlot(3, _moduleInventory, 19, 69, _chassiPipe);
 				if (_chassiPipe.getChassiSize() > 4) {
-					dummy.addRestrictedSlot(4, _moduleInventory, 19, 89, mod_LogisticsPipes.ItemModuleId + 256);
-					dummy.addRestrictedSlot(5, _moduleInventory, 19, 109, mod_LogisticsPipes.ItemModuleId + 256);
-					dummy.addRestrictedSlot(6, _moduleInventory, 19, 129, mod_LogisticsPipes.ItemModuleId + 256);
-					dummy.addRestrictedSlot(7, _moduleInventory, 19, 149, mod_LogisticsPipes.ItemModuleId + 256);
+					dummy.addModuleSlot(4, _moduleInventory, 19, 89, _chassiPipe);
+					dummy.addModuleSlot(5, _moduleInventory, 19, 109, _chassiPipe);
+					dummy.addModuleSlot(6, _moduleInventory, 19, 129, _chassiPipe);
+					dummy.addModuleSlot(7, _moduleInventory, 19, 149, _chassiPipe);
 				}
 				
 				

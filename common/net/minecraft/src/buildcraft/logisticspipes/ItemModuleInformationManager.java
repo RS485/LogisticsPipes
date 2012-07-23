@@ -25,8 +25,13 @@ public class ItemModuleInformationManager {
 	}
 	
 	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module) {
-		if(APIProxy.isRemote()) {
-			NBTTagList list = new NBTTagList();
+		NBTTagCompound nbt = new NBTTagCompound();
+        module.writeToNBT(nbt, "");
+        if(nbt.equals(new NBTTagCompound())) {
+        	return;
+        }
+        if(APIProxy.isRemote()) {
+			 NBTTagList list = new NBTTagList();
 			String info1 = "Please reopen the window";
 			String info2 = "to see the information.";
     		list.appendTag(new NBTTagString(info1,info1));
@@ -39,8 +44,6 @@ public class ItemModuleInformationManager {
     		stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
     		return;
 		}
-        NBTTagCompound nbt = new NBTTagCompound();
-        module.writeToNBT(nbt, "");
         if(!itemStack.hasTagCompound()) {
         	itemStack.setTagCompound(new NBTTagCompound());
         }

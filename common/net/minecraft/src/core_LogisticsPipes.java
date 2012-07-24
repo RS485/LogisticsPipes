@@ -278,6 +278,7 @@ import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
 import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
@@ -736,7 +737,22 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		//ModuleSupplier in separate files
 
-		
+		for(int i=0; i<1000;i++) {
+			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null);
+			if(module != null) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				module.writeToNBT(nbt, "");
+				if(!nbt.equals(new NBTTagCompound())) {
+					for(int j=1;j < 10; j++) {
+						Object[] obj = new Object[j];
+						for(int k=0;k<j;k++) {
+							obj[k] = new ItemStack(ModuleItem, 1, i);
+						}
+						craftingmanager.addShapelessRecipe(new ItemStack(ModuleItem, j, i), obj);
+					}
+				}
+			}
+		}
 		
 		
 		if (core_LogisticsPipes.DEBUG) {

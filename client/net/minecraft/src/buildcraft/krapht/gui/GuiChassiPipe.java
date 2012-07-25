@@ -87,6 +87,13 @@ public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider
 		controlList.clear();
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++){
 			controlList.add(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!"));
+			if(_moduleInventory == null) continue;
+			ItemStack module = _moduleInventory.getStackInSlot(i);
+			if(module == null) {
+				((SmallGuiButton)controlList.get(i)).drawButton = false;
+			} else {
+				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).getGuiHandlerID() != -1;
+			}
 		}
 	}
 	

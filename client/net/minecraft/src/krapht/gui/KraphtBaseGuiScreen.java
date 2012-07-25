@@ -8,7 +8,11 @@
 
 package net.minecraft.src.krapht.gui;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.src.GuiScreen;
+import net.minecraft.src.Tessellator;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 
 public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHandlerProvider {
@@ -109,25 +113,91 @@ public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHan
 	}
 	
 	public void drawGuiBackGround(){
-		drawRect(left + 2, top, right - 3, top+1, Colors.Black);			// Top border
-		drawRect(left + 3, bottom-1, right - 2, bottom, Colors.Black);		// Bottom border
-		drawRect(left, top + 2, left+1, bottom -3, Colors.Black);			// Left border
-		drawRect(right-1, top + 3, right, bottom - 2, Colors.Black);		// Right border
+
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(i);
+
+		//Top Side
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(left + 5	, top + 15			, (double)this.zLevel, 0.33	, 0.33);
+        var9.addVertexWithUV(right - 5	, top + 15			, (double)this.zLevel, 0.66	, 0.33);
+        var9.addVertexWithUV(right - 5	, top				, (double)this.zLevel, 0.66	, 0);
+        var9.addVertexWithUV(left + 5	, top				, (double)this.zLevel, 0.33	, 0);
+        var9.draw();
+
+        //Left Side
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(left, bottom -5		, (double)this.zLevel, 0	, 0.66);
+        var9.addVertexWithUV(left + 15, bottom - 5	, (double)this.zLevel, 0.33	, 0.66);
+        var9.addVertexWithUV(left + 15, top + 5		, (double)this.zLevel, 0.33	, 0.33);
+        var9.addVertexWithUV(left, top + 5			, (double)this.zLevel, 0	, 0.33);
+        var9.draw();
+
+        //Bottom Side
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(left + 5	, bottom			, (double)this.zLevel, 0.33	, 1);
+        var9.addVertexWithUV(right - 5	, bottom			, (double)this.zLevel, 0.66	, 1);
+        var9.addVertexWithUV(right - 5	, bottom - 15		, (double)this.zLevel, 0.66	, 0.66);
+        var9.addVertexWithUV(left + 5	, bottom - 15		, (double)this.zLevel, 0.33	, 0.66);
+        var9.draw();
+
+        //Right Side
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(right - 15	, bottom - 5			, (double)this.zLevel, 0.66	, 0.66);
+        var9.addVertexWithUV(right		, bottom - 5			, (double)this.zLevel, 1	, 0.66);
+        var9.addVertexWithUV(right		, top + 5				, (double)this.zLevel, 1	, 0.33);
+        var9.addVertexWithUV(right - 15	, top + 5				, (double)this.zLevel, 0.66	, 0.33);
+        var9.draw();
 		
-		drawRect(left+3, top + 3, right - 1, bottom -1, Colors.DarkGrey);	//Right/Bottom highlight
-		drawRect(left+1, top + 1, right - 3, bottom -3, Colors.White);		//Top/Left highlight
-		drawRect(left+3, top + 3, right - 3, bottom - 3, Colors.LightGrey);	// Main background
+		//Top Left
+		var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(left, top + 15			, (double)this.zLevel, 0	, 0.33);
+        var9.addVertexWithUV(left + 15, top + 15	, (double)this.zLevel, 0.33	, 0.33);
+        var9.addVertexWithUV(left + 15, top			, (double)this.zLevel, 0.33	, 0);
+        var9.addVertexWithUV(left, top				, (double)this.zLevel, 0	, 0);
+        var9.draw();
+        
+        //Bottom Left
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(left, bottom			, (double)this.zLevel, 0	, 1);
+        var9.addVertexWithUV(left + 15, bottom		, (double)this.zLevel, 0.33	, 1);
+        var9.addVertexWithUV(left + 15, bottom - 15	, (double)this.zLevel, 0.33	, 0.66);
+        var9.addVertexWithUV(left, bottom - 15		, (double)this.zLevel, 0	, 0.66);
+        var9.draw();
+
+        //Bottom Right
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(right - 15	, bottom			, (double)this.zLevel, 0.66	, 1);
+        var9.addVertexWithUV(right		, bottom			, (double)this.zLevel, 1	, 1);
+        var9.addVertexWithUV(right		, bottom - 15		, (double)this.zLevel, 1	, 0.66);
+        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)this.zLevel, 0.66	, 0.66);
+        var9.draw();
+
+        //Top Right
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(right - 15	, top + 15			, (double)this.zLevel, 0.66	, 0.33);
+        var9.addVertexWithUV(right		, top + 15			, (double)this.zLevel, 1	, 0.33);
+        var9.addVertexWithUV(right		, top				, (double)this.zLevel, 1	, 0);
+        var9.addVertexWithUV(right - 15	, top				, (double)this.zLevel, 0.66	, 0);
+        var9.draw();
+
+        //Center
+        var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(left + 15	, bottom - 15		, (double)this.zLevel, 0.33	, 0.66);
+        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)this.zLevel, 0.66	, 0.66);
+        var9.addVertexWithUV(right - 15	, top + 15			, (double)this.zLevel, 0.66	, 0.33);
+        var9.addVertexWithUV(left + 15	, top + 15			, (double)this.zLevel, 0.33	, 0.33);
+        var9.draw();
 		
-		drawPoint(left + 1, top +1, Colors.Black);							//Top-left border corner
-		drawPoint(left+3, top + 3, Colors.White);							//Top-left highlight corner
-		drawPoint(right - 3, top + 1, Colors.Black);						//Top-right border corner
-		drawPoint(right - 2, top + 2, Colors.Black);						//Top-right border corner
-		drawPoint(right - 3, top + 2, Colors.LightGrey);					//Top-right highlight corner
-		
-		drawPoint(left + 1, bottom -3, Colors.Black);						//Bottom-left border corner 1
-		drawPoint(left + 2, bottom -2, Colors.Black);						//Bottom-left border corner 2
-		drawPoint(left + 2, bottom -3, Colors.LightGrey);					//Bottom-left highlight corner
-		drawPoint(right - 2, bottom -2, Colors.Black);						//Bottom-right border corner
-		drawPoint(right - 4, bottom - 4, Colors.DarkGrey);					//Bottom-right highlight corner
 	}
 }

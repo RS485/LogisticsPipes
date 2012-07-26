@@ -85,7 +85,7 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen { //GuiScreen{
 //		drawPoint(right - 4, bottom - 4, colorDark);						//Bottom-right highlight corner
 
 		
-		String pipeName = ItemIdentifier.get(_router.getPipe().itemID, 0).getFriendlyName();
+		String pipeName = ItemIdentifier.get(_router.getPipe().itemID, 0, null).getFriendlyName();
 		fontRenderer.drawString(pipeName, xCenter - fontRenderer.getStringWidth(pipeName)/2, top + 10, 0x83601c);
 		fontRenderer.drawString("Inbound:", left + 60 - fontRenderer.getStringWidth("Inbound:"), top + 25, 0x303030);
 		fontRenderer.drawString("Outbound:", left + 60 - fontRenderer.getStringWidth("Outbound:"), top + 40, 0x303030);

@@ -17,7 +17,7 @@ public class MessageManager {
 	
 	public static void overflow(EntityPlayer player, ItemIdentifier item) {
 		LinkedList<ErrorMessage> error = new LinkedList<ErrorMessage>();
-		error.add(new ErrorMessage(item.itemID, item.itemDamage, 1));
+		error.add(new ErrorMessage(item.itemID, item.itemDamage, 1, item.tag));
 		CoreProxy.sendToPlayer(player, new PacketCraftingLoop(error));
 	}
 

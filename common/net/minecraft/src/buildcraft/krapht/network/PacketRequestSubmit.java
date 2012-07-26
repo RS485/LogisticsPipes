@@ -4,6 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.minecraft.src.CompressedStreamTools;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.Packet;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class PacketRequestSubmit extends PacketCoordinates {
@@ -11,6 +14,7 @@ public class PacketRequestSubmit extends PacketCoordinates {
 	public int itemID;
 	public int dataValue;
 	public int amount;
+	public NBTTagCompound tag;
 
 	public PacketRequestSubmit() {
 		super();
@@ -20,6 +24,7 @@ public class PacketRequestSubmit extends PacketCoordinates {
 		super(NetworkConstants.REQUEST_SUBMIT, x, y, z);
 		itemID = selectedItem.itemID;
 		dataValue = selectedItem.itemDamage;
+		tag = selectedItem.tag;
 		this.amount = amount;
 	}
 
@@ -29,6 +34,7 @@ public class PacketRequestSubmit extends PacketCoordinates {
 		data.writeInt(itemID);
 		data.writeInt(dataValue);
 		data.writeInt(amount);
+		SendNBTTagCompound.writeNBTTagCompound(tag, data);
 	}
 
 	@Override
@@ -37,5 +43,6 @@ public class PacketRequestSubmit extends PacketCoordinates {
 		itemID = data.readInt();
 		dataValue = data.readInt();
 		amount = data.readInt();
+		tag = SendNBTTagCompound.readNBTTagCompound(data);
 	}
 }

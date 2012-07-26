@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class PacketRequestGuiContent extends LogisticsPipesPacket {
@@ -33,18 +34,21 @@ public class PacketRequestGuiContent extends LogisticsPipesPacket {
 			data.writeInt(item.itemID);
 			data.writeInt(item.itemDamage);
 			data.writeInt(_availableItems.get(item));
+			SendNBTTagCompound.writeNBTTagCompound(item.tag, data);
 		}
 		data.write(0); // end
 		for (final ItemIdentifier item : _craftableItems) {
 			data.write(1); // byte
 			data.writeInt(item.itemID);
 			data.writeInt(item.itemDamage);
+			SendNBTTagCompound.writeNBTTagCompound(item.tag, data);
 		}
 		data.write(0); // end
 		for (final ItemIdentifier item : _allItems) {
 			data.write(1); // byte
 			data.writeInt(item.itemID);
 			data.writeInt(item.itemDamage);
+			SendNBTTagCompound.writeNBTTagCompound(item.tag, data);
 		}
 		data.write(0); // end
 	}
@@ -55,17 +59,20 @@ public class PacketRequestGuiContent extends LogisticsPipesPacket {
 			final int itemID = data.readInt();
 			final int dataValue = data.readInt();
 			final int amount = data.readInt();
-			_availableItems.put(ItemIdentifier.get(itemID, dataValue), amount);
+			final NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+			_availableItems.put(ItemIdentifier.get(itemID, dataValue, tag), amount);
 		}
 		while (data.read() != 0) { // read until the end
 			final int itemID = data.readInt();
 			final int dataValue = data.readInt();
-			_craftableItems.add(ItemIdentifier.get(itemID, dataValue));
+			final NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+			_craftableItems.add(ItemIdentifier.get(itemID, dataValue, tag));
 		}
 		while (data.read() != 0) { // read until the end
 			final int itemID = data.readInt();
 			final int dataValue = data.readInt();
-			_allItems.add(ItemIdentifier.get(itemID, dataValue));
+			final NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+			_allItems.add(ItemIdentifier.get(itemID, dataValue, tag));
 		}
 	}
 

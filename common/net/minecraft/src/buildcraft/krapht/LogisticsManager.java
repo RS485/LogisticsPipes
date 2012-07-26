@@ -220,7 +220,7 @@ public class LogisticsManager implements ILogisticsManager {
 				}
 			}
 			for (ItemIdentifier item : remaining.keySet()){
-				errors.add(new ErrorMessage(item.itemID,item.itemDamage,remaining.get(item)));
+				errors.add(new ErrorMessage(item.itemID,item.itemDamage,remaining.get(item),item.tag));
 			}
 			return false;
 		}

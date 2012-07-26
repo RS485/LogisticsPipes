@@ -10,8 +10,11 @@ package net.minecraft.src.krapht;
 
 import java.util.LinkedList;
 
+import javax.swing.text.html.parser.TagElement;
+
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
 
 /**
  * @author Krapht
@@ -24,27 +27,28 @@ import net.minecraft.src.ItemStack;
  */
 public final class ItemIdentifier {
 
-	//TODO: Change internal storage to a static matrix [itemid,itemdamage] to optimize search times, or some other hashed collection.
 	private final static LinkedList<ItemIdentifier> _itemIdentifierCache = new LinkedList<ItemIdentifier>();
 	
-	 //Hide default constructor
-	private ItemIdentifier(int itemID, int itemDamage) {
+	//Hide default constructor
+	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag) {
 		this.itemID =  itemID;
 		this.itemDamage = itemDamage;
+		this.tag = tag;
 	}
 	
 	public final int itemID;
 	public final int itemDamage;
+	public final NBTTagCompound tag;
 	
 	public static boolean allowNullsForTesting;
 	
-	public static ItemIdentifier get(int itemID, int itemUndamagableDamage)	{
+	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
 		for(ItemIdentifier item : _itemIdentifierCache)	{
-			if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage){
+			if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
 				return item;
 			}
 		}
-		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage); 
+		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag); 
 		_itemIdentifierCache.add(unknownItem);
 		return(unknownItem);
 	}
@@ -57,7 +61,20 @@ public final class ItemIdentifier {
 		if (!Item.itemsList[itemStack.itemID].isDamageable()) {
 			itemDamage = itemStack.getItemDamage();
 		}
-		return get(itemStack.itemID, itemDamage);
+		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
+	}
+	
+	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
+		if(tag1 == null && tag2 == null) {
+			return true;
+		}
+		if(tag1 == null) {
+			return false;
+		}
+		if(tag2 == null) {
+			return false;
+		}
+		return tag1.equals(tag2);
 	}
 	
 	public String getDebugName() {
@@ -68,9 +85,8 @@ public final class ItemIdentifier {
 	}
 	
 	public String getFriendlyName() {
-		if (Item.itemsList[itemID]!= null) {
-			return Item.itemsList[itemID].getItemDisplayName(this.makeNormalStack(1));
-			//return Item.itemsList[itemID].func_40397_d(this.makeNormalStack(1));
+		if (Item.itemsList[itemID] != null) {
+			return ItemIdentifierProxy.getName(itemID,this.makeNormalStack(1));
 		}
 		return "<Item name not found>";
 	}
@@ -80,6 +96,8 @@ public final class ItemIdentifier {
 	}
 	
 	public ItemStack makeNormalStack(int stackSize){
-		return new ItemStack(this.itemID, stackSize, this.itemDamage);
+		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
+		stack.setTagCompound(this.tag);
+		return stack;
 	}
 }

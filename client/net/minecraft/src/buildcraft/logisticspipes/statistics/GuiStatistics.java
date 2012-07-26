@@ -76,7 +76,7 @@ public class GuiStatistics extends KraphtBaseGuiScreen {
 	public void drawScreen(int i, int j, float f) {
 		drawGuiBackGround();
 		String s = this._targetItem.getFriendlyName() + " - History";
-		fontRenderer.drawString(s, xCenter - fontRenderer.getStringWidth(s)/2, top + 10, 0x404040);
+		fontRenderer.drawString(s, xCenter - fontRenderer.getStringWidth(s)/2, guiTop + 10, 0x404040);
 		
 		int xOrigo = xCenter - 95;
 		int yOrigo = yCenter + 80;
@@ -108,7 +108,7 @@ public class GuiStatistics extends KraphtBaseGuiScreen {
 		
 		float averagey = ((float)highest + lowest) / 2;
 		
-		fontRenderer.drawString(highest + "", xOrigo - 2 - fontRenderer.getStringWidth(highest + ""), top + 12, 0x404040);
+		fontRenderer.drawString(highest + "", xOrigo - 2 - fontRenderer.getStringWidth(highest + ""), guiTop + 12, 0x404040);
 		fontRenderer.drawString((int)averagey + "", xOrigo - 2 - fontRenderer.getStringWidth((int)averagey +""), yCenter - 9, 0x404040);
 		fontRenderer.drawString(lowest + "", xOrigo - 2 - fontRenderer.getStringWidth(lowest +""), bottom - 30, 0x404040);
 		

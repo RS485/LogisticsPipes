@@ -86,29 +86,29 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen { //GuiScreen{
 
 		
 		String pipeName = ItemIdentifier.get(_router.getPipe().itemID, 0, null).getFriendlyName();
-		fontRenderer.drawString(pipeName, xCenter - fontRenderer.getStringWidth(pipeName)/2, top + 10, 0x83601c);
-		fontRenderer.drawString("Inbound:", left + 60 - fontRenderer.getStringWidth("Inbound:"), top + 25, 0x303030);
-		fontRenderer.drawString("Outbound:", left + 60 - fontRenderer.getStringWidth("Outbound:"), top + 40, 0x303030);
+		fontRenderer.drawString(pipeName, xCenter - fontRenderer.getStringWidth(pipeName)/2, guiTop + 10, 0x83601c);
+		fontRenderer.drawString("Inbound:", guiLeft + 60 - fontRenderer.getStringWidth("Inbound:"), guiTop + 25, 0x303030);
+		fontRenderer.drawString("Outbound:", guiLeft + 60 - fontRenderer.getStringWidth("Outbound:"), guiTop + 40, 0x303030);
 		
-		fontRenderer.drawString(_router.getInboundItemsCount()+"", left + 80 - fontRenderer.getStringWidth(_router.getInboundItemsCount()+"")/2, top + 25, 0x303030);
-		fontRenderer.drawString(_router.getOutboundItemsCount()+"", left + 80 - fontRenderer.getStringWidth(_router.getOutboundItemsCount()+"")/2, top + 40, 0x303030);
+		fontRenderer.drawString(_router.getInboundItemsCount()+"", guiLeft + 80 - fontRenderer.getStringWidth(_router.getInboundItemsCount()+"")/2, guiTop + 25, 0x303030);
+		fontRenderer.drawString(_router.getOutboundItemsCount()+"", guiLeft + 80 - fontRenderer.getStringWidth(_router.getOutboundItemsCount()+"")/2, guiTop + 40, 0x303030);
 		
-		int sessionxCenter = left + 85;
-		int lifetimexCenter = left + 130;
+		int sessionxCenter = guiLeft + 85;
+		int lifetimexCenter = guiLeft + 130;
 		
-		fontRenderer.drawString("Session", sessionxCenter - fontRenderer.getStringWidth("Session") / 2, top + 55, 0x303030);
-		fontRenderer.drawString("Lifetime", lifetimexCenter - fontRenderer.getStringWidth("Lifetime") / 2, top + 55, 0x303030);
-		fontRenderer.drawString("Sent:", left + 60 - fontRenderer.getStringWidth("Sent:"), top + 65, 0x303030);
-		fontRenderer.drawString("Recieved:", left + 60 - fontRenderer.getStringWidth("Recieved:"), top + 80, 0x303030);
-		fontRenderer.drawString("Relayed:", left + 60 - fontRenderer.getStringWidth("Relayed:"), top + 95, 0x303030);
+		fontRenderer.drawString("Session", sessionxCenter - fontRenderer.getStringWidth("Session") / 2, guiTop + 55, 0x303030);
+		fontRenderer.drawString("Lifetime", lifetimexCenter - fontRenderer.getStringWidth("Lifetime") / 2, guiTop + 55, 0x303030);
+		fontRenderer.drawString("Sent:", guiLeft + 60 - fontRenderer.getStringWidth("Sent:"), guiTop + 65, 0x303030);
+		fontRenderer.drawString("Recieved:", guiLeft + 60 - fontRenderer.getStringWidth("Recieved:"), guiTop + 80, 0x303030);
+		fontRenderer.drawString("Relayed:", guiLeft + 60 - fontRenderer.getStringWidth("Relayed:"), guiTop + 95, 0x303030);
 		CoreRoutedPipe pipe = _router.getPipe();
-		fontRenderer.drawString(pipe.stat_session_sent+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_sent+"")/2, top + 65, 0x303030);
-		fontRenderer.drawString(pipe.stat_session_recieved+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_recieved+"")/2, top + 80, 0x303030);
-		fontRenderer.drawString(pipe.stat_session_relayed+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_relayed+"")/2, top + 95, 0x303030);
+		fontRenderer.drawString(pipe.stat_session_sent+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_sent+"")/2, guiTop + 65, 0x303030);
+		fontRenderer.drawString(pipe.stat_session_recieved+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_recieved+"")/2, guiTop + 80, 0x303030);
+		fontRenderer.drawString(pipe.stat_session_relayed+"", sessionxCenter - fontRenderer.getStringWidth(pipe.stat_session_relayed+"")/2, guiTop + 95, 0x303030);
 		
-		fontRenderer.drawString(pipe.stat_lifetime_sent+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_sent+"")/2, top + 65, 0x303030);
-		fontRenderer.drawString(pipe.stat_lifetime_recieved+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_recieved+"")/2, top + 80, 0x303030);
-		fontRenderer.drawString(pipe.stat_lifetime_relayed+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_relayed+"")/2, top + 95, 0x303030);
+		fontRenderer.drawString(pipe.stat_lifetime_sent+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_sent+"")/2, guiTop + 65, 0x303030);
+		fontRenderer.drawString(pipe.stat_lifetime_recieved+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_recieved+"")/2, guiTop + 80, 0x303030);
+		fontRenderer.drawString(pipe.stat_lifetime_relayed+"", lifetimexCenter - fontRenderer.getStringWidth(pipe.stat_lifetime_relayed+"")/2, guiTop + 95, 0x303030);
 		
 		
 		//fontRenderer.drawString("GameTime:" + mc.theWorld.getWorldTime(), left + 10, top + 85, 0x303030);

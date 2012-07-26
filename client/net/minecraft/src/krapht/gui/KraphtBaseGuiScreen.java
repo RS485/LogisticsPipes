@@ -8,10 +8,12 @@
 
 package net.minecraft.src.krapht.gui;
 
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 
-public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHandlerProvider {
+public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	public enum Colors
 	{
@@ -23,11 +25,7 @@ public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHan
 		Red
 	}
 	
-	protected final int xSize;
-	protected final int ySize;
-	protected int left;
 	protected int right;
-	protected int top;
 	protected int bottom;
 	protected int xCenter;
 	protected int yCenter;
@@ -35,6 +33,7 @@ public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHan
 	protected final int yCenterOffset;
 	
 	public KraphtBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
+		super(new DummyContainer(null, null));
 		this.xSize = xSize;
 		this.ySize = ySize;
 		this.xCenterOffset = xCenterOffset;
@@ -45,14 +44,14 @@ public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHan
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.left =  width/2 - xSize/2 + xCenterOffset;
-		this.top = height/2 - ySize/2  + yCenterOffset;
+		this.guiLeft =  width/2 - xSize/2 + xCenterOffset;
+		this.guiTop = height/2 - ySize/2  + yCenterOffset;
 		
 		this.right = width/2 + xSize/2 + xCenterOffset;
 		this.bottom = height/2 + ySize/2 + yCenterOffset;
 		
-		this.xCenter = (right + left) / 2;
-		this.yCenter = (bottom + top) / 2;
+		this.xCenter = (right + guiLeft) / 2;
+		this.yCenter = (bottom + guiTop) / 2;
 	}
 	
 	private int ConvertEnumToColor(Colors color){
@@ -108,25 +107,40 @@ public abstract class KraphtBaseGuiScreen extends GuiScreen implements IGuiIDHan
 		}
 	}
 	
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+		
+	}
+	
+	@Override
+	protected void keyTyped(char c, int i) {
+		if(i == 1){
+			this.mc.displayGuiScreen((GuiScreen)null);
+			this.mc.setIngameFocus();
+		} else {
+			super.keyTyped(c, i);
+		}
+	}
+	
 	public void drawGuiBackGround(){
-		drawRect(left + 2, top, right - 3, top+1, Colors.Black);			// Top border
-		drawRect(left + 3, bottom-1, right - 2, bottom, Colors.Black);		// Bottom border
-		drawRect(left, top + 2, left+1, bottom -3, Colors.Black);			// Left border
-		drawRect(right-1, top + 3, right, bottom - 2, Colors.Black);		// Right border
+		drawRect(guiLeft + 2, guiTop, right - 3, guiTop+1, Colors.Black);			// Top border
+		drawRect(guiLeft + 3, bottom-1, right - 2, bottom, Colors.Black);		// Bottom border
+		drawRect(guiLeft, guiTop + 2, guiLeft+1, bottom -3, Colors.Black);			// Left border
+		drawRect(right-1, guiTop + 3, right, bottom - 2, Colors.Black);		// Right border
 		
-		drawRect(left+3, top + 3, right - 1, bottom -1, Colors.DarkGrey);	//Right/Bottom highlight
-		drawRect(left+1, top + 1, right - 3, bottom -3, Colors.White);		//Top/Left highlight
-		drawRect(left+3, top + 3, right - 3, bottom - 3, Colors.LightGrey);	// Main background
+		drawRect(guiLeft+3, guiTop + 3, right - 1, bottom -1, Colors.DarkGrey);	//Right/Bottom highlight
+		drawRect(guiLeft+1, guiTop + 1, right - 3, bottom -3, Colors.White);		//Top/Left highlight
+		drawRect(guiLeft+3, guiTop + 3, right - 3, bottom - 3, Colors.LightGrey);	// Main background
 		
-		drawPoint(left + 1, top +1, Colors.Black);							//Top-left border corner
-		drawPoint(left+3, top + 3, Colors.White);							//Top-left highlight corner
-		drawPoint(right - 3, top + 1, Colors.Black);						//Top-right border corner
-		drawPoint(right - 2, top + 2, Colors.Black);						//Top-right border corner
-		drawPoint(right - 3, top + 2, Colors.LightGrey);					//Top-right highlight corner
+		drawPoint(guiLeft + 1, guiTop +1, Colors.Black);							//Top-left border corner
+		drawPoint(guiLeft+3, guiTop + 3, Colors.White);							//Top-left highlight corner
+		drawPoint(right - 3, guiTop + 1, Colors.Black);						//Top-right border corner
+		drawPoint(right - 2, guiTop + 2, Colors.Black);						//Top-right border corner
+		drawPoint(right - 3, guiTop + 2, Colors.LightGrey);					//Top-right highlight corner
 		
-		drawPoint(left + 1, bottom -3, Colors.Black);						//Bottom-left border corner 1
-		drawPoint(left + 2, bottom -2, Colors.Black);						//Bottom-left border corner 2
-		drawPoint(left + 2, bottom -3, Colors.LightGrey);					//Bottom-left highlight corner
+		drawPoint(guiLeft + 1, bottom -3, Colors.Black);						//Bottom-left border corner 1
+		drawPoint(guiLeft + 2, bottom -2, Colors.Black);						//Bottom-left border corner 2
+		drawPoint(guiLeft + 2, bottom -3, Colors.LightGrey);					//Bottom-left highlight corner
 		drawPoint(right - 2, bottom -2, Colors.Black);						//Bottom-right border corner
 		drawPoint(right - 4, bottom - 4, Colors.DarkGrey);					//Bottom-right highlight corner
 	}

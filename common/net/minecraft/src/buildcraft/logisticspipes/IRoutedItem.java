@@ -12,8 +12,8 @@ import java.util.UUID;
 
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
 
 /**
  * This interface describes the actions that must be available on an item that is considered routed

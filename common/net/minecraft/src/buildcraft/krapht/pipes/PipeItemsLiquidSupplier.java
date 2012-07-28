@@ -5,9 +5,11 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.BuildCraftAPI;
-import net.minecraft.src.buildcraft.api.ILiquidContainer;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.api.liquids.ILiquidTank;
+import buildcraft.api.liquids.LiquidManager;
+import buildcraft.api.liquids.LiquidStack;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
@@ -17,10 +19,10 @@ import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import net.minecraft.src.buildcraft.transport.EntityData;
-import net.minecraft.src.buildcraft.transport.IItemTravelingHook;
-import net.minecraft.src.buildcraft.transport.PipeTransportItems;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.EntityData;
+import buildcraft.transport.IItemTravelingHook;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.ForgeHooks;
 
 public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems, IItemTravelingHook{
@@ -43,20 +45,20 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-		if (!(tile instanceof ILiquidContainer)) return;
+		if (!(tile instanceof ILiquidTank)) return;
 		if (tile instanceof TileGenericPipe) return;
-		ILiquidContainer container = (ILiquidContainer) tile;
-		container.getLiquidSlots()[0].getLiquidQty();
+		ILiquidTank container = (ILiquidTank) tile;
+		//container.getLiquidSlots()[0].getLiquidQty();
 		if (data.item == null) return;
-		if (data.item.item == null) return;
-		int liquidId = BuildCraftAPI.getLiquidForFilledItem(data.item.item);
-		if (liquidId == 0) return;
-		while (data.item.item.stackSize > 0 && container.fill(data.orientation.reverse(), BuildCraftAPI.BUCKET_VOLUME, liquidId, false) == BuildCraftAPI.BUCKET_VOLUME){
-			container.fill(data.orientation.reverse(), BuildCraftAPI.BUCKET_VOLUME, liquidId, true);
-			data.item.item.stackSize--;
+		if (data.item.getItemStack() == null) return;
+		LiquidStack liquidId = LiquidManager.getLiquidForFilledItem(data.item.getItemStack());
+		if (liquidId == null) return;
+		while (data.item.getItemStack().stackSize > 0 && container.fill(liquidId, false) == liquidId.amount){
+			container.fill(liquidId, true);
+			data.item.getItemStack().stackSize--;
 			
-			if (data.item.item.itemID >= 0 && data.item.item.itemID < Item.itemsList.length){
-				Item item = Item.itemsList[data.item.item.itemID];
+			if (data.item.getItemStack().itemID >= 0 && data.item.getItemStack().itemID < Item.itemsList.length){
+				Item item = Item.itemsList[data.item.getItemStack().itemID];
 				if (item.hasContainerItem()){
 					Item containerItem = item.getContainerItem();
 					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(new ItemStack(containerItem, 1), this.worldObj);
@@ -65,7 +67,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 				}
 			}
 		}
-		if (data.item.item.stackSize < 1){
+		if (data.item.getItemStack().stackSize < 1){
 			((PipeTransportItems)this.transport).scheduleRemoval(data.item);
 		}
 	}

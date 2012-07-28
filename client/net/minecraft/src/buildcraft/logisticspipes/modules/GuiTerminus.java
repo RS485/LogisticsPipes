@@ -15,7 +15,7 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
-import net.minecraft.src.buildcraft.transport.Pipe;
+import buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;

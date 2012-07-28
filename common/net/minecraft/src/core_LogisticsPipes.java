@@ -254,17 +254,20 @@ import java.io.File;
 import java.lang.reflect.Method;
 
 import net.minecraft.src.Block;
-import net.minecraft.src.BuildCraftCore;
-import net.minecraft.src.BuildCraftTransport;
+import buildcraft.BuildCraftBuilders;
+import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
 import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemBlock;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.buildcraft.api.Action;
-import net.minecraft.src.buildcraft.api.BuildCraftAPI;
-import net.minecraft.src.buildcraft.api.Trigger;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.api.gates.Action;
+import buildcraft.api.gates.ActionManager;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.api.gates.Trigger;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.ActionDisableLogistics;
 import net.minecraft.src.buildcraft.krapht.ILogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
@@ -284,8 +287,8 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrdererClientInformation;
-import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
-import net.minecraft.src.buildcraft.transport.Pipe;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Pipe;
 import net.minecraft.src.forge.Configuration;
 import net.minecraft.src.forge.NetworkMod;
 import net.minecraft.src.forge.Property;
@@ -618,13 +621,13 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
 
 		core_LogisticsPipes.LogisticsFailedTrigger = new TriggerSupplierFailed(700);
-		BuildCraftAPI.registerTriggerProvider(new LogisticsTriggerProvider());
+		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		
 		core_LogisticsPipes.LogisticsDisableAction = new ActionDisableLogistics(700);
 		
 		ModuleItem						= new ItemModule(ItemModuleId).setItemName("itemModule");
-		
-		LOGISTICSPIPE_TEXTURE 			= CoreProxy.addCustomTexture(LOGISTICSPIPE_TEXTURE_FILE);
+		/*
+		LOGISTICSPIPE_TEXTURE 			= CoreProxy.BindTexture(LOGISTICSPIPE_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDER_TEXTURE 	= CoreProxy.addCustomTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTER_TEXTURE	= CoreProxy.addCustomTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
@@ -645,7 +648,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_CHASSI3_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI4_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI5_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
-
+*/
 		
 		LogisticsBasicPipe = createPipe(LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe");
 		LogisticsRequestPipe = createPipe(LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe");
@@ -671,8 +674,10 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID		= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID			= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
 		
+		/*
 		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
+		*/
 		
 		LogisticsBuilderSupplierPipe = createPipe(LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe");
 		LogisticsLiquidSupplierPipe = createPipe(LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe");

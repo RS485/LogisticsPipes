@@ -14,15 +14,17 @@ import net.minecraft.src.EntityItem;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.api.transport.IPipedItem;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
-import net.minecraft.src.buildcraft.transport.PipeTransportItems;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
@@ -40,16 +42,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	private TransportMode _transportMode = TransportMode.Unknown;
 	
 	
-	public RoutedEntityItem(World world, EntityPassiveItem entityItem) {
-		super(world, entityItem.entityId);
-		container = entityItem.container;
-		deterministicRandomization = entityItem.deterministicRandomization;
-		posX = entityItem.posX;
-		posY = entityItem.posY;
-		posZ = entityItem.posZ;
-		speed = entityItem.speed;
-		synchroTracker = entityItem.synchroTracker;
-		item = entityItem.item; 
+	public RoutedEntityItem(World world, IPipedItem entityItem) {
+		super(world, entityItem.getEntityId());
+		container = entityItem.getContainer();
+		deterministicRandomization = entityItem.getDeterministicRandomization();
+		position = entityItem.getPosition();
+		speed = entityItem.getSpeed();
+		synchroTracker = entityItem.getSynchroTracker();
+		item = entityItem.getItemStack(); 
 	}
 	
 	@Override
@@ -170,11 +170,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public IRoutedItem split(World worldObj, int itemsToTake, Orientations orientation) {
 		EntityPassiveItem newItem = new EntityPassiveItem(worldObj);
-		newItem.posX = this.posX;
-		newItem.posY = this.posY;
-		newItem.posZ = this.posZ;
-		newItem.speed = this.speed;
-		newItem.item = this.item.splitStack(itemsToTake);
+		newItem.setPosition(position.x, position.y, position.z);
+		newItem.setSpeed(this.speed);
+		newItem.setItemStack(this.item.splitStack(itemsToTake));
 		
 		if (this.container instanceof TileGenericPipe && ((TileGenericPipe)this.container).pipe.transport instanceof PipeTransportItems){
 			if (((TileGenericPipe)this.container).pipe instanceof PipeLogisticsChassi){
@@ -192,9 +190,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void SetPosition(double x, double y, double z) {
-		this.posX = x;
-		this.posY = y;
-		this.posZ = z;
+		this.position = new Position(x,y,z);
 	}
 
 	@Override

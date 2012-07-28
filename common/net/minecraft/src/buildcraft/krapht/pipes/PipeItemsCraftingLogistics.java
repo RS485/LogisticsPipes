@@ -16,14 +16,14 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.ISpecialInventory;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.core.Utils;
-import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
+import buildcraft.api.APIProxy;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.Utils;
+import buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.CraftingTemplate;
 import net.minecraft.src.buildcraft.krapht.ICraftItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
@@ -40,8 +40,8 @@ import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import net.minecraft.src.buildcraft.transport.PipeTransportItems;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -71,7 +71,9 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 	
 	protected ItemStack extractFromISpecialInventory(ISpecialInventory inv){
-		return inv.extractItem(true, Orientations.Unknown);
+		ItemStack[] stack = inv.extractItem(true, Orientations.Unknown, 1);
+		if(stack.length < 1) return null;
+		return stack[0];
 	}
 	
 	protected ItemStack extractFromIInventory(IInventory inv){
@@ -137,7 +139,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.speed = Utils.pipeNormalSpeed * core_LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER;
+					entityItem.setSpeed(Utils.pipeNormalSpeed * core_LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 					((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
 				}
 			}

@@ -18,7 +18,7 @@ import java.util.UUID;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
+import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;

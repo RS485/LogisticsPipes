@@ -2,7 +2,7 @@ package net.minecraft.src.buildcraft.logisticspipes;
 
 import java.util.LinkedList;
 
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;

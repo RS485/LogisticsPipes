@@ -2,8 +2,6 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.buildcraft.api.ISpecialInventory;
-import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.forge.ISidedInventory;

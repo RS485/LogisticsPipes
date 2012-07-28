@@ -13,13 +13,13 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.Tessellator;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
-import net.minecraft.src.buildcraft.transport.Pipe;
+import buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 

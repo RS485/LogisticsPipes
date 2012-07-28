@@ -13,23 +13,23 @@ import java.util.LinkedList;
 import net.minecraft.src.Block;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.IPipe;
-import net.minecraft.src.buildcraft.api.ITriggerProvider;
-import net.minecraft.src.buildcraft.api.Trigger;
+import buildcraft.api.transport.IPipe;
+import buildcraft.api.gates.ITrigger;
+import buildcraft.api.gates.ITriggerProvider;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 
 public class LogisticsTriggerProvider implements ITriggerProvider{
 
 	@Override
-	public LinkedList<Trigger> getPipeTriggers(IPipe pipe) {
+	public LinkedList<ITrigger> getPipeTriggers(IPipe pipe) {
 		if (!(pipe instanceof PipeItemsSupplierLogistics)) return null;
-		LinkedList<Trigger> triggers = new LinkedList<Trigger>();
+		LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 		triggers.add(mod_LogisticsPipes.LogisticsFailedTrigger);
 		return triggers;
 	}
 
 	@Override
-	public LinkedList<Trigger> getNeighborTriggers(Block block, TileEntity tile) {
+	public LinkedList<ITrigger> getNeighborTriggers(Block block, TileEntity tile) {
 		return null;
 	}
 }

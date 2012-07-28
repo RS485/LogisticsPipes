@@ -8,12 +8,12 @@
 
 package net.minecraft.src.buildcraft.logisticspipes;
 
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.APIProxy;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
-import net.minecraft.src.buildcraft.transport.*;
-import net.minecraft.src.buildcraft.transport.PipeTransportItems.*;
+import buildcraft.transport.*;
+import buildcraft.transport.PipeTransportItems.*;
 
 /**
  * @author Krapht

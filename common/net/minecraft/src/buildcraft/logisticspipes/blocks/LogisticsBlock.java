@@ -8,7 +8,7 @@ import net.minecraft.src.IBlockAccess;
 import net.minecraft.src.Material;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.APIProxy;
+import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 
 public class LogisticsBlock extends BlockContainer {

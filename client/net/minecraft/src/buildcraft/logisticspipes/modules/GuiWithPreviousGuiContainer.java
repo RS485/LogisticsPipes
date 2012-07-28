@@ -4,12 +4,12 @@ import net.minecraft.src.Container;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
-import net.minecraft.src.buildcraft.transport.Pipe;
+import buildcraft.transport.Pipe;
 
 public abstract class GuiWithPreviousGuiContainer extends GuiContainer implements IGuiIDHandlerProvider {
 	

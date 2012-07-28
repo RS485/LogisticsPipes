@@ -9,7 +9,7 @@
 package net.minecraft.src.buildcraft.krapht;
 
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.Action;
+import buildcraft.api.gates.Action;
 
 public class ActionDisableLogistics extends Action{
 

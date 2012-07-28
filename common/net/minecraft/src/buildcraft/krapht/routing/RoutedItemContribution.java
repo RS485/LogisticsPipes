@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import net.minecraft.src.NBTTagCompound;
 
-public class RoutedItemContribution implements net.minecraft.src.buildcraft.api.IPassiveItemContribution{
+public class RoutedItemContribution implements buildcraft.api.transport.IPassiveItemContribution {
 	
 	public UUID sourceUUID;
 	public UUID destinationUUID;

@@ -1,8 +1,8 @@
 package net.minecraft.src.buildcraft.krapht.logic;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.TileNetworkData;
+import buildcraft.api.core.Orientations;
+import buildcraft.core.network.TileNetworkData;
 
 public class BaseChassiLogic extends BaseRoutingLogic {
 	

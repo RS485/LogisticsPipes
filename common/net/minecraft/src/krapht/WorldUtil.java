@@ -13,8 +13,8 @@ import java.util.LinkedList;
 
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
 
 public class WorldUtil {
 	private int _x;

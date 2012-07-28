@@ -15,8 +15,8 @@ import java.util.UUID;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
-import net.minecraft.src.BuildCraftCore;
-import net.minecraft.src.BuildCraftTransport;
+import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftTransport;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
@@ -24,23 +24,24 @@ import net.minecraft.src.Packet;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.mod_BuildCraftTransport;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.api.SafeTimeTracker;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.core.DefaultProps;
-import net.minecraft.src.buildcraft.core.Utils;
-import net.minecraft.src.buildcraft.core.network.PacketIds;
-import net.minecraft.src.buildcraft.core.network.PacketPipeTransportContent;
+import buildcraft.mod_BuildCraftTransport;
+import buildcraft.api.APIProxy;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.api.core.SafeTimeTracker;
+import buildcraft.api.transport.IPipedItem;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.DefaultProps;
+import buildcraft.core.Utils;
+import buildcraft.core.network.PacketIds;
+import buildcraft.core.network.PacketPipeTransportContent;
 //import net.minecraft.src.buildcraft.krapht.logistics.ResolvedDestination;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeLogisticsContent;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
-import net.minecraft.src.buildcraft.transport.*;
+import buildcraft.transport.*;
 import net.minecraft.src.krapht.ItemIdentifier;
 
 public class PipeTransportLogistics extends PipeTransportItems {
@@ -109,19 +110,19 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	
 	 @Override
-	public void entityEntering(EntityPassiveItem item, Orientations orientation) {
+	public void entityEntering(IPipedItem item, Orientations orientation) {
 //		 if (!SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)){
 //			 SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 //		 }
 		 
-		 SafeTimeTracker save = item.synchroTracker;
-		 item.synchroTracker = new SafeTimeTracker() {
+		 SafeTimeTracker save = item.getSynchroTracker();
+		 item.setSynchroTracker(new SafeTimeTracker() {
 			 public boolean markTimeIfDelay(World world, long delay) {
 				 return false;
 			 }
-		 };
+		 });
 		 super.entityEntering(item, orientation);
-		 item.synchroTracker = save;
+		 item.setSynchroTracker(save);
 	}
 	
 	@Override
@@ -160,7 +161,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		
 		if (value == Orientations.Unknown ){ 
 			//Reduce the speed of items being dropped so they don't go all over the place
-			data.item.speed = Math.min(data.item.speed, Utils.pipeNormalSpeed * 5F);
+			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
 		}
 		
 		return value;
@@ -258,7 +259,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	
 	@Override
-	public void readjustSpeed(EntityPassiveItem item) {	
+	public void readjustSpeed(IPipedItem item) {	
 		if (SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)){
 			
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item); 
@@ -276,7 +277,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				break;
 			
 			}
-			item.speed = Math.max(item.speed, Utils.pipeNormalSpeed * defaultBoost);
+			item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
 		}
 	}
 
@@ -295,24 +296,24 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			return;
 		}
 		
-		EntityPassiveItem item = EntityPassiveItem.getOrCreate(worldObj, packet.getEntityId());
+		IPipedItem item = EntityPassiveItem.getOrCreate(worldObj, packet.getEntityId());
 
-		item.item = new ItemStack(packet.getItemId(), packet.getStackSize(), packet.getItemDamage());
+		item.setItemStack(new ItemStack(packet.getItemId(), packet.getStackSize(), packet.getItemDamage()));
 
 		item.setPosition(packet.getPosX(), packet.getPosY(), packet.getPosZ());
-		item.speed = packet.getSpeed();
-		item.deterministicRandomization = packet.getRandomization();
+		item.setSpeed(packet.getSpeed());
+		item.setDeterministicRandomization(packet.getRandomization());
 
 		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)) {
-			if (item.container != this.container || !travelingEntities.containsKey(item.entityId)) {
-				if (item.container != null) {
-					((PipeTransportItems) ((TileGenericPipe) item.container).pipe.transport).scheduleRemoval(item);
+			if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
+				if (item.getContainer() != null) {
+					((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
 				}
-				travelingEntities.put(new Integer(item.entityId), new EntityData(item, packet.getOrientation()));
-				item.container = container;
+				travelingEntities.put(new Integer(item.getEntityId()), new EntityData(item, packet.getOrientation()));
+				item.setContainer(container);
 			} else {
-				travelingEntities.get(new Integer(item.entityId)).item = item;
-				travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
+				travelingEntities.get(new Integer(item.getEntityId())).item = item;
+				travelingEntities.get(new Integer(item.getEntityId())).orientation = packet.getOrientation();
 			}
 			PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
 			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
@@ -325,15 +326,15 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		routed.setSource(newpacket.getSourceUUID(this.worldObj));
 		routed.setDestination(newpacket.getDestUUID(this.worldObj));
 		item = routed.getEntityPassiveItem();
-		if (item.container != this.container || !travelingEntities.containsKey(item.entityId)) {
-			if (item.container != null) {
-				((PipeTransportItems) ((TileGenericPipe) item.container).pipe.transport).scheduleRemoval(item);
+		if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
+			if (item.getContainer() != null) {
+				((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
 			}
-			travelingEntities.put(new Integer(item.entityId), new EntityData(item, packet.getOrientation()));
-			item.container = container;
+			travelingEntities.put(new Integer(item.getEntityId()), new EntityData(item, packet.getOrientation()));
+			item.setContainer(container);
 		} else {
-			travelingEntities.get(new Integer(item.entityId)).item = item;
-			travelingEntities.get(new Integer(item.entityId)).orientation = packet.getOrientation();
+			travelingEntities.get(new Integer(item.getEntityId())).item = item;
+			travelingEntities.get(new Integer(item.getEntityId())).orientation = packet.getOrientation();
 		}
 	}
 
@@ -345,9 +346,9 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	 * @return
 	 */
 	@Override
-	public Packet createItemPacket(EntityPassiveItem item, Orientations orientation) {
+	public Packet createItemPacket(IPipedItem item, Orientations orientation) {
 		if(item instanceof RoutedEntityItem) {
-			item.deterministicRandomization += worldObj.rand.nextInt(6);
+			item.setDeterministicRandomization(item.getDeterministicRandomization() + worldObj.rand.nextInt(6));
 			PacketPipeLogisticsContent packet = new PacketPipeLogisticsContent(container.xCoord, container.yCoord, container.zCoord, (RoutedEntityItem)item, orientation);
 
 			return packet.getPacket();

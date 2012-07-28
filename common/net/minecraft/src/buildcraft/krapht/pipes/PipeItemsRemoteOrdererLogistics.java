@@ -2,14 +2,14 @@ package net.minecraft.src.buildcraft.krapht.pipes;
 
 import java.util.Random;
 
-import net.minecraft.src.BuildCraftCore;
+import buildcraft.BuildCraftCore;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;

@@ -19,15 +19,14 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.mod_BuildCraftCore;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.api.TileNetworkData;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.core.DefaultProps;
-import net.minecraft.src.buildcraft.core.Utils;
-import net.minecraft.src.buildcraft.core.network.ISynchronizedTile;
+import buildcraft.mod_BuildCraftCore;
+import buildcraft.api.APIProxy;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.DefaultProps;
+import buildcraft.core.Utils;
+import buildcraft.core.network.ISynchronizedTile;
 import net.minecraft.src.buildcraft.krapht.IProvideItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsPromise;
@@ -51,7 +50,7 @@ import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILegacyActiveModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.ISimpleInventoryEventHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -155,6 +154,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().reverse());
 		return rawInventory;
 	}
+
 	@Override
 	public Orientations inventoryOrientation() {
 		return getPointedOrientation();
@@ -256,7 +256,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			switchOrientationOnTick = false;
 			if(!APIProxy.isRemote()) {
 				nextOrientation();
-				CoreProxy.sendToPlayers(container.getUpdatePacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
+				CoreProxy.sendToPlayers(container.getDescriptionPacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
 			}
 		}
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
@@ -290,7 +290,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, i, j, k, entityplayer);
 		
-		if (entityplayer.getCurrentEquippedItem().getItem() == net.minecraft.src.BuildCraftCore.wrenchItem){
+		if (entityplayer.getCurrentEquippedItem().getItem() == buildcraft.BuildCraftCore.wrenchItem){
 			if (entityplayer.isSneaking()){
 				((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				return true;

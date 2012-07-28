@@ -8,10 +8,10 @@ import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.mod_BuildCraftCore;
+import buildcraft.mod_BuildCraftCore;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.core.DefaultProps;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.DefaultProps;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
@@ -29,7 +29,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SneakyOrientation;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 
 public class PacketHandler implements IPacketHandler {
@@ -601,7 +601,7 @@ public class PacketHandler implements IPacketHandler {
 		if (pipe == null) {
 			return;
 		}
-		playerEntity.playerNetServerHandler.sendPacket(pipe.getUpdatePacket());
+		playerEntity.playerNetServerHandler.sendPacket(pipe.pipe.getNetworkPacket());
 	}
 
 	private void onCraftingPipeUpdateRequest(EntityPlayerMP player, PacketCoordinates packet) {
@@ -609,7 +609,7 @@ public class PacketHandler implements IPacketHandler {
 		if (pipe == null) {
 			return;
 		}
-		player.playerNetServerHandler.sendPacket(pipe.getUpdatePacket());
+		player.playerNetServerHandler.sendPacket(pipe.pipe.getNetworkPacket());
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe.logic instanceof LogicCrafting) {
 				final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((LogicCrafting)pipe.pipe.logic).getDummyInventory());

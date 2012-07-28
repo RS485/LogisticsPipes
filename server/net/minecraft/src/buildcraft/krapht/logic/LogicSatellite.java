@@ -10,7 +10,7 @@ package net.minecraft.src.buildcraft.krapht.logic;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;

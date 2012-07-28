@@ -5,16 +5,16 @@ import java.util.UUID;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.core.network.PacketPayload;
-import net.minecraft.src.buildcraft.core.network.PacketPipeTransportContent;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
+import buildcraft.core.network.PacketPayload;
+import buildcraft.core.network.PacketPipeTransportContent;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
-import net.minecraft.src.buildcraft.transport.Pipe;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.TileGenericPipe;
 
 public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 	
@@ -56,17 +56,17 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 		if(super.payload == null) {
 			super.payload = new PacketPayload(6, 4, 0);
 
-			payload.intPayload[0] = item.entityId;
+			payload.intPayload[0] = item.getEntityId();
 			payload.intPayload[1] = orientation.ordinal();
-			payload.intPayload[2] = item.item.itemID;
-			payload.intPayload[3] = item.item.stackSize;
-			payload.intPayload[4] = item.item.getItemDamage();
-			payload.intPayload[5] = item.deterministicRandomization;
+			payload.intPayload[2] = item.getItemStack().itemID;
+			payload.intPayload[3] = item.getItemStack().stackSize;
+			payload.intPayload[4] = item.getItemStack().getItemDamage();
+			payload.intPayload[5] = item.getDeterministicRandomization();
 
-			payload.floatPayload[0] = (float) item.posX;
-			payload.floatPayload[1] = (float) item.posY;
-			payload.floatPayload[2] = (float) item.posZ;
-			payload.floatPayload[3] = item.speed;
+			payload.floatPayload[0] = (float) item.getPosition().x;
+			payload.floatPayload[1] = (float) item.getPosition().y;
+			payload.floatPayload[2] = (float) item.getPosition().z;
+			payload.floatPayload[3] = item.getSpeed();
 		}
 		super.payload.append(additions);
 	}

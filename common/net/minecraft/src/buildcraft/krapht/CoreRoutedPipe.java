@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 
-import net.minecraft.src.BuildCraftCore;
+import buildcraft.BuildCraftCore;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -23,12 +23,12 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.api.APIProxy;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
@@ -47,9 +47,9 @@ import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
-import net.minecraft.src.buildcraft.transport.IPipeTransportItemsHook;
-import net.minecraft.src.buildcraft.transport.Pipe;
-import net.minecraft.src.buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.IPipeTransportItemsHook;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportItems;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.Pair;
 import net.minecraft.src.krapht.WorldUtil;
@@ -198,19 +198,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public abstract int getCenterTexture();
 	
 	@Override
-	public final void prepareTextureFor(Orientations connection) {
+	public String getTextureFile() {
+		return null;
+	}
+
+	@Override
+	public final int getTextureIndex(Orientations connection) {
 
 		if (connection == Orientations.Unknown || this.router == null){
-			_nextTexture =  getCenterTexture();
-			return;
+			return getCenterTexture();
 		}
 		
 		if (this.router.isRoutedExit(connection)) {
-			_nextTexture = getRoutedTexture(connection);
+			return getRoutedTexture(connection);
 			
 		}
 		else {
-			_nextTexture = getNonRoutedTexture(connection);
+			return getNonRoutedTexture(connection);
 		}
 	}
 	

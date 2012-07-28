@@ -16,15 +16,15 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.PipeTransportLogistics;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.DimensionManager;
 import net.minecraft.src.krapht.ItemIdentifier;
 
@@ -375,7 +375,7 @@ public class Router implements IRouter {
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
-			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifier.get(routedEntityItem.item));
+			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifier.get(routedEntityItem.getItemStack()));
 		}
 	}
 

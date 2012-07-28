@@ -17,12 +17,14 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.BuildCraftAPI;
-import net.minecraft.src.buildcraft.api.ILiquidContainer;
-import net.minecraft.src.buildcraft.api.LiquidSlot;
-import net.minecraft.src.buildcraft.builders.TileBuilder;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.api.APIProxy;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.api.liquids.ILiquidTank;
+import buildcraft.api.liquids.ITankContainer;
+import buildcraft.api.liquids.LiquidManager;
+import buildcraft.api.liquids.LiquidStack;
+import buildcraft.builders.TileBuilder;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
@@ -31,7 +33,7 @@ import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsBuilderSupplierLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsLiquidSupplier;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.InventoryUtilFactory;
@@ -63,49 +65,49 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
-			if (!(tile.tile instanceof ILiquidContainer)) continue;
-			ILiquidContainer container = (ILiquidContainer) tile.tile;
-			if (container.getLiquidSlots().length == 0) continue;
+			if (!(tile.tile instanceof ITankContainer)) continue;
+			ITankContainer container = (ITankContainer) tile.tile;
+			if (container.getTanks().length == 0) continue;
 			
 			//How much do I want?
 			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(dummyInventory);
 			HashMap<ItemIdentifier, Integer> wantContainers = invUtil.getItemsAndCount();
-			HashMap<Integer, Integer> wantLiquids = new HashMap<Integer, Integer>();
+			HashMap<LiquidStack, Integer> wantLiquids = new HashMap<LiquidStack, Integer>();
 			for (ItemIdentifier item : wantContainers.keySet()){
 				ItemStack wantItem = item.makeNormalStack(1);
-				int liquidId = BuildCraftAPI.getLiquidForFilledItem(wantItem);
-				if (liquidId == 0) continue;
-				wantLiquids.put(liquidId, wantContainers.get(item) * BuildCraftAPI.BUCKET_VOLUME);
+				LiquidStack liquidstack = LiquidManager.getLiquidForFilledItem(wantItem);
+				if (liquidstack == null) continue;
+				wantLiquids.put(liquidstack, wantContainers.get(item) * liquidstack.amount);
 			}
 
 			//How much do I have?
-			HashMap<Integer, Integer> haveLiquids = new HashMap<Integer, Integer>();
+			HashMap<LiquidStack, Integer> haveLiquids = new HashMap<LiquidStack, Integer>();
 			
-			LiquidSlot[] result = container.getLiquidSlots();
-			for (LiquidSlot slot : result){
-				if (!wantLiquids.containsKey(slot.getLiquidId())) continue;
-				if (!haveLiquids.containsKey(slot.getLiquidId())){
-					haveLiquids.put(slot.getLiquidId(), slot.getLiquidQty());
+			ILiquidTank[] result = container.getTanks();
+			for (ILiquidTank slot : result){
+				if (!wantLiquids.containsKey(slot.getLiquid())) continue;
+				if (!haveLiquids.containsKey(slot.getLiquid())){
+					haveLiquids.put(slot.getLiquid(), slot.getCapacity());
 				} else {
-					haveLiquids.put(slot.getLiquidId(), haveLiquids.get(slot.getLiquidId()) + slot.getLiquidQty());
+					haveLiquids.put(slot.getLiquid(), haveLiquids.get(slot.getLiquid()) + slot.getCapacity());
 				}
 			}
 			
 			//HashMap<Integer, Integer> needLiquids = new HashMap<Integer, Integer>();
 			//Reduce what I have
-			for (Integer liquidId: wantLiquids.keySet()){
+			for (LiquidStack liquidId: wantLiquids.keySet()){
 				if (haveLiquids.containsKey(liquidId)){
 					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - haveLiquids.get(liquidId));
 				}
 			}
 			
 			//Reduce what have been requested already
-			for (Integer liquidId : wantLiquids.keySet()){
+			for (LiquidStack liquidId : wantLiquids.keySet()){
 				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
 					ItemStack wantItem = requestedItem.makeNormalStack(1);
-					int requestedLiquidId = BuildCraftAPI.getLiquidForFilledItem(wantItem);
-					if (requestedLiquidId == 0) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * BuildCraftAPI.BUCKET_VOLUME);
+					LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(wantItem);
+					if (requestedLiquidId == null) continue;
+					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * liquidId.amount);
 				}
 			}
 			
@@ -115,8 +117,8 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			HashMap<ItemIdentifier, Integer> allNeededContainers = invUtil.getItemsAndCount();
 			for (ItemIdentifier need : allNeededContainers.keySet()){
-				int requestedLiquidId = BuildCraftAPI.getLiquidForFilledItem(need.makeNormalStack(1));
-				if (requestedLiquidId == 0) continue;
+				LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1));
+				if (requestedLiquidId == null) continue;
 				if (!wantLiquids.containsKey(requestedLiquidId)) continue;
 				int countToRequest = wantLiquids.get(requestedLiquidId) / BuildCraftAPI.BUCKET_VOLUME;
 				if (countToRequest < 1) continue;

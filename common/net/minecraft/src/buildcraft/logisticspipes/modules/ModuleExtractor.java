@@ -8,8 +8,8 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.buildcraft.api.ISpecialInventory;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
@@ -94,11 +94,13 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 		}
 		
 		if (targetInventory instanceof ISpecialInventory){
-			ItemStack stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation);
+			ItemStack[] stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation,1);
 			if (stack == null) return;
-			if (!shouldSend(stack)) return;
-			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation);
-			_itemSender.sendStack(stack);
+			if (stack.length < 1) return;
+			if (stack[0] == null) return;
+			if (!shouldSend(stack[0])) return;
+			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
+			_itemSender.sendStack(stack[0]);
 			return;
 		}
 		

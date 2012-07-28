@@ -8,7 +8,8 @@
 
 package net.minecraft.src;
 
-import net.minecraft.src.buildcraft.core.utils.Localization;
+import buildcraft.core.utils.Localization;
+import buildcraft.transport.Pipe;
 import net.minecraft.src.buildcraft.krapht.BuildCraftProxy3;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.ModTextureProxy;

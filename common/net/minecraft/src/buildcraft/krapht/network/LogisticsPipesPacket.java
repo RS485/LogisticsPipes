@@ -1,6 +1,6 @@
 package net.minecraft.src.buildcraft.krapht.network;
 
-import net.minecraft.src.buildcraft.core.network.BuildCraftPacket;
+import buildcraft.core.network.BuildCraftPacket;
 
 public abstract class LogisticsPipesPacket extends BuildCraftPacket {
 

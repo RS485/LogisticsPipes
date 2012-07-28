@@ -1,11 +1,11 @@
 package net.minecraft.src.buildcraft.logisticspipes.items;
 
-import net.minecraft.src.BuildCraftTransport;
+import buildcraft.BuildCraftTransport;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.mod_BuildCraftTransport;
+import buildcraft.mod_BuildCraftTransport;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
@@ -13,9 +13,9 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
-import net.minecraft.src.buildcraft.transport.Pipe;
-import net.minecraft.src.buildcraft.transport.PipeLogic;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeLogic;
+import buildcraft.transport.TileGenericPipe;
 
 public class CraftingSignCreator extends LogisticsItem {
 

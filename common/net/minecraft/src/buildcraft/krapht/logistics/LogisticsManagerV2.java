@@ -15,8 +15,8 @@ import java.util.UUID;
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.PipeTransportLogistics;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;

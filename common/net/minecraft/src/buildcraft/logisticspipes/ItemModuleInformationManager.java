@@ -11,7 +11,7 @@ import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.NBTTagString;
-import net.minecraft.src.buildcraft.api.APIProxy;
+import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IClientInformationProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 

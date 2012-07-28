@@ -13,7 +13,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.Slot;
-import net.minecraft.src.buildcraft.core.BuildCraftContainer;
+import buildcraft.core.BuildCraftContainer;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;

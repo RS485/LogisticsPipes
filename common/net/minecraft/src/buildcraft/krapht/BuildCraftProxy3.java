@@ -13,14 +13,15 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.transport.IPipedItem;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.IBuildCraftProxy;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
-import net.minecraft.src.buildcraft.transport.EntityData;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.EntityData;
+import buildcraft.transport.TileGenericPipe;
 
 public class BuildCraftProxy3 implements IBuildCraftProxy{
 
@@ -50,18 +51,18 @@ public class BuildCraftProxy3 implements IBuildCraftProxy{
 	}
 	
 	@Override
-	public boolean isRoutedItem(EntityPassiveItem item) {
+	public boolean isRoutedItem(IPipedItem item) {
 		return (item instanceof RoutedEntityItem);
 	}
 	
 	@Override
-	public IRoutedItem GetRoutedItem(EntityPassiveItem item) {
+	public IRoutedItem GetRoutedItem(IPipedItem item) {
 		return (IRoutedItem) item;
 	}
 	
 
 	@Override
-	public IRoutedItem CreateRoutedItem(World worldObj, EntityPassiveItem item) {
+	public IRoutedItem CreateRoutedItem(World worldObj, IPipedItem item) {
 		RoutedEntityItem newItem = new RoutedEntityItem(worldObj, item);
 		return newItem;
 	}

@@ -9,7 +9,7 @@
 package net.minecraft.src.krapht;
 
 import net.minecraft.src.IInventory;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.core.Utils;
 
 public class InventoryUtilFactory {
 	public InventoryUtil getInventoryUtil(IInventory inv) {

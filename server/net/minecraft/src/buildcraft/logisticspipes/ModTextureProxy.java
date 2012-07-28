@@ -2,12 +2,12 @@ package net.minecraft.src.buildcraft.logisticspipes;
 
 import net.minecraft.src.Item;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.mod_BuildCraftTransport;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.mod_BuildCraftTransport;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
-import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
-import net.minecraft.src.buildcraft.transport.Pipe;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Pipe;
 import net.minecraft.src.forge.MinecraftForge;
 
 

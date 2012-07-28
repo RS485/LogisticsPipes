@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.buildcraft.api.EntityPassiveItem;
 import net.minecraft.src.buildcraft.krapht.PipeTransportLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.krapht.ItemIdentifier;

@@ -11,11 +11,11 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
+import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRemoteOrdererLogistics;
-import net.minecraft.src.buildcraft.transport.Pipe;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.DimensionManager;
 import net.minecraft.src.forge.ITextureProvider;
 

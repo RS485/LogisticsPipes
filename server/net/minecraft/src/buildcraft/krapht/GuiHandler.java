@@ -7,7 +7,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
@@ -26,7 +26,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleLiquidSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IGuiHandler;
 import net.minecraft.src.krapht.gui.DummyContainer;
 

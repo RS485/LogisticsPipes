@@ -8,7 +8,7 @@
 
 package net.minecraft.src.buildcraft.logisticspipes;
 
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.Orientations;
 
 /**
  * This class is responsible for handling items arriving at its destination

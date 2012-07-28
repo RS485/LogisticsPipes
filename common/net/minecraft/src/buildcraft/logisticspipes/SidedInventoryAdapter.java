@@ -11,7 +11,7 @@ package net.minecraft.src.buildcraft.logisticspipes;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.forge.ISidedInventory;
 
 /**

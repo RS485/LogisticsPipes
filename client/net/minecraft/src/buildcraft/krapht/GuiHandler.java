@@ -39,7 +39,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
 import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {

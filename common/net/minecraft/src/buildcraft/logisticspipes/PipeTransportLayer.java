@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.RoutedEntityItem;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 
 /**

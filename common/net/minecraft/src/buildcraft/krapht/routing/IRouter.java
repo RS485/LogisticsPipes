@@ -13,8 +13,8 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;

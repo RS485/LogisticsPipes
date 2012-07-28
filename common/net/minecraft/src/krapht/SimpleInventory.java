@@ -16,9 +16,9 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.TileNetworkData;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.api.APIProxy;
+import buildcraft.core.network.TileNetworkData;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.ISaveState;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 

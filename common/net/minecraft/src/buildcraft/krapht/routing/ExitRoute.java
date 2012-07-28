@@ -8,7 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht.routing;
 
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.Orientations;
 
 /**
  * Defines direction with a cost

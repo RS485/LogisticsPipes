@@ -1,6 +1,6 @@
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import net.minecraft.src.BuildCraftCore;
+import buildcraft.BuildCraftCore;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.World;

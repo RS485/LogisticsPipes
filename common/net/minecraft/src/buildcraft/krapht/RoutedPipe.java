@@ -11,19 +11,21 @@ package net.minecraft.src.buildcraft.krapht;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import net.minecraft.src.BuildCraftTransport;
+import buildcraft.BuildCraftTransport;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.mod_LogisticsPipes;
 //import net.minecraft.src.buildcraft.core.Action;
-import net.minecraft.src.buildcraft.api.Action;
-import net.minecraft.src.buildcraft.api.BuildCraftAPI;
-import net.minecraft.src.buildcraft.api.IActionReceptor;
-import net.minecraft.src.buildcraft.api.Trigger;
-import net.minecraft.src.buildcraft.api.TriggerParameter;
-import net.minecraft.src.buildcraft.core.ActionRedstoneOutput;
+import buildcraft.api.gates.Action;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.api.gates.ActionManager;
+import buildcraft.api.gates.IAction;
+import buildcraft.api.gates.IActionReceptor;
+import buildcraft.api.gates.Trigger;
+import buildcraft.api.gates.TriggerParameter;
+import buildcraft.core.ActionRedstoneOutput;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
-import net.minecraft.src.buildcraft.transport.ActionSignalOutput;
-import net.minecraft.src.buildcraft.transport.Pipe;
+import buildcraft.transport.ActionSignalOutput;
+import buildcraft.transport.Pipe;
 //import net.minecraft.src.buildcraft.transport.Pipe.GateKind;
 
 public abstract class RoutedPipe extends CoreRoutedPipe {
@@ -33,19 +35,14 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 	}
 	
 	@Override
-	public int getMainBlockTexture() {
-		return _nextTexture;
-	}
-	
-	@Override
 	public void onNeighborBlockChange(int blockId) {
 		super.onNeighborBlockChange(blockId);
 		onNeighborBlockChange_Logistics();
 	}
 
 	@Override
-	public LinkedList<Action> getActions() {
-		LinkedList<Action> actions = super.getActions();
+	public LinkedList<IAction> getActions() {
+		LinkedList<IAction> actions = super.getActions();
 		actions.add(mod_LogisticsPipes.LogisticsDisableAction);
 		return actions;
 	}
@@ -58,7 +55,7 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 		// Activate the actions
 		for (Integer i : actions.keySet()) {
 			if (actions.get(i)) {
-				if (BuildCraftAPI.actions[i] instanceof ActionDisableLogistics){
+				if (ActionManager.actions[i] instanceof ActionDisableLogistics){
 					setEnabled(false);
 				}
 			}

@@ -12,12 +12,12 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.LaserKind;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.core.EntityBlock;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.api.APIProxy;
+import buildcraft.api.core.LaserKind;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.EntityBlock;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 
 class RouteLaser implements IPaintPath{

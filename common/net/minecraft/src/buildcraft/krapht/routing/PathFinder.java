@@ -13,17 +13,17 @@ import java.util.LinkedList;
 
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.routing.ExitRoute;
 import net.minecraft.src.buildcraft.krapht.routing.IPaintPath;
-import net.minecraft.src.buildcraft.transport.Pipe;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
-import net.minecraft.src.buildcraft.transport.pipes.PipeItemsIron;
-import net.minecraft.src.buildcraft.transport.pipes.PipeItemsObsidian;
+import buildcraft.transport.Pipe;
+import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.pipes.PipeItemsIron;
+import buildcraft.transport.pipes.PipeItemsObsidian;
 
 /**
  * Examines all pipe connections and their forks to locate all connected routers

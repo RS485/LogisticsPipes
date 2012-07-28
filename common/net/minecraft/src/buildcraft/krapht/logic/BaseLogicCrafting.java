@@ -10,11 +10,11 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.TileNetworkData;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
+import buildcraft.api.APIProxy;
+import buildcraft.api.core.Orientations;
+import buildcraft.core.network.TileNetworkData;
+import buildcraft.core.CoreProxy;
+import buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
@@ -24,7 +24,8 @@ import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import net.minecraft.src.forge.ISidedInventory;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.InventoryUtilFactory;
@@ -188,7 +189,7 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 		}
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
-			if (tile.tile instanceof TileAutoWorkbench) {
+			if (tile.tile instanceof ISidedInventory) {
 				Block block = worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
 				if(block != null) {
 					if(block.blockActivated(worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player)){

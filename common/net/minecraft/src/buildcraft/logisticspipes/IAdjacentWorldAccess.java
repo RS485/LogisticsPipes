@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.krapht.AdjacentTile;
 
 

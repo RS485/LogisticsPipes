@@ -9,8 +9,8 @@
 package net.minecraft.src.buildcraft.krapht.routing;
 
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
 
 public interface IPaintPath {
 	public void addLaser(World worldObj, Position start, Orientations o);

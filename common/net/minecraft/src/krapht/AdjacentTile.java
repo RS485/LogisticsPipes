@@ -1,7 +1,7 @@
 package net.minecraft.src.krapht;
 
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.buildcraft.api.Orientations;
+import buildcraft.api.core.Orientations;
 
 public class AdjacentTile {
 	public TileEntity tile;

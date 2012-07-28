@@ -17,6 +17,7 @@ import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
+import net.minecraft.src.buildcraft.api.ISpecialInventory;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
 import net.minecraft.src.buildcraft.core.CoreProxy;
@@ -67,9 +68,9 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 			//if(!(!_orderManager.hasOrders() && _extras < 1))
 			for (AdjacentTile tile : locateCrafters()){
 				ItemStack extracted = null; 
-				if (tile.tile instanceof TileAutoWorkbench){
-					extracted = extractFromAutoWorkbench((TileAutoWorkbench) tile.tile);
-				}else if (tile.tile instanceof IInventory) {
+				if (tile.tile instanceof ISpecialInventory){
+					extracted = extractFromISpecialInventory((TileAutoWorkbench) tile.tile);
+				} else if (tile.tile instanceof IInventory) {
 					extracted = extractFromIInventory((IInventory)tile.tile);
 				}
 				if (extracted == null) continue;

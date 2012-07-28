@@ -18,6 +18,7 @@ import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.api.EntityPassiveItem;
+import net.minecraft.src.buildcraft.api.ISpecialInventory;
 import net.minecraft.src.buildcraft.api.Orientations;
 import net.minecraft.src.buildcraft.api.Position;
 import net.minecraft.src.buildcraft.core.CoreProxy;
@@ -69,8 +70,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return crafters;
 	}
 	
-	protected ItemStack extractFromAutoWorkbench(TileAutoWorkbench workbench){
-		return workbench.extractItem(true, Orientations.Unknown);
+	protected ItemStack extractFromISpecialInventory(ISpecialInventory inv){
+		return inv.extractItem(true, Orientations.Unknown);
 	}
 	
 	protected ItemStack extractFromIInventory(IInventory inv){
@@ -112,8 +113,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		
 		for (AdjacentTile tile : locateCrafters()){
 			ItemStack extracted = null; 
-			if (tile.tile instanceof TileAutoWorkbench){
-				extracted = extractFromAutoWorkbench((TileAutoWorkbench) tile.tile);
+			if (tile.tile instanceof ISpecialInventory){
+				extracted = extractFromISpecialInventory((TileAutoWorkbench) tile.tile);
 			}else if (tile.tile instanceof IInventory) {
 				extracted = extractFromIInventory((IInventory)tile.tile);
 			}

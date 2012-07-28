@@ -5,24 +5,31 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import net.minecraft.src.buildcraft.krapht.ErrorMessage;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 
-public class PacketMissingItems extends LogisticsPipesPacket {
+public class PacketItems extends LogisticsPipesPacket {
 	
-	LinkedList<ErrorMessage> errors = new LinkedList<ErrorMessage>();
+	LinkedList<ItemMessage> items = new LinkedList<ItemMessage>();
+	public boolean error = true;
 	
-	public PacketMissingItems() {
+	public PacketItems() {
 		super();
 	}
 	
-	public PacketMissingItems(LinkedList<ErrorMessage> errors) {
-		super();
-		this.errors = errors;
+	public PacketItems(LinkedList<ItemMessage> errors) {
+		this();
+		this.items = errors;
 	}
 	
+	public PacketItems(LinkedList<ItemMessage> errors, boolean flag) {
+		this(errors);
+		this.error = flag;
+	}
+		
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
-		for(ErrorMessage error:errors) {
+		data.writeBoolean(error);
+		for(ItemMessage error:items) {
 			data.write(1);
 			data.writeInt(error.id);
 			data.writeInt(error.data);
@@ -33,12 +40,13 @@ public class PacketMissingItems extends LogisticsPipesPacket {
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
+		this.error = data.readBoolean();
 		while(data.read() != 0) {
-			ErrorMessage error = new ErrorMessage();
+			ItemMessage error = new ItemMessage();
 			error.id = data.readInt();
 			error.data = data.readInt();
 			error.amount = data.readInt();
-			errors.add(error);
+			items.add(error);
 		}
 	}
 

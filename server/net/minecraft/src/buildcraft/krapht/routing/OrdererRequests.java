@@ -7,7 +7,7 @@ import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
-import net.minecraft.src.buildcraft.krapht.ErrorMessage;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.network.PacketRequestGuiContent;
@@ -25,14 +25,16 @@ public class OrdererRequests {
 	}
 	
 	public static void request(EntityPlayerMP player, PacketRequestSubmit packet, CoreRoutedPipe pipe) {
-	LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID,packet.dataValue, packet.tag), packet.amount, pipe);
-		LinkedList<ErrorMessage> errors = new LinkedList<ErrorMessage>();
+		LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe);
+		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		boolean result = LogisticsManager.Request(request, pipe.getRouter().getRoutersByCost(), errors, player);
 		if (!result){
 			MessageManager.errors(player, errors);
 		}
 		else{
-			player.addChatMessage("Request successful!");
+			LinkedList list = new LinkedList<ItemMessage>();
+			list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
+			MessageManager.requested(player, list);
 		}
 	}
 	

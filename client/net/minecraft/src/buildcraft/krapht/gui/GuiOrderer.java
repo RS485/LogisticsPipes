@@ -26,7 +26,7 @@ import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
-import net.minecraft.src.buildcraft.krapht.ErrorMessage;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
@@ -537,14 +537,15 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		if (guibutton.id == 0 && selectedItem != null){
 			if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
 				LogisticsRequest request = new LogisticsRequest(selectedItem, requestCount, this._itemRequester);
-				LinkedList<ErrorMessage> errors = new LinkedList<ErrorMessage>();
+				LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);
 				if (!result){
-					for (ErrorMessage error : errors){
+					for (ItemMessage error : errors){
 						_entityPlayer.addChatMessage("Missing: " + error);
 					}
 				}
 				else{
+					_entityPlayer.addChatMessage("Requested: " + new ItemMessage(selectedItem, requestCount));
 					_entityPlayer.addChatMessage("Request successful!");
 					refreshItems();
 				}

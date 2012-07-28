@@ -9,7 +9,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.krapht.ErrorMessage;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
@@ -59,9 +59,9 @@ public class PacketHandler implements IPacketHandler {
 					onOrdererRefreshAnswer(packetC);
 					break;
 				case NetworkConstants.MISSING_ITEMS:
-					final PacketMissingItems packetD = new PacketMissingItems();
+					final PacketItems packetD = new PacketItems();
 					packetD.readData(data);
-					onMissingItems(packetD);
+					onItemsResponse(packetD);
 					break;
 				case NetworkConstants.CRAFTING_LOOP:
 					final PacketCraftingLoop packetE = new PacketCraftingLoop();
@@ -168,14 +168,21 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
-	private void onMissingItems(PacketMissingItems packet) {
-		for (final ErrorMessage error : packet.errors) {
-			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + error);
+	private void onItemsResponse(PacketItems packet) {
+		if(packet.error) {
+			for (final ItemMessage items : packet.items) {
+				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + items);
+			}
+		} else {
+			for (final ItemMessage items : packet.items) {
+				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Requested: " + items);
+			}
+			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Request successful!");
 		}
 	}
 
 	private void onCraftingLoop(PacketCraftingLoop packet) {
-		final ItemIdentifier item = packet.errors.get(0).getItemIdentifier();
+		final ItemIdentifier item = packet.items.get(0).getItemIdentifier();
 		ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName()
 				+ " !! ABORTING !!");
 	}

@@ -9,12 +9,16 @@
 package net.minecraft.src.buildcraft.krapht.gui;
 
 import java.io.Console;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.lwjgl.input.Mouse;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
+import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.RenderItem;
@@ -79,6 +83,8 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	private int requestCount = 1;
 	
 	private DisplayOptions displayOptions = DisplayOptions.Both;
+	
+	private Object[] tooltip = null;
 	
 	public GuiOrderer(IRequestItems itemRequester, EntityPlayer entityPlayer) {
 		super(220,220,0,0);
@@ -154,9 +160,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		controlList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
-		controlList.add(new SmallGuiButton(1, right - 15, top + 5, 10 ,10 ,">")); // Next page
-		controlList.add(new SmallGuiButton(2, right - 90, top + 5, 10, 10, "<")); // Prev page
-		controlList.add(new GuiButton(3, left + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
+		controlList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
+		controlList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
+		controlList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 		controlList.add(new SmallGuiButton(10, xCenter - 41, bottom - 15, 26, 10, "---")); // -64
 		controlList.add(new SmallGuiButton(4, xCenter - 41, bottom - 26, 15, 10, "--")); // -10
 		controlList.add(new SmallGuiButton(5, xCenter - 25, bottom - 26, 10, 10, "-")); // -1
@@ -175,8 +181,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	}
 	
 	@Override
-	public void drawScreen(int i, int j, float f) {
-		drawDefaultBackground();
+	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
+		//super.drawScreen(i, j, f);
+		//drawDefaultBackground();
 		drawGuiBackGround();
 
 		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
@@ -185,9 +192,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			page = maxPage;
 		}
 		
-		fontRenderer.drawString(_title, left + fontRenderer.getStringWidth(_title) / 2, top + 6, 0x404040);
+		fontRenderer.drawString(_title, guiLeft + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
-		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , top + 6 , 0x404040);
+		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , guiTop + 6 , 0x404040);
 		
 		String StackrequestCount = ""+(requestCount/64) + "+" + (requestCount % 64);
 		
@@ -201,16 +208,16 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		
 		//SearchInput
 		if(editsearch) {
-			drawRect(left + 30, bottom - 60, right - 28, bottom - 43, Colors.Black);
-			drawRect(left + 31, bottom - 59, right - 29, bottom - 44, Colors.White);
+			drawRect(guiLeft + 30, bottom - 60, right - 28, bottom - 43, Colors.Black);
+			drawRect(guiLeft + 31, bottom - 59, right - 29, bottom - 44, Colors.White);
 		} else {
-			drawRect(left + 31, bottom - 59, right - 29, bottom - 44, Colors.Black);
+			drawRect(guiLeft + 31, bottom - 59, right - 29, bottom - 44, Colors.Black);
 		}
-		drawRect(left + 32, bottom - 58, right - 30, bottom - 45, Colors.DarkGrey);
+		drawRect(guiLeft + 32, bottom - 58, right - 30, bottom - 45, Colors.DarkGrey);
 		
-		fontRenderer.drawString(searchinput1 + searchinput2, left + 35, bottom - 55, 0xFFFFFF);
+		fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 35, bottom - 55, 0xFFFFFF);
 		if(editsearch) {
-			int linex = left + 35 + fontRenderer.getStringWidth(searchinput1);
+			int linex = guiLeft + 35 + fontRenderer.getStringWidth(searchinput1);
 			if(System.currentTimeMillis() - oldSystemTime > 500) {
 				displaycursor = !displaycursor;
 				oldSystemTime = System.currentTimeMillis();
@@ -221,7 +228,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		}
 		
 		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
-			if (lastClickedx >= left + 32 && lastClickedx < right - 28 &&
+			if (lastClickedx >= guiLeft + 32 && lastClickedx < right - 28 &&
 					lastClickedy >= bottom - 60 && lastClickedy < bottom - 43){
 				editsearch = true;
 				lastClickedx = -10000000;
@@ -230,7 +237,6 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				editsearch = false;
 			}
 		}
-		
 		
 		int ppi = 0;
 		int row = 0;
@@ -244,8 +250,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			fontRenderer.drawString(friendlyName, xCenter - fontRenderer.getStringWidth(friendlyName) / 2, bottom - 39, 0x404040);
 		}
 		
-		drawRect(left + 6, top + 16, right - 12, bottom - 64, Colors.MiddleGrey);
+		tooltip = null;
 		
+		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 64, Colors.MiddleGrey);
 		for(ItemIdentifier item : _allItems) {
 			if(!itemSearched(item)) continue;
 			ppi++;
@@ -253,8 +260,8 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			if (ppi <= 70 * page) continue;
 			if (ppi > 70 * (page+1)) continue;
 			ItemStack st = _availableItems.containsKey(item)? item.makeNormalStack(_availableItems.get(item)) : item.makeNormalStack(0);
-			int x = left + 10 + panelxSize * column;
-			int y = top + 18 + panelySize * row;
+			int x = guiLeft + 10 + panelxSize * column;
+			int y = guiTop + 18 + panelySize * row;
 
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
 			int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
@@ -264,6 +271,21 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 					mouseY >= y && mouseY < y + panelySize) {
 				drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
 				drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+				
+				/*try {
+					Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
+					Field GuiManagerField = LayoutManager.getDeclaredField("gui");
+					GuiManagerField.setAccessible(true);
+					Object GuiManagerObject = GuiManagerField.get(null);
+					Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
+					Method drawItemTip = GuiManager.getDeclaredMethod("drawItemTip", new Class[]{int.class,int.class,ItemStack.class});
+					drawItemTip.setAccessible(true);
+					drawItemTip.invoke(GuiManagerObject, new Object[]{guiLeft+mouseX,guiTop+mouseY,st});
+				} catch(Exception e) {
+					//Normal minecraft code
+					e.printStackTrace();
+				}*/
+				tooltip = new Object[]{mouseX,mouseY,st};
 			}
 			
 			if (lastClickedx >= x && lastClickedx < x + panelxSize &&
@@ -299,7 +321,94 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			}
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
-		super.drawScreen(i, j, f);
+	}
+	
+	@Override
+	public void drawGuiContainerForegroundLayer() {
+		if(tooltip != null) {
+			try {
+				//Look for NEI
+				Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
+				Field GuiManagerField = LayoutManager.getDeclaredField("gui");
+				GuiManagerField.setAccessible(true);
+				Object GuiManagerObject = GuiManagerField.get(null);
+				Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
+				Method drawItemTip = GuiManager.getDeclaredMethod("drawItemTip", new Class[]{int.class,int.class,ItemStack.class});
+				drawItemTip.setAccessible(true);
+				drawItemTip.invoke(GuiManagerObject, tooltip);
+			} catch(Exception e) {
+				//Use minecraft vanilla code
+				ItemStack var22 = (ItemStack) tooltip[2];
+				List var24 = var22.getItemNameandInformation();
+
+	            if (var24.size() > 0)
+	            {
+	                int var10 = 0;
+	                int var11;
+	                int var12;
+
+	                for (var11 = 0; var11 < var24.size(); ++var11)
+	                {
+	                    var12 = this.fontRenderer.getStringWidth((String)var24.get(var11));
+
+	                    if (var12 > var10)
+	                    {
+	                        var10 = var12;
+	                    }
+	                }
+
+	                var11 = ((Integer)tooltip[0]).intValue() - this.guiLeft + 12;
+	                var12 = ((Integer)tooltip[1]).intValue() - this.guiTop - 12;
+	                int var14 = 8;
+
+	                if (var24.size() > 1)
+	                {
+	                    var14 += 2 + (var24.size() - 1) * 10;
+	                }
+
+	                this.zLevel = 300.0F;
+	                itemRenderer.zLevel = 300.0F;
+	                int var15 = -267386864;
+	                this.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
+	                this.drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
+	                this.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
+	                this.drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
+	                this.drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
+	                int var16 = 1347420415;
+	                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
+	                this.drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
+	                this.drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
+	                this.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
+	                this.drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
+
+	                for (int var18 = 0; var18 < var24.size(); ++var18)
+	                {
+	                    String var19 = (String)var24.get(var18);
+
+	                    if (var18 == 0)
+	                    {
+	                        var19 = "\u00a7" + Integer.toHexString(var22.getRarity().rarityColor) + var19;
+	                    }
+	                    else
+	                    {
+	                        var19 = "\u00a77" + var19;
+	                    }
+
+	                    this.fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+
+	                    if (var18 == 0)
+	                    {
+	                        var12 += 2;
+	                    }
+
+	                    var12 += 10;
+	                }
+
+	                this.zLevel = 0.0F;
+	                itemRenderer.zLevel = 0.0F;
+	            }
+			}
+		}
 	}
 	
 	private boolean itemSearched(ItemIdentifier item) {
@@ -334,7 +443,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		clickWasButton = false;
 		editsearchb = true;
 		super.mouseClicked(i, j, k);
-		if ((!clickWasButton & i > left + 9 & i < right - 9 && j > top + 15 && j < bottom - 42) || editsearch){
+		if ((!clickWasButton & i > guiLeft + 9 & i < right - 9 && j > guiTop + 15 && j < bottom - 42) || editsearch){
 			if(!editsearchb) {
 				editsearch = false;
 			}
@@ -557,12 +666,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				if (searchinput2.length() > 0)
 					searchinput2 = searchinput2.substring(1);
 			}
-		} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
-			super.keyTyped(c, i);
-		} else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)){
-			super.keyTyped(c, i);
+//		} else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
+//			super.keyTyped(c, i);
+//		} else if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)){
+//			super.keyTyped(c, i);
 		} else {
-			super.keyTyped(c, 1);
+			super.keyTyped(c, i);
 		}
 	}
 

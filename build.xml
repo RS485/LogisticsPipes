@@ -2,29 +2,33 @@
     
     <!-- Properties -->
     
-    <property name="build.dir"           value="build"/>
-    <property name="src.dir"             value="src"/>
+    <property name="build.dir"           value="build" />
+    <property name="src.dir"             value="src" />
     
-    <property name="download.dir"        value="download"/>
-    <property name="files.minecraft.dir" value="jars"/>
+    <property name="download.dir"        value="download" />
+    <property name="files.minecraft.dir" value="jars" />
     
-    <property name="classes.dir"         value="${build.dir}/classes"/>
-    <property name="jar.dir"             value="${build.dir}/dist"/>
+    <property name="classes.dir"         value="${build.dir}/classes" />
+    <property name="jar.dir"             value="${build.dir}/dist" />
           
-    <property name="mcp.dir"             value="${build.dir}/mcp"/>
-    <property name="forge.dir"           value="${mcp.dir}/forge"/>
-    <property name="buildcraft.dir"      value="${mcp.dir}/buildcraft"/>
+    <property name="mcp.dir"             value="${build.dir}/mcp" />
+    <property name="forge.dir"           value="${mcp.dir}/forge" />
+    <property name="buildcraft.dir"      value="${mcp.dir}/buildcraft" />
       
-    <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft"/>
-    <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server"/>
-          
-    <property name="mcp.version"         value="62"/>
-    <property name="forge.version"       value="3.3.8.152"/>
-    <property name="bc.version"          value="3.1.6.23"/>
-	<property name="lp.version"          value="0.4.5"/>
-    <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}"/>
+    <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft" />
+    <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server" />
     
-    <echo message="Starting build for ${lp.version.full}"/>
+    <property name="downloadserver"      value="http://www.theZorro266.com" />
+    <property name="downloadserver.dir"  value="rs485/" />
+    <property name="downloadserver.full" value="${downloadserver}/${downloadserver.dir}" />
+          
+    <property name="mcp.version"         value="62" />
+    <property name="forge.version"       value="3.3.8.152" />
+    <property name="bc.version"          value="3.1.6.45" />
+	  <property name="lp.version"          value="0.5.0" />
+    <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
+    
+    <echo message="Starting build for ${lp.version.full}" />
 	
     <!-- Targets -->
     
@@ -36,29 +40,27 @@
         
         <mkdir dir="${download.dir}"/>
         
-        <get src="https://dl.dropbox.com/u/33855125/LogisticsPipes/mcp/mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True"/>
-        <get src="https://dl.dropbox.com/u/33855125/LogisticsPipes/forge/minecraftforge-src-${forge.version}.zip" 
-            dest="${download.dir}" usetimestamp="True"/>
-        <get src="https://dl.dropbox.com/u/33855125/LogisticsPipes/buildcraft/buildcraft-src-${bc.version}.zip"
-            dest="${download.dir}" usetimestamp="True"/>
+        <get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True" />
+        <get src="${downloadserver.full}minecraftforge-src-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
+        <get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True" />
         
 		<echo message="Download finished"/>
 		
         <unzip dest="${mcp.dir}">
             <fileset dir="${download.dir}">
-                <include name="mcp*.zip"/>
+                <include name="mcp${mcp.version}.zip"/>
             </fileset>
         </unzip>
         
         <unzip dest="${mcp.dir}">
             <fileset dir="${download.dir}">
-                <include name="minecraftforge-src-*.zip"/>
+                <include name="minecraftforge-src-${forge.version}.zip"/>
             </fileset>
         </unzip>
         
         <unzip dest="${buildcraft.dir}">
             <fileset dir="${download.dir}">
-                <include name="buildcraft-src-*.zip"/>
+                <include name="buildcraft-src-${bc.version}.zip"/>
             </fileset>
         </unzip>
         
@@ -172,11 +174,15 @@
         
         <!-- Copy resoucres -->
         <copy todir="${classes.dir}/client">
-            <fileset dir="${src.dir}/resources"/>
+            <fileset dir="${src.dir}/resources">
+                <exclude name="mod_LogisticsPipes.info"/>
+            </fileset>
         </copy>
         <copy todir="${classes.dir}/server">
             <fileset dir="${src.dir}/resources">
-                <exclude name="logisticspipes/*"/>
+                <exclude name="mod_LogisticsPipes.info"/>
+                <exclude name="logisticspipes"/>
+                <exclude name="lang"/>
             </fileset>
         </copy>
         

@@ -3,8 +3,8 @@
   "modid" : "mod_LogisticsPipes",
   "name" : "Logistics Pipes",
   "description" : "This is the unofficial SMP version with additional features for the minecraft modification Logistics Pipes.",
-  "version" : "0.3.1",
-  "credits" : "All credits from the original mod go to Krapth. Thanks!",
+  "version" : "BETA",
+  "credits" : "All credits from the original mod go to Krapht. Thanks!",
   "authors" : [
     "davboecki",
     "theZorro266"
@@ -17,7 +17,8 @@
   ],
   "dependencies" : [
      "mod_MinecraftForge",
-     "mod_BuildCraftCore"
+     "mod_BuildCraftCore",
+     "mod_BuildCraftTransport"
   ]
 }
 ]

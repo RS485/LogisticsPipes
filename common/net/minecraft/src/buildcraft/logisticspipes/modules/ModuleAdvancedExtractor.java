@@ -1,5 +1,8 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -15,7 +18,7 @@ import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
-public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver {
+public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider {
 
 	protected int currentTick = 0;
 
@@ -168,5 +171,16 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 
 	public void setItemsIncluded(boolean flag) {
 		_itemsIncluded = flag;
+	}
+	
+	@Override
+	public List<String> getClientInformation() {
+		List<String> list = new ArrayList<String>();
+		list.add(areItemsIncluded() ? "Included" : "Excluded");
+		list.add("Extraction: " + _sneakyOrientation.name());
+		list.add("Filter: ");
+		list.add("<inventory>");
+		list.add("<that>");
+		return list;
 	}
 }

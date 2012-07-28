@@ -280,8 +280,7 @@ import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
-
-
+import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrdererClientInformation;
@@ -823,6 +822,23 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 									Character.valueOf('r'), Item.redstone, 
 									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
 
+		for(int i=0; i<1000;i++) {
+			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null);
+			if(module != null) {
+				NBTTagCompound nbt = new NBTTagCompound();
+				module.writeToNBT(nbt, "");
+				if(!nbt.equals(new NBTTagCompound())) {
+					for(int j=1;j < 10; j++) {
+						Object[] obj = new Object[j];
+						for(int k=0;k<j;k++) {
+							obj[k] = new ItemStack(ModuleItem, 1, i);
+						}
+						craftingManager.addShapelessRecipe(new ItemStack(ModuleItem, j, i), obj);
+					}
+				}
+			}
+		}
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.redstone});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { " i ","iPi", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 0)});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe2, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), core_LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotIron});

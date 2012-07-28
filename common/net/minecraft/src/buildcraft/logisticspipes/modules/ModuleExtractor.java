@@ -1,5 +1,8 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -14,7 +17,7 @@ import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.ItemIdentifier;
 
-public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationreceiver {
+public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
@@ -119,5 +122,12 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	
 	protected boolean shouldSend(ItemStack stack){
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getSourceUUID(), true);
+	}
+	
+	@Override
+	public List<String> getClientInformation() {
+		List<String> list = new ArrayList<String>();
+		list.add("Extraction: " + _sneakyOrientation.name());
+		return list;
 	}
 }

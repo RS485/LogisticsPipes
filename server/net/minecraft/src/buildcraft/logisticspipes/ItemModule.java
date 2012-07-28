@@ -49,7 +49,13 @@ public class ItemModule extends LogisticsItem{
 		super(i);
 		this.hasSubtypes = true;
 	}
-	
+
+	@Override
+    public boolean func_46003_i()
+    {
+        return true;
+    }
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addCreativeItems(ArrayList itemList) {

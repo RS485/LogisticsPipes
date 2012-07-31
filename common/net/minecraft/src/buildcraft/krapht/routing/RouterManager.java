@@ -34,6 +34,8 @@ public class RouterManager implements IRouterManager{
 		if (r == null){
 			r = new Router(id, worldObj, xCoord, yCoord, zCoord);
 			_routers.put(id, (Router)r);
+		} else if (r instanceof Router) {
+			((Router)r).reloadPipe(worldObj, xCoord, yCoord, zCoord);
 		}
 		return r;
 	}

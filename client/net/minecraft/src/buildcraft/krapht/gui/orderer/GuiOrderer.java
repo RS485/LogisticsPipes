@@ -96,8 +96,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 	protected abstract void refreshItems();
 
 	public void handlePacket(PacketRequestGuiContent packet) {
+		listbyserver = true;
 		_allItems.clear();
-		_allItems.addAll(((PacketRequestGuiContent)packet)._allItems);
+		_allItems.addAll(packet._allItems);
 	}
 	
 	@Override

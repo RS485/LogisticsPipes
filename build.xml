@@ -25,7 +25,7 @@
     <property name="mcp.version"         value="62" />
     <property name="forge.version"       value="3.3.8.152" />
     <property name="bc.version"          value="3.1.6.45" />
-	  <property name="lp.version"          value="0.5.0" />
+	<property name="lp.version"          value="0.5.0" />
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
     
     <echo message="Starting build for ${lp.version.full}" />
@@ -114,7 +114,14 @@
         
 		<echo message="Moved BC files"/>
 		
-		<!-- Refresh MD5 -->
+		<!-- Copy Dummy classes source -->
+		<copy todir="${serversrc.dir}">
+            <fileset dir="${src.dir}/dummy"/>
+        </copy>
+		
+		<echo message="Moved dummies files"/>
+		
+        <!-- Refresh MD5 -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
             <arg line="/c updatemd5.bat -f"/>
         </exec>

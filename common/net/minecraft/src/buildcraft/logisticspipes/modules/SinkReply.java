@@ -6,7 +6,8 @@ public class SinkReply {
 		DefaultRoute,
 		Terminus,
 		ItemSink,
-		PassiveSupplier
+		PassiveSupplier,
+		APIARIST_Analyser
 	}
 	
 	public FixedPriority fixedPriority;

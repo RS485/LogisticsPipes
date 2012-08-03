@@ -8,6 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht;
 
+import net.minecraft.src.buildcraft.krapht.forestry.IForestryProxy;
 import net.minecraft.src.buildcraft.krapht.logistics.ILogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.routing.IRouterManager;
 import net.minecraft.src.krapht.InventoryUtilFactory;
@@ -19,6 +20,11 @@ public final class SimpleServiceLocator {
 	public static IBuildCraftProxy buildCraftProxy = null;
 	public static void setBuildCraftProxy(final IBuildCraftProxy bcProxy){
 		buildCraftProxy = bcProxy;
+	}
+	
+	public static IForestryProxy forestryProxy;
+	public static  void setForestryProxy(final IForestryProxy fProxy){
+		forestryProxy = fProxy;
 	}
 	
 	public static IRouterManager routerManager;
@@ -35,4 +41,6 @@ public final class SimpleServiceLocator {
 	public static  void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
 		inventoryUtilFactory = invUtilFactory;
 	}
+	
+	
 }

@@ -51,7 +51,7 @@ public class RemoteOrderer extends Item implements ITextureProvider {
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
 		if(pipe != null) {
 			if(!APIProxy.isClient(par2World)) {
-				par3EntityPlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Orderer_ID, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
+				par3EntityPlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 			}
 			return par1ItemStack.copy();
 		} else {

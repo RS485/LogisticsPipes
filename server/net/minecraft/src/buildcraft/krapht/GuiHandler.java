@@ -227,7 +227,7 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new NONContainerGUI();
 				
-			case GuiIDs.GUI_Orderer_ID:
+			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new NONContainerGUI();
 			default:

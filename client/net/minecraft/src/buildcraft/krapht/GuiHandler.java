@@ -8,11 +8,12 @@ import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.gui.GuiChassiPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiCraftingPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiLiquidSupplierPipe;
-import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiRoutingStats;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSatellitePipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
+import net.minecraft.src.buildcraft.krapht.gui.orderer.GuiOrderer;
+import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalGuiOrderer;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
@@ -129,9 +130,9 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRouter());
 				
-			case GuiIDs.GUI_Orderer_ID:
+			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
-				return new GuiOrderer(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe(), player);
+				return new NormalGuiOrderer(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe(), player);
 				
 			// TODO To be client-sided
 				/*case GuiIDs.GUI_OrdererStats_ID:

@@ -26,4 +26,10 @@ public final class ItemIdentifierStack {
 	public ItemIdentifier getItem(){
 		return _item;
 	}
+
+	public ItemStack makeNormalStack(){
+		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
+		stack.setTagCompound(_item.tag);
+		return stack;
+	}
 }

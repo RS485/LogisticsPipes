@@ -8,6 +8,7 @@
 
 package net.minecraft.src.krapht.gui;
 
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 import net.minecraft.src.EntityPlayer;
@@ -17,7 +18,7 @@ import net.minecraft.src.Tessellator;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 
-public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider {
+public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider, ISubGuiControler {
 	
 	public enum Colors
 	{
@@ -35,6 +36,8 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	protected int yCenter;
 	protected final int xCenterOffset;
 	protected final int yCenterOffset;
+	
+	private SubGuiScreen subGui;
 	
 	public KraphtBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
 		super(new DummyContainer(null, null));
@@ -58,24 +61,62 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		this.yCenter = (bottom + guiTop) / 2;
 	}
 	
-	private int ConvertEnumToColor(Colors color){
-		switch(color){
-			case Black:
-				return 0xFF000000;
-			case White:
-				return 0xFFFFFFFF;
-			case DarkGrey:
-				return 0xFF555555;
-			case MiddleGrey:
-				return 0xFF8b8b8b;
-			case LightGrey:
-				return 0xFFC6C6C6;
-			case Red:
-				return 0xFFFF0000;
-			
-			default: 
-				return 0;
+	public boolean hasSubGui() {
+		return subGui != null;
+	}
+	
+	public SubGuiScreen getSubGui() {
+		return subGui;
+	}
+	
+	public void setSubGui(SubGuiScreen gui) {
+		if(subGui == null) {
+			subGui = gui;
+			subGui.setWorldAndResolution(this.mc, this.width, this.height);
+			subGui.register(this);
+			subGui.initGui();
+		}
+	}
+	
+	public void resetSubGui() {
+		subGui = null;
+	}
+	
+	@Override
+	public void drawScreen(int par1, int par2, float par3){
+		super.drawScreen(par1, par2, par3);
+		if(subGui != null) {
+			if(!subGui.hasSubGui()) {
+				super.drawDefaultBackground();
 			}
+			subGui.drawScreen(par1, par2, par3);
+		}
+	}
+	
+	@Override
+    public final void handleMouseInput() {
+		if(subGui != null) {
+			subGui.handleMouseInput();
+		} else {
+			this.handleMouseInputSub();
+		}
+    }
+	
+	public void handleMouseInputSub() {
+		super.handleMouseInput();
+	}
+	
+	@Override
+	public final void handleKeyboardInput() {
+		if(subGui != null) {
+			subGui.handleKeyboardInput();
+		} else {
+			this.handleKeyboardInputSub();
+		}
+	}
+
+	public void handleKeyboardInputSub() {
+		super.handleKeyboardInput();
 	}
 	
 	public void drawPoint(int x, int y, int color){
@@ -83,11 +124,11 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	}
 	
 	public void drawPoint(int x, int y, Colors color){
-		drawRect(x, y, x+1, y+1, ConvertEnumToColor(color));
+		drawRect(x, y, x+1, y+1, BasicGuiHelper.ConvertEnumToColor(color));
 	}
 	
 	public void drawRect(int x1, int y1, int x2, int y2, Colors color){
-		drawRect(x1, y1, x2, y2, ConvertEnumToColor(color));
+		drawRect(x1, y1, x2, y2, BasicGuiHelper.ConvertEnumToColor(color));
 	}
 	
 	public void drawLine(int x1, int y1, int x2, int y2, Colors color){
@@ -124,94 +165,5 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		} else {
 			super.keyTyped(c, i);
 		}
-	}
-	
-	public void drawGuiBackGround(){
-
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
-
-		//Top Side
-		Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 5	, guiTop + 15	, (double)this.zLevel, 0.33	, 0.33);
-        var9.addVertexWithUV(right - 5		, guiTop + 15	, (double)this.zLevel, 0.66	, 0.33);
-        var9.addVertexWithUV(right - 5		, guiTop		, (double)this.zLevel, 0.66	, 0);
-        var9.addVertexWithUV(guiLeft + 5	, guiTop		, (double)this.zLevel, 0.33	, 0);
-        var9.draw();
-
-        //Left Side
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft		, bottom -5		, (double)this.zLevel, 0	, 0.66);
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 5	, (double)this.zLevel, 0.33	, 0.66);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 5	, (double)this.zLevel, 0.33	, 0.33);
-        var9.addVertexWithUV(guiLeft		, guiTop + 5	, (double)this.zLevel, 0	, 0.33);
-        var9.draw();
-
-        //Bottom Side
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 5	, bottom		, (double)this.zLevel, 0.33	, 1);
-        var9.addVertexWithUV(right - 5		, bottom		, (double)this.zLevel, 0.66	, 1);
-        var9.addVertexWithUV(right - 5		, bottom - 15	, (double)this.zLevel, 0.66	, 0.66);
-        var9.addVertexWithUV(guiLeft + 5	, bottom - 15	, (double)this.zLevel, 0.33	, 0.66);
-        var9.draw();
-
-        //Right Side
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(right - 15	, bottom - 5		, (double)this.zLevel, 0.66	, 0.66);
-        var9.addVertexWithUV(right		, bottom - 5		, (double)this.zLevel, 1	, 0.66);
-        var9.addVertexWithUV(right		, guiTop + 5		, (double)this.zLevel, 1	, 0.33);
-        var9.addVertexWithUV(right - 15	, guiTop + 5		, (double)this.zLevel, 0.66	, 0.33);
-        var9.draw();
-		
-		//Top Left
-		var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)this.zLevel, 0	, 0.33);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)this.zLevel, 0.33	, 0.33);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)this.zLevel, 0.33	, 0);
-        var9.addVertexWithUV(guiLeft		, guiTop		, (double)this.zLevel, 0	, 0);
-        var9.draw();
-        
-        //Bottom Left
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft		, bottom		, (double)this.zLevel, 0	, 1);
-        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)this.zLevel, 0.33	, 1);
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)this.zLevel, 0.33	, 0.66);
-        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)this.zLevel, 0	, 0.66);
-        var9.draw();
-
-        //Bottom Right
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(right - 15	, bottom			, (double)this.zLevel, 0.66	, 1);
-        var9.addVertexWithUV(right		, bottom			, (double)this.zLevel, 1	, 1);
-        var9.addVertexWithUV(right		, bottom - 15		, (double)this.zLevel, 1	, 0.66);
-        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)this.zLevel, 0.66	, 0.66);
-        var9.draw();
-
-        //Top Right
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(right - 15	, guiTop + 15			, (double)this.zLevel, 0.66	, 0.33);
-        var9.addVertexWithUV(right		, guiTop + 15			, (double)this.zLevel, 1	, 0.33);
-        var9.addVertexWithUV(right		, guiTop				, (double)this.zLevel, 1	, 0);
-        var9.addVertexWithUV(right - 15	, guiTop				, (double)this.zLevel, 0.66	, 0);
-        var9.draw();
-
-        //Center
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 15		, (double)this.zLevel, 0.33	, 0.66);
-        var9.addVertexWithUV(right - 15		, bottom - 15		, (double)this.zLevel, 0.66	, 0.66);
-        var9.addVertexWithUV(right - 15		, guiTop + 15		, (double)this.zLevel, 0.66	, 0.33);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15		, (double)this.zLevel, 0.33	, 0.33);
-        var9.draw();
-		
 	}
 }

@@ -8,6 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht.routing;
 
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
@@ -417,6 +418,20 @@ public class Router implements IRouter {
 				CoreRoutedPipe pipe = getPipe();
 				if (pipe == null) return;
 				pipe.worldObj.markBlockAsNeedsUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);	
+				Field refreshRenderStateFiled;
+				try {
+					refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
+					refreshRenderStateFiled.setAccessible(true);
+					refreshRenderStateFiled.set(pipe.container, true);
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 				_blockNeedsUpdate = false;
 			}
 			return;

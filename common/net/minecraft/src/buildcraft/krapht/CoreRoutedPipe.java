@@ -203,17 +203,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public String getTextureFile() {
-		return null;
+		return mod_LogisticsPipes.BASE_TEXTURE_FILE;
 	}
 
 	@Override
 	public final int getTextureIndex(Orientations connection) {
 
-		if (connection == Orientations.Unknown || this.router == null){
+		if (connection == Orientations.Unknown){
 			return getCenterTexture();
 		}
 		
-		if (this.router.isRoutedExit(connection)) {
+		if (getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
 		}

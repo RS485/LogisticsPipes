@@ -23,6 +23,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
+import buildcraft.core.network.TilePacketWrapper;
 import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -113,6 +114,10 @@ public class PacketHandler implements IPacketHandler {
 					packetN.readData(data);
 					handleNonContainerGui(packetN);
 					break;
+				case NetworkConstants.PIPE_UPDATE:
+					final PacketPipeUpdate packetO = new PacketPipeUpdate();
+					packetO.readData(data);
+					handlePacketPipeUpdate(packetO);
 					
 			}
 		} catch (final Exception ex) {
@@ -278,6 +283,17 @@ public class PacketHandler implements IPacketHandler {
 		if(gui instanceof GuiScreen) {
 			ModLoader.openGUI(ModLoader.getMinecraftInstance().thePlayer, (GuiScreen)gui);
 		}
+	}
+
+	private void handlePacketPipeUpdate(PacketPipeUpdate packet) {
+		TileGenericPipe tile = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(tile == null) {
+			return;
+		}
+		if(tile.pipe == null) {
+			return;
+		}
+		new TilePacketWrapper(new Class[] { TileGenericPipe.class, tile.pipe.transport.getClass(), tile.pipe.logic.getClass() }).fromPayload(new Object[] { tile.pipe.container, tile.pipe.transport, tile.pipe.logic },packet.getPayload());
 	}
 
 	// BuildCraft method

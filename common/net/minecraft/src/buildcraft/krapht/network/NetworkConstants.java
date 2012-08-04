@@ -40,4 +40,5 @@ public class NetworkConstants {
 	public static final int REQUEST_CRAFTING_PIPE_UPDATE = 34;
 	public static final int CRAFTING_PIPE_OPEN_CONNECTED_GUI = 35;
 	public static final int NON_CONTAINER_GUI = 36;
+	public static final int PIPE_UPDATE = 37;
 }

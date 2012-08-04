@@ -139,7 +139,6 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 
 	@Override
 	public ItemSendMode getItemSendMode() {
-		// TODO Auto-generated method stub
-		return null;
+		return ItemSendMode.Normal;
 	}
 }

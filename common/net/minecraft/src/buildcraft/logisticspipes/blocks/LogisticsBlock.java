@@ -102,8 +102,10 @@ public class LogisticsBlock extends BlockContainer {
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
 		if (meta == SignBlockID && tile instanceof LogisticsTileEntiy) {
 			PipeItemsCraftingLogistics pipe = ((LogisticsTileEntiy) tile).getAttachedSignOwnerPipe();
-			pipe.logic.blockActivated(player);
-			return true;
+			if(pipe != null) {
+				pipe.logic.blockActivated(player);
+				return true;
+			}
 		}
 		return false;
 	}

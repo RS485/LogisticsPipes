@@ -601,7 +601,7 @@ public class PacketHandler implements IPacketHandler {
 		if (pipe == null) {
 			return;
 		}
-		playerEntity.playerNetServerHandler.sendPacket(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,pipe.pipe.getNetworkPacket()).getPacket());
+		playerEntity.playerNetServerHandler.sendPacket(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket());
 	}
 
 	private void onCraftingPipeUpdateRequest(EntityPlayerMP player, PacketCoordinates packet) {
@@ -609,7 +609,8 @@ public class PacketHandler implements IPacketHandler {
 		if (pipe == null) {
 			return;
 		}
-		player.playerNetServerHandler.sendPacket(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,pipe.pipe.getNetworkPacket()).getPacket());
+		if(!(pipe.pipe instanceof CoreRoutedPipe)) return;
+		player.playerNetServerHandler.sendPacket(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket());
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe.logic instanceof LogicCrafting) {
 				final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((LogicCrafting)pipe.pipe.logic).getDummyInventory());

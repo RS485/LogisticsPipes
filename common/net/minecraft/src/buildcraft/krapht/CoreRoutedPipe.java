@@ -29,11 +29,13 @@ import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.CoreProxy;
 import buildcraft.core.Utils;
+import buildcraft.core.network.PacketPayload;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.krapht.network.TilePacketWrapper;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
@@ -109,6 +111,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return _transportLayer;
 	}
 	
+	public net.minecraft.src.buildcraft.krapht.network.PacketPayload getLogisticsNetworkPacket() {
+		net.minecraft.src.buildcraft.krapht.network.PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(xCoord, yCoord, zCoord, new Object[] { container, transport, logic });
+
+		return payload;
+	}
 	
 //	@Deprecated
 //	public void sendRoutedItem(ItemStack item, UUID destination, Position origin){

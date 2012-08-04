@@ -39,7 +39,7 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 	protected final SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
 	protected final InventoryUtilFactory _invUtilFactory;
 	protected final InventoryUtil _dummyInvUtil;
-	
+
 	@TileNetworkData
 	public int signEntityX = 0;
 	@TileNetworkData

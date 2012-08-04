@@ -11,9 +11,11 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.api.APIProxy;
 import buildcraft.core.CoreProxy;
+import buildcraft.core.network.TileNetworkData;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
+import net.minecraft.src.krapht.SimpleInventory;
 
 public class LogicSatellite extends BaseLogicSatellite {
 

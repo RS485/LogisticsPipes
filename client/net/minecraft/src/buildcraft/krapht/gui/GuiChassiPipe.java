@@ -25,7 +25,7 @@ import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
-import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
+import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.forge.ForgeHooks;

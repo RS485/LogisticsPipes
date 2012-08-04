@@ -277,13 +277,13 @@ import net.minecraft.src.buildcraft.krapht.forestry.IForestryProxy;
 import net.minecraft.src.buildcraft.krapht.logistics.LogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.pipes.*;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
-import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 
+import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrdererClientInformation;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;

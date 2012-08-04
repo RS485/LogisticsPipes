@@ -12,7 +12,6 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.APIProxy;
 import buildcraft.api.core.Orientations;
-import buildcraft.core.network.TileNetworkData;
 import buildcraft.core.CoreProxy;
 import buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
@@ -21,6 +20,7 @@ import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
+import net.minecraft.src.buildcraft.krapht.network.TileNetworkData;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
@@ -35,8 +35,7 @@ import net.minecraft.src.krapht.WorldUtil;
 
 public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
-	@TileNetworkData
-	protected final SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
+	protected SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
 	protected final InventoryUtilFactory _invUtilFactory;
 	protected final InventoryUtil _dummyInvUtil;
 

@@ -87,20 +87,10 @@ public class ClassMapping {
 		int stringIndex = 0;
 	}
 	
-	private void addAllFields(Class<? extends Object> c, List<Field> List) {
-		List.addAll(Arrays.asList(c.getFields()));
-		if(!c.getClass().equals(Object.class)) {
-			if(c.getSuperclass() != null)
-				addAllFields(c.getSuperclass(),List);
-		}
-	}
-	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ClassMapping(final Class<? extends Object> c) {
 		clas = c;
-		ArrayList<Field> fieldsList = new ArrayList<Field>();
-		addAllFields(c,fieldsList);
-		Field[] fields = fieldsList.toArray(new Field[]{});
+		Field[] fields = c.getFields();
 
 		try {
 			for (Field f : fields) {

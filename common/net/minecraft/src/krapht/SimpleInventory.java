@@ -17,19 +17,16 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.World;
 import buildcraft.api.APIProxy;
-import buildcraft.core.network.TileNetworkData;
 import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.ISaveState;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
+import net.minecraft.src.buildcraft.krapht.network.TileNetworkData;
 
 public class SimpleInventory implements IInventory, ISaveState{
 
-	@TileNetworkData
-	private final ItemStack[] _contents;
-	@TileNetworkData
-	private final String _name;
-	@TileNetworkData
-	private final int _stackLimit;
+	private ItemStack[] _contents;
+	private String _name;
+	private int _stackLimit;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	

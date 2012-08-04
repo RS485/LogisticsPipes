@@ -14,7 +14,7 @@ public class PacketPipeUpdate extends PacketCoordinates {
 
 	public PacketPipeUpdate(int id, int x, int y, int z, PacketPayload payload) {
 		super(id, x, y, z);
-
+		this.payload = payload;
 	}
 
 	public PacketPayload getPayload() {

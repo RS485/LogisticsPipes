@@ -25,8 +25,8 @@
           
     <property name="mcp.version"         value="62" />
     <property name="forge.version"       value="3.3.8.152" />
-    <property name="bc.version"          value="3.1.6.45" />
-    <property name="forestry.version"    value="1.4.8.0" />
+    <property name="bc.version"          value="3.1.6.91" />
+    <property name="forestry.version"    value="1.4.9.13" />
     <property name="lp.version"          value="0.5.0" />
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
     

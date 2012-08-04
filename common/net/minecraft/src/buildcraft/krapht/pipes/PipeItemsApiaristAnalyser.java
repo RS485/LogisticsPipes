@@ -7,9 +7,9 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.Orientations;
-import net.minecraft.src.buildcraft.api.Position;
-import net.minecraft.src.buildcraft.core.Utils;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
@@ -24,7 +24,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristAnalyser;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
-import net.minecraft.src.buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.ISidedInventory;
 
 public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryProvider, ISendRoutedItem {

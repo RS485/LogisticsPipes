@@ -7,7 +7,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.core.CoreProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;

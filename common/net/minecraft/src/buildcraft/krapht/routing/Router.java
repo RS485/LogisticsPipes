@@ -56,7 +56,7 @@ public class Router implements IRouter {
 	private boolean _blockNeedsUpdate;
 	
 	public final UUID id;
-	private final World worldObj;
+	private World worldObj;
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
@@ -79,6 +79,13 @@ public class Router implements IRouter {
 		SharedLSADatabase.add(_myLsa);
 	}
 	
+	public void reloadPipe(World worldObj, int xCoord, int yCoord, int zCoord) {
+		if (this._xCoord == xCoord && this._yCoord == yCoord && this._zCoord == zCoord && worldObj.getWorldInfo().getDimension() == this.worldObj.getWorldInfo().getDimension()) {
+			this.worldObj = worldObj;
+			recheckAdjacent();
+		}
+	}
+
 	@Override
 	@Deprecated
 	public CoreRoutedPipe getPipe(){

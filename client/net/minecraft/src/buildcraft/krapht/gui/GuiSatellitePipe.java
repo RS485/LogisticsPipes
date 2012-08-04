@@ -48,6 +48,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
+		if(_satellite == null) return;
 		if (guibutton.id == 0){
 			_satellite.setNextId();
 		}
@@ -62,6 +63,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	protected void drawGuiContainerForegroundLayer() {
 		super.drawGuiContainerForegroundLayer();
 		fontRenderer.drawString("Satellite ID", 33, 10, 0x404040);
+		if(_satellite == null) return;
 		fontRenderer.drawString(_satellite.satelliteId+"", 59 - fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
 	}
 	

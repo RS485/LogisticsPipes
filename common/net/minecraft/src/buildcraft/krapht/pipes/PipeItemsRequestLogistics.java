@@ -46,7 +46,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	
 	public void openGui(EntityPlayer entityplayer) {
 		//ModLoader.getMinecraftInstance().displayGuiScreen(new GuiOrderer(this, entityplayer));
-		entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Orderer_ID, this.worldObj, this.xCoord , this.yCoord, this.zCoord);
+		entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, this.worldObj, this.xCoord , this.yCoord, this.zCoord);
 	}
 	
 	@Override

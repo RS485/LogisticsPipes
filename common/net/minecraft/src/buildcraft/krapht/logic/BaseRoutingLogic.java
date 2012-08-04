@@ -72,7 +72,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == core_LogisticsPipes.LogisticsRemoteOrderer) {
 			if(!APIProxy.isClient(entityplayer.worldObj)) {
-				entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Orderer_ID, worldObj, xCoord, yCoord, zCoord);
+				entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, worldObj, xCoord, yCoord, zCoord);
 			}
 			return true;
 		}

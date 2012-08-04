@@ -1,8 +1,11 @@
 package net.minecraft.src.buildcraft.logisticspipes;
 
+import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.core_LogisticsPipes;
 import buildcraft.mod_BuildCraftTransport;
+import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
@@ -19,7 +22,9 @@ public abstract class ModTextureProxy extends core_LogisticsPipes {
 		res.setItemName(clas.getSimpleName());
 		CoreProxy.addName(res, descr);
 		MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, mod_BuildCraftTransport.pipeItemRenderer);
-	
+		if(defaultID != mod_LogisticsPipes.LOGISTICSPIPE_BASIC_ID) {
+			registerShapelessResetRecipe(res,0,mod_LogisticsPipes.LogisticsBasicPipe,0);
+		}
 		return res;
 	}
 

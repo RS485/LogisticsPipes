@@ -44,6 +44,9 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 			pipeSource = null;
 		}
 		final Pipe pipeDest = routerDest.getPipe();
+		if(pipeDest == null) {
+			return;
+		}
 		PacketPayload additions = new PacketPayload(6,0,0);
 		if(pipeSource != null) {
 			additions.intPayload[0] = pipeSource.xCoord;

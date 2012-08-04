@@ -275,6 +275,8 @@ import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsTriggerProvider;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.TriggerSupplierFailed;
+import net.minecraft.src.buildcraft.krapht.forestry.ForestryProxy;
+import net.minecraft.src.buildcraft.krapht.forestry.IForestryProxy;
 import net.minecraft.src.buildcraft.krapht.logistics.LogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.pipes.*;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
@@ -293,6 +295,7 @@ import net.minecraft.src.forge.Configuration;
 import net.minecraft.src.forge.NetworkMod;
 import net.minecraft.src.forge.Property;
 import net.minecraft.src.krapht.InventoryUtilFactory;
+import net.minecraft.src.krapht.ItemIdentifier;
 
 public abstract class core_LogisticsPipes extends NetworkMod {
 	
@@ -316,6 +319,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsRequestPipeMK2;
 	public static Item LogisticsProviderPipeMK2;
 	public static Item LogisticsRemoteOrdererPipe;
+	public static Item LogisticsApiaristAnalyserPipe;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -350,6 +354,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
 	public static int LOGISTICSPIPE_REMOTE_ORDERER_ID				= 6889;
 	public static int LOGISTICSPIPE_PROVIDER_MK2_ID					= 6890;
+	public static int LOGISTICSPIPE_APIARIST_ANALYSER_ID			= 6891;
+	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
 	
@@ -382,6 +388,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_REQUESTERMK2_TEXTURE			= 0;
 	public static int LOGISTICSPIPE_PROVIDERMK2_TEXTURE				= 0;
 	public static int LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE			= 0;
+	public static int LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE		= 0;
 	
 		
 	// ** Texture files **
@@ -403,6 +410,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/builder_supplier.png";
 	public static final String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/liquid_supplier.png";
 	public static final String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	= "/logisticspipes/pipes/remote_orderer.png";
+	public static final String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "/logisticspipes/pipes/remote_orderer.png";
 
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
@@ -463,7 +471,19 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	@Override
 	public void modsLoaded() {
 		super.modsLoaded();
-		
+		if(ModLoader.isModLoaded("mod_Forestry")) {
+			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
+		} else {
+			//DummyProxy
+			SimpleServiceLocator.setForestryProxy(new IForestryProxy() {
+				@Override public boolean isBee(ItemStack item) {return false;}
+				@Override public boolean isBee(ItemIdentifier item) {return false;}
+				@Override public boolean isAnalysedBee(ItemStack item) {return false;}
+				@Override public boolean isAnalysedBee(ItemIdentifier item) {return false;}
+				@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
+				@Override public boolean forestryEnabled() {return false;}
+			});
+		}
 		try {
 			PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
 			//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
@@ -541,6 +561,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticPipeProviderMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeProviderMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_MK2_ID);
 		logisticPipeProviderMK2IdProperty.comment = "The item id for the provider logistics pipe MK2";
 
+		Property logisticPipeApiaristAnalyserIdProperty = configuration.getOrCreateIntProperty("logisticsPipeApiaristAnalyser.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_ANALYSER_ID);
+		logisticPipeApiaristAnalyserIdProperty.comment = "The item id for the apiarist logistics analyser pipe";
+
 		Property logisticPipeRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REMOTE_ORDERER_ID);
 		logisticPipeRemoteOrdererIdProperty.comment = "The item id for the remote orderer logistics pipe";
 
@@ -599,6 +622,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_REQUEST_MK2_ID	= Integer.parseInt(logisticPipeRequesterMK2IdProperty.value);
 		LOGISTICSPIPE_PROVIDER_MK2_ID	= Integer.parseInt(logisticPipeProviderMK2IdProperty.value);
 		LOGISTICSPIPE_REMOTE_ORDERER_ID	= Integer.parseInt(logisticPipeRemoteOrdererIdProperty.value);
+		LOGISTICSPIPE_APIARIST_ANALYSER_ID	= Integer.parseInt(logisticPipeApiaristAnalyserIdProperty.value);
 		LOGISTICS_DETECTION_LENGTH		= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT		= Integer.parseInt(detectionCount.value);
 		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
@@ -639,6 +663,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_REQUESTERMK2_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDERMK2_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
+		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
 		
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
@@ -665,6 +690,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2");
 		LogisticsRemoteOrdererPipe = createPipe(LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe");
 		LogisticsProviderPipeMK2 = createPipe(LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2");
+		LogisticsApiaristAnalyserPipe = createPipe(LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe");
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
@@ -833,13 +859,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 				NBTTagCompound nbt = new NBTTagCompound();
 				module.writeToNBT(nbt, "");
 				if(!nbt.equals(new NBTTagCompound())) {
-					for(int j=1;j < 10; j++) {
-						Object[] obj = new Object[j];
-						for(int k=0;k<j;k++) {
-							obj[k] = new ItemStack(ModuleItem, 1, i);
-						}
-						craftingManager.addShapelessRecipe(new ItemStack(ModuleItem, j, i), obj);
-					}
+					registerShapelessResetRecipe(ModuleItem, i, ModuleItem, i);
 				}
 			}
 		}
@@ -873,6 +893,16 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 			ModLoader.registerTileEntity(LogisticsTileEntiy.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new LogisticsBlockRenderer());
 		}
 		
+	}
+	
+	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
+		for(int j=1;j < 10; j++) {
+			Object[] obj = new Object[j];
+			for(int k=0;k<j;k++) {
+				obj[k] = new ItemStack(fromItem, 1, toData);
+			}
+			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
+		}		
 	}
 	
 	protected abstract Item createPipe (int defaultID, Class <? extends Pipe> clas, String descr);

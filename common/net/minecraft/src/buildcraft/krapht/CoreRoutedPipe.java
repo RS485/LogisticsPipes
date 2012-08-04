@@ -172,6 +172,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 						_sendQueue.removeFirst();
 					}
 				}
+			} else if(getItemSendMode() == null) {
+				throw new UnsupportedOperationException("getItemSendMode() can't return null. "+this.getClass().getName());
+			} else {
+				throw new UnsupportedOperationException("getItemSendMode() returned unhandled value. " + getItemSendMode().name() + " in "+this.getClass().getName());
 			}
 		}
 		if (getLogisticsModule() == null) return;

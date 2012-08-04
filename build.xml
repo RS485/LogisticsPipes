@@ -14,6 +14,7 @@
     <property name="mcp.dir"             value="${build.dir}/mcp" />
     <property name="forge.dir"           value="${mcp.dir}/forge" />
     <property name="buildcraft.dir"      value="${mcp.dir}/buildcraft" />
+    <property name="forestry.dir"        value="${mcp.dir}/forestry" />
       
     <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft" />
     <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server" />
@@ -25,7 +26,8 @@
     <property name="mcp.version"         value="62" />
     <property name="forge.version"       value="3.3.8.152" />
     <property name="bc.version"          value="3.1.6.45" />
-	  <property name="lp.version"          value="0.5.0" />
+    <property name="forestry.version"    value="1.4.8.0" />
+    <property name="lp.version"          value="0.5.0" />
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
     
     <echo message="Starting build for ${lp.version.full}" />
@@ -43,6 +45,7 @@
         <get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}minecraftforge-src-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True" />
+        <get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True" />
         
 		<echo message="Download finished"/>
 		
@@ -61,6 +64,12 @@
         <unzip dest="${buildcraft.dir}">
             <fileset dir="${download.dir}">
                 <include name="buildcraft-src-${bc.version}.zip"/>
+            </fileset>
+        </unzip>
+        
+        <unzip dest="${forestry.dir}">
+            <fileset dir="${download.dir}">
+                <include name="forestry-api-${forestry.version}.zip"/>
             </fileset>
         </unzip>
         
@@ -114,7 +123,27 @@
         
 		<echo message="Moved BC files"/>
 		
-		<!-- Refresh MD5 -->
+        <!-- Copy Forestry API source -->
+        <copy todir="${clientsrc.dir}">
+            <fileset dir="${forestry.dir}"/>
+        </copy>
+		<copy todir="${serversrc.dir}">
+            <fileset dir="${forestry.dir}"/>
+        </copy>
+		
+		<echo message="Moved Forestry API"/>
+		
+        <!-- Copy Dummy classes source -->
+        <copy todir="${clientsrc.dir}">
+            <fileset dir="${src.dir}/dummy"/>
+        </copy>
+		<copy todir="${serversrc.dir}">
+            <fileset dir="${src.dir}/dummy"/>
+        </copy>
+		
+		<echo message="Moved dummy files"/>
+		
+        <!-- Refresh MD5 -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
             <arg line="/c updatemd5.bat -f"/>
         </exec>

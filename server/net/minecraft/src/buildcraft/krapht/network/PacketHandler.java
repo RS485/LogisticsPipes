@@ -22,7 +22,7 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
-import net.minecraft.src.buildcraft.krapht.routing.OrdererRequests;
+import net.minecraft.src.buildcraft.krapht.routing.NormalOrdererRequests;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
@@ -273,7 +273,7 @@ public class PacketHandler implements IPacketHandler {
 			return;
 		}
 
-		OrdererRequests.request(player, packet, (CoreRoutedPipe) pipe.pipe);
+		NormalOrdererRequests.request(player, packet, (CoreRoutedPipe) pipe.pipe);
 	}
 
 	private void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
@@ -286,23 +286,23 @@ public class PacketHandler implements IPacketHandler {
 			return;
 		}
 
-		OrdererRequests.DisplayOptions option;
+		NormalOrdererRequests.DisplayOptions option;
 		switch (packet.integer) {
 			case 0:
-				option = OrdererRequests.DisplayOptions.Both;
+				option = NormalOrdererRequests.DisplayOptions.Both;
 				break;
 			case 1:
-				option = OrdererRequests.DisplayOptions.SupplyOnly;
+				option = NormalOrdererRequests.DisplayOptions.SupplyOnly;
 				break;
 			case 2:
-				option = OrdererRequests.DisplayOptions.CraftOnly;
+				option = NormalOrdererRequests.DisplayOptions.CraftOnly;
 				break;
 			default:
-				option = OrdererRequests.DisplayOptions.Both;
+				option = NormalOrdererRequests.DisplayOptions.Both;
 				break;
 		}
 
-		OrdererRequests.refresh(player, (CoreRoutedPipe) pipe.pipe, option);
+		NormalOrdererRequests.refresh(player, (CoreRoutedPipe) pipe.pipe, option);
 	}
 
 	private void onItemSinkDefault(EntityPlayerMP player, PacketPipeInteger packet) {

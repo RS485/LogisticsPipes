@@ -6,11 +6,12 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package net.minecraft.src.buildcraft.krapht.gui;
+package net.minecraft.src.buildcraft.krapht.gui.orderer;
 
 import java.io.Console;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,15 +23,19 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.RenderItem;
+import net.minecraft.src.Tessellator;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.core.CoreProxy;
+import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
+import net.minecraft.src.buildcraft.krapht.gui.popup.GuiRequestPopup;
+import net.minecraft.src.buildcraft.krapht.network.LogisticsPipesPacket;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
@@ -40,6 +45,9 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
 import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraft.src.krapht.ItemIdentifierStack;
+import net.minecraft.src.krapht.gui.BasicGuiHelper;
+import net.minecraft.src.krapht.gui.GuiCheckBox;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
@@ -47,111 +55,48 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 import org.omg.CORBA._PolicyStub;
 
-public class GuiOrderer extends KraphtBaseGuiScreen {
+public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 
-	private enum DisplayOptions {
-		Both,
-		SupplyOnly,
-		CraftOnly,
-	}
+	protected final IRequestItems _itemRequester;
+	protected final EntityPlayer _entityPlayer;
+	protected ItemIdentifier selectedItem = null;
+	protected final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
+	protected String searchinput1 = "";
+	protected String searchinput2 = "";
+	protected boolean editsearch = false;
+	protected boolean editsearchb = false;
+	protected boolean displaycursor = true;
+	protected long oldSystemTime = 0;
+	protected static int searchWidth = 150;
 	
-	private final IRequestItems _itemRequester;
-	private final EntityPlayer _entityPlayer;
-	private HashMap<ItemIdentifier, Integer> _availableItems;
-	private LinkedList<ItemIdentifier> _craftableItems;
-	private ItemIdentifier selectedItem = null;
-	private final LinkedList<ItemIdentifier>_allItems = new LinkedList<ItemIdentifier>(); 
-	private String searchinput1 = "";
-	private String searchinput2 = "";
-	private boolean editsearch = false;
-	private boolean editsearchb = false;
-	private boolean displaycursor = true;
-	private long oldSystemTime = 0;
-	private static int searchWidth = 150;
+	protected RenderItem renderItem = new RenderItem();
 	
-	private RenderItem renderItem = new RenderItem();
+	protected int lastClickedx = 0;
+	protected int lastClickedy = 0;
 	
-	private int lastClickedx = 0;
-	private int lastClickedy = 0;
+	protected final String _title = "Request items";
+	protected boolean clickWasButton = false;
 	
-	private final String _title = "Request items";
-	private boolean clickWasButton = false;
+	protected int page = 0;
+	protected int maxPage = 0;
 	
-	private int page = 0;
-	private int maxPage = 0;
+	protected int requestCount = 1;
+	protected Object[] tooltip = null;
 	
-	private int requestCount = 1;
+	protected boolean displayPopup = true;
 	
-	private DisplayOptions displayOptions = DisplayOptions.Both;
-	
-	private Object[] tooltip = null;
+	protected boolean listbyserver = false;
 	
 	public GuiOrderer(IRequestItems itemRequester, EntityPlayer entityPlayer) {
 		super(220,220,0,0);
 		_itemRequester = itemRequester;
 		_entityPlayer = entityPlayer;
-		refreshItems();
 	}
-	
-	private void refreshItems(){
-		if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
-			if (displayOptions == DisplayOptions.SupplyOnly || displayOptions == DisplayOptions.Both){
-				_availableItems = core_LogisticsPipes.logisticsManager.getAvailableItems(_itemRequester.getRouter().getRouteTable().keySet());
-			} else {
-				_availableItems = new HashMap<ItemIdentifier, Integer>();
-			}
-			if (displayOptions == DisplayOptions.CraftOnly || displayOptions == DisplayOptions.Both){
-				_craftableItems = core_LogisticsPipes.logisticsManager.getCraftableItems(_itemRequester.getRouter().getRouteTable().keySet());
-			} else {
-				_craftableItems = new LinkedList<ItemIdentifier>();
-			}
-			_allItems.clear();
-			
-			outer:
-			for (ItemIdentifier item : _availableItems.keySet()){
-				for (int i = 0; i <_allItems.size(); i++){
-					if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
-						_allItems.add(i, item);
-						continue outer;
-					}
-				}
-				_allItems.addLast(item);
-			}
-			
-			outer:
-			for (ItemIdentifier item : _craftableItems){
-				if (_allItems.contains(item)) continue;
-				for (int i = 0; i <_allItems.size(); i++){
-					if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
-						_allItems.add(i, item);
-						continue outer;
-					}
-				}
-				_allItems.addLast(item);
-			}
-		} else {
-			CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
-			int integer;
-			switch(displayOptions) {
-			case Both:
-				integer = 0;
-				break;
-			case SupplyOnly:
-				integer = 1;
-				break;
-			case CraftOnly:
-				integer = 2;
-				break;
-			default: 
-				integer = 3;
-			}
-			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,integer).getPacket());
-		}
-	}
-	
+
+	protected abstract void refreshItems();
+
 	public void handlePacket(PacketRequestGuiContent packet) {
-		_availableItems = packet._availableItems;
-		_craftableItems = packet._craftableItems;
+		listbyserver = true;
 		_allItems.clear();
 		_allItems.addAll(packet._allItems);
 	}
@@ -159,6 +104,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
+		controlList.clear();
 		controlList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
 		controlList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
 		controlList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
@@ -169,10 +115,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
 		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
-		//if (_itemRequester instanceof PipeItemsRequestLogistics){
-			//controlList.add(new SmallGuiButton(8, left + 10, bottom - 40, 30, 10, "Stats")); // Stats
-		//}
-		controlList.add(new SmallGuiButton(9, right - 45, bottom - 40, 40, 10, "Both"));
+		controlList.add(new GuiCheckBox(8, guiLeft + 13, bottom - 53, 14, 14, displayPopup)); // Popup
 	}
 	
 	@Override
@@ -184,7 +127,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		//super.drawScreen(i, j, f);
 		//drawDefaultBackground();
-		drawGuiBackGround();
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
 
 		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
 		if(maxPage == -1) maxPage = 0;
@@ -195,6 +138,8 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		fontRenderer.drawString(_title, guiLeft + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
 		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , guiTop + 6 , 0x404040);
+		
+		fontRenderer.drawString("Popup", guiLeft + 6 , bottom - 39, 0x404040);
 		
 		String StackrequestCount = ""+(requestCount/64) + "+" + (requestCount % 64);
 		
@@ -253,13 +198,28 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 		tooltip = null;
 		
 		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 64, Colors.MiddleGrey);
-		for(ItemIdentifier item : _allItems) {
+		
+		if(!listbyserver && APIProxy.isRemote()) {
+			int graphic = ((int)(System.currentTimeMillis() / 250) % 5);
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
+            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+            Tessellator var9 = Tessellator.instance;
+            var9.startDrawingQuads();
+            int xPosition = xCenter - 50;
+            int yPosition = guiTop + 40;
+            var9.addVertexWithUV(xPosition			, yPosition + 100		, (double)zLevel, 0.04	, 0.72 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition + 100	, yPosition + 100		, (double)zLevel, 0.08	, 0.72 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition + 100	, yPosition				, (double)zLevel, 0.08	, 0.69 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
+            var9.draw();
+		} else for(ItemIdentifierStack itemStack : _allItems) {
+			ItemIdentifier item = itemStack.getItem();
 			if(!itemSearched(item)) continue;
 			ppi++;
 			
 			if (ppi <= 70 * page) continue;
 			if (ppi > 70 * (page+1)) continue;
-			ItemStack st = _availableItems.containsKey(item)? item.makeNormalStack(_availableItems.get(item)) : item.makeNormalStack(0);
+			ItemStack st = itemStack.makeNormalStack();
 			int x = guiLeft + 10 + panelxSize * column;
 			int y = guiTop + 18 + panelySize * row;
 
@@ -267,34 +227,36 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 			int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
             int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 			
-			if (mouseX >= x && mouseX < x + panelxSize &&
-					mouseY >= y && mouseY < y + panelySize) {
-				drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
-				drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+            if(!super.hasSubGui()) {
+				if (mouseX >= x && mouseX < x + panelxSize &&
+						mouseY >= y && mouseY < y + panelySize) {
+					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
+					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					
+					/*try {
+						Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
+						Field GuiManagerField = LayoutManager.getDeclaredField("gui");
+						GuiManagerField.setAccessible(true);
+						Object GuiManagerObject = GuiManagerField.get(null);
+						Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
+						Method drawItemTip = GuiManager.getDeclaredMethod("drawItemTip", new Class[]{int.class,int.class,ItemStack.class});
+						drawItemTip.setAccessible(true);
+						drawItemTip.invoke(GuiManagerObject, new Object[]{guiLeft+mouseX,guiTop+mouseY,st});
+					} catch(Exception e) {
+						//Normal minecraft code
+						e.printStackTrace();
+					}*/
+					tooltip = new Object[]{mouseX,mouseY,st};
+				}
 				
-				/*try {
-					Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
-					Field GuiManagerField = LayoutManager.getDeclaredField("gui");
-					GuiManagerField.setAccessible(true);
-					Object GuiManagerObject = GuiManagerField.get(null);
-					Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
-					Method drawItemTip = GuiManager.getDeclaredMethod("drawItemTip", new Class[]{int.class,int.class,ItemStack.class});
-					drawItemTip.setAccessible(true);
-					drawItemTip.invoke(GuiManagerObject, new Object[]{guiLeft+mouseX,guiTop+mouseY,st});
-				} catch(Exception e) {
-					//Normal minecraft code
-					e.printStackTrace();
-				}*/
-				tooltip = new Object[]{mouseX,mouseY,st};
-			}
-			
-			if (lastClickedx >= x && lastClickedx < x + panelxSize &&
-					lastClickedy >= y && lastClickedy < y + panelySize){
-				selectedItem = item;
-				drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-				drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
-				drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-			}
+				if (lastClickedx >= x && lastClickedx < x + panelxSize &&
+						lastClickedy >= y && lastClickedy < y + panelySize){
+					selectedItem = item;
+					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
+					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
+					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+				}
+            }
 			
 			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 			String s;
@@ -325,6 +287,7 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	@Override
 	public void drawGuiContainerForegroundLayer() {
+		if(super.hasSubGui()) return;
 		if(tooltip != null) {
 			try {
 				//Look for NEI
@@ -430,8 +393,8 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	private int getSearchedItemNumber() {
 		int count = 0;
-		for(ItemIdentifier item : _allItems) {
-			if(itemSearched(item)) {
+		for(ItemIdentifierStack item : _allItems) {
+			if(itemSearched(item.getItem())) {
 				count++;
 			}
 		}
@@ -454,12 +417,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 	}
 	
 	@Override
-	public void handleMouseInput() {
+	public void handleMouseInputSub() {
 		boolean isShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		boolean isControl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
 		int wheel = org.lwjgl.input.Mouse.getDWheel() / 120;
 		if (wheel == 0){
-			super.handleMouseInput();
+			super.handleMouseInputSub();
 			return;
 		}
 		
@@ -524,7 +487,41 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				}
 			}
 		}
-		super.handleMouseInput();
+		super.handleMouseInputSub();
+	}
+
+	public void handleRequestAnswer(ItemMessage itemMessage, boolean error) {
+		List<ItemMessage> list = new ArrayList<ItemMessage>();
+		list.add(itemMessage);
+		handleRequestAnswer(list, error);
+	}
+
+	public void handleRequestAnswer(List<ItemMessage> items, boolean error) {
+		if (!error){
+			ArrayList<String> msg = new ArrayList<String>();
+			msg.add("You are missing:");
+			for (ItemMessage item : items){
+				if(!displayPopup) {
+					_entityPlayer.addChatMessage("Missing: " + item.toString());
+				} else {
+					msg.add(item.toString());
+				}
+			}
+			if(displayPopup) {
+				this.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
+			}
+		}
+		else{
+			if(displayPopup) {
+				this.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
+			} else {
+				for(ItemMessage item:items) {
+					_entityPlayer.addChatMessage("Requested: " + item);
+				}
+				_entityPlayer.addChatMessage("Request successful!");
+			}
+			refreshItems();
+		}
 	}
 	
 	@Override
@@ -539,16 +536,12 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				LogisticsRequest request = new LogisticsRequest(selectedItem, requestCount, this._itemRequester);
 				LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);
-				if (!result){
-					for (ItemMessage error : errors){
-						_entityPlayer.addChatMessage("Missing: " + error);
-					}
+				if(result) {
+					handleRequestAnswer(new ItemMessage(selectedItem,requestCount),result);
+				} else {
+					handleRequestAnswer(errors,result);
 				}
-				else{
-					_entityPlayer.addChatMessage("Requested: " + new ItemMessage(selectedItem, requestCount));
-					_entityPlayer.addChatMessage("Request successful!");
-					refreshItems();
-				}
+				refreshItems();
 			} else {
 				CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
 				CoreProxy.sendToServer(new PacketRequestSubmit(requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,selectedItem,requestCount).getPacket());
@@ -578,33 +571,9 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 				requestCount-=1;
 			}
 			requestCount+=64;
-		} else if (guibutton.id == 8 && selectedItem != null) {
-			//if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
-				PipeItemsRequestLogistics requestPipe = (PipeItemsRequestLogistics)_itemRequester;
-				//_entityPlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_OrdererStats_ID, requestPipe.worldObj, requestPipe.xCoord, requestPipe.yCoord, requestPipe.zCoord);
-				ModLoader.openGUI(_entityPlayer, new GuiStatistics(requestPipe.getHistory(), selectedItem, this, _entityPlayer, requestPipe));
-			//} else {
-				//TODo send To Server
-			//}
-		} else if (guibutton.id == 9) {
-			String displayString = "";
-			switch (displayOptions){
-			case Both:
-				displayOptions = DisplayOptions.CraftOnly;
-				displayString = "Craft";
-				break;
-			case CraftOnly:
-				displayOptions = DisplayOptions.SupplyOnly;
-				displayString = "Supply";
-				break;
-			case SupplyOnly:
-				displayOptions = DisplayOptions.Both;
-				displayString = "Both";
-				break;
-			}
-			guibutton.displayString = displayString;
-			refreshItems();
-			
+		} else if (guibutton.id == 8) {
+			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
+			displayPopup = button.change();
 		}
 		
 		super.actionPerformed(guibutton);
@@ -678,6 +647,6 @@ public class GuiOrderer extends KraphtBaseGuiScreen {
 
 	@Override
 	public int getGuiID() {
-		return GuiIDs.GUI_Orderer_ID;
+		return GuiIDs.GUI_Normal_Orderer_ID;
 	}
 }

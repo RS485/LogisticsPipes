@@ -11,9 +11,9 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
-import net.minecraft.src.buildcraft.krapht.gui.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
+import net.minecraft.src.buildcraft.krapht.gui.orderer.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
@@ -169,7 +169,9 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	private void onItemsResponse(PacketItems packet) {
-		if(packet.error) {
+		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)ModLoader.getMinecraftInstance().currentScreen).handleRequestAnswer(packet.items,!packet.error);
+		} else if(packet.error) {
 			for (final ItemMessage items : packet.items) {
 				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + items);
 			}

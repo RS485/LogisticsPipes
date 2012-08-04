@@ -21,6 +21,7 @@ import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 
 public class GuiStatistics extends KraphtBaseGuiScreen {
@@ -74,7 +75,7 @@ public class GuiStatistics extends KraphtBaseGuiScreen {
 
 	@Override
 	public void drawScreen(int i, int j, float f) {
-		drawGuiBackGround();
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
 		String s = this._targetItem.getFriendlyName() + " - History";
 		fontRenderer.drawString(s, xCenter - fontRenderer.getStringWidth(s)/2, guiTop + 10, 0x404040);
 		

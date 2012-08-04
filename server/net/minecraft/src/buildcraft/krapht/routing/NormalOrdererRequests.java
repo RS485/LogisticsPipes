@@ -15,8 +15,9 @@ import net.minecraft.src.buildcraft.krapht.network.PacketRequestSubmit;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.logisticspipes.MessageManager;
 import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraft.src.krapht.ItemIdentifierStack;
 
-public class OrdererRequests {
+public class NormalOrdererRequests {
 
 	public enum DisplayOptions {
 		Both,
@@ -41,7 +42,7 @@ public class OrdererRequests {
 	public static void refresh(EntityPlayerMP player, CoreRoutedPipe pipe, DisplayOptions option) {
 		HashMap<ItemIdentifier, Integer> _availableItems;
 		LinkedList<ItemIdentifier> _craftableItems;
-		LinkedList<ItemIdentifier>_allItems = new LinkedList<ItemIdentifier>(); 
+		LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 		
 		if (option == DisplayOptions.SupplyOnly || option == DisplayOptions.Both){
 			_availableItems = core_LogisticsPipes.logisticsManager.getAvailableItems(pipe.getRouter().getRouteTable().keySet());
@@ -58,25 +59,25 @@ public class OrdererRequests {
 		outer:
 		for (ItemIdentifier item : _availableItems.keySet()){
 			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
-					_allItems.add(i, item);
+				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
+					_allItems.add(i, item.makeStack(_availableItems.get(item)));
 					continue outer;
 				}
 			}
-			_allItems.addLast(item);
+			_allItems.addLast(item.makeStack(_availableItems.get(item)));
 		}
 		
 		outer:
 		for (ItemIdentifier item : _craftableItems){
 			if (_allItems.contains(item)) continue;
 			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).itemID || item.itemID == _allItems.get(i).itemID && item.itemDamage < _allItems.get(i).itemDamage){
-					_allItems.add(i, item);
+				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
+					_allItems.add(i, item.makeStack(0));
 					continue outer;
 				}
 			}
-			_allItems.addLast(item);
+			_allItems.addLast(item.makeStack(0));
 		}
-		CoreProxy.sendToPlayer(player, new PacketRequestGuiContent(_availableItems, _craftableItems, _allItems));
+		CoreProxy.sendToPlayer(player, new PacketRequestGuiContent(_allItems));
 	}
 }

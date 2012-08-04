@@ -69,7 +69,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 			for (AdjacentTile tile : locateCrafters()){
 				ItemStack extracted = null; 
 				if (tile.tile instanceof ISpecialInventory){
-					extracted = extractFromISpecialInventory((TileAutoWorkbench) tile.tile);
+					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile);
 				} else if (tile.tile instanceof IInventory) {
 					extracted = extractFromIInventory((IInventory)tile.tile);
 				}

@@ -20,7 +20,7 @@ public class GuiIDs {
 	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;
-	public static final int GUI_Orderer_ID = 31;
+	public static final int GUI_Normal_Orderer_ID = 31;
 	public static final int GUI_OrdererStats_ID = 32;
 	
 	//SubModules 

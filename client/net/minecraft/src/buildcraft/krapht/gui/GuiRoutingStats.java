@@ -13,6 +13,7 @@ import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 
 public class GuiRoutingStats extends KraphtBaseGuiScreen { //GuiScreen{
@@ -42,7 +43,7 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen { //GuiScreen{
 	public void drawScreen(int i, int j, float f) {
 		// TODO Auto-generated method stub
 		
-		super.drawGuiBackGround();
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
 		
 //		int colorLight = 0xFFC6C6C6;
 //		int colorDark = 0xFF555555;

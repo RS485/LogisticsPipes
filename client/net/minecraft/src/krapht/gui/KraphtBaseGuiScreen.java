@@ -156,7 +156,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		
 	}
-	
+	/*
 	@Override
 	protected void keyTyped(char c, int i) {
 		if(i == 1){
@@ -165,5 +165,5 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		} else {
 			super.keyTyped(c, i);
 		}
-	}
+	}*/
 }

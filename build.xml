@@ -168,7 +168,10 @@
         <copy todir="${serversrc.dir}">
             <fileset dir="${src.dir}/common"/>
         </copy>
-        
+		
+		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${BUILD_NUMBER}"/>
+		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${BUILD_NUMBER}"/>
+		
     </target>
     
     <target name="compile" depends="setup">

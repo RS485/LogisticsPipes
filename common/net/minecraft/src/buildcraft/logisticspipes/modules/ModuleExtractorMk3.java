@@ -10,8 +10,8 @@ import net.minecraft.src.forge.ISidedInventory;
 
 public class ModuleExtractorMk3 extends ModuleExtractorMk2 {
 
-	public ModuleExtractorMk3(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
-		super(invProvider, itemSender);
+	public ModuleExtractorMk3() {
+		super();
 	}
 
 	protected int ticksToAction(){

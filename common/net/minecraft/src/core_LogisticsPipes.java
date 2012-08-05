@@ -323,7 +323,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsRemoteOrderer;
 	public static Item LogisticsCraftingSignCreator;
 	
-	public static Item ModuleItem;
+	public static ItemModule ModuleItem;
 	
 	public static Trigger LogisticsFailedTrigger;
 	
@@ -646,7 +646,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		core_LogisticsPipes.LogisticsDisableAction = new ActionDisableLogistics(700);
 		
-		ModuleItem						= new ItemModule(ItemModuleId).setItemName("itemModule");
+		ModuleItem						= new ItemModule(ItemModuleId);
+		ModuleItem.setItemName("itemModule");
+		ModuleItem.loadModules();
 		
 		LOGISTICSPIPE_TEXTURE 			= CoreProxy.addCustomTexture(LOGISTICSPIPE_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDER_TEXTURE 	= CoreProxy.addCustomTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);

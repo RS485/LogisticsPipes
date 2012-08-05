@@ -19,12 +19,15 @@ import net.minecraft.src.krapht.SimpleInventory;
 public class ModulePassiveSupplier implements ILogisticsModule, IClientInformationProvider {
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 64);
-	private final IInventoryProvider _invProvider;
+	private IInventoryProvider _invProvider;
 	
-	public ModulePassiveSupplier(IInventoryProvider invProvider) {
+	public ModulePassiveSupplier() {}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 	}
-	
+
 	public IInventory getFilterInventory(){
 		return _filterInventory;
 	}

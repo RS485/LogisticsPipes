@@ -31,8 +31,8 @@ import net.minecraft.src.krapht.SimpleInventory;
 public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider {
 
 	
-	private final IInventoryProvider _invProvider;
-	private final ISendRoutedItem _itemSender;
+	private IInventoryProvider _invProvider;
+	private ISendRoutedItem _itemSender;
 	
 	private LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
@@ -45,11 +45,14 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	private boolean isExcludeFilter = false;
 	private ExtractionMode _extractionMode = ExtractionMode.Normal;
 	
-	public ModuleProvider(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public ModuleProvider() {}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
 		_filterInventory.readFromNBT(nbttagcompound, "");

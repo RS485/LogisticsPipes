@@ -4,11 +4,14 @@ import java.util.List;
 
 import org.lwjgl.input.Keyboard;
 
+import cpw.mods.fml.client.SpriteHelper;
+
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.NBTTagString;
+import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.LogisticsItem;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
@@ -19,26 +22,27 @@ public abstract class ItemModuleProxy extends LogisticsItem {
 		super(i);
 	}
 
-	@Override
-	public int getIconFromDamage(int i) {
+	public abstract int getModuleIconFromDamage(int damage);
 
-		if (i >= 500){
-			return 5 * 16 + (i - 500);
-		}
-		
-		if (i >= 200){
-			return 4 * 16 + (i - 200);
-		}
-		
-		if (i >= 100){
-			return 3 * 16 + (i - 100);
-		}
-			
-		return 2 * 16 + i;
+	@Override
+	public String getTextureFile() {
+		return core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 	
+	@Override
+	public int getIconFromDamage(int i) {
+		return getModuleIconFromDamage(i);
+	}
+	
+	@Override
 	public boolean func_46056_k() {
 		return true;
+	}
+	
+	public abstract String getTextureMap();
+	
+	public void loadModules() {
+		SpriteHelper.registerSpriteMapForFile(core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, getTextureMap());
 	}
 	
 	public void addInformation(ItemStack itemStack, List list) {

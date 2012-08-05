@@ -10,6 +10,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
+import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply.FixedPriority;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -30,7 +31,9 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 	public void setDefaultRoute(boolean isDefaultRoute){
 		_isDefaultRoute = isDefaultRoute;
 	}
-	
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {}
 
 	@Override
 	public SinkReply sinksItem(ItemStack item) {

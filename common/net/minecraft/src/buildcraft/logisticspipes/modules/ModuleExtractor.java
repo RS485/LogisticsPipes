@@ -22,11 +22,16 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
 	
-	private final IInventoryProvider _invProvider;
-	private final ISendRoutedItem _itemSender;
+	private IInventoryProvider _invProvider;
+	private ISendRoutedItem _itemSender;
 	private SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 	
-	public ModuleExtractor(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public ModuleExtractor() {
+		
+	}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

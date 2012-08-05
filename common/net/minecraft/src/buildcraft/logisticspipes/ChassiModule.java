@@ -9,6 +9,7 @@ import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -103,6 +104,11 @@ public class ChassiModule implements ILogisticsModule{
 			if (module == null) continue;
 			module.tick();
 		}
+	}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+		//Not used in Chassie Module
 	}
 
 }

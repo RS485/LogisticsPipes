@@ -89,7 +89,7 @@ public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider
 			controlList.add(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!"));
 			if(_moduleInventory == null) continue;
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if(module == null) {
+			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)controlList.get(i)).drawButton = false;
 			} else {
 				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).getGuiHandlerID() != -1;
@@ -118,7 +118,7 @@ public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider
 		super.drawGuiContainerForegroundLayer();
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
-			if(module == null) {
+			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)controlList.get(i)).drawButton = false;
 			} else {
 				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).getGuiHandlerID() != -1;

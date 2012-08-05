@@ -33,7 +33,8 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 
 	public PipeItemsApiaristAnalyser(int itemID) {
 		super(new TemporaryLogic(), itemID);
-		analyserModule = new ModuleApiaristAnalyser(this, this);
+		analyserModule = new ModuleApiaristAnalyser();
+		analyserModule.registerHandler(this, this);
 	}
 
 	@Override

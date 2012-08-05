@@ -24,12 +24,16 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Item list", 1);
 	private boolean _itemsIncluded = true;
-	protected final IInventoryProvider _invProvider;
-	protected final ISendRoutedItem _itemSender;
+	protected IInventoryProvider _invProvider;
+	protected ISendRoutedItem _itemSender;
 	protected SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 
-	public ModuleAdvancedExtractor(IInventoryProvider invProvider,
-			ISendRoutedItem itemSender) {
+	public ModuleAdvancedExtractor() {
+		
+	}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

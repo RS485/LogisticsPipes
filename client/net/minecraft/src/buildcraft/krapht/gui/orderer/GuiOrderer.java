@@ -217,17 +217,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
             var9.addVertexWithUV(xPosition + 100	, yPosition				, (double)zLevel, 0.08	, 0.69 + (graphic * 0.03125));
             var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
             var9.draw();
-		} else for(Item NMSItem:Item.itemsList  /* ItemIdentifierStack itemStack : _allItems*/) {
-			if(NMSItem == null) continue;
-			ItemStack st = new ItemStack(NMSItem,0);
-			ItemIdentifier item = ItemIdentifier.get(st);
-			//ItemIdentifier item = itemStack.getItem();
+		} else for(ItemIdentifierStack itemStack : _allItems) {
+			ItemIdentifier item = itemStack.getItem();
 			if(!itemSearched(item)) continue;
 			ppi++;
 			
 			if (ppi <= 70 * page) continue;
 			if (ppi > 70 * (page+1)) continue;
-			//ItemStack st = itemStack.makeNormalStack();
+			ItemStack st = itemStack.makeNormalStack();
 			int x = guiLeft + 10 + panelxSize * column;
 			int y = guiTop + 18 + panelySize * row;
 
@@ -388,9 +385,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	private int getSearchedItemNumber() {
 		int count = 0;
-		for(Item NMSItem:Item.itemsList  /*ItemIdentifierStack item : _allItems*/) {
-			if(NMSItem == null) continue;
-			if(itemSearched(ItemIdentifier.get(new ItemStack(NMSItem,0))/* item.getItem()*/)) {
+		for(ItemIdentifierStack item : _allItems) {
+			if(itemSearched(item.getItem())) {
 				count++;
 			}
 		}

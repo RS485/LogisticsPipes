@@ -40,6 +40,8 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		if(pipe.getDisk() != null) {
 			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, pipe.getDisk(), right - 37, bottom - 45);
 			Macrobutton.enabled = true;
+		} else {
+			Macrobutton.enabled = false;
 		}
 		
 		//Click on Disk

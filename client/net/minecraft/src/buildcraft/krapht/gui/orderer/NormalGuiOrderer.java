@@ -38,7 +38,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 	
 	public void initGui() {
 		super.initGui();
-		controlList.add(new SmallGuiButton(9, right - 45, bottom - 40, 40, 10, "Both"));
+		controlList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
 	}
 	
 	protected void refreshItems(){

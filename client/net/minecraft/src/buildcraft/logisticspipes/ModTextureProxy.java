@@ -7,6 +7,7 @@ import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_BuildCraftTransport;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.core.CoreProxy;
+import net.minecraft.src.buildcraft.core.utils.Localization;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
 import net.minecraft.src.buildcraft.transport.BlockGenericPipe;
@@ -36,5 +37,12 @@ public abstract class ModTextureProxy extends core_LogisticsPipes {
 		
 		MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
 		MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
+	}
+	
+	@Override
+	public void modsLoaded() {
+		Localization.addLocalization("/lang/logisticspipes/", "en_US");
+		
+		super.modsLoaded();
 	}
 }

@@ -14,6 +14,7 @@ import net.minecraft.src.buildcraft.krapht.gui.GuiSatellitePipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalGuiOrderer;
+import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
@@ -21,6 +22,7 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
@@ -40,6 +42,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
 import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
+import net.minecraft.src.buildcraft.transport.PipeLogic;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IGuiHandler;
 
@@ -133,6 +136,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new NormalGuiOrderer(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe(), player);
+				
+			case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
+				return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2)pipe.pipe), player);
 				
 			// TODO To be client-sided
 				/*case GuiIDs.GUI_OrdererStats_ID:

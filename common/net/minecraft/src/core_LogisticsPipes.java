@@ -283,6 +283,7 @@ import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 
+import net.minecraft.src.buildcraft.logisticspipes.items.ItemDisk;
 import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrdererClientInformation;
@@ -322,6 +323,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
 	public static Item LogisticsCraftingSignCreator;
+	public static ItemDisk LogisticsItemDisk;
 	
 	public static ItemModule ModuleItem;
 	
@@ -330,6 +332,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Action LogisticsDisableAction;
 
 	// Ids
+	public static int ItemDiskId									= 6870;
 	public static int ItemModuleId									= 6871;
 	public static int LOGISTICSREMOTEORDERER_ID						= 6872;
 	public static int LOGISTICSNETWORKMONITOR_ID					= 6873;
@@ -567,6 +570,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
+		Property logisticItemDiskIdProperty = configuration.getOrCreateIntProperty("logisticsDisk.id", Configuration.CATEGORY_ITEM, ItemDiskId);
+		logisticItemDiskIdProperty.comment = "The item id for the disk";
+
 		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
 		
@@ -603,6 +609,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSNETWORKMONITOR_ID		= Integer.parseInt(logisticNetworkMonitorIdProperty.value);
 		LOGISTICSREMOTEORDERER_ID		= Integer.parseInt(logisticRemoteOrdererIdProperty.value);
 		ItemModuleId					= Integer.parseInt(logisticModuleIdProperty.value);
+		ItemDiskId						= Integer.parseInt(logisticItemDiskIdProperty.value);
 		 
 		LOGISTICSPIPE_BASIC_ID 			= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID		= Integer.parseInt(logisticPipeRequesterIdProperty.value);
@@ -646,9 +653,13 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		core_LogisticsPipes.LogisticsDisableAction = new ActionDisableLogistics(700);
 		
-		ModuleItem						= new ItemModule(ItemModuleId);
+		ModuleItem = new ItemModule(ItemModuleId);
 		ModuleItem.setItemName("itemModule");
 		ModuleItem.loadModules();
+		
+		LogisticsItemDisk = new ItemDisk(ItemDiskId);
+		LogisticsItemDisk.setItemName("itemDisk");
+		LogisticsItemDisk.setIconIndex(3);
 		
 		LOGISTICSPIPE_TEXTURE 			= CoreProxy.addCustomTexture(LOGISTICSPIPE_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDER_TEXTURE 	= CoreProxy.addCustomTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
@@ -695,6 +706,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
+		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
 		
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID		= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID			= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
@@ -736,6 +748,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		craftingManager.addRecipe(new ItemStack(LogisticsCraftingPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsCraftingPipe, Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrdererPipe, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsBasicPipe, Character.valueOf('U'), Item.enderPearl});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsItemDisk, 1), new Object[] { "igi", "grg", "igi", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
 		
 		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.BLANK), new Object[] { "prp", "prp", "pgp", Character.valueOf('p'), Item.paper, Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
 

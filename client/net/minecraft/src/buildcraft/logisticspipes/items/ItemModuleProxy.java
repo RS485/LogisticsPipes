@@ -16,7 +16,7 @@ import net.minecraft.src.buildcraft.krapht.LogisticsItem;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
-public abstract class ItemModuleProxy extends LogisticsItem {
+public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 
 	public ItemModuleProxy(int i) {
 		super(i);
@@ -32,11 +32,6 @@ public abstract class ItemModuleProxy extends LogisticsItem {
 	@Override
 	public int getIconFromDamage(int i) {
 		return getModuleIconFromDamage(i);
-	}
-	
-	@Override
-	public boolean func_46056_k() {
-		return true;
 	}
 	
 	public abstract String getTextureMap();

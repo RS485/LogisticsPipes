@@ -33,7 +33,7 @@ import net.minecraft.src.krapht.SimpleInventory;
 public class ItemModule extends ItemModuleProxy {
 	
 	//Texture Map
-	public static final String textureMap =	"0001111111111111" +
+	public static final String textureMap =	"0000111111111111" +
 											"0000011111111111" +
 											"0000000011111111" +
 											"1110111011111111" +

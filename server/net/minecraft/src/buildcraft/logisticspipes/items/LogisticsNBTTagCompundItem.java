@@ -11,6 +11,6 @@ public class LogisticsNBTTagCompundItem extends LogisticsItem {
 	@Override
     public boolean func_46003_i()
     {
-        return false;
+        return true;
     }
 }

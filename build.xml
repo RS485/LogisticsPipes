@@ -169,8 +169,8 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 		
-		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${Build_Number}"/>
-		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${Build_Number}"/>
+		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${BUILD_NUMBER}"/>
+		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${BUILD_NUMBER}"/>
 		
     </target>
     

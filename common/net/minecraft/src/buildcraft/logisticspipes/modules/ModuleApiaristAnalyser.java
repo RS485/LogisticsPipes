@@ -10,12 +10,17 @@ import net.minecraft.src.forge.ISidedInventory;
 
 public class ModuleApiaristAnalyser implements ILogisticsModule {
 	
-	private final IInventoryProvider _invProvider;
-	private final ISendRoutedItem _itemSender;
+	private IInventoryProvider _invProvider;
+	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 	
-	public ModuleApiaristAnalyser(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public ModuleApiaristAnalyser() {
+		
+	}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

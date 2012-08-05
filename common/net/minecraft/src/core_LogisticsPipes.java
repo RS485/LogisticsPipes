@@ -280,13 +280,13 @@ import net.minecraft.src.buildcraft.krapht.forestry.IForestryProxy;
 import net.minecraft.src.buildcraft.krapht.logistics.LogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.pipes.*;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
-import net.minecraft.src.buildcraft.logisticspipes.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.items.CraftingSignCreator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 
+import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrdererClientInformation;
 import buildcraft.transport.BlockGenericPipe;
@@ -326,7 +326,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsRemoteOrderer;
 	public static Item LogisticsCraftingSignCreator;
 	
-	public static Item ModuleItem;
+	public static ItemModule ModuleItem;
 	
 	public static Trigger LogisticsFailedTrigger;
 	
@@ -413,7 +413,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/builder_supplier.png";
 	public static final String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/liquid_supplier.png";
 	public static final String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	= "/logisticspipes/pipes/remote_orderer.png";
-	public static final String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "/logisticspipes/pipes/remote_orderer.png";
+	public static final String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "/logisticspipes/pipes/analyzer.png";
 
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
@@ -680,7 +680,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		
 		core_LogisticsPipes.LogisticsDisableAction = new ActionDisableLogistics(700);
 		
-		ModuleItem						= new ItemModule(ItemModuleId).setItemName("itemModule");
+		ModuleItem						= new ItemModule(ItemModuleId);
+		ModuleItem.setItemName("itemModule");
+		ModuleItem.loadModules();
 		
 		LogisticsBasicPipe = createPipe(LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe");
 		LogisticsRequestPipe = createPipe(LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe");

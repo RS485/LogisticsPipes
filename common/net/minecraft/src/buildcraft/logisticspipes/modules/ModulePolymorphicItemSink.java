@@ -13,9 +13,12 @@ import net.minecraft.src.krapht.ItemIdentifier;
 
 public class ModulePolymorphicItemSink implements ILogisticsModule {
 	
-	private final IInventoryProvider _invProvider;
+	private IInventoryProvider _invProvider;
 	
-	public ModulePolymorphicItemSink(IInventoryProvider invProvider) {
+	public ModulePolymorphicItemSink() {}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 	}
 

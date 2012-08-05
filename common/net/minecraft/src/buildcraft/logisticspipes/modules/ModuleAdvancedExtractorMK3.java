@@ -4,8 +4,8 @@ import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 
 public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 
-	public ModuleAdvancedExtractorMK3(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
-		super(invProvider, itemSender);
+	public ModuleAdvancedExtractorMK3() {
+		super();
 	}
 
 	protected int ticksToAction(){

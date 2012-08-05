@@ -25,6 +25,7 @@ public class ItemModuleInformationManager {
 	}
 	
 	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module) {
+		if(module == null) return;
 		NBTTagCompound nbt = new NBTTagCompound();
         module.writeToNBT(nbt, "");
         if(nbt.equals(new NBTTagCompound())) {
@@ -63,6 +64,7 @@ public class ItemModuleInformationManager {
 	}
 	
 	public static void readInformation(ItemStack itemStack, ILogisticsModule module) {
+		if(module == null) return;
 		if(APIProxy.isRemote()) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
@@ -75,6 +77,7 @@ public class ItemModuleInformationManager {
 	}
 	
 	public static void removeInformation(ItemStack itemStack) {
+		if(itemStack == null) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
 			Collection collection = nbt.getTags();

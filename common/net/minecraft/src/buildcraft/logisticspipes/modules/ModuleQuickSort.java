@@ -16,14 +16,16 @@ public class ModuleQuickSort implements ILogisticsModule {
 	private boolean sent;
 	private int ticksToResend = 0;
 	
-	private final IInventoryProvider _invProvider;
-	private final ISendRoutedItem _itemSender;
+	private IInventoryProvider _invProvider;
+	private ISendRoutedItem _itemSender;
 	
-	public ModuleQuickSort(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public ModuleQuickSort() {}
+
+	@Override
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}
-
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {}

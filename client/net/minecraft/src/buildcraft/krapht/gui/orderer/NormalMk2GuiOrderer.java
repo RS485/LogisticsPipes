@@ -4,10 +4,12 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
+import net.minecraft.src.buildcraft.krapht.gui.popup.GuiDiskPopup;
 import net.minecraft.src.buildcraft.krapht.gui.popup.GuiMessagePopup;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristAnalyser;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
@@ -63,8 +65,12 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
-			this.setSubGui(new GuiMessagePopup("Comming Soon"));
-			//TODO Implement Gui
+			this.setSubGui(new GuiDiskPopup(this));
+			this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
 		}
+	}
+	
+	public ItemStack getDisk() {
+		return pipe.getDisk();
 	}
 }

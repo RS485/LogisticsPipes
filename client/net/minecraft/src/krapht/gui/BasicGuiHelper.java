@@ -1,10 +1,22 @@
 package net.minecraft.src.krapht.gui;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
+import net.minecraft.src.Gui;
+import net.minecraft.src.ItemRenderer;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.ModLoader;
+import net.minecraft.src.RenderItem;
 import net.minecraft.src.Tessellator;
+import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 public class BasicGuiHelper {
@@ -39,6 +51,200 @@ public class BasicGuiHelper {
 				return 0;
 			}
 	}
+	
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount) {
+		int ppi = 0;
+		int column = 0;
+		int row = 0;
+		FontRenderer fontRenderer = mc.fontRenderer;
+		RenderItem renderItem = new RenderItem();
+		for(ItemIdentifierStack itemStack : _allItems) {
+			ItemIdentifier item = itemStack.getItem();
+			if(!IItemSearch.itemSearched(item)) continue;
+			ppi++;
+			
+			if (ppi <= items * page) continue;
+			if (ppi > items * (page+1)) continue;
+			ItemStack st = itemStack.makeNormalStack();
+			int x = left + xSize * column;
+			int y = top + ySize * row;
+
+			GL11.glDisable(2896 /*GL_LIGHTING*/);
+			
+			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+			if(displayAmount) {
+				String s;
+				if (st.stackSize == 1){
+					s = "";
+				} else if (st.stackSize < 1000) {
+					s = st.stackSize + "";
+				} else if (st.stackSize < 1000000){
+					s = st.stackSize / 1000 + "K";
+				} else {
+					s = st.stackSize / 1000000 + "M";
+				}
+					
+				GL11.glDisable(2896 /*GL_LIGHTING*/);
+				GL11.glDisable(2929 /*GL_DEPTH_TEST*/);			
+				fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+		        GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+				GL11.glEnable(2896 /*GL_LIGHTING*/);
+			}
+
+			column++;
+			if (column >= columns){
+				row++;
+				column = 0;
+			}
+		}
+		GL11.glDisable(2896 /*GL_LIGHTING*/);
+	}
+	
+	private static float zLevel;
+	
+	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {
+		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false);
+	}
+	
+	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft) {		
+		zLevel = pzLevel;
+		if(tooltip != null) {
+			try {
+				if(forceminecraft) {
+					throw new Exception();
+				}
+				//Look for NEI
+				Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
+				Field GuiManagerField = LayoutManager.getDeclaredField("gui");
+				GuiManagerField.setAccessible(true);
+				Object GuiManagerObject = GuiManagerField.get(null);
+				Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
+				Class<?> NEIUtils = Class.forName("codechicken.nei.NEIUtils");
+				Class<?> NEIConfig = Class.forName("codechicken.nei.NEIConfig");
+				Method itemDisplayNameMultiline = NEIUtils.getDeclaredMethod("itemDisplayNameMultiline", new Class[]{ItemStack.class, boolean.class, boolean.class});
+				Method showIDs = NEIConfig.getDeclaredMethod("showIDs", new Class[]{});
+				Method drawMultilineTip = GuiManager.getDeclaredMethod("drawMultilineTip", new Class[]{int.class, int.class, List.class, int.class});
+				Object flagObject = showIDs.invoke(null, new Object[]{});
+				boolean flag = Boolean.valueOf((Boolean)flagObject);
+				
+				List<String> list = (List<String>) itemDisplayNameMultiline.invoke(null, new Object[]{tooltip[2],flag,true});
+				
+				if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
+					list.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
+				}
+				
+				drawMultilineTip.invoke(GuiManagerObject, new Object[]{tooltip[0], tooltip[1], list, ((ItemStack)tooltip[2]).getRarity().rarityColor});
+			} catch(Exception e) {
+				//Use minecraft vanilla code
+				ItemStack var22 = (ItemStack) tooltip[2];
+				List var24 = var22.getItemNameandInformation();
+				
+	            if (var24.size() > 0)
+	            {
+	                int var10 = 0;
+	                int var11;
+	                int var12;
+	                
+	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
+	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
+					}
+					
+	                for (var11 = 0; var11 < var24.size(); ++var11)
+	                {
+	                    var12 = ModLoader.getMinecraftInstance().fontRenderer.getStringWidth((String)var24.get(var11));
+
+	                    if (var12 > var10)
+	                    {
+	                        var10 = var12;
+	                    }
+	                }
+
+	                var11 = ((Integer)tooltip[0]).intValue() - guiLeft + 12;
+	                var12 = ((Integer)tooltip[1]).intValue() - guiTop - 12;
+	                int var14 = 8;
+
+	                if (var24.size() > 1)
+	                {
+	                    var14 += 2 + (var24.size() - 1) * 10;
+	                }
+
+	                GL11.glDisable(2896 /*GL_LIGHTING*/);
+        			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
+        			zLevel = 300.0F;
+	                int var15 = -267386864;
+	                drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
+	                drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
+	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
+	                drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
+	                drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
+	                int var16 = 1347420415;
+	                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
+	                drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
+	                drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
+	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
+	                drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
+
+	                for (int var18 = 0; var18 < var24.size(); ++var18)
+	                {
+	                    String var19 = (String)var24.get(var18);
+
+	                    if (var18 == 0)
+	                    {
+	                        var19 = "\u00a7" + Integer.toHexString(var22.getRarity().rarityColor) + var19;
+	                    }
+	                    else
+	                    {
+	                        var19 = "\u00a77" + var19;
+	                    }
+
+	                    ModLoader.getMinecraftInstance().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+	        	        
+	                    if (var18 == 0)
+	                    {
+	                        var12 += 2;
+	                    }
+
+	                    var12 += 10;
+	                }
+
+	                zLevel = 0.0F;
+	                
+	                GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+        			GL11.glEnable(2896 /*GL_LIGHTING*/);
+	            }
+			}
+		}
+	}
+
+    private static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6)
+    {
+        float var7 = (float)(par5 >> 24 & 255) / 255.0F;
+        float var8 = (float)(par5 >> 16 & 255) / 255.0F;
+        float var9 = (float)(par5 >> 8 & 255) / 255.0F;
+        float var10 = (float)(par5 & 255) / 255.0F;
+        float var11 = (float)(par6 >> 24 & 255) / 255.0F;
+        float var12 = (float)(par6 >> 16 & 255) / 255.0F;
+        float var13 = (float)(par6 >> 8 & 255) / 255.0F;
+        float var14 = (float)(par6 & 255) / 255.0F;
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
+        GL11.glEnable(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_ALPHA_TEST);
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+        GL11.glShadeModel(GL11.GL_SMOOTH);
+        Tessellator var15 = Tessellator.instance;
+        var15.startDrawingQuads();
+        var15.setColorRGBA_F(var8, var9, var10, var7);
+        var15.addVertex((double)par3, (double)par2, (double)zLevel);
+        var15.addVertex((double)par1, (double)par2, (double)zLevel);
+        var15.setColorRGBA_F(var12, var13, var14, var11);
+        var15.addVertex((double)par1, (double)par4, (double)zLevel);
+        var15.addVertex((double)par3, (double)par4, (double)zLevel);
+        var15.draw();
+        GL11.glShadeModel(GL11.GL_FLAT);
+        GL11.glDisable(GL11.GL_BLEND);
+        GL11.glEnable(GL11.GL_ALPHA_TEST);
+        GL11.glEnable(GL11.GL_TEXTURE_2D);
+    }
 	
 	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel){
 

@@ -17,7 +17,7 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	
 	private SubGuiScreen subGui;
 
-	private ISubGuiControler controler;
+	protected ISubGuiControler controler;
 	
 	public SubGuiScreen(int xSize, int ySize, int xOffset, int yOffset) {
 		this.xSize = xSize;

@@ -31,7 +31,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if(disk == null) {
-			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == mod_LogisticsPipes.LogisticsItemDisk) {
+			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(mod_LogisticsPipes.LogisticsItemDisk)) {
 				disk = entityplayer.getCurrentEquippedItem();
 				entityplayer.destroyCurrentEquippedItem();
 				flag = false;

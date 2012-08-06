@@ -183,6 +183,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		
 		if (_invProvider.getInventory() == null) return 0;
 		
+		if (_filterUtil.getItemsAndCount().size() > 0
+				&& ((this.isExcludeFilter && _filterUtil.getItemsAndCount().containsKey(item)) 
+						|| ((!this.isExcludeFilter) && !_filterUtil.getItemsAndCount().containsKey(item)))) return 0;
+		
 		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		return inv.itemCount(item);
 	}

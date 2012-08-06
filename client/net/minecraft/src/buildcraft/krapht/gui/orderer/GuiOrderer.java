@@ -85,8 +85,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	protected int requestCount = 1;
 	protected Object[] tooltip = null;
 	
-	protected boolean displayPopup = true;
-	
 	protected boolean listbyserver = false;
 	
 	public GuiOrderer(IRequestItems itemRequester, EntityPlayer entityPlayer) {
@@ -117,7 +115,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
 		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
-		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, displayPopup)); // Popup
+		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, mod_LogisticsPipes.displayPopup)); // Popup
 	}
 	
 	@Override
@@ -415,18 +413,18 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			ArrayList<String> msg = new ArrayList<String>();
 			msg.add("You are missing:");
 			for (ItemMessage item : items){
-				if(!displayPopup) {
+				if(!mod_LogisticsPipes.displayPopup) {
 					_entityPlayer.addChatMessage("Missing: " + item.toString());
 				} else {
 					msg.add(item.toString());
 				}
 			}
-			if(displayPopup) {
+			if(mod_LogisticsPipes.displayPopup) {
 				this.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
 		}
 		else{
-			if(displayPopup) {
+			if(mod_LogisticsPipes.displayPopup) {
 				this.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
 			} else {
 				for(ItemMessage item:items) {
@@ -487,7 +485,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			requestCount+=64;
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
-			displayPopup = button.change();
+			mod_LogisticsPipes.displayPopup = button.change();
 		}
 		
 		super.actionPerformed(guibutton);

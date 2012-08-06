@@ -333,7 +333,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Trigger LogisticsFailedTrigger;
 	
 	public static Action LogisticsDisableAction;
-
+	
 	// Ids
 	public static int ItemDiskId									= 6870;
 	public static int ItemModuleId									= 6871;
@@ -445,7 +445,10 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
 	
 	protected static Configuration configuration;
-	
+
+	//GuiOrderer Popup setting
+	public static boolean displayPopup = true;
+
 	//Blocks
 	Block logisticsBlock;
 	
@@ -632,8 +635,11 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 
 		Property pageInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererPageInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_PAGE_INVERTWHEEL);
 		pageInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order pages";
+		
+		Property pageDisplayPopupProperty = configuration.getOrCreateBooleanProperty("displayPopup", Configuration.CATEGORY_GENERAL, displayPopup);
+		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
 
-
+		
 		
 		Property logisticsBlockId = configuration.getOrCreateIntProperty("logisticsBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_BLOCK_ID);
 		logisticsBlockId.comment = "The ID of the LogisticsPipes Block (0 if you don't want any block)";
@@ -669,6 +675,8 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICS_BLOCK_ID = Integer.parseInt(logisticsBlockId.value);
 		
 		LOGISTICSCRAFTINGSIGNCREATOR_ID		= Integer.parseInt(logisticCraftingSignCreatorIdProperty.value);
+		
+		displayPopup = Boolean.parseBoolean(pageDisplayPopupProperty.value);
 		
 		LogisticsNetworkMonitior = new LogisticsItem(LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);

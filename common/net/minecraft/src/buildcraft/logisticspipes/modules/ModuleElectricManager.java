@@ -17,8 +17,6 @@ import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
-import net.minecraft.src.ic2.api.IElectricItem;
-
 public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider {
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Electric Items", 1);
@@ -47,7 +45,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 
 	public static int getCharge(ItemStack item)
 	{
-		if (item.getItem() instanceof IElectricItem && item.hasTagCompound())
+		if (SimpleServiceLocator.electricItemProxy.isElectricItem(item) && item.hasTagCompound())
 			return item.getTagCompound().getInteger("charge");
 		else
 			return 0;

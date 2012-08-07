@@ -18,6 +18,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK3;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleElectricManager;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk3;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
@@ -68,6 +69,8 @@ public class ItemModule extends ItemModuleProxy {
 	//PASSIVE MK 3
 	public static final int EXTRACTOR_MK3 = 200 + EXTRACTOR;
 	public static final int ADVANCED_EXTRACTOR_MK3 = 200 + ADVANCED_EXTRACTOR;
+
+	public static final int ELECTRICMANAGER = 300;
 	
 	
 	//ACTIVE MODULES
@@ -151,6 +154,7 @@ public class ItemModule extends ItemModuleProxy {
 		registerModule(EXTRACTOR_MK3			, "Extractor MK3 module"		, ModuleExtractorMk3.class);
 		registerModule(ADVANCED_EXTRACTOR_MK3	, "Advanced Extractor MK3"		, ModuleAdvancedExtractorMK3.class);
 		registerModule(PROVIDER					, "Provider module"				, ModuleProvider.class);
+		registerModule(ELECTRICMANAGER        , "Electric Manager module"        , ModuleElectricManager.class, 34);
 	}
 	
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {

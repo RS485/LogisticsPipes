@@ -25,6 +25,7 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiElectricManager;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiLiquidSupplier;
@@ -35,6 +36,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.GuiWithPreviousGuiCon
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleElectricManager;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleLiquidSupplier;
@@ -127,6 +129,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_Advanced_Extractor_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleAdvancedExtractor)) return null;
 				return new GuiAdvancedExtractor(player.inventory, pipe.pipe, (ModuleAdvancedExtractor) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen, 0);
+
+			case GuiIDs.GUI_Module_ElectricManager_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
+				return new GuiElectricManager(player.inventory, pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen, 0);				
 				
 				/*** Basic ***/
 			case GuiIDs.GUI_RoutingStats_ID:
@@ -180,6 +186,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_Advanced_Extractor_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleAdvancedExtractor)) return null;
 				return new GuiAdvancedExtractor(player.inventory, pipe.pipe, (ModuleAdvancedExtractor) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), ModLoader.getMinecraftInstance().currentScreen, slot + 1);
+
+			case GuiIDs.GUI_Module_ElectricManager_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
+				return new GuiElectricManager(player.inventory, pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), ModLoader.getMinecraftInstance().currentScreen, slot + 1);
 				
 			default:
 				return null;

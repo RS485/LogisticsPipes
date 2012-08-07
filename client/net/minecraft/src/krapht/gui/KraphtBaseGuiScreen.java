@@ -11,6 +11,7 @@ package net.minecraft.src.krapht.gui;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
@@ -76,6 +77,13 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 			subGui.register(this);
 			subGui.initGui();
 		}
+	}
+
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int width, int height) {
+		super.setWorldAndResolution(mc, width, height);
+		if(subGui != null)
+			subGui.setWorldAndResolution(mc, width, height);
 	}
 	
 	public void resetSubGui() {

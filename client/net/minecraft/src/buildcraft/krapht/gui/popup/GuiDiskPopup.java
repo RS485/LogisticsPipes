@@ -19,11 +19,14 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private boolean editname = false;
 	private boolean displaycursor = false;
 	private long oldSystemTime = 0;
+	private int mouseX = 0;
+	private int mouseY = 0;
 	private String name1;
 	private String name2;
 	private ItemStack disk;
 	private NormalMk2GuiOrderer mainGui;
 	private int scroll = 0;
+	private int selected = -1;
 	
 	private final int searchWidth = 120;
 	
@@ -43,6 +46,8 @@ public class GuiDiskPopup extends SubGuiScreen {
 	protected void mouseClicked(int i, int j, int k) {
 		int x = i - guiLeft;
 		int y = j - guiTop;
+		mouseX = i;
+		mouseY = j;
 		if(k == 0) {
 			if(10 < x && x < 138
 			&& 29 < y && y < 44    ) {
@@ -75,6 +80,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
+		controlList.clear();
 		controlList.add(new SmallGuiButton(0, xCenter + 16	, bottom - 27, 50, 10, "Request"));
 		controlList.add(new SmallGuiButton(1, xCenter + 16	, bottom - 15, 50, 10, "Exit"));
 		controlList.add(new SmallGuiButton(2, xCenter - 66	, bottom - 27, 50, 10, "Add"));
@@ -112,12 +118,35 @@ public class GuiDiskPopup extends SubGuiScreen {
 			NBTTagList list = new NBTTagList();
 			nbt.setTag("macroList", list);
 		}
+		
 		NBTTagList list = nbt.getTagList("macroList");
 		
-		for(int i = scroll;i < list.tagCount() && (i - scroll) < 20;i++) {
+		if(scroll + 12 > list.tagCount()) {
+			scroll = list.tagCount() - 12;
+		}
+		if(scroll < 0) {
+			scroll = 0;
+		}
+		
+		boolean flag = false;
+		
+		for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
+			if(guiLeft + 8 < mouseX && mouseX < right - 8 && guiTop + 48 + ((i - scroll) * 10) < mouseY && mouseY < guiTop + 59 + ((i - scroll) * 10)) {
+				selected = i;
+				mouseX = 0;
+				mouseY = 0;
+			}
+			if(i == selected) {
+				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
+				flag = true;
+			}
 			NBTTagCompound entry = (NBTTagCompound) list.tagAt(i);
 			String name = entry.getString("name");
-			fontRenderer.drawString(name, guiLeft + 10, guiTop + 50 + (i * 10), 0xFFFFFF);
+			fontRenderer.drawString(name, guiLeft + 10, guiTop + 50 + ((i - scroll) * 10), 0xFFFFFF);
+		}
+		
+		if(!flag) {
+			selected = -1;
 		}
 		
 		if(editname) {
@@ -138,27 +167,50 @@ public class GuiDiskPopup extends SubGuiScreen {
 		int wheel = org.lwjgl.input.Mouse.getDWheel() / 120;
 		if(wheel == 0) super.handleMouseInputSub();
 		if(wheel < 0) {
-			
-		} else {
-			
+			scroll++;
+		} else if(wheel > 0) {
+			if(scroll > 0) {
+				scroll--;
+			}
 		}
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0) {
-			//TODO Perform Request
+			this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
 		} else if (guibutton.id == 1) {
 			this.exitGui();
 		} else if (guibutton.id == 2) {
 			this.setSubGui(new GuiAddMacro(mainGui));
-			this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
 		} else if (guibutton.id == 3) {
-			//TODO Delete
+			NBTTagCompound nbt = disk.getTagCompound();
+			if(nbt == null) {
+				disk.setTagCompound(new NBTTagCompound());
+				nbt = disk.getTagCompound();
+			}
+			
+			if(!nbt.hasKey("macroList")) {
+				NBTTagList list = new NBTTagList();
+				nbt.setTag("macroList", list);
+			}
+
+			NBTTagList list = nbt.getTagList("macroList");
+			NBTTagList listnew = new NBTTagList();
+			
+			for(int i = 0;i < list.tagCount();i++) {
+				if(i != selected) {
+					listnew.appendTag(list.tagAt(i));
+				}
+			}
+			selected = -1;
+			nbt.setTag("macroList", listnew);
 		} else if (guibutton.id == 4) {
-			//TODO up
+			if(scroll > 0) {
+				scroll--;
+			}
 		} else if (guibutton.id == 5) {
-			//TODO down
+			scroll++;
 		} else {
 			super.actionPerformed(guibutton);
 		}

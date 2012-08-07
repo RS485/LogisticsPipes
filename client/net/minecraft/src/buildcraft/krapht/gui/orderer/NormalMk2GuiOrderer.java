@@ -18,7 +18,7 @@ import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
 
 public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	
-	protected PipeItemsRequestLogisticsMk2 pipe;
+	public PipeItemsRequestLogisticsMk2 pipe;
 	private SmallGuiButton Macrobutton;
 	
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
@@ -66,7 +66,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
 			this.setSubGui(new GuiDiskPopup(this));
-			this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
+			//this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
 		}
 	}
 	

@@ -10,6 +10,10 @@ import org.lwjgl.opengl.GL11;
 
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTBase;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagList;
+import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.ItemIdentifierStack;
@@ -43,13 +47,18 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	
 	private Object[] tooltip;
 	
-	//TODO
 	private int nameWidth = 122;
 	private int searchWidth = 138;
-
+	
+	private static int upcounter = 2;
+	
 	public GuiAddMacro(NormalMk2GuiOrderer mainGui) {
 		super(200, 200, 0, 0);
 		this.mainGui = mainGui;
+		macroItems.add(ItemIdentifier.get(1,0,null).makeStack(1));
+		macroItems.add(ItemIdentifier.get(2,0,null).makeStack(3));
+		macroItems.add(ItemIdentifier.get(3,0,null).makeStack(2));
+		name1 = upcounter++ + "";
 	}
 
 	@Override
@@ -282,7 +291,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
 
 		ppi = 0;
 		column = 0;
@@ -315,8 +324,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, mc, true);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, mc, true, true);
 
+		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
 		super.drawScreen(par1, par2, par3);
 		
 		if(!this.hasSubGui()) {
@@ -395,8 +405,47 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		} else if (guibutton.id == 3) {
 			prevPageMacro();
 		} else if (guibutton.id == 4) {
-			this.controler.resetSubGui();
-			this.controler.setSubGui(new GuiMessagePopup("Saving will come soon", "Would be saved as: "+name1+name2));
+			if(!(name1 + name2).equals("") && macroItems.size() != 0) {
+				if(APIProxy.isRemote()) {
+					this.controler.resetSubGui();
+					this.controler.setSubGui(new GuiMessagePopup("Saving will come soon", "Would be saved as: "+name1+name2));
+				} else {
+					boolean flag = false;
+					NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
+					
+					for(int i = 0; i < list.tagCount(); i++) {
+						NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
+						String name = tag.getString("name");
+						if(name.equals(name1 + name2)) {
+							flag = true;
+						}
+					}
+					if(flag) {
+						this.setSubGui(new GuiMessagePopup("Name '"+name1+name2+"' already exists", "Please chose a different one"));		
+					} else {
+						NBTTagCompound nbt = new NBTTagCompound();
+						nbt.setString("name", name1 + name2);
+						NBTTagList inventar = new NBTTagList();
+						for(ItemIdentifierStack stack:macroItems) {
+							NBTTagCompound itemNBT = new NBTTagCompound();
+							itemNBT.setInteger("id", stack.getItem().itemID);
+							itemNBT.setInteger("data", stack.getItem().itemDamage);
+							if(stack.getItem().tag != null) {
+								itemNBT.setCompoundTag("nbt", stack.getItem().tag);
+							}
+							itemNBT.setInteger("amount", stack.stackSize);
+							inventar.appendTag(itemNBT);
+						}
+						nbt.setTag("inventar", inventar);
+						list.appendTag(nbt);
+						this.exitGui();
+					}
+				}
+			} else if(macroItems.size() != 0) {
+				this.setSubGui(new GuiMessagePopup("Please enter a name"));
+			} else {
+				this.setSubGui(new GuiMessagePopup("Select some items"));
+			}
 		} else {
 			super.actionPerformed(guibutton);
 		}

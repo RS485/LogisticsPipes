@@ -275,7 +275,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					column = 0;
 				}
 			}
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, this, page, guiLeft + 10, guiTop + 18, 10, 70, panelxSize, panelySize, mc, true);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, this, page, guiLeft + 10, guiTop + 18, 10, 70, panelxSize, panelySize, mc, true, false);
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}

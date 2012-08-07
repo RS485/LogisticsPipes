@@ -52,7 +52,7 @@ public class BasicGuiHelper {
 			}
 	}
 	
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount) {
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber) {
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
@@ -74,7 +74,7 @@ public class BasicGuiHelper {
 			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 			if(displayAmount) {
 				String s;
-				if (st.stackSize == 1){
+				if (st.stackSize == 1 && !forcenumber){
 					s = "";
 				} else if (st.stackSize < 1000) {
 					s = st.stackSize + "";

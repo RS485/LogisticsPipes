@@ -50,15 +50,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	private int nameWidth = 122;
 	private int searchWidth = 138;
 	
-	private static int upcounter = 2;
-	
 	public GuiAddMacro(NormalMk2GuiOrderer mainGui) {
 		super(200, 200, 0, 0);
 		this.mainGui = mainGui;
-		macroItems.add(ItemIdentifier.get(1,0,null).makeStack(1));
-		macroItems.add(ItemIdentifier.get(2,0,null).makeStack(3));
-		macroItems.add(ItemIdentifier.get(3,0,null).makeStack(2));
-		name1 = upcounter++ + "";
 	}
 
 	@Override

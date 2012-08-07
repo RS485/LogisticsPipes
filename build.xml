@@ -121,7 +121,7 @@
             </filterset>
         </copy>
         
-		<echo message="Moved BC files"/>
+		<echo message="Copied BC files"/>
 		
         <!-- Copy Forestry API source -->
         <copy todir="${clientsrc.dir}">
@@ -131,7 +131,7 @@
             <fileset dir="${forestry.dir}"/>
         </copy>
 		
-		<echo message="Moved Forestry API"/>
+		<echo message="Copied Forestry API"/>
 		
         <!-- Copy Dummy classes source -->
         <copy todir="${clientsrc.dir}">
@@ -141,7 +141,7 @@
             <fileset dir="${src.dir}/dummy"/>
         </copy>
 		
-		<echo message="Moved dummy files"/>
+		<echo message="Copied dummy files"/>
 		
         <!-- Refresh MD5 -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
@@ -169,8 +169,8 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 		
-		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${BUILD_NUMBER}"/>
-		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="@(Build_Number)" value="${BUILD_NUMBER}"/>
+		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
 		
     </target>
     
@@ -206,17 +206,16 @@
         
         <!-- Copy resoucres -->
         <copy todir="${classes.dir}/client">
-            <fileset dir="${src.dir}/resources">
-                <exclude name="mod_LogisticsPipes.info"/>
-            </fileset>
+            <fileset dir="${src.dir}/resources"></fileset>
         </copy>
         <copy todir="${classes.dir}/server">
             <fileset dir="${src.dir}/resources">
-                <exclude name="mod_LogisticsPipes.info"/>
-                <exclude name="logisticspipes"/>
-                <exclude name="lang"/>
+                <filename name="mod_LogisticsPipes.info"/>
             </fileset>
         </copy>
+        
+        <rename src="${classes.dir}/server/mod_LogisticsPipes.info" dest="${classes.dir}/server/mcmod.info"/>
+        <rename src="${classes.dir}/client/mod_LogisticsPipes.info" dest="${classes.dir}/client/mcmod.info"/>
         
 		<echo message="Compiling finished"/>
 	

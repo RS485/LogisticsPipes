@@ -963,6 +963,6 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	
 	@Override
 	public String getVersion(){
-		return "0.5.@(Build_Number)";
+		return "%VERSION%";
 	}
 }

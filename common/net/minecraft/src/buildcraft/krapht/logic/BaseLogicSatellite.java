@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.buildcraft.api.TileNetworkData;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
@@ -25,6 +26,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
 
+	@TileNetworkData
 	public int satelliteId;
 
 	public BaseLogicSatellite() {

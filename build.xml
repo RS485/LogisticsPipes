@@ -214,8 +214,8 @@
             </fileset>
         </copy>
         
-        <rename src="${classes.dir}/server/mod_LogisticsPipes.info" dest="${classes.dir}/server/mcmod.info"/>
-        <rename src="${classes.dir}/client/mod_LogisticsPipes.info" dest="${classes.dir}/client/mcmod.info"/>
+        <move file="${classes.dir}/server/mod_LogisticsPipes.info" tofile="${classes.dir}/server/mcmod.info"/>
+        <move file="${classes.dir}/client/mod_LogisticsPipes.info" tofile="${classes.dir}/client/mcmod.info"/>
         
 		<echo message="Compiling finished"/>
 	

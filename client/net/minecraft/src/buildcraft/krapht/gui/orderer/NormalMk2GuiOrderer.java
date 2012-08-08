@@ -65,8 +65,11 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
-			this.setSubGui(new GuiDiskPopup(this));
-			this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
+			if(!APIProxy.isRemote()) {
+				this.setSubGui(new GuiDiskPopup(this));
+			} else {
+				this.setSubGui(new GuiMessagePopup("This only works in SSP at the moment"));
+			}
 		}
 	}
 	

@@ -137,13 +137,21 @@ public class LogisticsManager implements ILogisticsManager {
 //		return count;
 //	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ItemMessage> errors){
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, List<ItemMessage> errors){
 		return Request(originalRequest, validDestinations, errors, null);
 	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, LinkedList<ItemMessage> errors, EntityPlayer player){
+	
+	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, List<ItemMessage> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);
-		
+		return Request(transaction,validDestinations,errors,player);
+	}
+
+	public static boolean Request(LogisticsTransaction transaction, List<Router> validDestinations, List<ItemMessage> errors, EntityPlayer player){
+		return Request(transaction,validDestinations,errors,player, true);
+	}
+	
+	public static boolean Request(LogisticsTransaction transaction, List<Router> validDestinations, List<ItemMessage> errors, EntityPlayer player, boolean realrequest){
 		//First check all crafters
 		for (Router r : validDestinations) {
 			if (r.getPipe() instanceof ICraftItems) {
@@ -225,6 +233,10 @@ public class LogisticsManager implements ILogisticsManager {
 			return false;
 		}
 
+		if(!realrequest) {
+			return true;
+		}
+		
 		if (transaction.getRequests().getFirst() != null){
 			if(mod_LogisticsPipes.DisplayRequests)System.out.println("*** START REQUEST FOR " + transaction.getRequests().getFirst().numberLeft() + " " + transaction.getRequests().getFirst().getItem().getFriendlyName() + " ***");			
 		}

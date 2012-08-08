@@ -50,6 +50,7 @@ import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.GuiCheckBox;
 import net.minecraft.src.krapht.gui.IItemSearch;
+import net.minecraft.src.krapht.gui.ISubGuiControler;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
@@ -402,37 +403,35 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(ItemMessage itemMessage, boolean error) {
+	public void handleRequestAnswer(ItemMessage itemMessage, boolean error, ISubGuiControler control, EntityPlayer player) {
 		List<ItemMessage> list = new ArrayList<ItemMessage>();
 		list.add(itemMessage);
-		handleRequestAnswer(list, error);
+		handleRequestAnswer(list, error, control, player);
 	}
 
-	public void handleRequestAnswer(List<ItemMessage> items, boolean error) {
+	public void handleRequestAnswer(List<ItemMessage> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		if (!error){
 			ArrayList<String> msg = new ArrayList<String>();
 			msg.add("You are missing:");
 			for (ItemMessage item : items){
 				if(!mod_LogisticsPipes.displayPopup) {
-					_entityPlayer.addChatMessage("Missing: " + item.toString());
+					player.addChatMessage("Missing: " + item.toString());
 				} else {
 					msg.add(item.toString());
 				}
 			}
 			if(mod_LogisticsPipes.displayPopup) {
-				this.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
-		}
-		else{
+		} else {
 			if(mod_LogisticsPipes.displayPopup) {
-				this.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
 			} else {
 				for(ItemMessage item:items) {
-					_entityPlayer.addChatMessage("Requested: " + item);
+					player.addChatMessage("Requested: " + item);
 				}
-				_entityPlayer.addChatMessage("Request successful!");
+				player.addChatMessage("Request successful!");
 			}
-			refreshItems();
 		}
 	}
 	
@@ -449,9 +448,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);
 				if(result) {
-					handleRequestAnswer(new ItemMessage(selectedItem,requestCount),result);
+					handleRequestAnswer(new ItemMessage(selectedItem,requestCount),result, this, _entityPlayer);
+					refreshItems();
 				} else {
-					handleRequestAnswer(errors,result);
+					handleRequestAnswer(errors,result, this, _entityPlayer);
 				}
 				refreshItems();
 			} else {
@@ -557,6 +557,12 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		}
 	}
 
+	@Override
+	public void resetSubGui() {
+		super.resetSubGui();
+		refreshItems();
+	}
+	
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Normal_Orderer_ID;

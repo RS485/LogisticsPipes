@@ -174,7 +174,7 @@ public class PacketHandler implements IPacketHandler {
 
 	private void onItemsResponse(PacketItems packet) {
 		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)ModLoader.getMinecraftInstance().currentScreen).handleRequestAnswer(packet.items,!packet.error);
+			((GuiOrderer)ModLoader.getMinecraftInstance().currentScreen).handleRequestAnswer(packet.items,!packet.error,(GuiOrderer)ModLoader.getMinecraftInstance().currentScreen,ModLoader.getMinecraftInstance().thePlayer);
 		} else if(packet.error) {
 			for (final ItemMessage items : packet.items) {
 				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + items);

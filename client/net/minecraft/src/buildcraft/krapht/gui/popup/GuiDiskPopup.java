@@ -9,6 +9,8 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
+import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler;
+import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler.RequestReply;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 import net.minecraft.src.krapht.gui.SubGuiScreen;
@@ -174,11 +176,44 @@ public class GuiDiskPopup extends SubGuiScreen {
 			}
 		}
 	}
+
+	private void handleRequest() {
+		NBTTagCompound nbt = disk.getTagCompound();
+		if(nbt == null) {
+			disk.setTagCompound(new NBTTagCompound());
+			nbt = disk.getTagCompound();
+		}
+		
+		if(!nbt.hasKey("macroList")) {
+			NBTTagList list = new NBTTagList();
+			nbt.setTag("macroList", list);
+		}
+		
+		NBTTagList list = nbt.getTagList("macroList");
+		
+		if(scroll + 12 > list.tagCount()) {
+			scroll = list.tagCount() - 12;
+		}
+		if(scroll < 0) {
+			scroll = 0;
+		}
+		
+		boolean flag = false;
+		
+		for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
+			if(i == selected) {
+				NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
+				RequestReply reply = RequestHandler.requestMacrolist(itemlist,mainGui.pipe,mainGui._entityPlayer);
+				mainGui.handleRequestAnswer(reply.items, reply.suceed, this, mainGui._entityPlayer);
+				break;
+			}
+		}
+	}
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0) {
-			this.getSubGui().setSubGui(new GuiMessagePopup("This a WIP"));
+			handleRequest();
 		} else if (guibutton.id == 1) {
 			this.exitGui();
 		} else if (guibutton.id == 2) {
@@ -215,7 +250,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 			super.actionPerformed(guibutton);
 		}
 	}
-	
+
 	@Override
 	protected void keyTyped(char c, int i) {
 		if(editname) {

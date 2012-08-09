@@ -15,6 +15,7 @@
     <property name="forge.dir"           value="${mcp.dir}/forge" />
     <property name="buildcraft.dir"      value="${mcp.dir}/buildcraft" />
     <property name="forestry.dir"        value="${mcp.dir}/forestry" />
+    <property name="ic2.dir"             value="${mcp.dir}/ic2" />
       
     <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft" />
     <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server" />
@@ -27,6 +28,7 @@
     <property name="forge.version"       value="3.3.8.152" />
     <property name="bc.version"          value="3.1.6.91" />
     <property name="forestry.version"    value="1.4.9.13" />
+    <property name="ic2.version"         value="1.97" />
     <property name="lp.version"          value="0.5.0" />
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
     
@@ -46,6 +48,7 @@
         <get src="${downloadserver.full}minecraftforge-src-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True" />
+        <get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}-src.zip" dest="${download.dir}" usetimestamp="True" />
         
 		<echo message="Download finished"/>
 		
@@ -70,6 +73,12 @@
         <unzip dest="${forestry.dir}">
             <fileset dir="${download.dir}">
                 <include name="forestry-api-${forestry.version}.zip"/>
+            </fileset>
+        </unzip>
+        
+        <unzip dest="${ic2.dir}">
+            <fileset dir="${download.dir}">
+                <include name="industrialcraft-2-api_${ic2.version}-src.zip"/>
             </fileset>
         </unzip>
         
@@ -129,6 +138,16 @@
         </copy>
 		<copy todir="${serversrc.dir}">
             <fileset dir="${forestry.dir}"/>
+        </copy>
+		
+		<echo message="Copied Forestry API"/>
+		
+        <!-- Copy IC2 API source -->
+        <copy todir="${clientsrc.dir}/net/minecraft/src">
+            <fileset dir="${ic2.dir}"/>
+        </copy>
+		<copy todir="${serversrc.dir}/net/minecraft/src">
+            <fileset dir="${ic2.dir}"/>
         </copy>
 		
 		<echo message="Copied Forestry API"/>

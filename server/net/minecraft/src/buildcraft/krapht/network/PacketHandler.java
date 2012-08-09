@@ -2,8 +2,11 @@ package net.minecraft.src.buildcraft.krapht.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.util.zip.ZipEntry;
 
 import net.minecraft.src.EntityPlayerMP;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagList;
 import net.minecraft.src.NetServerHandler;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
@@ -21,8 +24,11 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.krapht.routing.NormalOrdererRequests;
+import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler;
+import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler.RequestReply;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
@@ -148,12 +154,36 @@ public class PacketHandler implements IPacketHandler {
 					packetT.readData(data);
 					onCraftingPipeOpenConnectedGui(net.getPlayerEntity(), packetT);
 					break;
+				case NetworkConstants.DISK_REQUEST_CONTENT:
+					final PacketCoordinates packetU = new PacketCoordinates();
+					packetU.readData(data);
+					onDiskContentRequest(net.getPlayerEntity(), packetU);
+					break;
+				case NetworkConstants.DISK_SET_NAME:
+					final PacketPipeString packetV = new PacketPipeString();
+					packetV.readData(data);
+					onDiskSetName(net.getPlayerEntity(), packetV);
+					break;
+				case NetworkConstants.DISK_CONTENT:
+					final PacketItem packetW = new PacketItem();
+					packetW.readData(data);
+					onDiskChangeClientSide(net.getPlayerEntity(), packetW);
+					break;
+				case NetworkConstants.DISK_DROP:
+					final PacketCoordinates packetX = new PacketCoordinates();
+					packetX.readData(data);
+					onDiskDrop(net.getPlayerEntity(), packetX);
+					break;
+				case NetworkConstants.DISK_MACRO_REQUEST:
+					final PacketPipeInteger packetY = new PacketPipeInteger();
+					packetY.readData(data);
+					onDiskMacroRequest(net.getPlayerEntity(), packetY);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
@@ -631,6 +661,95 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
+	private void onDiskContentRequest(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() != null) {
+				if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
+					((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+				}
+			}
+			CoreProxy.sendToPlayer(player, new PacketItem(NetworkConstants.DISK_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()));
+		}		
+	}
+
+	private void onDiskSetName(EntityPlayerMP player, PacketPipeString packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() == null) {
+				return;
+			}
+			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
+				((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+			}
+			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getTagCompound();
+			nbt.setString("name", packet.string);
+		}
+	}
+
+	private void onDiskChangeClientSide(EntityPlayerMP player, PacketItem packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			((PipeItemsRequestLogisticsMk2)pipe.pipe).setDisk(packet.itemstack);
+		}
+		onDiskContentRequest(player, packet);
+	}
+
+	private void onDiskDrop(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			((PipeItemsRequestLogisticsMk2)pipe.pipe).dropDisk();
+		}
+		onDiskContentRequest(player, packet);
+	}
+
+	private void onDiskMacroRequest(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
+			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() == null) {
+				return;
+			}
+			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
+				return;
+			}
+			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getTagCompound();
+			if(!nbt.hasKey("macroList")) {
+				NBTTagList list = new NBTTagList();
+				nbt.setTag("macroList", list);
+			}
+			
+			NBTTagList list = nbt.getTagList("macroList");
+			
+			
+			boolean flag = false;
+			
+			for(int i = 0;i < list.tagCount();i++) {
+				if(i == packet.integer) {
+					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
+					RequestReply reply = RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2)pipe.pipe,player);
+					CoreProxy.sendToPlayer(player, new PacketItems(reply.items, !reply.suceed));
+					//mainGui.handleRequestAnswer(reply.items, reply.suceed, this, player);
+					break;
+				}
+			}
+		}
+	}
+	
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

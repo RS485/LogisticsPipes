@@ -14,7 +14,10 @@ import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketItem;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
@@ -400,40 +403,41 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			prevPageMacro();
 		} else if (guibutton.id == 4) {
 			if(!(name1 + name2).equals("") && macroItems.size() != 0) {
-				if(APIProxy.isRemote()) {
-					this.controler.resetSubGui();
-					this.controler.setSubGui(new GuiMessagePopup("Saving will come soon", "Would be saved as: "+name1+name2));
+				boolean flag = false;
+				NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
+				
+				for(int i = 0; i < list.tagCount(); i++) {
+					NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
+					String name = tag.getString("name");
+					if(name.equals(name1 + name2)) {
+						flag = true;
+					}
+				}
+				if(flag) {
+					this.setSubGui(new GuiMessagePopup("Name '"+name1+name2+"' already exists", "Please chose a different one"));		
 				} else {
-					boolean flag = false;
-					NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
-					
-					for(int i = 0; i < list.tagCount(); i++) {
-						NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
-						String name = tag.getString("name");
-						if(name.equals(name1 + name2)) {
-							flag = true;
+					NBTTagCompound nbt = new NBTTagCompound();
+					nbt.setString("name", name1 + name2);
+					NBTTagList inventar = new NBTTagList();
+					for(ItemIdentifierStack stack:macroItems) {
+						NBTTagCompound itemNBT = new NBTTagCompound();
+						itemNBT.setInteger("id", stack.getItem().itemID);
+						itemNBT.setInteger("data", stack.getItem().itemDamage);
+						if(stack.getItem().tag != null) {
+							itemNBT.setCompoundTag("nbt", stack.getItem().tag);
 						}
+						itemNBT.setInteger("amount", stack.stackSize);
+						inventar.appendTag(itemNBT);
 					}
-					if(flag) {
-						this.setSubGui(new GuiMessagePopup("Name '"+name1+name2+"' already exists", "Please chose a different one"));		
-					} else {
-						NBTTagCompound nbt = new NBTTagCompound();
-						nbt.setString("name", name1 + name2);
-						NBTTagList inventar = new NBTTagList();
-						for(ItemIdentifierStack stack:macroItems) {
-							NBTTagCompound itemNBT = new NBTTagCompound();
-							itemNBT.setInteger("id", stack.getItem().itemID);
-							itemNBT.setInteger("data", stack.getItem().itemDamage);
-							if(stack.getItem().tag != null) {
-								itemNBT.setCompoundTag("nbt", stack.getItem().tag);
-							}
-							itemNBT.setInteger("amount", stack.stackSize);
-							inventar.appendTag(itemNBT);
-						}
-						nbt.setTag("inventar", inventar);
-						list.appendTag(nbt);
-						this.exitGui();
+					nbt.setTag("inventar", inventar);
+					list.appendTag(nbt);
+					this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
+					if(APIProxy.isRemote()) {
+						CoreProxy.sendToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+						//this.controler.resetSubGui();
+						//this.controler.setSubGui(new GuiMessagePopup("Saving will come soon", "Would be saved as: "+name1+name2));
 					}
+					this.exitGui();
 				}
 			} else if(macroItems.size() != 0) {
 				this.setSubGui(new GuiMessagePopup("Please enter a name"));

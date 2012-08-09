@@ -31,6 +31,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.forge.ForgeHooks;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.gui.DummyContainer;
+import net.minecraft.src.krapht.gui.ISubGuiControler;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
 public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider {

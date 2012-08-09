@@ -1,5 +1,7 @@
 package net.minecraft.src.buildcraft.krapht.gui.popup;
 
+import java.nio.channels.Pipe;
+
 import org.lwjgl.input.Keyboard;
 
 import net.minecraft.src.GuiButton;
@@ -8,7 +10,11 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeString;
 import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler;
 import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler.RequestReply;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
@@ -25,7 +31,6 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private int mouseY = 0;
 	private String name1;
 	private String name2;
-	private ItemStack disk;
 	private NormalMk2GuiOrderer mainGui;
 	private int scroll = 0;
 	private int selected = -1;
@@ -36,9 +41,8 @@ public class GuiDiskPopup extends SubGuiScreen {
 		super(150, 200, 0, 0);
 		this.mainGui = mainGui;
 		name2 = "";
-		disk = mainGui.getDisk();
-		if(disk.hasTagCompound()) {
-			name1 = disk.getTagCompound().getString("name");
+		if(mainGui.getDisk().hasTagCompound()) {
+			name1 = mainGui.getDisk().getTagCompound().getString("name");
 		} else {
 			name1 = "Disk";
 		}
@@ -67,16 +71,15 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void writeDiskName() {
 		editname = false;
 		if(APIProxy.isRemote()) {
-			this.setSubGui(new GuiMessagePopup("Diskname saving comming Soon"));
-			//TODO Send to Server
-		} else {
-			NBTTagCompound nbt = new NBTTagCompound();
-			if(disk.hasTagCompound()) {
-				nbt = disk.getTagCompound();
-			}
-			nbt.setString("name", name1 + name2);
-			disk.setTagCompound(nbt);
+			CoreProxy.sendToServer(new PacketPipeString(NetworkConstants.DISK_SET_NAME, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, name1 + name2).getPacket());
+			//this.setSubGui(new GuiMessagePopup("Diskname saving comming Soon"));
 		}
+		NBTTagCompound nbt = new NBTTagCompound();
+		if(mainGui.getDisk().hasTagCompound()) {
+			nbt = mainGui.getDisk().getTagCompound();
+		}
+		nbt.setString("name", name1 + name2);
+		mainGui.getDisk().setTagCompound(nbt);
 	}
 	
 	@Override
@@ -110,10 +113,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 		
 		drawRect(guiLeft + 6, guiTop + 46, right - 6, bottom - 30, BasicGuiHelper.ConvertEnumToColor(Colors.MiddleGrey));
 		
-		NBTTagCompound nbt = disk.getTagCompound();
+		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
 		if(nbt == null) {
-			disk.setTagCompound(new NBTTagCompound());
-			nbt = disk.getTagCompound();
+			mainGui.getDisk().setTagCompound(new NBTTagCompound());
+			nbt = mainGui.getDisk().getTagCompound();
 		}
 		
 		if(!nbt.hasKey("macroList")) {
@@ -178,35 +181,39 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	private void handleRequest() {
-		NBTTagCompound nbt = disk.getTagCompound();
-		if(nbt == null) {
-			disk.setTagCompound(new NBTTagCompound());
-			nbt = disk.getTagCompound();
-		}
-		
-		if(!nbt.hasKey("macroList")) {
-			NBTTagList list = new NBTTagList();
-			nbt.setTag("macroList", list);
-		}
-		
-		NBTTagList list = nbt.getTagList("macroList");
-		
-		if(scroll + 12 > list.tagCount()) {
-			scroll = list.tagCount() - 12;
-		}
-		if(scroll < 0) {
-			scroll = 0;
-		}
-		
-		boolean flag = false;
-		
-		for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
-			if(i == selected) {
-				NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
-				RequestReply reply = RequestHandler.requestMacrolist(itemlist,mainGui.pipe,mainGui._entityPlayer);
-				mainGui.handleRequestAnswer(reply.items, reply.suceed, this, mainGui._entityPlayer);
-				break;
+		if(!APIProxy.isRemote()) {
+			NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
+			if(nbt == null) {
+				mainGui.getDisk().setTagCompound(new NBTTagCompound());
+				nbt = mainGui.getDisk().getTagCompound();
 			}
+			
+			if(!nbt.hasKey("macroList")) {
+				NBTTagList list = new NBTTagList();
+				nbt.setTag("macroList", list);
+			}
+			
+			NBTTagList list = nbt.getTagList("macroList");
+			
+			if(scroll + 12 > list.tagCount()) {
+				scroll = list.tagCount() - 12;
+			}
+			if(scroll < 0) {
+				scroll = 0;
+			}
+			
+			boolean flag = false;
+			
+			for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
+				if(i == selected) {
+					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
+					RequestReply reply = RequestHandler.requestMacrolist(itemlist,mainGui.pipe,mainGui._entityPlayer);
+					mainGui.handleRequestAnswer(reply.items, reply.suceed, this, mainGui._entityPlayer);
+					break;
+				}
+			}
+		} else {
+			CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.DISK_MACRO_REQUEST, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, selected).getPacket());
 		}
 	}
 	
@@ -219,10 +226,10 @@ public class GuiDiskPopup extends SubGuiScreen {
 		} else if (guibutton.id == 2) {
 			this.setSubGui(new GuiAddMacro(mainGui));
 		} else if (guibutton.id == 3) {
-			NBTTagCompound nbt = disk.getTagCompound();
+			NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
 			if(nbt == null) {
-				disk.setTagCompound(new NBTTagCompound());
-				nbt = disk.getTagCompound();
+				mainGui.getDisk().setTagCompound(new NBTTagCompound());
+				nbt = mainGui.getDisk().getTagCompound();
 			}
 			
 			if(!nbt.hasKey("macroList")) {

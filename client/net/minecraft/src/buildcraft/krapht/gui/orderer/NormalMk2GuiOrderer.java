@@ -7,10 +7,13 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.gui.popup.GuiDiskPopup;
 import net.minecraft.src.buildcraft.krapht.gui.popup.GuiMessagePopup;
+import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
+import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristAnalyser;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
@@ -24,6 +27,9 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
 		super(RequestPipeMK2, entityPlayer);
 		pipe = RequestPipeMK2;
+		if(APIProxy.isRemote()) {
+			CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+		}
 	}
 	
 	@Override
@@ -52,8 +58,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 				if(!APIProxy.isRemote()) {
 					pipe.dropDisk();
 				} else {
-					this.setSubGui(new GuiMessagePopup("Comming Soon"));
-					//TODO implement for SMP
+					CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
 				}
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
@@ -68,7 +73,8 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 			if(!APIProxy.isRemote()) {
 				this.setSubGui(new GuiDiskPopup(this));
 			} else {
-				this.setSubGui(new GuiMessagePopup("This only works in SSP at the moment"));
+				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+				this.setSubGui(new GuiDiskPopup(this));
 			}
 		}
 	}

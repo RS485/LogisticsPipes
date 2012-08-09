@@ -1,10 +1,10 @@
 package net.minecraft.src.ic2.api;
 
-import net.minecraft.src.Item;
+import net.minecraft.src.ItemStack;
 
-public class Items {
+public final class Items {
 
-	public static Item getItem(String string) {
+	public static ItemStack getItem(String name) {
 		return null;
 	}
 

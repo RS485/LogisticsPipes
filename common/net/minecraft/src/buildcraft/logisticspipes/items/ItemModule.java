@@ -36,7 +36,7 @@ public class ItemModule extends ItemModuleProxy {
 	//Texture Map
 	public static final String textureMap =	"0000111111111111" +
 											"0000011111111111" +
-											"0000000011111111" +
+											"0000000001111111" +
 											"1110111011111111" +
 											"1110111011111111" +
 											"0111111111111111" +

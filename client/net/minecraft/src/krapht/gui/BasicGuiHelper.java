@@ -135,83 +135,86 @@ public class BasicGuiHelper {
 				
 				drawMultilineTip.invoke(GuiManagerObject, new Object[]{tooltip[0], tooltip[1], list, ((ItemStack)tooltip[2]).getRarity().rarityColor});
 			} catch(Exception e) {
-				//Use minecraft vanilla code
-				ItemStack var22 = (ItemStack) tooltip[2];
-				List var24 = var22.getItemNameandInformation();
-				
-	            if (var24.size() > 0)
-	            {
-	                int var10 = 0;
-	                int var11;
-	                int var12;
-	                
-	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
-	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
-					}
+				try {
+					//Use minecraft vanilla code
+					ItemStack var22 = (ItemStack) tooltip[2];
+					List var24 = var22.getItemNameandInformation();
 					
-	                for (var11 = 0; var11 < var24.size(); ++var11)
-	                {
-	                    var12 = ModLoader.getMinecraftInstance().fontRenderer.getStringWidth((String)var24.get(var11));
-
-	                    if (var12 > var10)
-	                    {
-	                        var10 = var12;
-	                    }
-	                }
-
-	                var11 = ((Integer)tooltip[0]).intValue() - guiLeft + 12;
-	                var12 = ((Integer)tooltip[1]).intValue() - guiTop - 12;
-	                int var14 = 8;
-
-	                if (var24.size() > 1)
-	                {
-	                    var14 += 2 + (var24.size() - 1) * 10;
-	                }
-
-	                GL11.glDisable(2896 /*GL_LIGHTING*/);
-        			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
-        			zLevel = 300.0F;
-	                int var15 = -267386864;
-	                drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
-	                drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
-	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
-	                drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
-	                drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
-	                int var16 = 1347420415;
-	                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
-	                drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
-	                drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
-	                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
-	                drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
-
-	                for (int var18 = 0; var18 < var24.size(); ++var18)
-	                {
-	                    String var19 = (String)var24.get(var18);
-
-	                    if (var18 == 0)
-	                    {
-	                        var19 = "\u00a7" + Integer.toHexString(var22.getRarity().rarityColor) + var19;
-	                    }
-	                    else
-	                    {
-	                        var19 = "\u00a77" + var19;
-	                    }
-
-	                    ModLoader.getMinecraftInstance().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
-	        	        
-	                    if (var18 == 0)
-	                    {
-	                        var12 += 2;
-	                    }
-
-	                    var12 += 10;
-	                }
-
-	                zLevel = 0.0F;
-	                
-	                GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-        			GL11.glEnable(2896 /*GL_LIGHTING*/);
+		            if (var24.size() > 0)
+		            {
+		                int var10 = 0;
+		                int var11;
+		                int var12;
+		                
+		                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
+		    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
+						}
+						
+		                for (var11 = 0; var11 < var24.size(); ++var11)
+		                {
+		                    var12 = ModLoader.getMinecraftInstance().fontRenderer.getStringWidth((String)var24.get(var11));
+	
+		                    if (var12 > var10)
+		                    {
+		                        var10 = var12;
+		                    }
+		                }
+	
+		                var11 = ((Integer)tooltip[0]).intValue() - guiLeft + 12;
+		                var12 = ((Integer)tooltip[1]).intValue() - guiTop - 12;
+		                int var14 = 8;
+	
+		                if (var24.size() > 1)
+		                {
+		                    var14 += 2 + (var24.size() - 1) * 10;
+		                }
+	
+		                GL11.glDisable(2896 /*GL_LIGHTING*/);
+	        			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
+	        			zLevel = 300.0F;
+		                int var15 = -267386864;
+		                drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
+		                drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
+		                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
+		                drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
+		                drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
+		                int var16 = 1347420415;
+		                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
+		                drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
+		                drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
+		                drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
+		                drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
+	
+		                for (int var18 = 0; var18 < var24.size(); ++var18)
+		                {
+		                    String var19 = (String)var24.get(var18);
+	
+		                    if (var18 == 0)
+		                    {
+		                        var19 = "\u00a7" + Integer.toHexString(var22.getRarity().rarityColor) + var19;
+		                    }
+		                    else
+		                    {
+		                        var19 = "\u00a77" + var19;
+		                    }
+	
+		                    ModLoader.getMinecraftInstance().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+		        	        
+		                    if (var18 == 0)
+		                    {
+		                        var12 += 2;
+		                    }
+	
+		                    var12 += 10;
+		                }
+	
+		                zLevel = 0.0F;
+		                
+		                GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+	        			GL11.glEnable(2896 /*GL_LIGHTING*/);
+		            }
 	            }
+	            catch(Exception e1) {}
 			}
 		}
 	}

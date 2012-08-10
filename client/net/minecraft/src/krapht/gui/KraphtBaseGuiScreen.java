@@ -46,7 +46,6 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		this.ySize = ySize;
 		this.xCenterOffset = xCenterOffset;
 		this.yCenterOffset = yCenterOffset;
-		
 	}
 	
 	@Override

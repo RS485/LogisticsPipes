@@ -25,7 +25,9 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		openGui(entityplayer);
+		if (!APIProxy.isRemote()) {
+			openGui(entityplayer);
+		}
 		return true;
 	}
 

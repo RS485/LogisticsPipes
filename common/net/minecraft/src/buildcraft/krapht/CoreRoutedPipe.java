@@ -276,7 +276,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (routerId == null || routerId == ""){
 				routerId = UUID.randomUUID().toString();
 			}
-			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj, xCoord, yCoord, zCoord);
+			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj.getWorldInfo().getDimension(), xCoord, yCoord, zCoord);
 		}
 		return router;
 	}

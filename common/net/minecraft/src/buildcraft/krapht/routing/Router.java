@@ -94,6 +94,9 @@ public class Router implements IRouter {
 		if(worldObj == null) {
 			worldObj = DimensionManager.getWorld(0);
 		}
+		if(worldObj == null) {
+			return null;
+		}
 		TileEntity tile = worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
 		
 		if (!(tile instanceof TileGenericPipe)) return null;

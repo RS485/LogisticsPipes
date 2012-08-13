@@ -513,7 +513,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	@Override
 	public void modsLoaded() {
 		super.modsLoaded();
-		if(ModLoader.isModLoaded("mod_Forestry") || true) { //TODO remove this debug
+		if(ModLoader.isModLoaded("mod_Forestry")) { //TODO remove this debug
 			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
 		} else {
 			//DummyProxy

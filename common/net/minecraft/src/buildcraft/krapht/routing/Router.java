@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
@@ -93,6 +94,9 @@ public class Router implements IRouter {
 		World worldObj = DimensionManager.getWorld(_dimension);
 		if(worldObj == null) {
 			worldObj = DimensionManager.getWorld(0);
+		}
+		if(worldObj == null) {
+			worldObj = WorldProxy.getMainWorld();
 		}
 		if(worldObj == null) {
 			return null;

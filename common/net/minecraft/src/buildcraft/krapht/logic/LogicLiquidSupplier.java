@@ -65,9 +65,9 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
-			if (!(tile.tile instanceof ITankContainer)) continue;
+			if (!(tile.tile instanceof ITankContainer) || tile.tile instanceof TileGenericPipe) continue;
 			ITankContainer container = (ITankContainer) tile.tile;
-			if (container.getTanks().length == 0) continue;
+			if (container.getTanks() == null || container.getTanks().length == 0) continue;
 			
 			//How much do I want?
 			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(dummyInventory);

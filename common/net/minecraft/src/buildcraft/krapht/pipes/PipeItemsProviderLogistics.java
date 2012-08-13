@@ -15,9 +15,7 @@ import java.util.UUID;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.core_LogisticsPipes;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.IProvideItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsOrderManager;
@@ -31,10 +29,12 @@ import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.CroppedInventory;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems{
 
@@ -130,7 +130,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_PROVIDER_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_PROVIDER_TEXTURE;
 	}
 
 	@Override

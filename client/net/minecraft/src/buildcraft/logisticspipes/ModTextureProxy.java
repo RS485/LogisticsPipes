@@ -1,24 +1,20 @@
 package net.minecraft.src.buildcraft.logisticspipes;
 
-import cpw.mods.fml.client.SpriteHelper;
-import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.core_LogisticsPipes;
-import buildcraft.mod_BuildCraftTransport;
 import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.krapht.GuiHandler;
+import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.MinecraftForge;
+import buildcraft.mod_BuildCraftTransport;
 import buildcraft.core.CoreProxy;
 import buildcraft.core.utils.Localization;
-import net.minecraft.src.buildcraft.krapht.GuiHandler;
-import net.minecraft.src.buildcraft.krapht.network.ConnectionHandler;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Pipe;
-import net.minecraft.src.forge.MinecraftForge;
-import net.minecraft.src.forge.MinecraftForgeClient;
+import cpw.mods.fml.client.SpriteHelper;
 
 
-public abstract class ModTextureProxy extends core_LogisticsPipes {
+public abstract class ModTextureProxy {
 	
 	protected int index = 0;
 	
@@ -33,8 +29,10 @@ public abstract class ModTextureProxy extends core_LogisticsPipes {
 		return res;
 	}
 	
+	protected abstract void registerShapelessResetRecipe(Item res, int i, Item logisticsBasicPipe, int j);
+
 	public int registerTexture(String fileName) {
-		ModLoader.addOverride(BASE_TEXTURE_FILE, fileName, index);
+		ModLoader.addOverride(mod_LogisticsPipes.BASE_TEXTURE_FILE, fileName, index);
 		return index++;
 	}
 	
@@ -55,24 +53,17 @@ public abstract class ModTextureProxy extends core_LogisticsPipes {
 		"1111111111111111" + 
 		"1111111111111111" + 
 		"1111111111111111";
-		SpriteHelper.registerSpriteMapForFile(BASE_TEXTURE_FILE, spirt);
+		SpriteHelper.registerSpriteMapForFile(mod_LogisticsPipes.BASE_TEXTURE_FILE, spirt);
 	}
-	
-	@Override
+
 	public void load() {
-		super.load();
-		MinecraftForge.registerConnectionHandler(new ConnectionHandler());
-		
 		MinecraftForge.setGuiHandler(this,new GuiHandler());
 		
-		MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
-		MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
+		MinecraftForgeClient.preloadTexture(mod_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE);
+		MinecraftForgeClient.preloadTexture(mod_LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
 	}
 	
-	@Override
 	public void modsLoaded() {
 		Localization.addLocalization("/lang/logisticspipes/", "en_US");
-		
-		super.modsLoaded();
 	}
 }

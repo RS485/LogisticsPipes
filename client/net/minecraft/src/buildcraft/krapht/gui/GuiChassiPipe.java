@@ -8,19 +8,12 @@
 
 package net.minecraft.src.buildcraft.krapht.gui;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.src.Container;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
@@ -28,10 +21,12 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import net.minecraft.src.forge.ForgeHooks;
-import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.gui.DummyContainer;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
+
+import org.lwjgl.opengl.GL11;
+
+import buildcraft.core.CoreProxy;
 
 public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
@@ -103,7 +98,7 @@ public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider
 		if (guibutton.id >= 0 && guibutton.id <= 7){
 			ILogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null){
-				if(!APIProxy.isClient(_player.worldObj)) {
+				if(!CoreProxy.isClient(_player.worldObj)) {
 					_player.openGui(mod_LogisticsPipes.instance, module.getGuiHandlerID() + (100 * (guibutton.id + 1)), _chassiPipe.worldObj, _chassiPipe.xCoord, _chassiPipe.yCoord, _chassiPipe.zCoord);	
 				} else {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID,_chassiPipe.xCoord,_chassiPipe.yCoord,_chassiPipe.zCoord,guibutton.id).getPacket());

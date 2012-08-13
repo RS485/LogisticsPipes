@@ -1,6 +1,6 @@
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 
 public class PipeLogisticsChassiMk2 extends PipeLogisticsChassi{
 
@@ -10,7 +10,7 @@ public class PipeLogisticsChassiMk2 extends PipeLogisticsChassi{
 
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_CHASSI2_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_CHASSI2_TEXTURE;
 	}
 
 	@Override

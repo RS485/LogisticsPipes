@@ -25,7 +25,7 @@ public class CraftingSignCreator extends LogisticsItem {
 	}
 
 	@Override
-	public boolean onItemUse(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput)
+	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput)
     {	
 		if(itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) {
 			return false;
@@ -136,7 +136,7 @@ public class CraftingSignCreator extends LogisticsItem {
 										}
 									}
 								}
-								this.onItemUse(itemStack, player ,world, pipechecksignX, pipechecksignY, pipechecksignZ, side + 10);
+								this.onItemUseFirst(itemStack, player ,world, pipechecksignX, pipechecksignY, pipechecksignZ, side + 10);
 							}
 						}	
 					} else if(selfcalled) {

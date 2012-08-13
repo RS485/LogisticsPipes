@@ -8,15 +8,12 @@
 
 package net.minecraft.src.buildcraft.krapht;
 
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.Trigger;
-import buildcraft.api.gates.TriggerParameter;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsSupplierLogistics;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
 
 public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 
@@ -43,6 +40,6 @@ public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 
 	@Override
 	public String getTextureFile() {
-		return core_LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+		return mod_LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
 	}
 }

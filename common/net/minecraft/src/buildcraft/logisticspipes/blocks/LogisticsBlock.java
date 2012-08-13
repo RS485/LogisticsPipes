@@ -1,14 +1,12 @@
 package net.minecraft.src.buildcraft.logisticspipes.blocks;
 
 import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.Block;
 import net.minecraft.src.BlockContainer;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IBlockAccess;
 import net.minecraft.src.Material;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 
 public class LogisticsBlock extends BlockContainer {
@@ -92,26 +90,26 @@ public class LogisticsBlock extends BlockContainer {
 	}
 
 	@Override
-	public TileEntity getBlockEntity() {
+	public TileEntity createNewTileEntity(World var1) {
 		return new LogisticsTileEntiy();
 	}
 	
 	@Override
-	public boolean blockActivated(World world, int x, int y, int z, EntityPlayer player){
+	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player){
 		int meta = world.getBlockMetadata(x, y, z);
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
 		if (meta == SignBlockID && tile instanceof LogisticsTileEntiy) {
 			PipeItemsCraftingLogistics pipe = ((LogisticsTileEntiy) tile).getAttachedSignOwnerPipe();
 			if(pipe != null) {
 				pipe.logic.blockActivated(player);
-				return true;
+				return;
 			}
 		}
-		return false;
+		return;
 	}
 	
 	@Override
-    public void onBlockRemoval(World par1World, int par2, int par3, int par4) {
+    public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
     	int meta = par1World.getBlockMetadata(par2, par3, par4);
 		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
 		if (meta == SignBlockID && tile instanceof LogisticsTileEntiy) {

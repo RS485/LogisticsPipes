@@ -1,7 +1,6 @@
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.krapht.LogisticsOrderManager;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 
 public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
@@ -12,7 +11,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
 	}
 
 	@Override

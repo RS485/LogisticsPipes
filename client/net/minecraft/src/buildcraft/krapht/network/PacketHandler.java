@@ -3,14 +3,14 @@ package net.minecraft.src.buildcraft.krapht.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import net.minecraft.src.Gui;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
+import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.GuiOrderer;
@@ -23,25 +23,25 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
-import buildcraft.transport.TileGenericPipe;
-import net.minecraft.src.forge.IPacketHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.IPacketHandler;
+import cpw.mods.fml.common.network.Player;
 
 public class PacketHandler implements IPacketHandler {
 
 	@Override
-	public void onPacketData(NetworkManager network, String channel, byte[] bytes) {
+	public void onPacketData(NetworkManager manager, Packet250CustomPayload packet, Player player) {
 
-		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(bytes));
+		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
 		try {
-			network.getNetHandler();
 
 			final int packetID = data.read();
 			switch (packetID) {
 				case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID:
-					final PacketPipeInteger packet = new PacketPipeInteger();
-					packet.readData(data);
-					onCraftingPipeSetSatellite(packet);
+					final PacketPipeInteger packetAa = new PacketPipeInteger();
+					packetAa.readData(data);
+					onCraftingPipeSetSatellite(packetAa);
 					break;
 				case NetworkConstants.CRAFTING_PIPE_IMPORT_BACK:
 					final PacketInventoryChange packetA = new PacketInventoryChange();

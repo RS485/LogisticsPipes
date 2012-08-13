@@ -1,39 +1,27 @@
 package net.minecraft.src.buildcraft.logisticspipes.blocks;
 
-import static net.minecraft.src.forge.IItemRenderer.ItemRenderType.INVENTORY;
-import static net.minecraft.src.forge.IItemRenderer.ItemRendererHelper.INVENTORY_BLOCK;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.src.Block;
-import net.minecraft.src.EntityItem;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemBlock;
-import net.minecraft.src.ItemRenderer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModelSign;
-import net.minecraft.src.OpenGlHelper;
 import net.minecraft.src.RenderBlocks;
-import net.minecraft.src.RenderHelper;
 import net.minecraft.src.RenderItem;
 import net.minecraft.src.RenderManager;
 import net.minecraft.src.Tessellator;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.TileEntityRenderer;
-import net.minecraft.src.TileEntitySign;
 import net.minecraft.src.TileEntitySpecialRenderer;
-import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
-import net.minecraft.src.forge.ForgeHooksClient;
-import net.minecraft.src.forge.IItemRenderer;
-import net.minecraft.src.forge.MinecraftForgeClient;
+import net.minecraftforge.client.ForgeHooksClient;
+import net.minecraftforge.client.IItemRenderer;
+import net.minecraftforge.client.IItemRenderer.ItemRenderType;
+import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
+import net.minecraftforge.client.MinecraftForgeClient;
 
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 
 public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 
@@ -115,12 +103,12 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		        
 		        this.bindTextureByName(item.getTextureFile());
 		        
-		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, INVENTORY);
+		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
 				ForgeHooksClient.overrideTexture(itemstack.getItem());
 		        
 				if(customRenderer != null) {
-			        	if(customRenderer.shouldUseRenderHelper(INVENTORY, itemstack, INVENTORY_BLOCK)) {
+			        	if(customRenderer.shouldUseRenderHelper(ItemRenderType.INVENTORY, itemstack, ItemRendererHelper.INVENTORY_BLOCK)) {
 			        		GL11.glScalef(0.20F, -0.20F, -0.01F);
 			                
 			    	        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
@@ -133,7 +121,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			    	        
 			    	        //renderBlocks.useInventoryTint = false;
 			    	        
-			    	        customRenderer.renderItem(INVENTORY, itemstack, renderBlocks);
+			    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
 			    	        
 			    	        GL11.glEnable(GL11.GL_LIGHTING);
 			    	        GL11.glEnable(GL11.GL_LIGHT0);
@@ -161,7 +149,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			    	        
 			    	        //renderBlocks.useInventoryTint = false;
 			    	        
-			    	        customRenderer.renderItem(INVENTORY, itemstack, renderBlocks);
+			    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
 			    	        
 			    	        GL11.glEnable(GL11.GL_LIGHTING);
 			    	        GL11.glEnable(GL11.GL_LIGHT0);

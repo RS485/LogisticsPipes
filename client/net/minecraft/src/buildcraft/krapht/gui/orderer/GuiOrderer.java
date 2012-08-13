@@ -8,43 +8,28 @@
 
 package net.minecraft.src.buildcraft.krapht.gui.orderer;
 
-import java.io.Console;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.lwjgl.input.Mouse;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.RenderItem;
 import net.minecraft.src.Tessellator;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.core.CoreProxy;
-import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
-import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
+import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.gui.popup.GuiRequestPopup;
-import net.minecraft.src.buildcraft.krapht.network.LogisticsPipesPacket;
-import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
-import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
-import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.krapht.network.PacketRequestGuiContent;
 import net.minecraft.src.buildcraft.krapht.network.PacketRequestSubmit;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
-import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
-import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
@@ -53,8 +38,10 @@ import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-import org.omg.CORBA._PolicyStub;
+
+import buildcraft.core.CoreProxy;
 
 public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 
@@ -150,7 +137,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		
 		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 24, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", xCenter - fontRenderer.getStringWidth(StackrequestCount+"") / 2, bottom - 14, 0x404040);
-		if (core_LogisticsPipes.DEBUG){
+		if (mod_LogisticsPipes.DEBUG){
 			fontRenderer.drawString(i+","+j, 10, 10, 0xFFFFFF);
 			fontRenderer.drawString(lastClickedx+","+lastClickedy, 10, 30, 0xFFFFFF);
 		}
@@ -204,7 +191,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		
 		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, Colors.MiddleGrey);
 		
-		if(!listbyserver && APIProxy.isRemote()) {
+		if(!listbyserver && CoreProxy.isRemote()) {
 			int graphic = ((int)(System.currentTimeMillis() / 250) % 5);
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
             GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -420,13 +407,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		
 		if (isShift && !isControl){
 			if (wheel > 0){
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					prevPage();
 				} else {
 					nextPage();
 				}
 			} else {
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					nextPage();
 				} else {
 					prevPage();
@@ -434,13 +421,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 			}
 		} else if(!isControl) {
 			if (wheel > 0){
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel);
 				} else {
 					requestCount+= wheel;
 				}
 			} else {
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount+= -wheel;	
 				} else {
 					requestCount = Math.max(1, requestCount + wheel);
@@ -448,14 +435,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 			}
 		} else if(isControl && !isShift) {
 			if (wheel > 0){
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel*10);
 				} else {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= wheel*10;
 				}
 			} else {
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= -wheel*10;	
 				} else {
@@ -464,14 +451,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 			}
 		} else if(isControl && isShift) {
 			if (wheel > 0){
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel*64);
 				} else {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= wheel*64;
 				}
 			} else {
-				if (!core_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!mod_LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= -wheel*64;	
 				} else {
@@ -524,7 +511,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		clickWasButton = true;
 		
 		if (guibutton.id == 0 && selectedItem != null){
-			if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+			if(!CoreProxy.isRemote()) {
 				LogisticsRequest request = new LogisticsRequest(selectedItem, requestCount, this._itemRequester);
 				LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);

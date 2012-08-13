@@ -7,16 +7,14 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
-import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
-import net.minecraft.src.forge.ISidedInventory;
-import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
+import net.minecraftforge.common.ISidedInventory;
+import buildcraft.api.core.Orientations;
+import buildcraft.core.Utils;
 
 public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider {
 

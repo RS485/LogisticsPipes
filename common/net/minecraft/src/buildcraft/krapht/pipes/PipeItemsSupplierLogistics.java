@@ -8,7 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
@@ -24,7 +24,7 @@ public class PipeItemsSupplierLogistics extends RoutedPipe implements IRequestIt
 	
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_SUPPLIER_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_SUPPLIER_TEXTURE;
 	}
 	
 	@Override

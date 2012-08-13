@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
@@ -42,14 +42,14 @@ public class NormalGuiOrderer extends GuiOrderer {
 	}
 	
 	protected void refreshItems(){
-		if(!ModLoader.getMinecraftInstance().isMultiplayerWorld()) {
+		if(!CoreProxy.isRemote()) {
 			if (displayOptions == DisplayOptions.SupplyOnly || displayOptions == DisplayOptions.Both){
-				_availableItems = core_LogisticsPipes.logisticsManager.getAvailableItems(_itemRequester.getRouter().getRouteTable().keySet());
+				_availableItems = mod_LogisticsPipes.logisticsManager.getAvailableItems(_itemRequester.getRouter().getRouteTable().keySet());
 			} else {
 				_availableItems = new HashMap<ItemIdentifier, Integer>();
 			}
 			if (displayOptions == DisplayOptions.CraftOnly || displayOptions == DisplayOptions.Both){
-				_craftableItems = core_LogisticsPipes.logisticsManager.getCraftableItems(_itemRequester.getRouter().getRouteTable().keySet());
+				_craftableItems = mod_LogisticsPipes.logisticsManager.getCraftableItems(_itemRequester.getRouter().getRouteTable().keySet());
 			} else {
 				_craftableItems = new LinkedList<ItemIdentifier>();
 			}

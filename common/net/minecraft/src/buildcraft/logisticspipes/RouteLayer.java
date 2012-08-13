@@ -8,12 +8,10 @@
 
 package net.minecraft.src.buildcraft.logisticspipes;
 
-import buildcraft.api.APIProxy;
-import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
-import buildcraft.transport.*;
-import buildcraft.transport.PipeTransportItems.*;
+import buildcraft.api.core.Orientations;
+import buildcraft.core.CoreProxy;
 
 /**
  * @author Krapht
@@ -32,7 +30,7 @@ public class RouteLayer {
 	
 	public Orientations getOrientationForItem(IRoutedItem item){
 
-		if(item.getDestination() == null && APIProxy.isRemote()) {
+		if(item.getDestination() == null && CoreProxy.isRemote()) {
 			return null;
 		}
 		

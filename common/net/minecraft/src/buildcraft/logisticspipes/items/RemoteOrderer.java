@@ -1,6 +1,5 @@
 package net.minecraft.src.buildcraft.logisticspipes.items;
 
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.src.EntityPlayer;
@@ -9,17 +8,15 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRemoteOrdererLogistics;
+import net.minecraftforge.common.DimensionManager;
+import buildcraft.core.CoreProxy;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
-import net.minecraft.src.forge.DimensionManager;
-import net.minecraft.src.forge.ITextureProvider;
 
-public class RemoteOrderer extends Item implements ITextureProvider {
+public class RemoteOrderer extends Item {
 	
 	protected RemoteOrderer(int id) {
 		super(id);
@@ -27,7 +24,7 @@ public class RemoteOrderer extends Item implements ITextureProvider {
 
 	@Override
 	public String getTextureFile() {
-		return core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
+		return mod_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 
 	//Client
@@ -50,7 +47,7 @@ public class RemoteOrderer extends Item implements ITextureProvider {
     	}
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
 		if(pipe != null) {
-			if(!APIProxy.isClient(par2World)) {
+			if(!CoreProxy.isClient(par2World)) {
 				par3EntityPlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 			}
 			return par1ItemStack.copy();

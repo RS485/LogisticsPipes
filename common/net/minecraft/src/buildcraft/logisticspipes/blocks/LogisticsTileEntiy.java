@@ -3,11 +3,10 @@ package net.minecraft.src.buildcraft.logisticspipes.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
+import buildcraft.core.CoreProxy;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogisticsTileEntiy extends TileEntity {
@@ -42,7 +41,7 @@ public class LogisticsTileEntiy extends TileEntity {
     public void updateEntity() {
     	if(!init) {
     		init = true;
-    		if(APIProxy.isRemote()) {
+    		if(CoreProxy.isRemote()) {
 	    		for(CoreRoutedPipe pipe:getNearRoutingPipes()) {
 	    			if(pipe instanceof PipeItemsCraftingLogistics) {
 	    				((PipeItemsCraftingLogistics)pipe).enableUpdateRequest();

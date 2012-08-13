@@ -12,11 +12,9 @@ import java.util.List;
 
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.forge.ITextureProvider;
 
-public class LogisticsItem extends Item implements ITextureProvider{
+public class LogisticsItem extends Item {
 
 	public LogisticsItem(int i) {
 		super(i);
@@ -24,6 +22,6 @@ public class LogisticsItem extends Item implements ITextureProvider{
 	
 	@Override
 	public String getTextureFile() {
-		return core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
+		return mod_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 }

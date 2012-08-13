@@ -14,16 +14,7 @@ import java.util.LinkedList;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
-import buildcraft.core.CoreProxy;
-import buildcraft.core.Utils;
-import buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.CraftingTemplate;
 import net.minecraft.src.buildcraft.krapht.ICraftItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
@@ -40,13 +31,19 @@ import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.WorldUtil;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.core.Utils;
+import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
 
@@ -97,7 +94,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		super.updateEntity();
 		if(!init) {
 			init = true;
-			if(APIProxy.isRemote()) {
+			if(CoreProxy.isRemote()) {
 				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
 			}
 		}
@@ -139,7 +136,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(Utils.pipeNormalSpeed * core_LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+					entityItem.setSpeed(Utils.pipeNormalSpeed * mod_LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 					((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
 				}
 			}
@@ -156,7 +153,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_CRAFTER_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}
 	
 	public void canProvide(LogisticsTransaction transaction){

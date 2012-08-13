@@ -12,14 +12,13 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
-import net.minecraft.src.InventoryPlayer;
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
-import net.minecraft.src.forge.MinecraftForgeClient;
 import net.minecraft.src.krapht.gui.DummyContainer;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
+import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 
@@ -103,14 +102,14 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			return;
 		}
 		if (_logic.isSatelliteConnected()){
-			MinecraftForgeClient.bindTexture(core_LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
+			MinecraftForgeClient.bindTexture(mod_LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
 		}else{
-			MinecraftForgeClient.bindTexture(core_LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
+			MinecraftForgeClient.bindTexture(mod_LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
 		}
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
-		MinecraftForgeClient.unbindTexture();
+		//MinecraftForgeClient.unbindTexture();
 		fontRenderer.drawString(""+_logic.satelliteId , 155 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
 	}
 

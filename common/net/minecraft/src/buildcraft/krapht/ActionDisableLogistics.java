@@ -8,7 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht;
 
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.api.gates.Action;
 
 public class ActionDisableLogistics extends Action{
@@ -31,6 +31,6 @@ public class ActionDisableLogistics extends Action{
 	@Override
 	public String getTexture() {
 		// TODO Auto-generated method stub
-		return core_LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+		return mod_LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
 	}
 }

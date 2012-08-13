@@ -1,26 +1,14 @@
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import java.util.Random;
-
-import buildcraft.BuildCraftCore;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
-import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
-import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
-import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
-import net.minecraft.src.forge.DimensionManager;
 
 public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequestItems {
 

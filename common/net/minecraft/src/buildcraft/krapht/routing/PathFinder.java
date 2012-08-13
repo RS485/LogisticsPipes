@@ -12,14 +12,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.core_LogisticsPipes;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
-import buildcraft.core.Utils;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.krapht.routing.ExitRoute;
-import net.minecraft.src.buildcraft.krapht.routing.IPaintPath;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.pipes.PipeItemsIron;
@@ -95,12 +92,12 @@ class PathFinder {
 			return foundPipes;
 		}
 		
-		if(startPipe.pipe != null && core_LogisticsPipes.PipeItemTeleport != null) {
+		if(startPipe.pipe != null && mod_LogisticsPipes.PipeItemTeleport != null) {
 			//Special check for teleport pipes
-			if (core_LogisticsPipes.teleportPipeDetected && core_LogisticsPipes.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
+			if (mod_LogisticsPipes.teleportPipeDetected && mod_LogisticsPipes.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
 				
 				try {
-					LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) core_LogisticsPipes.teleportPipeMethod.invoke(startPipe.pipe, false);
+					LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) mod_LogisticsPipes.teleportPipeMethod.invoke(startPipe.pipe, false);
 					for (Pipe telepipe : pipez){
 						HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)telepipe.container), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
 						for(RoutedPipe pipe : result.keySet()) 	{

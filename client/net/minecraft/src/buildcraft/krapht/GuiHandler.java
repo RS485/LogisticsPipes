@@ -12,7 +12,6 @@ import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiRoutingStats;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSatellitePipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
-import net.minecraft.src.buildcraft.krapht.gui.orderer.GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalGuiOrderer;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
@@ -21,7 +20,6 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
@@ -32,24 +30,20 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.GuiPassiveSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiTerminus;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiWithPreviousGuiContainer;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleLiquidSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
-import net.minecraft.src.buildcraft.logisticspipes.statistics.GuiStatistics;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.PipeLogic;
-import net.minecraft.src.forge.IGuiHandler;
+import cpw.mods.fml.common.network.IGuiHandler;
 
 public class GuiHandler implements IGuiHandler {
 
 	@Override
-	public Object getGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
 
 		if(!world.blockExists(x, y, z))
 			return null;

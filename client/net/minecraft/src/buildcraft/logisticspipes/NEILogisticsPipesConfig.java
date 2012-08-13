@@ -1,10 +1,6 @@
 package net.minecraft.src.buildcraft.logisticspipes;
 
-import net.minecraft.src.core_LogisticsPipes;
-import codechicken.nei.IConfigureNEI;
-import codechicken.nei.MultiItemRange;
-
-import static codechicken.nei.API.*;
+import net.minecraft.src.mod_LogisticsPipes;
 
 public class NEILogisticsPipesConfig implements IConfigureNEI
 {
@@ -13,33 +9,33 @@ public class NEILogisticsPipesConfig implements IConfigureNEI
 	public void loadConfig()
 	{
 		MultiItemRange main = new MultiItemRange();
-		main.add(core_LogisticsPipes.LogisticsNetworkMonitior);
-		main.add(core_LogisticsPipes.LogisticsRemoteOrderer);
-		main.add(core_LogisticsPipes.LogisticsCraftingSignCreator);
+		main.add(mod_LogisticsPipes.LogisticsNetworkMonitior);
+		main.add(mod_LogisticsPipes.LogisticsRemoteOrderer);
+		main.add(mod_LogisticsPipes.LogisticsCraftingSignCreator);
 		
 		MultiItemRange pipes = new MultiItemRange();
-		pipes.add(core_LogisticsPipes.LogisticsBasicPipe);
-		pipes.add(core_LogisticsPipes.LogisticsRequestPipe);
-		pipes.add(core_LogisticsPipes.LogisticsProviderPipe);
-		pipes.add(core_LogisticsPipes.LogisticsCraftingPipe);
-		pipes.add(core_LogisticsPipes.LogisticsSatellitePipe);
-		pipes.add(core_LogisticsPipes.LogisticsSupplierPipe);
-		pipes.add(core_LogisticsPipes.LogisticsBuilderSupplierPipe);
-		pipes.add(core_LogisticsPipes.LogisticsLiquidSupplierPipe);
-		pipes.add(core_LogisticsPipes.LogisticsCraftingPipeMK2);
-		pipes.add(core_LogisticsPipes.LogisticsRequestPipeMK2);
-		pipes.add(core_LogisticsPipes.LogisticsProviderPipeMK2);
-		pipes.add(core_LogisticsPipes.LogisticsRemoteOrdererPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsBasicPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsRequestPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsProviderPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsCraftingPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsSatellitePipe);
+		pipes.add(mod_LogisticsPipes.LogisticsSupplierPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsBuilderSupplierPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsLiquidSupplierPipe);
+		pipes.add(mod_LogisticsPipes.LogisticsCraftingPipeMK2);
+		pipes.add(mod_LogisticsPipes.LogisticsRequestPipeMK2);
+		pipes.add(mod_LogisticsPipes.LogisticsProviderPipeMK2);
+		pipes.add(mod_LogisticsPipes.LogisticsRemoteOrdererPipe);
 		
 		MultiItemRange pipesChassi = new MultiItemRange();
-		pipesChassi.add(core_LogisticsPipes.LogisticsChassiPipe1);
-		pipesChassi.add(core_LogisticsPipes.LogisticsChassiPipe2);
-		pipesChassi.add(core_LogisticsPipes.LogisticsChassiPipe3);
-		pipesChassi.add(core_LogisticsPipes.LogisticsChassiPipe4);
-		pipesChassi.add(core_LogisticsPipes.LogisticsChassiPipe5);
+		pipesChassi.add(mod_LogisticsPipes.LogisticsChassiPipe1);
+		pipesChassi.add(mod_LogisticsPipes.LogisticsChassiPipe2);
+		pipesChassi.add(mod_LogisticsPipes.LogisticsChassiPipe3);
+		pipesChassi.add(mod_LogisticsPipes.LogisticsChassiPipe4);
+		pipesChassi.add(mod_LogisticsPipes.LogisticsChassiPipe5);
 		
 		MultiItemRange modules = new MultiItemRange();
-		modules.add(core_LogisticsPipes.ModuleItem, 0, 500);
+		modules.add(mod_LogisticsPipes.ModuleItem, 0, 500);
 		
 		
 		addSetRange("LogisticsPipes", main);

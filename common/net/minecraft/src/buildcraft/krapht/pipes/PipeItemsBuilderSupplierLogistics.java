@@ -8,16 +8,10 @@
 
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-//import net.minecraft.src.buildcraft.api.Trigger;
-//import net.minecraft.src.buildcraft.api.TriggerParameter;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
-//import net.minecraft.src.buildcraft.krapht.TriggerSupplierFailed;
 import net.minecraft.src.buildcraft.krapht.logic.LogicBuilderSupplier;
-import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
-import net.minecraft.src.buildcraft.krapht.routing.Router;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.krapht.InventoryUtilFactory;
 

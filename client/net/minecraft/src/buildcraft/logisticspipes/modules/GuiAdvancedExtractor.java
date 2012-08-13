@@ -15,7 +15,6 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
 import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
@@ -51,7 +50,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
 				((GuiButton)controlList.get(0)).displayString = _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
-				if(APIProxy.isClient(mc.theWorld)) {
+				if(CoreProxy.isClient(mc.theWorld)) {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
 				}
 				break;
@@ -59,7 +58,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 				if(!_advancedExtractor.connectedToSidedInventory()) {
 					controlList.remove(1);
 				}
-				if(APIProxy.isClient(mc.theWorld)) {
+				if(CoreProxy.isClient(mc.theWorld)) {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
 				} else {
 					ModLoader.getMinecraftInstance().thePlayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (slot * 100), pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);

@@ -16,18 +16,17 @@ import java.util.UUID;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.PipeTransportLogistics;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
-import buildcraft.transport.TileGenericPipe;
-import net.minecraft.src.forge.DimensionManager;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.transport.TileGenericPipe;
 
 public class Router implements IRouter {
 
@@ -184,7 +183,7 @@ public class Router implements IRouter {
 		boolean adjacentChanged = false;
 		CoreRoutedPipe thisPipe = getPipe();
 		if (thisPipe == null) return;
-		HashMap<RoutedPipe, ExitRoute> adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, core_LogisticsPipes.LOGISTICS_DETECTION_COUNT, core_LogisticsPipes.LOGISTICS_DETECTION_LENGTH);
+		HashMap<RoutedPipe, ExitRoute> adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, mod_LogisticsPipes.LOGISTICS_DETECTION_COUNT, mod_LogisticsPipes.LOGISTICS_DETECTION_LENGTH);
 		
 		for (RoutedPipe pipe : _adjacent.keySet()){
 			if(!adjacent.containsKey(pipe))

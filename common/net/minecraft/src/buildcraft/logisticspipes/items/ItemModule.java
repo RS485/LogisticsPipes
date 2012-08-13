@@ -4,31 +4,25 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.NBTBase;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
-import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.krapht.LogisticsItem;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK3;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk3;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleQuickSort;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
-import net.minecraft.src.krapht.ItemIdentifier;
-import net.minecraft.src.krapht.SimpleInventory;
 
 public class ItemModule extends ItemModuleProxy {
 	
@@ -186,7 +180,7 @@ public class ItemModule extends ItemModuleProxy {
 	}
 	
 	public int addOverlay(String newFileName) {
-		return ModLoader.addOverride(core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, newFileName);
+		return ModLoader.addOverride(mod_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, newFileName);
 	}
 	
 	public int getUnusedModuleID() {
@@ -215,8 +209,11 @@ public class ItemModule extends ItemModuleProxy {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public void addCreativeItems(ArrayList itemList) {
-		for(Module module:modules) {
+	public CreativeTabs getCreativeTab()
+    {
+        return CreativeTabs.tabRedstone;
+    }
+		/*for(Module module:modules) {
 			itemList.add(new ItemStack(this, 1, module.getId()));
 		}
 		/*for (int i = 0; i <= 7; i++){
@@ -232,8 +229,9 @@ public class ItemModule extends ItemModuleProxy {
 		for (int i = 500; i <= 500; i++){
 			itemList.add(new ItemStack(this, 1, i));
 		}
-		*/
+		
 	}
+	*/
 	
 	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender){
 		if (itemStack == null) return null;

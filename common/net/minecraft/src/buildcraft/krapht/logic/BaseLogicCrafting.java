@@ -9,11 +9,6 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
-import buildcraft.api.APIProxy;
-import buildcraft.api.core.Orientations;
-import buildcraft.core.CoreProxy;
-import buildcraft.factory.TileAutoWorkbench;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
@@ -23,15 +18,17 @@ import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.network.TileNetworkData;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
-import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
-import net.minecraft.src.forge.ISidedInventory;
-import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.InventoryUtilFactory;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.WorldUtil;
+import net.minecraftforge.common.ISidedInventory;
+import buildcraft.api.core.Orientations;
+import buildcraft.core.CoreProxy;
+import buildcraft.factory.TileAutoWorkbench;
+import buildcraft.transport.TileGenericPipe;
 
 public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
@@ -182,7 +179,7 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 	}
 
 	public void openAttachedGui(EntityPlayer player) {
-		if (APIProxy.isRemote()) {
+		if (CoreProxy.isRemote()) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
 			CoreProxy.sendToServer(packet.getPacket());
 		}

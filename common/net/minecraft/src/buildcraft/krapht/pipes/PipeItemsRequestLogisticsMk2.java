@@ -1,15 +1,10 @@
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import buildcraft.BuildCraftCore;
-import java.util.UUID;
-
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 
@@ -68,7 +63,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_REQUESTERMK2_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_REQUESTERMK2_TEXTURE;
 	}
 	
 	public ItemStack getDisk() {

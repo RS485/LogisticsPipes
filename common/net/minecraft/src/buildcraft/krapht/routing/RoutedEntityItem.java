@@ -13,19 +13,17 @@ import java.util.UUID;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
-import buildcraft.api.transport.IPipedItem;
-import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
+import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.api.transport.IPipedItem;
+import buildcraft.core.EntityPassiveItem;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import net.minecraft.src.krapht.ItemIdentifier;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 

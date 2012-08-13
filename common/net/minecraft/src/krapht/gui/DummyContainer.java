@@ -46,13 +46,13 @@ public class DummyContainer extends Container{
         for(int row = 0; row < 3; row++) {
             for(int column = 0; column < 9; column++)
             {
-                addSlot(new Slot(_playerInventory, column + row * 9 + 9, xOffset + column * 18, yOffset + row * 18));
+                addSlotToContainer(new Slot(_playerInventory, column + row * 9 + 9, xOffset + column * 18, yOffset + row * 18));
             }
         }
 
         //Player "hotbar"
         for(int i1 = 0; i1 < 9; i1++) {
-            addSlot(new Slot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
+        	addSlotToContainer(new Slot(_playerInventory, i1, xOffset + i1 * 18, yOffset + 58));
         }
 	}
 	
@@ -63,19 +63,19 @@ public class DummyContainer extends Container{
 	 * @param yCoord yCoord of TopLeft corner of where the slot should be rendered
 	 */
 	public void addDummySlot(int slotId, int xCoord, int yCoord){
-		addSlot(new DummySlot(_dummyInventory, slotId, xCoord, yCoord));
+		addSlotToContainer(new DummySlot(_dummyInventory, slotId, xCoord, yCoord));
 	}
 	
 	public void addNormalSlot(int slotId, IInventory inventory, int xCoord, int yCoord){
-		addSlot(new Slot(inventory, slotId, xCoord, yCoord));
+		addSlotToContainer(new Slot(inventory, slotId, xCoord, yCoord));
 	}
 	
 	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID) {
-		addSlot(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
+		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
 	}
 	
 	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
-		addSlot(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
+		addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
 	}
 	
 	/**

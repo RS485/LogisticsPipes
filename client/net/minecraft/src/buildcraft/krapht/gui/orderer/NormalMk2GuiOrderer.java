@@ -1,18 +1,14 @@
 package net.minecraft.src.buildcraft.krapht.gui.orderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
-import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.krapht.GuiIDs;
-import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.gui.popup.GuiMessagePopup;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristAnalyser;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
-import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
+
+import org.lwjgl.opengl.GL11;
+
+import buildcraft.core.CoreProxy;
 
 public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	
@@ -47,7 +43,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		//Click on Disk
 		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
 			if (lastClickedx >= right - 39 && lastClickedx < right - 19 && lastClickedy >= bottom - 47 && lastClickedy < bottom - 27) {
-				if(!APIProxy.isRemote()) {
+				if(!CoreProxy.isRemote()) {
 					pipe.dropDisk();
 				} else {
 					this.setSubGui(new GuiMessagePopup("Comming Soon"));

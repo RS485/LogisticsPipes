@@ -1,28 +1,20 @@
 package net.minecraft.src.buildcraft.logisticspipes.statistics;
 
-import java.awt.Color;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import org.lwjgl.opengl.GL11;
-
-import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiScreen;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.Tessellator;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
-import buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
+import buildcraft.core.CoreProxy;
+import buildcraft.transport.Pipe;
 
 public class GuiStatistics extends KraphtBaseGuiScreen {
 
@@ -53,7 +45,7 @@ public class GuiStatistics extends KraphtBaseGuiScreen {
 	protected void keyTyped(char c, int i) {
 		if (i == 1 || c == 'e'){
 			if (prevGuiID != -1){
-				if(!APIProxy.isClient(mc.theWorld)) {
+				if(!CoreProxy.isClient(mc.theWorld)) {
 					_player.openGui(mod_LogisticsPipes.instance, prevGuiID, mc.theWorld, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 				} else {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID).getPacket());

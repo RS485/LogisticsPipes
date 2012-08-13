@@ -2,19 +2,18 @@ package net.minecraft.src.buildcraft.logisticspipes.items;
 
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-
-import cpw.mods.fml.client.SpriteHelper;
-
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.NBTTagString;
-import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.krapht.LogisticsItem;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
+
+import org.lwjgl.input.Keyboard;
+
+import cpw.mods.fml.client.SpriteHelper;
 
 public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 
@@ -26,7 +25,7 @@ public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 
 	@Override
 	public String getTextureFile() {
-		return core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
+		return mod_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 	
 	@Override
@@ -37,7 +36,7 @@ public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 	public abstract String getTextureMap();
 	
 	public void loadModules() {
-		SpriteHelper.registerSpriteMapForFile(core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, getTextureMap());
+		SpriteHelper.registerSpriteMapForFile(mod_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, getTextureMap());
 	}
 	
 	public void addInformation(ItemStack itemStack, List list) {

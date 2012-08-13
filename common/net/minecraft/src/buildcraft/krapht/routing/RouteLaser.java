@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import net.minecraft.src.World;
-import buildcraft.api.APIProxy;
+import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import buildcraft.api.core.LaserKind;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
+import buildcraft.core.CoreProxy;
 import buildcraft.core.EntityBlock;
 import buildcraft.core.Utils;
-import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 
 class RouteLaser implements IPaintPath{
 	private LinkedList<EntityBlock> _lasers = new LinkedList<EntityBlock>();
@@ -28,7 +28,7 @@ class RouteLaser implements IPaintPath{
 	
 	public void clear(){
 		for(EntityBlock b : _lasers)
-		APIProxy.removeEntity(b);
+		CoreProxy.removeEntity(b);
 		_lasers = new LinkedList<EntityBlock>();
 	}
 	

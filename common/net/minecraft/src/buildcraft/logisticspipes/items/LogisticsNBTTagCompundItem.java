@@ -9,7 +9,7 @@ public class LogisticsNBTTagCompundItem extends LogisticsItem {
 	}
 
 	@Override
-	public boolean func_46056_k() {
+	public boolean getShareTag() {
 		return true;
 	}
 	

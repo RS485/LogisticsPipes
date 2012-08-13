@@ -8,23 +8,20 @@
 
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import java.lang.reflect.Proxy;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import buildcraft.BuildCraftCore;
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.BuildCraftCore;
+import buildcraft.core.CoreProxy;
 
 public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems{
 	
@@ -36,7 +33,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_REQUESTER_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_REQUESTER_TEXTURE;
 	}
 
 	@Override
@@ -52,7 +49,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem){
-			if (!APIProxy.isRemote()) {
+			if (!CoreProxy.isRemote()) {
 				openGui(entityplayer);
 			}
 		}
@@ -64,7 +61,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	public void updateEntity() {
 		super.updateEntity();
 		if (this.worldObj.getWorldTime() % 1200 == 0){
-			_history.addLast(core_LogisticsPipes.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet()));
+			_history.addLast(mod_LogisticsPipes.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet()));
 			if (_history.size() > 20){
 				_history.removeFirst();
 			}

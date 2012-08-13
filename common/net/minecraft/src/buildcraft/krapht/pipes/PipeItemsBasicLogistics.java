@@ -8,8 +8,7 @@
 
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import buildcraft.api.core.Orientations;
-import net.minecraft.src.core_LogisticsPipes;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
@@ -26,7 +25,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_TEXTURE;
 	}
 
 	@Override

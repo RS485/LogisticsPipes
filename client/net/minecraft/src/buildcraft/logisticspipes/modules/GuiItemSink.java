@@ -9,20 +9,17 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
-import net.minecraft.src.ModLoader;
-import buildcraft.api.APIProxy;
-import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
-import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
-import buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.DummyContainer;
 
 import org.lwjgl.opengl.GL11;
+
+import buildcraft.core.CoreProxy;
+import buildcraft.transport.Pipe;
 
 public class GuiItemSink extends GuiWithPreviousGuiContainer {
 
@@ -46,7 +43,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
-				if(APIProxy.isClient(mc.theWorld)) {
+				if(CoreProxy.isClient(mc.theWorld)) {
 					CoreProxy.sendToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
 				}
 				break;

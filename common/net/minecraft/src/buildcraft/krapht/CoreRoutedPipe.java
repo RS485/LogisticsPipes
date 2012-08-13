@@ -21,9 +21,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
@@ -93,7 +91,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		pipecount++;
 		//Roughly spread pipe updates throughout the frequency, no need to maintain balance
-		_delayOffset = pipecount % core_LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY; 
+		_delayOffset = pipecount % mod_LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY; 
 	}
 	
 	public RouteLayer getRouteLayer(){
@@ -164,7 +162,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		getRouter().update(worldObj.getWorldTime() % core_LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getRouter().update(worldObj.getWorldTime() % mod_LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal) {
@@ -230,11 +228,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public int getRoutedTexture(Orientations connection){
-		return core_LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE;
 	}
 	
 	public int getNonRoutedTexture(Orientations connection){
-		return core_LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
 	
 	@Override
@@ -299,12 +297,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
 			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
-				if(!APIProxy.isClient(entityplayer.worldObj)) {
+				if(!CoreProxy.isClient(entityplayer.worldObj)) {
 					entityplayer.openGui(mod_LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);
-					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleItemSink) {
+					if(CoreProxy.isServerSide() && getLogisticsModule() instanceof ModuleItemSink) {
 						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, ((ModuleItemSink)getLogisticsModule()).isDefaultRoute() ? 1 : 0));
 					}
-					if(APIProxy.isServerSide() && getLogisticsModule() instanceof ModuleExtractor) {
+					if(CoreProxy.isServerSide() && getLogisticsModule() instanceof ModuleExtractor) {
 						CoreProxy.sendToPlayer(entityplayer, new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, ((ModuleExtractor)getLogisticsModule()).getSneakyOrientation().ordinal()));
 					}
 					return true;

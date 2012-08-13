@@ -3,19 +3,16 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
-import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.api.core.Orientations;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
-import net.minecraft.src.forge.ISidedInventory;
-import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraftforge.common.ISidedInventory;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.inventory.ISpecialInventory;
 
 public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider {
 

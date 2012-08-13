@@ -14,19 +14,10 @@ import java.util.UUID;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.core_LogisticsPipes;
-import buildcraft.mod_BuildCraftCore;
-import buildcraft.api.APIProxy;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
-import buildcraft.core.CoreProxy;
-import buildcraft.core.DefaultProps;
-import buildcraft.core.Utils;
-import buildcraft.core.network.ISynchronizedTile;
+import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.IProvideItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.LogisticsPromise;
@@ -34,7 +25,6 @@ import net.minecraft.src.buildcraft.krapht.LogisticsTransaction;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.logic.BaseChassiLogic;
-import net.minecraft.src.buildcraft.krapht.logic.TemporaryLogic;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
@@ -42,19 +32,25 @@ import net.minecraft.src.buildcraft.logisticspipes.ChassiModule;
 import net.minecraft.src.buildcraft.logisticspipes.ChassiTransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.ItemModuleInformationManager;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
-import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILegacyActiveModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
-import buildcraft.transport.TileGenericPipe;
-import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.ISimpleInventoryEventHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
+import net.minecraftforge.common.ISidedInventory;
+import buildcraft.mod_BuildCraftCore;
+import buildcraft.api.core.Orientations;
+import buildcraft.api.core.Position;
+import buildcraft.core.CoreProxy;
+import buildcraft.core.DefaultProps;
+import buildcraft.core.Utils;
+import buildcraft.transport.TileGenericPipe;
 
 public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems{
 
@@ -108,20 +104,20 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	@Override
 	public int getCenterTexture() {
-		return core_LogisticsPipes.LOGISTICSPIPE_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_TEXTURE;
 	}
 	
 	@Override
 	public int getRoutedTexture(Orientations connection) {
-		return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
 	
 	@Override
 	public int getNonRoutedTexture(Orientations connection) {
 		if (connection.equals(ChassiLogic.orientation)){
-			return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
+			return mod_LogisticsPipes.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
-		return core_LogisticsPipes.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
+		return mod_LogisticsPipes.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}
 	
 	@Override
@@ -211,7 +207,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
 		_moduleInventory.removeListener(this);
-		if(!APIProxy.isRemote()) {
+		if(!CoreProxy.isRemote()) {
 			for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
 				if(_moduleInventory.getStackInSlot(i) != null) {
 					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i));
@@ -254,9 +250,9 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		super.updateEntity();
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
-			if(!APIProxy.isRemote()) {
+			if(!CoreProxy.isRemote()) {
 				nextOrientation();
-				CoreProxy.sendToPlayers(container.getDescriptionPacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
+				CoreProxy.sendToPlayers(this.getDescriptionPacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
 			}
 		}
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
@@ -265,7 +261,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 		if(!init) {
 			init = true;
-			if(APIProxy.isRemote()) {
+			if(CoreProxy.isRemote()) {
 				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.REQUEST_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
 			}
 		}

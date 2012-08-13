@@ -8,38 +8,29 @@
 
 package net.minecraft.src.buildcraft.krapht.logic;
 
-import java.util.Collection;
 import java.util.HashMap;
 
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import buildcraft.api.core.BuildCraftAPI;
-import buildcraft.api.liquids.ILiquidTank;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
-import buildcraft.builders.TileBuilder;
-import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsBuilderSupplierLogistics;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsLiquidSupplier;
-import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.InventoryUtil;
-import net.minecraft.src.krapht.InventoryUtilFactory;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.WorldUtil;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.api.liquids.ILiquidTank;
+import buildcraft.api.liquids.ITankContainer;
+import buildcraft.api.liquids.LiquidManager;
+import buildcraft.api.liquids.LiquidStack;
+import buildcraft.core.CoreProxy;
 
 public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireReliableTransport{
 	
@@ -186,7 +177,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
-		if(!APIProxy.isClient(entityplayer.worldObj)) {
+		if(!CoreProxy.isClient(entityplayer.worldObj)) {
 			//GuiProxy.openGuiLiquidSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(mod_LogisticsPipes.instance, GuiIDs.GUI_LiquidSupplier_ID, worldObj, xCoord, yCoord, zCoord);
 		}

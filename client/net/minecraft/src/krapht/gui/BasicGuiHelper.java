@@ -249,6 +249,38 @@ public class BasicGuiHelper {
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
 	
+    public static void drawSlotBackground(Minecraft mc, int x, int y) {
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot.png");
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(i);
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 18	, (double)zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 18	, y + 18	, (double)zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 18	, y			, (double)zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
+        var9.draw();
+    }
+    
+    public static void renderForestryIconAt(Minecraft mc, int x, int y, float zLevel, int iconIndex) {
+		int i = mc.renderEngine.getTexture("/gfx/forestry/gui/analyzer_icons.png");
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(i);
+		
+		double iconX = ((double)((iconIndex % 16) * 16)) / 256;
+		double iconXright = ((double)(((iconIndex % 16) + 1) * 16)) / 256;
+		double iconY = ((double)((iconIndex / 16) * 16)) / 256;
+		double iconYbottom = ((double)(((iconIndex / 16) + 1) * 16)) / 256;
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 16	, (double)zLevel, iconX			, iconYbottom);
+        var9.addVertexWithUV(x + 16	, y + 16	, (double)zLevel, iconXright	, iconYbottom);
+        var9.addVertexWithUV(x + 16	, y			, (double)zLevel, iconXright	, iconY);
+        var9.addVertexWithUV(x		, y			, (double)zLevel, iconX			, iconY);
+        var9.draw();
+	}
 	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel){
 
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");

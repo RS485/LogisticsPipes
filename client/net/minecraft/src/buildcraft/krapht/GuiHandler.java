@@ -5,6 +5,7 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.buildcraft.krapht.gui.GuiApiaristSink;
 import net.minecraft.src.buildcraft.krapht.gui.GuiChassiPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiCraftingPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiLiquidSupplierPipe;
@@ -21,6 +22,7 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicLiquidSupplier;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristSink;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
@@ -36,6 +38,7 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.GuiWithPreviousGuiCon
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleElectricManager;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
@@ -147,6 +150,9 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
 				return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2)pipe.pipe), player);
 				
+			case GuiIDs.GUI_Module_Apiarist_Sink_ID: //TODO change to general catch like above with module pipes
+				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsApiaristSink)) return null;
+				return new GuiApiaristSink((ModuleApiaristSink)((PipeItemsApiaristSink)pipe.pipe).getLogisticsModule(), player);
 			// TODO To be client-sided
 				/*case GuiIDs.GUI_OrdererStats_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogistics)) return null;

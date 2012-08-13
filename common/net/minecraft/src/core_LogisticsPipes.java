@@ -323,7 +323,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static Item LogisticsProviderPipeMK2;
 	public static Item LogisticsRemoteOrdererPipe;
 	public static Item LogisticsApiaristAnalyserPipe;
-	
+	public static Item LogisticsApiaristSinkPipe;	
 	
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
@@ -360,6 +360,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_REMOTE_ORDERER_ID				= 6889;
 	public static int LOGISTICSPIPE_PROVIDER_MK2_ID					= 6890;
 	public static int LOGISTICSPIPE_APIARIST_ANALYSER_ID			= 6891;
+	public static int LOGISTICSPIPE_APIARIST_SINK_ID				= 6892;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -395,6 +396,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static int LOGISTICSPIPE_PROVIDERMK2_TEXTURE				= 0;
 	public static int LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE			= 0;
 	public static int LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE		= 0;
+	public static int LOGISTICSPIPE_APIARIST_SINK_TEXTURE			= 0;
 	
 		
 	// ** Texture files **
@@ -419,6 +421,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/liquid_supplier.png";
 	public static final String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	= "/logisticspipes/pipes/remote_orderer.png";
 	public static final String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "/logisticspipes/pipes/analyzer.png";
+	public static final String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE 	= "/logisticspipes/pipes/analyzer.png"; //TODO add texure
 
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
@@ -510,7 +513,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	@Override
 	public void modsLoaded() {
 		super.modsLoaded();
-		if(ModLoader.isModLoaded("mod_Forestry")) {
+		if(ModLoader.isModLoaded("mod_Forestry") || true) { //TODO remove this debug
 			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
 		} else {
 			//DummyProxy
@@ -623,6 +626,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		Property logisticPipeRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REMOTE_ORDERER_ID);
 		logisticPipeRemoteOrdererIdProperty.comment = "The item id for the remote orderer logistics pipe";
 
+		Property logisticPipeApiaristSinkIdProperty = configuration.getOrCreateIntProperty("logisticsPipeApiaristSink.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_SINK_ID);
+		logisticPipeApiaristSinkIdProperty.comment = "The item id for the apiarist logistics sink pipe";
+
 		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
@@ -686,6 +692,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_PROVIDER_MK2_ID	= Integer.parseInt(logisticPipeProviderMK2IdProperty.value);
 		LOGISTICSPIPE_REMOTE_ORDERER_ID	= Integer.parseInt(logisticPipeRemoteOrdererIdProperty.value);
 		LOGISTICSPIPE_APIARIST_ANALYSER_ID	= Integer.parseInt(logisticPipeApiaristAnalyserIdProperty.value);
+		LOGISTICSPIPE_APIARIST_SINK_ID	= Integer.parseInt(logisticPipeApiaristSinkIdProperty.value);
 		LOGISTICS_DETECTION_LENGTH		= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT		= Integer.parseInt(detectionCount.value);
 		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
@@ -738,6 +745,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LogisticsRemoteOrdererPipe = createPipe(LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe");
 		LogisticsProviderPipeMK2 = createPipe(LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2");
 		LogisticsApiaristAnalyserPipe = createPipe(LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe");
+		LogisticsApiaristSinkPipe = createPipe(LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe");
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");

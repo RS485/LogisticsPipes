@@ -17,5 +17,4 @@ public interface IForestryProxy {
 	public abstract boolean isAnalysedBee(ItemIdentifier item);
 	
 	public abstract boolean isTileAnalyser(TileEntity tile);
-	
 }

@@ -6,6 +6,7 @@ public class SinkReply {
 		DefaultRoute,
 		Terminus,
 		ItemSink,
+		APIARIST_BeeSink,
 		PassiveSupplier,
 		APIARIST_Analyser
 	}

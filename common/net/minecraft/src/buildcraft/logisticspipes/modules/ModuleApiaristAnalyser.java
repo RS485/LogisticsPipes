@@ -37,7 +37,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 
 	@Override
 	public int getGuiHandlerID() {
-		return 0;
+		return -1;
 	}
 
 	@Override

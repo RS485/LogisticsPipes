@@ -23,6 +23,8 @@ import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
 import net.minecraft.src.buildcraft.krapht.network.TileNetworkData;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.krapht.routing.Router;
+import net.minecraft.src.buildcraft.krapht.recipeproviders.ICraftingRecipeProvider;
+import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy;
 import net.minecraft.src.forge.ISidedInventory;
 import buildcraft.transport.TileGenericPipe;
@@ -36,8 +38,8 @@ import net.minecraft.src.krapht.WorldUtil;
 public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
 	protected SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
-	protected final InventoryUtilFactory _invUtilFactory;
-	protected final InventoryUtil _dummyInvUtil;
+	//protected final InventoryUtilFactory _invUtilFactory;
+	//protected final InventoryUtil _dummyInvUtil;
 
 	@TileNetworkData
 	public int signEntityX = 0;
@@ -53,12 +55,12 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 	public int satelliteId = 0;
 
 	public BaseLogicCrafting() {
-		this(new InventoryUtilFactory());
+	/*	this(new InventoryUtilFactory());
 	}
 
 	public BaseLogicCrafting(InventoryUtilFactory invUtilFactory) {
 		_invUtilFactory = invUtilFactory;
-		_dummyInvUtil = _invUtilFactory.getInventoryUtil(_dummyInventory);
+		_dummyInvUtil = _invUtilFactory.getInventoryUtil(_dummyInventory);*/
 		throttleTime = 40;
 	}
 
@@ -114,12 +116,12 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 
 	/* ** OTHER CODE ** */
 
-	public int RequestsItem(ItemIdentifier item) {
+	/*public int RequestsItem(ItemIdentifier item) {
 		if (item == null) {
 			return 0;
 		}
 		return _dummyInvUtil.getItemCount(item);
-	}
+	}*/
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -187,16 +189,19 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 			CoreProxy.sendToServer(packet.getPacket());
 		}
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		boolean found = false;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
-			if (tile.tile instanceof ISidedInventory) {
-				Block block = worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
-				if(block != null) {
-					if(block.blockActivated(worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player)){
-						break;
-					}
+			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
+				if (provider.canOpenGui(tile.tile)) {
+					found = true;
+					break;
 				}
 			}
-			if (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe)) {
+
+			if (!found)
+				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
+
+			if (found) {
 				Block block = worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
 				if(block != null) {
 					if(block.blockActivated(worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player)){
@@ -209,61 +214,12 @@ public abstract class BaseLogicCrafting extends BaseRoutingLogic implements IReq
 
 	public void importFromCraftingTable() {
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		new LinkedList<AdjacentTile>();
-		TileAutoWorkbench bench = null;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
-			if (!(tile.tile instanceof TileAutoWorkbench)) {
-				continue;
-			}
-			bench = (TileAutoWorkbench) tile.tile;
-			break;
-		}
-		if (bench == null) {
-			return;
-		}
-
-		// Import
-		for (int i = 0; i < bench.getSizeInventory(); i++) {
-			if (i >= _dummyInventory.getSizeInventory() - 1) {
-				break;
-			}
-			final ItemStack newStack = bench.getStackInSlot(i) == null ? null : bench.getStackInSlot(i).copy();
-			_dummyInventory.setInventorySlotContents(i, newStack);
-		}
-
-		// Compact
-		for (int i = 0; i < _dummyInventory.getSizeInventory() - 1; i++) {
-			final ItemStack stackInSlot = _dummyInventory.getStackInSlot(i);
-			if (stackInSlot == null) {
-				continue;
-			}
-			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
-			for (int j = i + 1; j < _dummyInventory.getSizeInventory() - 1; j++) {
-				final ItemStack stackInOtherSlot = _dummyInventory.getStackInSlot(j);
-				if (stackInOtherSlot == null) {
-					continue;
-				}
-				if (itemInSlot == ItemIdentifier.get(stackInOtherSlot)) {
-					stackInSlot.stackSize += stackInOtherSlot.stackSize;
-					_dummyInventory.setInventorySlotContents(j, null);
-				}
+			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
+				if (provider.importRecipe(tile.tile, _dummyInventory))
+					return;
 			}
 		}
-		for (int i = 0; i < _dummyInventory.getSizeInventory() - 1; i++) {
-			if (_dummyInventory.getStackInSlot(i) != null) {
-				continue;
-			}
-			for (int j = i + 1; j < _dummyInventory.getSizeInventory() - 1; j++) {
-				if (_dummyInventory.getStackInSlot(j) == null) {
-					continue;
-				}
-				_dummyInventory.setInventorySlotContents(i, _dummyInventory.getStackInSlot(j));
-				_dummyInventory.setInventorySlotContents(j, null);
-				break;
-			}
-		}
-
-		_dummyInventory.setInventorySlotContents(9, bench.findRecipe());
 	}
 
 	/* ** INTERFACE TO PIPE ** */

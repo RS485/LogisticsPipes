@@ -281,6 +281,7 @@ import net.minecraft.src.buildcraft.krapht.ic2.ElectricItemProxy;
 import net.minecraft.src.buildcraft.krapht.ic2.IElectricItemProxy;
 import net.minecraft.src.buildcraft.krapht.logistics.LogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.pipes.*;
+import net.minecraft.src.buildcraft.krapht.recipeproviders.*;
 import net.minecraft.src.buildcraft.krapht.routing.RouterManager;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlock;
 import net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsBlockRenderer;
@@ -944,6 +945,9 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		}
 
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
+		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
+		if (RollingMachine.load())
+			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
 		
 		//Blocks
 		if(LOGISTICS_BLOCK_ID != 0) {

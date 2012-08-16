@@ -8,10 +8,13 @@
 
 package net.minecraft.src.buildcraft.krapht;
 
+import java.util.LinkedList;
+
 import net.minecraft.src.buildcraft.krapht.forestry.IForestryProxy;
 import net.minecraft.src.buildcraft.krapht.ic2.IElectricItemProxy;
 import net.minecraft.src.buildcraft.krapht.logistics.ILogisticsManagerV2;
 import net.minecraft.src.buildcraft.krapht.routing.IRouterManager;
+import net.minecraft.src.buildcraft.krapht.recipeproviders.ICraftingRecipeProvider;
 import net.minecraft.src.krapht.InventoryUtilFactory;
 
 public final class SimpleServiceLocator {
@@ -48,5 +51,11 @@ public final class SimpleServiceLocator {
 		inventoryUtilFactory = invUtilFactory;
 	}
 	
+	public static LinkedList<ICraftingRecipeProvider> craftingRecipeProviders = new LinkedList<ICraftingRecipeProvider>();
+	public static void addCraftingRecipeProvider(ICraftingRecipeProvider provider) {
+		if (!craftingRecipeProviders.contains(provider)) {
+			craftingRecipeProviders.add(provider);
+		}
+	}
 	
 }

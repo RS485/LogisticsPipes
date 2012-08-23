@@ -5,7 +5,6 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.krapht.gui.GuiApiaristSink;
 import net.minecraft.src.buildcraft.krapht.gui.GuiChassiPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiCraftingPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiLiquidSupplierPipe;
@@ -27,6 +26,7 @@ import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.GuiApiaristSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiElectricManager;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
@@ -151,13 +151,9 @@ public class GuiHandler implements IGuiHandler {
 				return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2)pipe.pipe), player);
 				
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID: //TODO change to general catch like above with module pipes
-				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsApiaristSink)) return null;
-				return new GuiApiaristSink((ModuleApiaristSink)((PipeItemsApiaristSink)pipe.pipe).getLogisticsModule(), player);
-			// TODO To be client-sided
-				/*case GuiIDs.GUI_OrdererStats_ID:
-				if(pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogistics)) return null;
-				return new GuiStatistics(((PipeItemsRequestLogistics)pipe.pipe).getHistory(), selectedItem, ModLoader.getMinecraftInstance().currentScreen, _entityPlayer)
-				*/
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
+				return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, 0);
+			
 			default:
 				return null;
 			}
@@ -196,6 +192,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_ElectricManager_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
 				return new GuiElectricManager(player.inventory, pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), ModLoader.getMinecraftInstance().currentScreen, slot + 1);
+			
+			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
+				return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, slot + 1);
 				
 			default:
 				return null;

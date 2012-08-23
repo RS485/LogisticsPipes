@@ -1,12 +1,9 @@
 package net.minecraft.src.buildcraft.krapht;
 
-import net.minecraft.src.Container;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.logic.BaseRoutingLogic;
 import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
@@ -15,13 +12,12 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
-import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
+import net.minecraft.src.buildcraft.krapht.network.PacketModuleNBT;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleLiquidSupplier;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
@@ -184,7 +180,12 @@ public class GuiHandler implements IGuiHandler {
 			    }
 			    
 			    return dummy;
-				
+
+			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
+				CoreProxy.sendToPlayer(player, new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,-1,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()));
+				return new DummyContainer(player.inventory, null);
+			    
 			case GuiIDs.GUI_ChassiModule_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
 				PipeLogisticsChassi _chassiPipe = (PipeLogisticsChassi)pipe.pipe;
@@ -306,6 +307,11 @@ public class GuiHandler implements IGuiHandler {
 			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 			    }
 			    return dummy;
+			    
+			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
+				CoreProxy.sendToPlayer(player, new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,slot,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)));
+				return new DummyContainer(player.inventory, null);
 			    
 			default:
 			    return null;

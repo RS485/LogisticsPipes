@@ -6,11 +6,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.IProvideItems;
 import net.minecraft.src.buildcraft.krapht.IRequestItems;
@@ -22,7 +21,6 @@ import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.routing.IRouter;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
-
 import net.minecraft.src.krapht.CroppedInventory;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -48,7 +46,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

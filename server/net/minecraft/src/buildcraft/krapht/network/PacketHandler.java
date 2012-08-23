@@ -21,6 +21,7 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristSink;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsProviderLogistics;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogistics;
@@ -31,6 +32,8 @@ import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler;
 import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler.RequestReply;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISneakyOrientationreceiver;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink.FilterType;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
@@ -178,6 +181,10 @@ public class PacketHandler implements IPacketHandler {
 					final PacketPipeInteger packetY = new PacketPipeInteger();
 					packetY.readData(data);
 					onDiskMacroRequest(net.getPlayerEntity(), packetY);
+				case NetworkConstants.BEE_MODULE_SET_BEE:
+					final PacketPipeFourInteger packetZ = new PacketPipeFourInteger();
+					packetZ.readData(data);
+					onBeeModuleSetBee(net.getPlayerEntity(), packetZ);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -747,6 +754,37 @@ public class PacketHandler implements IPacketHandler {
 					break;
 				}
 			}
+		}
+	}
+
+	private void onBeeModuleSetBee(EntityPlayerMP player, PacketPipeFourInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		ModuleApiaristSink sink;
+		if(pipe.pipe instanceof PipeItemsApiaristSink) {
+			sink = (ModuleApiaristSink) ((PipeItemsApiaristSink)pipe.pipe).getLogisticsModule();
+		} else if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(packet.integer1 - 1) instanceof ModuleApiaristSink) {
+			sink = (ModuleApiaristSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(packet.integer1 - 1);
+		} else {
+			return;
+		}
+		if(packet.integer2 >= sink.filter.length) return;
+		switch(packet.integer3) {
+		case 0:
+			sink.filter[packet.integer2].firstBee = packet.integer4;
+			break;
+		case 1:
+			sink.filter[packet.integer2].secondBee = packet.integer4;
+			break;
+		case 2:
+			sink.filter[packet.integer2].filterGroup = packet.integer4;
+			break;
+		case 3:
+			if(packet.integer4 >= FilterType.values().length) return;
+			sink.filter[packet.integer2].filterType = FilterType.values()[packet.integer4];
+			break;
 		}
 	}
 	

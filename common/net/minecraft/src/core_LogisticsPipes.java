@@ -303,7 +303,7 @@ import net.minecraft.src.krapht.ItemIdentifier;
 
 public abstract class core_LogisticsPipes extends NetworkMod {
 	
-	public static boolean DEBUG = false;
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
 	
 	// Items
 	public static Item LogisticsBasicPipe;
@@ -422,7 +422,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	public static final String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/liquid_supplier.png";
 	public static final String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	= "/logisticspipes/pipes/remote_orderer.png";
 	public static final String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "/logisticspipes/pipes/analyzer.png";
-	public static final String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE 	= "/logisticspipes/pipes/analyzer.png"; //TODO add texure
+	public static final String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE 	= "/logisticspipes/pipes/beesink.png";
 
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
@@ -514,7 +514,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 	@Override
 	public void modsLoaded() {
 		super.modsLoaded();
-		if(ModLoader.isModLoaded("mod_Forestry")) { //TODO remove this debug
+		if(ModLoader.isModLoaded("mod_Forestry")) {
 			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
 		} else {
 			//DummyProxy
@@ -525,6 +525,26 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 				@Override public boolean isAnalysedBee(ItemIdentifier item) {return false;}
 				@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
 				@Override public boolean forestryEnabled() {return false;}
+				@Override public boolean isVaildAlleleId(int id) {return false;}
+				@Override public boolean isKnownAlleleId(int id, World world) {return false;}
+				@Override public String getAlleleName(int id) {return "";}
+				@Override public int getFirstAlleleId(ItemStack bee) {return 0;}
+				@Override public int getSecondAlleleId(ItemStack bee) {return 0;}
+				@Override public boolean isDrone(ItemStack bee) {return false;}
+				@Override public boolean isFlyer(ItemStack bee) {return false;}
+				@Override public boolean isPrincess(ItemStack bee) {return false;}
+				@Override public boolean isQueen(ItemStack bee) {return false;}
+				@Override public boolean isPurebred(ItemStack bee) {return false;}
+				@Override public boolean isNocturnal(ItemStack bee) {return false;}
+				@Override public boolean isPureNocturnal(ItemStack bee) {return false;}
+				@Override public boolean isPureFlyer(ItemStack bee) {return false;}
+				@Override public boolean isCave(ItemStack bee) {return false;}
+				@Override public boolean isPureCave(ItemStack bee) {return false;}
+				@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
+				@Override public int getIconIndexForAlleleId(int id, int phase) {return 0;}
+				@Override public int getColorForAlleleId(int id, int phase) {return 0;}
+				@Override public int getRenderPassesForAlleleId(int id) {return 0;}
+				@Override public void addCraftingRecipes() {}
 			});
 		}
 
@@ -797,7 +817,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 
 		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrdererPipe, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsBasicPipe, Character.valueOf('U'), Item.enderPearl});
 		
-		//craftingManager.addRecipe(new ItemStack(LogisticsItemDisk, 1), new Object[] { "igi", "grg", "igi", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
+		craftingManager.addRecipe(new ItemStack(LogisticsItemDisk, 1), new Object[] { "igi", "grg", "igi", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
 		
 		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.BLANK), new Object[] { "prp", "prp", "pgp", Character.valueOf('p'), Item.paper, Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
 
@@ -911,13 +931,17 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), 
 									Character.valueOf('r'), Item.redstone, 
 									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
 		for(int i=0; i<1000;i++) {
-			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null);
+			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null, null);
 			if(module != null) {
 				NBTTagCompound nbt = new NBTTagCompound();
-				module.writeToNBT(nbt, "");
-				if(!nbt.equals(new NBTTagCompound())) {
+				boolean force = false;
+				try {
+					module.writeToNBT(nbt, "");
+				} catch(Exception e) {
+					force = true;
+				}
+				if(!nbt.equals(new NBTTagCompound()) || force) {
 					registerShapelessResetRecipe(ModuleItem, i, ModuleItem, i);
 				}
 			}
@@ -945,6 +969,7 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		}
 
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
+		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());

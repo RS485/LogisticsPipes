@@ -5,6 +5,7 @@ import java.util.UUID;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
+import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.api.Orientations;
@@ -22,6 +23,7 @@ import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IWorldProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.transport.TileGenericPipe;
@@ -34,6 +36,7 @@ public class PipeItemsApiaristSink extends RoutedPipe {
 	public PipeItemsApiaristSink(int itemID) {
 		super(new TemporaryLogic(), itemID);
 		sinkModule = new ModuleApiaristSink();
+		sinkModule.registerHandler(null, null, this);
 	}
 
 	@Override

@@ -3,11 +3,10 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
@@ -24,7 +23,7 @@ public class ModulePassiveSupplier implements ILogisticsModule, IClientInformati
 	public ModulePassiveSupplier() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 	}
 

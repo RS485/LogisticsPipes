@@ -6,30 +6,27 @@ import java.util.List;
 
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.NBTBase;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
+import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
-import net.minecraft.src.buildcraft.krapht.LogisticsItem;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IWorldProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleAdvancedExtractorMK3;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristAnalyser;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleElectricManager;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk2;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractorMk3;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePassiveSupplier;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModulePolymorphicItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleQuickSort;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleTerminus;
-import net.minecraft.src.krapht.ItemIdentifier;
-import net.minecraft.src.krapht.SimpleInventory;
 
 public class ItemModule extends ItemModuleProxy {
 	
@@ -61,6 +58,8 @@ public class ItemModule extends ItemModuleProxy {
 	public static final int QUICKSORT = 5;
 	public static final int TERMINUS = 6;
 	public static final int ADVANCED_EXTRACTOR = 7;
+	public static final int BEEANALYZER = 8;
+	public static final int BEESINK = 9;
 
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
@@ -154,7 +153,9 @@ public class ItemModule extends ItemModuleProxy {
 		registerModule(EXTRACTOR_MK3			, "Extractor MK3 module"		, ModuleExtractorMk3.class);
 		registerModule(ADVANCED_EXTRACTOR_MK3	, "Advanced Extractor MK3"		, ModuleAdvancedExtractorMK3.class);
 		registerModule(PROVIDER					, "Provider module"				, ModuleProvider.class);
-		registerModule(ELECTRICMANAGER        , "Electric Manager module"        , ModuleElectricManager.class, 40);
+		registerModule(ELECTRICMANAGER			, "Electric Manager module"		, ModuleElectricManager.class, 96);
+		registerModule(BEEANALYZER				, "Bee Analyzer module"			, ModuleApiaristAnalyser.class);
+		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);
 	}
 	
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
@@ -193,21 +194,6 @@ public class ItemModule extends ItemModuleProxy {
 		return ModLoader.addOverride(core_LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, newFileName);
 	}
 	
-	public int getUnusedModuleID() {
-		int id = -1;
-		boolean flag = true;
-		while(flag) {
-			flag = false;
-			id++;
-			for(Module module:modules) {
-				if(module.getId() == id) {
-					flag = true;
-				}
-			}
-		}
-		return id;
-	}
-	
 	public int[] getRegisteredModulesIDs() {
 		int[] array = new int[modules.size()];
 		int i = 0;
@@ -223,78 +209,11 @@ public class ItemModule extends ItemModuleProxy {
 		for(Module module:modules) {
 			itemList.add(new ItemStack(this, 1, module.getId()));
 		}
-		/*for (int i = 0; i <= 7; i++){
-			itemList.add(new ItemStack(this, 1, i));
-		}
-
-		itemList.add(new ItemStack(this, 1, 103));
-		itemList.add(new ItemStack(this, 1, 107));
-		
-		itemList.add(new ItemStack(this, 1, 203));
-		itemList.add(new ItemStack(this, 1, 207));
-		
-		for (int i = 500; i <= 500; i++){
-			itemList.add(new ItemStack(this, 1, i));
-		}
-		*/
 	}
 	
-	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender){
+	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.shiftedIndex) return null;
-		/*
-		switch (itemStack.getItemDamage()){
-		 
-		
-			//PASSIVE
-			case ITEMSINK:
-				if (currentModule instanceof ModuleItemSink) return currentModule;
-				return new ModuleItemSink();
-			case PASSIVE_SUPPLIER:
-				if (currentModule instanceof ModulePassiveSupplier) return currentModule;
-				return new ModulePassiveSupplier(invProvider);
-			case EXTRACTOR:
-				if (currentModule != null && currentModule.getClass().equals(ModuleExtractor.class)) return currentModule; 
-				return new ModuleExtractor(invProvider, itemSender);
-			case POLYMORPHIC_ITEMSINK:
-				if (currentModule instanceof ModulePolymorphicItemSink) return currentModule;
-				return new ModulePolymorphicItemSink(invProvider);
-			case QUICKSORT:
-				if (currentModule instanceof ModuleQuickSort) return currentModule;
-				return new ModuleQuickSort(invProvider, itemSender);
-			case TERMINUS:
-				if (currentModule instanceof ModuleTerminus) return currentModule;
-				return new ModuleTerminus();
-			case ADVANCED_EXTRACTOR:
-				if (currentModule != null && currentModule.getClass().equals(ModuleAdvancedExtractor.class)) return currentModule; 
-				return new ModuleAdvancedExtractor(invProvider, itemSender);
-				
-			//PASSIVE MK2
-			case EXTRACTOR_MK2:
-				if (currentModule != null && currentModule.getClass().equals(ModuleExtractorMk2.class)) return currentModule;
-				return new ModuleExtractorMk2(invProvider, itemSender);
-			
-			case ADVANCED_EXTRACTOR_MK2:
-				if (currentModule != null && currentModule.getClass().equals(ModuleAdvancedExtractorMK2.class)) return currentModule;
-				return new ModuleAdvancedExtractorMK2(invProvider, itemSender);
-				
-			//PASSIVE MK2
-			case EXTRACTOR_MK3:
-				if (currentModule != null && currentModule.getClass().equals(ModuleExtractorMk3.class)) return currentModule;
-				return new ModuleExtractorMk3(invProvider, itemSender);
-			
-			case ADVANCED_EXTRACTOR_MK3:
-				if (currentModule != null && currentModule.getClass().equals(ModuleAdvancedExtractorMK3.class)) return currentModule;
-				return new ModuleAdvancedExtractorMK3(invProvider, itemSender);
-					
-			//ACTIVE
-			case PROVIDER:
-				if (currentModule instanceof ModuleProvider) return currentModule;
-				return new ModuleProvider(invProvider, itemSender);
-			default:
-				return null;
-		}
-		*/
 		for(Module module:modules) {
 			if(itemStack.getItemDamage() == module.getId()) {
 				if(module.getILogisticsModuleClass() == null) return null;
@@ -303,7 +222,7 @@ public class ItemModule extends ItemModuleProxy {
 				}
 				ILogisticsModule newmodule = module.getILogisticsModule();
 				if(newmodule == null) return null;
-				newmodule.registerHandler(invProvider, itemSender);
+				newmodule.registerHandler(invProvider, itemSender, world);
 				return newmodule;
 			}
 		}
@@ -312,47 +231,6 @@ public class ItemModule extends ItemModuleProxy {
 
 	@Override
 	public String getModuleDisplayName(ItemStack itemstack) {
-		/*switch(itemstack.getItemDamage()){
-		case BLANK:
-			return "Blank module";
-			
-		//PASSIVE
-		case ITEMSINK:
-			return "ItemSink module";
-		case PASSIVE_SUPPLIER:
-			return "Passive Supplier module";
-		case EXTRACTOR:
-			return "Extractor module";
-		case POLYMORPHIC_ITEMSINK: 
-			return "Polymorphic ItemSink module";
-		case QUICKSORT:
-			return "QuickSort module";
-		case TERMINUS:
-			return "Terminus module";
-		case ADVANCED_EXTRACTOR:
-			return "Advanced Extractor module";
-			
-		//PASSIVE MK2
-		case EXTRACTOR_MK2:
-			return "Extractor MK2 module";
-		case ADVANCED_EXTRACTOR_MK2:
-			return "Advanced Extractor MK2";
-			
-		//PASSIVE MK3
-		case EXTRACTOR_MK3:
-			return "Extractor MK3 module";
-		case ADVANCED_EXTRACTOR_MK3:
-			return "Advanced Extractor MK3";
-			
-		//ACTIVE
-		case PROVIDER:
-			return "Provider module";
-			
-			
-		default:
-			return ""; 
-		}
-		*/
 		for(Module module:modules) {
 			if(itemstack.getItemDamage() == module.getId()) {
 				return module.getName();

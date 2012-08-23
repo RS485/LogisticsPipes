@@ -189,7 +189,9 @@
         </copy>
 		
 		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${clientsrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${serversrc.dir}/net/minecraft/src/core_LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		
     </target>
     

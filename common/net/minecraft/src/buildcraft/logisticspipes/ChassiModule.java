@@ -1,15 +1,14 @@
 package net.minecraft.src.buildcraft.logisticspipes;
 
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeLogisticsChassi;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IWorldProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply;
 import net.minecraft.src.krapht.InventoryUtil;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -107,7 +106,7 @@ public class ChassiModule implements ILogisticsModule{
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		//Not used in Chassie Module
 	}
 

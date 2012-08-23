@@ -3,18 +3,14 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.SinkReply.FixedPriority;
-import net.minecraft.src.buildcraft.krapht.ILogisticsManager;
-import net.minecraft.src.krapht.InventoryUtil;
-import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
 
 public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider {
@@ -38,7 +34,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

@@ -9,6 +9,8 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraft.src.buildcraft.core.network.PacketNBT;
+import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
 import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
@@ -19,12 +21,14 @@ import net.minecraft.src.buildcraft.krapht.logic.LogicCrafting;
 import net.minecraft.src.buildcraft.krapht.logic.LogicProvider;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSatellite;
 import net.minecraft.src.buildcraft.krapht.logic.LogicSupplier;
+import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristSink;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.buildcraft.logisticspipes.ExtractionMode;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiAdvancedExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
+import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
 import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
@@ -129,6 +133,10 @@ public class PacketHandler implements IPacketHandler {
 					final PacketItems packetP = new PacketItems();
 					packetP.readData(data);
 					handleMacroResponse(packetP);
+				case NetworkConstants.BEE_MODULE_CONTENT:
+					final PacketModuleNBT packetQ = new PacketModuleNBT();
+					packetQ.readData(data);
+					handleBeePacketNBT(packetQ);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -322,6 +330,22 @@ public class PacketHandler implements IPacketHandler {
 				((GuiOrderer) ModLoader.getMinecraftInstance().currentScreen).handleRequestAnswer(packet.items, packet.error, ((GuiOrderer) ModLoader.getMinecraftInstance().currentScreen).getSubGui(),ModLoader.getMinecraftInstance().thePlayer);
 			}
 		}
+	}
+
+	private void handleBeePacketNBT(PacketModuleNBT packet) {
+		final TileGenericPipe tile = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(tile == null) {
+			return;
+		}
+		ModuleApiaristSink sink;
+		if(packet.slot == -1 && tile.pipe instanceof PipeItemsApiaristSink) {
+			sink = (ModuleApiaristSink) ((PipeItemsApiaristSink)tile.pipe).getLogisticsModule();
+		} else if(tile.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)tile.pipe).getLogisticsModule().getSubModule(packet.slot) instanceof ModuleApiaristSink) {
+			sink = (ModuleApiaristSink) ((CoreRoutedPipe)tile.pipe).getLogisticsModule().getSubModule(packet.slot);
+		} else {
+			return;
+		}
+		packet.handle(sink);
 	}
 
 	// BuildCraft method

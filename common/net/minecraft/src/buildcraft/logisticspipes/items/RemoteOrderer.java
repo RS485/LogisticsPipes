@@ -6,6 +6,7 @@ import java.util.Random;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -14,6 +15,7 @@ import net.minecraft.src.mod_LogisticsPipes;
 import buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRemoteOrdererLogistics;
+import net.minecraft.src.buildcraft.krapht.routing.WorldProxy;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.DimensionManager;
@@ -92,6 +94,9 @@ public class RemoteOrderer extends Item implements ITextureProvider {
 			return null;
 		}
 		World world = DimensionManager.getWorld(stack.stackTagCompound.getInteger("connectedPipe-world-dim"));
+		if(world == null) {
+			world = WorldProxy.getMainWorld();
+		}
 		if(world == null) {
 			return null;
 		}

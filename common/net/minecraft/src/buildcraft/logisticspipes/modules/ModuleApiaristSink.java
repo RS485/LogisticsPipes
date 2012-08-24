@@ -40,8 +40,8 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		
 		private final ModuleApiaristSink module;
 		public FilterType filterType = FilterType.Null;
-		public int firstBee = -1;
-		public int secondBee = -1;
+		public String firstBee = "";
+		public String secondBee = "";
 		public int filterGroup = 0;
 		
 		public SinkSetting(ModuleApiaristSink module) {
@@ -49,71 +49,27 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 
 		public void firstBeeUp() {
-			boolean changed = false;
-			for (int id = firstBee + 1; id <= 256; id++) {
-				if (!SimpleServiceLocator.forestryProxy.isVaildAlleleId(id)	|| !SimpleServiceLocator.forestryProxy.isKnownAlleleId(id, module.worldProvider.getWorld())) {
-					continue;
-				}
-				firstBee = id;
-				changed = true;
-				break;
-			}
-			if(!changed) {
-				firstBee = -1;
-			}
+			firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee);
 		}
 
 		public void firstBeeDown() {
-			boolean changed = false;
-			for (int id = firstBee - 1; id >= 0; id--) {
-				if (!SimpleServiceLocator.forestryProxy.isVaildAlleleId(id)	|| !SimpleServiceLocator.forestryProxy.isKnownAlleleId(id, module.worldProvider.getWorld())) {
-					continue;
-				}
-				firstBee = id;
-				changed = true;
-				break;
-			}
-			if(!changed) {
-				firstBee = -1;
-			}
+			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee);
 		}
 		
 		public void firstBeeReset() {
-			firstBee = -1;
+			firstBee = "";
 		}
 		
 		public void secondBeeUp() {
-			boolean changed = false;
-			for (int id = secondBee + 1; id <= 256; id++) {
-				if (!SimpleServiceLocator.forestryProxy.isVaildAlleleId(id)	|| !SimpleServiceLocator.forestryProxy.isKnownAlleleId(id, module.worldProvider.getWorld())) {
-					continue;
-				}
-				secondBee = id;
-				changed = true;
-				break;
-			}
-			if(!changed) {
-				secondBee = -1;
-			}
+			secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee);
 		}
 		
 		public void secondBeeDown() {
-			boolean changed = false;
-			for (int id = secondBee - 1; id >= 0; id--) {
-				if (!SimpleServiceLocator.forestryProxy.isVaildAlleleId(id)	|| !SimpleServiceLocator.forestryProxy.isKnownAlleleId(id, module.worldProvider.getWorld())) {
-					continue;
-				}
-				secondBee = id;
-				changed = true;
-				break;
-			}
-			if(!changed) {
-				secondBee = -1;
-			}
+			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee);
 		}
 		
 		public void secondBeeReset() {
-			secondBee = -1;
+			secondBee = "";
 		}
 		
 		public void filterGroupUp() {
@@ -162,14 +118,14 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 			} else {
 				filterType = FilterType.Null;
 			}
-			firstBee = nbttagcompound.getInteger("firstBee");
-			secondBee = nbttagcompound.getInteger("secondBee");
+			firstBee = nbttagcompound.getString("firstBeeString");
+			secondBee = nbttagcompound.getString("secondBeeString");
 		}
 
 		public void writeToNBT(NBTTagCompound nbttagcompound) {
 			nbttagcompound.setInteger("filterType", filterType.ordinal());
-			nbttagcompound.setInteger("firstBee", firstBee);
-			nbttagcompound.setInteger("secondBee", secondBee);
+			nbttagcompound.setString("firstBeeString", firstBee);
+			nbttagcompound.setString("secondBeeString", secondBee);
 		}
 
 		private boolean allAllele(ItemStack bee) {
@@ -177,11 +133,11 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 
 		private boolean firstAllele(ItemStack bee) {
-			return SimpleServiceLocator.forestryProxy.getFirstAlleleId(bee) == firstBee || firstBee == -1;
+			return SimpleServiceLocator.forestryProxy.getFirstAlleleId(bee) == firstBee || firstBee == "";
 		}
 
 		private boolean secondAllele(ItemStack bee) {
-			return SimpleServiceLocator.forestryProxy.getSecondAlleleId(bee) == secondBee || secondBee == -1;
+			return SimpleServiceLocator.forestryProxy.getSecondAlleleId(bee) == secondBee || secondBee == "";
 		}
 		
 		public boolean isFiltered(ItemStack bee) {

@@ -17,17 +17,19 @@ public interface IForestryProxy {
 	
 	public abstract boolean isAnalysedBee(ItemIdentifier item);
 
-	public abstract boolean isVaildAlleleId(int id);
-
-	public abstract boolean isKnownAlleleId(int id, World world);
+	public abstract boolean isKnownAlleleId(String uid, World world);
 	
-	public abstract String getAlleleName(int id);
+	public abstract String getAlleleName(String uid);
 	
 	public abstract boolean isTileAnalyser(TileEntity tile);
 
-	public abstract int getFirstAlleleId(ItemStack bee);
+	public abstract String getFirstAlleleId(ItemStack bee);
 
-	public abstract int getSecondAlleleId(ItemStack bee);
+	public abstract String getSecondAlleleId(ItemStack bee);
+	
+	public abstract String getNextAlleleId(String uid);
+
+	public abstract String getPrevAlleleId(String uid);
 
 	public abstract boolean isDrone(ItemStack bee);
 
@@ -51,11 +53,11 @@ public interface IForestryProxy {
 	
 	public abstract String getForestryTranslation(String input);
 
-	public abstract int getIconIndexForAlleleId(int id, int phase);
+	public abstract int getIconIndexForAlleleId(String uid, int phase);
 
-	public abstract int getColorForAlleleId(int id, int phase);
+	public abstract int getColorForAlleleId(String uid, int phase);
 			
-	public abstract int getRenderPassesForAlleleId(int id);
+	public abstract int getRenderPassesForAlleleId(String uid);
 	
 	public abstract void addCraftingRecipes();
 }

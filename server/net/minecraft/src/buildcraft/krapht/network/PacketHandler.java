@@ -182,7 +182,7 @@ public class PacketHandler implements IPacketHandler {
 					packetY.readData(data);
 					onDiskMacroRequest(net.getPlayerEntity(), packetY);
 				case NetworkConstants.BEE_MODULE_SET_BEE:
-					final PacketPipeFourInteger packetZ = new PacketPipeFourInteger();
+					final PacketPipeBeePacket packetZ = new PacketPipeBeePacket();
 					packetZ.readData(data);
 					onBeeModuleSetBee(net.getPlayerEntity(), packetZ);
 			}
@@ -757,7 +757,7 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
-	private void onBeeModuleSetBee(EntityPlayerMP player, PacketPipeFourInteger packet) {
+	private void onBeeModuleSetBee(EntityPlayerMP player, PacketPipeBeePacket packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null) {
 			return;
@@ -773,10 +773,10 @@ public class PacketHandler implements IPacketHandler {
 		if(packet.integer2 >= sink.filter.length) return;
 		switch(packet.integer3) {
 		case 0:
-			sink.filter[packet.integer2].firstBee = packet.integer4;
+			sink.filter[packet.integer2].firstBee = packet.string1;
 			break;
 		case 1:
-			sink.filter[packet.integer2].secondBee = packet.integer4;
+			sink.filter[packet.integer2].secondBee = packet.string1;
 			break;
 		case 2:
 			sink.filter[packet.integer2].filterGroup = packet.integer4;

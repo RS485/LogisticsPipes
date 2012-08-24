@@ -320,7 +320,7 @@ public class BasicGuiHelper {
         var9.draw();
 	}
     
-    public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, int id) {
+    public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
 		int tex = mc.renderEngine.getTexture("/gfx/forestry/items/bees.png");
 		//GL11.glDisable(2896 /*Light*/);
 		mc.renderEngine.bindTexture(tex);

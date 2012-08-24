@@ -6,7 +6,7 @@ import net.minecraft.src.GuiScreen;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
-import net.minecraft.src.buildcraft.krapht.network.PacketPipeFourInteger;
+import net.minecraft.src.buildcraft.krapht.network.PacketPipeBeePacket;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink.FilterType;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink.SinkSetting;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
@@ -88,7 +88,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.FilterTypeDown();
 			}
 			if(APIProxy.isRemote()) {
-				PacketPipeFourInteger packet = new PacketPipeFourInteger(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
 				CoreProxy.sendToServer(packet.getPacket());
 			}
 		}
@@ -158,7 +158,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.filterGroupDown();
 			}
 			if(APIProxy.isRemote()) {
-				PacketPipeFourInteger packet = new PacketPipeFourInteger(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
 				CoreProxy.sendToServer(packet.getPacket());
 			}
 		}
@@ -281,7 +281,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				}
 			}
 			if(APIProxy.isRemote()) {
-				PacketPipeFourInteger packet = new PacketPipeFourInteger(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
 				CoreProxy.sendToServer(packet.getPacket());
 			}
 		}
@@ -303,7 +303,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
 		@Override
 		public boolean drawSlotIcon() {
-			return drawSlotBackground() && (slotNumber == 0 ? setting.firstBee : setting.secondBee) != -1;
+			return drawSlotBackground() && (slotNumber == 0 ? setting.firstBee : setting.secondBee) != "";
 		}
 
 		@Override
@@ -314,9 +314,9 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		@Override
 		public boolean displayToolTip() {
 			if(slotNumber == 0) {
-				return setting.firstBee != -1 && drawSlotBackground();
+				return setting.firstBee != "" && drawSlotBackground();
 			} else {
-				return setting.secondBee != -1 && drawSlotBackground();
+				return setting.secondBee != "" && drawSlotBackground();
 			}
 		}
 

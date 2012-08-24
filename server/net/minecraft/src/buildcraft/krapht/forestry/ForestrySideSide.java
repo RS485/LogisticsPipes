@@ -5,18 +5,22 @@ import net.minecraft.src.Item;
 public abstract class ForestrySideSide implements IForestryProxy {
 
 	protected Item beeDroneGE;
+
 	@Override
-	public int getIconIndexForAlleleId(int id, int phase) {
+	public int getIconIndexForAlleleId(String uid, int phase) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public int getColorForAlleleId(int id, int phase) {
+	public int getColorForAlleleId(String uid, int phase) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
-	public int getRenderPassesForAlleleId(int id) {
+	public int getRenderPassesForAlleleId(String uid) {
+		// TODO Auto-generated method stub
 		return 0;
 	}
 }

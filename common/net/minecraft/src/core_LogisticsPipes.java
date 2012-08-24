@@ -494,11 +494,13 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 		LOGISTICSPIPE_NOTROUTED_TEXTURE 			= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
 		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE 		= registerTexture(LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
 		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE 	= registerTexture(LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
+		LOGISTICSPIPE_APIARIST_SINK_TEXTURE 		= registerTexture(LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
 		
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
@@ -525,11 +527,10 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 				@Override public boolean isAnalysedBee(ItemIdentifier item) {return false;}
 				@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
 				@Override public boolean forestryEnabled() {return false;}
-				@Override public boolean isVaildAlleleId(int id) {return false;}
-				@Override public boolean isKnownAlleleId(int id, World world) {return false;}
-				@Override public String getAlleleName(int id) {return "";}
-				@Override public int getFirstAlleleId(ItemStack bee) {return 0;}
-				@Override public int getSecondAlleleId(ItemStack bee) {return 0;}
+				@Override public boolean isKnownAlleleId(String uid, World world) {return false;}
+				@Override public String getAlleleName(String uid) {return "";}
+				@Override public String getFirstAlleleId(ItemStack bee) {return "";}
+				@Override public String getSecondAlleleId(ItemStack bee) {return "";}
 				@Override public boolean isDrone(ItemStack bee) {return false;}
 				@Override public boolean isFlyer(ItemStack bee) {return false;}
 				@Override public boolean isPrincess(ItemStack bee) {return false;}
@@ -541,10 +542,12 @@ public abstract class core_LogisticsPipes extends NetworkMod {
 				@Override public boolean isCave(ItemStack bee) {return false;}
 				@Override public boolean isPureCave(ItemStack bee) {return false;}
 				@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
-				@Override public int getIconIndexForAlleleId(int id, int phase) {return 0;}
-				@Override public int getColorForAlleleId(int id, int phase) {return 0;}
-				@Override public int getRenderPassesForAlleleId(int id) {return 0;}
+				@Override public int getIconIndexForAlleleId(String id, int phase) {return 0;}
+				@Override public int getColorForAlleleId(String id, int phase) {return 0;}
+				@Override public int getRenderPassesForAlleleId(String id) {return 0;}
 				@Override public void addCraftingRecipes() {}
+				@Override public String getNextAlleleId(String uid) {return null;}
+				@Override public String getPrevAlleleId(String uid) {return null;}
 			});
 		}
 

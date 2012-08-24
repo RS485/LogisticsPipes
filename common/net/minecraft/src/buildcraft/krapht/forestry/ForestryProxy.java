@@ -83,7 +83,11 @@ public class ForestryProxy extends ForestrySideSide implements IForestryProxy {
 	}
 	
 	public int getBeeAlleleCount() {
-		return AlleleManager.alleleList.length;
+		int counter = 0;
+		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
+			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) counter++;
+		}
+		return counter;
 	}
 	
 	@Override
@@ -112,33 +116,85 @@ public class ForestryProxy extends ForestrySideSide implements IForestryProxy {
 	}
 
 	@Override
-	public boolean isVaildAlleleId(int id) {
-		return forestry.api.genetics.AlleleManager.alleleList[id] != null;
+	public boolean isKnownAlleleId(String allele, World world) {
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleSpecies)) return false;
+		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
+		return BeeManager.breedingManager.getApiaristTracker(world).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	@Override
-	public boolean isKnownAlleleId(int id, World world) {
-		if(forestry.api.genetics.AlleleManager.alleleList[id] == null) return false;
-		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleList[id]).isSecret()) return true;
-		return BeeManager.breedingManager.getApiaristTracker(world).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleList[id]);
+	public String getAlleleName(String uid) {
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) return "";
+		return ((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
+	}
+	
+	private String getFirstValidAllele() {
+		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
+			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
+				return AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID();
+			}
+		}
+		return "";
+	}
+	
+	@Override
+	public String getNextAlleleId(String uid) {
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
+			return getFirstValidAllele();
+		}
+		int index = 0;
+		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
+			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
+				if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID().equals(uid)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
+			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
+				if(index < i) {
+					return AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID();
+				}
+			}
+		}
+		return "";
+	}
+	
+	@Override
+	public String getPrevAlleleId(String uid) {
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
+			return getFirstValidAllele();
+		}
+		int index = 0;
+		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
+			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
+				if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID().equals(uid)) {
+					index = i;
+					break;
+				}
+			}
+		}
+		for(int i=AlleleManager.alleleRegistry.getRegisteredAlleles().size();i>=0;i--) {
+			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
+				if(index > i) {
+					return AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID();
+				}
+			}
+		}
+		return "";
 	}
 
 	@Override
-	public String getAlleleName(int id) {
-		if(forestry.api.genetics.AlleleManager.alleleList[id] == null) return "";
-		return ((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleList[id]).getName();
+	public String getFirstAlleleId(ItemStack bee) {
+		if(!BeeManager.beeInterface.isBee(bee)) return ""; 
+		return BeeManager.beeInterface.getBee(bee).getGenome().getPrimaryAsBee().getUID();
 	}
 
 	@Override
-	public int getFirstAlleleId(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return -1; 
-		return BeeManager.beeInterface.getBee(bee).getGenome().getPrimaryAsBee().getId();
-	}
-
-	@Override
-	public int getSecondAlleleId(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return -1; 
-		return BeeManager.beeInterface.getBee(bee).getGenome().getSecondaryAsBee().getId();
+	public String getSecondAlleleId(ItemStack bee) {
+		if(!BeeManager.beeInterface.isBee(bee)) return ""; 
+		return BeeManager.beeInterface.getBee(bee).getGenome().getSecondaryAsBee().getUID();
 	}
 
 	@Override

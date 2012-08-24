@@ -2,17 +2,13 @@ package net.minecraft.src.buildcraft.krapht.ic2;
 
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.krapht.ItemIdentifier;
-import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.core_LogisticsPipes;
-
-import net.minecraft.src.BuildCraftCore;
-import net.minecraft.src.BuildCraftSilicon;
-
+import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.ic2.api.IElectricItem;
-import net.minecraft.src.ic2.api.Items;
 import net.minecraft.src.ic2.api.Ic2Recipes;
+import net.minecraft.src.ic2.api.Items;
+import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
 
 
 public class ElectricItemProxy implements IElectricItemProxy {

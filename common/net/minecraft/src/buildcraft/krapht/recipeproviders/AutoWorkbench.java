@@ -2,10 +2,9 @@ package net.minecraft.src.buildcraft.krapht.recipeproviders;
 
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-
-import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraft.src.krapht.ItemIdentifier;
-import net.minecraft.src.buildcraft.factory.TileAutoWorkbench;
+import net.minecraft.src.krapht.SimpleInventory;
+import buildcraft.factory.TileAutoWorkbench;
 
 public class AutoWorkbench implements ICraftingRecipeProvider {
 	public boolean canOpenGui(TileEntity tile) {

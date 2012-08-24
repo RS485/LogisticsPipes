@@ -16,11 +16,9 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.World;
-import buildcraft.api.APIProxy;
-import buildcraft.core.Utils;
 import net.minecraft.src.buildcraft.krapht.ISaveState;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
-import net.minecraft.src.buildcraft.krapht.network.TileNetworkData;
+import buildcraft.api.APIProxy;
 
 public class SimpleInventory implements IInventory, ISaveState{
 

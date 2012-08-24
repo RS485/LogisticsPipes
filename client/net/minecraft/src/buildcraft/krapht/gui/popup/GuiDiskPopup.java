@@ -1,16 +1,8 @@
 package net.minecraft.src.buildcraft.krapht.gui.popup;
 
-import java.nio.channels.Pipe;
-
-import org.lwjgl.input.Keyboard;
-
 import net.minecraft.src.GuiButton;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
@@ -18,9 +10,14 @@ import net.minecraft.src.buildcraft.krapht.network.PacketPipeString;
 import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler;
 import net.minecraft.src.buildcraft.logisticspipes.macros.RequestHandler.RequestReply;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
+import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 import net.minecraft.src.krapht.gui.SubGuiScreen;
-import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
+
+import org.lwjgl.input.Keyboard;
+
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 
 public class GuiDiskPopup extends SubGuiScreen {
 	

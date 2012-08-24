@@ -40,6 +40,7 @@ public class NetworkConstants {
 	public static final int REQUEST_CRAFTING_PIPE_UPDATE = 34;
 	public static final int CRAFTING_PIPE_OPEN_CONNECTED_GUI = 35;
 	//public static final int NON_CONTAINER_GUI = 36;
+	public static final int PIPE_UPDATE = 36;
 	public static final int DISK_REQUEST_CONTENT = 37;
 	public static final int DISK_CONTENT = 38;
 	public static final int DISK_SET_NAME = 39;
@@ -48,5 +49,4 @@ public class NetworkConstants {
 	public static final int DISK_MACRO_REQUEST_RESPONSE = 42;
 	public static final int BEE_MODULE_SET_BEE = 43;
 	public static final int BEE_MODULE_CONTENT = 44;
-	public static final int PIPE_UPDATE = 36;
 }

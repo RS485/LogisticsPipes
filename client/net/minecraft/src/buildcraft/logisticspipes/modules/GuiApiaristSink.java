@@ -3,22 +3,19 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiScreen;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeFourInteger;
-import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
-import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink.FilterType;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink.SinkSetting;
-import net.minecraft.src.buildcraft.transport.Pipe;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.DummyContainer;
 import net.minecraft.src.krapht.gui.IItemTextureRenderSlot;
 import net.minecraft.src.krapht.gui.ISmallColorRenderSlot;
-import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
+import buildcraft.transport.Pipe;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 

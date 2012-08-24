@@ -13,12 +13,12 @@ import java.util.LinkedList;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.buildcraft.api.TileNetworkData;
 import net.minecraft.src.buildcraft.krapht.IRequireReliableTransport;
 import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.core.network.TileNetworkData;
 
 public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReliableTransport {
 

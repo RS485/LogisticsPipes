@@ -3,16 +3,12 @@ package net.minecraft.src.buildcraft.krapht.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import net.minecraft.src.Gui;
-import net.minecraft.src.GuiScreen;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraft.src.buildcraft.core.network.PacketNBT;
 import net.minecraft.src.buildcraft.krapht.CoreRoutedPipe;
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
-import net.minecraft.src.buildcraft.krapht.GuiHandler;
 import net.minecraft.src.buildcraft.krapht.gui.GuiProviderPipe;
 import net.minecraft.src.buildcraft.krapht.gui.GuiSupplierPipe;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.GuiOrderer;
@@ -29,9 +25,9 @@ import net.minecraft.src.buildcraft.logisticspipes.modules.GuiExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiItemSink;
 import net.minecraft.src.buildcraft.logisticspipes.modules.GuiProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristSink;
-import buildcraft.transport.TileGenericPipe;
 import net.minecraft.src.forge.IPacketHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.transport.TileGenericPipe;
 
 public class PacketHandler implements IPacketHandler {
 
@@ -125,9 +121,9 @@ public class PacketHandler implements IPacketHandler {
 					handleRequestMK2DiskItem(packetO);
 					break;
 				case NetworkConstants.PIPE_UPDATE:
-					final PacketPipeUpdate packetO = new PacketPipeUpdate();
-					packetO.readData(data);
-					handlePacketPipeUpdate(packetO);
+					final PacketPipeUpdate packetOa = new PacketPipeUpdate();
+					packetOa.readData(data);
+					handlePacketPipeUpdate(packetOa);
 					
 				case NetworkConstants.DISK_MACRO_REQUEST_RESPONSE:
 					final PacketItems packetP = new PacketItems();

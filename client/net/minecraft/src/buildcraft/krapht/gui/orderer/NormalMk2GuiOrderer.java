@@ -1,23 +1,18 @@
 package net.minecraft.src.buildcraft.krapht.gui.orderer;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.mod_LogisticsPipes;
-import buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
-import net.minecraft.src.buildcraft.krapht.GuiIDs;
-import net.minecraft.src.buildcraft.krapht.IRequestItems;
 import net.minecraft.src.buildcraft.krapht.gui.popup.GuiDiskPopup;
-import net.minecraft.src.buildcraft.krapht.gui.popup.GuiMessagePopup;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketCoordinates;
-import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsApiaristAnalyser;
 import net.minecraft.src.buildcraft.krapht.pipes.PipeItemsRequestLogisticsMk2;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
-import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
+
+import org.lwjgl.opengl.GL11;
+
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 
 public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	

@@ -1,19 +1,14 @@
 package net.minecraft.src.buildcraft.krapht.pipes;
 
-import buildcraft.BuildCraftCore;
-import java.util.UUID;
-
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
 import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
-import net.minecraft.src.buildcraft.api.APIProxy;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
-import net.minecraft.src.buildcraft.logisticspipes.ItemModuleInformationManager;
+import buildcraft.api.APIProxy;
 
 public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	

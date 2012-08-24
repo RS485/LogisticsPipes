@@ -3,8 +3,6 @@ package net.minecraft.src.buildcraft.krapht.forestry;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import net.minecraft.src.BuildCraftCore;
-import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
@@ -13,6 +11,7 @@ import net.minecraft.src.World;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.BuildCraftCore;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;

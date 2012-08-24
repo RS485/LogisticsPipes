@@ -1,20 +1,12 @@
 package net.minecraft.src.buildcraft.krapht.gui.popup;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
-import net.minecraft.src.buildcraft.api.APIProxy;
-import net.minecraft.src.buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.gui.orderer.NormalMk2GuiOrderer;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketItem;
@@ -25,6 +17,13 @@ import net.minecraft.src.krapht.gui.IItemSearch;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen.Colors;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 import net.minecraft.src.krapht.gui.SubGuiScreen;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
+
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 
 public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 

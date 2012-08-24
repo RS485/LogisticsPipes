@@ -4,25 +4,26 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 
 import net.minecraft.src.buildcraft.krapht.ItemMessage;
 
 public class PacketItems extends LogisticsPipesPacket {
 	
-	LinkedList<ItemMessage> items = new LinkedList<ItemMessage>();
+	List<ItemMessage> items = new LinkedList<ItemMessage>();
 	public boolean error = true;
 	
 	public PacketItems() {
 		super();
 	}
 	
-	public PacketItems(LinkedList<ItemMessage> errors) {
+	public PacketItems(List<ItemMessage> errors) {
 		this();
 		this.items = errors;
 	}
 	
-	public PacketItems(LinkedList<ItemMessage> errors, boolean flag) {
-		this(errors);
+	public PacketItems(List<ItemMessage> items2, boolean flag) {
+		this(items2);
 		this.error = flag;
 	}
 		

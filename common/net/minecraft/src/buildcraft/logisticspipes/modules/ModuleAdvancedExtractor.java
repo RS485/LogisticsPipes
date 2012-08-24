@@ -11,6 +11,7 @@ import net.minecraft.src.buildcraft.krapht.GuiIDs;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
+import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.SimpleInventory;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
@@ -31,7 +32,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

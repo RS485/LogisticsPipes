@@ -8,16 +8,20 @@ import net.minecraft.src.krapht.gui.SmallGuiButton;
 
 import org.lwjgl.opengl.GL11;
 
+import buildcraft.api.APIProxy;
 import buildcraft.core.CoreProxy;
 
 public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	
-	protected PipeItemsRequestLogisticsMk2 pipe;
+	public PipeItemsRequestLogisticsMk2 pipe;
 	private SmallGuiButton Macrobutton;
 	
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
 		super(RequestPipeMK2, entityPlayer);
 		pipe = RequestPipeMK2;
+		if(APIProxy.isRemote()) {
+			CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+		}
 	}
 	
 	@Override
@@ -46,8 +50,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 				if(!CoreProxy.isRemote()) {
 					pipe.dropDisk();
 				} else {
-					this.setSubGui(new GuiMessagePopup("Comming Soon"));
-					//TODO implement for SMP
+					CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
 				}
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
@@ -59,8 +62,16 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
-			this.setSubGui(new GuiMessagePopup("Comming Soon"));
-			//TODO Implement Gui
+			if(!APIProxy.isRemote()) {
+				this.setSubGui(new GuiDiskPopup(this));
+			} else {
+				CoreProxy.sendToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+				this.setSubGui(new GuiDiskPopup(this));
+			}
 		}
+	}
+	
+	public ItemStack getDisk() {
+		return pipe.getDisk();
 	}
 }

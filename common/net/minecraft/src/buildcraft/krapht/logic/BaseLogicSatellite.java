@@ -18,6 +18,7 @@ import net.minecraft.src.buildcraft.krapht.LogisticsManager;
 import net.minecraft.src.buildcraft.krapht.LogisticsRequest;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.krapht.ItemIdentifier;
+import buildcraft.core.network.TileNetworkData;
 
 public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReliableTransport {
 
@@ -25,6 +26,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
 
+	@TileNetworkData
 	public int satelliteId;
 
 	public BaseLogicSatellite() {

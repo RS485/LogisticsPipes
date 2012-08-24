@@ -26,6 +26,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI
 		pipes.add(mod_LogisticsPipes.LogisticsRequestPipeMK2);
 		pipes.add(mod_LogisticsPipes.LogisticsProviderPipeMK2);
 		pipes.add(mod_LogisticsPipes.LogisticsRemoteOrdererPipe);
+		pipes.add(core_LogisticsPipes.LogisticsApiaristAnalyserPipe);
 		
 		MultiItemRange pipesChassi = new MultiItemRange();
 		pipesChassi.add(mod_LogisticsPipes.LogisticsChassiPipe1);

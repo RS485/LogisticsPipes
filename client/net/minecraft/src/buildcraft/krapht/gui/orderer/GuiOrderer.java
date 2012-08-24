@@ -34,6 +34,8 @@ import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.ItemIdentifierStack;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
 import net.minecraft.src.krapht.gui.GuiCheckBox;
+import net.minecraft.src.krapht.gui.IItemSearch;
+import net.minecraft.src.krapht.gui.ISubGuiControler;
 import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
@@ -43,12 +45,12 @@ import org.lwjgl.opengl.GL11;
 
 import buildcraft.core.CoreProxy;
 
-public abstract class GuiOrderer extends KraphtBaseGuiScreen {
+public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch {
 
 	protected final IRequestItems _itemRequester;
-	protected final EntityPlayer _entityPlayer;
+	public final EntityPlayer _entityPlayer;
 	protected ItemIdentifier selectedItem = null;
-	protected final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
+	public final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";
 	protected boolean editsearch = false;
@@ -70,8 +72,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 	
 	protected int requestCount = 1;
 	protected Object[] tooltip = null;
-	
-	protected boolean displayPopup = true;
 	
 	protected boolean listbyserver = false;
 	
@@ -103,7 +103,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
 		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
-		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, displayPopup)); // Popup
+		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, mod_LogisticsPipes.displayPopup)); // Popup
 	}
 	
 	@Override
@@ -204,62 +204,66 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
             var9.addVertexWithUV(xPosition + 100	, yPosition				, (double)zLevel, 0.08	, 0.69 + (graphic * 0.03125));
             var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
             var9.draw();
-		} else for(ItemIdentifierStack itemStack : _allItems) {
-			ItemIdentifier item = itemStack.getItem();
-			if(!itemSearched(item)) continue;
-			ppi++;
-			
-			if (ppi <= 70 * page) continue;
-			if (ppi > 70 * (page+1)) continue;
-			ItemStack st = itemStack.makeNormalStack();
-			int x = guiLeft + 10 + panelxSize * column;
-			int y = guiTop + 18 + panelySize * row;
-
-			GL11.glDisable(2896 /*GL_LIGHTING*/);
-			int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
-            int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
-			
-            if(!super.hasSubGui()) {
-				if (mouseX >= x && mouseX < x + panelxSize &&
-						mouseY >= y && mouseY < y + panelySize) {
-					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
-					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+		} else {
+			long starttime = System.currentTimeMillis();
+			for(ItemIdentifierStack itemStack : _allItems) {
+				ItemIdentifier item = itemStack.getItem();
+				if(!itemSearched(item)) continue;
+				ppi++;
+				
+				if (ppi <= 70 * page) continue;
+				if (ppi > 70 * (page+1)) continue;
+				ItemStack st = itemStack.makeNormalStack();
+				int x = guiLeft + 10 + panelxSize * column;
+				int y = guiTop + 18 + panelySize * row;
+	
+				GL11.glDisable(2896 /*GL_LIGHTING*/);
+				int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
+	            int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
+				
+	            if(!super.hasSubGui()) {
+					if (mouseX >= x && mouseX < x + panelxSize &&
+							mouseY >= y && mouseY < y + panelySize) {
+						drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
+						drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+						
+						tooltip = new Object[]{mouseX,mouseY,st};
+					}
 					
-					tooltip = new Object[]{mouseX,mouseY,st};
+					if (lastClickedx >= x && lastClickedx < x + panelxSize &&
+							lastClickedy >= y && lastClickedy < y + panelySize){
+						selectedItem = item;
+						drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
+						drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
+						drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					}
+	            }
+				/*
+				renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+				String s;
+				if (st.stackSize == 1){
+					s = "";
+				} else if (st.stackSize < 1000) {
+					s = st.stackSize + "";
+				} else if (st.stackSize < 1000000){
+					s = st.stackSize / 1000 + "K";
+				} else {
+					s = st.stackSize / 1000000 + "M";
 				}
-				
-				if (lastClickedx >= x && lastClickedx < x + panelxSize &&
-						lastClickedy >= y && lastClickedy < y + panelySize){
-					selectedItem = item;
-					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
-					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					
+				GL11.glDisable(2896 /*GL_LIGHTING* /);
+				GL11.glDisable(2929 /*GL_DEPTH_TEST* /);			
+				fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+	            GL11.glEnable(2929 /*GL_DEPTH_TEST* /);
+				GL11.glEnable(2896 /*GL_LIGHTING* /);
+				*/
+				column++;
+				if (column == 10){
+					row++;
+					column = 0;
 				}
-            }
-			
-			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-			String s;
-			if (st.stackSize == 1){
-				s = "";
-			} else if (st.stackSize < 1000) {
-				s = st.stackSize + "";
-			} else if (st.stackSize < 1000000){
-				s = st.stackSize / 1000 + "K";
-			} else {
-				s = st.stackSize / 1000000 + "M";
 			}
-				
-			GL11.glDisable(2896 /*GL_LIGHTING*/);
-			GL11.glDisable(2929 /*GL_DEPTH_TEST*/);			
-			fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-            GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-			GL11.glEnable(2896 /*GL_LIGHTING*/);
-
-			column++;
-			if (column == 10){
-				row++;
-				column = 0;
-			}
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, this, page, guiLeft + 10, guiTop + 18, 10, 70, panelxSize, panelySize, mc, true, false);
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
@@ -267,93 +271,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 	@Override
 	public void drawGuiContainerForegroundLayer() {
 		if(super.hasSubGui()) return;
-		if(tooltip != null) {
-			try {
-				//Look for NEI
-				Class<?> LayoutManager = Class.forName("codechicken.nei.LayoutManager");
-				Field GuiManagerField = LayoutManager.getDeclaredField("gui");
-				GuiManagerField.setAccessible(true);
-				Object GuiManagerObject = GuiManagerField.get(null);
-				Class<?> GuiManager = Class.forName("codechicken.nei.GuiManager");
-				Method drawItemTip = GuiManager.getDeclaredMethod("drawItemTip", new Class[]{int.class,int.class,ItemStack.class});
-				drawItemTip.setAccessible(true);
-				drawItemTip.invoke(GuiManagerObject, tooltip);
-			} catch(Exception e) {
-				//Use minecraft vanilla code
-				ItemStack var22 = (ItemStack) tooltip[2];
-				List var24 = var22.getItemNameandInformation();
-
-	            if (var24.size() > 0)
-	            {
-	                int var10 = 0;
-	                int var11;
-	                int var12;
-
-	                for (var11 = 0; var11 < var24.size(); ++var11)
-	                {
-	                    var12 = this.fontRenderer.getStringWidth((String)var24.get(var11));
-
-	                    if (var12 > var10)
-	                    {
-	                        var10 = var12;
-	                    }
-	                }
-
-	                var11 = ((Integer)tooltip[0]).intValue() - this.guiLeft + 12;
-	                var12 = ((Integer)tooltip[1]).intValue() - this.guiTop - 12;
-	                int var14 = 8;
-
-	                if (var24.size() > 1)
-	                {
-	                    var14 += 2 + (var24.size() - 1) * 10;
-	                }
-
-	                this.zLevel = 300.0F;
-	                itemRenderer.zLevel = 300.0F;
-	                int var15 = -267386864;
-	                this.drawGradientRect(var11 - 3, var12 - 4, var11 + var10 + 3, var12 - 3, var15, var15);
-	                this.drawGradientRect(var11 - 3, var12 + var14 + 3, var11 + var10 + 3, var12 + var14 + 4, var15, var15);
-	                this.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 + var14 + 3, var15, var15);
-	                this.drawGradientRect(var11 - 4, var12 - 3, var11 - 3, var12 + var14 + 3, var15, var15);
-	                this.drawGradientRect(var11 + var10 + 3, var12 - 3, var11 + var10 + 4, var12 + var14 + 3, var15, var15);
-	                int var16 = 1347420415;
-	                int var17 = (var16 & 16711422) >> 1 | var16 & -16777216;
-	                this.drawGradientRect(var11 - 3, var12 - 3 + 1, var11 - 3 + 1, var12 + var14 + 3 - 1, var16, var17);
-	                this.drawGradientRect(var11 + var10 + 2, var12 - 3 + 1, var11 + var10 + 3, var12 + var14 + 3 - 1, var16, var17);
-	                this.drawGradientRect(var11 - 3, var12 - 3, var11 + var10 + 3, var12 - 3 + 1, var16, var16);
-	                this.drawGradientRect(var11 - 3, var12 + var14 + 2, var11 + var10 + 3, var12 + var14 + 3, var17, var17);
-
-	                for (int var18 = 0; var18 < var24.size(); ++var18)
-	                {
-	                    String var19 = (String)var24.get(var18);
-
-	                    if (var18 == 0)
-	                    {
-	                        var19 = "\u00a7" + Integer.toHexString(var22.getRarity().rarityColor) + var19;
-	                    }
-	                    else
-	                    {
-	                        var19 = "\u00a77" + var19;
-	                    }
-
-	                    this.fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
-
-	                    if (var18 == 0)
-	                    {
-	                        var12 += 2;
-	                    }
-
-	                    var12 += 10;
-	                }
-
-	                this.zLevel = 0.0F;
-	                itemRenderer.zLevel = 0.0F;
-	            }
-			}
-		}
+		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
-	private boolean itemSearched(ItemIdentifier item) {
+	public boolean itemSearched(ItemIdentifier item) {
 		if(searchinput1 == "" && searchinput2 == "") return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;
 		if(isSearched(String.valueOf(item.itemID),(searchinput1 + searchinput2))) return true;
@@ -469,37 +390,35 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(ItemMessage itemMessage, boolean error) {
+	public void handleRequestAnswer(ItemMessage itemMessage, boolean error, ISubGuiControler control, EntityPlayer player) {
 		List<ItemMessage> list = new ArrayList<ItemMessage>();
 		list.add(itemMessage);
-		handleRequestAnswer(list, error);
+		handleRequestAnswer(list, error, control, player);
 	}
 
-	public void handleRequestAnswer(List<ItemMessage> items, boolean error) {
+	public void handleRequestAnswer(List<ItemMessage> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		if (!error){
 			ArrayList<String> msg = new ArrayList<String>();
 			msg.add("You are missing:");
 			for (ItemMessage item : items){
-				if(!displayPopup) {
-					_entityPlayer.addChatMessage("Missing: " + item.toString());
+				if(!mod_LogisticsPipes.displayPopup) {
+					player.addChatMessage("Missing: " + item.toString());
 				} else {
 					msg.add(item.toString());
 				}
 			}
-			if(displayPopup) {
-				this.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
+			if(mod_LogisticsPipes.displayPopup) {
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
-		}
-		else{
-			if(displayPopup) {
-				this.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
+		} else {
+			if(mod_LogisticsPipes.displayPopup) {
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
 			} else {
 				for(ItemMessage item:items) {
-					_entityPlayer.addChatMessage("Requested: " + item);
+					player.addChatMessage("Requested: " + item);
 				}
-				_entityPlayer.addChatMessage("Request successful!");
+				player.addChatMessage("Request successful!");
 			}
-			refreshItems();
 		}
 	}
 	
@@ -516,9 +435,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 				LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);
 				if(result) {
-					handleRequestAnswer(new ItemMessage(selectedItem,requestCount),result);
+					handleRequestAnswer(new ItemMessage(selectedItem,requestCount),result, this, _entityPlayer);
+					refreshItems();
 				} else {
-					handleRequestAnswer(errors,result);
+					handleRequestAnswer(errors,result, this, _entityPlayer);
 				}
 				refreshItems();
 			} else {
@@ -552,7 +472,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 			requestCount+=64;
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
-			displayPopup = button.change();
+			mod_LogisticsPipes.displayPopup = button.change();
 		}
 		
 		super.actionPerformed(guibutton);
@@ -624,6 +544,12 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen {
 		}
 	}
 
+	@Override
+	public void resetSubGui() {
+		super.resetSubGui();
+		refreshItems();
+	}
+	
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Normal_Orderer_ID;

@@ -7,6 +7,7 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import buildcraft.api.APIProxy;
 
 public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	
@@ -18,7 +19,9 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		openGui(entityplayer);
+		if (!APIProxy.isRemote()) {
+			openGui(entityplayer);
+		}
 		return true;
 	}
 
@@ -26,7 +29,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
 		if(disk == null) {
-			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == mod_LogisticsPipes.LogisticsItemDisk) {
+			if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem().equals(mod_LogisticsPipes.LogisticsItemDisk)) {
 				disk = entityplayer.getCurrentEquippedItem();
 				entityplayer.destroyCurrentEquippedItem();
 				flag = false;
@@ -69,12 +72,24 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	public ItemStack getDisk() {
 		return disk;
 	}
-
+	
+	@Override
+	public void onBlockRemoval() {
+		super.onBlockRemoval();
+		if(!APIProxy.isRemote()) {
+			this.dropDisk();
+		}
+	}
+	
 	public void dropDisk() {
 		if(disk != null) {
 			EntityItem item = new EntityItem(worldObj,this.xCoord, this.yCoord, this.zCoord, disk);
 			worldObj.spawnEntityInWorld(item);
 			disk = null;
 		}
+	}
+
+	public void setDisk(ItemStack itemstack) {
+		this.disk = itemstack;
 	}
 }

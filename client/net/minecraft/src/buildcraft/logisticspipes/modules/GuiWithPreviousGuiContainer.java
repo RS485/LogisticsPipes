@@ -1,15 +1,17 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
 import net.minecraft.src.Container;
-import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.mod_LogisticsPipes;
+import buildcraft.api.APIProxy;
+import buildcraft.core.CoreProxy;
 import net.minecraft.src.buildcraft.krapht.network.NetworkConstants;
 import net.minecraft.src.buildcraft.krapht.network.PacketPipeInteger;
 import buildcraft.core.CoreProxy;
 import buildcraft.transport.Pipe;
+import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 
-public abstract class GuiWithPreviousGuiContainer extends GuiContainer implements IGuiIDHandlerProvider {
+public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
 	
 	private int prevGuiID = -1;
 	protected Pipe pipe;

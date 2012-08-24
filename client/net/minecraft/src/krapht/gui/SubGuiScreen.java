@@ -1,5 +1,6 @@
 package net.minecraft.src.krapht.gui;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 
@@ -17,7 +18,7 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	
 	private SubGuiScreen subGui;
 
-	private ISubGuiControler controler;
+	protected ISubGuiControler controler;
 	
 	public SubGuiScreen(int xSize, int ySize, int xOffset, int yOffset) {
 		this.xSize = xSize;
@@ -101,7 +102,14 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 			subGui.initGui();
 		}
 	}
-
+	
+	@Override
+	public void setWorldAndResolution(Minecraft mc, int width, int height) {
+		super.setWorldAndResolution(mc, width, height);
+		if(subGui != null)
+			subGui.setWorldAndResolution(mc, width, height);
+	}
+	
 	@Override
 	public void resetSubGui() {
 		subGui = null;

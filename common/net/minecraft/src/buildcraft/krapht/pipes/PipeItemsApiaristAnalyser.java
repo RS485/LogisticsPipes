@@ -5,6 +5,8 @@ import java.util.UUID;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
+import net.minecraft.src.World;
+import net.minecraft.src.core_LogisticsPipes;
 import net.minecraft.src.mod_LogisticsPipes;
 import net.minecraft.src.buildcraft.krapht.RoutedPipe;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
@@ -16,6 +18,7 @@ import net.minecraft.src.buildcraft.logisticspipes.SidedInventoryAdapter;
 import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IWorldProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleApiaristAnalyser;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
@@ -30,7 +33,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public PipeItemsApiaristAnalyser(int itemID) {
 		super(new TemporaryLogic(), itemID);
 		analyserModule = new ModuleApiaristAnalyser();
-		analyserModule.registerHandler(this, this);
+		analyserModule.registerHandler(this, this, this);
 	}
 
 	@Override

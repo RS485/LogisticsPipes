@@ -17,9 +17,12 @@ public class LogisticsTransaction {
 
 	private LinkedList<LogisticsRequest> _requests = new LinkedList<LogisticsRequest>();
 	private LinkedList<CraftingTemplate> _craftingTemplates = new LinkedList<CraftingTemplate>();
-	
+
 	public LogisticsTransaction (LogisticsRequest originalRequest){
 		_requests.add(originalRequest);
+	}
+
+	public LogisticsTransaction () {
 	}
 	
 	public LinkedList<LogisticsRequest> getRequests(){

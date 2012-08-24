@@ -15,7 +15,7 @@ import net.minecraft.src.World;
 
 public interface IRouterManager {
 
-	public IRouter getOrCreateRouter(UUID id, World worldObj, int xCoord, int yCoord, int zCoord);
+	public IRouter getOrCreateRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord);
 	public IRouter getRouter(UUID id);
 	public boolean isRouter(UUID id);
 }

@@ -1,13 +1,11 @@
 package net.minecraft.src.buildcraft.logisticspipes.modules;
 
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.buildcraft.krapht.GuiIDs;
+import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
-import net.minecraft.src.krapht.ItemIdentifier;
 
 public class ModuleQuickSort implements ILogisticsModule {
 
@@ -22,7 +20,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public ModuleQuickSort() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

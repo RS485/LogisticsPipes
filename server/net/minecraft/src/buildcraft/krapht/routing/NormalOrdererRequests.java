@@ -69,7 +69,7 @@ public class NormalOrdererRequests {
 		
 		outer:
 		for (ItemIdentifier item : _craftableItems){
-			if (_allItems.contains(item)) continue;
+			if (_availableItems.containsKey(item)) continue;
 			for (int i = 0; i <_allItems.size(); i++){
 				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
 					_allItems.add(i, item.makeStack(0));

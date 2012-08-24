@@ -1,5 +1,8 @@
 package net.minecraft.src.buildcraft.krapht.gui.popup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.krapht.gui.BasicGuiHelper;
@@ -14,17 +17,18 @@ public class GuiRequestPopup extends SubGuiScreen {
 	
 	public GuiRequestPopup(EntityPlayer player, Object... message) {
 		super(200, (message.length * 10) + 40, 0, 0);
-		text = new String[message.length];
-		int i=0;
+		List<String> textArray = new ArrayList<String>();
 		for(Object o:message) {
 			if(o instanceof Object[]) {
 				for(Object oZwei:(Object[])o) {
-					text[i++] = oZwei.toString();
+					textArray.add(oZwei.toString());
 				}
 			} else {
-				text[i++] = o.toString();
+				textArray.add(o.toString());
 			}
 		}
+		text = textArray.toArray(new String[]{});
+		this.ySize = (text.length * 10) + 40;
 		this.player = player;
 	}
 	

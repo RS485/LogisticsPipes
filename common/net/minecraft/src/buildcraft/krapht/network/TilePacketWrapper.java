@@ -10,7 +10,9 @@
 package net.minecraft.src.buildcraft.krapht.network;
 
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.buildcraft.krapht.network.ClassMapping.Indexes;
+import buildcraft.core.ByteBuffer;
+import buildcraft.core.ClassMapping;
+import buildcraft.core.ClassMapping.Indexes;
 
 public class TilePacketWrapper {
 

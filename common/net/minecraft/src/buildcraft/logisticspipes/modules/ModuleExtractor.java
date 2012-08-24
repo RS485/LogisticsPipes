@@ -28,7 +28,7 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}

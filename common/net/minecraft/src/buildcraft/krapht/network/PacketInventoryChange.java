@@ -36,6 +36,7 @@ public class PacketInventoryChange extends PacketCoordinates {
 				data.writeInt(itemstack.itemID);
 				data.writeInt(itemstack.stackSize);
 				data.writeInt(itemstack.getItemDamage());
+				SendNBTTagCompound.writeNBTTagCompound(itemstack.getTagCompound(), data);
 			} else {
 				data.writeInt(0);
 			}
@@ -57,7 +58,9 @@ public class PacketInventoryChange extends PacketCoordinates {
 			if (itemID == 0) {
 				itemStacks.add(null);
 			} else {
-				itemStacks.add(new ItemStack(itemID, data.readInt(), data.readInt()));
+				ItemStack stack = new ItemStack(itemID, data.readInt(), data.readInt());
+				stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
+				itemStacks.add(stack);
 			}
 			
 			index = data.readByte(); // read the next slot

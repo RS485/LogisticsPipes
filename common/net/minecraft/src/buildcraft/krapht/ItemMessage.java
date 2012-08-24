@@ -2,6 +2,7 @@ package net.minecraft.src.buildcraft.krapht;
 
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.krapht.ItemIdentifier;
+import net.minecraft.src.krapht.ItemIdentifierStack;
 
 public class ItemMessage {
 
@@ -20,6 +21,10 @@ public class ItemMessage {
 	
 	public ItemMessage(ItemIdentifier selectedItem, int requestCount) {
 		this(selectedItem.itemID,selectedItem.itemDamage,requestCount, selectedItem.tag);
+	}
+	
+	public ItemMessage(ItemIdentifierStack selectedItemStack) {
+		this(selectedItemStack.getItem(),selectedItemStack.stackSize);
 	}
 	
 	public String toString() {

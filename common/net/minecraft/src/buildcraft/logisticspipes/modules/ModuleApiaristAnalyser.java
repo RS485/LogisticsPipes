@@ -3,6 +3,7 @@ package net.minecraft.src.buildcraft.logisticspipes.modules;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.World;
 import net.minecraft.src.buildcraft.krapht.SimpleServiceLocator;
 import net.minecraft.src.buildcraft.logisticspipes.IInventoryProvider;
 
@@ -18,7 +19,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 	}
@@ -35,7 +36,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 
 	@Override
 	public int getGuiHandlerID() {
-		return 0;
+		return -1;
 	}
 
 	@Override

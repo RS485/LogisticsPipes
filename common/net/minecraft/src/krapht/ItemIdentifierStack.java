@@ -32,4 +32,12 @@ public final class ItemIdentifierStack {
 		stack.setTagCompound(_item.tag);
 		return stack;
 	}
+	
+	public boolean equals(Object object) {
+		if(object instanceof ItemIdentifierStack) {
+			ItemIdentifierStack stack = (ItemIdentifierStack)object;
+			return stack._item.equals(this._item) && stack.stackSize == this.stackSize;
+		}
+		return false;
+	}
 }

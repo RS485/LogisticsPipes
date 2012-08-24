@@ -40,6 +40,9 @@ import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILegacyActiveModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ISendRoutedItem;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IWorldProvider;
+import buildcraft.transport.TileGenericPipe;
+import net.minecraft.src.forge.ISidedInventory;
 import net.minecraft.src.krapht.ISimpleInventoryEventHandler;
 import net.minecraft.src.krapht.ItemIdentifier;
 import net.minecraft.src.krapht.SimpleInventory;
@@ -52,7 +55,7 @@ import buildcraft.core.DefaultProps;
 import buildcraft.core.Utils;
 import buildcraft.transport.TileGenericPipe;
 
-public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems{
+public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider{
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
@@ -232,7 +235,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			
 			if (stack.getItem() instanceof ItemModule){
 				ILogisticsModule current = _module.getModule(i);
-				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this);
+				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this);
 				if (current != next){
 					_module.installModule(i, next);
 					ItemModuleInformationManager.readInformation(stack, next);
@@ -361,5 +364,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
+	}
+	
+	@Override
+	public World getWorld() {
+		return this.worldObj;
 	}
 }

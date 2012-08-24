@@ -45,6 +45,7 @@ import net.minecraft.src.buildcraft.logisticspipes.PipeTransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.RouteLayer;
 import net.minecraft.src.buildcraft.logisticspipes.TransportLayer;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
+import net.minecraft.src.buildcraft.logisticspipes.modules.IWorldProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleExtractor;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ModuleItemSink;
 import buildcraft.transport.IPipeTransportItemsHook;
@@ -54,7 +55,7 @@ import net.minecraft.src.krapht.AdjacentTile;
 import net.minecraft.src.krapht.Pair;
 import net.minecraft.src.krapht.WorldUtil;
 
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics {
+public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider {
 
 	protected enum ItemSendMode {
 		Normal,
@@ -190,18 +191,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void onBlockRemoval() {
-		super.onBlockRemoval();
-		getRouter().destroy();
-		if (logic instanceof BaseRoutingLogic){
-			((BaseRoutingLogic)logic).destroy();
+		try {
+			super.onBlockRemoval();
+			if(getRouter() != null) {
+				getRouter().destroy();
+			}
+			if (logic instanceof BaseRoutingLogic){
+				((BaseRoutingLogic)logic).destroy();
+			}
+			//Just in case
+			pipecount = Math.max(pipecount - 1, 0);
+			
+			if (transport != null && transport instanceof PipeTransportLogistics){
+				((PipeTransportLogistics)transport).dropBuffer();
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
 		}
-		//Just in case
-		pipecount = Math.max(pipecount - 1, 0);
-		
-		if (transport != null && transport instanceof PipeTransportLogistics){
-			((PipeTransportLogistics)transport).dropBuffer();
-		}
-		
 	}
 	
 	public abstract int getCenterTexture();
@@ -269,7 +275,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (routerId == null || routerId == ""){
 				routerId = UUID.randomUUID().toString();
 			}
-			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj, xCoord, yCoord, zCoord);
+			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj.getWorldInfo().getDimension(), xCoord, yCoord, zCoord);
 		}
 		return router;
 	}
@@ -346,5 +352,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		stat_session_recieved += count;
 		stat_lifetime_recieved += count;
 	}
-	
+
+	@Override
+	public World getWorld() {
+		return this.worldObj;
+	}
 }

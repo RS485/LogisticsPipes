@@ -22,13 +22,15 @@ import net.minecraft.src.buildcraft.logisticspipes.items.ItemModule;
 import net.minecraft.src.buildcraft.logisticspipes.modules.IGuiIDHandlerProvider;
 import net.minecraft.src.buildcraft.logisticspipes.modules.ILogisticsModule;
 import net.minecraft.src.krapht.gui.DummyContainer;
+import net.minecraft.src.krapht.gui.ISubGuiControler;
+import net.minecraft.src.krapht.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.krapht.gui.SmallGuiButton;
 
+public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.core.CoreProxy;
 
-public class GuiChassiPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private final PipeLogisticsChassi _chassiPipe;
 	private final EntityPlayer _player;

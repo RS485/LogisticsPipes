@@ -17,13 +17,16 @@ public class GuiIDs {
 	public static final int GUI_Module_Terminus_ID = 25;
 	public static final int GUI_ChassiModule_ID = 26;
 	public static final int GUI_Module_Advanced_Extractor_ID = 27;
+	public static final int GUI_Module_Apiarist_Sink_ID = 28;
 	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;
 	public static final int GUI_Normal_Orderer_ID = 31;
 	public static final int GUI_OrdererStats_ID = 32;
 	public static final int GUI_Normal_Mk2_Orderer_ID = 34;
-	
+
+	public static final int GUI_Module_ElectricManager_ID = 40;
+
 	//SubModules 
 	//All IDS above 120 and so on...
 }

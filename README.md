@@ -6,7 +6,11 @@ Logistics Pipes is copyrighted by [Krapht](https://github.com/Krapht "Krapht Git
 
 #Release
 
-[Wiki](https://github.com/RS485/LogisticsPipes/wiki/Download)
+[Downloads](https://github.com/RS485/LogisticsPipes/downloads)
+
+#Builds
+
+[Jenkins] (http://ci.thezorro266.com/)
 
 ##More Description
 

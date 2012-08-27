@@ -20,13 +20,7 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.PipeTransportLogistics;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
-
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -34,6 +28,8 @@ import net.minecraftforge.common.DimensionManager;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Router implements IRouter {
 

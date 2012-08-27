@@ -13,11 +13,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.RoutedPipe;
-
-
 import net.minecraft.src.ItemStack;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;

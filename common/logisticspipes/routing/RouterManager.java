@@ -11,8 +11,6 @@ package logisticspipes.routing;
 import java.util.HashMap;
 import java.util.UUID;
 
-import net.minecraft.src.World;
-
 
 public class RouterManager implements IRouterManager{
 	private final static HashMap<UUID, Router> _routers = new HashMap<UUID, Router>();

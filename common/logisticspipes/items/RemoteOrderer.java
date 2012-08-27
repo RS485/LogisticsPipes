@@ -6,8 +6,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
-
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -31,13 +29,8 @@ public class RemoteOrderer extends Item {
 		return LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 
-	//Client
-    public boolean func_46056_k() {
-        return true;
-    }
-
-	//Server
-    public boolean func_46003_i() {
+	@Override
+	public boolean getShareTag() {
         return true;
     }
     

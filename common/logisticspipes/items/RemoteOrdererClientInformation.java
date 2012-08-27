@@ -3,10 +3,7 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.items.RemoteOrderer;
 import logisticspipes.main.KeyBoardProxy;
-
-
 import net.minecraft.src.ItemStack;
 
 public class RemoteOrdererClientInformation extends RemoteOrderer {

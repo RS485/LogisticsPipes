@@ -253,9 +253,6 @@ package logisticspipes;
 import java.io.File;
 import java.lang.reflect.Method;
 
-import logisticspipes.blocks.LogisticsBlock;
-import logisticspipes.blocks.LogisticsBlockRenderer;
-import logisticspipes.blocks.LogisticsTileEntiy;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
@@ -263,13 +260,13 @@ import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.RemoteOrdererClientInformation;
 import logisticspipes.logistics.LogisticsManagerV2;
-import logisticspipes.logisticspipes.ModTextureProxy;
 import logisticspipes.main.ActionDisableLogistics;
 import logisticspipes.main.LogisticsItem;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsTriggerProvider;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.main.TriggerSupplierFailed;
+import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
@@ -295,43 +292,47 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy3;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
-import logisticspipes.proxy.recipeproviders.AutoWorkbench;
-import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
 import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
-import net.minecraft.src.ItemBlock;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
-import buildcraft.BuildCraftBuilders;
+import net.minecraftforge.event.EventPriority;
 import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
 import buildcraft.core.ProxyCore;
+import buildcraft.core.utils.Localization;
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.TransportProxyClient;
+import cpw.mods.fml.client.SpriteHelper;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
+import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
+import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(name="Logistics Pipes", version="0.5.@(Build_Number)", useMetadata = false, modid = "LP|MAIN")
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
-public class LogisticsPipes extends ModTextureProxy {
+public class LogisticsPipes {
 
 	public static LogisticsPipes instance;
 
@@ -522,7 +523,6 @@ public class LogisticsPipes extends ModTextureProxy {
 	
 	@Init
 	public void init(FMLInitializationEvent event) {
-		super.load();
 		if(event.getSide().isClient()) {
 			initTextures();
 			LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
@@ -549,7 +549,14 @@ public class LogisticsPipes extends ModTextureProxy {
 			LOGISTICSPIPE_CHASSI3_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
 			LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
 			LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
+
+			MinecraftForgeClient.preloadTexture(LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE);
+			MinecraftForgeClient.preloadTexture(LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
+
+			Localization.addLocalization("/lang/logisticspipes/", "en_US");
 		}
+		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
+		
 	}
 	
 	@PreInit
@@ -766,18 +773,18 @@ public class LogisticsPipes extends ModTextureProxy {
 			}
 		}
 		
-		BuildCraftCore.initialize();
-		BuildCraftTransport.initialize();
-		BuildCraftBuilders.initialize();
-		BuildCraftSilicon.initialize();
+		//BuildCraftCore.initialize();
+		//BuildCraftTransport.initialize();
+		//BuildCraftBuilders.initialize();
+		//BuildCraftSilicon.initialize();
 		
 		LogisticsNetworkMonitior = new LogisticsItem(LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		LogisticsRemoteOrderer = new RemoteOrdererClientInformation(LOGISTICSREMOTEORDERER_ID);
+		//LogisticsRemoteOrderer = new RemoteOrdererClientInformation(LOGISTICSREMOTEORDERER_ID);
 		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
-		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
+		//LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
 
 		LogisticsCraftingSignCreator = new CraftingSignCreator(LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		LogisticsCraftingSignCreator.setIconIndex(LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
@@ -796,26 +803,26 @@ public class LogisticsPipes extends ModTextureProxy {
 		LogisticsItemDisk.setItemName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
 		
-		LogisticsBasicPipe = createPipe(LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe");
-		LogisticsRequestPipe = createPipe(LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe");
-		LogisticsProviderPipe = createPipe(LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe");
-		LogisticsCraftingPipe = createPipe(LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe");
-		LogisticsSatellitePipe = createPipe(LOGISTICSPIPE_SATELLITE_ID, PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe");
-		LogisticsSupplierPipe = createPipe(LOGISTICSPIPE_SUPPLIER_ID, PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe");
-		LogisticsChassiPipe1 = createPipe(LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1");
-		LogisticsChassiPipe2 = createPipe(LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2");
-		LogisticsChassiPipe3 = createPipe(LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3");
-		LogisticsChassiPipe4 = createPipe(LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4");
-		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5");
-		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2");
-		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2");
-		LogisticsRemoteOrdererPipe = createPipe(LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe");
-		LogisticsProviderPipeMK2 = createPipe(LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2");
-		LogisticsApiaristAnalyserPipe = createPipe(LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe");
-		LogisticsApiaristSinkPipe = createPipe(LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe");
+		LogisticsBasicPipe = createPipe(LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe", event.getSide());
+		LogisticsRequestPipe = createPipe(LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", event.getSide());
+		LogisticsProviderPipe = createPipe(LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe", event.getSide());
+		LogisticsCraftingPipe = createPipe(LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", event.getSide());
+		LogisticsSatellitePipe = createPipe(LOGISTICSPIPE_SATELLITE_ID, PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe", event.getSide());
+		LogisticsSupplierPipe = createPipe(LOGISTICSPIPE_SUPPLIER_ID, PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe", event.getSide());
+		LogisticsChassiPipe1 = createPipe(LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", event.getSide());
+		LogisticsChassiPipe2 = createPipe(LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", event.getSide());
+		LogisticsChassiPipe3 = createPipe(LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", event.getSide());
+		LogisticsChassiPipe4 = createPipe(LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", event.getSide());
+		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", event.getSide());
+		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", event.getSide());
+		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", event.getSide());
+		LogisticsRemoteOrdererPipe = createPipe(LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe", event.getSide());
+		LogisticsProviderPipeMK2 = createPipe(LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", event.getSide());
+		LogisticsApiaristAnalyserPipe = createPipe(LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", event.getSide());
+		LogisticsApiaristSinkPipe = createPipe(LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", event.getSide());
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
-		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
+		//ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
@@ -825,17 +832,17 @@ public class LogisticsPipes extends ModTextureProxy {
 		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
 		*/
 		
-		LogisticsBuilderSupplierPipe = createPipe(LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe");
-		LogisticsLiquidSupplierPipe = createPipe(LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe");
+		LogisticsBuilderSupplierPipe = createPipe(LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", event.getSide());
+		LogisticsLiquidSupplierPipe = createPipe(LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", event.getSide());
 		
 		CraftingManager craftingManager = CraftingManager.getInstance();
 		craftingManager.addRecipe(new ItemStack(LogisticsBuilderSupplierPipe, 1), new Object[]{"iPy", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('y'), new ItemStack(Item.dyePowder, 1,11)});
 		craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingManager.addRecipe(new ItemStack(LogisticsLiquidSupplierPipe, 1), new Object[]{" B ", "lPl", " B ", Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('B'), Item.bucketEmpty});
-		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+		//craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsBasicPipe, 8), new Object[] { "grg", "GdG", "grg", Character.valueOf('g'), Block.glass, 
+		/*craftingManager.addRecipe(new ItemStack(LogisticsBasicPipe, 8), new Object[] { "grg", "GdG", "grg", Character.valueOf('g'), Block.glass, 
 								   Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
 								   Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond, 
 								   Character.valueOf('r'), Block.torchRedstoneActive});
@@ -973,7 +980,7 @@ public class LogisticsPipes extends ModTextureProxy {
 									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
 									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), 
 									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
+									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});*/
 
 		for(int i=0; i<1000;i++) {
 			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null, null);
@@ -990,7 +997,7 @@ public class LogisticsPipes extends ModTextureProxy {
 				}
 			}
 		}
-		
+		/*
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.redstone});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { " i ","iPi", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 0)});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe2, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotIron});
@@ -1025,7 +1032,7 @@ public class LogisticsPipes extends ModTextureProxy {
 		
 			ModLoader.registerTileEntity(LogisticsTileEntiy.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new LogisticsBlockRenderer());
 		}
-		
+		*/
 	}
 	
 	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
@@ -1035,6 +1042,44 @@ public class LogisticsPipes extends ModTextureProxy {
 				obj[k] = new ItemStack(fromItem, 1, toData);
 			}
 			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
-		}		
+		}
+	}
+	
+	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
+		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
+		res.setItemName(clas.getSimpleName());
+		
+		if(side.isClient()) {
+			ProxyCore.proxy.addName(res, descr);
+			MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, TransportProxyClient.pipeItemRenderer);
+		}
+		if(defaultID != LogisticsPipes.LOGISTICSPIPE_BASIC_ID) {
+			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
+		}
+		return res;
+	}
+	
+	public int registerTexture(String fileName) {
+		return RenderingRegistry.addTextureOverride(LogisticsPipes.BASE_TEXTURE_FILE, fileName/*, index*/);
+	}
+	
+	public void initTextures() {
+		String spirt = 	"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111" + 
+		"1111111111111111";
+		SpriteHelper.registerSpriteMapForFile(LogisticsPipes.BASE_TEXTURE_FILE, spirt);
 	}
 }

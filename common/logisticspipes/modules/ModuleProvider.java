@@ -27,12 +27,9 @@ import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-
-
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
 
 public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider {
 

@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.utils.gui.DummyContainer;
-
-import org.lwjgl.input.Mouse;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Container;
 import net.minecraft.src.GuiContainer;

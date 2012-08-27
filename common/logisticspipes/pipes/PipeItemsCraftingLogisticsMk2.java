@@ -16,8 +16,6 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
-
-
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import buildcraft.api.core.Position;

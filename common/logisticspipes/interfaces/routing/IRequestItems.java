@@ -8,8 +8,6 @@
 
 package logisticspipes.interfaces.routing;
 
-import java.util.UUID;
-
 import logisticspipes.routing.IRouter;
 
 

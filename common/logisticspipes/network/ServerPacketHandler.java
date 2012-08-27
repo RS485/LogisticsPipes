@@ -3,9 +3,6 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -19,10 +16,10 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
@@ -37,6 +34,8 @@ import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler {
 	

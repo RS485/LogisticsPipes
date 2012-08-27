@@ -13,7 +13,6 @@ import logisticspipes.logic.LogicProvider;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketCoordinates;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;

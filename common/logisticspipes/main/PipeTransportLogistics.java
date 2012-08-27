@@ -15,8 +15,6 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.PacketPipeLogisticsContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.RoutedEntityItem;
-
-
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;

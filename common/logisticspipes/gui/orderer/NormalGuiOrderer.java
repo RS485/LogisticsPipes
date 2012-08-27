@@ -9,8 +9,6 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketPipeInteger;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
-
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import cpw.mods.fml.common.network.PacketDispatcher;

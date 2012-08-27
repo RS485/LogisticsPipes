@@ -3,12 +3,10 @@ package logisticspipes.network;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-
 import net.minecraft.src.NBTTagCompound;
 
 public class PacketRequestGuiContent extends LogisticsPipesPacket {

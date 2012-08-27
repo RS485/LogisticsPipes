@@ -34,12 +34,6 @@ import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.WorldUtil;
-
-
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -50,6 +44,8 @@ import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.Utils;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
 

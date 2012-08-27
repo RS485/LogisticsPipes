@@ -5,10 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.utils.ItemIdentifier;
-
-import net.minecraft.src.CompressedStreamTools;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.Packet;
 
 public class PacketRequestSubmit extends PacketCoordinates {
 

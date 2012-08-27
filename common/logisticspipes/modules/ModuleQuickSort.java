@@ -9,7 +9,6 @@ import logisticspipes.main.SimpleServiceLocator;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
 
 public class ModuleQuickSort implements ILogisticsModule {
 

@@ -1,19 +1,10 @@
 package logisticspipes.utils.gui;
 
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.logisticspipes.ChassiModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.pipes.PipeLogisticsChassi;
-
-
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
 
 public class ModuleSlot extends RestrictedSlot {
 	

@@ -1,13 +1,7 @@
 package logisticspipes.blocks;
 
-import logisticspipes.blocks.LogisticsBlock;
-import net.minecraft.src.BlockLog;
-import net.minecraft.src.ModelSign;
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.TileEntitySign;
 import net.minecraft.src.TileEntitySpecialRenderer;
-
-import org.lwjgl.opengl.GL11;
 
 public class LogisticsBlockRenderer extends TileEntitySpecialRenderer
 {

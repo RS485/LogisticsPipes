@@ -8,30 +8,16 @@
 
 package logisticspipes.logistics;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.UUID;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MaximizeAction;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.PipeTransportLogistics;
 import logisticspipes.main.SimpleServiceLocator;
-import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.RoutedEntityItem;
-import logisticspipes.routing.Router;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
-
-
 import net.minecraft.src.ItemStack;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.api.core.Orientations;
 
 public class LogisticsManagerV2 implements ILogisticsManagerV2{
 	

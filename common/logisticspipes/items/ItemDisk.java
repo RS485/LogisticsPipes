@@ -1,8 +1,5 @@
 package logisticspipes.items;
 
-import logisticspipes.items.ItemDiskProxy;
-import logisticspipes.main.LogisticsItem;
-import logisticspipes.network.LogisticsPipesPacket;
 
 public class ItemDisk extends ItemDiskProxy {
 

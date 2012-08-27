@@ -8,7 +8,6 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.items.ItemModule;
@@ -16,14 +15,11 @@ import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketPipeInteger;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 

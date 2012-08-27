@@ -10,11 +10,9 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.IItemSearch;
+import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.SubGuiScreen;
-import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
-
-
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;

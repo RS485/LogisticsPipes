@@ -5,14 +5,11 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.INBTPacketProvider;
-import logisticspipes.network.PacketPipeInteger;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
 
 public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider {
 	

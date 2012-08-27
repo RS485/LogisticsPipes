@@ -23,8 +23,6 @@ import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
-
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;

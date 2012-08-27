@@ -8,14 +8,8 @@
 
 package logisticspipes.main;
 
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
-
-
-
 import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
 
 public class LogisticsItem extends Item {
 

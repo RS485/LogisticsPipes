@@ -22,8 +22,6 @@ import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
-
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;

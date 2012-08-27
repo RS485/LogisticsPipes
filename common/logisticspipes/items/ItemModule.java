@@ -8,7 +8,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.items.ItemModuleProxy;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleAdvancedExtractorMK2;
@@ -25,12 +24,9 @@ import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
-
-
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.World;
 
 public class ItemModule extends ItemModuleProxy {
 	

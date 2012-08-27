@@ -1,6 +1,5 @@
 package logisticspipes.blocks;
 
-import logisticspipes.blocks.LogisticsTileEntiy;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.src.Block;

@@ -1,12 +1,8 @@
 package logisticspipes.proxy;
 
 import net.minecraft.src.World;
-import net.minecraft.src.WorldClient;
-import net.minecraft.src.WorldServer;
-import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.SidedProxy;
 
 public class MainProxy {
 	

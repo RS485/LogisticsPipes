@@ -1,7 +1,6 @@
 package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 
 public class SubGuiScreen extends GuiScreen implements ISubGuiControler {

@@ -11,7 +11,6 @@ package logisticspipes.interfaces.routing;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
-import java.util.UUID;
 
 import logisticspipes.routing.Router;
 import logisticspipes.utils.ItemIdentifier;

@@ -4,7 +4,6 @@ import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.modules.SinkReply;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
 
 public interface ILogisticsModule extends ISaveState {
 	/**

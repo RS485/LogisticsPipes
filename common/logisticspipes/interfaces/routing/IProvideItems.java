@@ -13,7 +13,6 @@ import java.util.HashMap;
 import logisticspipes.main.LogisticsPromise;
 import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.Router;
 import logisticspipes.utils.ItemIdentifier;
 
 

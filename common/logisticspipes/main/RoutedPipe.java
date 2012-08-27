@@ -13,22 +13,8 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logic.BaseRoutingLogic;
-
-
-import buildcraft.BuildCraftTransport;
-import net.minecraft.src.NBTTagCompound;
-//import net.minecraft.src.buildcraft.core.Action;
-import buildcraft.api.gates.Action;
-import buildcraft.api.core.BuildCraftAPI;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
-import buildcraft.api.gates.IActionReceptor;
-import buildcraft.api.gates.Trigger;
-import buildcraft.api.gates.TriggerParameter;
-import buildcraft.core.ActionRedstoneOutput;
-import buildcraft.transport.ActionSignalOutput;
-import buildcraft.transport.Pipe;
-//import net.minecraft.src.buildcraft.transport.Pipe.GateKind;
 
 public abstract class RoutedPipe extends CoreRoutedPipe {
 	

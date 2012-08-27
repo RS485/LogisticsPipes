@@ -3,18 +3,13 @@ package logisticspipes.logisticspipes.macros;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.LogisticsTransaction;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.routing.Router;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;

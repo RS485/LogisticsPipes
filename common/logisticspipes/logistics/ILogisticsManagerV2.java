@@ -8,14 +8,9 @@
 
 package logisticspipes.logistics;
 
-import java.util.LinkedList;
 import java.util.UUID;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.PipeTransportLogistics;
-import logisticspipes.utils.ItemIdentifier;
-
-
 import net.minecraft.src.ItemStack;
 
 public interface ILogisticsManagerV2 {

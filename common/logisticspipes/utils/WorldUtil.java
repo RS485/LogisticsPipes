@@ -8,7 +8,6 @@
 
 package logisticspipes.utils;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 import net.minecraft.src.TileEntity;

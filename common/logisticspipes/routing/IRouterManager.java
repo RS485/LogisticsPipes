@@ -10,8 +10,6 @@ package logisticspipes.routing;
 
 import java.util.UUID;
 
-import net.minecraft.src.World;
-
 
 public interface IRouterManager {
 

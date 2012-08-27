@@ -12,13 +12,11 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
-
-
 import net.minecraft.src.Block;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.transport.IPipe;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.gates.ITriggerProvider;
+import buildcraft.api.transport.IPipe;
 
 public class LogisticsTriggerProvider implements ITriggerProvider{
 

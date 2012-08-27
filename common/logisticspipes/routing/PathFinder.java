@@ -14,8 +14,6 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
-
-
 import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;

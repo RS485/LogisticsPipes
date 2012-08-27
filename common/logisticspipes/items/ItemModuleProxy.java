@@ -3,11 +3,8 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.items.LogisticsNBTTagCompundItem;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-
-
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;

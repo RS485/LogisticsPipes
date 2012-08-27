@@ -8,7 +8,6 @@
 
 package logisticspipes.gui;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.main.GuiIDs;
@@ -19,7 +18,6 @@ import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Slot;
-import net.minecraftforge.client.MinecraftForgeClient;
 
 import org.lwjgl.opengl.GL11;
 

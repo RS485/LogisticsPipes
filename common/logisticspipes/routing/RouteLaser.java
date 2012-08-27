@@ -12,8 +12,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.main.RoutedPipe;
-
-
 import net.minecraft.src.World;
 import buildcraft.api.core.LaserKind;
 import buildcraft.api.core.Orientations;

@@ -28,8 +28,6 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-
-
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.ItemStack;

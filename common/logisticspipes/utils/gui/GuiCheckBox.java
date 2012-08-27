@@ -1,11 +1,11 @@
 package logisticspipes.utils.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.Tessellator;
+
+import org.lwjgl.opengl.GL11;
 
 public class GuiCheckBox extends GuiButton {
 	

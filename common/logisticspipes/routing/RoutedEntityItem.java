@@ -15,8 +15,6 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.ItemIdentifier;
-
-
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;

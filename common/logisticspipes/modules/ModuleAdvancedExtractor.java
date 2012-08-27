@@ -15,8 +15,6 @@ import logisticspipes.logisticspipes.modules.SneakyOrientation;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.SimpleInventory;
-
-
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;

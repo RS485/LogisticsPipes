@@ -10,8 +10,6 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
-import javax.swing.text.html.parser.TagElement;
-
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;

@@ -6,8 +6,6 @@ import java.util.List;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.proxy.MainProxy;
-
-
 import net.minecraft.src.TileEntity;
 import buildcraft.transport.TileGenericPipe;
 

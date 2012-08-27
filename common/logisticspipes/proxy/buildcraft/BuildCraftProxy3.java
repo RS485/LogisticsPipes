@@ -11,17 +11,14 @@ package logisticspipes.proxy.buildcraft;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.proxy.interfaces.IBuildCraftProxy;
 import logisticspipes.routing.RoutedEntityItem;
-import net.minecraft.src.EntityItem;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.transport.IPipedItem;
+import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.Utils;
 import buildcraft.transport.EntityData;
-import buildcraft.transport.TileGenericPipe;
 
 public class BuildCraftProxy3 implements IBuildCraftProxy{
 

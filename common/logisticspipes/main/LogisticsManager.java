@@ -8,12 +8,10 @@
 
 package logisticspipes.main;
 
-import java.io.PipedReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -26,12 +24,8 @@ import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.Router;
-import logisticspipes.routing.RouterManager;
 import logisticspipes.utils.ItemIdentifier;
-
-
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ModLoader;
 
 public class LogisticsManager implements ILogisticsManager {
 	private class LogisticsValue {

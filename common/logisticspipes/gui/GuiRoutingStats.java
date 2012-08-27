@@ -10,7 +10,6 @@ package logisticspipes.gui;
 
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
-import logisticspipes.main.RoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.BasicGuiHelper;

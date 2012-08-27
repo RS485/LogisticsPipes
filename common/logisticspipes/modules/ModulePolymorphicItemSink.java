@@ -12,7 +12,6 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
 
 public class ModulePolymorphicItemSink implements ILogisticsModule {
 	

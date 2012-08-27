@@ -10,7 +10,6 @@ package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicLiquidSupplier;
-import logisticspipes.logic.LogicSupplier;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;

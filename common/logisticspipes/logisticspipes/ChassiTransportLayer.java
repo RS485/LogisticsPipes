@@ -1,14 +1,8 @@
 package logisticspipes.logisticspipes;
 
-import java.util.LinkedList;
-
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.utils.ItemIdentifier;
-
-
 import buildcraft.api.core.Orientations;
 
 public class ChassiTransportLayer extends TransportLayer{

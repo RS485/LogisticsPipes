@@ -8,14 +8,12 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.modules.ModuleApiaristAnalyser;
-
-
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;

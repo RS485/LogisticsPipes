@@ -1,17 +1,14 @@
 package logisticspipes.proxy.recipeproviders;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-
+import net.minecraft.src.InventoryCrafting;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
-
-import net.minecraft.src.InventoryCrafting;
 
 public class RollingMachine implements ICraftingRecipeProvider {
 

@@ -8,12 +8,9 @@ import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
-
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.FontRenderer;
 import net.minecraft.src.Gui;
-import net.minecraft.src.ItemRenderer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.RenderItem;

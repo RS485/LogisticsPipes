@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-import logisticspipes.logisticspipes.IInventoryProvider;
 
 public class ModuleExtractorMk2 extends ModuleExtractor{
 	

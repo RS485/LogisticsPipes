@@ -1,9 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
 
 public interface IElectricItemProxy {
 

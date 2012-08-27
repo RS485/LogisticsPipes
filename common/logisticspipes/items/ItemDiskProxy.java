@@ -2,8 +2,6 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.items.LogisticsNBTTagCompundItem;
-
 import net.minecraft.src.ItemStack;
 
 public class ItemDiskProxy extends LogisticsNBTTagCompundItem {

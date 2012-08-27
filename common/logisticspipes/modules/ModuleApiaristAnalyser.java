@@ -5,12 +5,10 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
 import logisticspipes.main.SimpleServiceLocator;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
 
 public class ModuleApiaristAnalyser implements ILogisticsModule {
 	

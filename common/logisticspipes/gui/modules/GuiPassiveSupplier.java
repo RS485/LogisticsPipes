@@ -8,18 +8,15 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
-import net.minecraft.src.ModLoader;
-import buildcraft.transport.Pipe;
 
 import org.lwjgl.opengl.GL11;
+
+import buildcraft.transport.Pipe;
 
 public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 

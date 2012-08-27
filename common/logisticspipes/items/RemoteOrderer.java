@@ -1,11 +1,14 @@
 package logisticspipes.items;
 
+import java.util.List;
 import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.main.GuiIDs;
+import logisticspipes.main.KeyBoardProxy;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
+import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -20,7 +23,7 @@ import cpw.mods.fml.common.FMLCommonHandler;
 
 public class RemoteOrderer extends Item {
 	
-	protected RemoteOrderer(int id) {
+	public RemoteOrderer(int id) {
 		super(id);
 	}
 
@@ -34,6 +37,28 @@ public class RemoteOrderer extends Item {
         return true;
     }
     
+
+	@Override
+	public int getIconFromDamage(int par1) {
+    	return LogisticsPipes.instance.LOGISTICSREMOTEORDERER_ICONINDEX;
+	}
+	
+	@Override
+	public void addInformation(ItemStack itemstack, List list) {
+		//Add special tooltip in tribute to DireWolf
+		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.shiftedIndex){
+			if (KeyBoardProxy.isShiftDown()){
+				list.add("a.k.a \"Requesting Tool\" - DW20");
+			}
+		}
+		
+		if(itemstack.hasTagCompound() && itemstack.stackTagCompound.hasKey("connectedPipe-x")) {
+			list.add("\u00a77Has Remote Pipe");
+		}
+		
+		super.addInformation(itemstack, list);
+	}
+	
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {	
 		if(par1ItemStack == null) {
@@ -88,7 +113,7 @@ public class RemoteOrderer extends Item {
 		World world = DimensionManager.getWorld(stack.stackTagCompound.getInteger("connectedPipe-world-dim"));
 		if(world == null) {
 			if(FMLCommonHandler.instance().getSide().isClient()) {
-				world = FMLClientHandler.instance().getClient().theWorld;
+				world = MainProxy.getClientMainWorld();
 			}
 		}
 		if(world == null) {
@@ -104,4 +129,10 @@ public class RemoteOrderer extends Item {
 		}
 		return null;
 	}
+
+	@Override
+	public CreativeTabs getCreativeTab()
+    {
+        return CreativeTabs.tabTools;
+    }
 }

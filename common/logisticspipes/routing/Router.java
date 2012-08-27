@@ -20,6 +20,7 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.PipeTransportLogistics;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -98,7 +99,7 @@ public class Router implements IRouter {
 		}
 		if(worldObj == null) {
 			if(FMLCommonHandler.instance().getSide().isClient()) {
-				worldObj = FMLClientHandler.instance().getClient().theWorld;
+				worldObj = MainProxy.getClientMainWorld();
 			}
 		}
 		if(worldObj == null) {

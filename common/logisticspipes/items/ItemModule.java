@@ -209,11 +209,14 @@ public class ItemModule extends ItemModuleProxy {
     {
         return CreativeTabs.tabRedstone;
     }
-		/*for(Module module:modules) {
-			itemList.add(new ItemStack(this, 1, module.getId()));
+	
+	@Override
+	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+    {
+		for(Module module:modules) {
+			par3List.add(new ItemStack(this, 1, module.getId()));
 		}
-	}
-	*/
+    }
 	
 	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world){
 		if (itemStack == null) return null;

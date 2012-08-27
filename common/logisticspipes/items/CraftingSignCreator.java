@@ -7,6 +7,7 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.main.LogisticsItem;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -195,4 +196,10 @@ public class CraftingSignCreator extends LogisticsItem {
 	public int getMaxDamage() {
 		return 100;
 	}
+
+	@Override
+	public CreativeTabs getCreativeTab()
+    {
+        return CreativeTabs.tabTools;
+    }
 }

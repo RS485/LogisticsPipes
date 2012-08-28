@@ -182,9 +182,6 @@
         <copy todir="${classes.dir}/client">
             <fileset dir="${mcp.dir}/reobf/minecraft"/>
         </copy>
-        <copy todir="${classes.dir}/server">
-            <fileset dir="${mcp.dir}/reobf/minecraft_server"/>
-        </copy>
         
         <!-- Copy resoucres -->
         <copy todir="${classes.dir}/client">

@@ -11,12 +11,16 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.main.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketPipeInteger;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
 
 import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
@@ -68,7 +72,6 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 	
 	@Override
 	public void initGui() {
-		// TODO Auto-generated method stub
 		super.initGui();
        controlList.clear();
        controlList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
@@ -81,6 +84,7 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		
@@ -88,15 +92,11 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 	
 	@Override
 	public void onGuiClosed() {
-		// TODO Auto-generated method stub
 		super.onGuiClosed();
-		logic.pause = false;
-		
 	}
 
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_LiquidSupplier_ID;
 	}
-
 }

@@ -319,6 +319,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.SpriteHelper;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.PostInit;
@@ -705,7 +706,7 @@ public class LogisticsPipes {
 	
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
-		if(ModLoader.isModLoaded("mod_Forestry")) {
+		if(Loader.isModLoaded("mod_Forestry")) {
 			//SimpleServiceLocator.setForestryProxy(new ForestryProxy()); //TODO
 		} else {
 			//DummyProxy
@@ -739,7 +740,7 @@ public class LogisticsPipes {
 				@Override public String getPrevAlleleId(String uid) {return null;}
 			});
 		}
-		if(ModLoader.isModLoaded("mod_IC2")) {
+		if(Loader.isModLoaded("mod_IC2")) {
 			//SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy()); //TODO
 		} else {
 			//DummyProxy

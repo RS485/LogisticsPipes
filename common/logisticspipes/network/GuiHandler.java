@@ -36,6 +36,7 @@ import logisticspipes.modules.ModuleLiquidSupplier;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.DummyContainer;
@@ -100,7 +101,9 @@ public class GuiHandler implements IGuiHandler {
 						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
 					}
 				}
-				return dummy;
+				
+				PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplier)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
+			    return dummy;
 				
 			case GuiIDs.GUI_ProviderPipe_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof LogicProvider)) return null;

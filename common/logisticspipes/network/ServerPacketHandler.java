@@ -7,6 +7,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
+import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.logisticspipes.macros.RequestHandler;
@@ -22,6 +23,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -182,6 +184,10 @@ public class ServerPacketHandler {
 					final PacketPipeBeePacket packetZ = new PacketPipeBeePacket();
 					packetZ.readData(data);
 					onBeeModuleSetBee(player, packetZ);
+				case NetworkConstants.LIQUID_SUPPLIER_PARTIALS:
+					final PacketPipeInteger packetAa = new PacketPipeInteger();
+					packetAa.readData(data);
+					onLiquidSupplierPartials(player, packetAa);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -782,6 +788,18 @@ public class ServerPacketHandler {
 			if(packet.integer4 >= FilterType.values().length) return;
 			sink.filter[packet.integer2].filterType = FilterType.values()[packet.integer4];
 			break;
+		}
+	}
+
+	private static void onLiquidSupplierPartials(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeItemsLiquidSupplier) {
+			PipeItemsLiquidSupplier liquid = (PipeItemsLiquidSupplier) pipe.pipe;
+			((LogicLiquidSupplier)liquid.logic).setRequestingPartials((packet.integer % 10) == 1);
 		}
 	}
 	

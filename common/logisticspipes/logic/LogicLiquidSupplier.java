@@ -21,6 +21,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
@@ -41,8 +42,6 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	
 	private boolean _requestPartials = false;
 
-	public boolean pause = false;
-	
 	public LogicLiquidSupplier(){
 		throttleTime = 100;
 	}
@@ -53,7 +52,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	
 	@Override
 	public void throttledUpdateEntity() {
-		if (pause) return;
+		if (MainProxy.isClient(worldObj)) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
@@ -64,42 +63,42 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			//How much do I want?
 			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(dummyInventory);
 			HashMap<ItemIdentifier, Integer> wantContainers = invUtil.getItemsAndCount();
-			HashMap<LiquidStack, Integer> wantLiquids = new HashMap<LiquidStack, Integer>();
+			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
 			for (ItemIdentifier item : wantContainers.keySet()){
 				ItemStack wantItem = item.makeNormalStack(1);
 				LiquidStack liquidstack = LiquidManager.getLiquidForFilledItem(wantItem);
 				if (liquidstack == null) continue;
-				wantLiquids.put(liquidstack, wantContainers.get(item) * liquidstack.amount);
+				wantLiquids.put(LiquidIdentifier.get(liquidstack), wantContainers.get(item) * liquidstack.amount);
 			}
 
 			//How much do I have?
-			HashMap<LiquidStack, Integer> haveLiquids = new HashMap<LiquidStack, Integer>();
+			HashMap<LiquidIdentifier, Integer> haveLiquids = new HashMap<LiquidIdentifier, Integer>();
 			
 			ILiquidTank[] result = container.getTanks();
 			for (ILiquidTank slot : result){
-				if (!wantLiquids.containsKey(slot.getLiquid())) continue;
-				if (!haveLiquids.containsKey(slot.getLiquid())){
-					haveLiquids.put(slot.getLiquid(), slot.getCapacity());
+				if (!wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
+				if (!haveLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))){
+					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), slot.getLiquid().amount);
 				} else {
-					haveLiquids.put(slot.getLiquid(), haveLiquids.get(slot.getLiquid()) + slot.getCapacity());
+					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), haveLiquids.get(slot.getLiquid()) +  slot.getLiquid().amount);
 				}
 			}
 			
 			//HashMap<Integer, Integer> needLiquids = new HashMap<Integer, Integer>();
 			//Reduce what I have
-			for (LiquidStack liquidId: wantLiquids.keySet()){
+			for (LiquidIdentifier liquidId: wantLiquids.keySet()){
 				if (haveLiquids.containsKey(liquidId)){
 					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - haveLiquids.get(liquidId));
 				}
 			}
 			
 			//Reduce what have been requested already
-			for (LiquidStack liquidId : wantLiquids.keySet()){
+			for (LiquidIdentifier liquidId : wantLiquids.keySet()){
 				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
 					ItemStack wantItem = requestedItem.makeNormalStack(1);
 					LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(wantItem);
 					if (requestedLiquidId == null) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * liquidId.amount);
+					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidManager.getLiquidForFilledItem(requestedItem.makeNormalStack(1)).amount);
 				}
 			}
 			
@@ -111,8 +110,8 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			for (ItemIdentifier need : allNeededContainers.keySet()){
 				LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1));
 				if (requestedLiquidId == null) continue;
-				if (!wantLiquids.containsKey(requestedLiquidId)) continue;
-				int countToRequest = wantLiquids.get(requestedLiquidId) / BuildCraftAPI.BUCKET_VOLUME;
+				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
+				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
 				if (countToRequest < 1) continue;
 				boolean success = false;
 				do{ 

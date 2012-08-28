@@ -3,6 +3,7 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import logisticspipes.gui.GuiLiquidSupplierPipe;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
@@ -13,6 +14,7 @@ import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
+import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.logisticspipes.ExtractionMode;
@@ -20,14 +22,15 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.pipes.PipeItemsApiaristSink;
+import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
 public class ClientPacketHandler {
@@ -123,23 +126,30 @@ public class ClientPacketHandler {
 					final PacketPipeUpdate packetOa = new PacketPipeUpdate();
 					packetOa.readData(data);
 					handlePacketPipeUpdate(packetOa);
-					
+					break;
 				case NetworkConstants.DISK_MACRO_REQUEST_RESPONSE:
 					final PacketItems packetP = new PacketItems();
 					packetP.readData(data);
 					handleMacroResponse(packetP);
+					break;
 				case NetworkConstants.BEE_MODULE_CONTENT:
 					final PacketModuleNBT packetQ = new PacketModuleNBT();
 					packetQ.readData(data);
 					handleBeePacketNBT(packetQ);
+					break;
+				case NetworkConstants.LIQUID_SUPPLIER_PARTIALS:
+					final PacketPipeInteger packetR = new PacketPipeInteger();
+					packetR.readData(data);
+					onLiquidSupplierPartials(player,packetR);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-
+	
 	private static void onCraftingPipeSetSatellite(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -152,7 +162,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onCraftingPipeSetImport(PacketInventoryChange packet) {
-		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -168,7 +178,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onSatellitePipeSetSatellite(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -181,40 +191,40 @@ public class ClientPacketHandler {
 	}
 
 	private static void onOrdererRefreshAnswer(PacketRequestGuiContent packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer) ModLoader.getMinecraftInstance().currentScreen).handlePacket(packet);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handlePacket(packet);
 		}
 	}
 
 	private static void onItemsResponse(PacketItems packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)ModLoader.getMinecraftInstance().currentScreen).handleRequestAnswer(packet.items,!packet.error,(GuiOrderer)ModLoader.getMinecraftInstance().currentScreen,ModLoader.getMinecraftInstance().thePlayer);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(packet.items,!packet.error,(GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer);
 		} else if(packet.error) {
 			for (final ItemMessage items : packet.items) {
-				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Missing: " + items);
+				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Missing: " + items);
 			}
 		} else {
 			for (final ItemMessage items : packet.items) {
-				ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Requested: " + items);
+				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Requested: " + items);
 			}
-			ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Request successful!");
+			FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Request successful!");
 		}
 	}
 
 	private static void onCraftingLoop(PacketCraftingLoop packet) {
 		final ItemIdentifier item = packet.items.get(0).getItemIdentifier();
-		ModLoader.getMinecraftInstance().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName()
+		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Logistics: Possible crafting loop while trying to craft " + item.getFriendlyName()
 				+ " !! ABORTING !!");
 	}
 
 	private static void onItemSinkStatusRecive(PacketPipeInteger packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiItemSink) {
-			((GuiItemSink) ModLoader.getMinecraftInstance().currentScreen).handleDefaultRoutePackage(packet);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiItemSink) {
+			((GuiItemSink) FMLClientHandler.instance().getClient().currentScreen).handleDefaultRoutePackage(packet);
 		}
 	}
 
 	private static void onProviderPipeModeRecive(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -236,7 +246,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onProviderPipeIncludeRecive(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -246,13 +256,13 @@ public class ClientPacketHandler {
 		}
 		((LogicProvider) pipe.pipe.logic).setFilterExcluded(packet.integer == 1);
 		
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProviderPipe) {
-			((GuiProviderPipe) ModLoader.getMinecraftInstance().currentScreen).refreshInclude();
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProviderPipe) {
+			((GuiProviderPipe) FMLClientHandler.instance().getClient().currentScreen).refreshInclude();
 		}
 	}
 
 	private static void onSupplierPipeRecive(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -262,44 +272,37 @@ public class ClientPacketHandler {
 		}
 		((LogicSupplier) pipe.pipe.logic).setRequestingPartials(packet.integer == 1);
 		
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiSupplierPipe) {
-			((GuiSupplierPipe) ModLoader.getMinecraftInstance().currentScreen).refreshMode();
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSupplierPipe) {
+			((GuiSupplierPipe) FMLClientHandler.instance().getClient().currentScreen).refreshMode();
 		}
 	}
 
 	private static void onModulePipeRecive(PacketPipeInteger packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiExtractor) {
-			((GuiExtractor) ModLoader.getMinecraftInstance().currentScreen).handlePackat(packet);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
+			((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).handlePackat(packet);
 		}
 	}
 
 	private static void onProviderModuleModeRecive(PacketPipeInteger packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProvider) {
-			((GuiProvider) ModLoader.getMinecraftInstance().currentScreen).handleModuleModeRecive(packet);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProvider) {
+			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleModeRecive(packet);
 		}
 	}
 
 	private static void onProviderModuleIncludeRecive(PacketPipeInteger packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiProvider) {
-			((GuiProvider) ModLoader.getMinecraftInstance().currentScreen).handleModuleIncludeRecive(packet);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProvider) {
+			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleIncludeRecive(packet);
 		}
 	}
 
 	private static void onAdvancedExtractorModuleIncludeRecive(PacketPipeInteger packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiAdvancedExtractor) {
-			((GuiAdvancedExtractor) ModLoader.getMinecraftInstance().currentScreen).handleIncludeRoutePackage(packet);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiAdvancedExtractor) {
+			((GuiAdvancedExtractor) FMLClientHandler.instance().getClient().currentScreen).handleIncludeRoutePackage(packet);
 		}
 	}
 
-	//private void handleNonContainerGui(PacketPipeInteger packet) {
-	//	Object gui = new GuiHandler().getGuiElement(packet.integer, ModLoader.getMinecraftInstance().thePlayer, ModLoader.getMinecraftInstance().theWorld,packet.posX,packet.posY,packet.posZ);
-	//	if(gui instanceof GuiScreen) {
-	//		ModLoader.openGUI(ModLoader.getMinecraftInstance().thePlayer, (GuiScreen)gui);
-	//	}
-	//}
-
 	private static void handlePacketPipeUpdate(PacketPipeUpdate packet) {
-		TileGenericPipe tile = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(tile == null) {
 			return;
 		}
@@ -310,7 +313,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void handleRequestMK2DiskItem(PacketItem packet) {
-		final TileGenericPipe tile = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(tile == null) {
 			return;
 		}
@@ -320,15 +323,15 @@ public class ClientPacketHandler {
 	}
 	
 	private static void handleMacroResponse(PacketItems packet) {
-		if (ModLoader.getMinecraftInstance().currentScreen instanceof GuiOrderer) {
-			if(((GuiOrderer) ModLoader.getMinecraftInstance().currentScreen).getSubGui() instanceof GuiDiskPopup) {
-				((GuiOrderer) ModLoader.getMinecraftInstance().currentScreen).handleRequestAnswer(packet.items, packet.error, ((GuiOrderer) ModLoader.getMinecraftInstance().currentScreen).getSubGui(),ModLoader.getMinecraftInstance().thePlayer);
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			if(((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).getSubGui() instanceof GuiDiskPopup) {
+				((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(packet.items, packet.error, ((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).getSubGui(),FMLClientHandler.instance().getClient().thePlayer);
 			}
 		}
 	}
 
 	private static void handleBeePacketNBT(PacketModuleNBT packet) {
-		final TileGenericPipe tile = getPipe(ModLoader.getMinecraftInstance().theWorld, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(tile == null) {
 			return;
 		}
@@ -341,6 +344,16 @@ public class ClientPacketHandler {
 			return;
 		}
 		packet.handle(sink);
+	}
+
+	private static void onLiquidSupplierPartials(Player player, PacketPipeInteger packet) {
+		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(tile == null) {
+			return;
+		}
+		if(tile.pipe instanceof PipeItemsLiquidSupplier && tile.pipe.logic instanceof LogicLiquidSupplier) {
+			((LogicLiquidSupplier)tile.pipe.logic).setRequestingPartials((packet.integer % 10) == 1);		
+		}
 	}
 
 	// BuildCraft method

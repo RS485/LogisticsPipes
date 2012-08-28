@@ -58,7 +58,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
-	private boolean switchOrientationOnTick = false;
+	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 	private long tick = 0;
 	BaseChassiLogic ChassiLogic;
@@ -192,6 +192,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
+			switchOrientationOnTick = false;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

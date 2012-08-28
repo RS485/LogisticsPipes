@@ -10,7 +10,7 @@ import logisticspipes.main.SimpleServiceLocator;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.liquids.ILiquidTank;
+import buildcraft.api.liquids.ITankContainer;
 import buildcraft.api.liquids.LiquidManager;
 import buildcraft.api.liquids.LiquidStack;
 import buildcraft.transport.EntityData;
@@ -38,16 +38,16 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-		if (!(tile instanceof ILiquidTank)) return;
+		if (!(tile instanceof ITankContainer)) return;
 		if (tile instanceof TileGenericPipe) return;
-		ILiquidTank container = (ILiquidTank) tile;
+		ITankContainer container = (ITankContainer) tile;
 		//container.getLiquidSlots()[0].getLiquidQty();
 		if (data.item == null) return;
 		if (data.item.getItemStack() == null) return;
 		LiquidStack liquidId = LiquidManager.getLiquidForFilledItem(data.item.getItemStack());
 		if (liquidId == null) return;
-		while (data.item.getItemStack().stackSize > 0 && container.fill(liquidId, false) == liquidId.amount){
-			container.fill(liquidId, true);
+		while (data.item.getItemStack().stackSize > 0 && container.fill(data.orientation, liquidId, false) == liquidId.amount){
+			container.fill(data.orientation, liquidId, true);
 			data.item.getItemStack().stackSize--;
 			
 			if (data.item.getItemStack().itemID >= 0 && data.item.getItemStack().itemID < Item.itemsList.length){

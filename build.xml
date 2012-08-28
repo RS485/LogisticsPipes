@@ -1,9 +1,5 @@
 <project name="LogisticsPipes" basedir="../" default="main">
     
-	<echo message="THIS SCRIPT IS NOT ABLE TO COMPILE LOGISTICSPIPES FOR MC 1.3.2. UPDATE WILL COME SOON." />
-	
-	<exit>
-	
     <!-- Properties -->
     
     <property name="build.dir"           value="build" />
@@ -23,17 +19,18 @@
       
     <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft" />
     <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server" />
+    <property name="commonsrc.dir"       value="${mcp.dir}/src/common" />
     
     <property name="downloadserver"      value="http://www.theZorro266.com" />
     <property name="downloadserver.dir"  value="rs485/" />
     <property name="downloadserver.full" value="${downloadserver}/${downloadserver.dir}" />
           
-    <property name="mcp.version"         value="62" />
-    <property name="forge.version"       value="3.3.8.152" />
-    <property name="bc.version"          value="3.1.6.91" />
+    <property name="mcp.version"         value="72" />
+    <property name="forge.version"       value="4.0.0.237" />
+    <property name="bc.version"          value="3.1.8.103" />
     <property name="forestry.version"    value="1.4.9.13" />
     <property name="ic2.version"         value="1.97" />
-    <property name="lp.version"          value="0.5.0" />
+    <property name="lp.version"          value="0.5.1" />
     <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
     
     <echo message="Starting build for ${lp.version.full}" />
@@ -110,57 +107,30 @@
 		<echo message="Decompile finished"/>
 		
         <!-- Copy BC source -->
-        <copy todir="${clientsrc.dir}">
-            <fileset dir="${buildcraft.dir}/buildcraft_client"/>
-        </copy>
-        <copy todir="${clientsrc.dir}">
+        <copy todir="${commonsrc.dir}">
             <fileset dir="${buildcraft.dir}/common">
-                <exclude name="**/buildcraft/devel"/>
-            </fileset>
-            <filterset>
-                <filter token="VERSION" value="${bc.version}" />
-            </filterset>
-        </copy>
-        
-        <copy todir="${serversrc.dir}">
-            <fileset dir="${buildcraft.dir}/buildcraft_server"/>
-        </copy>
-        <copy todir="${serversrc.dir}">
-            <fileset dir="${buildcraft.dir}/common">
-                <exclude name="**/buildcraft/devel"/>
-            </fileset>
-            <filterset>
-                <filter token="VERSION" value="${bc.version}" />
-            </filterset>
+				<exclude name="**/buildcraft/devel"/>
+			</fileset>
         </copy>
         
 		<echo message="Copied BC files"/>
 		
         <!-- Copy Forestry API source -->
-        <copy todir="${clientsrc.dir}">
-            <fileset dir="${forestry.dir}"/>
-        </copy>
-		<copy todir="${serversrc.dir}">
+        <copy todir="${commonsrc.dir}">
             <fileset dir="${forestry.dir}"/>
         </copy>
 		
 		<echo message="Copied Forestry API"/>
 		
         <!-- Copy IC2 API source -->
-        <copy todir="${clientsrc.dir}/net/minecraft/src">
-            <fileset dir="${ic2.dir}"/>
-        </copy>
-		<copy todir="${serversrc.dir}/net/minecraft/src">
+        <copy todir="${commonsrc.dir}/net/minecraft/src">
             <fileset dir="${ic2.dir}"/>
         </copy>
 		
-		<echo message="Copied Forestry API"/>
+		<echo message="Copied IC2 API"/>
 		
         <!-- Copy Dummy classes source -->
-        <copy todir="${clientsrc.dir}">
-            <fileset dir="${src.dir}/dummy"/>
-        </copy>
-		<copy todir="${serversrc.dir}">
+        <copy todir="${commonsrc.dir}">
             <fileset dir="${src.dir}/dummy"/>
         </copy>
 		
@@ -178,24 +148,11 @@
 		<echo message="Regenerated MD5s"/>
 		
         <!-- Copy LP source -->
-        <copy todir="${clientsrc.dir}">
-            <fileset dir="${src.dir}/client"/>
-        </copy>
-        <copy todir="${clientsrc.dir}">
+        <copy todir="${commonsrc.dir}">
             <fileset dir="${src.dir}/common"/>
         </copy>
-        
-        <copy todir="${serversrc.dir}">
-            <fileset dir="${src.dir}/server"/>
-        </copy>
-        <copy todir="${serversrc.dir}">
-            <fileset dir="${src.dir}/common"/>
-        </copy>
-		
-		<replace file="${clientsrc.dir}/net/minecraft/src/mod_LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${clientsrc.dir}/net/minecraft/src/mod_LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
-		<replace file="${serversrc.dir}/net/minecraft/src/mod_LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${serversrc.dir}/net/minecraft/src/mod_LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		
     </target>
     
@@ -233,13 +190,7 @@
         <copy todir="${classes.dir}/client">
             <fileset dir="${src.dir}/resources"></fileset>
         </copy>
-        <copy todir="${classes.dir}/server">
-            <fileset dir="${src.dir}/resources">
-                <filename name="mod_LogisticsPipes.info"/>
-            </fileset>
-        </copy>
         
-        <move file="${classes.dir}/server/mod_LogisticsPipes.info" tofile="${classes.dir}/server/mcmod.info"/>
         <move file="${classes.dir}/client/mod_LogisticsPipes.info" tofile="${classes.dir}/client/mcmod.info"/>
         
 		<echo message="Compiling finished"/>
@@ -250,8 +201,7 @@
         
 		<echo message="Packing version ${lp.version.full}"/>
 	
-        <jar destfile="${jar.dir}/LogisticsPipes-client-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
-        <jar destfile="${jar.dir}/LogisticsPipes-server-${lp.version.full}.jar" basedir="${classes.dir}/server"/>
+        <jar destfile="${jar.dir}/LogisticsPipes-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
         
 		<echo message="Packing finished"/>
 	

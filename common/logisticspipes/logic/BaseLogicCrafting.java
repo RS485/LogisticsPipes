@@ -4,7 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.main.GuiIDs;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.RoutedPipe;
@@ -173,6 +175,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
+		if (MainProxy.isServer(entityplayer.worldObj)) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
+		}
 	}
 
 	@Override
@@ -185,7 +190,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe());
-			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getRoutersByCost(), null)) {
+			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}
@@ -234,7 +239,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.importRecipe(tile.tile, _dummyInventory))
-					return;
+					break;
 			}
 		}
 		

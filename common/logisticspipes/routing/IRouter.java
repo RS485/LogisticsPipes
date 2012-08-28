@@ -28,31 +28,16 @@ public interface IRouter {
 	
 	@Deprecated
 	public HashMap<Router, Orientations> getRouteTable();
-	@Deprecated
-	public LinkedList<Router> getRoutersByCost();
 	public LinkedList<IRouter> getIRoutersByCost();
-	@Deprecated
-	public LinkedList<Orientations> GetNonRoutedExits();
 	@Deprecated
 	public CoreRoutedPipe getPipe();
 	
 	public UUID getId();
-	@Deprecated
-	public int getInboundItemsCount();
-	@Deprecated
-	public int getOutboundItemsCount();
-	@Deprecated
 	public void itemDropped(RoutedEntityItem routedEntityItem);
-	@Deprecated
-	public void startTrackingRoutedItem(RoutedEntityItem routedEntityItem);
-	@Deprecated
-	public void startTrackingInboundItem(RoutedEntityItem routedEntityItem);
 	@Deprecated
 	public void displayRoutes();
 	@Deprecated
 	public void displayRouteTo(IRouter r);
-	@Deprecated
-	public void outboundItemArrived(RoutedEntityItem routedEntityItem);
 	@Deprecated
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	

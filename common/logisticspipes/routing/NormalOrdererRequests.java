@@ -28,7 +28,7 @@ public class NormalOrdererRequests {
 	public static void request(EntityPlayerMP player, PacketRequestSubmit packet, CoreRoutedPipe pipe) {
 		LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe);
 		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
-		boolean result = LogisticsManager.Request(request, pipe.getRouter().getRoutersByCost(), errors, player);
+		boolean result = LogisticsManager.Request(request, pipe.getRouter().getIRoutersByCost(), errors, player);
 		if (!result){
 			MessageManager.errors(player, errors);
 		}

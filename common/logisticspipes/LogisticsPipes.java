@@ -253,6 +253,9 @@ package logisticspipes;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import logisticspipes.blocks.LogisticsBlock;
+import logisticspipes.blocks.LogisticsBlockRenderer;
+import logisticspipes.blocks.LogisticsTileEntiy;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
@@ -289,14 +292,19 @@ import logisticspipes.pipes.PipeLogisticsChassiMk3;
 import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy3;
+import logisticspipes.proxy.forestry.ForestryProxy;
+import logisticspipes.proxy.ic2.ElectricItemProxy;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.recipeproviders.AutoWorkbench;
+import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
 import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
+import net.minecraft.src.ItemBlock;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
@@ -306,6 +314,8 @@ import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
@@ -315,7 +325,6 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TransportProxyClient;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.SpriteHelper;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -513,7 +522,9 @@ public class LogisticsPipes {
 	public LogisticsPipes() {
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy3());
 		instance = this;
-		SimpleServiceLocator.setRouterManager(new RouterManager());
+		RouterManager manager = new RouterManager();
+		SimpleServiceLocator.setRouterManager(manager);
+		SimpleServiceLocator.setDirectConnectionManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 	}
@@ -707,7 +718,7 @@ public class LogisticsPipes {
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
 		if(Loader.isModLoaded("mod_Forestry")) {
-			//SimpleServiceLocator.setForestryProxy(new ForestryProxy()); //TODO
+			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setForestryProxy(new IForestryProxy() {
@@ -741,7 +752,7 @@ public class LogisticsPipes {
 			});
 		}
 		if(Loader.isModLoaded("mod_IC2")) {
-			//SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy()); //TODO
+			SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy());
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setElectricItemProxy(new IElectricItemProxy() {
@@ -840,12 +851,12 @@ public class LogisticsPipes {
 		
 		CraftingManager craftingManager = CraftingManager.getInstance();
 		craftingManager.addRecipe(new ItemStack(LogisticsBuilderSupplierPipe, 1), new Object[]{"iPy", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('y'), new ItemStack(Item.dyePowder, 1,11)});
-		craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
+		//craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		craftingManager.addRecipe(new ItemStack(LogisticsLiquidSupplierPipe, 1), new Object[]{" B ", "lPl", " B ", Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('B'), Item.bucketEmpty});
-		//craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		
 		
-		/*craftingManager.addRecipe(new ItemStack(LogisticsBasicPipe, 8), new Object[] { "grg", "GdG", "grg", Character.valueOf('g'), Block.glass, 
+		craftingManager.addRecipe(new ItemStack(LogisticsBasicPipe, 8), new Object[] { "grg", "GdG", "grg", Character.valueOf('g'), Block.glass, 
 								   Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
 								   Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond, 
 								   Character.valueOf('r'), Block.torchRedstoneActive});
@@ -983,7 +994,7 @@ public class LogisticsPipes {
 									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
 									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), 
 									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});*/
+									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
 
 		for(int i=0; i<1000;i++) {
 			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null, null);
@@ -1000,7 +1011,7 @@ public class LogisticsPipes {
 				}
 			}
 		}
-		/*
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.redstone});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { " i ","iPi", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 0)});
 		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe2, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotIron});
@@ -1035,7 +1046,7 @@ public class LogisticsPipes {
 		
 			ModLoader.registerTileEntity(LogisticsTileEntiy.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new LogisticsBlockRenderer());
 		}
-		*/
+		
 	}
 	
 	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {

@@ -29,7 +29,6 @@ import net.minecraftforge.common.DimensionManager;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Router implements IRouter {
@@ -40,8 +39,8 @@ public class Router implements IRouter {
 	}
 	
 	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
-	private final LinkedList<RoutedEntityItem> _outboundItems = new LinkedList<RoutedEntityItem>();
-	private final LinkedList<RoutedEntityItem> _inboundItems = new LinkedList<RoutedEntityItem>();
+	//private final LinkedList<RoutedEntityItem> _outboundItems = new LinkedList<RoutedEntityItem>();
+	//private final LinkedList<RoutedEntityItem> _inboundItems = new LinkedList<RoutedEntityItem>();
 
 	private static int _LSDVersion = 0;
 	private int _lastLSDVersion = 0;
@@ -133,6 +132,7 @@ public class Router implements IRouter {
 		return _routeTable;
 	}
 	
+	/*
 	@Deprecated
 	@Override
 	public LinkedList<Router> getRoutersByCost(){
@@ -158,6 +158,7 @@ public class Router implements IRouter {
 		}
 		return _routersByCost;
 	}
+	*/
 	
 	@Override
 	public LinkedList<IRouter> getIRoutersByCost() {
@@ -328,8 +329,7 @@ public class Router implements IRouter {
 		}
 	}
 
-	@Override
-	public LinkedList<Orientations> GetNonRoutedExits()	{
+	private LinkedList<Orientations> GetNonRoutedExits()	{
 		LinkedList<Orientations> ret = new LinkedList<Orientations>();
 		
 		outer:
@@ -356,44 +356,34 @@ public class Router implements IRouter {
 	public void displayRouteTo(IRouter r){
 		_laser.displayRoute(this, r);
 	}
-
-	@Override
-	public int getInboundItemsCount(){
-		return _inboundItems.size();
-	}
-
-	@Override
-	public int getOutboundItemsCount(){
-		return _outboundItems.size();
-	}
-	
-	@Override
-	public void startTrackingRoutedItem(RoutedEntityItem routedEntityItem){
-		if(!_outboundItems.contains(routedEntityItem)){
-			_outboundItems.add(routedEntityItem);
-		}
-	}
-
-	@Override
-	public void startTrackingInboundItem(RoutedEntityItem routedEntityItem){
-		if (!_inboundItems.contains(routedEntityItem)){
-			_inboundItems.add(routedEntityItem);
-		}
-	}
-	
-	@Override
-	public void outboundItemArrived(RoutedEntityItem routedEntityItem){
-		if (_outboundItems.contains(routedEntityItem)){
-			_outboundItems.remove(routedEntityItem);
-		}
-	}
+//	
+//	@Override
+//	public void startTrackingRoutedItem(RoutedEntityItem routedEntityItem){
+//		if(!_outboundItems.contains(routedEntityItem)){
+//			_outboundItems.add(routedEntityItem);
+//		}
+//	}
+//
+//	@Override
+//	public void startTrackingInboundItem(RoutedEntityItem routedEntityItem){
+//		if (!_inboundItems.contains(routedEntityItem)){
+//			_inboundItems.add(routedEntityItem);
+//		}
+//	}
+//	
+//	@Override
+//	public void outboundItemArrived(RoutedEntityItem routedEntityItem){
+//		if (_outboundItems.contains(routedEntityItem)){
+//			_outboundItems.remove(routedEntityItem);
+//		}
+//	}
 	
 	@Override
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem){
-		if (_inboundItems.contains(routedEntityItem)){
+/*		if (_inboundItems.contains(routedEntityItem)){
 			_inboundItems.remove(routedEntityItem);
 		}
-
+*/
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
@@ -403,14 +393,8 @@ public class Router implements IRouter {
 
 	@Override
 	public void itemDropped(RoutedEntityItem routedEntityItem) {
-		if (_outboundItems.contains(routedEntityItem)){
-			_outboundItems.remove(routedEntityItem);
-		}
-		if (_inboundItems.contains(routedEntityItem)){
-			_inboundItems.remove(routedEntityItem);
-		}
+		//TODO
 	}
-
 	
 	/**
 		 * Flags the last sent LSA as expired. Each router will be responsible of purging it from its database.

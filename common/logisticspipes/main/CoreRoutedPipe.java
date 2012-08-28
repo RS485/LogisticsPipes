@@ -143,7 +143,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		routedItem.SetPosition(p.x, p.y, p.z);
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.reverse());
 		
-		router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
+		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
 		
 		stat_lifetime_sent++;
 		stat_session_sent++;

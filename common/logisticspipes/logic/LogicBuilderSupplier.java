@@ -104,7 +104,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				int neededCount = needed.get(need);
 				boolean success = false;
 				do{ 
-					success = LogisticsManager.Request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe), getRouter().getRoutersByCost(), null);
+					success = LogisticsManager.Request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe), getRouter().getIRoutersByCost(), null);
 					if (success || neededCount == 1){
 						break;
 					}

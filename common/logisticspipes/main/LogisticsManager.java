@@ -135,23 +135,23 @@ public class LogisticsManager implements ILogisticsManager {
 //		return count;
 //	}
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, List<ItemMessage> errors){
+	public static boolean Request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors){
 		return Request(originalRequest, validDestinations, errors, null);
 	}
 	
 	
-	public static boolean Request(LogisticsRequest originalRequest, List<Router> validDestinations, List<ItemMessage> errors, EntityPlayer player){
+	public static boolean Request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);
 		return Request(transaction,validDestinations,errors,player);
 	}
 
-	public static boolean Request(LogisticsTransaction transaction, List<Router> validDestinations, List<ItemMessage> errors, EntityPlayer player){
+	public static boolean Request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, EntityPlayer player){
 		return Request(transaction,validDestinations,errors,player, true);
 	}
 	
-	public static boolean Request(LogisticsTransaction transaction, List<Router> validDestinations, List<ItemMessage> errors, EntityPlayer player, boolean realrequest){
+	public static boolean Request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, EntityPlayer player, boolean realrequest){
 		//First check all crafters
-		for (Router r : validDestinations) {
+		for (IRouter r : validDestinations) {
 			if (r.getPipe() instanceof ICraftItems) {
 				((ICraftItems)r.getPipe()).canCraft(transaction);
 			}
@@ -161,7 +161,7 @@ public class LogisticsManager implements ILogisticsManager {
 			//Then check if we can do this without crafting any items.
 			
 			//Then check if we can have it delivered
-			for( Router r : validDestinations) {
+			for(IRouter r : validDestinations) {
 				if (r.getPipe() instanceof IProvideItems){
 					((IProvideItems)r.getPipe()).canProvide(transaction);
 					if (transaction.isDeliverable()) break;

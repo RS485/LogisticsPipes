@@ -38,8 +38,8 @@ public class RequestHandler {
 		}
 		List<ItemMessage> errors = new ArrayList<ItemMessage>();
 		RequestReply reply = new RequestReply();
-		if(LogisticsManager.Request(transaction, requester.getRouter().getRoutersByCost(), errors, player, false)) {
-			LogisticsManager.Request(transaction, requester.getRouter().getRoutersByCost(), errors, player, true);
+		if(LogisticsManager.Request(transaction, requester.getRouter().getIRoutersByCost(), errors, player, false)) {
+			LogisticsManager.Request(transaction, requester.getRouter().getIRoutersByCost(), errors, player, true);
 			reply.items = items;
 			reply.suceed = true;
 		} else {

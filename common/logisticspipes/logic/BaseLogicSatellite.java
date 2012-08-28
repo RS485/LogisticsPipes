@@ -134,7 +134,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe());
-			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getRoutersByCost(), null)) {
+			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}

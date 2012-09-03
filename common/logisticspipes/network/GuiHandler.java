@@ -214,6 +214,18 @@ public class GuiHandler implements IGuiHandler {
 			    
 			    return dummy;
 
+			case GuiIDs.GUI_Module_ElectricManager_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
+				dummy = new DummyContainer(player.inventory, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getFilterInventory());
+				dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+				//Pipe slots
+				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+				}
+				
+				return dummy;
+				
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
 				PacketDispatcher.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,-1,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getPacket(), (Player)player);
@@ -356,6 +368,18 @@ public class GuiHandler implements IGuiHandler {
 			    }
 			    return dummy;
 			    
+			case GuiIDs.GUI_Module_ElectricManager_ID:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleElectricManager)) return null;
+				dummy = new DummyContainer(player.inventory, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getFilterInventory());
+				dummy.addNormalSlotsForPlayerInventory(8, 60);
+
+				//Pipe slots
+				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+				}
+				
+				return dummy;
+			
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
 				PacketDispatcher.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,slot,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getPacket(), (Player)player);

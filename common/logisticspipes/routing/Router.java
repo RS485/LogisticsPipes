@@ -13,14 +13,14 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.PipeTransportLogistics;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -199,7 +199,7 @@ public class Router implements IRouter {
 		boolean adjacentChanged = false;
 		CoreRoutedPipe thisPipe = getPipe();
 		if (thisPipe == null) return;
-		HashMap<RoutedPipe, ExitRoute> adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, LogisticsPipes.LOGISTICS_DETECTION_COUNT, LogisticsPipes.LOGISTICS_DETECTION_LENGTH);
+		HashMap<RoutedPipe, ExitRoute> adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH);
 		
 		for (RoutedPipe pipe : _adjacent.keySet()){
 			if(!adjacent.containsKey(pipe))
@@ -415,24 +415,10 @@ public class Router implements IRouter {
 			if (_blockNeedsUpdate){
 				CoreRoutedPipe pipe = getPipe();
 				if (pipe == null) return;
-				pipe.worldObj.markBlockAsNeedsUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);	
-				Field refreshRenderStateFiled;
-				try {
-					refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
-					refreshRenderStateFiled.setAccessible(true);
-					refreshRenderStateFiled.set(pipe.container, true);
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				} catch (NoSuchFieldException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
+				pipe.worldObj.markBlockAsNeedsUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
+				pipe.refreshRender();
 				_blockNeedsUpdate = false;
 			}
-			return;
 		}
 	}
 

@@ -11,7 +11,7 @@ package logisticspipes.pipes;
 import java.util.HashMap;
 import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -34,7 +34,7 @@ import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketCoordinates;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -106,20 +106,20 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_TEXTURE;
+		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
 	
 	@Override
 	public int getRoutedTexture(Orientations connection) {
-		return LogisticsPipes.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
+		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
 	
 	@Override
 	public int getNonRoutedTexture(Orientations connection) {
 		if (connection.equals(ChassiLogic.orientation)){
-			return LogisticsPipes.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
+			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
-		return LogisticsPipes.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
+		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}
 	
 	@Override

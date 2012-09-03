@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.KeyBoardProxy;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
@@ -29,7 +30,7 @@ public class RemoteOrderer extends Item {
 
 	@Override
 	public String getTextureFile() {
-		return LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
+		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 
 	@Override
@@ -40,7 +41,7 @@ public class RemoteOrderer extends Item {
 
 	@Override
 	public int getIconFromDamage(int par1) {
-    	return LogisticsPipes.instance.LOGISTICSREMOTEORDERER_ICONINDEX;
+    	return Textures.LOGISTICSREMOTEORDERER_ICONINDEX;
 	}
 	
 	@Override

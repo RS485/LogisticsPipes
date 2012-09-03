@@ -12,7 +12,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsTileEntiy;
+import logisticspipes.blocks.LogisticsSignTileEntity;
+import logisticspipes.config.Configs;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -27,13 +29,16 @@ import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketCoordinates;
+import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -46,6 +51,7 @@ import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
 
@@ -140,7 +146,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(Utils.pipeNormalSpeed * LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+					entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 					((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
 				}
 			}
@@ -157,7 +163,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_CRAFTER_TEXTURE;
+		return Textures.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}
 	
 	public void canProvide(LogisticsTransaction transaction){
@@ -258,11 +264,14 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return entity.xCoord == ((BaseLogicCrafting)logic).signEntityX && entity.yCoord == ((BaseLogicCrafting)logic).signEntityY && entity.zCoord == ((BaseLogicCrafting)logic).signEntityZ;
 	}
 	
-	public void addSign(LogisticsTileEntiy entity) {
+	public void addSign(LogisticsSignTileEntity entity, EntityPlayer player) {
 		if(((BaseLogicCrafting)logic).signEntityX == 0 && ((BaseLogicCrafting)logic).signEntityY == 0 && ((BaseLogicCrafting)logic).signEntityZ == 0) {
 			((BaseLogicCrafting)logic).signEntityX = entity.xCoord;
 			((BaseLogicCrafting)logic).signEntityY = entity.yCoord;
 			((BaseLogicCrafting)logic).signEntityZ = entity.zCoord;
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket(), (Player)player);
+			final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, ((BaseLogicCrafting)logic).getDummyInventory());
+			PacketDispatcher.sendPacketToPlayer(newpacket.getPacket(), (Player)player);
 		}
 	}
 	

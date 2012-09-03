@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;

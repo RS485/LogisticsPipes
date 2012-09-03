@@ -9,24 +9,18 @@ import net.minecraft.src.Material;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 
-public class LogisticsBlock extends BlockContainer {
+public class LogisticsSignBlock extends BlockContainer {
 
 	public static final int SignBlockID = 0;
 
-	public LogisticsBlock(int par1) {
+	public LogisticsSignBlock(int par1) {
 		super(par1, Material.iron);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
 
-	// public int getBlockTexture(IBlockAccess par1IBlockAccess, int par2,int
-	// par3, int par4, int par5) {
-	// return this.getBlockTextureFromSideAndMetadata(par5,
-	// par1IBlockAccess.getBlockMetadata(par2, par3, par4));
-	// }
-
 	@Override
 	public int getBlockTextureFromSideAndMetadata(int par1, int par2) {
-		return par2 == SignBlockID ? 4 /* SIGN */: 0 /* NONE */;
+		return 4;
 	}
 
 	@Override
@@ -40,8 +34,7 @@ public class LogisticsBlock extends BlockContainer {
 	}
 
 	@Override
-	public boolean getBlocksMovement(IBlockAccess par1IBlockAccess, int par2,
-			int par3, int par4) {
+	public boolean getBlocksMovement(IBlockAccess par1IBlockAccess, int par2, int par3, int par4) {
 		return true;
 	}
 
@@ -56,23 +49,22 @@ public class LogisticsBlock extends BlockContainer {
 	}
 
 	@Override
-	public AxisAlignedBB getCollisionBoundingBoxFromPool(World par1World, int par2, int par3, int par4)
-    {
-        return null;
+	public AxisAlignedBB getCollisionBoundingBoxFromPool(World par1World, int par2, int par3, int par4) {
+		return null;
     }
 	
 	@Override
 	public void setBlockBoundsBasedOnState(IBlockAccess par1IBlockAccess, int par2, int par3, int par4) {
 		int meta = par1IBlockAccess.getBlockMetadata(par2, par3, par4);
 		TileEntity tile = par1IBlockAccess.getBlockTileEntity(par2, par3, par4);
-		if (meta == SignBlockID && tile instanceof LogisticsTileEntiy) {
+		if (meta == SignBlockID && tile instanceof LogisticsSignTileEntity) {
 			float var6 = 0.28125F;
 			float var7 = 0.78125F;
 			float var8 = 0.0F;
 			float var9 = 1.0F;
 			float var10 = 0.125F;
 			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-			PipeItemsCraftingLogistics pipe = ((LogisticsTileEntiy) tile).getAttachedSignOwnerPipe();
+			PipeItemsCraftingLogistics pipe = ((LogisticsSignTileEntity)tile).getAttachedSignOwnerPipe();
 			if (pipe != null) {
 				int disX = pipe.xCoord - tile.xCoord;
 				int disZ = pipe.zCoord - tile.zCoord;
@@ -91,29 +83,29 @@ public class LogisticsBlock extends BlockContainer {
 
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
-		return new LogisticsTileEntiy();
+		return new LogisticsSignTileEntity();
 	}
 	
 	@Override
-	public void onBlockClicked(World world, int x, int y, int z, EntityPlayer player){
+	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
 		int meta = world.getBlockMetadata(x, y, z);
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
-		if (meta == SignBlockID && tile instanceof LogisticsTileEntiy) {
-			PipeItemsCraftingLogistics pipe = ((LogisticsTileEntiy) tile).getAttachedSignOwnerPipe();
+		if (meta == SignBlockID && tile instanceof LogisticsSignTileEntity) {
+			PipeItemsCraftingLogistics pipe = ((LogisticsSignTileEntity)tile).getAttachedSignOwnerPipe();
 			if(pipe != null) {
 				pipe.logic.blockActivated(player);
-				return;
+				return true;
 			}
 		}
-		return;
+		return false;
 	}
 	
 	@Override
     public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
     	int meta = par1World.getBlockMetadata(par2, par3, par4);
 		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
-		if (meta == SignBlockID && tile instanceof LogisticsTileEntiy) {
-			PipeItemsCraftingLogistics pipe = ((LogisticsTileEntiy) tile).getAttachedSignOwnerPipe();
+		if (meta == SignBlockID && tile instanceof LogisticsSignTileEntity) {
+			PipeItemsCraftingLogistics pipe = ((LogisticsSignTileEntity) tile).getAttachedSignOwnerPipe();
 			if(pipe != null) {
 				pipe.removeRegisteredSign();
 			}

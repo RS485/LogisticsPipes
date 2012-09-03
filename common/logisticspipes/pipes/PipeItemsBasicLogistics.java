@@ -8,7 +8,7 @@
 
 package logisticspipes.pipes;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.main.RoutedPipe;
@@ -25,7 +25,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_TEXTURE;
+		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
 
 	@Override

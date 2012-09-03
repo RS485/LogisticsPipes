@@ -8,7 +8,7 @@
 
 package logisticspipes.main;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import buildcraft.api.gates.Action;
 
 public class ActionDisableLogistics extends Action{
@@ -31,6 +31,6 @@ public class ActionDisableLogistics extends Action{
 	@Override
 	public String getTexture() {
 		// TODO Auto-generated method stub
-		return LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
 	}
 }

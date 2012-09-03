@@ -12,8 +12,11 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.routing.IDirectRoutingConnection;
+import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
@@ -124,26 +127,52 @@ class PathFinder {
 			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, Orientations.values()[i]);
 			p.moveForwards(1);
 			TileEntity tile = startPipe.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
-			if (tile == null || !(tile instanceof TileGenericPipe) || !SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile))
-				continue;
-	
-			int beforeRecurseCount = foundPipes.size();
-			HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
-			for(RoutedPipe pipe : result.keySet()) 	{
-				//Update Result with the direction we took
-				result.get(pipe).exitOrientation = Orientations.values()[i];
-				if (!foundPipes.containsKey(pipe)) {  
-					// New path
-					foundPipes.put(pipe, result.get(pipe));
-				}
-				else if (result.get(pipe).metric < foundPipes.get(pipe).metric)	{ 
-					//If new path is better, replace old path, otherwise do nothing
-					foundPipes.put(pipe, result.get(pipe));
+			
+			if (tile == null) continue;
+			boolean isDirectConnection = false;
+			int resistance = 0;
+			
+			if(tile instanceof IInventory) {
+				if(startPipe.pipe instanceof IDirectRoutingConnection) {
+					if(SimpleServiceLocator.connectionManager.hasDirectConnection(((RoutedPipe)startPipe.pipe).getRouter())) {
+						CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(((RoutedPipe)startPipe.pipe).getRouter());
+						if(CRP != null) {
+							tile = CRP.container;
+							isDirectConnection = true;
+							resistance = ((IDirectRoutingConnection)startPipe.pipe).getConnectionResistance();
+							if(Orientations.values()[i] != Orientations.XPos) {
+								resistance = 0;
+							}
+						}
+					}
 				}
 			}
-			if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
-				p.moveBackwards(1);
-				pathPainter.addLaser(startPipe.worldObj, p, Orientations.values()[i]);
+
+			if (tile == null) continue;
+			
+			if (tile instanceof TileGenericPipe && (isDirectConnection || SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile))) {
+				int beforeRecurseCount = foundPipes.size();
+				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
+				for(RoutedPipe pipe : result.keySet()) 	{
+					//Update Result with the direction we took
+					result.get(pipe).exitOrientation = Orientations.values()[i];
+					if (!foundPipes.containsKey(pipe)) {  
+						// New path
+						foundPipes.put(pipe, result.get(pipe));
+						//Add resistance
+						foundPipes.get(pipe).metric += resistance;
+					}
+					else if (result.get(pipe).metric + resistance < foundPipes.get(pipe).metric)	{ 
+						//If new path is better, replace old path, otherwise do nothing
+						foundPipes.put(pipe, result.get(pipe));
+						//Add resistance
+						foundPipes.get(pipe).metric += resistance;
+					}
+				}
+				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
+					p.moveBackwards(1);
+					pathPainter.addLaser(startPipe.worldObj, p, Orientations.values()[i]);
+				}
 			}
 		}
 		return foundPipes;

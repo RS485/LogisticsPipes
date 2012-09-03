@@ -1,6 +1,6 @@
 package logisticspipes.utils.gui;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import net.minecraft.src.IInventory;
@@ -12,7 +12,7 @@ public class ModuleSlot extends RestrictedSlot {
 	private int _moduleIndex;
 	
 	public ModuleSlot(IInventory iinventory, int i, int j, int k, PipeLogisticsChassi pipe) {
-		super(iinventory, i, j, k, LogisticsPipes.ItemModuleId + 256);
+		super(iinventory, i, j, k, Configs.ItemModuleId + 256);
 		_pipe = pipe;
 		_moduleIndex = i;
 	}

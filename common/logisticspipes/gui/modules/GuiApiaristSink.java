@@ -6,7 +6,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleApiaristSink.SinkSetting;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketPipeBeePacket;
+import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;

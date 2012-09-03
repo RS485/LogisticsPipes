@@ -5,7 +5,7 @@ import java.util.List;
 
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketItem;
+import logisticspipes.network.packets.PacketItem;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -325,7 +325,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		super.drawScreen(par1, par2, par3);
 		
 		if(!this.hasSubGui()) {
-			BasicGuiHelper.displayItemToolTip(tooltip, this, 300, guiLeft, guiTop, true);
+			BasicGuiHelper.displayItemToolTip(tooltip, this, 300, guiLeft, guiTop, true, false);
 		}
 	}
 

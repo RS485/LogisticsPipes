@@ -8,11 +8,14 @@
 
 package logisticspipes.main;
 
+import java.lang.reflect.Field;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -26,11 +29,12 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketPipeInteger;
 import logisticspipes.network.TilePacketWrapper;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
@@ -42,7 +46,9 @@ import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.Utils;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
@@ -78,14 +84,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
-		super(new PipeTransportLogistics(), logic, itemID);
+		this(new PipeTransportLogistics(), logic, itemID);
+	}
+	
+	public CoreRoutedPipe(PipeTransport transport, BaseRoutingLogic logic, int itemID) {
+		super(transport, logic, itemID);
 		((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
 		//Roughly spread pipe updates throughout the frequency, no need to maintain balance
-		_delayOffset = pipecount % LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY; 
+		_delayOffset = pipecount % Configs.LOGISTICS_DETECTION_FREQUENCY; 
 	}
-	
+
 	public RouteLayer getRouteLayer(){
 		if (_routeLayer == null){
 			_routeLayer = new RouteLayer(getRouter(), getTransportLayer());
@@ -101,8 +111,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return _transportLayer;
 	}
 	
-	public logisticspipes.network.PacketPayload getLogisticsNetworkPacket() {
-		logisticspipes.network.PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(xCoord, yCoord, zCoord, new Object[] { container, transport, logic });
+	public logisticspipes.network.packets.PacketPayload getLogisticsNetworkPacket() {
+		logisticspipes.network.packets.PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(xCoord, yCoord, zCoord, new Object[] { container, transport, logic });
 
 		return payload;
 	}
@@ -154,7 +164,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		getRouter().update(worldObj.getWorldTime() % LogisticsPipes.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal) {
@@ -205,7 +215,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public String getTextureFile() {
-		return LogisticsPipes.BASE_TEXTURE_FILE;
+		return Textures.BASE_TEXTURE_FILE;
 	}
 
 	@Override
@@ -225,11 +235,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public int getRoutedTexture(Orientations connection){
-		return LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE;
+		return Textures.LOGISTICSPIPE_ROUTED_TEXTURE;
 	}
 	
 	public int getNonRoutedTexture(Orientations connection){
-		return LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE;
+		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
 	
 	@Override
@@ -310,7 +320,22 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
 	
-	
+	public void refreshRender() {
+		Field refreshRenderStateFiled;
+		try {
+			refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
+			refreshRenderStateFiled.setAccessible(true);
+			refreshRenderStateFiled.set(this.container, true);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/***  --  IAdjacentWorldAccess  --  ***/
 	

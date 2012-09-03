@@ -2,6 +2,7 @@ package logisticspipes.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
@@ -21,13 +22,25 @@ import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketItem;
+import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketPipeBeePacket;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeString;
+import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.network.packets.PacketRequestGuiContent;
+import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.routing.NormalOrdererRequests;
+import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
@@ -180,14 +193,22 @@ public class ServerPacketHandler {
 					final PacketPipeInteger packetY = new PacketPipeInteger();
 					packetY.readData(data);
 					onDiskMacroRequest(player, packetY);
+					break;
 				case NetworkConstants.BEE_MODULE_SET_BEE:
 					final PacketPipeBeePacket packetZ = new PacketPipeBeePacket();
 					packetZ.readData(data);
 					onBeeModuleSetBee(player, packetZ);
+					break;
 				case NetworkConstants.LIQUID_SUPPLIER_PARTIALS:
 					final PacketPipeInteger packetAa = new PacketPipeInteger();
 					packetAa.readData(data);
 					onLiquidSupplierPartials(player, packetAa);
+					break;
+				case NetworkConstants.INC_SYS_CON_CONTENT:
+					final PacketCoordinates packetAb = new PacketCoordinates();
+					packetAb.readData(data);
+					onInvSysContentRequest(player, packetAb);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -641,7 +662,7 @@ public class ServerPacketHandler {
 		if (pipe == null) {
 			return;
 		}
-		PacketDispatcher.sendPacketToServer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket());
+		PacketDispatcher.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) playerEntity);
 	}
 
 	private static void onCraftingPipeUpdateRequest(EntityPlayerMP player, PacketCoordinates packet) {
@@ -650,7 +671,7 @@ public class ServerPacketHandler {
 			return;
 		}
 		if(!(pipe.pipe instanceof CoreRoutedPipe)) return;
-		PacketDispatcher.sendPacketToServer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket());
+		PacketDispatcher.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) player);
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe.logic instanceof BaseLogicCrafting) {
 				final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory());
@@ -800,6 +821,20 @@ public class ServerPacketHandler {
 		if(pipe.pipe instanceof PipeItemsLiquidSupplier) {
 			PipeItemsLiquidSupplier liquid = (PipeItemsLiquidSupplier) pipe.pipe;
 			((LogicLiquidSupplier)liquid.logic).setRequestingPartials((packet.integer % 10) == 1);
+		}
+	}
+
+	private static void onInvSysContentRequest(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
+			PipeItemsInvSysConnector connector = (PipeItemsInvSysConnector) pipe.pipe;
+			LinkedList<ItemIdentifierStack> allItems = connector.getExpectedItems();
+			PacketRequestGuiContent packetContent = new PacketRequestGuiContent(allItems, NetworkConstants.INC_SYS_CON_CONTENT);
+			PacketDispatcher.sendPacketToPlayer(packetContent.getPacket(), (Player)player);
 		}
 	}
 	

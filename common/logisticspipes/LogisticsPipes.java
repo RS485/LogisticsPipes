@@ -250,17 +250,22 @@ TODO later, maybe....
 
 package logisticspipes;
 
-import java.io.File;
 import java.lang.reflect.Method;
 
-import logisticspipes.blocks.LogisticsBlock;
-import logisticspipes.blocks.LogisticsBlockRenderer;
-import logisticspipes.blocks.LogisticsTileEntiy;
+import logisticspipes.blocks.CraftingSignRenderer;
+import logisticspipes.blocks.LogisticsSignBlock;
+import logisticspipes.blocks.LogisticsSignTileEntity;
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.config.Configs;
+import logisticspipes.config.SolderingStationRecipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.ActionDisableLogistics;
@@ -271,13 +276,14 @@ import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.main.TriggerSupplierFailed;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.PacketHandler;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
+import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogisticsMk2;
@@ -303,16 +309,14 @@ import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
 import net.minecraft.src.CraftingManager;
+import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.Item;
-import net.minecraft.src.ItemBlock;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraftforge.client.MinecraftForgeClient;
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
@@ -325,9 +329,6 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TransportProxyClient;
-import cpw.mods.fml.client.SpriteHelper;
-import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -343,7 +344,8 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 @Mod(name="Logistics Pipes", version="0.5.@(Build_Number)", useMetadata = false, modid = "LP|MAIN")
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
-
+	
+	
 	public static LogisticsPipes instance;
 
 	//Log Requests
@@ -371,145 +373,26 @@ public class LogisticsPipes {
 	public static Item LogisticsRemoteOrdererPipe;
 	public static Item LogisticsApiaristAnalyserPipe;
 	public static Item LogisticsApiaristSinkPipe;
+	public static Item LogisticsInvSysCon;
 	
 	
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
 	public static Item LogisticsCraftingSignCreator;
 	public static ItemDisk LogisticsItemDisk;
+	public static Item LogisticsItemCard;
 	
 	public static ItemModule ModuleItem;
 	
 	public static Trigger LogisticsFailedTrigger;
 	
 	public static Action LogisticsDisableAction;
-
-	// Ids
-	public static int ItemDiskId									= 6870;
-	public static int ItemModuleId									= 6871;
-	public static int LOGISTICSREMOTEORDERER_ID						= 6872;
-	public static int LOGISTICSNETWORKMONITOR_ID					= 6873;
 	
-	public static int LOGISTICSPIPE_BASIC_ID						= 6874;
-	public static int LOGISTICSPIPE_REQUEST_ID						= 6875;
-	public static int LOGISTICSPIPE_PROVIDER_ID						= 6876;
-	public static int LOGISTICSPIPE_CRAFTING_ID						= 6877;
-	public static int LOGISTICSPIPE_SATELLITE_ID					= 6878;
-	public static int LOGISTICSPIPE_SUPPLIER_ID						= 6879;
-	public static int LOGISTICSPIPE_BUILDERSUPPLIER_ID				= 6880;
-	public static int LOGISTICSPIPE_CHASSI1_ID						= 6881;
-	public static int LOGISTICSPIPE_CHASSI2_ID						= 6882;
-	public static int LOGISTICSPIPE_CHASSI3_ID						= 6883;
-	public static int LOGISTICSPIPE_CHASSI4_ID						= 6884;
-	public static int LOGISTICSPIPE_CHASSI5_ID						= 6885;
-	public static int LOGISTICSPIPE_LIQUIDSUPPLIER_ID				= 6886;
-	public static int LOGISTICSPIPE_CRAFTING_MK2_ID					= 6887;
-	public static int LOGISTICSPIPE_REQUEST_MK2_ID					= 6888;
-	public static int LOGISTICSPIPE_REMOTE_ORDERER_ID				= 6889;
-	public static int LOGISTICSPIPE_PROVIDER_MK2_ID					= 6890;
-	public static int LOGISTICSPIPE_APIARIST_ANALYSER_ID			= 6891;
-	public static int LOGISTICSPIPE_APIARIST_SINK_ID				= 6892;
+	private Textures textures = new Textures();
 	
-	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
-	
-	
-	
-	// Texture #
-	
-	
-	public static final int LOGISTICSNETWORKMONITOR_ICONINDEX = 0 * 16 + 0;
-	public static final int LOGISTICSREMOTEORDERER_ICONINDEX = 0 * 16 + 1;
-	public static final int LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX = 0 * 16 + 2;
-	
-	public static int LOGISTICSPIPE_TEXTURE							= 0;
-	public static int LOGISTICSPIPE_PROVIDER_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_REQUESTER_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_CRAFTER_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_SATELLITE_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_SUPPLIER_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE			= 0;
-	public static int LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE			= 0;
-	public static int LOGISTICSPIPE_ROUTED_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_NOTROUTED_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE			= 0;
-	public static int LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE		= 0;
-	public static int LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE		= 0;
-	public static int LOGISTICSPIPE_CHASSI1_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_CHASSI2_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_CHASSI3_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_CHASSI4_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_CHASSI5_TEXTURE					= 0;
-	public static int LOGISTICSPIPE_CRAFTERMK2_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_REQUESTERMK2_TEXTURE			= 0;
-	public static int LOGISTICSPIPE_PROVIDERMK2_TEXTURE				= 0;
-	public static int LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE			= 0;
-	public static int LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE		= 0;
-	public static int LOGISTICSPIPE_APIARIST_SINK_TEXTURE			= 0;
-	
-		
-	// ** Texture files **
-	//Overrider
-	public static final String BASE_TEXTURE_FILE = "/logisticspipes/empty.png";
-	
-	// Misc
-	public static final String LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures.png";
-	public static final String LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures.png";
-	
-	// Standalone pipes
-	public static final String LOGISTICSPIPE_TEXTURE_FILE					= "/logisticspipes/pipes/basic.png";
-	public static final String LOGISTICSPIPE_PROVIDER_TEXTURE_FILE			= "/logisticspipes/pipes/provider.png";
-	public static final String LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/provider_mk2.png";
-	public static final String LOGISTICSPIPE_REQUESTER_TEXTURE_FILE			= "/logisticspipes/pipes/request.png";
-	public static final String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/request_mk2.png";
-	public static final String LOGISTICSPIPE_CRAFTER_TEXTURE_FILE			= "/logisticspipes/pipes/crafting.png";
-	public static final String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		= "/logisticspipes/pipes/crafting_mk2.png";
-	public static final String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE			= "/logisticspipes/pipes/satellite.png";
-	public static final String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE			= "/logisticspipes/pipes/supplier.png";
-	public static final String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/builder_supplier.png";
-	public static final String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	= "/logisticspipes/pipes/liquid_supplier.png";
-	public static final String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	= "/logisticspipes/pipes/remote_orderer.png";
-	public static final String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE = "/logisticspipes/pipes/analyzer.png";
-	public static final String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE 	= "/logisticspipes/pipes/beesink.png";
-
-	// Status overlay
-	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
-	public static final String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/not_routed.png";
-	
-	// Chassi pipes
-	public static final String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk1.png";
-	public static final String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk2.png";
-	public static final String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk3.png";
-	public static final String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk4.png";
-	public static final String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk5.png";
-	
-	// Chassi status overlay
-	public static final String LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE		= "/logisticspipes/pipes/chassi/status_overlay/routed.png";
-	public static final String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	= "/logisticspipes/pipes/chassi/status_overlay/not_routed.png";
-	public static final String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	= "/logisticspipes/pipes/chassi/status_overlay/direction.png";
-	
-	// Configrables
-	public static int LOGISTICS_DETECTION_LENGTH	= 50;
-	public static int LOGISTICS_DETECTION_COUNT		= 100;
-	public static int LOGISTICS_DETECTION_FREQUENCY = 20;
-	public static boolean LOGISTICS_ORDERER_COUNT_INVERTWHEEL = false;
-	public static boolean LOGISTICS_ORDERER_PAGE_INVERTWHEEL = false;
-	
-	public static final float LOGISTICS_ROUTED_SPEED_MULTIPLIER	= 20F;
-	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
-	
-	protected static Configuration configuration;
-	
-	//GuiOrderer Popup setting
-	public static boolean displayPopup = true;
-
 	//Blocks
-	Block logisticsBlock;
-	
-	//BlockID
-	
-	public static int LOGISTICS_BLOCK_ID = 201;
-	
-	/** stuff for testing **/
+	Block logisticsSign;
+	Block logisticsSolidBlock;
 	
 	@Deprecated
 	public static ILogisticsManager logisticsManager = new LogisticsManager();
@@ -535,184 +418,16 @@ public class LogisticsPipes {
 	
 	@Init
 	public void init(FMLInitializationEvent event) {
+		textures.load(event);
 		if(event.getSide().isClient()) {
-				initTextures();
-		}
-		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
-		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
-		LOGISTICSPIPE_ROUTED_TEXTURE 				= registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_NOTROUTED_TEXTURE 			= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
-		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE 		= registerTexture(LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
-		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE 	= registerTexture(LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
-		LOGISTICSPIPE_APIARIST_SINK_TEXTURE 		= registerTexture(LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
-		
-		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI1_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI1_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI2_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI2_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI3_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
-		
-		if(event.getSide().isClient()) {
-			MinecraftForgeClient.preloadTexture(LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE);
-			MinecraftForgeClient.preloadTexture(LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
-
 			Localization.addLocalization("/lang/logisticspipes/", "en_US");
 		}
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
-		
 	}
 	
 	@PreInit
 	public void LoadConfig(FMLPreInitializationEvent evt) {
-		File configFile = new File(ProxyCore.proxy.getBuildCraftBase(), "config/LogisticsPipes.cfg");
-		configuration = new Configuration(configFile);
-		configuration.load();
-		
-		Property logisticRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSREMOTEORDERER_ID);
-		logisticRemoteOrdererIdProperty.comment = "The item id for the remote orderer";
-		
-		Property logisticNetworkMonitorIdProperty = configuration.getOrCreateIntProperty("logisticsNetworkMonitor.id", Configuration.CATEGORY_ITEM, LOGISTICSNETWORKMONITOR_ID);
-		logisticNetworkMonitorIdProperty.comment = "The item id for the network monitor";
-		
-		Property logisticPipeIdProperty = configuration.getOrCreateIntProperty("logisticsPipe.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_BASIC_ID);
-		logisticPipeIdProperty.comment = "The item id for the basic logistics pipe";
-		
-		Property logisticPipeRequesterIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequester.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_ID);
-		logisticPipeRequesterIdProperty.comment = "The item id for the requesting logistics pipe";
-		
-		Property logisticPipeProviderIdProperty = configuration.getOrCreateIntProperty("logisticsPipeProvider.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_ID);
-		logisticPipeProviderIdProperty.comment = "The item id for the providing logistics pipe";
-		
-		Property logisticPipeCraftingIdProperty = configuration.getOrCreateIntProperty("logisticsPipeCrafting.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_ID);
-		logisticPipeCraftingIdProperty.comment = "The item id for the crafting logistics pipe";
-
-		Property logisticPipeSatelliteIdProperty = configuration.getOrCreateIntProperty("logisticsPipeSatellite.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_SATELLITE_ID);
-		logisticPipeSatelliteIdProperty.comment = "The item id for the crafting satellite pipe";
-		
-		Property logisticPipeSupplierIdProperty = configuration.getOrCreateIntProperty("logisticsPipeSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_SUPPLIER_ID);
-		logisticPipeSupplierIdProperty.comment = "The item id for the supplier pipe";
-		
-		Property logisticPipeChassi1IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi1.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI1_ID);
-		logisticPipeChassi1IdProperty.comment = "The item id for the chassi1";
-		
-		Property logisticPipeChassi2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI2_ID);
-		logisticPipeChassi2IdProperty.comment = "The item id for the chassi2";
-		
-		Property logisticPipeChassi3IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi3.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI3_ID);
-		logisticPipeChassi3IdProperty.comment = "The item id for the chassi3";
-		
-		Property logisticPipeChassi4IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi4.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI4_ID);
-		logisticPipeChassi4IdProperty.comment = "The item id for the chassi4";
-		
-		Property logisticPipeChassi5IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi5.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI5_ID);
-		logisticPipeChassi5IdProperty.comment = "The item id for the chassi5";
-
-		Property logisticPipeCraftingMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeCraftingMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK2_ID);
-		logisticPipeCraftingMK2IdProperty.comment = "The item id for the crafting logistics pipe MK2";
-		
-		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
-		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
-
-		Property logisticPipeProviderMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeProviderMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_MK2_ID);
-		logisticPipeProviderMK2IdProperty.comment = "The item id for the provider logistics pipe MK2";
-
-		Property logisticPipeApiaristAnalyserIdProperty = configuration.getOrCreateIntProperty("logisticsPipeApiaristAnalyser.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_ANALYSER_ID);
-		logisticPipeApiaristAnalyserIdProperty.comment = "The item id for the apiarist logistics analyser pipe";
-
-		Property logisticPipeRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REMOTE_ORDERER_ID);
-		logisticPipeRemoteOrdererIdProperty.comment = "The item id for the remote orderer logistics pipe";
-		
-		Property logisticPipeApiaristSinkIdProperty = configuration.getOrCreateIntProperty("logisticsPipeApiaristSink.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_SINK_ID);
-		logisticPipeApiaristSinkIdProperty.comment = "The item id for the apiarist logistics sink pipe";
-
-		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
-		logisticModuleIdProperty.comment = "The item id for the modules";
-
-		Property logisticItemDiskIdProperty = configuration.getOrCreateIntProperty("logisticsDisk.id", Configuration.CATEGORY_ITEM, ItemDiskId);
-		logisticItemDiskIdProperty.comment = "The item id for the disk";
-
-		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
-		
-		Property logisticPipeBuilderSupplierIdProperty = configuration.getOrCreateIntProperty("logisticsPipeBuilderSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_BUILDERSUPPLIER_ID);
-		logisticPipeBuilderSupplierIdProperty.comment = "The item id for the builder supplier pipe";
-		
-		Property logisticPipeLiquidSupplierIdProperty = configuration.getOrCreateIntProperty("logisticsPipeLiquidSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_LIQUIDSUPPLIER_ID);
-		logisticPipeLiquidSupplierIdProperty.comment = "The item id for the liquid supplier pipe";
-
-
-		
-		Property detectionLength = configuration.getOrCreateIntProperty("detectionLength", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_LENGTH);
-		detectionLength.comment = "The maximum shortest length between logistics pipes. This is an indicator on the maxim depth of the recursion algorithm to discover logistics neighbours. A low value might use less CPU, a high value will allow longer pipe sections";
-		
-		Property detectionCount = configuration.getOrCreateIntProperty("detectionCount", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_COUNT);
-		detectionCount.comment = "The maximum number of buildcraft pipees (including forks) between logistics pipes. This is an indicator of the maximum ammount of nodes the recursion algorithm will visit before giving up. As it is possible to fork a pipe connection using standard BC pipes the algorithm will attempt to discover all available destinations through that pipe. Do note that the logistics system will not interfere with the operation of non-logistics pipes. So a forked pipe will usually be sup-optimal, but it is possible. A low value might reduce CPU usage, a high value will be able to handle more complex pipe setups. If you never fork your connection between the logistics pipes this has the same meaning as detectionLength and the lower of the two will be used";
-		
-		Property detectionFrequency = configuration.getOrCreateIntProperty("detectionFrequency", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_FREQUENCY);
-		detectionFrequency.comment = "The amount of time that passes between checks to see if it is still connected to its neighbours. A low value will mean that it will detect changes faster but use more CPU. A high value means detection takes longer, but CPU consumption is reduced. A value of 20 will check about every second";
-		
-		Property countInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererCountInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_COUNT_INVERTWHEEL);
-		countInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order number of items"; 
-
-		Property pageInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererPageInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_PAGE_INVERTWHEEL);
-		pageInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order pages";
-
-		Property pageDisplayPopupProperty = configuration.getOrCreateBooleanProperty("displayPopup", Configuration.CATEGORY_GENERAL, displayPopup);
-		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
-
-
-		
-		Property logisticsBlockId = configuration.getOrCreateIntProperty("logisticsBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_BLOCK_ID);
-		logisticsBlockId.comment = "The ID of the LogisticsPipes Block (0 if you don't want any block)";
-				
-		configuration.save();
-		
-		LOGISTICSNETWORKMONITOR_ID		= Integer.parseInt(logisticNetworkMonitorIdProperty.value);
-		LOGISTICSREMOTEORDERER_ID		= Integer.parseInt(logisticRemoteOrdererIdProperty.value);
-		ItemModuleId					= Integer.parseInt(logisticModuleIdProperty.value);
-		ItemDiskId						= Integer.parseInt(logisticItemDiskIdProperty.value);
-		 
-		LOGISTICSPIPE_BASIC_ID 			= Integer.parseInt(logisticPipeIdProperty.value);
-		LOGISTICSPIPE_REQUEST_ID		= Integer.parseInt(logisticPipeRequesterIdProperty.value);
-		LOGISTICSPIPE_PROVIDER_ID		= Integer.parseInt(logisticPipeProviderIdProperty.value);
-		LOGISTICSPIPE_CRAFTING_ID		= Integer.parseInt(logisticPipeCraftingIdProperty.value);
-		LOGISTICSPIPE_SATELLITE_ID		= Integer.parseInt(logisticPipeSatelliteIdProperty.value);
-		LOGISTICSPIPE_SUPPLIER_ID		= Integer.parseInt(logisticPipeSupplierIdProperty.value);
-		LOGISTICSPIPE_CHASSI1_ID		= Integer.parseInt(logisticPipeChassi1IdProperty.value);
-		LOGISTICSPIPE_CHASSI2_ID		= Integer.parseInt(logisticPipeChassi2IdProperty.value);
-		LOGISTICSPIPE_CHASSI3_ID		= Integer.parseInt(logisticPipeChassi3IdProperty.value);
-		LOGISTICSPIPE_CHASSI4_ID		= Integer.parseInt(logisticPipeChassi4IdProperty.value);
-		LOGISTICSPIPE_CHASSI5_ID		= Integer.parseInt(logisticPipeChassi5IdProperty.value);
-		LOGISTICSPIPE_CRAFTING_MK2_ID	= Integer.parseInt(logisticPipeCraftingMK2IdProperty.value);
-		LOGISTICSPIPE_REQUEST_MK2_ID	= Integer.parseInt(logisticPipeRequesterMK2IdProperty.value);
-		LOGISTICSPIPE_PROVIDER_MK2_ID	= Integer.parseInt(logisticPipeProviderMK2IdProperty.value);
-		LOGISTICSPIPE_REMOTE_ORDERER_ID	= Integer.parseInt(logisticPipeRemoteOrdererIdProperty.value);
-		LOGISTICSPIPE_APIARIST_ANALYSER_ID	= Integer.parseInt(logisticPipeApiaristAnalyserIdProperty.value);
-		LOGISTICSPIPE_APIARIST_SINK_ID	= Integer.parseInt(logisticPipeApiaristSinkIdProperty.value);
-		LOGISTICS_DETECTION_LENGTH		= Integer.parseInt(detectionLength.value);
-		LOGISTICS_DETECTION_COUNT		= Integer.parseInt(detectionCount.value);
-		LOGISTICS_DETECTION_FREQUENCY 	= Math.max(Integer.parseInt(detectionFrequency.value), 1);
-		LOGISTICS_ORDERER_COUNT_INVERTWHEEL = Boolean.parseBoolean(countInvertWheelProperty.value);
-		LOGISTICS_ORDERER_PAGE_INVERTWHEEL = Boolean.parseBoolean(pageInvertWheelProperty.value);
-		LOGISTICS_BLOCK_ID = Integer.parseInt(logisticsBlockId.value);
-		
-		LOGISTICSCRAFTINGSIGNCREATOR_ID		= Integer.parseInt(logisticCraftingSignCreatorIdProperty.value);
-		
-		displayPopup = Boolean.parseBoolean(pageDisplayPopupProperty.value);
-
-		LOGISTICSPIPE_BUILDERSUPPLIER_ID		= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
-		LOGISTICSPIPE_LIQUIDSUPPLIER_ID			= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
+		Configs.load();
 	}
 	
 	@PostInit
@@ -792,16 +507,21 @@ public class LogisticsPipes {
 		//BuildCraftBuilders.initialize();
 		//BuildCraftSilicon.initialize();
 		
-		LogisticsNetworkMonitior = new LogisticsItem(LOGISTICSNETWORKMONITOR_ID);
-		LogisticsNetworkMonitior.setIconIndex(LOGISTICSNETWORKMONITOR_ICONINDEX);
+		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
+		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		LogisticsRemoteOrderer = new RemoteOrderer(LOGISTICSREMOTEORDERER_ID);
+		LogisticsItemCard = new LogisticsItem(Configs.ItemCardId);
+		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
+		LogisticsItemCard.setItemName("logisticsItemCard");
+		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
+		
+		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
 		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
 
-		LogisticsCraftingSignCreator = new CraftingSignCreator(LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		LogisticsCraftingSignCreator.setIconIndex(LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
+		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
+		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
 		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
 
 		LogisticsPipes.LogisticsFailedTrigger = new TriggerSupplierFailed(700);
@@ -809,33 +529,35 @@ public class LogisticsPipes {
 		
 		LogisticsPipes.LogisticsDisableAction = new ActionDisableLogistics(700);
 		
-		ModuleItem = new ItemModule(ItemModuleId);
+		ModuleItem = new ItemModule(Configs.ItemModuleId);
 		ModuleItem.setItemName("itemModule");
 		ModuleItem.loadModules();
 		
-		LogisticsItemDisk = new ItemDisk(ItemDiskId);
+		LogisticsItemDisk = new ItemDisk(Configs.ItemDiskId);
 		LogisticsItemDisk.setItemName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
 		
-		LogisticsBasicPipe = createPipe(LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe", event.getSide());
-		LogisticsRequestPipe = createPipe(LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", event.getSide());
-		LogisticsProviderPipe = createPipe(LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe", event.getSide());
-		LogisticsCraftingPipe = createPipe(LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", event.getSide());
-		LogisticsSatellitePipe = createPipe(LOGISTICSPIPE_SATELLITE_ID, PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe", event.getSide());
-		LogisticsSupplierPipe = createPipe(LOGISTICSPIPE_SUPPLIER_ID, PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe", event.getSide());
-		LogisticsChassiPipe1 = createPipe(LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", event.getSide());
-		LogisticsChassiPipe2 = createPipe(LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", event.getSide());
-		LogisticsChassiPipe3 = createPipe(LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", event.getSide());
-		LogisticsChassiPipe4 = createPipe(LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", event.getSide());
-		LogisticsChassiPipe5 = createPipe(LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", event.getSide());
-		LogisticsCraftingPipeMK2 = createPipe(LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", event.getSide());
-		LogisticsRequestPipeMK2 = createPipe(LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", event.getSide());
-		LogisticsRemoteOrdererPipe = createPipe(LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe", event.getSide());
-		LogisticsProviderPipeMK2 = createPipe(LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", event.getSide());
-		LogisticsApiaristAnalyserPipe = createPipe(LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", event.getSide());
-		LogisticsApiaristSinkPipe = createPipe(LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", event.getSide());
-		
+		LogisticsBasicPipe = createPipe(Configs.LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe", event.getSide());
+		LogisticsRequestPipe = createPipe(Configs.LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", event.getSide());
+		LogisticsProviderPipe = createPipe(Configs.LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe", event.getSide());
+		LogisticsCraftingPipe = createPipe(Configs.LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", event.getSide());
+		LogisticsSatellitePipe = createPipe(Configs.LOGISTICSPIPE_SATELLITE_ID, PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe", event.getSide());
+		LogisticsSupplierPipe = createPipe(Configs.LOGISTICSPIPE_SUPPLIER_ID, PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe", event.getSide());
+		LogisticsChassiPipe1 = createPipe(Configs.LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", event.getSide());
+		LogisticsChassiPipe2 = createPipe(Configs.LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", event.getSide());
+		LogisticsChassiPipe3 = createPipe(Configs.LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", event.getSide());
+		LogisticsChassiPipe4 = createPipe(Configs.LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", event.getSide());
+		LogisticsChassiPipe5 = createPipe(Configs.LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", event.getSide());
+		LogisticsCraftingPipeMK2 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", event.getSide());
+		LogisticsRequestPipeMK2 = createPipe(Configs.LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", event.getSide());
+		LogisticsRemoteOrdererPipe = createPipe(Configs.LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe", event.getSide());
+		LogisticsProviderPipeMK2 = createPipe(Configs.LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", event.getSide());
+		LogisticsApiaristAnalyserPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", event.getSide());
+		LogisticsApiaristSinkPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", event.getSide());
+		LogisticsInvSysCon = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", event.getSide());
+
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
+		ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
@@ -846,8 +568,8 @@ public class LogisticsPipes {
 		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
 		*/
 		
-		LogisticsBuilderSupplierPipe = createPipe(LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", event.getSide());
-		LogisticsLiquidSupplierPipe = createPipe(LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", event.getSide());
+		LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", event.getSide());
+		LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", event.getSide());
 		
 		CraftingManager craftingManager = CraftingManager.getInstance();
 		craftingManager.addRecipe(new ItemStack(LogisticsBuilderSupplierPipe, 1), new Object[]{"iPy", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('y'), new ItemStack(Item.dyePowder, 1,11)});
@@ -1028,10 +750,8 @@ public class LogisticsPipes {
 		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
 		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
 		
-		if(LOGISTICS_BLOCK_ID != 0) {
-			craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('S'), Item.sign, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
-			craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('S'), Item.sign, Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
-		}
+		craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('S'), Item.sign, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
+		craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('S'), Item.sign, Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
 		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
@@ -1039,14 +759,16 @@ public class LogisticsPipes {
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
 		
+		SolderingStationRecipes.loadRecipe();
+		
 		//Blocks
-		if(LOGISTICS_BLOCK_ID != 0) {
-			logisticsBlock = new LogisticsBlock(LOGISTICS_BLOCK_ID);
-			ModLoader.registerBlock(logisticsBlock, ItemBlock.class);
-		
-			ModLoader.registerTileEntity(LogisticsTileEntiy.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new LogisticsBlockRenderer());
-		}
-		
+		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
+		ModLoader.registerBlock(logisticsSign);
+		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
+		ModLoader.registerTileEntity(LogisticsSignTileEntity.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new CraftingSignRenderer());
+		ModLoader.registerTileEntity(LogisticsSignTileEntity.class, "logisticspipes.blocks.LogisticsSignTileEntity", new CraftingSignRenderer());
+		ModLoader.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 	}
 	
 	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
@@ -1067,38 +789,9 @@ public class LogisticsPipes {
 			ProxyCore.proxy.addName(res, descr);
 			MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, TransportProxyClient.pipeItemRenderer);
 		}
-		if(defaultID != LogisticsPipes.LOGISTICSPIPE_BASIC_ID) {
+		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
 		}
 		return res;
-	}
-	
-	private int index = 0;
-	
-	public int registerTexture(String fileName) {
-		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-			RenderingRegistry.addTextureOverride(LogisticsPipes.BASE_TEXTURE_FILE, fileName, index);
-		}
-		return index++;
-	}
-	
-	public void initTextures() {
-		String spirt = 	"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111" + 
-		"1111111111111111";
-		SpriteHelper.registerSpriteMapForFile(LogisticsPipes.BASE_TEXTURE_FILE, spirt);
 	}
 }

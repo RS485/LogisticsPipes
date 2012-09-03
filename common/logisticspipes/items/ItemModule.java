@@ -4,7 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -191,7 +191,7 @@ public class ItemModule extends ItemModuleProxy {
 	}
 	
 	public int addOverlay(String newFileName) {
-		return ModLoader.addOverride(LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, newFileName);
+		return ModLoader.addOverride(Textures.LOGISTICSITEMS_TEXTURE_FILE, newFileName);
 	}
 	
 	public int[] getRegisteredModulesIDs() {

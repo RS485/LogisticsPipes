@@ -3,7 +3,8 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
-import logisticspipes.gui.GuiLiquidSupplierPipe;
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
@@ -21,10 +22,19 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.network.packets.PacketCraftingLoop;
+import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketItem;
+import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketModuleNBT;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
@@ -142,12 +152,32 @@ public class ClientPacketHandler {
 					packetR.readData(data);
 					onLiquidSupplierPartials(player,packetR);
 					break;
+				case NetworkConstants.INC_SYS_CON_CONTENT:
+					final PacketRequestGuiContent packetS = new PacketRequestGuiContent();
+					packetS.readData(data);
+					onInvSysConGuiData(player,packetS);
+					break;
+				case NetworkConstants.SOLDERING_UPDATE_HEAT:
+					final PacketPipeInteger packetT = new PacketPipeInteger();
+					packetT.readData(data);
+					onSolderingUpdateHeat(player, packetT);
+					break;
+				case NetworkConstants.SOLDERING_UPDATE_PROGRESS:
+					final PacketPipeInteger packetU = new PacketPipeInteger();
+					packetU.readData(data);
+					onSolderingUpdateProgress(player, packetU);
+					break;
+				case NetworkConstants.SOLDERING_UPDATE_INVENTORY:
+					final PacketInventoryChange packetV = new PacketInventoryChange();
+					packetV.readData(data);
+					onSolderingUpdateInventory(player, packetV);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
 	}
-	
+
 	private static void onCraftingPipeSetSatellite(PacketPipeInteger packet) {
 		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
@@ -353,6 +383,40 @@ public class ClientPacketHandler {
 		}
 		if(tile.pipe instanceof PipeItemsLiquidSupplier && tile.pipe.logic instanceof LogicLiquidSupplier) {
 			((LogicLiquidSupplier)tile.pipe.logic).setRequestingPartials((packet.integer % 10) == 1);		
+		}
+	}
+	
+	private static void onInvSysConGuiData(Player player, PacketRequestGuiContent packet) {
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiInvSysConnector) {
+			((GuiInvSysConnector) FMLClientHandler.instance().getClient().currentScreen).handleContentAnswer(packet._allItems);
+		}
+	}
+
+	private static void onSolderingUpdateHeat(Player player, PacketPipeInteger packet) {
+		final TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSolderingTileEntity) {
+			LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
+			station.heat = packet.integer;
+		}
+	}
+
+	private static void onSolderingUpdateProgress(Player player, PacketPipeInteger packet) {
+		final TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSolderingTileEntity) {
+			LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
+			station.progress = packet.integer;
+		}
+	}
+
+	private static void onSolderingUpdateInventory(Player player, PacketInventoryChange packet) {
+		final TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSolderingTileEntity) {
+			LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
+			for(int i=0;i<station.getSizeInventory();i++) {
+				if(i >= packet.itemStacks.size()) break;
+				ItemStack stack = packet.itemStacks.get(i);
+				station.setInventorySlotContents(i, stack);
+			}
 		}
 	}
 

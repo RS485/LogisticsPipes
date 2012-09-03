@@ -18,7 +18,7 @@ import logisticspipes.main.GuiIDs;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.AdjacentTile;

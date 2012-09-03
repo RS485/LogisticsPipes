@@ -2,7 +2,7 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.logic.TemporaryLogic;
@@ -35,7 +35,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE;
+		return Textures.LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE;
 	}
 
 	@Override
@@ -52,9 +52,9 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	@Override
 	public int getNonRoutedTexture(Orientations connection) {
 		if (connection.equals(getPointedOrientation())){
-			return LogisticsPipes.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
+			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
-		return LogisticsPipes.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
+		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}
 	
 	@Override

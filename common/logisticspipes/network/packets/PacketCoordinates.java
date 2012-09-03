@@ -1,8 +1,10 @@
-package logisticspipes.network;
+package logisticspipes.network.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+
+import logisticspipes.network.LogisticsPipesPacket;
 
 public class PacketCoordinates extends LogisticsPipesPacket {
 

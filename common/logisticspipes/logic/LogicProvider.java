@@ -12,7 +12,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.InventoryUtilFactory;

@@ -1,17 +1,18 @@
-package logisticspipes.network;
+package logisticspipes.network.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
+import logisticspipes.network.SendNBTTagCompound;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 
 public class PacketInventoryChange extends PacketCoordinates {
 
 	public IInventory inventory;
-	public ArrayList<ItemStack> itemStacks;
+	public LinkedList<ItemStack> itemStacks;
 
 	public PacketInventoryChange() {
 		super();
@@ -49,18 +50,18 @@ public class PacketInventoryChange extends PacketCoordinates {
 
 		super.readData(data);
 
-		itemStacks = new ArrayList<ItemStack>(); // TODO ... => Map<slotid, ItemStack>
+		itemStacks = new LinkedList<ItemStack>(); // TODO ... => Map<slotid, ItemStack>
 		
 		byte index = data.readByte();
 
 		while (index != -1) { // read until the end
 			final int itemID = data.readInt();
 			if (itemID == 0) {
-				itemStacks.add(null);
+				itemStacks.addLast(null);
 			} else {
 				ItemStack stack = new ItemStack(itemID, data.readInt(), data.readInt());
 				stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
-				itemStacks.add(stack);
+				itemStacks.addLast(stack);
 			}
 			
 			index = data.readByte(); // read the next slot

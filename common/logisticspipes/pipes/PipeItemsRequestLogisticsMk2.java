@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.EntityItem;
@@ -66,7 +67,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_REQUESTERMK2_TEXTURE;
+		return Textures.LOGISTICSPIPE_REQUESTERMK2_TEXTURE;
 	}
 	
 	public ItemStack getDisk() {

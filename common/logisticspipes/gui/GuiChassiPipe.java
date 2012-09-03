@@ -13,7 +13,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.items.ItemModule;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;

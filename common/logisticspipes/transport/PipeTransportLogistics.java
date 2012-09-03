@@ -6,13 +6,15 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.transport;
 
 import java.util.HashMap;
 import java.util.Iterator;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.network.PacketPipeLogisticsContent;
+import logisticspipes.main.RoutedPipe;
+import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.packets.PacketPipeLogisticsContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.src.ItemStack;

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import logisticspipes.interfaces.IToolTipHandler;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -17,6 +18,7 @@ import net.minecraft.src.RenderItem;
 import net.minecraft.src.Tessellator;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class BasicGuiHelper {
@@ -59,8 +61,17 @@ public class BasicGuiHelper {
 		FontRenderer fontRenderer = mc.fontRenderer;
 		RenderItem renderItem = new RenderItem();
 		for(ItemIdentifierStack itemStack : _allItems) {
+			if(itemStack == null) {
+				column++;
+				if (column >= columns){
+					row++;
+					column = 0;
+				}
+				ppi++;
+				continue;	
+			}
 			ItemIdentifier item = itemStack.getItem();
-			if(!IItemSearch.itemSearched(item)) continue;
+			if(IItemSearch!= null && !IItemSearch.itemSearched(item)) continue;
 			ppi++;
 			
 			if (ppi <= items * page) continue;
@@ -72,6 +83,7 @@ public class BasicGuiHelper {
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
 			
 			renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+			
 			if(displayAmount) {
 				String s;
 				if (st.stackSize == 1 && !forcenumber){
@@ -103,10 +115,10 @@ public class BasicGuiHelper {
 	private static float zLevel;
 	
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {
-		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false);
+		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false, false);
 	}
 	
-	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft) {		
+	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
 			try {
@@ -138,8 +150,8 @@ public class BasicGuiHelper {
 	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
 					}
 	                
-	                int var11 = ((Integer)tooltip[0]).intValue() - guiLeft + 12;
-	                int var12 = ((Integer)tooltip[1]).intValue() - guiTop - 12;
+	                int var11 = ((Integer)tooltip[0]).intValue() - (forceAdd ? 0 : guiLeft) + 12;
+	                int var12 = ((Integer)tooltip[1]).intValue() - (forceAdd ? 0 : guiTop) - 12;
 	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor, forceminecraft);
 	            }
 	            catch(Exception e1) {}
@@ -270,6 +282,20 @@ public class BasicGuiHelper {
         GL11.glEnable(GL11.GL_ALPHA_TEST);
         GL11.glEnable(GL11.GL_TEXTURE_2D);
     }
+
+	public static void drawPlayerInventoryBackground(Minecraft mc, int xOffset, int yOffset) {
+		//Player "backpack"
+        for(int row = 0; row < 3; row++) {
+            for(int column = 0; column < 9; column++)
+            {
+            	drawSlotBackground(mc, xOffset + column * 18 - 1, yOffset + row * 18 - 1);
+            }
+        }
+        //Player "hotbar"
+        for(int i1 = 0; i1 < 9; i1++) {
+        	drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset + 58 - 1);
+        }
+	}
 
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot.png");

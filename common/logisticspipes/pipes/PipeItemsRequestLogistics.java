@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.TemporaryLogic;
@@ -33,7 +34,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_REQUESTER_TEXTURE;
+		return Textures.LOGISTICSPIPE_REQUESTER_TEXTURE;
 	}
 
 	@Override

@@ -12,7 +12,7 @@ import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketCoordinates;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;

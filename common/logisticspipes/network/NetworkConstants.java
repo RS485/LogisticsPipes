@@ -49,4 +49,8 @@ public class NetworkConstants {
 	public static final int BEE_MODULE_SET_BEE = 43;
 	public static final int BEE_MODULE_CONTENT = 44;
 	public static final int LIQUID_SUPPLIER_PARTIALS = 45;
+	public static final int INC_SYS_CON_CONTENT = 46;
+	public static final int SOLDERING_UPDATE_HEAT = 47;
+	public static final int SOLDERING_UPDATE_PROGRESS = 48;
+	public static final int SOLDERING_UPDATE_INVENTORY = 49;
 }

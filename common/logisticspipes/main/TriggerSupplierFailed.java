@@ -8,7 +8,7 @@
 
 package logisticspipes.main;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.Trigger;
@@ -40,6 +40,6 @@ public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 
 	@Override
 	public String getTextureFile() {
-		return LogisticsPipes.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
 	}
 }

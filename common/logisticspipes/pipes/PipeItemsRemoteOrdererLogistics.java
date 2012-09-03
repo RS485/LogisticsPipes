@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
@@ -18,7 +19,7 @@ public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequ
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE;
+		return Textures.LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE;
 	}
 
 	@Override

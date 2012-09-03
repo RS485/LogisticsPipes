@@ -1,6 +1,6 @@
 package logisticspipes.pipes;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.main.LogisticsRequest;
 
 public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
@@ -11,7 +11,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
+		return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
 	}
 
 	@Override

@@ -1,4 +1,4 @@
-package logisticspipes.network;
+package logisticspipes.network.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.main.ItemMessage;
+import logisticspipes.network.LogisticsPipesPacket;
+import logisticspipes.network.NetworkConstants;
 
 
 

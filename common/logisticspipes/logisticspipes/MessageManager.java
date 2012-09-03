@@ -3,8 +3,8 @@ package logisticspipes.logisticspipes;
 import java.util.LinkedList;
 
 import logisticspipes.main.ItemMessage;
-import logisticspipes.network.PacketCraftingLoop;
-import logisticspipes.network.PacketItems;
+import logisticspipes.network.packets.PacketCraftingLoop;
+import logisticspipes.network.packets.PacketItems;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import cpw.mods.fml.common.network.PacketDispatcher;

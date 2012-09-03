@@ -8,7 +8,7 @@
 
 package logisticspipes.main;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import net.minecraft.src.Item;
 
 public class LogisticsItem extends Item {
@@ -19,6 +19,6 @@ public class LogisticsItem extends Item {
 	
 	@Override
 	public String getTextureFile() {
-		return LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
+		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 }

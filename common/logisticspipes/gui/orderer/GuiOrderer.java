@@ -13,13 +13,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.ItemMessage;
-import logisticspipes.network.PacketRequestGuiContent;
-import logisticspipes.network.PacketRequestSubmit;
+import logisticspipes.network.packets.PacketRequestGuiContent;
+import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -98,7 +99,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
 		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
-		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, LogisticsPipes.displayPopup)); // Popup
+		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.displayPopup)); // Popup
 	}
 	
 	@Override
@@ -323,13 +324,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		
 		if (isShift && !isControl){
 			if (wheel > 0){
-				if (!LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
+				if (!Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					prevPage();
 				} else {
 					nextPage();
 				}
 			} else {
-				if (!LogisticsPipes.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
+				if (!Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					nextPage();
 				} else {
 					prevPage();
@@ -337,13 +338,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		} else if(!isControl) {
 			if (wheel > 0){
-				if (!LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel);
 				} else {
 					requestCount+= wheel;
 				}
 			} else {
-				if (!LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount+= -wheel;	
 				} else {
 					requestCount = Math.max(1, requestCount + wheel);
@@ -351,14 +352,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		} else if(isControl && !isShift) {
 			if (wheel > 0){
-				if (!LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel*10);
 				} else {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= wheel*10;
 				}
 			} else {
-				if (!LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= -wheel*10;	
 				} else {
@@ -367,14 +368,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		} else if(isControl && isShift) {
 			if (wheel > 0){
-				if (!LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					requestCount = Math.max(1, requestCount - wheel*64);
 				} else {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= wheel*64;
 				}
 			} else {
-				if (!LogisticsPipes.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
 					requestCount+= -wheel*64;	
 				} else {
@@ -396,17 +397,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			ArrayList<String> msg = new ArrayList<String>();
 			msg.add("You are missing:");
 			for (ItemMessage item : items){
-				if(!LogisticsPipes.displayPopup) {
+				if(!Configs.displayPopup) {
 					player.addChatMessage("Missing: " + item.toString());
 				} else {
 					msg.add(item.toString());
 				}
 			}
-			if(LogisticsPipes.displayPopup) {
+			if(Configs.displayPopup) {
 				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
 		} else {
-			if(LogisticsPipes.displayPopup) {
+			if(Configs.displayPopup) {
 				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
 			} else {
 				for(ItemMessage item:items) {
@@ -467,7 +468,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			requestCount+=64;
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
-			LogisticsPipes.displayPopup = button.change();
+			Configs.displayPopup = button.change();
 		}
 		
 		super.actionPerformed(guibutton);

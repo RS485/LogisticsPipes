@@ -40,17 +40,21 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	private List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
 
 	public KraphtBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
-		super(new DummyContainer(null, null));
-		this.xSize = xSize;
-		this.ySize = ySize;
-		this.xCenterOffset = xCenterOffset;
-		this.yCenterOffset = yCenterOffset;
+		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);
 	}
-	
+
 	public KraphtBaseGuiScreen(Container container){
 		super(container);
 		this.xCenterOffset = 0;
 		this.yCenterOffset = 0;
+	}
+
+	public KraphtBaseGuiScreen(Container container, int xSize, int ySize, int xCenterOffset, int yCenterOffset){
+		super(container);
+		this.xSize = xSize;
+		this.ySize = ySize;
+		this.xCenterOffset = xCenterOffset;
+		this.yCenterOffset = yCenterOffset;
 	}
 	
 	@Override
@@ -212,10 +216,5 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		while (lasty > y2){
 			drawPoint(x2, --lasty, color);
 		}
-	}
-	
-	@Override
-	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		
 	}
 }

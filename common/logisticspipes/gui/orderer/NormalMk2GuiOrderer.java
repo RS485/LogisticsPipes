@@ -2,7 +2,7 @@ package logisticspipes.gui.orderer;
 
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketCoordinates;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;

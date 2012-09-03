@@ -2,7 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.ItemStack;
@@ -25,7 +25,7 @@ public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 
 	@Override
 	public String getTextureFile() {
-		return LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE;
+		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 	
 	@Override
@@ -36,7 +36,7 @@ public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 	public abstract String getTextureMap();
 	
 	public void loadModules() {
-		SpriteHelper.registerSpriteMapForFile(LogisticsPipes.LOGISTICSITEMS_TEXTURE_FILE, getTextureMap());
+		SpriteHelper.registerSpriteMapForFile(Textures.LOGISTICSITEMS_TEXTURE_FILE, getTextureMap());
 	}
 	
 	public void addInformation(ItemStack itemStack, List list) {

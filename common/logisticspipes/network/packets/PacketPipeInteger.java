@@ -1,33 +1,33 @@
-package logisticspipes.network;
+package logisticspipes.network.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public class PacketPipeString extends PacketCoordinates {
-	public String string;
+public class PacketPipeInteger extends PacketCoordinates {
+	public int integer;
 
-	public PacketPipeString() {
+	public PacketPipeInteger() {
 		super();
 	}
 
-	public PacketPipeString(int id, int x, int y, int z, String string) {
+	public PacketPipeInteger(int id, int x, int y, int z, int integer) {
 		super(id, x, y, z);
 
-		this.string = string;
+		this.integer = integer;
 	}
 
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
 
-		data.writeUTF(string != null ? string : "");
+		data.writeInt(integer);
 	}
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
 
-		string = data.readUTF();
+		integer = data.readInt();
 	}
 }

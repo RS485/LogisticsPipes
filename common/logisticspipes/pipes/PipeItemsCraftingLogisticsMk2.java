@@ -11,6 +11,8 @@ package logisticspipes.pipes;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
+import logisticspipes.config.Textures;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.main.LogisticsRequest;
@@ -70,7 +72,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 						Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
 						entityPos.moveForwards(0.5);
 						EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
-						entityItem.setSpeed(Utils.pipeNormalSpeed * LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+						entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 						((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
 					}
 				}
@@ -83,7 +85,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
+		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
 	}
 
 	@Override

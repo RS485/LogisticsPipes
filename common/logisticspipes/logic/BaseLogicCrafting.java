@@ -12,9 +12,9 @@ import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.PacketCoordinates;
-import logisticspipes.network.PacketInventoryChange;
-import logisticspipes.network.PacketPipeInteger;
+import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.routing.IRouter;
@@ -206,7 +206,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void openAttachedGui(EntityPlayer player) {
-		if (MainProxy.isServer(player.worldObj)) {
+		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
 			PacketDispatcher.sendPacketToServer(packet.getPacket());
 		}

@@ -1,6 +1,6 @@
 package logisticspipes.pipes;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -28,7 +28,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE;
+		return Textures.LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE;
 	} 
 
 	@Override

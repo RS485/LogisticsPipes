@@ -15,6 +15,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.logic.BaseRoutingLogic;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
+import buildcraft.transport.PipeTransport;
 
 public abstract class RoutedPipe extends CoreRoutedPipe {
 	
@@ -22,6 +23,10 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 		super(logic, itemID);
 	}
 	
+	public RoutedPipe(PipeTransport transport, BaseRoutingLogic logic, int itemID) {
+		super(transport, logic, itemID);
+	}
+
 	@Override
 	public void onNeighborBlockChange(int blockId) {
 		super.onNeighborBlockChange(blockId);

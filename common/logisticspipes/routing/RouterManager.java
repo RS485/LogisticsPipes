@@ -12,7 +12,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import buildcraft.api.core.Orientations;
+
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
+import logisticspipes.main.CoreRoutedPipe;
+import logisticspipes.main.RoutedPipe;
 import logisticspipes.utils.Pair;
 
 
@@ -66,22 +70,24 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	}
 	
 	@Override
-	public boolean addDirectConnection(String ident, IRouter router) {
+	public boolean addDirectConnection(UUID ident, IRouter router) {
 		boolean added = false;
 		for(DirectConnection con:connectedPipes) {
 			if(!ident.equals(con.identifier)) {
-				if(con.Router1.equals(router.getId())) {
+				if(con.Router1 != null && con.Router1.equals(router.getId())) {
 					con.Router1 = null;
-				} else if(con.Router2.equals(router.getId())) {
+				} else if(con.Router2 != null && con.Router2.equals(router.getId())) {
 					con.Router2 = null;
 				}
 			} else {
 				if(con.Router1 == null) {
 					con.Router1 = router.getId();
 					added = true;
+					break;
 				} else if(con.Router2 == null) {
 					con.Router2 = router.getId();
 					added = true;
+					break;
 				} else {
 					return false;
 				}
@@ -94,5 +100,38 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 			Dc.Router1 = router.getId();
 		}
 		return true;
+	}
+
+	@Override
+	public CoreRoutedPipe getConnectedPipe(IRouter router) {
+		UUID id=null;
+		for(DirectConnection con:connectedPipes) {
+			if(con.Router1 != null && con.Router2 != null) {
+				if(con.Router1.equals(router.getId())) {
+					id = con.Router2;
+					break;
+				} else if(con.Router2.equals(router.getId())) {
+					id = con.Router1;
+					break;
+				}
+			}
+		}
+		if(id == null) {
+			return null;
+		}
+		Router r = _routers.get(id);
+		if(r == null) return null;
+		return r.getPipe();
+	}
+
+	@Override
+	public void removeDirectConnection(IRouter router) {
+		for(DirectConnection con:connectedPipes) {
+			if(con.Router1 != null && con.Router1.equals(router.getId())) {
+				con.Router1 = null;
+			} else if(con.Router2 != null && con.Router2.equals(router.getId())) {
+				con.Router2 = null;
+			}
+		}
 	}
 }

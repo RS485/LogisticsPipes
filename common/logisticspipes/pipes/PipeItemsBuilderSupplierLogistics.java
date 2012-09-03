@@ -8,7 +8,7 @@
 
 package logisticspipes.pipes;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicBuilderSupplier;
@@ -32,7 +32,7 @@ public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRe
 	
 	@Override
 	public int getCenterTexture() {
-		return LogisticsPipes.LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE;
+		return Textures.LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE;
 	}
 	
 	 /* TRIGGER INTERFACE */

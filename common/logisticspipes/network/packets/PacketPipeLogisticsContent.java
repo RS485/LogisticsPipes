@@ -1,4 +1,4 @@
-package logisticspipes.network;
+package logisticspipes.network.packets;
 
 import java.util.UUID;
 

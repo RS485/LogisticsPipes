@@ -8,7 +8,9 @@
 
 package logisticspipes.utils.gui;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
+import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
@@ -24,10 +26,19 @@ public class DummyContainer extends Container{
 	
 	private final IInventory _playerInventory;
 	private final IInventory _dummyInventory;
-	
+	private final IGuiOpenControler _controler;
+
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory){
 		_playerInventory = playerInventory;
 		_dummyInventory = dummyInventory;
+		_controler = null;
+	}
+
+	public DummyContainer(EntityPlayer player, IInventory dummyInventory, IGuiOpenControler controler){
+		_playerInventory = player.inventory;
+		_dummyInventory = dummyInventory;
+		_controler = controler;
+		_controler.guiOpenedByPlayer(player);
 	}
 
 	@Override
@@ -71,9 +82,13 @@ public class DummyContainer extends Container{
 	public void addNormalSlot(int slotId, IInventory inventory, int xCoord, int yCoord){
 		addSlotToContainer(new Slot(inventory, slotId, xCoord, yCoord));
 	}
-	
+
 	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, int ItemID) {
 		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, ItemID));
+	}
+
+	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck) {
+		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck));
 	}
 	
 	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
@@ -109,7 +124,7 @@ public class DummyContainer extends Container{
 		if (slot == null || !(slot instanceof DummySlot)) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if(stack2 != null && stack2.getItem().shiftedIndex == LogisticsPipes.ItemModuleId + 256) {
+			if(stack2 != null && stack2.getItem().shiftedIndex == Configs.ItemModuleId + 256) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 					((EntityPlayerMP)entityplayer).updateCraftingInventorySlot(this, slotId, stack2);
 				}
@@ -168,6 +183,14 @@ public class DummyContainer extends Container{
 		return currentlyEquippedStack;
 	}
 	
+	@Override
+	public void onCraftGuiClosed(EntityPlayer par1EntityPlayer) {
+		if(_controler != null) {
+			_controler.guiClosedByPlayer(par1EntityPlayer);
+		}
+		super.onCraftGuiClosed(par1EntityPlayer);
+	}
+
 	@Override
 	protected void retrySlotClick(int i, int j, boolean flag,
 			EntityPlayer entityplayer) {

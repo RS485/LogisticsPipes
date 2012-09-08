@@ -3,14 +3,10 @@ package logisticspipes.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.config.Configs;
-import logisticspipes.interfaces.ITileEntityPart;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.power.IPowerProvider;
-import buildcraft.api.power.IPowerReceptor;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogisticsSignTileEntity extends TileEntity {

@@ -11,8 +11,6 @@ package logisticspipes.routing;
 import java.util.Map;
 import java.util.UUID;
 
-import cpw.mods.fml.common.TickType;
-
 
 public interface IRouterManager {
 	public IRouter getOrCreateRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord);

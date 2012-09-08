@@ -6,7 +6,6 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
-import logisticspipes.routing.RouterManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;

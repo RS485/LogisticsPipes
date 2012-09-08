@@ -6,7 +6,6 @@ import java.io.IOException;
 
 import logisticspipes.network.INBTPacketProvider;
 import logisticspipes.network.SendNBTTagCompound;
-
 import net.minecraft.src.NBTTagCompound;
 
 public class PacketModuleNBT extends PacketCoordinates {

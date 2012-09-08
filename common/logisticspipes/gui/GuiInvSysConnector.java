@@ -5,11 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.config.Configs;
-import logisticspipes.interfaces.IToolTipHandler;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
-import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;

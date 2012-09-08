@@ -1,7 +1,6 @@
 package logisticspipes.items;
 
 import logisticspipes.config.Textures;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import net.minecraft.src.DamageSource;
 import net.minecraft.src.EntityLiving;
 import net.minecraft.src.EntityPlayer;
@@ -10,6 +9,7 @@ import net.minecraft.src.ItemArmor;
 import net.minecraft.src.ItemStack;
 import net.minecraftforge.common.IArmorTextureProvider;
 import net.minecraftforge.common.ISpecialArmor;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, ISpecialArmor {
 

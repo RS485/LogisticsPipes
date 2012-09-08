@@ -1,10 +1,8 @@
 package logisticspipes.utils.gui.hud;
 
 import logisticspipes.interfaces.IHUDButton;
-import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
 
 import org.lwjgl.opengl.GL11;
 

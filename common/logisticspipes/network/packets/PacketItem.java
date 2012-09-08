@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.network.SendNBTTagCompound;
-
 import net.minecraft.src.ItemStack;
 
 public class PacketItem extends PacketCoordinates {

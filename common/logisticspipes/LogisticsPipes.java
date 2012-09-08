@@ -322,7 +322,6 @@ import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
-import buildcraft.core.ProxyCore;
 import buildcraft.core.utils.Localization;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
@@ -339,6 +338,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
 @Mod(name="Logistics Pipes", version="0.5.@(Build_Number)", useMetadata = false, modid = "LP|MAIN")
@@ -798,7 +798,7 @@ public class LogisticsPipes {
 		res.setItemName(clas.getSimpleName());
 		
 		if(side.isClient()) {
-			ProxyCore.proxy.addName(res, descr);
+			LanguageRegistry.addName(res, descr);
 			MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, TransportProxyClient.pipeItemRenderer);
 		}
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {

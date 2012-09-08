@@ -2,9 +2,9 @@ package logisticspipes.config;
 
 import java.io.File;
 
+import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
-import buildcraft.core.ProxyCore;
 
 public class Configs {
 
@@ -58,7 +58,7 @@ public class Configs {
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
 	
 	public static void load() {
-		File configFile = new File(ProxyCore.proxy.getBuildCraftBase(), "config/LogisticsPipes.cfg");
+		File configFile = new File(Minecraft.getMinecraftDir(), "config/LogisticsPipes.cfg");
 		configuration = new Configuration(configFile);
 		configuration.load();
 		

@@ -1,6 +1,5 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.client.Minecraft;
 
 public interface IHeadUpDisplayRendererProvider {
 	public IHeadUpDisplayRenderer getRenderer();

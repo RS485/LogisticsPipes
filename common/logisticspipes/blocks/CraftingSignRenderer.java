@@ -8,7 +8,6 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemBlock;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModelSign;
-import net.minecraft.src.OpenGlHelper;
 import net.minecraft.src.RenderBlocks;
 import net.minecraft.src.RenderItem;
 import net.minecraft.src.RenderManager;

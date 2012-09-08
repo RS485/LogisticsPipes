@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import net.minecraft.src.ModLoader;

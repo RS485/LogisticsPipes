@@ -2,7 +2,6 @@ package logisticspipes.pipes;
 
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 

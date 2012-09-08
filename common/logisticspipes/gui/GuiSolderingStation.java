@@ -1,14 +1,12 @@
 package logisticspipes.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
-import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
+
+import org.lwjgl.opengl.GL11;
 
 public class GuiSolderingStation extends KraphtBaseGuiScreen {
 

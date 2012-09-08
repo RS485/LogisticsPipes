@@ -1,8 +1,6 @@
 package logisticspipes.pipes;
 
-import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;

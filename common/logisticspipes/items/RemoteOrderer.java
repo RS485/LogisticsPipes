@@ -19,8 +19,6 @@ import net.minecraft.src.World;
 import net.minecraftforge.common.DimensionManager;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.FMLCommonHandler;
 
 public class RemoteOrderer extends Item {
 	

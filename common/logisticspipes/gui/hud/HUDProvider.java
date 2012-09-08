@@ -1,10 +1,10 @@
 package logisticspipes.gui.hud;
 
-import org.lwjgl.opengl.GL11;
-
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
+
+import org.lwjgl.opengl.GL11;
 
 public class HUDProvider extends BasicHUDGui {
 	

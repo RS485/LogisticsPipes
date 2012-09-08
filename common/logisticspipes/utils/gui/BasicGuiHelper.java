@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import logisticspipes.interfaces.IToolTipHandler;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -18,7 +17,6 @@ import net.minecraft.src.RenderItem;
 import net.minecraft.src.Tessellator;
 
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
 public class BasicGuiHelper {

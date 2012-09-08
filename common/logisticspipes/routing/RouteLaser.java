@@ -12,12 +12,13 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.main.RoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.World;
+import net.minecraft.src.WorldClient;
 import buildcraft.api.core.LaserKind;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.EntityBlock;
-import buildcraft.core.ProxyCore;
 import buildcraft.core.Utils;
 
 class RouteLaser implements IPaintPath{
@@ -27,8 +28,12 @@ class RouteLaser implements IPaintPath{
 	
 	
 	public void clear(){
-		for(EntityBlock b : _lasers)
-		ProxyCore.proxy.removeEntity(b);
+		for(EntityBlock b : _lasers) {
+			b.setDead();
+			if(MainProxy.isClient()) {
+				((WorldClient) b.worldObj).removeEntityFromWorld(b.entityId);
+			}
+		}
 		_lasers = new LinkedList<EntityBlock>();
 	}
 	

@@ -18,7 +18,6 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.Router;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
@@ -66,7 +65,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	/* ** SATELLITE CODE ** */
 
 	protected int getNextConnectSatelliteId(boolean prev) {
-		final HashMap<Router, Orientations> routes = getRouter().getRouteTable();
+		final HashMap<IRouter, Orientations> routes = getRouter().getRouteTable();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (routes.containsKey(satellite.getRouter())) {

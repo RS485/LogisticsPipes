@@ -8,14 +8,21 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
+import logisticspipes.gui.hud.HUDCrafting;
+import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -31,17 +38,25 @@ import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.gui.BasicGuiHelper;
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
+
+import org.lwjgl.opengl.GL11;
+
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
@@ -53,9 +68,14 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
-public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems{
+public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver {
 
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
+
+	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
+	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final HUDCrafting HUD = new HUDCrafting(this);
 	
 	protected int _extras;
 	private boolean init = false;
@@ -132,10 +152,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 				ItemStack stackToSend = extracted.splitStack(1);
 				Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
 				if (_orderManager.hasOrders()){
-					LogisticsRequest order = _orderManager.getNextRequest();
+					Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
 					item.setSource(this.getRouter().getId());
-					item.setDestination(order.getDestination().getRouter().getId());
+					item.setDestination(order.getValue2().getRouter().getId());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
 					//super.sendRoutedItem(stackToSend, order.getDestination().getRouter().getId(), p);
@@ -156,7 +176,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	private ItemIdentifier providedItem(){
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
-		if ( stack == null) return null;
+		if (stack == null) return null;
 		return ItemIdentifier.get(stack);
 	}
 	
@@ -223,7 +243,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		if (promise.extra){
 			_extras -= promise.numberOfItems;
 		}
-		_orderManager.addOrder(new LogisticsRequest(promise.item, promise.numberOfItems, destination));
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	@Override
@@ -289,4 +309,70 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
+	
+	public boolean hasOrder() {
+		return _orderManager.hasOrders();
+	}
+	
+	@Override
+	public int getX() {
+		return xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return zCoord;
+	}
+
+	@Override
+	public void startWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+	}
+
+	@Override
+	public void stopWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+	}
+
+	@Override
+	public void playerStartWatching(EntityPlayer player, int mode) {
+		if(mode == 1) {
+			localModeWatchers.add(player);
+		} else {
+			super.playerStartWatching(player, mode);
+		}
+	}
+
+	@Override
+	public void playerStopWatching(EntityPlayer player, int mode) {
+		super.playerStopWatching(player, mode);
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public void listenedChanged() {
+		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
+		if(!oldList.equals(all)) {
+			oldList.clear();
+			oldList.addAll(all);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
+		}
+	}
+
+	@Override
+	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+		displayList.clear();
+		displayList.addAll(list);
+	}
+
+	@Override
+	public IHeadUpDisplayRenderer getRenderer() {
+		return HUD;
+	}
+	
 }

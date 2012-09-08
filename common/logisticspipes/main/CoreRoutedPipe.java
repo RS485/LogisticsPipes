@@ -9,14 +9,17 @@
 package logisticspipes.main;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseRoutingLogic;
@@ -33,9 +36,9 @@ import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
@@ -52,7 +55,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider {
+public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler {
 
 	protected enum ItemSendMode {
 		Normal,
@@ -82,6 +85,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private final LinkedList<Pair<IRoutedItem, Orientations>> _sendQueue = new LinkedList<Pair<IRoutedItem, Orientations>>(); 
 	
+	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 	
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);
@@ -116,25 +120,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 		return payload;
 	}
-	
-//	@Deprecated
-//	public void sendRoutedItem(ItemStack item, UUID destination, Position origin){
-//		Position entityPos = new Position(origin.x + 0.5, origin.y + Utils.getPipeFloorOf(item), origin.z + 0.5, origin.orientation.reverse());
-//		entityPos.moveForwards(0.5);
-//		
-//		RoutedEntityItem routedItem = new RoutedEntityItem(worldObj, new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, item));
-//		routedItem.sourceUUID = this.getRouter().getId();
-//		router.startTrackingRoutedItem(routedItem);
-//		routedItem.destinationUUID = destination;
-//		if (destination != null && SimpleServiceLocator.routerManager.isRouter(destination) ){
-//			SimpleServiceLocator.routerManager.getRouter(destination).startTrackingInboundItem(routedItem);
-//		}
-//		
-//		routedItem.speed = Utils.pipeNormalSpeed * core_LogisticsPipes.LOGISTICS_ROUTED_SPEED_MULTIPLIER;
-//		((PipeTransportItems) transport).entityEntering(routedItem, entityPos.orientation);
-//		stat_lifetime_sent++;
-//		stat_session_sent++;
-//	}
 	
 	/**
 	 * Readjusts the routed item's coordinates and adds it to BC
@@ -211,6 +196,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	@Override
+	public void invalidate() {
+		if(getRouter() != null) {
+			getRouter().destroy();
+			router = null;
+		}
+		super.invalidate();
+	}
+	
 	public abstract int getCenterTexture();
 	
 	@Override
@@ -276,7 +270,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (routerId == null || routerId == ""){
 				routerId = UUID.randomUUID().toString();
 			}
-			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), worldObj.getWorldInfo().getDimension(), xCoord, yCoord, zCoord);
+			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
 		}
 		return router;
 	}
@@ -371,5 +365,20 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public World getWorld() {
 		return this.worldObj;
+	}
+
+	@Override
+	public void playerStartWatching(EntityPlayer player, int mode) {
+		watchers.add(player);
+	}
+
+	@Override
+	public void playerStopWatching(EntityPlayer player, int mode) {
+		watchers.remove(player);
+	}
+
+	@Override
+	public void itemCouldNotBeSend(ItemIdentifierStack item) {
+		//Override by subclasses //TODO
 	}
 }

@@ -57,7 +57,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		controlList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 35, 10, 10, "<"));
 		controlList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 35, 10, 10, ">"));
 		controlList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 35, 30, 10, "Save"));
-		refresh();
+		refreshPacket();
 	}
 
 	@Override
@@ -109,7 +109,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		}
 	}
 	
-	private void refresh() {
+	private void refreshPacket() {
 		PacketCoordinates packet = new PacketCoordinates(NetworkConstants.INC_SYS_CON_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 		PacketDispatcher.sendPacketToServer(packet.getPacket());
 	}
@@ -146,7 +146,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		} else if(button.id == 1) {
 			pageUp();
 		} else if(button.id == 2) {
-			refresh();
+			refreshPacket();
 		} else if(button.id == 3) {
 			for(int i=0;i<(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) ? 10 : 1);i++) {
 				if(localresistance > 0) {

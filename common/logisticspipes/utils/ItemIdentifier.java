@@ -82,6 +82,10 @@ public final class ItemIdentifier {
 		return "<item not found>";
 	}
 	
+	public boolean isValid() {
+		return Item.itemsList[itemID] != null;
+	}
+	
 	private String getName(int id,ItemStack stack) {
 		String name = "???";
 		try {

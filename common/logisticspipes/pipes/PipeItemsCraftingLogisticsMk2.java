@@ -13,11 +13,14 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
+import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import buildcraft.api.core.Position;
@@ -43,7 +46,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 			return;
 		}
 		
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < 16; i++) {
 			if ((!_orderManager.hasOrders() && _extras < 1)) break;
 			//if(!(!_orderManager.hasOrders() && _extras < 1))
 			for (AdjacentTile tile : locateCrafters()){
@@ -58,10 +61,10 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 					ItemStack stackToSend = extracted.splitStack(1);
 					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
 					if (_orderManager.hasOrders()){
-						LogisticsRequest order = _orderManager.getNextRequest();
+						Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 						IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
 						item.setSource(this.getRouter().getId());
-						item.setDestination(order.getDestination().getRouter().getId());
+						item.setDestination(order.getValue2().getRouter().getId());
 						item.setTransportMode(TransportMode.Active);
 						super.queueRoutedItem(item, tile.orientation);
 						//super.sendRoutedItem(stackToSend, order.getDestination().getRouter().getId(), p);

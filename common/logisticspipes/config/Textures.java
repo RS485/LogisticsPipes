@@ -69,10 +69,14 @@ public class Textures {
 	public static final String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	= "/logisticspipes/pipes/chassi/status_overlay/not_routed.png";
 	public static final String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	= "/logisticspipes/pipes/chassi/status_overlay/direction.png";
 	
+	//Armor
+	public static final String LOGISTICSPIPE_HUD_TEXTURE_FILE				= "/logisticspipes/HUD.png";
+	
 	public static final int LOGISTICSNETWORKMONITOR_ICONINDEX = 0 * 16 + 0;
 	public static final int LOGISTICSREMOTEORDERER_ICONINDEX = 0 * 16 + 1;
 	public static final int LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX = 0 * 16 + 2;
 	public static final int LOGISTICSITEMCARD_ICONINDEX = 0 * 16 + 4;
+	public static final int LOGISTICSITEMHUD_ICONINDEX = 0 * 16 + 5;
 
 	//Overrider
 	public static final String BASE_TEXTURE_FILE = "/logisticspipes/empty.png";

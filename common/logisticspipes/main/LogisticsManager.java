@@ -23,11 +23,11 @@ import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.Router;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 
 public class LogisticsManager implements ILogisticsManager {
+	/*
 	private class LogisticsValue {
 		int TotalThisCycle = 0;
 		int CompletedThisCycle = 0;
@@ -52,13 +52,15 @@ public class LogisticsManager implements ILogisticsManager {
 			cycleCompletedFraction = TotalThisCycle == 0 ? 1F : (1F / (float) TotalThisCycle) * (float) CompletedThisCycle;
 		}
 	}
+	*/
+	//private static HashMap<ItemIdentifier, HashMap<IRouter, LogisticsValue >>  _logisticsDatabase = new HashMap<ItemIdentifier, HashMap<IRouter,LogisticsValue>>();
+	//private static ILogisticsManager _instance;
 	
-	private static HashMap<ItemIdentifier, HashMap<Router, LogisticsValue >>  _logisticsDatabase = new HashMap<ItemIdentifier, HashMap<Router,LogisticsValue>>();
-	private static ILogisticsManager _instance;
-	
+	/*
 	static { //Workaround to create instances of internal class
 		_instance = new LogisticsManager();
 	}
+	*/
 	
 //	@Override
 //	@Deprecated
@@ -288,9 +290,10 @@ public class LogisticsManager implements ILogisticsManager {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<Router> validDestinations) {
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations) {
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(Router r: validDestinations){
+		for(IRouter r: validDestinations){
+			if(r == null) continue;
 			if (!(r.getPipe() instanceof IProvideItems)) continue;
 
 			IProvideItems provider = (IProvideItems) r.getPipe();
@@ -308,9 +311,10 @@ public class LogisticsManager implements ILogisticsManager {
 	}
 
 	@Override
-	public LinkedList<ItemIdentifier> getCraftableItems(Set<Router> validDestinations) {
+	public LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
-		for (Router r : validDestinations){
+		for (IRouter r : validDestinations){
+			if(r == null) continue;
 			if (!(r.getPipe() instanceof ICraftItems)) continue;
 			
 			ICraftItems crafter = (ICraftItems) r.getPipe();

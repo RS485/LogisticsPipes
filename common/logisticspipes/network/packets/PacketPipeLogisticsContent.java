@@ -3,8 +3,9 @@ package logisticspipes.network.packets;
 import java.util.UUID;
 
 import logisticspipes.main.CoreRoutedPipe;
+import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
-import logisticspipes.routing.Router;
 import logisticspipes.routing.RouterManager;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -30,8 +31,8 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 	
 	public PacketPipeLogisticsContent(int x, int y, int z, RoutedEntityItem item, Orientations orientation) {
 		super(x,y,z,item,orientation);
-		final Router routerSource = RouterManager.get(item.getSource());
-		final Router routerDest = RouterManager.get(item.getDestination());
+		final IRouter routerSource = SimpleServiceLocator.routerManager.getRouter(item.getSource());
+		final IRouter routerDest = SimpleServiceLocator.routerManager.getRouter(item.getDestination());
 		if(routerDest == null) {
 			return;
 		}

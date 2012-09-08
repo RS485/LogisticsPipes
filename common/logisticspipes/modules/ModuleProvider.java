@@ -26,6 +26,8 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -87,8 +89,8 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		currentTick = 0;
 		if (!_orderManager.hasOrders()) return;
 		
-		LogisticsRequest order = _orderManager.getNextRequest();
-		int sent = sendItem(order.getItem(), order.numberLeft(), order.getDestination().getRouter().getId());
+		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
+		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
 		if (sent > 0){
 			_orderManager.sendSuccessfull(sent);
 		}
@@ -120,7 +122,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new LogisticsRequest(promise.item, promise.numberOfItems, destination));
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	@Override

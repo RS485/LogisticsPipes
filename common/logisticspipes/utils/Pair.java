@@ -18,4 +18,8 @@ public class Pair<T1, T2> {
 	public T2 getValue2(){
 		return _value2;
 	}
+	
+	public String toString() {
+		return new StringBuilder("<").append(_value1.toString()).append(",").append(_value2.toString()).append(">").toString();
+	}
 }

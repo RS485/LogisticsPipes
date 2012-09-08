@@ -55,7 +55,7 @@ class RouteLaser implements IPaintPath{
 	
 	public void displayRoute(IRouter r){
 		LinkedList<IRouter> knownRouters = new LinkedList<IRouter>();
-		for (Router table : r.getRouteTable().keySet()){
+		for (IRouter table : r.getRouteTable().keySet()){
 			if (table == r) continue;
 			knownRouters.add(table);
 		}

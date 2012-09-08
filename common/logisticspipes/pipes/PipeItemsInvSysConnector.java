@@ -1,28 +1,25 @@
 package logisticspipes.pipes;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;
+import logisticspipes.gui.hud.HUDInvSysConnector;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.logic.LogicInvSysConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
-import logisticspipes.modules.ModuleExtractor;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.ItemIdentifier;
@@ -42,12 +39,13 @@ import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.transport.EntityData;
 
-public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection {
+public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider {
 	
 	private boolean init = false;
 	private LinkedList<Pair<ItemIdentifier,Pair<UUID,UUID>>> destination = new LinkedList<Pair<ItemIdentifier,Pair<UUID,UUID>>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
+	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
 	
 	public PipeItemsInvSysConnector(int itemID) {
 		super(new TransportInvConnection(), new LogicInvSysConnection(), itemID);
@@ -161,6 +159,23 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		worldObj.spawnEntityInWorld(item);
 		inv.setInventorySlotContents(0, null);
 	}
+
+	public LinkedList<ItemIdentifierStack> getExpectedItems() {
+		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+		for(Pair<ItemIdentifier,Pair<UUID,UUID>> pair:destination) {
+			boolean found = false;
+			for(ItemIdentifierStack stack:list) {
+				if(stack.getItem() == pair.getValue1()) {
+					found = true;
+					stack.stackSize += 1;
+				}
+			}
+			if(!found) {
+				list.add(new ItemIdentifierStack(pair.getValue1(), 1));
+			}
+		}
+		return list;
+	}
 	
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
@@ -179,9 +194,21 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		if(CRP != null) {
 			CRP.refreshRender();
 		}
-		dropFreqCard();
+		//dropFreqCard();
 	}
+	
 
+	@Override
+	public void invalidate() {
+		//CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
+		//if(CRP != null) {
+			//CRP.refreshRender();
+		//}
+		super.invalidate();
+	}
+	
+	
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
@@ -269,20 +296,35 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		}
 	}
 
-	public LinkedList<ItemIdentifierStack> getExpectedItems() {
-		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair<ItemIdentifier,Pair<UUID,UUID>> pair:destination) {
-			boolean found = false;
-			for(ItemIdentifierStack stack:list) {
-				if(stack.getItem() == pair.getValue1()) {
-					found = true;
-					stack.stackSize += 1;
-				}
-			}
-			if(!found) {
-				list.add(new ItemIdentifierStack(pair.getValue1(), 1));
-			}
-		}
-		return list;
+	@Override
+	public int getX() {
+		return this.xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return this.yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return this.zCoord;
+	}
+
+	@Override
+	public void startWaitching() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void stopWaitching() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public IHeadUpDisplayRenderer getRenderer() {
+		return HUD;
 	}
 }

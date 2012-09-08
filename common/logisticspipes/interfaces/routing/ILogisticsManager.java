@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Set;
 
-import logisticspipes.routing.Router;
+import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 
 
@@ -22,7 +22,7 @@ public interface ILogisticsManager {
 //	@Deprecated
 //	public UUID getDestinationFor(ItemIdentifier item, Set<Router> validDestinations);
 	@Deprecated
-	public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<Router> validDestinations);
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations);
 	@Deprecated
-	public LinkedList<ItemIdentifier> getCraftableItems(Set<Router> validDestinations);
+	public LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations);
 }

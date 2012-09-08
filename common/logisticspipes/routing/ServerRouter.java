@@ -8,11 +8,11 @@
 
 package logisticspipes.routing;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -25,17 +25,15 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraftforge.common.DimensionManager;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.FMLCommonHandler;
 
-public class Router implements IRouter {
+public class ServerRouter implements IRouter {
 
 	public class LSA {
-		public Router source;
-		public HashMap<Router, Integer> neighboursWithMetric;
+		public IRouter source;
+		public HashMap<IRouter, Integer> neighboursWithMetric;
 	}
 	
 	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
@@ -47,13 +45,13 @@ public class Router implements IRouter {
 	
 	private static RouteLaser _laser = new RouteLaser();
 	
-	private static LinkedList<LSA> SharedLSADatabase = new LinkedList<Router.LSA>();
+	private static LinkedList<LSA> SharedLSADatabase = new LinkedList<LSA>();
 	private LSA _myLsa = new LSA();
 		
 	/** Map of router -> orientation for all known destinations **/
-	private HashMap<Router, Orientations> _routeTable = new HashMap<Router, Orientations>();
-	private HashMap<Router, Integer> _routeCosts = new HashMap<Router, Integer>();
-	private LinkedList<Router> _routersByCost = null;
+	private HashMap<IRouter, Orientations> _routeTable = new HashMap<IRouter, Orientations>();
+	private HashMap<IRouter, Integer> _routeCosts = new HashMap<IRouter, Integer>();
+	private LinkedList<IRouter> _routersByCost = null;
 	private LinkedList<IRouter> _externalRoutersByCost = null;
 
 	private boolean _blockNeedsUpdate;
@@ -70,7 +68,7 @@ public class Router implements IRouter {
 		_laser = new RouteLaser();
 	}
 	
-	public Router(UUID id, int dimension, int xCoord, int yCoord, int zCoord){
+	public ServerRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord){
 		this.id = id;
 		this._dimension = dimension;
 		this._xCoord = xCoord;
@@ -78,29 +76,13 @@ public class Router implements IRouter {
 		this._zCoord = zCoord;
 		_myLsa = new LSA();
 		_myLsa.source = this;
-		_myLsa.neighboursWithMetric = new HashMap<Router, Integer>();
+		_myLsa.neighboursWithMetric = new HashMap<IRouter, Integer>();
 		SharedLSADatabase.add(_myLsa);
 	}
-	
-	/*public void reloadPipe(World worldObj, int xCoord, int yCoord, int zCoord) {
-		if (this._xCoord == xCoord && this._yCoord == yCoord && this._zCoord == zCoord && worldObj.getWorldInfo().getDimension() == this.worldObj.getWorldInfo().getDimension()) {
-			this.worldObj = worldObj;
-			recheckAdjacent();
-		}
-	}*/
 
 	@Override
-	@Deprecated
 	public CoreRoutedPipe getPipe(){
-		World worldObj = DimensionManager.getWorld(_dimension);
-		if(worldObj == null) {
-			worldObj = DimensionManager.getWorld(0);
-		}
-		if(worldObj == null) {
-			if(FMLCommonHandler.instance().getSide().isClient()) {
-				worldObj = MainProxy.getClientMainWorld();
-			}
-		}
+		World worldObj = MainProxy.getWorld(_dimension);
 		if(worldObj == null) {
 			return null;
 		}
@@ -119,15 +101,16 @@ public class Router implements IRouter {
 			_externalRoutersByCost = null;
 			_lastLSDVersion = _LSDVersion;
 			
+			/*
 			CoreRoutedPipe pipe = getPipe();
 			if (pipe == null) return;
 			PipeTransportLogistics trans = (PipeTransportLogistics)pipe.transport;
-			//HashMap<UUID, Orientations> table = new HashMap<UUID, Orientations>();
+			*/
 		}
 	}
 
 	@Override
-	public HashMap<Router, Orientations> getRouteTable(){
+	public HashMap<IRouter, Orientations> getRouteTable(){
 		ensureRouteTableIsUpToDate();
 		return _routeTable;
 	}
@@ -168,7 +151,7 @@ public class Router implements IRouter {
 			
 			LinkedList<RouterCost> tempList = new LinkedList<RouterCost>();
 			outer:
-			for (Router r : _routeCosts.keySet()){
+			for (IRouter r : _routeCosts.keySet()){
 				for (int i = 0; i < tempList.size(); i++){
 					if (_routeCosts.get(r) < tempList.get(i).cost){
 						tempList.add(i, new RouterCost(r, _routeCosts.get(r)));
@@ -229,9 +212,9 @@ public class Router implements IRouter {
 	
 	private void SendNewLSA()
 	{
-		_myLsa.neighboursWithMetric = new HashMap<Router, Integer>();
+		_myLsa.neighboursWithMetric = new HashMap<IRouter, Integer>();
 		for (RoutedPipe adjacent : _adjacent.keySet()){
-			_myLsa.neighboursWithMetric.put(RouterManager.get(adjacent.getRouter().getId()), _adjacent.get(adjacent).metric);
+			_myLsa.neighboursWithMetric.put(adjacent.getRouter(), _adjacent.get(adjacent).metric);
 		}
 		_LSDVersion++;
 		CreateRouteTable();
@@ -244,37 +227,37 @@ public class Router implements IRouter {
 		//Dijkstra!
 		
 		/** Map of all "approved" routers and the route to get there **/
-		HashMap<Router, LinkedList<Router>> tree =  new HashMap<Router, LinkedList<Router>>();
+		HashMap<IRouter, LinkedList<IRouter>> tree =  new HashMap<IRouter, LinkedList<IRouter>>();
 		/** The cost to get to an "approved" router **/
-		HashMap<Router, Integer> treeCost = new HashMap<Router, Integer>();
+		HashMap<IRouter, Integer> treeCost = new HashMap<IRouter, Integer>();
 		
 		//Init root(er - lol)
-		tree.put(this,  new LinkedList<Router>());
+		tree.put(this,  new LinkedList<IRouter>());
 		treeCost.put(this,  0);
 		/** The candidate router and which approved router put it in the candidate list **/
-		HashMap<Router, Router> candidates = new HashMap<Router, Router>();
+		HashMap<IRouter, IRouter> candidates = new HashMap<IRouter, IRouter>();
 		/** The total cost for the candidate route **/
-		HashMap<Router, Integer> candidatesCost = new HashMap<Router, Integer>();
+		HashMap<IRouter, Integer> candidatesCost = new HashMap<IRouter, Integer>();
 		
 		//Init candidates
 		for (RoutedPipe pipe :  _adjacent.keySet()){
-			candidates.put(RouterManager.get(pipe.getRouter().getId()), this);
-			candidatesCost.put(RouterManager.get(pipe.getRouter().getId()), _adjacent.get(pipe).metric);
+			candidates.put(SimpleServiceLocator.routerManager.getRouter(pipe.getRouter().getId()), this);
+			candidatesCost.put(SimpleServiceLocator.routerManager.getRouter(pipe.getRouter().getId()), _adjacent.get(pipe).metric);
 		}
 
 		
 		while (!candidates.isEmpty()){
-			Router lowestCostCandidateRouter = null;
+			IRouter lowestCostCandidateRouter = null;
 			int lowestCost = Integer.MAX_VALUE;
-			for(Router candidate : candidatesCost.keySet()){
+			for(IRouter candidate : candidatesCost.keySet()){
 				if (candidatesCost.get(candidate) < lowestCost){
 					lowestCostCandidateRouter = candidate;
 					lowestCost = candidatesCost.get(candidate);
 				}
 			}
 			
-			Router lowestParent = candidates.get(lowestCostCandidateRouter);	//Get the approved parent of the lowest cost candidate
-			LinkedList<Router> lowestPath = (LinkedList<Router>) tree.get(lowestParent).clone();	//Get a copy of the route for the approved router 
+			IRouter lowestParent = candidates.get(lowestCostCandidateRouter);	//Get the approved parent of the lowest cost candidate
+			LinkedList<IRouter> lowestPath = (LinkedList<IRouter>) tree.get(lowestParent).clone();	//Get a copy of the route for the approved router 
 			lowestPath.addLast(lowestCostCandidateRouter); //Add to the route to get to the candidate
 			
 			//Approve the candidate
@@ -286,9 +269,9 @@ public class Router implements IRouter {
 			candidatesCost.remove(lowestCostCandidateRouter);
 			
 			//Add new candidates from the newly approved route
-			for (LSA lsa : Router.SharedLSADatabase){
+			for (LSA lsa : SharedLSADatabase){
 				if (lsa.source != lowestCostCandidateRouter) continue;				
-				for (Router newCandidate: lsa.neighboursWithMetric.keySet()){
+				for (IRouter newCandidate: lsa.neighboursWithMetric.keySet()){
 					if (tree.containsKey(newCandidate)) continue;
 					int candidateCost = lowestCost + lsa.neighboursWithMetric.get(newCandidate);
 					if (candidates.containsKey(newCandidate) && candidatesCost.get(newCandidate) <= candidateCost){
@@ -302,17 +285,17 @@ public class Router implements IRouter {
 		
 		
 		//Build route table
-		_routeTable = new HashMap<Router, Orientations>();
-		_routeCosts = new HashMap<Router, Integer>();
-		for (Router node : tree.keySet())
+		_routeTable = new HashMap<IRouter, Orientations>();
+		_routeCosts = new HashMap<IRouter, Integer>();
+		for (IRouter node : tree.keySet())
 		{
-			LinkedList<Router> route = tree.get(node);
+			LinkedList<IRouter> route = tree.get(node);
 			if (route.size() == 0){
 				_routeTable.put(node, Orientations.Unknown);
 				continue;
 			}
 			
-			Router firstHop = route.getFirst();
+			IRouter firstHop = route.getFirst();
 			if (firstHop == null) continue;
 			CoreRoutedPipe firstPipe = firstHop.getPipe();
 			if (firstPipe == null) continue;
@@ -405,7 +388,7 @@ public class Router implements IRouter {
 				SharedLSADatabase.remove(_myLsa);
 				_LSDVersion++;
 			}
-			RouterManager.removeRouter(this.id);
+			SimpleServiceLocator.routerManager.removeRouter(this.id);
 		}
 
 	@Override
@@ -426,7 +409,7 @@ public class Router implements IRouter {
 	
 	
 	@Override
-	public void sendRoutedItem(ItemStack item, Router destination, Position origin) {
+	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -438,7 +421,7 @@ public class Router implements IRouter {
 
 	@Override
 	public Orientations getExitFor(UUID id) {
-		return this.getRouteTable().get(RouterManager.get(id));
+		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id));
 	}
 	
 	@Override

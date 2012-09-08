@@ -61,6 +61,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		if(MainProxy.isClient()) return;
 		if (this.worldObj.getWorldTime() % 1200 == 0){
 			_history.addLast(LogisticsPipes.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet()));
 			if (_history.size() > 20){

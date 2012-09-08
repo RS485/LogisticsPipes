@@ -53,4 +53,8 @@ public class NetworkConstants {
 	public static final int SOLDERING_UPDATE_HEAT = 47;
 	public static final int SOLDERING_UPDATE_PROGRESS = 48;
 	public static final int SOLDERING_UPDATE_INVENTORY = 49;
+	public static final int HUD_START_WATCHING = 50;
+	public static final int HUD_STOP_WATCHING = 51;
+	public static final int PIPE_CHEST_CONTENT = 52;
+	public static final int ORDER_MANAGER_CONTENT = 53;
 }

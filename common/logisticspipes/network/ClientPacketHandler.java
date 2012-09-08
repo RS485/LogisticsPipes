@@ -13,6 +13,8 @@ import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.popup.GuiDiskPopup;
+import logisticspipes.interfaces.IChestContentReceiver;
+import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -28,6 +30,7 @@ import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.pipes.PipeItemsApiaristSink;
@@ -172,6 +175,15 @@ public class ClientPacketHandler {
 					packetV.readData(data);
 					onSolderingUpdateInventory(player, packetV);
 					break;
+				case NetworkConstants.PIPE_CHEST_CONTENT:
+					final PacketPipeInvContent packetW = new PacketPipeInvContent();
+					packetW.readData(data);
+					onSateliteChestInv(player, packetW);
+					break;
+				case NetworkConstants.ORDER_MANAGER_CONTENT:
+					final PacketPipeInvContent packetX = new PacketPipeInvContent();
+					packetX.readData(data);
+					onOrderManagerContent(player, packetX);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -417,6 +429,26 @@ public class ClientPacketHandler {
 				ItemStack stack = packet.itemStacks.get(i);
 				station.setInventorySlotContents(i, stack);
 			}
+		}
+	}
+
+	private static void onSateliteChestInv(Player player, PacketPipeInvContent packet) {
+		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(tile == null) {
+			return;
+		}
+		if(tile.pipe instanceof IChestContentReceiver) {
+			((IChestContentReceiver)tile.pipe).setReceivedChestContent(packet._allItems);
+		}
+	}
+
+	private static void onOrderManagerContent(Player player, PacketPipeInvContent packet) {
+		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(tile == null) {
+			return;
+		}
+		if(tile.pipe instanceof IOrderManagerContentReceiver) {
+			((IOrderManagerContentReceiver)tile.pipe).setOrderManagerContent(packet._allItems);
 		}
 	}
 

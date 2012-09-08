@@ -10,10 +10,10 @@ package logisticspipes.routing;
 
 
 class RouterCost {
-	public final Router router;
+	public final IRouter router;
 	public final int cost;
 	
-	public RouterCost(Router router, int cost){
+	public RouterCost(IRouter router, int cost){
 		this.router = router;
 		this.cost = cost;
 	}

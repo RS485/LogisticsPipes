@@ -8,11 +8,18 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.config.Textures;
+import logisticspipes.gui.hud.HUDProvider;
+import logisticspipes.interfaces.IChestContentReceiver;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -20,24 +27,40 @@ import logisticspipes.logic.LogicProvider;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.main.LogisticsOrderManager;
 import logisticspipes.main.LogisticsPromise;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
+import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
+import buildcraft.core.Utils;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
-public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems{
+public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
+	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	private final HUDProvider HUD = new HUDProvider(this);
+	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	//private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
 		
@@ -45,11 +68,8 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		super(new LogicProvider(), itemID);
 	}
 	
-	public PipeItemsProviderLogistics(int itemID, 
-										//InventoryUtilFactory inventoryUtilFactory,
-										LogisticsOrderManager logisticsOrderManager) {
-		this(itemID);		
-		//_inventoryUtilFactory = inventoryUtilFactory;
+	public PipeItemsProviderLogistics(int itemID, LogisticsOrderManager logisticsOrderManager) {
+		this(itemID);
 		_orderManager = logisticsOrderManager;
 	}
 	
@@ -146,8 +166,8 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		super.updateEntity();
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
-		LogisticsRequest order = _orderManager.getNextRequest();
-		int sent = sendItem(order.getItem(), order.numberLeft(), order.getDestination().getRouter().getId());
+		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
+		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
 		if (sent > 0){
 			_orderManager.sendSuccessfull(sent);
 		}
@@ -182,7 +202,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new LogisticsRequest(promise.item, promise.numberOfItems, destination));
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	@Override
@@ -240,5 +260,107 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
+	}
+
+	@Override
+	public int getX() {
+		return xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return zCoord;
+	}
+
+	@Override
+	public void startWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
+	}
+
+	@Override
+	public void stopWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
+	}
+	
+	private IInventory getRawInventory(Orientations ori) {
+		Position pos = new Position(this.xCoord, this.yCoord, this.zCoord, ori);
+		pos.moveForwards(1);
+		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		if (tile instanceof TileGenericPipe) return null;
+		if (!(tile instanceof IInventory)) return null;
+		return Utils.getInventory((IInventory) tile);
+	}
+	
+	private IInventory getInventory(Orientations ori) {
+		IInventory rawInventory = getRawInventory(ori);
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, ori.reverse());
+		return rawInventory;
+	}
+	
+	private void addToList(ItemIdentifierStack stack) {
+		for(ItemIdentifierStack ident:itemList) {
+			if(ident.getItem().equals(stack.getItem())) {
+				ident.stackSize += stack.stackSize;
+				return;
+			}
+		}
+		itemList.addLast(stack);
+	}
+	
+	private void updateInv(boolean force) {
+		itemList.clear();
+		for(Orientations ori:Orientations.values()) {
+			LogicProvider providerLogic = (LogicProvider) logic;
+			IInventory inv = getInventory(ori);
+			if(inv != null) {
+				for(int i=0;i<inv.getSizeInventory();i++) {
+					if(inv.getStackInSlot(i) != null) {
+						//Filter
+						if (providerLogic.hasFilter() 
+								&& ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(ItemIdentifier.get(inv.getStackInSlot(i)))) 
+										|| (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(ItemIdentifier.get(inv.getStackInSlot(i)))))) continue;
+
+						addToList(ItemIdentifierStack.GetFromStack(inv.getStackInSlot(i)));
+					}
+				}
+			}
+		}
+		if(!itemList.equals(oldList) || force) {
+			oldList.clear();
+			oldList.addAll(itemList);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, itemList).getPacket(), localModeWatchers);
+		}
+	}
+
+	@Override
+	public void playerStartWatching(EntityPlayer player, int mode) {
+		if(mode == 1) {
+			localModeWatchers.add(player);
+			updateInv(true);
+		} else {
+			super.playerStartWatching(player, mode);
+		}
+	}
+
+	@Override
+	public void playerStopWatching(EntityPlayer player, int mode) {
+		super.playerStartWatching(player, mode);
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public void setReceivedChestContent(LinkedList<ItemIdentifierStack> list) {
+		itemList.clear();
+		itemList.addAll(list);
+	}
+
+	@Override
+	public IHeadUpDisplayRenderer getRenderer() {
+		return HUD;
 	}
 }

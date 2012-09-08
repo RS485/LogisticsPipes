@@ -21,15 +21,14 @@ import buildcraft.api.core.Position;
 public interface IRouter {
 	public void destroy();
 	public void update(boolean fullRefresh);
-	public void sendRoutedItem(ItemStack item, Router destination, Position origin);
+	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
 	public boolean isRoutedExit(Orientations connection);
 	public boolean hasRoute(UUID id);
 	public Orientations getExitFor(UUID id);
 	
 	@Deprecated
-	public HashMap<Router, Orientations> getRouteTable();
+	public HashMap<IRouter, Orientations> getRouteTable();
 	public LinkedList<IRouter> getIRoutersByCost();
-	@Deprecated
 	public CoreRoutedPipe getPipe();
 	
 	public UUID getId();

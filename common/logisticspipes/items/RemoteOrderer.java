@@ -111,12 +111,8 @@ public class RemoteOrderer extends Item {
 		if(!stack.stackTagCompound.hasKey("connectedPipe-world-dim")) {
 			return null;
 		}
-		World world = DimensionManager.getWorld(stack.stackTagCompound.getInteger("connectedPipe-world-dim"));
-		if(world == null) {
-			if(FMLCommonHandler.instance().getSide().isClient()) {
-				world = MainProxy.getClientMainWorld();
-			}
-		}
+		int dim = stack.stackTagCompound.getInteger("connectedPipe-world-dim");
+		World world = MainProxy.getWorld(dim);
 		if(world == null) {
 			return null;
 		}

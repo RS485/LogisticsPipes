@@ -252,10 +252,7 @@ package logisticspipes;
 
 import java.lang.reflect.Method;
 
-import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignBlock;
-import logisticspipes.blocks.LogisticsSignTileEntity;
-import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
 import logisticspipes.config.SolderingStationRecipes;
@@ -264,6 +261,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
+import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
@@ -297,6 +295,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
 import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy3;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.ElectricItemProxy;
@@ -305,11 +304,11 @@ import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.routing.RouterManager;
+import logisticspipes.ticks.TickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
 import net.minecraft.src.CraftingManager;
-import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
@@ -340,6 +339,7 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
 
 @Mod(name="Logistics Pipes", version="0.5.@(Build_Number)", useMetadata = false, modid = "LP|MAIN")
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -381,6 +381,7 @@ public class LogisticsPipes {
 	public static Item LogisticsCraftingSignCreator;
 	public static ItemDisk LogisticsItemDisk;
 	public static Item LogisticsItemCard;
+	public static ItemHUDArmor LogisticsHUDArmor;
 	
 	public static ItemModule ModuleItem;
 	
@@ -423,6 +424,10 @@ public class LogisticsPipes {
 			Localization.addLocalization("/lang/logisticspipes/", "en_US");
 		}
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
+		if(event.getSide().equals(Side.CLIENT) && DEBUG) {
+			//WIP (highly alpha)
+			TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
+		}
 	}
 	
 	@PreInit
@@ -523,7 +528,11 @@ public class LogisticsPipes {
 		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
 		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
-
+		
+		LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId);
+		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
+		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		
 		LogisticsPipes.LogisticsFailedTrigger = new TriggerSupplierFailed(700);
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		
@@ -562,6 +571,7 @@ public class LogisticsPipes {
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
+		ModLoader.addName(LogisticsHUDArmor, "Logistics HUD Glasses");
 		
 		/*
 		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
@@ -766,9 +776,7 @@ public class LogisticsPipes {
 		ModLoader.registerBlock(logisticsSign);
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
-		ModLoader.registerTileEntity(LogisticsSignTileEntity.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy", new CraftingSignRenderer());
-		ModLoader.registerTileEntity(LogisticsSignTileEntity.class, "logisticspipes.blocks.LogisticsSignTileEntity", new CraftingSignRenderer());
-		ModLoader.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
+		MainProxy.proxy.registerTileEntitis();
 	}
 	
 	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {

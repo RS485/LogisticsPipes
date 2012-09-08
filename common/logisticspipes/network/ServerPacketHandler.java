@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -208,6 +209,16 @@ public class ServerPacketHandler {
 					final PacketCoordinates packetAb = new PacketCoordinates();
 					packetAb.readData(data);
 					onInvSysContentRequest(player, packetAb);
+					break;
+				case NetworkConstants.HUD_START_WATCHING:
+					final PacketPipeInteger packetAc = new PacketPipeInteger();
+					packetAc.readData(data);
+					onHUDWatchingChange(player, packetAc, true);
+					break;
+				case NetworkConstants.HUD_STOP_WATCHING:
+					final PacketPipeInteger packetAd = new PacketPipeInteger();
+					packetAd.readData(data);
+					onHUDWatchingChange(player, packetAd, false);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -835,6 +846,22 @@ public class ServerPacketHandler {
 			LinkedList<ItemIdentifierStack> allItems = connector.getExpectedItems();
 			PacketRequestGuiContent packetContent = new PacketRequestGuiContent(allItems, NetworkConstants.INC_SYS_CON_CONTENT);
 			PacketDispatcher.sendPacketToPlayer(packetContent.getPacket(), (Player)player);
+		}
+	}
+
+	private static void onHUDWatchingChange(EntityPlayerMP player, PacketPipeInteger packet, boolean add) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof IWatchingHandler) {
+			IWatchingHandler handler = (IWatchingHandler) pipe.pipe;
+			if(add) {
+				handler.playerStartWatching(player, packet.integer);
+			} else {
+				handler.playerStopWatching(player, packet.integer);
+			}
 		}
 	}
 	

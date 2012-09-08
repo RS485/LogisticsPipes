@@ -9,29 +9,41 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
-
-import buildcraft.api.core.Orientations;
 
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.utils.Pair;
+import logisticspipes.proxy.MainProxy;
 
 
 public class RouterManager implements IRouterManager, IDirectConnectionManager {
-	private final static HashMap<UUID, Router> _routers = new HashMap<UUID, Router>();
-	private final static ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
 	
-	//DO ONLY USE FROM PURE ROUTER OBJECTS!
-	public static Router get(UUID id){
-		return _routers.get(id);
+	private final HashMap<UUID, IRouter> _routersClient = new HashMap<UUID, IRouter>();
+	private final HashMap<UUID, IRouter> _routersServer = new HashMap<UUID, IRouter>();
+	
+	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
+
+	@Override
+	public IRouter getRouter(UUID id){
+		if(MainProxy.isClient()) {
+			return _routersClient.get(id);
+		} else {
+			return _routersServer.get(id);
+		}
 	}
 	
-	static void removeRouter(UUID id) {
-		if (_routers.containsKey(id)){
-			_routers.remove(id);
+	public void removeRouter(UUID id) {
+		if(MainProxy.isClient()) {
+			if (_routersClient.containsKey(id)){
+				_routersClient.remove(id);
+			}
+		} else {
+			if (_routersServer.containsKey(id)){
+				_routersServer.remove(id);
+			}
 		}
 	}
 
@@ -39,20 +51,32 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	public IRouter getOrCreateRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
 		IRouter r = this.getRouter(id);
 		if (r == null){
-			r = new Router(id, dimension, xCoord, yCoord, zCoord);
-			_routers.put(id, (Router)r);
+			if(MainProxy.isClient()) {
+				r = new ClientRouter(id, dimension, xCoord, yCoord, zCoord);
+				_routersClient.put(id, r);
+			} else {
+				r = new ServerRouter(id, dimension, xCoord, yCoord, zCoord);
+				_routersServer.put(id, r);
+			}
 		}
 		return r;
 	}
 	
 	@Override
-	public IRouter getRouter(UUID id){
-		return _routers.get(id);
+	public boolean isRouter(UUID id) {
+		if(MainProxy.isClient()) {
+			return _routersClient.containsKey(id);
+		} else {
+			return _routersServer.containsKey(id);
+		}
 	}
 	
-	@Override
-	public boolean isRouter(UUID id) {
-		return _routers.containsKey(id);
+	public Map<UUID, IRouter> getRouters() {
+		if(MainProxy.isClient()) {
+			return Collections.unmodifiableMap(_routersClient);
+		} else {
+			return Collections.unmodifiableMap(_routersServer);
+		}
 	}
 
 	@Override
@@ -71,6 +95,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	
 	@Override
 	public boolean addDirectConnection(UUID ident, IRouter router) {
+		if(MainProxy.isClient()) return false;
 		boolean added = false;
 		for(DirectConnection con:connectedPipes) {
 			if(!ident.equals(con.identifier)) {
@@ -119,13 +144,14 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		if(id == null) {
 			return null;
 		}
-		Router r = _routers.get(id);
+		IRouter r = getRouter(id);
 		if(r == null) return null;
 		return r.getPipe();
 	}
 
 	@Override
 	public void removeDirectConnection(IRouter router) {
+		if(MainProxy.isClient()) return;
 		for(DirectConnection con:connectedPipes) {
 			if(con.Router1 != null && con.Router1.equals(router.getId())) {
 				con.Router1 = null;

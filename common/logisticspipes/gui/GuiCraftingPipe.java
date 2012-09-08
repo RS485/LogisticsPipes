@@ -54,7 +54,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		
 		controlList.add(new SmallGuiButton(0, (width-xSize) / 2 + 164, (height - ySize) / 2 + 50, 10,10, ">"));
 		controlList.add(new SmallGuiButton(1, (width-xSize) / 2 + 129, (height - ySize) / 2 + 50, 10,10, "<"));
-		controlList.add(new SmallGuiButton(2, (width-xSize) / 2 + 138, (height - ySize) / 2 + 75, 30,10, "Paint"));
+		//controlList.add(new SmallGuiButton(2, (width-xSize) / 2 + 138, (height - ySize) / 2 + 75, 30,10, "Paint"));
 		controlList.add(new SmallGuiButton(3, (width-xSize) / 2 + 47, (height - ySize) / 2 + 50, 37,10, "Import"));
 		controlList.add(new SmallGuiButton(4, (width-xSize) / 2 + 15, (height - ySize) / 2 + 50, 28,10, "Open"));
 		for(int i = 0; i < 6; i++) {
@@ -117,9 +117,9 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}*/
 		//TODO /\ /\ ???
 
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		drawRect(0,1000,0,10000, 0xFFFF0000);
-		drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
+		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		//drawRect(0,1000,0,10000, 0xFFFF0000);
+		//drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
 		//MinecraftForgeClient.unbindTexture();
 		fontRenderer.drawString(""+_logic.satelliteId , 155 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
 	}

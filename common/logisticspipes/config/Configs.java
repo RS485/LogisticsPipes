@@ -9,6 +9,7 @@ import buildcraft.core.ProxyCore;
 public class Configs {
 
 	// Ids
+	public static int ItemHUDId										= 6868;
 	public static int ItemCardId									= 6869;
 	public static int ItemDiskId									= 6870;
 	public static int ItemModuleId									= 6871;
@@ -123,6 +124,9 @@ public class Configs {
 
 		Property logisticItemDiskIdProperty = configuration.getOrCreateIntProperty("logisticsDisk.id", Configuration.CATEGORY_ITEM, ItemDiskId);
 		logisticItemDiskIdProperty.comment = "The item id for the disk";
+		
+		Property logisticItemHUDIdProperty = configuration.getOrCreateIntProperty("logisticsHUD.id", Configuration.CATEGORY_ITEM, ItemHUDId);
+		logisticItemHUDIdProperty.comment = "The item id for the Logistics HUD glasses";
 
 		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
@@ -176,6 +180,7 @@ public class Configs {
 		ItemModuleId						= Integer.parseInt(logisticModuleIdProperty.value);
 		ItemDiskId							= Integer.parseInt(logisticItemDiskIdProperty.value);
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
+		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);
 		 
 		LOGISTICSPIPE_BASIC_ID 				= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID			= Integer.parseInt(logisticPipeRequesterIdProperty.value);

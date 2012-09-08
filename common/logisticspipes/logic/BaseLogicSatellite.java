@@ -20,6 +20,7 @@ import logisticspipes.main.RoutedPipe;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
@@ -55,6 +56,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	}
 
 	protected int findId(int increment) {
+		if(MainProxy.isClient()) return satelliteId;
 		int potentialId = satelliteId;
 		boolean conflict = true;
 		while (conflict) {
@@ -74,6 +76,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	}
 
 	protected void ensureAllSatelliteStatus() {
+		if(MainProxy.isClient()) return;
 		if (satelliteId == 0 && AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -92,6 +95,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
 			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
+		updateWatchers();
 	}
 
 	public void setPrevId(EntityPlayer player) {
@@ -104,10 +108,19 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
 			PacketDispatcher.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
+		updateWatchers();
+	}
+
+	private void updateWatchers() {
+		for(EntityPlayer player : ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers) {
+			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			PacketDispatcher.sendPacketToPlayer(packet.getPacket(),(Player) player);
+		}
 	}
 
 	@Override
 	public void destroy() {
+		if(MainProxy.isClient()) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}

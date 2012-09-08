@@ -1,8 +1,8 @@
 package logisticspipes.logisticspipes;
 
-import static codechicken.nei.API.addSetRange;
+import static codechicken.nei.api.API.addSetRange;
 import logisticspipes.LogisticsPipes;
-import codechicken.nei.IConfigureNEI;
+import codechicken.nei.api.IConfigureNEI;
 import codechicken.nei.MultiItemRange;
 
 public class NEILogisticsPipesConfig implements IConfigureNEI

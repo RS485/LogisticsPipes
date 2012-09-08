@@ -50,7 +50,7 @@ import net.minecraft.src.TileEntity;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
 

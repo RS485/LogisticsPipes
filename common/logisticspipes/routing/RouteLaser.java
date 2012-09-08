@@ -19,7 +19,7 @@ import buildcraft.api.core.LaserKind;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.EntityBlock;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 
 class RouteLaser implements IPaintPath{
 	private LinkedList<EntityBlock> _lasers = new LinkedList<EntityBlock>();

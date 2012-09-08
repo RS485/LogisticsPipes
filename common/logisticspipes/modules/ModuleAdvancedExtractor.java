@@ -21,7 +21,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 
 public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider {
 

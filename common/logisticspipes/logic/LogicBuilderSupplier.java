@@ -26,7 +26,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import buildcraft.builders.TileBuilder;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 
 public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport {
 	

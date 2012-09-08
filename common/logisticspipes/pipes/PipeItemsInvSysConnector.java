@@ -35,6 +35,7 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
+import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 
 public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider {
@@ -86,7 +87,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(tile instanceof IInventory) {
-				IInventory inv = (IInventory) tile;
+				IInventory inv = Utils.getInventory((IInventory) tile);
 				if(inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory)inv, Orientations.values()[i].reverse());
 				}

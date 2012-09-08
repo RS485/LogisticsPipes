@@ -12,8 +12,8 @@ package logisticspipes.network;
 import logisticspipes.network.packets.PacketPayload;
 import net.minecraft.src.TileEntity;
 import buildcraft.core.ByteBuffer;
-import buildcraft.core.ClassMapping;
-import buildcraft.core.ClassMapping.Indexes;
+import buildcraft.core.network.ClassMapping;
+import buildcraft.core.network.ClassMapping.Indexes;
 
 public class TilePacketWrapper {
 

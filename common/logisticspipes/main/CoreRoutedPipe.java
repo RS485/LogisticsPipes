@@ -47,7 +47,7 @@ import net.minecraft.src.World;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;

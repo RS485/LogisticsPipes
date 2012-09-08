@@ -17,7 +17,7 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 
 public class BuildCraftProxy3 implements IBuildCraftProxy{

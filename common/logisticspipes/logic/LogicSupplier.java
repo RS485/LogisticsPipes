@@ -30,7 +30,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.NBTTagCompound;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
 import buildcraft.transport.TileGenericPipe;

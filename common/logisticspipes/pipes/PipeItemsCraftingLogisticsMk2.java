@@ -25,7 +25,7 @@ import net.minecraft.src.ItemStack;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.Utils;
+import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransportItems;
 
 public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{

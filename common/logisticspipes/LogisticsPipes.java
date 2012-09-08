@@ -516,10 +516,12 @@ public class LogisticsPipes {
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		LogisticsItemCard = new LogisticsItem(Configs.ItemCardId);
-		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
-		LogisticsItemCard.setItemName("logisticsItemCard");
-		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
+		if(DEBUG) {
+			LogisticsItemCard = new LogisticsItem(Configs.ItemCardId);
+			LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
+			LogisticsItemCard.setItemName("logisticsItemCard");
+			//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
+		}
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
@@ -529,9 +531,11 @@ public class LogisticsPipes {
 		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
 		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
 		
-		LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId);
-		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
-		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		if(DEBUG) {
+			LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId);
+			LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
+			LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		}
 		
 		LogisticsPipes.LogisticsFailedTrigger = new TriggerSupplierFailed(700);
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
@@ -563,15 +567,15 @@ public class LogisticsPipes {
 		LogisticsProviderPipeMK2 = createPipe(Configs.LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", event.getSide());
 		LogisticsApiaristAnalyserPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", event.getSide());
 		LogisticsApiaristSinkPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", event.getSide());
-		LogisticsInvSysCon = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", event.getSide());
+		if(DEBUG) LogisticsInvSysCon = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", event.getSide());
 
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
-		ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
+		if(DEBUG) ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
-		ModLoader.addName(LogisticsHUDArmor, "Logistics HUD Glasses");
+		if(DEBUG) ModLoader.addName(LogisticsHUDArmor, "Logistics HUD Glasses");
 		
 		/*
 		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
@@ -769,13 +773,13 @@ public class LogisticsPipes {
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
 		
-		SolderingStationRecipes.loadRecipe();
+		if(DEBUG) SolderingStationRecipes.loadRecipe();
 		
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
 		ModLoader.registerBlock(logisticsSign);
-		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
-		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
+		if(DEBUG) logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		if(DEBUG) ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		MainProxy.proxy.registerTileEntitis();
 	}
 	

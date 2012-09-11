@@ -1,5 +1,12 @@
 <project name="LogisticsPipes" basedir="../" default="main">
-    
+	<taskdef resource="net/sf/antcontrib/antlib.xml">
+		<classpath>
+			<pathelement location="/usr/share/java/ant-contrib.jar"/>
+			<pathelement location="/usr/share/java/commons-httpclient.jar"/>
+		</classpath>
+    </taskdef>
+    <property environment="env" />
+
     <!-- Properties -->
     
     <property name="build.dir"           value="build" />
@@ -32,7 +39,7 @@
     <property name="ic2.version"         value="1.97" />
     <property name="lp.version"          value="0.5.1" />
     <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-    <property name="lp.version.full"     value="${lp.version}.pre2" />
+	<property name="lp.version.full"     value="${lp.version}.pre2" />
     
     <echo message="Starting build for ${lp.version.full}" />
 	
@@ -95,7 +102,11 @@
         <chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
         <chmod file="${mcp.dir}/reobfuscate.sh" perm="+x"/>
         <chmod file="${forge.dir}/install.sh" perm="+x"/>
-        
+		
+		<!-- if your building on OSX these 2 should be executable -->
+        <chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x" />
+        <chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x" />
+
         <!-- Install forge -->
         <exec dir="${forge.dir}" executable="cmd" osfamily="windows">
             <arg line="/c install.cmd"/>

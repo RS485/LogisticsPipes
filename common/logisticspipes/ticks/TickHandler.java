@@ -188,9 +188,9 @@ public class TickHandler implements ITickHandler {
 		double y = renderer.getY() + 0.5 - player.posY;
 		double z = renderer.getZ() + 0.5 - player.posZ;
 		GL11.glTranslatef((float)x, (float)y, (float)z);
-		GL11.glRotatef(90, 1, 0, 0);
-		GL11.glRotated(getAngle(z,x) + 90, 0, 0, 1);
-		GL11.glRotated((-1)*getAngle(Math.hypot(x,z),y) + 180, 1, 0, 0);
+		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+		GL11.glRotated(getAngle(z,x) + 90, 0.0D, 0.0D, 1.0D);
+		GL11.glRotated((-1)*getAngle(Math.hypot(x,z),y) + 180, 1.0D, 0.0D, 0.0D);
 
 		GL11.glTranslatef(0.0F, 0.0F, -0.4F);
 		

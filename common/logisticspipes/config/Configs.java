@@ -2,7 +2,9 @@ package logisticspipes.config;
 
 import java.io.File;
 
-import net.minecraft.client.Minecraft;
+import logisticspipes.proxy.MainProxy;
+
+import net.minecraft.src.ModLoader;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 
@@ -58,7 +60,15 @@ public class Configs {
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
 	
 	public static void load() {
-		File configFile = new File(Minecraft.getMinecraftDir(), "config/LogisticsPipes.cfg");
+		File configFile = null;
+		if(MainProxy.isClient()) {
+			configFile = new File(net.minecraft.client.Minecraft.getMinecraftDir(), "config/LogisticsPipes.cfg");
+		} else if(MainProxy.isServer()) {
+			configFile = net.minecraft.server.MinecraftServer.getServer().getFile("config/LogisticsPipes.cfg");
+		} else {
+			ModLoader.getLogger().severe("No server, no client? Where am I running?");
+			return;
+		}
 		configuration = new Configuration(configFile);
 		configuration.load();
 		

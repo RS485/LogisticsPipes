@@ -327,6 +327,7 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TransportProxyClient;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
@@ -532,7 +533,13 @@ public class LogisticsPipes {
 		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
 		
 		if(DEBUG) {
-			LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId);
+			int renderIndex;
+			if(MainProxy.isClient()) {
+				renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
+			} else {
+				renderIndex = 0;
+			}
+			LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId, renderIndex);
 			LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
 			LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
 		}

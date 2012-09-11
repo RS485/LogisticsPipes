@@ -13,8 +13,8 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, ISpecialArmor {
 
-	public ItemHUDArmor(int par1) {
-		super(par1, EnumArmorMaterial.CHAIN, RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD"), 0);
+	public ItemHUDArmor(int par1, int renderIndex) {
+		super(par1, EnumArmorMaterial.CHAIN, renderIndex, 0);
 	}
 
 	@Override

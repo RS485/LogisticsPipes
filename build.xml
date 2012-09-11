@@ -31,7 +31,8 @@
     <property name="forestry.version"    value="1.5.0.0" />
     <property name="ic2.version"         value="1.97" />
     <property name="lp.version"          value="0.5.1" />
-    <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" />
+    <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
+    <property name="lp.version.full"     value="${lp.version}.pre2" />
     
     <echo message="Starting build for ${lp.version.full}" />
 	

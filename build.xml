@@ -164,7 +164,7 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${src.dir}/resources/mod_LogisticsPipes.info" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${src.dir}/resources/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		
     </target>

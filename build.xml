@@ -39,7 +39,7 @@
     <property name="ic2.version"         value="1.97" />
     <property name="lp.version"          value="0.5.1" />
     <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-	<property name="lp.version.full"     value="${lp.version}.pre2" />
+	<property name="lp.version.full"     value="${lp.version}.pre3" />
     
     <echo message="Starting build for ${lp.version.full}" />
 	
@@ -164,6 +164,7 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${src.dir}/resources/mod_LogisticsPipes.info" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		
     </target>
@@ -199,8 +200,6 @@
         <copy todir="${classes.dir}/client">
             <fileset dir="${src.dir}/resources"></fileset>
         </copy>
-        
-        <move file="${classes.dir}/client/mod_LogisticsPipes.info" tofile="${classes.dir}/client/mcmod.info"/>
         
 		<echo message="Compiling finished"/>
 	

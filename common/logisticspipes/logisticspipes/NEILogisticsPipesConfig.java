@@ -4,13 +4,12 @@ import static codechicken.nei.api.API.addSetRange;
 import logisticspipes.LogisticsPipes;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.IConfigureNEI;
+import cpw.mods.fml.common.Mod;
 
-public class NEILogisticsPipesConfig implements IConfigureNEI
-{
-
+public class NEILogisticsPipesConfig implements IConfigureNEI {
+	
 	@Override
-	public void loadConfig()
-	{
+	public void loadConfig() {
 		MultiItemRange main = new MultiItemRange();
 		main.add(LogisticsPipes.LogisticsNetworkMonitior);
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);
@@ -46,7 +45,16 @@ public class NEILogisticsPipesConfig implements IConfigureNEI
 		addSetRange("LogisticsPipes.Modules", modules);
 		addSetRange("LogisticsPipes.Pipes", pipes);
 		addSetRange("LogisticsPipes.Pipes.Chassi", pipesChassi);
-		
+	}
+
+	@Override
+	public String getName() {
+		return ((Mod) LogisticsPipes.instance).name();
+	}
+
+	@Override
+	public String getVersion() {
+		return ((Mod) LogisticsPipes.instance).version();
 	}
 	
 }

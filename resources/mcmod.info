@@ -1,0 +1,31 @@
+[
+{
+  "modid" : "LogisticsPipes|Main",
+  "name" : "Logistics Pipes",
+  "description" : "This is the unofficial SMP version with additional features for the minecraft modification Logistics Pipes.",
+  "version" : "%VERSION%",
+  "credits" : "All credits from the original mod go to Krapht. Thanks!",
+  "authors" : [
+    "davboecki",
+    "theZorro266"
+  ],
+  "logoFile" : "",
+  "url" : "https://github.com/RS485/LogisticsPipes",
+  "updateUrl" : "",
+  "parent" : "",
+  "screenshots" : [
+  ],
+  "requiredMods": [
+    "Forge",
+    "BuildCraft|Core",
+	"BuildCraft|Transport",
+    "BuildCraft|Builders",
+    "BuildCraft|Silicon"
+  ],
+  "dependencies": [
+	"IC2",
+	"Forestry"
+  ],
+  "useDependencyInformation": "true"
+}
+]

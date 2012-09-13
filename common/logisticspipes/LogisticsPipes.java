@@ -118,7 +118,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "after:Forge,after:FML,after:BuildCraft|Core,after:BuildCraft|Transport,after:BuildCraft|Builders,after:BuildCraft|Silicon,after:IC2,after:Forestry", useMetadata = true)
+@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "after:Forge;after:FML;after:BuildCraft|Core;after:BuildCraft|Transport;after:BuildCraft|Builders;after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
 	public static LogisticsPipes instance;

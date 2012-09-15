@@ -200,7 +200,7 @@
             <fileset dir="${src.dir}/resources"></fileset>
         </copy>
 		
-		<replace file="{classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
         
 		<echo message="Compiling finished"/>
 	

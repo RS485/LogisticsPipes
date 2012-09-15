@@ -164,7 +164,6 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${src.dir}/resources/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		
     </target>
@@ -200,6 +199,8 @@
         <copy todir="${classes.dir}/client">
             <fileset dir="${src.dir}/resources"></fileset>
         </copy>
+		
+		<replace file="{classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
         
 		<echo message="Compiling finished"/>
 	

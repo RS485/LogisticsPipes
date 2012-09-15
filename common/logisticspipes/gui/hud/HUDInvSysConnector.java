@@ -42,7 +42,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 
 	@Override
 	public boolean display() {
-		return true;
+		return false;
 	}
 
 	@Override

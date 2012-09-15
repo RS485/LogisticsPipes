@@ -52,7 +52,7 @@ public class LogisticsOrderManager {
 				return;
 			}
 		}
-		list.addLast(stack);
+		list.addLast(stack.clone());
 	}
 	
 	public boolean hasOrders(){

@@ -30,7 +30,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	
 	public abstract void destroy();
 	
-	protected int throttleTime = 40;
+	protected int throttleTime = 20;
 	private int throttleTimeLeft = 0;
 	
 	

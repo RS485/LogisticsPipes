@@ -75,7 +75,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			ILiquidTank[] result = container.getTanks();
 			for (ILiquidTank slot : result){
-				if (!wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
+				if (slot.getLiquid() == null || !wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
 				if (!haveLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))){
 					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), slot.getLiquid().amount);
 				} else {

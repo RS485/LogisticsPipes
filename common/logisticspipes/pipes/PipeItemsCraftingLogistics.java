@@ -28,6 +28,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.CraftingTemplate;
 import logisticspipes.main.LogisticsOrderManager;
 import logisticspipes.main.LogisticsPromise;
@@ -116,12 +117,12 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public void updateEntity() {
 		super.updateEntity();
 		if(!init) {
-		if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
-				if(MainProxy.isClient(this.worldObj)) {
+			if(MainProxy.isClient()) {
+				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
 					PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
 				}
-				init = true;
 			}
+			init = true;
 		}
 		if(this instanceof PipeItemsCraftingLogisticsMk2) {
 			return;
@@ -298,6 +299,9 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		((BaseLogicCrafting)logic).signEntityX = 0;
 		((BaseLogicCrafting)logic).signEntityY = 0;
 		((BaseLogicCrafting)logic).signEntityZ = 0;
+		if(MainProxy.isServer()) {
+			MainProxy.sendToPlayerList(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,this.getLogisticsNetworkPacket()).getPacket(), localModeWatchers);
+		}
 	}
 
 	@Override
@@ -338,6 +342,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, _orderManager.getContentList()).getPacket(), localModeWatchers);
 		} else {
 			super.playerStartWatching(player, mode);
 		}

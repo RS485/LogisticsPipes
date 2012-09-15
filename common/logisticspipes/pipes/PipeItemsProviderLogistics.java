@@ -17,10 +17,12 @@ import java.util.UUID;
 
 import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDProvider;
+import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicProvider;
@@ -54,14 +56,15 @@ import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
 
-public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
-	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 	//private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
 		
 	public PipeItemsProviderLogistics(int itemID) {
@@ -126,6 +129,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				if (maxCount < 1) break;
 			}			
 		}
+		updateInv(false);
 		return sent;
 	}
 	
@@ -338,6 +342,16 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
+	public void listenedChanged() {
+		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
+		if(!oldList.equals(all)) {
+			oldList.clear();
+			oldList.addAll(all);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
+		}
+	}
+
+	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
@@ -362,5 +376,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
+	}
+
+	@Override
+	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+		itemListOrderer.clear();
+		itemListOrderer.addAll(list);
 	}
 }

@@ -40,4 +40,12 @@ public final class ItemIdentifierStack {
 		}
 		return false;
 	}
+	
+	public String toString() {
+		return new StringBuilder(Integer.toString(stackSize)).append("x").append(_item.toString()).toString();
+	}
+	
+	public ItemIdentifierStack clone() {
+		return new ItemIdentifierStack(_item, stackSize);
+	}
 }

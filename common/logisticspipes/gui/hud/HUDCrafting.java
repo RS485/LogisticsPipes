@@ -42,7 +42,8 @@ public class HUDCrafting extends BasicHUDGui {
 		if(((BaseLogicCrafting)pipe.logic).getCraftedItem() != null) {
 			list.add(ItemIdentifierStack.GetFromStack(((BaseLogicCrafting)pipe.logic).getCraftedItem()));
 		}
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 4, 12, 18, 18, mc, true, true);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, mc, true, true);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -35, -10, 4, 4, 18, 18, mc, true, true);
 	}
 
 	@Override

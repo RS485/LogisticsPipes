@@ -80,7 +80,6 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		// TODO Auto-generated method stub
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";

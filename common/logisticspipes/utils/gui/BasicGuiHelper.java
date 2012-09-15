@@ -1,6 +1,7 @@
 package logisticspipes.utils.gui;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -101,9 +102,16 @@ public class BasicGuiHelper {
 				}
 					
 				GL11.glDisable(2896 /*GL_LIGHTING*/);
-				GL11.glDisable(2929 /*GL_DEPTH_TEST*/);			
-				fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-		        GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+				GL11.glTranslated(0.0D, 0.0D, 100.0D);
+				try {
+					drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+					GL11.glTranslated(0.0D, 0.0D, -100.0D);
+				} catch (Exception e) {
+					GL11.glTranslated(0.0D, 0.0D, -100.0D);
+					GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+					fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+					GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
+				}
 				GL11.glEnable(2896 /*GL_LIGHTING*/);
 			}
 
@@ -116,6 +124,40 @@ public class BasicGuiHelper {
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
 	
+
+    /**
+     * Draws the specified string with a shadow.
+     * @throws SecurityException 
+     * @throws NoSuchMethodException 
+     * @throws InvocationTargetException 
+     * @throws IllegalArgumentException 
+     * @throws IllegalAccessException 
+     * @throws NoSuchFieldException 
+     */
+    private static int drawStringWithShadow(FontRenderer fontRenderer,String par1Str, int par2, int par3, int par4) throws Exception {
+    	Method a = fontRenderer.getClass().getDeclaredMethod("resetStyles");
+    	a.setAccessible(true);
+    	a.invoke(fontRenderer);
+    	
+    	Field b = fontRenderer.getClass().getDeclaredField("bidiFlag");
+    	b.setAccessible(true);
+        if (((Boolean)b.get(fontRenderer)).booleanValue())
+        {	
+        	Method c = fontRenderer.getClass().getDeclaredMethod("bidiReorder", String.class);
+        	c.setAccessible(true);
+        	par1Str = (String)c.invoke(fontRenderer, par1Str);
+        }
+        Method d = fontRenderer.getClass().getDeclaredMethod("renderString", String.class, int.class, int.class, int.class, boolean.class);
+        d.setAccessible(true);
+        int var5 = ((Integer)d.invoke(fontRenderer, par1Str, par2 + 1, par3 + 1, par4, true)).intValue();
+
+		GL11.glTranslated(0.0D, 0.0D, 1.0D);
+        var5 = Math.max(var5, ((Integer)d.invoke(fontRenderer, par1Str, par2, par3, par4, false)).intValue());
+		GL11.glTranslated(0.0D, 0.0D, -1.0D);
+		
+        return var5;
+    }
+    
 	private static float zLevel;
 	
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {

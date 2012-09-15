@@ -25,7 +25,7 @@ public class ForestryProxy implements IForestryProxy {
 			tileMachine = Class.forName("forestry.core.gadgets.TileMachine");
 			machine_in_TileMachine = tileMachine.getDeclaredField("machine");
 			machine_in_TileMachine.setAccessible(true);
-			analyserClass = Class.forName("forestry.apiculture.MachineAnalyzer");
+			analyserClass = Class.forName("forestry.apiculture.gadgets.MachineAnalyzer");
 			enumFilterTypeClass = Class.forName("forestry.pipes.EnumFilterType");
 			getBeeType = enumFilterTypeClass.getDeclaredMethod("getType", new Class[]{ItemStack.class});
 			getBeeType.setAccessible(true);

@@ -110,5 +110,6 @@ public class LogisticsSignBlock extends BlockContainer {
 				pipe.removeRegisteredSign();
 			}
 		}
+		super.breakBlock(par1World, par2, par3, par4, par5, par6);
     }
 }

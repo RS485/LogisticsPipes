@@ -10,6 +10,8 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
+import logisticspipes.proxy.MainProxy;
+
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -25,7 +27,8 @@ import net.minecraft.src.NBTTagCompound;
  */
 public final class ItemIdentifier {
 
-	private final static LinkedList<ItemIdentifier> _itemIdentifierCache = new LinkedList<ItemIdentifier>();
+	private final static LinkedList<ItemIdentifier> _itemIdentifierCacheServer = new LinkedList<ItemIdentifier>();
+	private final static LinkedList<ItemIdentifier> _itemIdentifierCacheClient = new LinkedList<ItemIdentifier>();
 	
 	//Hide default constructor
 	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag) {
@@ -41,13 +44,13 @@ public final class ItemIdentifier {
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
-		for(ItemIdentifier item : _itemIdentifierCache)	{
+		for(ItemIdentifier item : MainProxy.isClient() ? _itemIdentifierCacheClient : _itemIdentifierCacheServer) {
 			if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
 				return item;
 			}
 		}
 		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag); 
-		_itemIdentifierCache.add(unknownItem);
+		(MainProxy.isClient() ? _itemIdentifierCacheClient : _itemIdentifierCacheServer).add(unknownItem);
 		return(unknownItem);
 	}
 	
@@ -129,5 +132,9 @@ public final class ItemIdentifier {
 		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
 		stack.setTagCompound(this.tag);
 		return stack;
+	}
+	
+	public String toString() {
+		return getFriendlyName();
 	}
 }

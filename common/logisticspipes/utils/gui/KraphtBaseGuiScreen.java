@@ -117,7 +117,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 						if(slot.getToolTipText() != null && !slot.getToolTipText().equals("")) {
 							ArrayList<String> list = new ArrayList<String>();
 							list.add(slot.getToolTipText());
-							BasicGuiHelper.drawToolTip(par1 + guiLeft, par2 + guiTop, list, 0, false);
+							BasicGuiHelper.drawToolTip(par1, par2, list, 0xf, false);
 						}
 					}
 				}

@@ -7,12 +7,14 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.liquids.ITankContainer;
 import buildcraft.api.liquids.LiquidManager;
 import buildcraft.api.liquids.LiquidStack;
+import buildcraft.core.IMachine;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
@@ -22,7 +24,20 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 
 	
 	public PipeItemsLiquidSupplier(int itemID) {
-		super(new LogicLiquidSupplier(), itemID);
+		super(new PipeTransportLogistics() {
+
+			@Override
+			public boolean isPipeConnected(TileEntity tile) {
+				if(super.isPipeConnected(tile)) return true;
+				if(tile instanceof TileGenericPipe) return false;
+				if (tile instanceof ITankContainer) {
+					ITankContainer liq = (ITankContainer) tile;
+					if (liq.getTanks() != null && liq.getTanks().length > 0)
+						return true;
+				}
+				return false;
+			}
+		}, new LogicLiquidSupplier(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
 	}
 

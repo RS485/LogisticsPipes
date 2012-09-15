@@ -77,6 +77,9 @@ public class Textures {
 	public static final int LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX = 0 * 16 + 2;
 	public static final int LOGISTICSITEMCARD_ICONINDEX = 0 * 16 + 4;
 	public static final int LOGISTICSITEMHUD_ICONINDEX = 0 * 16 + 5;
+	public static final int LOGISTICSITEMHUD_PART1_ICONINDEX = 0 * 16 + 6;
+	public static final int LOGISTICSITEMHUD_PART2_ICONINDEX = 0 * 16 + 7;
+	public static final int LOGISTICSITEMHUD_PART3_ICONINDEX = 0 * 16 + 8;
 
 	//Overrider
 	public static final String BASE_TEXTURE_FILE = "/logisticspipes/empty.png";

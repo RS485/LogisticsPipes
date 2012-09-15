@@ -21,7 +21,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 		super.updateEntity();
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
-		for(int i = 0; i < 64; i++) {
+		for(int i = 0; i < 16; i++) {
 			if(_orderManager.hasOrders()) {
 				Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 				int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());

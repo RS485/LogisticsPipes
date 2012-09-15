@@ -38,6 +38,7 @@ import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
+import logisticspipes.items.ItemHUDParts;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
@@ -118,7 +119,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "after:Forge;after:FML;after:BuildCraft|Core;after:BuildCraft|Transport;after:BuildCraft|Builders;after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
+@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
 	public static LogisticsPipes instance;
@@ -157,6 +158,7 @@ public class LogisticsPipes {
 	public static ItemDisk LogisticsItemDisk;
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
+	public static Item LogisticsHUDParts;
 	
 	public static ItemModule ModuleItem;
 	
@@ -208,8 +210,9 @@ public class LogisticsPipes {
 	
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
-		if(Loader.isModLoaded("mod_Forestry")) {
+		if(Loader.isModLoaded("Forestry")) {
 			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
+			System.out.println("Loaded ForestryProxy");
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setForestryProxy(new IForestryProxy() {
@@ -241,9 +244,11 @@ public class LogisticsPipes {
 				@Override public String getNextAlleleId(String uid) {return null;}
 				@Override public String getPrevAlleleId(String uid) {return null;}
 			});
+			System.out.println("Loaded Forestry DummyProxy");
 		}
-		if(Loader.isModLoaded("mod_IC2")) {
+		if(Loader.isModLoaded("IC2")) {
 			SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy());
+			System.out.println("Loaded IC2Proxy");
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setElectricItemProxy(new IElectricItemProxy() {
@@ -256,6 +261,7 @@ public class LogisticsPipes {
 				@Override public boolean isCharged(ItemStack stack, boolean partial, Item electricItem) {return false;}
 				@Override public void addCraftingRecipes() {}
 			});
+			System.out.println("Loaded IC2 DummyProxy");
 		}
 
 		try {
@@ -307,6 +313,10 @@ public class LogisticsPipes {
 			LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId, renderIndex);
 			LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
 			LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+			
+			LogisticsHUDParts = new ItemHUDParts(Configs.ItemHUDPartsId);
+			LogisticsHUDParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
+			LogisticsHUDParts.setItemName("logisticsHUDParts");
 		}
 		
 		LogisticsPipes.LogisticsFailedTrigger = new TriggerSupplierFailed(700);
@@ -347,7 +357,10 @@ public class LogisticsPipes {
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
-		if(DEBUG) ModLoader.addName(LogisticsHUDArmor, "Logistics HUD Glasses");
+		if(DEBUG) LanguageRegistry.instance().addNameForObject(LogisticsHUDArmor, "en_US", "Logistics HUD Glasses");
+		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,0), "en_US", "Logistics HUD Bow");
+		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,1), "en_US", "Logistics HUD Glass");
+		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		
 		/*
 		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);

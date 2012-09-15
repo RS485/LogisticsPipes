@@ -11,6 +11,7 @@ import net.minecraftforge.common.Property;
 public class Configs {
 
 	// Ids
+	public static int ItemHUDPartsId								= 6867;
 	public static int ItemHUDId										= 6868;
 	public static int ItemCardId									= 6869;
 	public static int ItemDiskId									= 6870;
@@ -138,6 +139,9 @@ public class Configs {
 		Property logisticItemHUDIdProperty = configuration.getOrCreateIntProperty("logisticsHUD.id", Configuration.CATEGORY_ITEM, ItemHUDId);
 		logisticItemHUDIdProperty.comment = "The item id for the Logistics HUD glasses";
 
+		Property logisticItemHUDPartsIdProperty = configuration.getOrCreateIntProperty("logisticsHUDParts.id", Configuration.CATEGORY_ITEM, ItemHUDPartsId);
+		logisticItemHUDPartsIdProperty.comment = "The item id for the Logistics HUD glasses parts";
+
 		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
 		
@@ -191,6 +195,7 @@ public class Configs {
 		ItemDiskId							= Integer.parseInt(logisticItemDiskIdProperty.value);
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
 		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);
+		ItemHUDPartsId						= Integer.parseInt(logisticItemHUDPartsIdProperty.value);
 		 
 		LOGISTICSPIPE_BASIC_ID 				= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID			= Integer.parseInt(logisticPipeRequesterIdProperty.value);

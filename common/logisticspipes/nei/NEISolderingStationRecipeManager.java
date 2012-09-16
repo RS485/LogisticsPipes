@@ -12,7 +12,7 @@ import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.ShapedRecipeHandler;
 
 public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
-	
+
 	private ShapedRecipeHandler.CachedShapedRecipe getShape(SolderingStationRecipe recipe) {
 		ShapedRecipeHandler.CachedShapedRecipe shape = new ShapedRecipeHandler.CachedShapedRecipe(0, 0, null, recipe.result);
 		for(int x = 0; x < 3; x++)
@@ -36,6 +36,7 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 		return shape;
 	}
 	
+	@Override
 	public void loadCraftingRecipes(ItemStack result) {
 		for(SolderingStationRecipe recipe: SolderingStationRecipes.getRecipes()) {
 			if(NEIClientUtils.areStacksSameTypeCrafting(recipe.result, result)) {
@@ -55,7 +56,6 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	{
 		return "Soldering Station";
 	}
-
 
 	@Override
 	public String getGuiTexture()

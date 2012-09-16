@@ -39,7 +39,7 @@
     <property name="ic2.version"         value="1.97" />
     <property name="lp.version"          value="0.5.1" />
     <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-	<property name="lp.version.full"     value="${lp.version}.pre6" />
+	<property name="lp.version.full"     value="${lp.version}.pre7" />
     
     <echo message="Starting build for ${lp.version.full}" />
 	

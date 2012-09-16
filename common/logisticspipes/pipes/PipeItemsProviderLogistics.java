@@ -356,6 +356,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		if(mode == 1) {
 			localModeWatchers.add(player);
 			updateInv(true);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, _orderManager.getContentList()).getPacket(), localModeWatchers);
 		} else {
 			super.playerStartWatching(player, mode);
 		}

@@ -16,6 +16,7 @@ import buildcraft.BuildCraftCore;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;
+import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
 
 public class ForestryProxy implements IForestryProxy {
@@ -131,9 +132,9 @@ public class ForestryProxy implements IForestryProxy {
 	}
 	
 	private String getFirstValidAllele() {
-		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
-			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
-				return AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID();
+		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if(allele instanceof IAlleleSpecies) {
+				return allele.getUID();
 			}
 		}
 		return "";
@@ -144,19 +145,14 @@ public class ForestryProxy implements IForestryProxy {
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
 			return getFirstValidAllele();
 		}
-		int index = 0;
-		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
-			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
-				if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID().equals(uid)) {
-					index = i;
-					break;
-				}
-			}
-		}
-		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
-			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
-				if(index < i) {
-					return AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID();
+		IAllele nowAllele = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
+		boolean next = false;
+		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if(allele instanceof IAlleleSpecies) {
+				if(next) {
+					return allele.getUID();
+				} else if(allele.getUID().equals(uid)) {
+					next = true;
 				}
 			}
 		}
@@ -168,19 +164,17 @@ public class ForestryProxy implements IForestryProxy {
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
 			return getFirstValidAllele();
 		}
-		int index = 0;
-		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
-			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
-				if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID().equals(uid)) {
-					index = i;
-					break;
-				}
-			}
-		}
-		for(int i=AlleleManager.alleleRegistry.getRegisteredAlleles().size();i>=0;i--) {
-			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) {
-				if(index > i) {
-					return AlleleManager.alleleRegistry.getRegisteredAlleles().get(i).getUID();
+		IAllele nowAllele = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
+		IAllele lastAllele = null;
+		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if(allele instanceof IAlleleSpecies) {
+				if(allele.getUID().equals(uid)) {
+					if(lastAllele == null) {
+						return "";
+					}
+					return lastAllele.getUID();
+				} else {
+					lastAllele = allele;
 				}
 			}
 		}

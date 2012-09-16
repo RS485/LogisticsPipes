@@ -32,8 +32,12 @@ public class TickHandler implements ITickHandler {
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				//Orientation
-				try {
-					Method camera = mc.entityRenderer.getClass().getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
+				try {Method camera;
+					try {
+						camera = mc.entityRenderer.getClass().getDeclaredMethod("a", new Class[]{float.class, int.class});
+					} catch(Exception e) {
+						camera = mc.entityRenderer.getClass().getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
+					}
 					camera.setAccessible(true);
 					camera.invoke(mc.entityRenderer, new Object[]{tickData[0],1});
 					ActiveRenderInfo.updateRenderInfo(mc.thePlayer, mc.gameSettings.thirdPersonView == 2);

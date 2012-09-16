@@ -51,11 +51,15 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 
 		public void firstBeeUp() {
-			firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee);
+			do {
+				firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee);
+			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(firstBee, module.worldProvider.getWorld()) && !firstBee.equals(""));
 		}
 
 		public void firstBeeDown() {
-			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee);
+			do {
+				firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee);
+			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(firstBee, module.worldProvider.getWorld()) && !firstBee.equals(""));
 		}
 		
 		public void firstBeeReset() {
@@ -63,11 +67,15 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 		
 		public void secondBeeUp() {
-			secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee);
+			do {
+				secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee);
+			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(secondBee, module.worldProvider.getWorld()) && !secondBee.equals(""));
 		}
 		
 		public void secondBeeDown() {
-			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee);
+			do {
+				secondBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(secondBee);
+			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(secondBee, module.worldProvider.getWorld()) && !secondBee.equals(""));
 		}
 		
 		public void secondBeeReset() {

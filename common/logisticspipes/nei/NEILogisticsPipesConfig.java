@@ -1,12 +1,22 @@
-package logisticspipes.logisticspipes;
+package logisticspipes.nei;
 
 import static codechicken.nei.api.API.addSetRange;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+
 import logisticspipes.LogisticsPipes;
+import net.minecraft.src.Item;
 import codechicken.nei.MultiItemRange;
+import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
 import cpw.mods.fml.common.Mod;
 
 public class NEILogisticsPipesConfig implements IConfigureNEI {
+	
+	public static List<Item> pipelist = new ArrayList<Item>();
 	
 	@Override
 	public void loadConfig() {
@@ -15,21 +25,27 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
 		
-		MultiItemRange pipes = new MultiItemRange();
-		pipes.add(LogisticsPipes.LogisticsBasicPipe);
-		pipes.add(LogisticsPipes.LogisticsRequestPipe);
-		pipes.add(LogisticsPipes.LogisticsProviderPipe);
-		pipes.add(LogisticsPipes.LogisticsCraftingPipe);
-		pipes.add(LogisticsPipes.LogisticsSatellitePipe);
-		pipes.add(LogisticsPipes.LogisticsSupplierPipe);
-		pipes.add(LogisticsPipes.LogisticsBuilderSupplierPipe);
-		pipes.add(LogisticsPipes.LogisticsLiquidSupplierPipe);
-		pipes.add(LogisticsPipes.LogisticsCraftingPipeMK2);
-		pipes.add(LogisticsPipes.LogisticsRequestPipeMK2);
-		pipes.add(LogisticsPipes.LogisticsProviderPipeMK2);
-		pipes.add(LogisticsPipes.LogisticsRemoteOrdererPipe);
-		pipes.add(LogisticsPipes.LogisticsApiaristAnalyserPipe);
+		Item[] pipeArray = pipelist.toArray(new Item[]{});
+		Arrays.sort(pipeArray, new Comparator() {
+			@Override
+			public int compare(Object arg0, Object arg1) {
+				if(((Item)arg0).shiftedIndex < ((Item)arg1).shiftedIndex) {
+					return -1;
+				} else if(((Item)arg0).shiftedIndex > ((Item)arg1).shiftedIndex) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		});
 		
+		MultiItemRange pipes = new MultiItemRange();
+		for(Item pipe: pipeArray) {
+			if(pipe != LogisticsPipes.LogisticsChassiPipe1 && pipe != LogisticsPipes.LogisticsChassiPipe2 && pipe != LogisticsPipes.LogisticsChassiPipe3 && pipe != LogisticsPipes.LogisticsChassiPipe4 && pipe != LogisticsPipes.LogisticsChassiPipe5) {
+				pipes.add(pipe);
+			}
+		}
+
 		MultiItemRange pipesChassi = new MultiItemRange();
 		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe1);
 		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe2);
@@ -38,13 +54,15 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe5);
 		
 		MultiItemRange modules = new MultiItemRange();
-		modules.add(LogisticsPipes.ModuleItem, 0, 500);
-		
+		modules.add(LogisticsPipes.ModuleItem, 0, 1000);
 		
 		addSetRange("LogisticsPipes", main);
 		addSetRange("LogisticsPipes.Modules", modules);
 		addSetRange("LogisticsPipes.Pipes", pipes);
 		addSetRange("LogisticsPipes.Pipes.Chassi", pipesChassi);
+
+		API.registerRecipeHandler(new NEISolderingStationRecipeManager());
+		API.registerUsageHandler(new NEISolderingStationRecipeManager());
 	}
 
 	@Override

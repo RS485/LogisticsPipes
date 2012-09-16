@@ -49,6 +49,7 @@ import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsTriggerProvider;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.main.TriggerSupplierFailed;
+import logisticspipes.nei.NEILogisticsPipesConfig;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketHandler;
@@ -589,6 +590,7 @@ public class LogisticsPipes {
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
 		}
+		NEILogisticsPipesConfig.pipelist.add(res);
 		return res;
 	}
 }

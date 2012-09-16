@@ -26,14 +26,10 @@ TODO later, maybe....
 
 package logisticspipes;
 
-import java.lang.reflect.Method;
-
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
-import logisticspipes.config.SolderingStationRecipes;
 import logisticspipes.config.Textures;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
@@ -43,72 +39,37 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
-import logisticspipes.main.ActionDisableLogistics;
 import logisticspipes.main.LogisticsItem;
 import logisticspipes.main.LogisticsManager;
-import logisticspipes.main.LogisticsTriggerProvider;
 import logisticspipes.main.SimpleServiceLocator;
-import logisticspipes.main.TriggerSupplierFailed;
-import logisticspipes.nei.NEILogisticsPipesConfig;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketHandler;
-import logisticspipes.pipes.PipeItemsApiaristAnalyser;
-import logisticspipes.pipes.PipeItemsApiaristSink;
-import logisticspipes.pipes.PipeItemsBasicLogistics;
-import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
-import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
-import logisticspipes.pipes.PipeItemsInvSysConnector;
-import logisticspipes.pipes.PipeItemsLiquidSupplier;
-import logisticspipes.pipes.PipeItemsProviderLogistics;
-import logisticspipes.pipes.PipeItemsProviderLogisticsMk2;
-import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
-import logisticspipes.pipes.PipeItemsRequestLogistics;
-import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
-import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.pipes.PipeLogisticsChassiMk1;
-import logisticspipes.pipes.PipeLogisticsChassiMk2;
-import logisticspipes.pipes.PipeLogisticsChassiMk3;
-import logisticspipes.pipes.PipeLogisticsChassiMk4;
-import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy3;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.ElectricItemProxy;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
+import logisticspipes.recipes.RecipeManager;
+import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.ticks.TickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
-import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import net.minecraftforge.client.MinecraftForgeClient;
-import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
-import buildcraft.api.gates.Action;
-import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.Trigger;
-import buildcraft.core.utils.Localization;
-import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.ItemPipe;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.TransportProxyClient;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.Init;
+import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.Side;
@@ -123,6 +84,8 @@ import cpw.mods.fml.common.registry.TickRegistry;
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
+	
+	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
 
 	//Log Requests
@@ -163,10 +126,6 @@ public class LogisticsPipes {
 	
 	public static ItemModule ModuleItem;
 	
-	public static Trigger LogisticsFailedTrigger;
-	
-	public static Action LogisticsDisableAction;
-	
 	private Textures textures = new Textures();
 	
 	//Blocks
@@ -175,27 +134,20 @@ public class LogisticsPipes {
 	
 	@Deprecated
 	public static ILogisticsManager logisticsManager = new LogisticsManager();
-	
-	/** Support for teleport pipes **/
-	public static boolean teleportPipeDetected = false;
-	public static Class<? extends Pipe> PipeItemTeleport;
-	public static Method teleportPipeMethod;
 
-	public LogisticsPipes() {
-		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy3());
-		instance = this;
+	@Init
+	public void init(FMLInitializationEvent event) {
+		
+		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
-	}
-	
-	@Init
-	public void init(FMLInitializationEvent event) {
+		
 		textures.load(event);
 		if(event.getSide().isClient()) {
-			Localization.addLocalization("/lang/logisticspipes/", "en_US");
+			SimpleServiceLocator.buildCraftProxy.registerLocalization();
 		}
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
 		if(event.getSide().equals(Side.CLIENT) && DEBUG) {
@@ -264,26 +216,7 @@ public class LogisticsPipes {
 			});
 			System.out.println("Loaded IC2 DummyProxy");
 		}
-
-		try {
-			PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
-			//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
-			teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-			teleportPipeDetected = true;
-			ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
-
-		} catch (Exception e) {
-			try {
-				//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
-				PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
-				teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-				teleportPipeDetected = true;
-				ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
-
-			} catch (Exception e1) {
-				ModLoader.getLogger().fine("Additional pipes not detected: " + e1.getMessage());
-			}
-		}
+		SimpleServiceLocator.buildCraftProxy.registerTeleportPipes();
 				
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
@@ -320,10 +253,7 @@ public class LogisticsPipes {
 			LogisticsHUDParts.setItemName("logisticsHUDParts");
 		}
 		
-		LogisticsPipes.LogisticsFailedTrigger = new TriggerSupplierFailed(700);
-		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
-		
-		LogisticsPipes.LogisticsDisableAction = new ActionDisableLogistics(700);
+		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule(Configs.ItemModuleId);
 		ModuleItem.setItemName("itemModule");
@@ -333,25 +263,8 @@ public class LogisticsPipes {
 		LogisticsItemDisk.setItemName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
 		
-		LogisticsBasicPipe = createPipe(Configs.LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe", event.getSide());
-		LogisticsRequestPipe = createPipe(Configs.LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", event.getSide());
-		LogisticsProviderPipe = createPipe(Configs.LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe", event.getSide());
-		LogisticsCraftingPipe = createPipe(Configs.LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", event.getSide());
-		LogisticsSatellitePipe = createPipe(Configs.LOGISTICSPIPE_SATELLITE_ID, PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe", event.getSide());
-		LogisticsSupplierPipe = createPipe(Configs.LOGISTICSPIPE_SUPPLIER_ID, PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe", event.getSide());
-		LogisticsChassiPipe1 = createPipe(Configs.LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", event.getSide());
-		LogisticsChassiPipe2 = createPipe(Configs.LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", event.getSide());
-		LogisticsChassiPipe3 = createPipe(Configs.LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", event.getSide());
-		LogisticsChassiPipe4 = createPipe(Configs.LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", event.getSide());
-		LogisticsChassiPipe5 = createPipe(Configs.LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", event.getSide());
-		LogisticsCraftingPipeMK2 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", event.getSide());
-		LogisticsRequestPipeMK2 = createPipe(Configs.LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", event.getSide());
-		LogisticsRemoteOrdererPipe = createPipe(Configs.LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe", event.getSide());
-		LogisticsProviderPipeMK2 = createPipe(Configs.LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", event.getSide());
-		LogisticsApiaristAnalyserPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", event.getSide());
-		LogisticsApiaristSinkPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", event.getSide());
-		if(DEBUG) LogisticsInvSysCon = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", event.getSide());
-
+		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
+		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
 		if(DEBUG) ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
@@ -363,195 +276,7 @@ public class LogisticsPipes {
 		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,1), "en_US", "Logistics HUD Glass");
 		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		
-		/*
-		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE = CoreProxy.addCustomTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
-		*/
-		
-		LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", event.getSide());
-		LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", event.getSide());
-		
-		CraftingManager craftingManager = CraftingManager.getInstance();
-		craftingManager.addRecipe(new ItemStack(LogisticsBuilderSupplierPipe, 1), new Object[]{"iPy", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('y'), new ItemStack(Item.dyePowder, 1,11)});
-		//craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsLiquidSupplierPipe, 1), new Object[]{" B ", "lPl", " B ", Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4), Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('B'), Item.bucketEmpty});
-		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
-		
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsBasicPipe, 8), new Object[] { "grg", "GdG", "grg", Character.valueOf('g'), Block.glass, 
-								   Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-								   Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond, 
-								   Character.valueOf('r'), Block.torchRedstoneActive});
-		craftingManager.addRecipe(new ItemStack(LogisticsBasicPipe, 8), new Object[] { "grg", "GdG", "grg", Character.valueOf('g'), Block.glass, 
-								   Character.valueOf('G'), BuildCraftCore.goldGearItem,
-								   Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond, 
-								   Character.valueOf('r'), Block.torchRedstoneActive});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsProviderPipe, 1), new Object[] { "d", "P", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('d'), Item.lightStoneDust});
-		craftingManager.addRecipe(new ItemStack(LogisticsCraftingPipe, 1), new Object[] { "dPd", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('d'), Item.lightStoneDust});
-		craftingManager.addRecipe(new ItemStack(LogisticsSatellitePipe, 1), new Object[] { "rPr", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('r'), Item.redstone});
-		craftingManager.addRecipe(new ItemStack(LogisticsSupplierPipe, 1), new Object[] { "lPl", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4)});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsRequestPipe, 1), new Object[] { "gPg", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('g'), BuildCraftCore.goldGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsRequestPipe, 1), new Object[] { "gPg", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('g'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsRequestPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsRequestPipe, Character.valueOf('U'), BuildCraftCore.diamondGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsRequestPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsRequestPipe, Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsCraftingPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsCraftingPipe, Character.valueOf('U'), BuildCraftCore.goldGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsCraftingPipeMK2, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsCraftingPipe, Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrdererPipe, 1), new Object[] {"U", "B", Character.valueOf('B'), LogisticsBasicPipe, Character.valueOf('U'), Item.enderPearl});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsItemDisk, 1), new Object[] { "igi", "grg", "igi", Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
-		
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.BLANK), new Object[] { "prp", "prp", "pgp", Character.valueOf('p'), Item.paper, Character.valueOf('r'), Item.redstone, Character.valueOf('g'), Item.goldNugget});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ITEMSINK), new Object[] { "CGC", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 2),
-									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ITEMSINK), new Object[] { " G ", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 2),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.PASSIVE_SUPPLIER), new Object[] { "CGC", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 1),
-									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.PASSIVE_SUPPLIER), new Object[] { " G ", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 1),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR), new Object[] { "CGC", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
-									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR), new Object[] { " G ", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR),
-									Character.valueOf('U'), Item.redstone});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK2), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR),
-									Character.valueOf('U'), BuildCraftCore.goldGearItem});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK2), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR),
-									Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR),
-									Character.valueOf('U'), BuildCraftCore.goldGearItem});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR),
-									Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK3), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK2),
-									Character.valueOf('U'), BuildCraftCore.diamondGearItem});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK3), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.EXTRACTOR_MK2),
-									Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK3), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2),
-									Character.valueOf('U'), BuildCraftCore.diamondGearItem});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK3), new Object[] {"U", "B",
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.ADVANCED_EXTRACTOR_MK2),
-									Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.POLYMORPHIC_ITEMSINK), new Object[] { "CGC", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 14),
-									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.POLYMORPHIC_ITEMSINK), new Object[] { " G ", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 14),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.QUICKSORT), new Object[] { "CGC", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
-									Character.valueOf('G'), BuildCraftCore.diamondGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.QUICKSORT), new Object[] { " G ", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.TERMINUS), new Object[] { "CGD", "rBr", "DrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
-									Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
-									Character.valueOf('G'), BuildCraftCore.ironGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.TERMINUS), new Object[] { " G ", "rBr", "CrD", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
-									Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.PROVIDER), new Object[] { "CGC", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
-									Character.valueOf('G'), BuildCraftCore.goldGearItem, 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-		craftingManager.addRecipe(new ItemStack(ModuleItem, 1, ItemModule.PROVIDER), new Object[] { " G ", "rBr", "CrC", 
-									Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
-									Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), 
-									Character.valueOf('r'), Item.redstone, 
-									Character.valueOf('B'), new ItemStack(ModuleItem, 1, ItemModule.BLANK)});
-
-		for(int i=0; i<1000;i++) {
-			ILogisticsModule module = ((ItemModule)ModuleItem).getModuleForItem(new ItemStack(ModuleItem, 1, i), null, null, null, null);
-			if(module != null) {
-				NBTTagCompound nbt = new NBTTagCompound();
-				boolean force = false;
-				try {
-					module.writeToNBT(nbt, "");
-				} catch(Exception e) {
-					force = true;
-				}
-				if(!nbt.equals(new NBTTagCompound())) {
-					registerShapelessResetRecipe(ModuleItem, i, ModuleItem, i);
-				}
-			}
-		}
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.redstone});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe1, 1), new Object[] { " i ","iPi", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 0)});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe2, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotIron});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe2, 1), new Object[] { " i ","iPi", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1)});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe3, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.ingotGold});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe3, 1), new Object[] { " i ","iPi", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe4, 1), new Object[] { "iii", "iPi", "iii", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Item.diamond});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe4, 1), new Object[] { " i ","iPi", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
-		craftingManager.addRecipe(new ItemStack(LogisticsChassiPipe5, 1), new Object[] { "gig", "iPi", "gig", Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, Character.valueOf('i'), Block.blockDiamond, Character.valueOf('g'), Block.blockGold});
-
-		craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsRemoteOrderer, 1), new Object[] { "gg", "gg", "DD", Character.valueOf('g'), Block.glass, Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), BuildCraftCore.goldGearItem, Character.valueOf('S'), Item.sign, Character.valueOf('D'), BuildCraftCore.diamondGearItem});
-		craftingManager.addRecipe(new ItemStack(LogisticsCraftingSignCreator, 1), new Object[] {"G G", " S ", " D ", Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), Character.valueOf('S'), Item.sign, Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)});
+		RecipeManager.loadRecipes();
 		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
@@ -567,30 +292,5 @@ public class LogisticsPipes {
 		if(DEBUG) logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		if(DEBUG) ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		MainProxy.proxy.registerTileEntitis();
-	}
-	
-	protected void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
-		for(int j=1;j < 10; j++) {
-			Object[] obj = new Object[j];
-			for(int k=0;k<j;k++) {
-				obj[k] = new ItemStack(fromItem, 1, toData);
-			}
-			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
-		}
-	}
-	
-	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
-		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
-		res.setItemName(clas.getSimpleName());
-		
-		if(side.isClient()) {
-			LanguageRegistry.addName(res, descr);
-			MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, TransportProxyClient.pipeItemRenderer);
-		}
-		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
-			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
-		}
-		NEILogisticsPipesConfig.pipelist.add(res);
-		return res;
 	}
 }

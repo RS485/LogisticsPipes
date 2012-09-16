@@ -1,11 +1,9 @@
-package logisticspipes.config;
+package logisticspipes.recipes;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
-import buildcraft.BuildCraftSilicon;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ICraftingResultHandler;
@@ -13,6 +11,7 @@ import net.minecraft.src.Block;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import buildcraft.BuildCraftSilicon;
 
 public class SolderingStationRecipes {
 	

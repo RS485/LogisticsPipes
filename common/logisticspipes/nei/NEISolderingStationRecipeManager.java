@@ -1,10 +1,9 @@
 package logisticspipes.nei;
 
-import logisticspipes.config.SolderingStationRecipes;
-import logisticspipes.config.SolderingStationRecipes.SolderingStationRecipe;
 import logisticspipes.gui.GuiSolderingStation;
+import logisticspipes.recipes.SolderingStationRecipes;
+import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import net.minecraft.src.GuiContainer;
-import net.minecraft.src.GuiCrafting;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import codechicken.nei.NEIClientUtils;

@@ -4,8 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import cpw.mods.fml.client.registry.RenderingRegistry;
-
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -28,7 +26,7 @@ import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 
 public class ItemModule extends ItemModuleProxy {
 	

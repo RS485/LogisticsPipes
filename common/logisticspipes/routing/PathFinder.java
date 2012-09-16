@@ -11,11 +11,11 @@ package logisticspipes.routing;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
@@ -95,12 +95,12 @@ class PathFinder {
 			return foundPipes;
 		}
 		
-		if(startPipe.pipe != null && LogisticsPipes.PipeItemTeleport != null) {
+		if(startPipe.pipe != null && BuildCraftProxy.PipeItemTeleport != null) {
 			//Special check for teleport pipes
-			if (LogisticsPipes.teleportPipeDetected && LogisticsPipes.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
+			if (BuildCraftProxy.teleportPipeDetected && BuildCraftProxy.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
 				
 				try {
-					LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) LogisticsPipes.teleportPipeMethod.invoke(startPipe.pipe, false);
+					LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) BuildCraftProxy.teleportPipeMethod.invoke(startPipe.pipe, false);
 					for (Pipe telepipe : pipez){
 						HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)telepipe.container), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
 						for(RoutedPipe pipe : result.keySet()) 	{

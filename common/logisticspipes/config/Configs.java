@@ -3,7 +3,6 @@ package logisticspipes.config;
 import java.io.File;
 
 import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.src.ModLoader;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;

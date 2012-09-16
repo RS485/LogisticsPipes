@@ -12,21 +12,19 @@ import java.util.LinkedList;
 
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
-import logisticspipes.proxy.interfaces.IBuildCraftProxy;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.utils.InventoryUtilFactory;
 
-
-
 public final class SimpleServiceLocator {
 	
 	private SimpleServiceLocator(){};
 	
-	public static IBuildCraftProxy buildCraftProxy = null;
-	public static void setBuildCraftProxy(final IBuildCraftProxy bcProxy){
+	public static BuildCraftProxy buildCraftProxy = null;
+	public static void setBuildCraftProxy(final BuildCraftProxy bcProxy){
 		buildCraftProxy = bcProxy;
 	}
 	

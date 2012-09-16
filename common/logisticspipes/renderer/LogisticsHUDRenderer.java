@@ -5,12 +5,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ScaledResolution;
-
-import org.lwjgl.opengl.GL11;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.main.CoreRoutedPipe;
@@ -19,6 +13,12 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
+import net.minecraft.client.Minecraft;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.ScaledResolution;
+
+import org.lwjgl.opengl.GL11;
+
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsHUDRenderer {

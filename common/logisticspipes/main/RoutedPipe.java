@@ -11,8 +11,8 @@ package logisticspipes.main;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.logic.BaseRoutingLogic;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.transport.PipeTransport;
@@ -36,7 +36,7 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 	@Override
 	public LinkedList<IAction> getActions() {
 		LinkedList<IAction> actions = super.getActions();
-		actions.add(LogisticsPipes.LogisticsDisableAction);
+		actions.add(BuildCraftProxy.LogisticsDisableAction);
 		return actions;
 	}
 	

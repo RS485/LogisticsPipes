@@ -28,7 +28,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.CraftingTemplate;
 import logisticspipes.main.LogisticsOrderManager;
 import logisticspipes.main.LogisticsPromise;

@@ -10,8 +10,8 @@ package logisticspipes.main;
 
 import java.util.LinkedList;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.Block;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.gates.ITrigger;
@@ -24,7 +24,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider{
 	public LinkedList<ITrigger> getPipeTriggers(IPipe pipe) {
 		if (!(pipe instanceof PipeItemsSupplierLogistics)) return null;
 		LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
-		triggers.add(LogisticsPipes.LogisticsFailedTrigger);
+		triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 		return triggers;
 	}
 

@@ -11,7 +11,6 @@ package logisticspipes.utils;
 import java.util.LinkedList;
 
 import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;

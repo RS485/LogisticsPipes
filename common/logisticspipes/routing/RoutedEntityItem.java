@@ -8,6 +8,8 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -16,6 +18,7 @@ import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityItem;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
@@ -39,6 +42,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	private TransportMode _transportMode = TransportMode.Unknown;
 	
+	private List<EntityPlayer> knownBy = new ArrayList<EntityPlayer>();
 	
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
 		super(world, entityItem.getEntityId());
@@ -53,6 +57,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public EntityItem toEntityItem(Orientations dir) {
 		return super.toEntityItem(dir);
+	}
+	
+	public void addKnownPlayer(EntityPlayer player) {
+		knownBy.add(player);
+	}
+	
+	public boolean isKnownBy(EntityPlayer player) {
+		return knownBy.contains(player);
 	}
 	
 //	public boolean isDefaultRouted(){

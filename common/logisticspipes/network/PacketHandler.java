@@ -1,7 +1,5 @@
-package logisticspipes.network.packets;
+package logisticspipes.network;
 
-import logisticspipes.network.ClientPacketHandler;
-import logisticspipes.network.ServerPacketHandler;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NetworkManager;

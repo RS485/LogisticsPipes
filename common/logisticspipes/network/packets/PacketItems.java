@@ -7,7 +7,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.main.ItemMessage;
-import logisticspipes.network.LogisticsPipesPacket;
 import logisticspipes.network.NetworkConstants;
 
 

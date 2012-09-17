@@ -275,6 +275,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return router;
 	}
 	
+	public void refreshRouterIdFromRouter() {
+		if(router != null) {
+			routerId = router.getId().toString();
+		}
+	}
+	
 	public boolean isEnabled(){
 		return enabled;
 	}

@@ -12,15 +12,21 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
+
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
@@ -47,12 +53,12 @@ public class ServerRouter implements IRouter {
 	private LSA _myLsa = new LSA();
 		
 	/** Map of router -> orientation for all known destinations **/
-	private HashMap<IRouter, Orientations> _routeTable = new HashMap<IRouter, Orientations>();
-	private HashMap<IRouter, Integer> _routeCosts = new HashMap<IRouter, Integer>();
-	private LinkedList<IRouter> _routersByCost = null;
-	private LinkedList<IRouter> _externalRoutersByCost = null;
+	public HashMap<IRouter, Orientations> _routeTable = new HashMap<IRouter, Orientations>();
+	public HashMap<IRouter, Integer> _routeCosts = new HashMap<IRouter, Integer>();
+	public LinkedList<IRouter> _externalRoutersByCost = null;
 
 	private boolean _blockNeedsUpdate;
+	private boolean init = false;
 	
 	public final UUID id;
 	private int _dimension;
@@ -95,7 +101,6 @@ public class ServerRouter implements IRouter {
 	private void ensureRouteTableIsUpToDate(){
 		if (_LSDVersion > _lastLSDVersion){
 			CreateRouteTable();
-			_routersByCost  = null;
 			_externalRoutersByCost = null;
 			_lastLSDVersion = _LSDVersion;
 			
@@ -104,6 +109,8 @@ public class ServerRouter implements IRouter {
 			if (pipe == null) return;
 			PipeTransportLogistics trans = (PipeTransportLogistics)pipe.transport;
 			*/
+			
+			MainProxy.sendCompressedToAllPlayers((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, _xCoord , _yCoord, _zCoord, _dimension, this).getPacket());
 		}
 	}
 
@@ -401,6 +408,7 @@ public class ServerRouter implements IRouter {
 				_blockNeedsUpdate = false;
 			}
 		}
+		ensureRouteTableIsUpToDate();
 	}
 
 	/************* IROUTER *******************/

@@ -14,7 +14,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
-public class TickHandler implements ITickHandler {
+public class RenderTickHandler implements ITickHandler {
 
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {
@@ -25,8 +25,8 @@ public class TickHandler implements ITickHandler {
 	
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-		renderTicks++;
 		if(type.contains(TickType.RENDER)) {
+			renderTicks++;
 			if(LogisticsHUDRenderer.instance().displayRenderer()) {
 				GL11.glPushMatrix();
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
@@ -65,6 +65,6 @@ public class TickHandler implements ITickHandler {
 
 	@Override
 	public String getLabel() {
-		return "LogisticsPipes";
+		return "LogisticsPipes Renderer";
 	}
 }

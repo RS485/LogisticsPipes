@@ -1,12 +1,16 @@
 package logisticspipes.proxy;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.ticks.PacketBufferHandlerThread;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Packet;
+import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldClient;
 import net.minecraft.src.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.SidedProxy;
@@ -55,6 +59,35 @@ public class MainProxy {
 	public static void sendToPlayerList(Packet packet, List<EntityPlayer> players) {
 		for(EntityPlayer player:players) {
 			PacketDispatcher.sendPacketToPlayer(packet, (Player)player);
+		}
+	}
+
+	public static void sendToAllPlayers(Packet packet) {
+		for(World world: DimensionManager.getWorlds()) {
+			for(Object playerObject:world.playerEntities) {
+				Player player = (Player) playerObject;
+				PacketDispatcher.sendPacketToPlayer(packet, player);
+			}
+		}
+	}
+
+	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
+		List<EntityPlayer> list = new ArrayList<EntityPlayer>();
+		for(Object playerObject:worldObj.playerEntities) {
+			EntityPlayer player = (EntityPlayer) playerObject;
+			if(Math.hypot(player.posX - xCoord, Math.hypot(player.posY - yCoord, player.posZ - zCoord)) < distance) {
+				list.add(player);
+			}
+		}
+		return list;
+	}
+
+	public static void sendCompressedToAllPlayers(Packet250CustomPayload packet) {
+		for(World world: DimensionManager.getWorlds()) {
+			for(Object playerObject:world.playerEntities) {
+				Player player = (Player) playerObject;
+				PacketBufferHandlerThread.addPacketToCompressor(packet, player);
+			}
 		}
 	}
 }

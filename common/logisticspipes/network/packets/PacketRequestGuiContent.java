@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.LinkedList;
 
-import logisticspipes.network.LogisticsPipesPacket;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.utils.ItemIdentifier;

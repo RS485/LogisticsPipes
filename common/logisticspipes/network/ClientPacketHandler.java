@@ -24,6 +24,7 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
@@ -33,9 +34,14 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
+import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.ClientRouter;
+import logisticspipes.routing.IRouter;
+import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NetworkManager;
@@ -49,8 +55,11 @@ import cpw.mods.fml.common.network.Player;
 public class ClientPacketHandler {
 	
 	public static void onPacketData(NetworkManager manager, Packet250CustomPayload packet, Player player) {
-
 		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
+		onPacketData(data, player);
+	}
+	
+	public static void onPacketData(DataInputStream data, Player player) {
 		try {
 
 			final int packetID = data.read();
@@ -184,6 +193,17 @@ public class ClientPacketHandler {
 					final PacketPipeInvContent packetX = new PacketPipeInvContent();
 					packetX.readData(data);
 					onOrderManagerContent(player, packetX);
+					break;
+				case NetworkConstants.ROUTER_UPDATE_CONTENT:
+					final PacketRouterInformation packetY = new PacketRouterInformation();
+					packetY.readData(data);
+					onRouterInformation(player, packetY);
+					break;
+				case NetworkConstants.BUFFERED_PACKET_TRANSFER:
+					final PacketBufferTransfer packetZ = new PacketBufferTransfer();
+					packetZ.readData(data);
+					onBufferTransfer(packetZ);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -450,6 +470,24 @@ public class ClientPacketHandler {
 		if(tile.pipe instanceof IOrderManagerContentReceiver) {
 			((IOrderManagerContentReceiver)tile.pipe).setOrderManagerContent(packet._allItems);
 		}
+	}
+
+	private static void onRouterInformation(Player player, PacketRouterInformation packet) {
+		World world = MainProxy.getWorld(packet._dimension);
+		final TileGenericPipe pipe = getPipe(world, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof CoreRoutedPipe) {
+			IRouter router = ((CoreRoutedPipe)pipe.pipe).getRouter();
+			if(router instanceof ClientRouter) {
+				((ClientRouter)router).handleRouterPacket(packet);
+			}
+		}
+	}
+
+	private static void onBufferTransfer(PacketBufferTransfer packet) {
+		PacketBufferHandlerThread.handlePacket(packet);
 	}
 
 	// BuildCraft method

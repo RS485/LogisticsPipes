@@ -27,33 +27,25 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 		this.posY = packet.posY;
 		this.posZ = packet.posZ;
 	}
-	
+
 	public PacketPipeLogisticsContent(int x, int y, int z, RoutedEntityItem item, Orientations orientation) {
 		super(x,y,z,item,orientation);
 		final IRouter routerSource = SimpleServiceLocator.routerManager.getRouter(item.getSource());
 		final IRouter routerDest = SimpleServiceLocator.routerManager.getRouter(item.getDestination());
-		if(routerDest == null) {
-			return;
-		}
-		final Pipe pipeSource;
+		
+		PacketPayload additions = new PacketPayload(0,0,2);
 		if(routerSource != null) {
-			pipeSource = routerSource.getPipe();
+			additions.stringPayload[0] = routerSource.getId().toString();
 		} else {
-			pipeSource = null;
+			additions.stringPayload[0] = "";
 		}
-		final Pipe pipeDest = routerDest.getPipe();
-		if(pipeDest == null) {
-			return;
+		
+		if(routerDest != null) {
+			additions.stringPayload[1] = routerDest.getId().toString();
+		} else {
+			additions.stringPayload[1] = "";
 		}
-		PacketPayload additions = new PacketPayload(6,0,0);
-		if(pipeSource != null) {
-			additions.intPayload[0] = pipeSource.xCoord;
-			additions.intPayload[1] = pipeSource.yCoord;
-			additions.intPayload[2] = pipeSource.zCoord;
-		}
-		additions.intPayload[3] = pipeDest.xCoord;
-		additions.intPayload[4] = pipeDest.yCoord;
-		additions.intPayload[5] = pipeDest.zCoord;
+		
 		if(super.payload == null) {
 			super.payload = new PacketPayload(6, 4, 0);
 
@@ -73,59 +65,29 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 	}
 	
 	public static boolean isPacket(PacketPipeTransportContent packet) {
-		if(packet.payload.intPayload.length < 12) {
+		if(packet.payload.stringPayload.length < 2) {
 			return false;
 		}
 		return true;
 	}
 	
 	public UUID getSourceUUID(World world) {
-		if(this.payload.intPayload.length < 12) {
+		if(this.payload.stringPayload.length < 2) {
 			return null;
 		}
-		TileGenericPipe tile = getPipe(world,payload.intPayload[6],payload.intPayload[7],payload.intPayload[8]);
-		if(tile != null) {
-			if(tile.pipe instanceof CoreRoutedPipe) {
-				return ((CoreRoutedPipe)tile.pipe).getRouter().getId();
-			}
+		if(payload.stringPayload[0] == null || payload.stringPayload[0].equals("")) {
+			return null;
 		}
-		return null;
+		return UUID.fromString(payload.stringPayload[0]);
 	}
 	
 	public UUID getDestUUID(World world) {
-		if(this.payload.intPayload.length < 12) {
+		if(this.payload.stringPayload.length < 2) {
 			return null;
 		}
-		TileGenericPipe tile = getPipe(world,payload.intPayload[9],payload.intPayload[10],payload.intPayload[11]);
-		if(tile != null) {
-			if(tile.pipe instanceof CoreRoutedPipe) {
-				return ((CoreRoutedPipe)tile.pipe).getRouter().getId();
-			}
+		if(payload.stringPayload[1] == null || payload.stringPayload[1].equals("")) {
+			return null;
 		}
-		return null;
+		return UUID.fromString(payload.stringPayload[1]);
 	}
-	
-	// BuildCraft method
-	/**
-	 * Retrieves pipe at specified coordinates if any.
-	 * 
-	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @return
-	 */
-	private TileGenericPipe getPipe(World world, int x, int y, int z) {
-		if (!world.blockExists(x, y, z)) {
-			return null;
-		}
-
-		final TileEntity tile = world.getBlockTileEntity(x, y, z);
-		if (!(tile instanceof TileGenericPipe)) {
-			return null;
-		}
-
-		return (TileGenericPipe) tile;
-	}
-	// BuildCraft method end
 }

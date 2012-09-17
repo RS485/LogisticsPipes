@@ -17,13 +17,12 @@ import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.packets.PacketPipeLogisticsContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.RoutedEntityItem;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.Packet;
-import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
-import buildcraft.api.core.SafeTimeTracker;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.EntityPassiveItem;
@@ -34,6 +33,7 @@ import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class PipeTransportLogistics extends PipeTransportItems {
 
@@ -100,20 +100,31 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 	}
 	
-	 @Override
+	@Override
 	public void entityEntering(IPipedItem item, Orientations orientation) {
 //		 if (!SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)){
 //			 SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 //		 }
 		 
-		 SafeTimeTracker save = item.getSynchroTracker();
-		 item.setSynchroTracker(new SafeTimeTracker() {
-			 public boolean markTimeIfDelay(World world, long delay) {
-				 return false;
-			 }
-		 });
-		 super.entityEntering(item, orientation);
-		 item.setSynchroTracker(save);
+		if(item instanceof RoutedEntityItem) {
+			RoutedEntityItem routed = (RoutedEntityItem) item;
+			for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
+				if(!routed.isKnownBy(player)) {
+					PacketDispatcher.sendPacketToPlayer(createItemPacket(item, orientation), (Player)player);
+					routed.addKnownPlayer(player);
+				}
+			}
+		}
+		super.entityEntering(item, orientation);
+		 /*
+		SafeTimeTracker save = item.getSynchroTracker();
+	 item.setSynchroTracker(new SafeTimeTracker() {
+		 public boolean markTimeIfDelay(World world, long delay) {
+			 return false;
+		 }
+	 });
+	 item.setSynchroTracker(save);
+	*/
 	}
 	
 	@Override
@@ -135,7 +146,16 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if (value == Orientations.Unknown && !routedItem.getDoNotBuffer()){
 			if(MainProxy.isServer(_pipe.worldObj)) {
 				//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
-					PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
+				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
+				/*
+				if(data.item instanceof RoutedEntityItem) {
+				 
+					RoutedEntityItem routed = (RoutedEntityItem) data.item;
+					for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
+						PacketDispatcher.sendPacketToPlayer(createItemPacket(routedItem.getEntityPassiveItem(), value), (Player)player);
+						routed.addKnownPlayer(player);
+					}
+				}*/
 			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
@@ -148,6 +168,15 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if(MainProxy.isServer(_pipe.worldObj)) {
 			//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
 			PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
+			/*
+			if(data.item instanceof RoutedEntityItem) {
+				RoutedEntityItem routed = (RoutedEntityItem) data.item;
+				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
+					PacketDispatcher.sendPacketToPlayer(createItemPacket(routedItem.getEntityPassiveItem(), value), (Player)player);
+					routed.addKnownPlayer(player);
+				}
+			}
+			*/
 		}
 		
 		if (value == Orientations.Unknown ){ 

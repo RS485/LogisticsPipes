@@ -3,6 +3,7 @@ package logisticspipes.proxy;
 import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.World;
 import net.minecraftforge.common.DimensionManager;
@@ -36,5 +37,15 @@ public class ClientProxy implements IProxy {
 		} else {
 			return DimensionManager.getWorld(_dimension);
 		}
+	}
+
+	@Override
+	public EntityPlayer getClientPlayer() {
+		return FMLClientHandler.instance().getClient().thePlayer;
+	}
+
+	@Override
+	public boolean isMainThreadRunning() {
+		return FMLClientHandler.instance().getClient().running;
 	}
 }

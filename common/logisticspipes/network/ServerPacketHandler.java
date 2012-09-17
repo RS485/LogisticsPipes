@@ -33,6 +33,7 @@ import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
@@ -40,7 +41,11 @@ import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.NormalOrdererRequests;
+import logisticspipes.routing.ServerRouter;
+import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
@@ -219,6 +224,11 @@ public class ServerPacketHandler {
 					final PacketPipeInteger packetAd = new PacketPipeInteger();
 					packetAd.readData(data);
 					onHUDWatchingChange(player, packetAd, false);
+					break;
+				case NetworkConstants.REQUEST_ROUTER_UPDATE:
+					final PacketPipeInteger packetAe = new PacketPipeInteger();
+					packetAe.readData(data);
+					onRouterUpdateRequest(player, packetAe);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -861,6 +871,20 @@ public class ServerPacketHandler {
 				handler.playerStartWatching(player, packet.integer);
 			} else {
 				handler.playerStopWatching(player, packet.integer);
+			}
+		}
+	}
+
+	private static void onRouterUpdateRequest(EntityPlayerMP player, PacketPipeInteger packet) {
+		World world = MainProxy.getWorld(packet.integer);
+		final TileGenericPipe pipe = getPipe(world, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof CoreRoutedPipe) {
+			IRouter router = ((CoreRoutedPipe)pipe.pipe).getRouter();
+			if(router instanceof ServerRouter) {
+				PacketBufferHandlerThread.addPacketToCompressor((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, packet.posX, packet.posY, packet.posZ, packet.integer, (ServerRouter)router).getPacket(), (Player) player);
 			}
 		}
 	}

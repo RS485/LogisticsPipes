@@ -44,7 +44,7 @@ import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketHandler;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
@@ -56,7 +56,8 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.routing.RouterManager;
-import logisticspipes.ticks.TickHandler;
+import logisticspipes.ticks.PacketBufferHandlerThread;
+import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
@@ -152,7 +153,13 @@ public class LogisticsPipes {
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
 		if(event.getSide().equals(Side.CLIENT) && DEBUG) {
 			//WIP (highly alpha)
-			TickRegistry.registerTickHandler(new TickHandler(), Side.CLIENT);
+			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
+		}
+		if(event.getSide() == Side.CLIENT) {
+			new PacketBufferHandlerThread(Side.CLIENT);
+			new PacketBufferHandlerThread(Side.SERVER);	
+		} else {
+			new PacketBufferHandlerThread(Side.SERVER);	
 		}
 	}
 	

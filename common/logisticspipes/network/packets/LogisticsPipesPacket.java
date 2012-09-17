@@ -1,5 +1,6 @@
-package logisticspipes.network;
+package logisticspipes.network.packets;
 
+import logisticspipes.network.NetworkConstants;
 import buildcraft.core.network.BuildCraftPacket;
 
 public abstract class LogisticsPipesPacket extends BuildCraftPacket {

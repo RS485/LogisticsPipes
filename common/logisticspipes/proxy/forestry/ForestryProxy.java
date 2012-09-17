@@ -141,7 +141,7 @@ public class ForestryProxy implements IForestryProxy {
 	}
 	
 	@Override
-	public String getNextAlleleId(String uid) {
+	public String getNextAlleleId(String uid, World world) {
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
 			return getFirstValidAllele();
 		}
@@ -149,7 +149,7 @@ public class ForestryProxy implements IForestryProxy {
 		boolean next = false;
 		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
 			if(allele instanceof IAlleleSpecies) {
-				if(next) {
+				if(next && isKnownAlleleId(allele.getUID(), world)) {
 					return allele.getUID();
 				} else if(allele.getUID().equals(uid)) {
 					next = true;
@@ -160,7 +160,7 @@ public class ForestryProxy implements IForestryProxy {
 	}
 	
 	@Override
-	public String getPrevAlleleId(String uid) {
+	public String getPrevAlleleId(String uid, World world) {
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
 			return getFirstValidAllele();
 		}
@@ -173,7 +173,7 @@ public class ForestryProxy implements IForestryProxy {
 						return "";
 					}
 					return lastAllele.getUID();
-				} else {
+				} else if(isKnownAlleleId(allele.getUID(), world)) {
 					lastAllele = allele;
 				}
 			}

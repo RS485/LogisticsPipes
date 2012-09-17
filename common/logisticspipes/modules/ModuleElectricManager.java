@@ -53,6 +53,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 
 	public boolean findElectricItem(ItemStack item, boolean discharged, boolean partial)
 	{
+		//TODO doesn't work as intended
 		if (!SimpleServiceLocator.electricItemProxy.isElectricItem(item)) return false;
 
 		for (int i = 0; i < _filterInventory.getSizeInventory(); i++){

@@ -51,15 +51,11 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 
 		public void firstBeeUp() {
-			do {
-				firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee);
-			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(firstBee, module.worldProvider.getWorld()) && !firstBee.equals(""));
+			firstBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(firstBee, module.worldProvider.getWorld());
 		}
 
 		public void firstBeeDown() {
-			do {
-				firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee);
-			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(firstBee, module.worldProvider.getWorld()) && !firstBee.equals(""));
+			firstBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(firstBee, module.worldProvider.getWorld());
 		}
 		
 		public void firstBeeReset() {
@@ -67,15 +63,11 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 		
 		public void secondBeeUp() {
-			do {
-				secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee);
-			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(secondBee, module.worldProvider.getWorld()) && !secondBee.equals(""));
+			secondBee = SimpleServiceLocator.forestryProxy.getNextAlleleId(secondBee, module.worldProvider.getWorld());
 		}
 		
 		public void secondBeeDown() {
-			do {
-				secondBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(secondBee);
-			} while(SimpleServiceLocator.forestryProxy.isKnownAlleleId(secondBee, module.worldProvider.getWorld()) && !secondBee.equals(""));
+			secondBee = SimpleServiceLocator.forestryProxy.getPrevAlleleId(secondBee, module.worldProvider.getWorld());
 		}
 		
 		public void secondBeeReset() {
@@ -143,11 +135,11 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		}
 
 		private boolean firstAllele(ItemStack bee) {
-			return SimpleServiceLocator.forestryProxy.getFirstAlleleId(bee) == firstBee || firstBee == "";
+			return SimpleServiceLocator.forestryProxy.getFirstAlleleId(bee).equals(firstBee) || firstBee.equals("");
 		}
 
 		private boolean secondAllele(ItemStack bee) {
-			return SimpleServiceLocator.forestryProxy.getSecondAlleleId(bee) == secondBee || secondBee == "";
+			return SimpleServiceLocator.forestryProxy.getSecondAlleleId(bee).equals(secondBee) || secondBee.equals("");
 		}
 		
 		public boolean isFiltered(ItemStack bee) {

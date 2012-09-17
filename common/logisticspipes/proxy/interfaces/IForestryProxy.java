@@ -27,9 +27,9 @@ public interface IForestryProxy {
 
 	public abstract String getSecondAlleleId(ItemStack bee);
 	
-	public abstract String getNextAlleleId(String uid);
+	public abstract String getNextAlleleId(String uid, World world);
 
-	public abstract String getPrevAlleleId(String uid);
+	public abstract String getPrevAlleleId(String uid, World world);
 
 	public abstract boolean isDrone(ItemStack bee);
 

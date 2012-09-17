@@ -201,8 +201,8 @@ public class LogisticsPipes {
 				@Override public int getColorForAlleleId(String id, int phase) {return 0;}
 				@Override public int getRenderPassesForAlleleId(String id) {return 0;}
 				@Override public void addCraftingRecipes() {}
-				@Override public String getNextAlleleId(String uid) {return null;}
-				@Override public String getPrevAlleleId(String uid) {return null;}
+				@Override public String getNextAlleleId(String uid, World world) {return null;}
+				@Override public String getPrevAlleleId(String uid, World world) {return null;}
 			});
 			System.out.println("Loaded Forestry DummyProxy");
 		}

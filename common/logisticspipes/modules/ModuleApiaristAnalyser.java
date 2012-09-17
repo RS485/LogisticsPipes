@@ -65,7 +65,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 		
-		IInventory inv = _invProvider.getInventory();
+		IInventory inv = _invProvider.getRawInventory();
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);

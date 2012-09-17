@@ -106,7 +106,7 @@ public class ClientRouter implements IRouter {
 				IRouter r = SimpleServiceLocator.routerManager.getRouter(id);
 				if(r == null) continue;
 				for (int i = 0; i < tempList.size(); i++){
-					if (_routeCosts.get(r) < tempList.get(i).cost){
+					if (_routeCosts.get(id) < tempList.get(i).cost){
 						tempList.add(i, new RouterCost(r, _routeCosts.get(id)));
 						continue outer;
 					}

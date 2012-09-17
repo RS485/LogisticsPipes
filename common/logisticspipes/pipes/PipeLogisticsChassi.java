@@ -33,6 +33,7 @@ import logisticspipes.main.LogisticsPromise;
 import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.main.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.proxy.MainProxy;
@@ -180,7 +181,16 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
-	
+
+	@Override
+	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode) {
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		itemToSend.setSource(this.getRouter().getId());
+		itemToSend.setDestination(destination);
+		itemToSend.setTransportMode(TransportMode.Active);
+		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
+	}
+
 	
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		try {

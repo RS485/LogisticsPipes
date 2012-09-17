@@ -22,6 +22,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import net.minecraft.src.CreativeTabs;
@@ -71,9 +72,10 @@ public class ItemModule extends ItemModuleProxy {
 
 	public static final int ELECTRICMANAGER = 300;
 	
-	
+
 	//ACTIVE MODULES
 	public static final int PROVIDER = 500;
+	public static final int PROVIDER_MK2 = 501;
 	
 	private List<Module> modules = new ArrayList<Module>();
 	
@@ -153,6 +155,7 @@ public class ItemModule extends ItemModuleProxy {
 		registerModule(EXTRACTOR_MK3			, "Extractor MK3 module"		, ModuleExtractorMk3.class);
 		registerModule(ADVANCED_EXTRACTOR_MK3	, "Advanced Extractor MK3"		, ModuleAdvancedExtractorMK3.class);
 		registerModule(PROVIDER					, "Provider module"				, ModuleProvider.class);
+		registerModule(PROVIDER_MK2				, "Provider module MK2"			, ModuleProviderMk2.class);
 		registerModule(ELECTRICMANAGER			, "Electric Manager module"		, ModuleElectricManager.class, 96);
 		registerModule(BEEANALYZER				, "Bee Analyzer module"			, ModuleApiaristAnalyser.class);
 		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);

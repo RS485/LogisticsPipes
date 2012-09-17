@@ -57,7 +57,7 @@ import cpw.mods.fml.common.network.Player;
 
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler {
 
-	protected enum ItemSendMode {
+	public enum ItemSendMode {
 		Normal,
 		Fast
 	}
@@ -83,7 +83,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public long stat_lifetime_recieved;
 	public long stat_lifetime_relayed;
 	
-	private final LinkedList<Pair<IRoutedItem, Orientations>> _sendQueue = new LinkedList<Pair<IRoutedItem, Orientations>>(); 
+	private final LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>>(); 
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 	
@@ -121,15 +121,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return payload;
 	}
 	
-	/**
-	 * Readjusts the routed item's coordinates and adds it to BC
-	 * @param routedItem - The item to send, nothing will be done regarding source and destinations
-	 * @param from - The orientation relative to this pipe where the item is coming from.
-	 */
-	
-	public void queueRoutedItem(IRoutedItem routedItem, Orientations from){
+	public void queueRoutedItem(IRoutedItem routedItem, Orientations from) {
+		_sendQueue.addLast(new Pair3<IRoutedItem, Orientations, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
+	}
 
-		_sendQueue.addLast(new Pair<IRoutedItem, Orientations>(routedItem, from));
+	public void queueRoutedItem(IRoutedItem routedItem, Orientations from, ItemSendMode mode) {
+		_sendQueue.addLast(new Pair3<IRoutedItem, Orientations, ItemSendMode>(routedItem, from, mode));
 	}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, Orientations from){
@@ -156,8 +153,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
+				for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
+					if (!_sendQueue.isEmpty()){
+						itemToSend = _sendQueue.getFirst();
+						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
+						_sendQueue.removeFirst();
+					}
+				}
 			} else if(getItemSendMode() == ItemSendMode.Fast) {
-				for(int i=0;i<64;i++) {
+				for(int i=0;i < 16;i++) {
 					if (!_sendQueue.isEmpty()){
 						Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
 						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());

@@ -34,21 +34,20 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 
 public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider {
-
 	
-	private IInventoryProvider _invProvider;
-	private ISendRoutedItem _itemSender;
+	protected IInventoryProvider _invProvider;
+	protected ISendRoutedItem _itemSender;
 	
-	private LogisticsOrderManager _orderManager = new LogisticsOrderManager();
+	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
 	private final InventoryUtil _filterUtil = new InventoryUtil(_filterInventory, false);
 	
-	private final int ticksToAction = 6;
-	private int currentTick = 0;
+	protected final int ticksToAction = 6;
+	protected int currentTick = 0;
 	
-	private boolean isExcludeFilter = false;
-	private ExtractionMode _extractionMode = ExtractionMode.Normal;
+	protected boolean isExcludeFilter = false;
+	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
 	
 	public ModuleProvider() {}
 
@@ -97,7 +96,6 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		else {
 			_orderManager.sendFailed();
 		}
-		
 	}
 
 	@Override
@@ -170,7 +168,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		return null;
 	}
 	
-	private int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
+	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
 		int sent = 0;
 		if (_invProvider.getInventory() == null) return 0;
 		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());

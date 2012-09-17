@@ -138,4 +138,9 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
+
+	@Override
+	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode) {
+		sendStack(stack,destination); // Ignore send mode
+	}
 }

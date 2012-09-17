@@ -107,11 +107,11 @@ public class ClientRouter implements IRouter {
 				if(r == null) continue;
 				for (int i = 0; i < tempList.size(); i++){
 					if (_routeCosts.get(r) < tempList.get(i).cost){
-						tempList.add(i, new RouterCost(r, _routeCosts.get(r)));
+						tempList.add(i, new RouterCost(r, _routeCosts.get(id)));
 						continue outer;
 					}
 				}
-				tempList.addLast(new RouterCost(r, _routeCosts.get(r)));
+				tempList.addLast(new RouterCost(r, _routeCosts.get(id)));
 			}
 			
 			while(tempList.size() > 0){
@@ -172,7 +172,13 @@ public class ClientRouter implements IRouter {
 	
 	public void handleRouterPacket(PacketRouterInformation packet) {
 		this._routeCosts = packet._routeCosts;
+		if(_routeCosts == null) {
+			_routeCosts = new HashMap<UUID, Integer>();
+		}
 		this._routeTable = packet._routeTable;
+		if(_routeTable == null) {
+			_routeTable = new HashMap<UUID, Orientations>();
+		}
 		_externalRoutersByCost = null;
 		this.id = packet.uuid;
 		this.routedExit = packet.routedExit;

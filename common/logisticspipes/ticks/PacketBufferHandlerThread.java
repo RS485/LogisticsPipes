@@ -24,7 +24,6 @@ public class PacketBufferHandlerThread extends Thread {
 
 	private final Side side;
 	private boolean running = true;
-	private boolean handling = false;
 	
 	//Shared
 	private static HashMap<Player, LinkedList<Packet250CustomPayload>> serverList = new HashMap<Player,LinkedList<Packet250CustomPayload>>();
@@ -128,13 +127,7 @@ public class PacketBufferHandlerThread extends Thread {
 			}
 			try {
 				if(side.equals(Side.CLIENT)) {
-					if(clientBuffer.length > 0) {
-						handling = true;
-					} else {
-						if(handling) {
-							System.out.println("Handled");
-							handling = false;
-						}
+					if(clientBuffer.length <= 0) {
 						Thread.sleep(100);
 					}
 				} else if(side.equals(Side.SERVER)) {

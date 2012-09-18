@@ -123,7 +123,11 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			    	        
 			    	        //renderBlocks.useInventoryTint = false;
 			    	        
+			    	        GL11.glPushMatrix();
+			    	        
 			    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
+
+			    	        GL11.glPopMatrix();
 			    	        
 			    	        GL11.glEnable(GL11.GL_LIGHTING);
 			    	        GL11.glEnable(GL11.GL_LIGHT0);
@@ -150,9 +154,13 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 			    	        
 			    	        //renderBlocks.useInventoryTint = false;
-			    	        
+
+					        GL11.glPushMatrix();
+					        
 			    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
-			    	        
+
+					        GL11.glPopMatrix();
+					        
 			    	        GL11.glEnable(GL11.GL_LIGHTING);
 			    	        GL11.glEnable(GL11.GL_LIGHT0);
 			    	        GL11.glEnable(GL11.GL_LIGHT1);
@@ -170,22 +178,21 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			        GL11.glDisable(GL11.GL_LIGHT0);
 			        GL11.glDisable(GL11.GL_LIGHT1);
 			        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+
+			        GL11.glPushMatrix();
 			        
 			        renderBlocks.renderBlockAsItem(Block.blocksList[item.shiftedIndex], itemstack.getItemDamage(), 1.0F);
 
+			        GL11.glPopMatrix();
+			        
 			        GL11.glEnable(GL11.GL_LIGHTING);
 			        GL11.glEnable(GL11.GL_LIGHT0);
 			        GL11.glEnable(GL11.GL_LIGHT1);
 			        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-
-			        GL11.glPopMatrix();
-			        GL11.glPushMatrix();
 			        
-			        GL11.glTranslatef((float)par2 + 0.18F, (float)par4 + 0.80F * var10, (float)par6 + 0.1F);
-			        GL11.glRotatef(-var12, 0.0F, 1.0F, 0.0F);
-			        GL11.glScalef(0.20F, -0.20F, -0.01F);
-			        GL11.glTranslatef(0.0F, -0.3125F, -0.4375F);
-		            
+			        GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
+	    	        GL11.glRotatef(-210.0F, 1.0F, 0.0F, 0.0F);
+	                
 			        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
 			        GL11.glDepthMask(false);
 			
@@ -208,7 +215,9 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 			        
 			        GL11.glTranslatef(0.1F, -0.2F, 0.0F);
-		
+
+			        GL11.glPushMatrix();
+			        
 			        if (item.requiresMultipleRenderPasses())
 		            {
 		                for (int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14)
@@ -221,6 +230,8 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		            {
 		            	renderItem(item.getIconIndex(itemstack));
 		            }
+
+			        GL11.glPopMatrix();
 			        
 			        GL11.glTranslatef(-0.6F, 0.2F, 0.0F);
 		

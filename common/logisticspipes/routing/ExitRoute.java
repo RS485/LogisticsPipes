@@ -13,7 +13,7 @@ import buildcraft.api.core.Orientations;
 /**
  * Defines direction with a cost
  */
-class ExitRoute {
+public class ExitRoute {
 	public Orientations exitOrientation;
 	public int metric;
 	

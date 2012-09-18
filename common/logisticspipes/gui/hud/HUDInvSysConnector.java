@@ -1,6 +1,11 @@
 package logisticspipes.gui.hud;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 
@@ -11,6 +16,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 	private PipeItemsInvSysConnector pipe;
 	private int cursorX = 0;
 	private int cursorY = 0;
+	private long display = System.currentTimeMillis();
 	
 	public HUDInvSysConnector(PipeItemsInvSysConnector pipe) {
 		this.pipe = pipe;
@@ -30,19 +36,24 @@ public class HUDInvSysConnector extends BasicHUDGui {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
 		
-		GL11.glTranslatef(0.0F, 0.0F, -0.001F);
+		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
+		GL11.glScalef(1.5F, 1.5F, 0.0001F);
+		String message = "Expected:";
+		mc.fontRenderer.drawString(message , -28, -25, 0);
+		GL11.glScalef(0.8F, 0.8F, -1F);
 		
-		GL11.glPushMatrix();
-		BasicGuiHelper.drawRect(cursorX - 2, -50, cursorX + 2, 50, 0xff000000);
-		BasicGuiHelper.drawRect(-50, cursorY - 2, 50, cursorY + 2, 0xff000000);
-		GL11.glPopMatrix();
-		
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.getExpectedItems(), null, 0, 9, 29, 3, 9, 18, 18, mc, true, true);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -37, -18, 3, 9, 18, 18, mc, true, true);
 	}
 
 	@Override
 	public boolean display() {
-		return false;
+		if(display > System.currentTimeMillis()) {
+			return true;
+		}
+		if(pipe.displayList.size() > 0) {
+			display = System.currentTimeMillis() + (2 * 1000);
+		}
+		return pipe.displayList.size() > 0;
 	}
 
 	@Override

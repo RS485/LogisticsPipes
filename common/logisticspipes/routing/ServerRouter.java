@@ -35,7 +35,7 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter {
 
-	public class LSA {
+	private class LSA {
 		public IRouter source;
 		public HashMap<IRouter, Integer> neighboursWithMetric;
 	}
@@ -109,8 +109,6 @@ public class ServerRouter implements IRouter {
 			if (pipe == null) return;
 			PipeTransportLogistics trans = (PipeTransportLogistics)pipe.transport;
 			*/
-			
-			MainProxy.sendCompressedToAllPlayers((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, _xCoord , _yCoord, _zCoord, _dimension, this).getPacket());
 		}
 	}
 
@@ -222,6 +220,7 @@ public class ServerRouter implements IRouter {
 			_myLsa.neighboursWithMetric.put(adjacent.getRouter(), _adjacent.get(adjacent).metric);
 		}
 		_LSDVersion++;
+		MainProxy.sendCompressedToAllPlayers((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, _xCoord , _yCoord, _zCoord, _dimension, this).getPacket());
 		CreateRouteTable();
 	}
 	

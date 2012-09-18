@@ -1,6 +1,8 @@
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -9,6 +11,7 @@ import logisticspipes.gui.hud.HUDInvSysConnector;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.logic.LogicInvSysConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -18,6 +21,9 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.ItemIdentifier;
@@ -37,13 +43,18 @@ import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
-public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider {
+public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
 	private boolean init = false;
 	private LinkedList<Pair<ItemIdentifier,Pair<UUID,UUID>>> destination = new LinkedList<Pair<ItemIdentifier,Pair<UUID,UUID>>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
+	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
+	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
 	
 	public PipeItemsInvSysConnector(int itemID) {
@@ -111,6 +122,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 						} else {
 							inv.setInventorySlotContents(i, stack);
 						}
+						updateContentListener();
 						break;
 					}
 				}
@@ -260,6 +272,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	public void addItem(ItemIdentifier item, UUID sourceId, UUID destinationId) {
 		if(item != null && destinationId != null) {
 			destination.addLast(new Pair<ItemIdentifier,Pair<UUID,UUID>>(item,new Pair<UUID,UUID>(sourceId,destinationId)));
+			updateContentListener();
 		}
 	}
 	
@@ -312,18 +325,46 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	@Override
 	public void startWaitching() {
-		// TODO Auto-generated method stub
-		
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
 	}
 
 	@Override
 	public void stopWaitching() {
-		// TODO Auto-generated method stub
-		
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
 	}
 
 	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
+	}
+	
+	private void updateContentListener() {
+		if(!getExpectedItems().equals(oldList)) {
+			oldList.clear();
+			oldList.addAll(getExpectedItems());
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, getExpectedItems()).getPacket(), localModeWatchers);
+		}
+	}
+
+	@Override
+	public void playerStartWatching(EntityPlayer player, int mode) {
+		if(mode == 1) {
+			localModeWatchers.add(player);
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, getExpectedItems()).getPacket(), (Player)player);
+		} else {
+			super.playerStartWatching(player, mode);
+		}
+	}
+
+	@Override
+	public void playerStopWatching(EntityPlayer player, int mode) {
+		super.playerStopWatching(player, mode);
+		localModeWatchers.remove(player);
+	}
+	
+	@Override
+	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+		displayList.clear();
+		displayList.addAll(list);
 	}
 }

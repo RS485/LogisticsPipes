@@ -224,12 +224,14 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		inv.writeToNBT(nbttagcompound, "");
+		nbttagcompound.setInteger("resistance", resistance);
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 		inv.readFromNBT(nbttagcompound, "");
+		resistance = nbttagcompound.getInteger("resistance");
 	}
 	
 	private boolean hasRemoteConnection() {

@@ -56,6 +56,7 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.routing.RouterManager;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -73,10 +74,12 @@ import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
+import cpw.mods.fml.common.Mod.ServerStopping;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
@@ -299,5 +302,11 @@ public class LogisticsPipes {
 		if(DEBUG) logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		if(DEBUG) ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		MainProxy.proxy.registerTileEntitis();
+	}
+	
+	@ServerStopping
+	public void cleanup(FMLServerStoppingEvent event) {
+		SimpleServiceLocator.routerManager.serverStopClean();
+		ServerRouter.resetStatics();
 	}
 }

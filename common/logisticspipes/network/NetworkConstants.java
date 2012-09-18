@@ -60,4 +60,5 @@ public class NetworkConstants {
 	public static final int REQUEST_ROUTER_UPDATE = 54;
 	public static final int ROUTER_UPDATE_CONTENT = 55;
 	public static final int BUFFERED_PACKET_TRANSFER = 56;
+	public static final int INC_SYS_CON_RESISTANCE = 57;
 }

@@ -22,4 +22,8 @@ public class ExitRoute {
 		this.exitOrientation = exitOrientation;
 		this.metric = metric;
 	}
+	
+	public String toString() {
+		return "{" + this.exitOrientation.name() + "," + metric + "}";
+	}
 }

@@ -36,6 +36,7 @@ import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsApiaristSink;
+import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.proxy.MainProxy;
@@ -43,6 +44,7 @@ import logisticspipes.routing.ClientRouter;
 import logisticspipes.routing.IRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
@@ -65,9 +67,9 @@ public class ClientPacketHandler {
 			final int packetID = data.read();
 			switch (packetID) {
 				case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID:
-					final PacketPipeInteger packetAa = new PacketPipeInteger();
-					packetAa.readData(data);
-					onCraftingPipeSetSatellite(packetAa);
+					final PacketPipeInteger packetA1 = new PacketPipeInteger();
+					packetA1.readData(data);
+					onCraftingPipeSetSatellite(packetA1);
 					break;
 				case NetworkConstants.CRAFTING_PIPE_IMPORT_BACK:
 					final PacketInventoryChange packetA = new PacketInventoryChange();
@@ -203,6 +205,11 @@ public class ClientPacketHandler {
 					final PacketBufferTransfer packetZ = new PacketBufferTransfer();
 					packetZ.readData(data);
 					onBufferTransfer(packetZ);
+					break;
+				case NetworkConstants.INC_SYS_CON_RESISTANCE:
+					final PacketPipeInteger packetAa = new PacketPipeInteger();
+					packetAa.readData(data);
+					onInvSysConResistance(player, packetAa);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -488,6 +495,17 @@ public class ClientPacketHandler {
 
 	private static void onBufferTransfer(PacketBufferTransfer packet) {
 		PacketBufferHandlerThread.handlePacket(packet);
+	}
+
+	private static void onInvSysConResistance(Player player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
+			PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
+			invCon.resistance = packet.integer;
+		}
 	}
 
 	// BuildCraft method

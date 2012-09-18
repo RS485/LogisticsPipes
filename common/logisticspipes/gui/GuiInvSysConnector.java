@@ -8,6 +8,7 @@ import logisticspipes.config.Configs;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -157,6 +158,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			}
 		} else if(button.id == 5) {
 			pipe.resistance = localresistance;
+			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
 		}
 	}
 

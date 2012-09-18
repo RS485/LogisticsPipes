@@ -230,6 +230,11 @@ public class ServerPacketHandler {
 					packetAe.readData(data);
 					onRouterUpdateRequest(player, packetAe);
 					break;
+				case NetworkConstants.INC_SYS_CON_RESISTANCE:
+					final PacketPipeInteger packetAf = new PacketPipeInteger();
+					packetAf.readData(data);
+					onInvSysConResistance(player, packetAf);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -886,6 +891,18 @@ public class ServerPacketHandler {
 			if(router instanceof ServerRouter) {
 				PacketBufferHandlerThread.addPacketToCompressor((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, packet.posX, packet.posY, packet.posZ, packet.integer, (ServerRouter)router).getPacket(), (Player) player);
 			}
+		}
+	}
+
+	private static void onInvSysConResistance(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
+			PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
+			invCon.resistance = packet.integer;
+			invCon.getRouter().update(true);
 		}
 	}
 	

@@ -140,9 +140,6 @@ class PathFinder {
 							tile = CRP.container;
 							isDirectConnection = true;
 							resistance = ((IDirectRoutingConnection)startPipe.pipe).getConnectionResistance();
-							if(Orientations.values()[i] != Orientations.XPos) {
-								resistance = 0;
-							}
 						}
 					}
 				}

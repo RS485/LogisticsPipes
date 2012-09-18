@@ -181,4 +181,10 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 			}
 		}
 	}
+
+	@Override
+	public void serverStopClean() {
+		connectedPipes.clear();
+		_routersServer.clear();
+	}
 }

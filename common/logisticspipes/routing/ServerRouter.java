@@ -66,7 +66,7 @@ public class ServerRouter implements IRouter {
 	private final int _yCoord;
 	private final int _zCoord;
 	
-	public static void ResetStatics(){
+	public static void resetStatics(){
 		SharedLSADatabase.clear();
 		_LSDVersion = 0;
 		_laser = new RouteLaser();

@@ -13,6 +13,7 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.common.network.PacketDispatcher;
 
@@ -87,7 +88,8 @@ public class GuiDiskPopup extends SubGuiScreen {
 	
 	@Override
 	public void drawScreen(int par1, int par2, float par3){
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		
 		fontRenderer.drawStringWithShadow("Disk", xCenter - (fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 		

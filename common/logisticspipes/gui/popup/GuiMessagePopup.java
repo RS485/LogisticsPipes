@@ -44,7 +44,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 			xSize = mWidth = Math.max(Math.min(lWidth + 20,400),120);
 			super.initGui();
 		}
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int i=0;i < 9 && i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
 			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.fontRenderer);

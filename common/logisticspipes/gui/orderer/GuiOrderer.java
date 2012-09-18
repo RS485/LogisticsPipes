@@ -111,7 +111,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		//super.drawScreen(i, j, f);
 		//drawDefaultBackground();
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
 		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
 		if(maxPage == -1) maxPage = 0;
@@ -408,7 +408,15 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		} else {
 			if(Configs.displayPopup) {
-				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));	
+				if(control.hasSubGui()) {
+					ISubGuiControler newcontroller = control;
+					while(newcontroller.hasSubGui()) {
+						newcontroller = newcontroller.getSubGui();
+					}
+					newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
+				} else {
+					control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
+				}
 			} else {
 				for(ItemMessage item:items) {
 					player.addChatMessage("Requested: " + item);

@@ -60,7 +60,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 115);
 		mc.fontRenderer.drawString("Inventory System Connector", guiLeft + 5, guiTop + 6, 0x404040);
 		drawRect(guiLeft + 9, guiTop + 58, guiLeft + 170, guiTop + 112, Colors.MiddleGrey);

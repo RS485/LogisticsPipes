@@ -61,7 +61,7 @@ public class HUDSatellite extends BasicHUDGui {
 	        } else {
 	        	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
 	        }
-			BasicGuiHelper.drawGuiBackGround(mc, -50, -50, 50, 50, 0);
+			BasicGuiHelper.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
 			if(day) {
 	        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
 	        } else {
@@ -86,7 +86,7 @@ public class HUDSatellite extends BasicHUDGui {
 	        } else {
 	        	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
 	        }
-			BasicGuiHelper.drawGuiBackGround(mc, -30, -30, 30, 30, 0);
+			BasicGuiHelper.drawGuiBackGround(mc, -30, -30, 30, 30, 0, false);
 			if(day) {
 	        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
 	        } else {

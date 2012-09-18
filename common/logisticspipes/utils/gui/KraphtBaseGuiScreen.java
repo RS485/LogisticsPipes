@@ -11,6 +11,8 @@ package logisticspipes.utils.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.lwjgl.opengl.GL11;
+
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Container;
@@ -102,10 +104,12 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	public void drawScreen(int par1, int par2, float par3){
 		super.drawScreen(par1, par2, par3);
 		if(subGui != null) {
+			GL11.glTranslatef(0.0F, 0.0F, 101.0F);
 			if(!subGui.hasSubGui()) {
 				super.drawDefaultBackground();
 			}
 			subGui.drawScreen(par1, par2, par3);
+			GL11.glTranslatef(0.0F, 0.0F, -101.0F);
 		} else {
 			for(IRenderSlot slot:slots) {
 				int mouseX = par1 - guiLeft;

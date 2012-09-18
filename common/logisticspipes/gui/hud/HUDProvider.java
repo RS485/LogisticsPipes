@@ -96,7 +96,7 @@ public class HUDProvider extends BasicHUDGui {
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -50, -55, 50, 55, 0);
+		BasicGuiHelper.drawGuiBackGround(mc, -50, -55, 50, 55, 0, false);
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {

@@ -1,5 +1,7 @@
 package logisticspipes.utils.gui;
 
+import org.lwjgl.opengl.GL11;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.GuiScreen;
 
@@ -59,10 +61,12 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	public void drawScreen(int par1, int par2, float par3){
 		super.drawScreen(par1, par2, par3);
 		if(subGui != null) {
+			GL11.glTranslatef(0.0F, 0.0F, 1.0F);
 			if(!subGui.hasSubGui()) {
 				super.drawDefaultBackground();
 			}
 			subGui.drawScreen(par1, par2, par3);
+			GL11.glTranslatef(0.0F, 0.0F, -1.0F);
 		}
 	}
 

@@ -103,7 +103,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	
 	@Override
 	public void drawScreen(int par1, int par2, float par3){
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		
 		fontRenderer.drawString("Add Macro", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 		
@@ -286,6 +286,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
+
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(mainGui._allItems, this, pageAll, guiLeft + 10, guiTop + 18, 9, 45, panelxSize, panelySize, mc, false, false);
 
 		ppi = 0;

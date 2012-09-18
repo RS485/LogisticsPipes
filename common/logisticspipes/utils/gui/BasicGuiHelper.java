@@ -444,10 +444,12 @@ public class BasicGuiHelper {
 	      }
 	}
     
-	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel){
+	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag){
 
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");
-		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		if(flag) {
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		}
 		mc.renderEngine.bindTexture(i);
 
 		//Top Side

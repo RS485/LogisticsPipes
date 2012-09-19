@@ -309,9 +309,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
 				if(MainProxy.isServer(world)) {
 					entityplayer.openGui(LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);
-					if(getLogisticsModule() instanceof ModuleItemSink) {
-						PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, ((ModuleItemSink)getLogisticsModule()).isDefaultRoute() ? 1 : 0).getPacket(), (Player)entityplayer);
-					}
 					if(getLogisticsModule() instanceof ModuleExtractor) {
 						PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, ((ModuleExtractor)getLogisticsModule()).getSneakyOrientation().ordinal()).getPacket(), (Player)entityplayer);
 					}

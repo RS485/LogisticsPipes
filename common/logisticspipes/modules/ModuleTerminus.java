@@ -74,4 +74,7 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 		list.add("<that>");
 		return list;
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

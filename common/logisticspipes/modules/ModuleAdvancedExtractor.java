@@ -192,4 +192,10 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 		list.add("<that>");
 		return list;
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		// TODO Auto-generated method stub
+		
+	}
 }

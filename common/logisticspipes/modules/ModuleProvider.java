@@ -253,4 +253,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		list.add("<that>");
 		return list;
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

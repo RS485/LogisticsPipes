@@ -33,15 +33,16 @@ public class LogisticsHUDRenderer {
 	
 	private static LogisticsHUDRenderer renderer = null;
 	
-	private void clearList() {
-		for(IHeadUpDisplayRendererProvider renderer:list) {
-			renderer.stopWaitching();
+	private void clearList(boolean flag) {
+		if(flag) {
+			for(IHeadUpDisplayRendererProvider renderer:list) {
+				renderer.stopWaitching();
+			}
 		}
 		list.clear();
 	}
 	
 	private void refreshList(double x,double y,double z) {
-		clearList();
 		ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>> newList = new ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>>();
 		for(IRouter router:SimpleServiceLocator.routerManager.getRouters().values()) {
 			CoreRoutedPipe pipe = router.getPipe();
@@ -50,7 +51,9 @@ public class LogisticsHUDRenderer {
 				double dis = Math.hypot(pipe.xCoord - x + 0.5,Math.hypot(pipe.yCoord - y + 0.5, pipe.zCoord - z + 0.5));
 				if(dis < 15 && dis > 0.75) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,(IHeadUpDisplayRendererProvider)pipe));
-					((IHeadUpDisplayRendererProvider)pipe).startWaitching();
+					if(!list.contains(pipe)) {
+						((IHeadUpDisplayRendererProvider)pipe).startWaitching();
+					}
 				}
 			}
 		}
@@ -68,6 +71,19 @@ public class LogisticsHUDRenderer {
 				}
 			}
 		});
+		for(IHeadUpDisplayRendererProvider part:list) {
+			boolean contains = false;
+			for(Pair<Double,IHeadUpDisplayRendererProvider> inpart:newList) {
+				if(inpart.getValue2().equals(part)) {
+					contains = true;
+					break;
+				}
+			}
+			if(!contains) {
+				part.stopWaitching();
+			}
+		}
+		clearList(false);
 		for(Object part:sorter) {
 			list.addLast(((Pair<Double,IHeadUpDisplayRendererProvider>)part).getValue2());
 		}
@@ -274,7 +290,7 @@ public class LogisticsHUDRenderer {
 	public boolean displayRenderer() {
 		if(!displayHUD()) {
 			if(list.size() != 0) {
-				clearList();
+				clearList(true);
 			}
 			warned = false;
 		}

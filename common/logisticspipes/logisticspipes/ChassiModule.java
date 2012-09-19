@@ -110,4 +110,8 @@ public class ChassiModule implements ILogisticsModule{
 		//Not used in Chassie Module
 	}
 
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		//Not used in Chassie Module
+	}
 }

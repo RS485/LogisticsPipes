@@ -13,7 +13,6 @@ import net.minecraft.src.NBTTagCompound;
 public class PacketPipeInvContent extends PacketCoordinates {
 
 	public LinkedList<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
-	private int id;
 
 	public PacketPipeInvContent() {
 		super();
@@ -22,7 +21,6 @@ public class PacketPipeInvContent extends PacketCoordinates {
 	public PacketPipeInvContent(int id, int x, int y, int z, LinkedList<ItemIdentifierStack> allItems) {
 		super(id, x, y, z);
 		_allItems = allItems;
-		this.id = id;
 	}
 
 	@Override
@@ -30,10 +28,14 @@ public class PacketPipeInvContent extends PacketCoordinates {
 		super.writeData(data);
 		for (final ItemIdentifierStack item : _allItems) {
 			data.write(1); // byte
-			data.writeInt(item.getItem().itemID);
-			data.writeInt(item.getItem().itemDamage);
-			data.writeInt(item.stackSize);
-			SendNBTTagCompound.writeNBTTagCompound(item.getItem().tag, data);
+			if(item == null) {
+				data.writeInt(0);
+			} else {
+				data.writeInt(item.getItem().itemID);
+				data.writeInt(item.getItem().itemDamage);
+				data.writeInt(item.stackSize);
+				SendNBTTagCompound.writeNBTTagCompound(item.getItem().tag, data);
+			}
 		}
 		data.write(0); // end
 	}
@@ -43,16 +45,14 @@ public class PacketPipeInvContent extends PacketCoordinates {
 		super.readData(data);
 		while (data.read() != 0) { // read until the end
 			final int itemID = data.readInt();
-			final int dataValue = data.readInt();
-			final int amount = data.readInt();
-			final NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
-			_allItems.add(ItemIdentifier.get(itemID, dataValue, tag).makeStack(amount));
+			if(itemID != 0) {
+				final int dataValue = data.readInt();
+				final int amount = data.readInt();
+				final NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+				_allItems.add(ItemIdentifier.get(itemID, dataValue, tag).makeStack(amount));
+			} else {
+				_allItems.add(null);
+			}
 		}
 	}
-
-	@Override
-	public int getID() {
-		return id;
-	}
-
 }

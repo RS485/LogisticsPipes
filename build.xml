@@ -108,11 +108,11 @@
         <chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x" />
 
         <!-- Install forge -->
-        <exec dir="${forge.dir}" executable="cmd" osfamily="windows">
+        <exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
             <arg line="/c install.cmd"/>
         </exec>
         
-        <exec dir="${forge.dir}" executable="sh" osfamily="unix">
+        <exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
             <arg value="install.sh" />
         </exec>
         
@@ -149,11 +149,11 @@
 		<echo message="Copied dummy files"/>
 		
         <!-- Refresh MD5 -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
             <arg line="/c updatemd5.bat -f"/>
         </exec>
         
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix">
+        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
             <arg line="updatemd5.sh -f" />
         </exec>
 		
@@ -173,20 +173,20 @@
 		<echo message="Compiling version ${lp.version.full}"/>
 	
         <!-- Recompile -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
             <arg line="/c recompile.bat"/>
         </exec>
         
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix">
+        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
             <arg value="recompile.sh" />
         </exec>
         
         <!-- Reobf -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows">
+        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
             <arg line="/c reobfuscate.bat"/>
         </exec>
         
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix">
+        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
             <arg value="reobfuscate.sh" />
         </exec>
         

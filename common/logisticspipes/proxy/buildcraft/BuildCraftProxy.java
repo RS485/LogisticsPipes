@@ -179,7 +179,9 @@ public class BuildCraftProxy {
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
 		}
-		NEILogisticsPipesConfig.pipelist.add(res);
+		try {
+			NEILogisticsPipesConfig.pipelist.add(res);
+		} catch(Exception e) {}
 		return res;
 	}
 	

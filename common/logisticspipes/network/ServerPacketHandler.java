@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -27,6 +28,7 @@ import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeString;
@@ -240,6 +242,16 @@ public class ServerPacketHandler {
 					packetAg.readData(data);
 					onCraftingPipeStackMove(player, packetAg);
 					break;
+				case NetworkConstants.HUD_START_WATCHING_MODULE:
+					final PacketPipeInteger packetAh = new PacketPipeInteger();
+					packetAh.readData(data);
+					onHUDModuleWatchingChange(player, packetAh, true);
+					break;
+				case NetworkConstants.HUD_STOP_WATCHING_MODULE:
+					final PacketPipeInteger packetAi = new PacketPipeInteger();
+					packetAi.readData(data);
+					onHUDModuleWatchingChange(player, packetAi, false);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -326,7 +338,7 @@ public class ServerPacketHandler {
 		player.openGui(LogisticsPipes.instance, cassiPipe.getLogisticsModule().getSubModule(packet.integer).getGuiHandlerID()
 				+ (100 * (packet.integer + 1)), player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ,
+			PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ, packet.integer,
 					(((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isDefaultRoute() ? 1 : 0)).getPacket(), (Player)player);
 		}
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleExtractor) {
@@ -921,6 +933,23 @@ public class ServerPacketHandler {
 			if(((PipeItemsCraftingLogistics)pipe.pipe).logic instanceof BaseLogicCrafting) {
 				BaseLogicCrafting logic = (BaseLogicCrafting) ((PipeItemsCraftingLogistics)pipe.pipe).logic;
 				logic.handleStackMove(packet.integer);
+			}
+		}
+	}
+
+	private static void onHUDModuleWatchingChange(EntityPlayerMP player, PacketPipeInteger packet, boolean flag) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.integer) instanceof IModuleWatchReciver) {
+			
+			IModuleWatchReciver handler = (IModuleWatchReciver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.integer);
+			if(flag) {
+				handler.startWatching(player);
+			} else {
+				handler.stopWatching(player);
 			}
 		}
 	}

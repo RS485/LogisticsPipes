@@ -30,7 +30,7 @@ public abstract class BasicHUDGui implements IHeadUpDisplayRenderer {
 	public void handleCursor(int x, int y) {
 		GL11.glPushMatrix();
 		for(IHUDButton button:buttons) {
-			if(!button.buttonEnabled()) continue;
+			if(!button.buttonEnabled() || !button.shouldRenderButton()) continue;
 			if((button.getX() - 1 < x && x < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < y && y < (button.getY() + button.sizeY() + 1))) {
 				if(!button.isFocused() && !button.isblockFocused()) {
 					button.setFocused();

@@ -141,4 +141,7 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 		list.add("Extraction: " + _sneakyOrientation.name());
 		return list;
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

@@ -85,4 +85,6 @@ public class ModuleQuickSort implements ILogisticsModule {
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, false, _itemSender.getSourceUUID(), true);
 	}
 
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

@@ -9,11 +9,11 @@ import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.interfaces.IChestContentReceiver;
+import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
@@ -24,11 +24,14 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
@@ -36,15 +39,16 @@ import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsApiaristSink;
+import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ClientRouter;
 import logisticspipes.routing.IRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
@@ -97,7 +101,7 @@ public class ClientPacketHandler {
 					onCraftingLoop(packetE);
 					break;
 				case NetworkConstants.ITEM_SINK_STATUS:
-					final PacketPipeInteger packetH = new PacketPipeInteger();
+					final PacketModuleInteger packetH = new PacketModuleInteger();
 					packetH.readData(data);
 					onItemSinkStatusRecive(packetH);
 					break;
@@ -211,6 +215,16 @@ public class ClientPacketHandler {
 					packetAa.readData(data);
 					onInvSysConResistance(player, packetAa);
 					break;
+				case NetworkConstants.CHASSIE_PIPE_CONTENT:
+					final PacketPipeInvContent packetAb = new PacketPipeInvContent();
+					packetAb.readData(data);
+					onChassieInvRecive(player, packetAb);
+					break;
+				case NetworkConstants.MODULE_INV_CONTENT:
+					final PacketModuleInvContent packetAc = new PacketModuleInvContent();
+					packetAc.readData(data);
+					onModuleInvRecive(packetAc);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -286,9 +300,31 @@ public class ClientPacketHandler {
 				+ " !! ABORTING !!");
 	}
 
-	private static void onItemSinkStatusRecive(PacketPipeInteger packet) {
-		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiItemSink) {
-			((GuiItemSink) FMLClientHandler.instance().getClient().currentScreen).handleDefaultRoutePackage(packet);
+	private static void onItemSinkStatusRecive(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		
+		if(packet.slot == -1) {
+			if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+				return;
+			}
+			if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleItemSink)) {
+				return;
+			}
+			ModuleItemSink module = (ModuleItemSink) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
+			module.setDefaultRoute(packet.integer == 1);
+			return;
+		}
+		
+		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+			return;
+		}
+		if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
+		if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleItemSink) {
+			ModuleItemSink module = (ModuleItemSink) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			module.setDefaultRoute(packet.integer == 1);
 		}
 	}
 
@@ -505,6 +541,28 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
 			PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
 			invCon.resistance = packet.integer;
+		}
+	}
+
+	private static void onChassieInvRecive(Player player, PacketPipeInvContent packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeLogisticsChassi) {
+			PipeLogisticsChassi chassie = (PipeLogisticsChassi) pipe.pipe;
+			chassie.handleItemIdentifierList(packet._allItems);
+		}
+	}
+
+	private static void onModuleInvRecive(PacketModuleInvContent packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof IModuleInventoryReceive) {
+			IModuleInventoryReceive module = (IModuleInventoryReceive) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			module.handleInvContent(packet._allItems);
 		}
 	}
 

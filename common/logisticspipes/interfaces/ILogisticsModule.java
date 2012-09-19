@@ -15,6 +15,11 @@ public interface ILogisticsModule extends ISaveState {
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world);
 	
 	/**
+	 * Registers the position to the module
+	 */
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot);
+	
+	/**
 	 * 
 	 * @return The gui id of the given module; 
 	 */

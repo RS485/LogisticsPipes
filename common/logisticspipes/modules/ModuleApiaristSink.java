@@ -279,4 +279,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	public void writeToPacketNBT(NBTTagCompound tag) {
 		writeToNBT(tag,"");
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

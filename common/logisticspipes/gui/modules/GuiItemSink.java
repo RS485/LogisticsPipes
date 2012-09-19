@@ -91,10 +91,5 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		return GuiIDs.GUI_Module_ItemSink_ID;
 	}
 	
-	public void handleDefaultRoutePackage(PacketPipeInteger packet) {
-		_itemSink.setDefaultRoute((packet.integer % 10) == 1);
-		((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
-	}
-	
 	//int inventoryRows = 1;
 }

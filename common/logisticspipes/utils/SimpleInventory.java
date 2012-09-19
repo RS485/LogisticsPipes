@@ -139,4 +139,18 @@ public class SimpleInventory implements IInventory, ISaveState{
 		this._contents[i] = null;
 		return stackToTake;
 	}
+
+	public void handleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+		int i=0;
+		for(ItemIdentifierStack stack:_allItems) {
+			if(_contents.length <= i) break;
+			if(stack == null) {
+				_contents[i] = null;
+			} else {
+				_contents[i] = stack.makeNormalStack();
+			}
+			i++;
+		}
+		onInventoryChanged();
+	}
 }

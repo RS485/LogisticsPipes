@@ -57,4 +57,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 
 	@Override
 	public void tick() {}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

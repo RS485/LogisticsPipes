@@ -8,11 +8,17 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.config.Textures;
 import logisticspipes.gui.GuiChassiPipe;
+import logisticspipes.gui.hud.HUDChassiePipe;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -33,13 +39,16 @@ import logisticspipes.main.LogisticsPromise;
 import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
-import logisticspipes.main.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
@@ -50,12 +59,14 @@ import net.minecraft.src.World;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
+import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
-public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider{
+public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider {
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
@@ -64,6 +75,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	private long tick = 0;
 	BaseChassiLogic ChassiLogic;
 	private boolean convertFromMeta = false;
+	
+	//HUD
+	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private HUDChassiePipe HUD;
 
 	public PipeLogisticsChassi(int itemID) {
 		super(new BaseChassiLogic(), itemID);
@@ -71,6 +86,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		_moduleInventory = new SimpleInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
 		_module = new ChassiModule(getChassiSize(), this);
+		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
 	
 	public Orientations getPointedOrientation(){
@@ -246,6 +262,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			if (stack.getItem() instanceof ItemModule){
 				ILogisticsModule current = _module.getModule(i);
 				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this);
+				next.registerPosition(xCoord, yCoord, zCoord, i);
 				if (current != next){
 					_module.installModule(i, next);
 					ItemModuleInformationManager.readInformation(stack, next, this.worldObj);
@@ -260,6 +277,9 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				}
 			}
 		}
+		if(MainProxy.isServer()) {
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), localModeWatchers);
+		}
 	}
 
 	@Override
@@ -269,8 +289,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			switchOrientationOnTick = false;
 			if(MainProxy.isServer(this.worldObj)) {
 				nextOrientation();
-				//TODO
-				//PacketDispatcher.sendToPlayers(this.getDescriptionPacket(), worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, mod_BuildCraftCore.instance);
+				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
 			}
 		}
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
@@ -384,5 +403,71 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public World getWorld() {
 		return this.worldObj;
+	}
+
+	@Override
+	public IHeadUpDisplayRenderer getRenderer() {
+		return HUD;
+	}
+
+	@Override
+	public int getX() {
+		return xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return zCoord;
+	}
+
+	@Override
+	public void startWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+	}
+
+	@Override
+	public void stopWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		HUD.stopWatching();
+	}
+
+	@Override
+	public void playerStartWatching(EntityPlayer player, int mode) {
+		if(mode == 1) {
+			localModeWatchers.add(player);
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), (Player)player);
+		} else {
+			super.playerStartWatching(player, mode);
+		}
+	}
+
+	@Override
+	public void playerStopWatching(EntityPlayer player, int mode) {
+		super.playerStopWatching(player, mode);
+		localModeWatchers.remove(player);
+	}
+
+	public void handleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+		_moduleInventory.handleItemIdentifierList(_allItems);
+	}
+
+	public ChassiModule getModules() {
+		return _module;
+	}
+
+	@Override
+	public void setTile(TileEntity tile) {
+		super.setTile(tile);
+		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++){
+			ILogisticsModule current = _module.getModule(i);
+			if(current != null) {
+				current.registerPosition(xCoord, yCoord, zCoord, i);
+			}
+		}
 	}
 }

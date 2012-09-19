@@ -52,13 +52,18 @@ public class BasicGuiHelper {
 				return 0;
 			}
 	}
-	
+
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, true);
+	}
+
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color) {
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
 		FontRenderer fontRenderer = mc.fontRenderer;
 		RenderItem renderItem = new RenderItem();
+		renderItem.field_77024_a = color;
 		for(ItemIdentifierStack itemStack : _allItems) {
 			if(itemStack == null) {
 				column++;
@@ -444,88 +449,108 @@ public class BasicGuiHelper {
 	      }
 	}
     
-	public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag){
+    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag){
+    	drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, flag, true, true, true, true);
+    }
+    
+    public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight){
 
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");
 		if(flag) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
 		mc.renderEngine.bindTexture(i);
-
-		//Top Side
-		Tessellator var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
-        var9.addVertexWithUV(right - 15		, guiTop + 15	, (double)zLevel, 0.66	, 0.33);
-        var9.addVertexWithUV(right - 15		, guiTop		, (double)zLevel, 0.66	, 0);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)zLevel, 0.33	, 0);
-        var9.draw();
-
-        //Left Side
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)zLevel, 0	, 0.66);
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
-        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)zLevel, 0	, 0.33);
-        var9.draw();
-
-        //Bottom Side
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)zLevel, 0.33	, 1);
-        var9.addVertexWithUV(right - 15		, bottom		, (double)zLevel, 0.66	, 1);
-        var9.addVertexWithUV(right - 15		, bottom - 15	, (double)zLevel, 0.66	, 0.66);
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
-        var9.draw();
-
-        //Right Side
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)zLevel, 0.66	, 0.66);
-        var9.addVertexWithUV(right		, bottom - 15		, (double)zLevel, 1	, 0.66);
-        var9.addVertexWithUV(right		, guiTop + 15		, (double)zLevel, 1	, 0.33);
-        var9.addVertexWithUV(right - 15	, guiTop + 15		, (double)zLevel, 0.66	, 0.33);
-        var9.draw();
 		
-		//Top Left
-		var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)zLevel, 0	, 0.33);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)zLevel, 0.33	, 0);
-        var9.addVertexWithUV(guiLeft		, guiTop		, (double)zLevel, 0	, 0);
-        var9.draw();
+		if(displayTop) {
+			//Top Side
+			Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
+	        var9.addVertexWithUV(right - 15		, guiTop + 15	, (double)zLevel, 0.66	, 0.33);
+	        var9.addVertexWithUV(right - 15		, guiTop		, (double)zLevel, 0.66	, 0);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)zLevel, 0.33	, 0);
+	        var9.draw();
+		}
+
+		if(displayLeft) {
+			//Left Side
+			Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)zLevel, 0	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
+	        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)zLevel, 0	, 0.33);
+	        var9.draw();
+		}
+		
+		if(displayBottom) {
+	        //Bottom Side
+			Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)zLevel, 0.33	, 1);
+	        var9.addVertexWithUV(right - 15		, bottom		, (double)zLevel, 0.66	, 1);
+	        var9.addVertexWithUV(right - 15		, bottom - 15	, (double)zLevel, 0.66	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
+	        var9.draw();
+		}
+		
+		if(displayRight) {
+	        //Right Side
+			Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)zLevel, 0.66	, 0.66);
+	        var9.addVertexWithUV(right		, bottom - 15		, (double)zLevel, 1	, 0.66);
+	        var9.addVertexWithUV(right		, guiTop + 15		, (double)zLevel, 1	, 0.33);
+	        var9.addVertexWithUV(right - 15	, guiTop + 15		, (double)zLevel, 0.66	, 0.33);
+	        var9.draw();
+		}
+		
+		if(displayTop && displayLeft) {
+			//Top Left
+			Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)zLevel, 0	, 0.33);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)zLevel, 0.33	, 0);
+	        var9.addVertexWithUV(guiLeft		, guiTop		, (double)zLevel, 0	, 0);
+	        var9.draw();
+		}
         
-        //Bottom Left
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft		, bottom		, (double)zLevel, 0	, 1);
-        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)zLevel, 0.33	, 1);
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
-        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)zLevel, 0	, 0.66);
-        var9.draw();
+		if(displayBottom && displayLeft) {
+			//Bottom Left
+			Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(guiLeft		, bottom		, (double)zLevel, 0	, 1);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)zLevel, 0.33	, 1);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
+	        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)zLevel, 0	, 0.66);
+	        var9.draw();
+		}
 
-        //Bottom Right
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(right - 15	, bottom			, (double)zLevel, 0.66	, 1);
-        var9.addVertexWithUV(right		, bottom			, (double)zLevel, 1	, 1);
-        var9.addVertexWithUV(right		, bottom - 15		, (double)zLevel, 1	, 0.66);
-        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)zLevel, 0.66	, 0.66);
-        var9.draw();
+        if(displayBottom && displayRight) {
+    		//Bottom Right
+        	Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(right - 15	, bottom			, (double)zLevel, 0.66	, 1);
+	        var9.addVertexWithUV(right		, bottom			, (double)zLevel, 1	, 1);
+	        var9.addVertexWithUV(right		, bottom - 15		, (double)zLevel, 1	, 0.66);
+	        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)zLevel, 0.66	, 0.66);
+	        var9.draw();
+	    }
 
-        //Top Right
-        var9 = Tessellator.instance;
-        var9.startDrawingQuads();
-        var9.addVertexWithUV(right - 15	, guiTop + 15			, (double)zLevel, 0.66	, 0.33);
-        var9.addVertexWithUV(right		, guiTop + 15			, (double)zLevel, 1	, 0.33);
-        var9.addVertexWithUV(right		, guiTop				, (double)zLevel, 1	, 0);
-        var9.addVertexWithUV(right - 15	, guiTop				, (double)zLevel, 0.66	, 0);
-        var9.draw();
+	    if(displayTop && displayRight) {
+	    	//Top Right
+	        Tessellator var9 = Tessellator.instance;
+	        var9.startDrawingQuads();
+	        var9.addVertexWithUV(right - 15	, guiTop + 15			, (double)zLevel, 0.66	, 0.33);
+	        var9.addVertexWithUV(right		, guiTop + 15			, (double)zLevel, 1	, 0.33);
+	        var9.addVertexWithUV(right		, guiTop				, (double)zLevel, 1	, 0);
+	        var9.addVertexWithUV(right - 15	, guiTop				, (double)zLevel, 0.66	, 0);
+	        var9.draw();
+	    }
 
         //Center
-        var9 = Tessellator.instance;
+	    Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
         var9.addVertexWithUV(guiLeft + 15	, bottom - 15		, (double)zLevel, 0.33	, 0.66);
         var9.addVertexWithUV(right - 15		, bottom - 15		, (double)zLevel, 0.66	, 0.66);

@@ -82,4 +82,7 @@ public class ModulePassiveSupplier implements ILogisticsModule, IClientInformati
 		list.add("<that>");
 		return list;
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

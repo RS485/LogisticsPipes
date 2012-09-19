@@ -8,6 +8,9 @@
 
 package logisticspipes.utils;
 
+import java.util.LinkedList;
+
+import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 
 public final class ItemIdentifierStack {
@@ -47,5 +50,17 @@ public final class ItemIdentifierStack {
 	
 	public ItemIdentifierStack clone() {
 		return new ItemIdentifierStack(_item, stackSize);
+	}
+
+	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv) {
+		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+		for(int i=0;i<inv.getSizeInventory();i++) {
+			if(inv.getStackInSlot(i) == null) {
+				list.add(null);
+			} else {
+				list.add(ItemIdentifierStack.GetFromStack(inv.getStackInSlot(i)));
+			}
+		}
+		return list;
 	}
 }

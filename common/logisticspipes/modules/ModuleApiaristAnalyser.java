@@ -76,4 +76,10 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 			}
 		}
 	}
+
+	@Override
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		// TODO Auto-generated method stub
+		
+	}
 }

@@ -39,6 +39,7 @@ import logisticspipes.modules.ModuleLiquidSupplier;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
@@ -160,6 +161,9 @@ public class GuiHandler implements IGuiHandler {
 			    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
 			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 			    }
+			    
+			    PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, x, y, z, -1, ((ModuleItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
+			    
 			    return dummy;
 				
 			case GuiIDs.GUI_Module_LiquidSupplier_ID:

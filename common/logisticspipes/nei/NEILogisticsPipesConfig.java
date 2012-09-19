@@ -2,12 +2,11 @@ package logisticspipes.nei;
 
 import static codechicken.nei.api.API.addSetRange;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.Item;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;
@@ -16,8 +15,6 @@ import cpw.mods.fml.common.Mod;
 
 public class NEILogisticsPipesConfig implements IConfigureNEI {
 	
-	public static List<Item> pipelist = new ArrayList<Item>();
-	
 	@Override
 	public void loadConfig() {
 		MultiItemRange main = new MultiItemRange();
@@ -25,7 +22,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
 		
-		Item[] pipeArray = pipelist.toArray(new Item[]{});
+		Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
 		Arrays.sort(pipeArray, new Comparator() {
 			@Override
 			public int compare(Object arg0, Object arg1) {

@@ -9,6 +9,8 @@
 package logisticspipes.proxy.buildcraft;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -68,6 +70,8 @@ public class BuildCraftProxy {
 	public static Class<? extends Pipe> PipeItemTeleport;
 	public static Method teleportPipeMethod;
 
+	public static List<Item> pipelist = new ArrayList<Item>();
+	
 	public static Trigger LogisticsFailedTrigger;
 	
 	public static Action LogisticsDisableAction;
@@ -179,9 +183,7 @@ public class BuildCraftProxy {
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
 		}
-		try {
-			NEILogisticsPipesConfig.pipelist.add(res);
-		} catch(Exception e) {}
+		pipelist.add(res);
 		return res;
 	}
 	

@@ -27,6 +27,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.Slot;
 import buildcraft.api.core.Orientations;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
@@ -208,6 +209,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
 			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			return;
 		}
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		boolean found = false;
@@ -251,6 +253,22 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			final PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
 			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
 
+		}
+	}
+
+	public void handleStackMove(int number) {
+		if(MainProxy.isClient()) {
+			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
+		}
+		ItemStack stack = _dummyInventory.getStackInSlot(number);
+		if(stack == null ) return;
+		for(int i = 6;i < 9;i++) {
+			ItemStack stackb = _dummyInventory.getStackInSlot(i);
+			if(stackb == null) {
+				_dummyInventory.setInventorySlotContents(i, stack);
+				_dummyInventory.setInventorySlotContents(number, null);
+				break;
+			}
 		}
 	}
 

@@ -41,7 +41,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 
 	public LogisticsSolderingTileEntity() {
 		provider = PowerFramework.currentFramework.createPowerProvider();
-		provider.configure(10, 10, 10, 10, 10);
+		provider.configure(10, 10, 100, 10, 100);
 	}
 
 	public Container createContainer(EntityPlayer player) {
@@ -63,7 +63,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		dummy.addRestrictedSlot(11, this, 149, 11, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
-				return getRecipeForTaget(itemStack) != null;
+				return getRecipeForTaget(itemStack) != null && areStacksEmpty();
 			}
 		});
 		dummy.addNormalSlotsForPlayerInventory(8, 84);
@@ -80,7 +80,16 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		}
 		return stack.itemID == allowed.itemID && stack.getItemDamage() == allowed.getItemDamage();
 	}
-
+	
+	public boolean areStacksEmpty() {
+		for(int i=0; i<9;i++) {
+			if(inv.getStackInSlot(i) != null && inv.getStackInSlot(i).itemID != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+	
 	public ItemStack[] getRecipeForTaget() {
 		return getRecipeForTaget(inv.getStackInSlot(11));
 	}
@@ -214,9 +223,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	@Override
 	public void updateEntity() {
 		if(hasWork() && heat < 100) {
-			if(provider.useEnergy(1, 3, false) >= 1) {
-				heat += provider.useEnergy(1, 3, true);
-				heat--;
+			if(provider.useEnergy(1, 100, false) >= 1) {
+				heat += provider.useEnergy(1, 100, true);
 				if(heat > 100) {
 					heat = 100;
 				}
@@ -279,7 +287,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	@Override
 	public int powerRequest() {
 		if (hasWork()) {
-			return 3;
+			return provider.getMaxEnergyReceived();
 		} else {
 			return 0;
 		}
@@ -337,6 +345,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 
 	@Override
 	public int addItem(ItemStack stack, boolean doAdd, Orientations from) {
+		if(stack == null) return 0;
+		if(stack.getItem() == null) return 0;
 		if (stack.getItem() == Item.ingotIron) {
 			ItemStack iron = inv.getStackInSlot(9);
 			if (iron == null) {
@@ -353,16 +363,67 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			}
 			return toAdd;
 		}
-		//TODO
+		ItemStack[] recipe = getRecipeForTaget();
+		if(recipe != null) {
+			boolean found = false;
+			int min = Integer.MAX_VALUE;
+			int i=0;
+			for(ItemStack itemstack:recipe) {
+				if(itemstack == null) {
+					i++;
+					continue;
+				}
+				if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+					found = true;
+					ItemStack slot = inv.getStackInSlot(i);
+					if(slot != null) {
+						min = Math.min(slot.stackSize, min);
+					} else {
+						min = 0;
+					}
+				}
+				i++;
+			}
+			if(found) {
+				int freespace = 64 - min;
+				int toAdd = Math.min(stack.stackSize, freespace);
+				if(doAdd) {
+					i=0;
+					for(ItemStack itemstack:recipe) {
+						if(itemstack == null) {
+							i++;
+							continue;
+						}
+						if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+							ItemStack slot = inv.getStackInSlot(i);
+							if(slot == null) {
+								inv.setInventorySlotContents(i, stack);
+								inv.onInventoryChanged();
+								break;
+							} else if(slot.stackSize == min) {
+								slot.stackSize += toAdd;
+								inv.setInventorySlotContents(i, slot);
+								inv.onInventoryChanged();
+								break;
+							}
+						}
+						i++;
+					}
+				}
+				return toAdd;
+			} else {
+				return 0;
+			}
+		}
 		return 0;
 	}
 
 	@Override
-	public ItemStack[] extractItem(boolean doRemove, Orientations from,
-			int maxItemCount) {
+	public ItemStack[] extractItem(boolean doRemove, Orientations from, int maxItemCount) {
 		ItemStack[] tmp = new ItemStack[] { inv.getStackInSlot(10) };
 		if (doRemove) {
 			inv.setInventorySlotContents(10, null);
+			inv.onInventoryChanged();
 		}
 		return tmp;
 	}

@@ -61,4 +61,5 @@ public class NetworkConstants {
 	public static final int ROUTER_UPDATE_CONTENT = 55;
 	public static final int BUFFERED_PACKET_TRANSFER = 56;
 	public static final int INC_SYS_CON_RESISTANCE = 57;
+	public static final int CRAFTING_PIPE_STACK_MOVE = 58;
 }

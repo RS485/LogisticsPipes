@@ -11,6 +11,7 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.main.GuiIDs;
+import logisticspipes.network.NetworkConstants;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;
@@ -67,7 +68,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if(5 < guibutton.id && guibutton.id < 11) {
-			handleStackMove(guibutton.id - 5);
+			_logic.handleStackMove(guibutton.id - 5);
 		}
 		switch(guibutton.id){
 		case 0:
@@ -148,18 +149,6 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				buttonarray[count - 36].drawButton = true;
 			} else {
 				buttonarray[count - 36].drawButton = false;
-			}
-		}
-	}
-
-	private void handleStackMove(int number) {
-		Slot slot = inventorySlots.getSlot(number + 36);
-		if(slot == null || slot.getStack() == null) return;
-		for(int i = 42;i < 45;i++) {
-			Slot slotb = inventorySlots.getSlot(i);
-			if(slotb != null && slotb.getStack() == null) {
-				slotb.putStack(slot.getStack());
-				slot.putStack(null);
 			}
 		}
 	}

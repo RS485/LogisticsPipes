@@ -167,7 +167,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		
 		if(MainProxy.isServer(_pipe.worldObj)) {
 			//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
-			PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
+			//PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
 			/*
 			if(data.item instanceof RoutedEntityItem) {
 				RoutedEntityItem routed = (RoutedEntityItem) data.item;

@@ -53,6 +53,7 @@ import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
+import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.routing.RouterManager;
@@ -291,6 +292,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
+		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
 		

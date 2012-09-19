@@ -1,23 +1,26 @@
 package logisticspipes.proxy.recipeproviders;
 
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-import buildcraft.factory.TileAutoWorkbench;
 
-public class AutoWorkbench implements ICraftingRecipeProvider {
+public class SolderingStation implements ICraftingRecipeProvider {
+
+	@Override
 	public boolean canOpenGui(TileEntity tile) {
-		return (tile instanceof TileAutoWorkbench);
+		return tile instanceof LogisticsSolderingTileEntity;
 	}
 
 	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
-		if (!(tile instanceof TileAutoWorkbench))
+		if (!(tile instanceof LogisticsSolderingTileEntity))
 			return false;
 
-		TileAutoWorkbench bench = (TileAutoWorkbench) tile;
-		ItemStack result = bench.findRecipe();
+		LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
+		ItemStack result = station.getStackInSlot(11);
 
 		if (result == null)
 			return false;
@@ -25,11 +28,8 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 		inventory.setInventorySlotContents(9, result);
 
 		// Import
-		for (int i = 0; i < bench.getSizeInventory(); i++) {
-			if (i >= inventory.getSizeInventory() - 1) {
-				break;
-			}
-			final ItemStack newStack = bench.getStackInSlot(i) == null ? null : bench.getStackInSlot(i).copy();
+		for (int i = 0; i < station.getRecipeForTaget().length; i++) {
+			final ItemStack newStack = station.getRecipeForTaget()[i] == null ? null : station.getRecipeForTaget()[i].copy();
 			inventory.setInventorySlotContents(i, newStack);
 		}
 
@@ -65,6 +65,16 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 				break;
 			}
 		}
+		
+		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+			if (inventory.getStackInSlot(i) != null) {
+				continue;
+			}
+			inventory.setInventorySlotContents(i, new ItemStack(Item.ingotIron,1));
+			break;
+		}
+		
 		return true;
 	}
+
 }

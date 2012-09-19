@@ -235,6 +235,11 @@ public class ServerPacketHandler {
 					packetAf.readData(data);
 					onInvSysConResistance(player, packetAf);
 					break;
+				case NetworkConstants.CRAFTING_PIPE_STACK_MOVE:
+					final PacketPipeInteger packetAg = new PacketPipeInteger();
+					packetAg.readData(data);
+					onCraftingPipeStackMove(player, packetAg);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -903,6 +908,20 @@ public class ServerPacketHandler {
 			PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
 			invCon.resistance = packet.integer;
 			invCon.getRouter().update(true);
+		}
+	}
+
+	private static void onCraftingPipeStackMove(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
+			if(((PipeItemsCraftingLogistics)pipe.pipe).logic instanceof BaseLogicCrafting) {
+				BaseLogicCrafting logic = (BaseLogicCrafting) ((PipeItemsCraftingLogistics)pipe.pipe).logic;
+				logic.handleStackMove(packet.integer);
+			}
 		}
 	}
 	

@@ -19,6 +19,7 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
+import logisticspipes.main.Pair3;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
@@ -49,7 +50,7 @@ import cpw.mods.fml.common.network.Player;
 public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
 	private boolean init = false;
-	private LinkedList<Pair<ItemIdentifier,Pair<UUID,UUID>>> destination = new LinkedList<Pair<ItemIdentifier,Pair<UUID,UUID>>>();
+	private LinkedList<Pair3<ItemIdentifier,UUID,UUID>> destination = new LinkedList<Pair3<ItemIdentifier,UUID,UUID>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
@@ -113,9 +114,9 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			ItemStack stack = inv.getStackInSlot(i);
 			if(stack != null) {
 				ItemIdentifier ident = ItemIdentifier.get(stack);
-				for(Pair<ItemIdentifier,Pair<UUID,UUID>> pair:destination) {
+				for(Pair3<ItemIdentifier,UUID,UUID> pair:destination) {
 					if(pair.getValue1() == ident) {
-						sendStack(stack.splitStack(1),pair.getValue2().getValue1(),pair.getValue2().getValue2(),dir);
+						sendStack(stack.splitStack(1),pair.getValue2(),pair.getValue3(),dir);
 						destination.remove(pair);
 						if(stack.stackSize <=0 ) {
 							inv.setInventorySlotContents(i, null);	
@@ -173,7 +174,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	public LinkedList<ItemIdentifierStack> getExpectedItems() {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair<ItemIdentifier,Pair<UUID,UUID>> pair:destination) {
+		for(Pair3<ItemIdentifier,UUID,UUID> pair:destination) {
 			boolean found = false;
 			for(ItemIdentifierStack stack:list) {
 				if(stack.getItem() == pair.getValue1()) {
@@ -273,7 +274,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	@Override
 	public void addItem(ItemIdentifier item, UUID sourceId, UUID destinationId) {
 		if(item != null && destinationId != null) {
-			destination.addLast(new Pair<ItemIdentifier,Pair<UUID,UUID>>(item,new Pair<UUID,UUID>(sourceId,destinationId)));
+			destination.addLast(new Pair3<ItemIdentifier,UUID,UUID>(item,sourceId,destinationId));
 			updateContentListener();
 		}
 	}

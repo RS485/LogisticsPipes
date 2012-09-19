@@ -155,7 +155,7 @@ public class LogisticsPipes {
 			SimpleServiceLocator.buildCraftProxy.registerLocalization();
 		}
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
-		if(event.getSide().equals(Side.CLIENT) && DEBUG) {
+		if(event.getSide().equals(Side.CLIENT)) {
 			//WIP (highly alpha)
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}
@@ -233,12 +233,10 @@ public class LogisticsPipes {
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		if(DEBUG) {
-			LogisticsItemCard = new LogisticsItem(Configs.ItemCardId);
-			LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
-			LogisticsItemCard.setItemName("logisticsItemCard");
-			//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
-		}
+		LogisticsItemCard = new LogisticsItem(Configs.ItemCardId);
+		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
+		LogisticsItemCard.setItemName("logisticsItemCard");
+		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
@@ -248,21 +246,19 @@ public class LogisticsPipes {
 		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
 		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
 		
-		if(DEBUG) {
-			int renderIndex;
-			if(MainProxy.isClient()) {
-				renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
-			} else {
-				renderIndex = 0;
-			}
-			LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId, renderIndex);
-			LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
-			LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
-			
-			LogisticsHUDParts = new ItemHUDParts(Configs.ItemHUDPartsId);
-			LogisticsHUDParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
-			LogisticsHUDParts.setItemName("logisticsHUDParts");
+		int renderIndex;
+		if(MainProxy.isClient()) {
+			renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
+		} else {
+			renderIndex = 0;
 		}
+		LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId, renderIndex);
+		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
+		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		
+		LogisticsHUDParts = new ItemHUDParts(Configs.ItemHUDPartsId);
+		LogisticsHUDParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
+		LogisticsHUDParts.setItemName("logisticsHUDParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
@@ -277,15 +273,15 @@ public class LogisticsPipes {
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
-		if(DEBUG) ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
+		ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
 		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
 		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
 		ModLoader.addName(ModuleItem, "BlankModule");
 		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
-		if(DEBUG) LanguageRegistry.instance().addNameForObject(LogisticsHUDArmor, "en_US", "Logistics HUD Glasses");
-		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,0), "en_US", "Logistics HUD Bow");
-		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,1), "en_US", "Logistics HUD Glass");
-		if(DEBUG) LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,2), "en_US", "Logistics HUD Nose Bridge");
+		LanguageRegistry.instance().addNameForObject(LogisticsHUDArmor, "en_US", "Logistics HUD Glasses");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,0), "en_US", "Logistics HUD Bow");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,1), "en_US", "Logistics HUD Glass");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		
 		RecipeManager.loadRecipes();
 		
@@ -296,13 +292,13 @@ public class LogisticsPipes {
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
 		
-		if(DEBUG) SolderingStationRecipes.loadRecipe();
+		SolderingStationRecipes.loadRecipe();
 		
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
 		ModLoader.registerBlock(logisticsSign);
-		if(DEBUG) logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
-		if(DEBUG) ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
+		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		MainProxy.proxy.registerTileEntitis();
 	}
 	

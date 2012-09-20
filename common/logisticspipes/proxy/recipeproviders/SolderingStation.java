@@ -20,7 +20,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 			return false;
 
 		LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
-		ItemStack result = station.getStackInSlot(11);
+		ItemStack result = station.getTagetForRecipe(false);
 
 		if (result == null)
 			return false;

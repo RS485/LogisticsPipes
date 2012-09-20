@@ -26,7 +26,11 @@ public class HUDCrafting extends BasicHUDGui {
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);	
         }
-		BasicGuiHelper.drawGuiBackGround(mc, -50, -50, 50, 50, 0, false);
+		if(pipe.displayList.size() > 0) {
+			BasicGuiHelper.drawGuiBackGround(mc, -50, -28, 50, 30, 0, false);
+		} else {
+			BasicGuiHelper.drawGuiBackGround(mc, -30, -22, 30, 25, 0, false);
+		}
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)127);
         } else {
@@ -35,20 +39,32 @@ public class HUDCrafting extends BasicHUDGui {
 
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
 		GL11.glScalef(1.5F, 1.5F, 0.0001F);
-		String message = "Result:";
-		mc.fontRenderer.drawString(message , -28, -25, 0);
+
+		if(pipe.displayList.size() > 0) {
+			String message = "Result:";
+			mc.fontRenderer.drawString(message , -28, -10, 0);
+			message = "Todo:";
+			mc.fontRenderer.drawString(message , -28, 5, 0);
+		} else {
+			String message = "Result:";
+			mc.fontRenderer.drawString(message , -16, -10, 0);
+		}
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
 		if(((BaseLogicCrafting)pipe.logic).getCraftedItem() != null) {
 			list.add(ItemIdentifierStack.GetFromStack(((BaseLogicCrafting)pipe.logic).getCraftedItem()));
 		}
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -37, 1, 1, 18, 18, mc, true, true);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -35, -10, 4, 4, 18, 18, mc, true, true);
+		if(pipe.displayList.size() > 0) {
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, mc, true, true);
+		} else {
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, mc, true, true);
+		}
 	}
 
 	@Override
 	public boolean display() {
-		return pipe.canRegisterSign() || pipe.hasOrder();
+		return (pipe.canRegisterSign() && ((BaseLogicCrafting)pipe.logic).getCraftedItem() != null) || pipe.hasOrder();
 	}
 
 

@@ -57,6 +57,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
+	private UUID idbuffer = UUID.randomUUID();
 	
 	public PipeItemsInvSysConnector(int itemID) {
 		super(new TransportInvConnection(), new LogicInvSysConnection(), itemID);
@@ -78,9 +79,18 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				getRouter().update(true);
 				this.refreshRender();
 				init = true;
+				idbuffer = getConnectionUUID();
 			}
 		}
 		if(init && !hasConnectionUUID()) {
+			init = false;
+			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
+			if(CRP != null) {
+				CRP.refreshRender();
+			}
+		}
+		if(init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
 			init = false;
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());

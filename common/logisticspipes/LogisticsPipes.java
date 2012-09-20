@@ -36,6 +36,7 @@ import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemHUDParts;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
@@ -96,7 +97,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG = "%DEBUG%".equals("% " + "DEBUG" + "%") || "%DEBUG%".equals("true");
 
 	// Items
 	public static Item LogisticsBasicPipe;
@@ -233,7 +234,7 @@ public class LogisticsPipes {
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		LogisticsItemCard = new LogisticsItem(Configs.ItemCardId);
+		LogisticsItemCard = new LogisticsItemCard(Configs.ItemCardId);
 		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
 		LogisticsItemCard.setItemName("logisticsItemCard");
 		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);

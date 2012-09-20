@@ -119,8 +119,10 @@ public class LogisticsHUDRenderer {
 	            mc.fontRenderer.drawString(warning , (int) (((size.getScaledWidth() - mc.fontRenderer.getStringWidth(warning)) / 2) * d), (int) (((size.getScaledHeight() / 2) - 4) * d), 0xFFFF0000);
 			}
 			if(!warned) {
-				GL11.glPopMatrix();
 				return;
+			} else {
+				EntityPlayer player = mc.thePlayer;
+				refreshList(player.posX,player.posY,player.posZ);
 			}
 		}
 		String warning = "Warning: This is a WIP. Highly testing. Use on your own risk.";

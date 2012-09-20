@@ -106,9 +106,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			destinationRouter.itemDropped(this);
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifier.get(item));
-				System.out.println("Router removed: " + this.item.hashCode() + ", " + item.toString());
-			} else {
-				System.out.println("Router handled: " + this.item.hashCode() + ", " + item.toString());
 			}
 		}
 		super.remove();
@@ -179,8 +176,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Deprecated
 	public void setArrived() {
 		this.arrived = true;
-		if(MainProxy.isClient()) return;
-		System.out.println("Router arrived: " + this.item.hashCode() + ", " + item.toString());
 	}
 
 	@Override

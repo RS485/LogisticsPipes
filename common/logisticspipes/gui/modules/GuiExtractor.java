@@ -129,11 +129,4 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Extractor_ID;
 	}
-
-	public void handlePackat(PacketPipeInteger packet) {
-		if(packet.posX == pipe.xCoord && packet.posY == pipe.yCoord && packet.posZ == pipe.zCoord) {
-			_orientationReceiver.setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
-			refreshButtons();
-		}
-	}
 }

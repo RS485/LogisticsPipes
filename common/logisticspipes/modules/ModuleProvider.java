@@ -86,15 +86,15 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	public void tick() {
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
-		if (!_orderManager.hasOrders()) return;
-		
-		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-		if (sent > 0){
-			_orderManager.sendSuccessfull(sent);
-		}
-		else {
-			_orderManager.sendFailed();
+		while (_orderManager.hasOrders()) {
+			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
+			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
+			if (sent > 0){
+				_orderManager.sendSuccessfull(sent);
+			}
+			else {
+				_orderManager.sendFailed();
+			}
 		}
 	}
 

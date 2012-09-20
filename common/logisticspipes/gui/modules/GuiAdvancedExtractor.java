@@ -97,9 +97,4 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Advanced_Extractor_ID + (slot * 100);
 	}
-	
-	public void handleIncludeRoutePackage(PacketPipeInteger packet) {
-		_advancedExtractor.setItemsIncluded((packet.integer % 10) == 1);
-		((GuiButton)controlList.get(0)).displayString = _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
-	}
 }

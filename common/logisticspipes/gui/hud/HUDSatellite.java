@@ -76,7 +76,7 @@ public class HUDSatellite extends BasicHUDGui {
 			String message = "ID: " + Integer.toString(((BaseLogicSatellite)pipe.logic).satelliteId);
 			mc.fontRenderer.drawString(message , -28, -28, 0);
 			GL11.glScalef(0.8F, 0.8F, -1F);
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.itemList, null, page, -35, -20, 4, 12, 18, 18, mc, true, true);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.itemList, null, page, -35, -20, 4, 12, 18, 18, mc, true, true, true, true);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
 			mc.fontRenderer.drawString(message , 9, -41, 0);

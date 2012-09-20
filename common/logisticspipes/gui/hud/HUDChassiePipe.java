@@ -123,7 +123,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 							button.renderButton(button.isFocused(), button.isblockFocused());
 						}
 						if(!button.buttonEnabled() || !button.shouldRenderButton()) continue;
-						if((button.getX() - 1 < xCursor && xCursor < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < yCursor && yCursor < (button.getY() + button.sizeY() + 1))) {
+						if((button.getX() - 1 < (xCursor - 11) && (xCursor - 11) < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < (yCursor - 5) && (yCursor - 5) < (button.getY() + button.sizeY() + 1))) {
 							if(!button.isFocused() && !button.isblockFocused()) {
 								button.setFocused();
 							} else if(button.focusedTime() > 400) {
@@ -143,6 +143,11 @@ public class HUDChassiePipe extends BasicHUDGui {
 				mc.fontRenderer.drawString("display" , -5, 5, 0);
 				GL11.glTranslatef(0.0F, 0.0F, 0.000005F);
 			}
+		} else {
+			GL11.glTranslatef(0.0F, 0.0F, -0.005F);
+			GL11.glScalef(1.5F, 1.5F, 0.0001F);
+			GL11.glScalef(0.8F, 0.8F, -1F);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, true, true, true, true);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 0.000005F);
 	}
@@ -259,7 +264,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			} else {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);
 			}
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, false, false, this.buttonEnabled() || isSlotSelected(position));
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, posX + ((sizeX - 16) / 2), posY + ((sizeY - 16) / 2), 1, 1, 18, 18, mc, false, false, this.buttonEnabled() || isSlotSelected(position), true);
 			if(hover) {
 				GL11.glTranslatef(0.0F, 0.0F, 0.01F);
 			}

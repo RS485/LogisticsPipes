@@ -55,10 +55,10 @@ public class HUDCrafting extends BasicHUDGui {
 			list.add(ItemIdentifierStack.GetFromStack(((BaseLogicCrafting)pipe.logic).getCraftedItem()));
 		}
 		if(pipe.displayList.size() > 0) {
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true);
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, mc, true, true);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 13, -17, 1, 1, 18, 18, mc, true, true, true, true);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, 13, 3, 1, 1, 18, 18, mc, true, true, true, true);
 		} else {
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, mc, true, true);
+			BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, -9, 0, 1, 1, 18, 18, mc, true, true, true, true);
 		}
 	}
 

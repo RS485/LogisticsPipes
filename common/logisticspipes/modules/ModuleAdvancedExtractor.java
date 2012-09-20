@@ -1,10 +1,20 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
+
+import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
+import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IHUDModuleHandler;
+import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWorldProvider;
@@ -14,7 +24,15 @@ import logisticspipes.logisticspipes.modules.SinkReply;
 import logisticspipes.logisticspipes.modules.SneakyOrientation;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleInvContent;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -23,7 +41,7 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
 import buildcraft.core.utils.Utils;
 
-public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider {
+public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	protected int currentTick = 0;
 
@@ -32,9 +50,19 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
 	protected SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
+	
+	private int slot = 0;
+	private int xCoord = 0;
+	private int yCoord = 0;
+	private int zCoord = 0;
+	
+	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
+	
+	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	
 
 	public ModuleAdvancedExtractor() {
-		
+		_filterInventory.addListener(this);
 	}
 
 	@Override
@@ -180,6 +208,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 
 	public void setItemsIncluded(boolean flag) {
 		_itemsIncluded = flag;
+		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, xCoord, yCoord, zCoord, slot, areItemsIncluded() ? 1 : 0).getPacket(), localModeWatchers);
 	}
 	
 	@Override
@@ -195,7 +224,47 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		// TODO Auto-generated method stub
-		
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+		this.slot = slot;
+	}
+	
+	@Override
+	public void InventoryChanged(SimpleInventory inventory) {
+		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+	}
+
+	@Override
+	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+		_filterInventory.handleItemIdentifierList(list);
+	}
+
+	@Override
+	public void startWatching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void stopWatching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+		PacketDispatcher.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+		PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyOrientation.ordinal()).getPacket(), (Player)player);
+		PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, xCoord, yCoord, zCoord, slot, areItemsIncluded() ? 1 : 0).getPacket(), (Player)player);
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public IHUDModuleRenderer getRenderer() {
+		return HUD;
 	}
 }

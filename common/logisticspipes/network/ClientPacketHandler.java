@@ -8,22 +8,26 @@ import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
-import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.ISendQueueContentRecieiver;
+import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.logisticspipes.ExtractionMode;
+import logisticspipes.logisticspipes.modules.SneakyOrientation;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.ItemMessage;
+import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCraftingLoop;
@@ -39,7 +43,6 @@ import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsApiaristSink;
-import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
@@ -49,6 +52,7 @@ import logisticspipes.routing.ClientRouter;
 import logisticspipes.routing.IRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
@@ -121,7 +125,7 @@ public class ClientPacketHandler {
 					onSupplierPipeRecive(packetI);
 					break;
 				case NetworkConstants.EXTRACTOR_MODULE_RESPONSE:
-					final PacketPipeInteger packetJ = new PacketPipeInteger();
+					final PacketModuleInteger packetJ = new PacketModuleInteger();
 					packetJ.readData(data);
 					onModulePipeRecive(packetJ);
 					break;
@@ -136,15 +140,10 @@ public class ClientPacketHandler {
 					onProviderModuleIncludeRecive(packetL);
 					break;
 				case NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE:
-					final PacketPipeInteger packetM = new PacketPipeInteger();
+					final PacketModuleInteger packetM = new PacketModuleInteger();
 					packetM.readData(data);
 					onAdvancedExtractorModuleIncludeRecive(packetM);
 					break;
-				//case NetworkConstants.NON_CONTAINER_GUI:
-				//	final PacketPipeInteger packetN = new PacketPipeInteger();
-				//	packetN.readData(data);
-				//	handleNonContainerGui(packetN);
-				//	break;
 				case NetworkConstants.DISK_CONTENT:
 					final PacketItem packetO = new PacketItem();
 					packetO.readData(data);
@@ -215,7 +214,7 @@ public class ClientPacketHandler {
 					packetAa.readData(data);
 					onInvSysConResistance(player, packetAa);
 					break;
-				case NetworkConstants.CHASSIE_PIPE_CONTENT:
+				case NetworkConstants.CHASSIE_PIPE_MODULE_CONTENT:
 					final PacketPipeInvContent packetAb = new PacketPipeInvContent();
 					packetAb.readData(data);
 					onChassieInvRecive(player, packetAb);
@@ -224,6 +223,16 @@ public class ClientPacketHandler {
 					final PacketModuleInvContent packetAc = new PacketModuleInvContent();
 					packetAc.readData(data);
 					onModuleInvRecive(packetAc);
+					break;
+				case NetworkConstants.ELECTRIC_MANAGER_STATE:
+					final PacketModuleInteger packetAj = new PacketModuleInteger();
+					packetAj.readData(data);
+					onElectricModuleStateChange(packetAj);
+					break;
+				case NetworkConstants.SEND_QUEUE_CONTENT:
+					final PacketPipeInvContent packetAk = new PacketPipeInvContent();
+					packetAk.readData(data);
+					onSendQueueInventory(packetAk);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -382,9 +391,22 @@ public class ClientPacketHandler {
 		}
 	}
 
-	private static void onModulePipeRecive(PacketPipeInteger packet) {
-		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
-			((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).handlePackat(packet);
+	private static void onModulePipeRecive(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		
+		if(packet.slot == -1) {
+			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyOrientationreceiver) {
+				((ISneakyOrientationreceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
+			}
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ISneakyOrientationreceiver) {
+			ISneakyOrientationreceiver recieiver = (ISneakyOrientationreceiver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			recieiver.setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
 		}
 	}
 
@@ -400,9 +422,22 @@ public class ClientPacketHandler {
 		}
 	}
 
-	private static void onAdvancedExtractorModuleIncludeRecive(PacketPipeInteger packet) {
-		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiAdvancedExtractor) {
-			((GuiAdvancedExtractor) FMLClientHandler.instance().getClient().currentScreen).handleIncludeRoutePackage(packet);
+	private static void onAdvancedExtractorModuleIncludeRecive(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		
+		if(packet.slot == -1) {
+			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleAdvancedExtractor) {
+				((ModuleAdvancedExtractor)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setItemsIncluded(packet.integer == 1);
+			}
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleAdvancedExtractor) {
+			ModuleAdvancedExtractor recieiver = (ModuleAdvancedExtractor) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			recieiver.setItemsIncluded(packet.integer == 1);
 		}
 	}
 
@@ -551,7 +586,7 @@ public class ClientPacketHandler {
 		}
 		if(pipe.pipe instanceof PipeLogisticsChassi) {
 			PipeLogisticsChassi chassie = (PipeLogisticsChassi) pipe.pipe;
-			chassie.handleItemIdentifierList(packet._allItems);
+			chassie.handleModuleItemIdentifierList(packet._allItems);
 		}
 	}
 
@@ -563,6 +598,29 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof IModuleInventoryReceive) {
 			IModuleInventoryReceive module = (IModuleInventoryReceive) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
 			module.handleInvContent(packet._allItems);
+		}
+	}
+
+	private static void onElectricModuleStateChange(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleElectricManager) {
+			ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			module.setDischargeMode(packet.integer == 1);
+		}
+	}
+
+	private static void onSendQueueInventory(PacketPipeInvContent packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof ISendQueueContentRecieiver) {
+			ISendQueueContentRecieiver receiver = (ISendQueueContentRecieiver) pipe.pipe;
+			receiver.handleSendQueueItemIdentifierList(packet._allItems);
 		}
 	}
 

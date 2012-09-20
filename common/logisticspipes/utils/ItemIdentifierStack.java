@@ -10,6 +10,11 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
+import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.main.CoreRoutedPipe.ItemSendMode;
+import logisticspipes.main.Pair3;
+import buildcraft.api.core.Orientations;
+
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 
@@ -59,6 +64,28 @@ public final class ItemIdentifierStack {
 				list.add(null);
 			} else {
 				list.add(ItemIdentifierStack.GetFromStack(inv.getStackInSlot(i)));
+			}
+		}
+		return list;
+	}
+
+	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue) {
+		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+		for(Pair3<IRoutedItem, Orientations, ItemSendMode> part:_sendQueue) {
+			if(part == null) {
+				list.add(null);
+			} else {
+				boolean added = false;
+				for(ItemIdentifierStack stack:list) {
+					if(stack.getItem().equals(ItemIdentifierStack.GetFromStack(part.getValue1().getItemStack()).getItem())) {
+						stack.stackSize += part.getValue1().getItemStack().stackSize;
+						added = true;
+						break;
+					}
+				}
+				if(!added) {
+					list.add(ItemIdentifierStack.GetFromStack(part.getValue1().getItemStack()));
+				}
 			}
 		}
 		return list;

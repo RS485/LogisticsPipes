@@ -34,6 +34,7 @@ import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleLiquidSupplier;
 import logisticspipes.modules.ModulePassiveSupplier;
@@ -150,6 +151,7 @@ public class GuiHandler implements IGuiHandler {
 				/*** Modules ***/
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyOrientationreceiver)) return null;
+				PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, pipe.xCoord, pipe.yCoord, pipe.zCoord, -1, ((ISneakyOrientationreceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getSneakyOrientation().ordinal()).getPacket(), (Player)player);
 				return new DummyContainer(player.inventory, null);
 				
 			case GuiIDs.GUI_Module_ItemSink_ID:
@@ -226,6 +228,8 @@ public class GuiHandler implements IGuiHandler {
 				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
 					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 				}
+				
+				PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, pipe.xCoord, pipe.yCoord, pipe.zCoord, -1, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
 				
 				return dummy;
 				
@@ -382,7 +386,8 @@ public class GuiHandler implements IGuiHandler {
 				for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
 					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 				}
-				
+
+				PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
 				return dummy;
 			
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:

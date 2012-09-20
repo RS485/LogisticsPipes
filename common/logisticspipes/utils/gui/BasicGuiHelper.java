@@ -14,8 +14,10 @@ import net.minecraft.src.FontRenderer;
 import net.minecraft.src.Gui;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
+import net.minecraft.src.RenderBlocks;
 import net.minecraft.src.RenderItem;
 import net.minecraft.src.Tessellator;
+import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -58,11 +60,16 @@ public class BasicGuiHelper {
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color) {
+		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, true, false);
+	}
+
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color, boolean disableEffect) {
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
 		FontRenderer fontRenderer = mc.fontRenderer;
 		RenderItem renderItem = new RenderItem();
+	    RenderBlocks renderBlocks = new RenderBlocks();
 		renderItem.field_77024_a = color;
 		for(ItemIdentifierStack itemStack : _allItems) {
 			if(itemStack == null) {
@@ -88,7 +95,18 @@ public class BasicGuiHelper {
 			//GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
 			
 			if(st != null && itemStack.getItem().isValid()) {
-				renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+				if(disableEffect) {
+					if (st != null)
+			        {
+			            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.field_77024_a, renderItem.zLevel, (float)x, (float)y))
+			            {
+			            	renderItem.drawItemIntoGui(fontRenderer, mc.renderEngine, st.itemID, st.getItemDamage(), st.getIconIndex(), x, y);
+			            }
+			        }
+
+				} else {
+					renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+				}
 			}
 			
 	        //GL11.glEnable(2929 /*GL_DEPTH_TEST*/);

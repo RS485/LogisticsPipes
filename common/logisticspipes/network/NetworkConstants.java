@@ -62,8 +62,11 @@ public class NetworkConstants {
 	public static final int BUFFERED_PACKET_TRANSFER = 56;
 	public static final int INC_SYS_CON_RESISTANCE = 57;
 	public static final int CRAFTING_PIPE_STACK_MOVE = 58;
-	public static final int CHASSIE_PIPE_CONTENT = 59;
+	public static final int CHASSIE_PIPE_MODULE_CONTENT = 59;
 	public static final int HUD_START_WATCHING_MODULE = 60;
 	public static final int HUD_STOP_WATCHING_MODULE = 61;
 	public static final int MODULE_INV_CONTENT = 62;
+	public static final int ELECTRIC_MANAGER_SET = 63;
+	public static final int ELECTRIC_MANAGER_STATE = 64;
+	public static final int SEND_QUEUE_CONTENT = 65;
 }

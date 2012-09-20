@@ -83,7 +83,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public long stat_lifetime_recieved;
 	public long stat_lifetime_relayed;
 	
-	private final LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>>(); 
+	protected final LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>>(); 
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 	
@@ -123,11 +123,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public void queueRoutedItem(IRoutedItem routedItem, Orientations from) {
 		_sendQueue.addLast(new Pair3<IRoutedItem, Orientations, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
+		sendQueueChanged();
 	}
 
 	public void queueRoutedItem(IRoutedItem routedItem, Orientations from, ItemSendMode mode) {
 		_sendQueue.addLast(new Pair3<IRoutedItem, Orientations, ItemSendMode>(routedItem, from, mode));
+		sendQueueChanged();
 	}
+	
+	protected void sendQueueChanged() {}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, Orientations from){
 		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()) + 0.5F, this.zCoord + 0.5F, from);
@@ -160,6 +164,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 						_sendQueue.removeFirst();
 					}
 				}
+				sendQueueChanged();
 			} else if(getItemSendMode() == ItemSendMode.Fast) {
 				for(int i=0;i < 16;i++) {
 					if (!_sendQueue.isEmpty()){
@@ -168,6 +173,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 						_sendQueue.removeFirst();
 					}
 				}
+				sendQueueChanged();
 			} else if(getItemSendMode() == null) {
 				throw new UnsupportedOperationException("getItemSendMode() can't return null. "+this.getClass().getName());
 			} else {
@@ -309,9 +315,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
 				if(MainProxy.isServer(world)) {
 					entityplayer.openGui(LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);
-					if(getLogisticsModule() instanceof ModuleExtractor) {
-						PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, ((ModuleExtractor)getLogisticsModule()).getSneakyOrientation().ordinal()).getPacket(), (Player)entityplayer);
-					}
 					return true;
 				} else {
 					return false;

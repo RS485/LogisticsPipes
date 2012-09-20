@@ -21,6 +21,7 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -66,7 +67,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
-public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider {
+public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
@@ -77,6 +78,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	private boolean convertFromMeta = false;
 	
 	//HUD
+	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	private HUDChassiePipe HUD;
 
@@ -142,7 +144,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public void onNeighborBlockChange_Logistics() {
 		if (!isValidOrientation(ChassiLogic.orientation)){
-			nextOrientation();
+			if(MainProxy.isServer(this.worldObj)) {
+				nextOrientation();
+				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
+			}
 		}
 	};
 	
@@ -278,7 +283,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 		if(MainProxy.isServer()) {
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_MODULE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -440,7 +445,8 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), (Player)player);
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_MODULE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), (Player)player);
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListSendQueue(_sendQueue)).getPacket(), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -452,10 +458,26 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		localModeWatchers.remove(player);
 	}
 
-	public void handleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+	public void handleModuleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
+	public void handleContentItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+		_moduleInventory.handleItemIdentifierList(_allItems);
+	}
+
+	@Override
+	protected void sendQueueChanged() {
+		if(MainProxy.isServer()) {
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListSendQueue(_sendQueue)).getPacket(), localModeWatchers);
+		}
+	}
+
+	public void handleSendQueueItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems){
+		displayList.clear();
+		displayList.addAll(_allItems);
+	}
+	
 	public ChassiModule getModules() {
 		return _module;
 	}

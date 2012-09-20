@@ -7,31 +7,33 @@ import net.minecraft.client.Minecraft;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
+
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 
-public class HUDItemSink implements IHUDModuleRenderer {
+public class HUDElectricManager implements IHUDModuleRenderer {
 	
-	private final ModuleItemSink module;
+	private final ModuleElectricManager module;
 	
-	public HUDItemSink(ModuleItemSink module) {
-		this.module = module;
+	public HUDElectricManager(ModuleElectricManager moduleElectricManager) {
+		this.module = moduleElectricManager;
 	}
-	
+
 	@Override
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		GL11.glScalef(1.0F, 1.0F, -0.00001F);
+		GL11.glScalef(1.0F, 1.0F, -0.000001F);
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(ItemIdentifierStack.getListFromInventory(module.getFilterInventory()), null, 0, -25, -32, 3, 9, 18, 18, mc, false, false, true, true);
-		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
-		mc.fontRenderer.drawString("Default:" , -29, 25, 0);
-		if(module.isDefaultRoute()) {
-			mc.fontRenderer.drawString("Yes" , 11, 25, 0);
-		} else {
+		GL11.glScalef(1.0F, 1.0F, 1 / -0.000001F);
+		mc.fontRenderer.drawString("Charge:" , -29, 25, 0);
+		if(module.isDischargeMode()) {
 			mc.fontRenderer.drawString("No" , 15, 25, 0);
+		} else {
+			mc.fontRenderer.drawString("Yes" , 11, 25, 0);
 		}
 	}
 

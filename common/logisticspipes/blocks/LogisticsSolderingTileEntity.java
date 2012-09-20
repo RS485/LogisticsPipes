@@ -103,6 +103,20 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		}
 		return null;
 	}
+	
+	public ItemStack getTargetForTaget() {
+		return getTargetForTaget(inv.getStackInSlot(11));
+	}
+	
+	public ItemStack getTargetForTaget(ItemStack target) {
+		if(target == null) return null;
+		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
+			if(target.itemID == recipe.result.itemID && target.getItemDamage() == recipe.result.getItemDamage()) {
+				return recipe.result;
+			}
+		}
+		return null;
+	}
 
 	public List<ItemIdentifierStack> getRecipeForTagetAsItemIdentifierStackList() {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();

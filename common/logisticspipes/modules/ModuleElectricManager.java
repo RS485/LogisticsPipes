@@ -1,10 +1,20 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
+
+import logisticspipes.gui.hud.modules.HUDElectricManager;
+import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IHUDModuleHandler;
+import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -12,12 +22,20 @@ import logisticspipes.logisticspipes.modules.SinkReply;
 import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleInvContent;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 
-public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider {
+public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
@@ -25,6 +43,19 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	protected ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
+	
+	private int slot = 0;
+	private int xCoord = 0;
+	private int yCoord = 0;
+	private int zCoord = 0;
+	
+	private IHUDModuleRenderer HUD = new HUDElectricManager(this);
+	
+	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	
+	public ModuleElectricManager() {
+		_filterInventory.addListener(this);
+	}
 
 	public IInventory getFilterInventory(){
 		return _filterInventory;
@@ -35,6 +66,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	}
 	public void setDischargeMode(boolean isDischargeMode){
 		_dischargeMode = isDischargeMode;
+		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, xCoord, yCoord, zCoord, slot, isDischargeMode() ? 1 : 0).getPacket(), localModeWatchers);
 	}
 
 	@Override
@@ -59,9 +91,9 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 		for (int i = 0; i < _filterInventory.getSizeInventory(); i++){
 			ItemStack stack = _filterInventory.getStackInSlot(i);
 			if (stack == null) continue;
-			if (discharged && SimpleServiceLocator.electricItemProxy.isDischarged(item,partial,stack.getItem()))
+			if (!discharged && SimpleServiceLocator.electricItemProxy.isDischarged(item,partial,stack.getItem()))
 				return true;
-			if (!discharged && SimpleServiceLocator.electricItemProxy.isCharged(item,partial,stack.getItem()))
+			if (discharged && SimpleServiceLocator.electricItemProxy.isCharged(item,partial,stack.getItem()))
 				return true;
 		}
 		return false;
@@ -124,6 +156,49 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 		return list;
 	}
 
+
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+		this.slot = slot;
+	}
+
+	@Override
+	public void startWatching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void stopWatching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+		PacketDispatcher.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+		PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, xCoord, yCoord, zCoord, slot, isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public IHUDModuleRenderer getRenderer() {
+		return HUD;
+	}
+
+	@Override
+	public void InventoryChanged(SimpleInventory inventory) {
+		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+	}
+
+	@Override
+	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+		_filterInventory.handleItemIdentifierList(list);
+	}
 }

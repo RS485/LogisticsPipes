@@ -11,7 +11,7 @@ package logisticspipes.gui.modules;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
@@ -32,7 +32,7 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-	       //Default item toggle:
+	    //Default item toggle:
 		controlList.clear();
 		controlList.add(new GuiButton(0, width / 2 + 50, height / 2 - 34, 30, 20, _module.isDischargeMode() ? "Yes" : "No"));
 	}
@@ -44,7 +44,7 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
 				((GuiButton)controlList.get(0)).displayString = _module.isDischargeMode() ? "Yes" : "No";
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_module.isDischargeMode() ? 1 : 0) + (slot * 10)).getPacket());
+				PacketDispatcher.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
 				break;
 		}
 	}
@@ -88,11 +88,4 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_ElectricManager_ID;
 	}
-
-	public void handleDefaultRoutePackage(PacketPipeInteger packet) {
-		_module.setDischargeMode((packet.integer % 10) == 1);
-		((GuiButton)controlList.get(0)).displayString = _module.isDischargeMode() ? "Yes" : "No";
-	}
-
-	//int inventoryRows = 1;
 }

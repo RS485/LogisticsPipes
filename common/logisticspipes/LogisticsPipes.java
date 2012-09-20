@@ -97,7 +97,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("% " + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
 
 	// Items
 	public static Item LogisticsBasicPipe;
@@ -157,7 +157,6 @@ public class LogisticsPipes {
 		}
 		NetworkRegistry.instance().registerGuiHandler(LogisticsPipes.instance, new GuiHandler());
 		if(event.getSide().equals(Side.CLIENT)) {
-			//WIP (highly alpha)
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}
 		if(event.getSide() == Side.CLIENT) {

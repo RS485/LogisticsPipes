@@ -3,6 +3,7 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logisticspipes.ChassiModule;
@@ -114,9 +115,26 @@ public class HUDChassiePipe extends BasicHUDGui {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
 
 			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getRenderer() != null) {
-
 				GL11.glTranslatef(11.0F, 5.0F, -0.00005F);
 				((IHUDModuleHandler)selectedmodule).getRenderer().renderContent();
+				if(((IHUDModuleHandler)selectedmodule).getRenderer().getButtons() != null) {
+					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getRenderer().getButtons()) {
+						if(button.shouldRenderButton()) {
+							button.renderButton(button.isFocused(), button.isblockFocused());
+						}
+						if(!button.buttonEnabled() || !button.shouldRenderButton()) continue;
+						if((button.getX() - 1 < xCursor && xCursor < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < yCursor && yCursor < (button.getY() + button.sizeY() + 1))) {
+							if(!button.isFocused() && !button.isblockFocused()) {
+								button.setFocused();
+							} else if(button.focusedTime() > 400) {
+								button.clicked();
+								button.blockFocused();
+							}
+						} else if(button.isFocused() || button.isblockFocused()) {
+							button.clearFocused();
+						}
+					}
+				}
 				GL11.glTranslatef(-11.0F, -5.0F, 0.00005F);
 			} else {
 				GL11.glTranslatef(0.0F, 0.0F, -0.000005F);

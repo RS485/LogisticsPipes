@@ -91,9 +91,9 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 		for (int i = 0; i < _filterInventory.getSizeInventory(); i++){
 			ItemStack stack = _filterInventory.getStackInSlot(i);
 			if (stack == null) continue;
-			if (!discharged && SimpleServiceLocator.electricItemProxy.isDischarged(item,partial,stack.getItem()))
+			if (discharged && SimpleServiceLocator.electricItemProxy.isDischarged(item,partial,stack.getItem()))
 				return true;
-			if (discharged && SimpleServiceLocator.electricItemProxy.isCharged(item,partial,stack.getItem()))
+			if (!discharged && SimpleServiceLocator.electricItemProxy.isCharged(item,partial,stack.getItem()))
 				return true;
 		}
 		return false;

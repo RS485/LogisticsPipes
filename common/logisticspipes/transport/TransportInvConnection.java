@@ -19,19 +19,12 @@ import buildcraft.transport.TileGenericPipe;
 public class TransportInvConnection extends PipeTransportLogistics {
 	
 	public TransportInvConnection() {
-		travelHook = new IItemTravelingHook() {
-			
+		travelHook = new LogisticsItemTravelingHook(worldObj, xCoord, yCoord, zCoord, this) {
 			@Override
 			public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 				scheduleRemoval(data.item);
 				handleTileReached(data, tile);
 			}
-			
-			@Override
-			public void drop(PipeTransportItems pipe, EntityData data) {}
-			
-			@Override
-			public void centerReached(PipeTransportItems pipe, EntityData data) {}
 		};
 	}
 	

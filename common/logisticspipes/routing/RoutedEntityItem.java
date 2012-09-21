@@ -92,6 +92,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			}
 		}
 		destinationUUID = newDestination;
+		knownBy.clear();
 	}
 	
 	@Override
@@ -124,7 +125,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setDestination(UUID destination) {
 		this.destinationUUID = destination;
-		
+		knownBy.clear();
 	}
 
 	@Override
@@ -135,6 +136,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setSource(UUID source) {
 		this.sourceUUID = source;
+		knownBy.clear();
 	}
 
 //	@Override
@@ -195,13 +197,15 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 				
 		}
 		
-		return SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem);
+		knownBy.clear();
 		
+		return SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem);
 	}
 
 	@Override
 	public void SetPosition(double x, double y, double z) {
 		this.position = new Position(x,y,z);
+		knownBy.clear();
 	}
 
 	@Override

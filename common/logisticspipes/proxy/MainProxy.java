@@ -73,10 +73,12 @@ public class MainProxy {
 
 	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
 		List<EntityPlayer> list = new ArrayList<EntityPlayer>();
-		for(Object playerObject:worldObj.playerEntities) {
-			EntityPlayer player = (EntityPlayer) playerObject;
-			if(Math.hypot(player.posX - xCoord, Math.hypot(player.posY - yCoord, player.posZ - zCoord)) < distance) {
-				list.add(player);
+		if(worldObj != null) {
+			for(Object playerObject:worldObj.playerEntities) {
+				EntityPlayer player = (EntityPlayer) playerObject;
+				if(Math.hypot(player.posX - xCoord, Math.hypot(player.posY - yCoord, player.posZ - zCoord)) < distance) {
+					list.add(player);
+				}
 			}
 		}
 		return list;

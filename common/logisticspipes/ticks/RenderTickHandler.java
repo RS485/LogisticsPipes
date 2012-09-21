@@ -2,7 +2,9 @@ package logisticspipes.ticks;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import net.minecraft.client.Minecraft;
@@ -28,6 +30,16 @@ public class RenderTickHandler implements ITickHandler {
 		if(type.contains(TickType.RENDER)) {
 			renderTicks++;
 			if(LogisticsHUDRenderer.instance().displayRenderer()) {
+				//Saveguard List
+				List<UnlockThreadSecure> suspendedThread = new ArrayList<UnlockThreadSecure>();
+				//Suspend Rei Mini Map
+				for(Thread thread:Thread.getAllStackTraces().keySet()) {
+					if(thread.getClass().getName().equals("reifnsk.minimap.ReiMinimap")) {
+						//Start saveguard
+						suspendedThread.add(new UnlockThreadSecure(1000, thread));
+						thread.suspend();
+					}
+				}
 				GL11.glPushMatrix();
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 				Minecraft mc = FMLClientHandler.instance().getClient();
@@ -53,6 +65,17 @@ public class RenderTickHandler implements ITickHandler {
 					e.printStackTrace();
 				}
 				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks);
+				mc.entityRenderer.setupOverlayRendering();
+				//Stop saveguard
+				for(UnlockThreadSecure thread:suspendedThread) {
+					thread.running = false;
+				}
+				//Restart Rei Mini Map
+				for(Thread thread:Thread.getAllStackTraces().keySet()) {
+					if(thread.getClass().getName().equals("reifnsk.minimap.ReiMinimap")) {
+						thread.resume();
+					}
+				}
 		        GL11.glPopMatrix();
 			}
 		}

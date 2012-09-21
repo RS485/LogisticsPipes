@@ -22,6 +22,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.Packet;
+import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.DefaultProps;
@@ -30,6 +31,7 @@ import buildcraft.core.network.PacketIds;
 import buildcraft.core.network.PacketPipeTransportContent;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
+import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -50,6 +52,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
+		travelHook = new LogisticsItemTravelingHook(worldObj, xCoord, yCoord, zCoord, this);
 	}
 
 //	private ResolvedRoute resolveRoute(EntityData data){
@@ -102,29 +105,20 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	@Override
 	public void entityEntering(IPipedItem item, Orientations orientation) {
-//		 if (!SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)){
-//			 SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
-//		 }
-		 
-		if(item instanceof RoutedEntityItem) {
-			RoutedEntityItem routed = (RoutedEntityItem) item;
-			for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-				if(!routed.isKnownBy(player)) {
-					PacketDispatcher.sendPacketToPlayer(createItemPacket(item, orientation), (Player)player);
-					routed.addKnownPlayer(player);
+		if(MainProxy.isServer()) {
+			if(item instanceof RoutedEntityItem) {
+				RoutedEntityItem routed = (RoutedEntityItem) item;
+				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
+					if(!routed.isKnownBy(player)) {
+						PacketDispatcher.sendPacketToPlayer(createItemPacket(routed, orientation), (Player)player);
+						if(routed.getDestination() != null) { 
+							routed.addKnownPlayer(player);
+						}
+					}
 				}
 			}
 		}
 		super.entityEntering(item, orientation);
-		 /*
-		SafeTimeTracker save = item.getSynchroTracker();
-	 item.setSynchroTracker(new SafeTimeTracker() {
-		 public boolean markTimeIfDelay(World world, long delay) {
-			 return false;
-		 }
-	 });
-	 item.setSynchroTracker(save);
-	*/
 	}
 	
 	@Override
@@ -134,28 +128,26 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			_pipe = (RoutedPipe) container.pipe;
 		}
 		
+		boolean forcePacket = false;
+		if(!(data.item instanceof IRoutedItem)) {
+			forcePacket = true;
+		} else if(((IRoutedItem)data.item).getDestination() == null) {
+			forcePacket = true;
+		}
+		
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(_pipe.worldObj, data);
 		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem, _pipe.worldObj);
-		if (value == null && MainProxy.isClient(_pipe.worldObj)) {
+		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
+			scheduleRemoval(data.item);
 			return Orientations.Unknown;
 		} else if (value == null) {
 			System.out.println("THIS IS NOT SUPPOSED TO HAPPEN!");
 			return Orientations.Unknown;
 		}
 		if (value == Orientations.Unknown && !routedItem.getDoNotBuffer()){
-			if(MainProxy.isServer(_pipe.worldObj)) {
-				//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
+			if(MainProxy.isServer()) {
 				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
-				/*
-				if(data.item instanceof RoutedEntityItem) {
-				 
-					RoutedEntityItem routed = (RoutedEntityItem) data.item;
-					for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(routedItem.getEntityPassiveItem(), value), (Player)player);
-						routed.addKnownPlayer(player);
-					}
-				}*/
 			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
@@ -165,18 +157,18 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		
 		readjustSpeed(routedItem.getEntityPassiveItem());
 		
-		if(MainProxy.isServer(_pipe.worldObj)) {
-			//if (item.synchroTracker.markTimeIfDelay(worldObj, 6 * BuildCraftCore.updateFactor))
-			//PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
-			/*
-			if(data.item instanceof RoutedEntityItem) {
-				RoutedEntityItem routed = (RoutedEntityItem) data.item;
+		if(MainProxy.isServer()) {
+			if(routedItem instanceof RoutedEntityItem) {
+				RoutedEntityItem routed = (RoutedEntityItem) routedItem;
 				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-					PacketDispatcher.sendPacketToPlayer(createItemPacket(routedItem.getEntityPassiveItem(), value), (Player)player);
-					routed.addKnownPlayer(player);
+					if(!routed.isKnownBy(player) || forcePacket) {
+						PacketDispatcher.sendPacketToPlayer(createItemPacket(routed, value), (Player)player);
+						if(!forcePacket) {
+							routed.addKnownPlayer(player);
+						}
+					}
 				}
 			}
-			*/
 		}
 		
 		if (value == Orientations.Unknown ){ 
@@ -339,6 +331,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
 			routed.setSource(newpacket.getSourceUUID(this.worldObj));
 			routed.setDestination(newpacket.getDestUUID(this.worldObj));
+			travelingEntities.get(new Integer(item.getEntityId())).item = routed.getEntityPassiveItem();
 			return;
 		}
 		PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);

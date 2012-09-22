@@ -244,11 +244,13 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 				}
 				updateHeat();
 			} else {
-				heat--;
-				if(heat < 0) {
-					heat = 0;
+				if(worldObj.getWorldTime() % 5 == 0) {
+					heat--;
+					if(heat < 0) {
+						heat = 0;
+					}
+					updateHeat();
 				}
-				updateHeat();
 			}
 		} else if(!hasWork() && heat > 0) {
 			heat--;

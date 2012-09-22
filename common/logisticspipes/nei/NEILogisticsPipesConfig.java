@@ -64,12 +64,12 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 
 	@Override
 	public String getName() {
-		return ((Mod) LogisticsPipes.instance).name();
+		return LogisticsPipes.class.getAnnotation(Mod.class).name();
 	}
 
 	@Override
 	public String getVersion() {
-		return ((Mod) LogisticsPipes.instance).version();
+		return LogisticsPipes.class.getAnnotation(Mod.class).version();
 	}
 	
 }

@@ -1,14 +1,24 @@
 package logisticspipes.nei;
 
+import java.util.List;
+
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
+import net.minecraft.src.Container;
+import net.minecraft.src.CraftingManager;
 import net.minecraft.src.GuiContainer;
+import net.minecraft.src.IRecipe;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.ShapedRecipes;
+import codechicken.nei.DefaultOverlayRenderer;
 import codechicken.nei.NEIClientUtils;
+import codechicken.nei.NEICompatibility;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.ShapedRecipeHandler;
+import codechicken.nei.recipe.weakDependancy_Forge;
+import codechicken.nei.recipe.ShapedRecipeHandler.CachedShapedRecipe;
 
 public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 
@@ -60,5 +70,37 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	public String getGuiTexture()
 	{
 		return "/logisticspipes/gui/soldering_station.png";
+	}
+
+
+	@Override
+	public boolean hasOverlay(GuiContainer gui, Container container, int recipe)
+	{
+		return false;
+	}
+	
+	@Override
+	public void loadUsageRecipes(ItemStack ingredient) {
+		for(SolderingStationRecipe recipe: SolderingStationRecipes.getRecipes()) {
+			for(ItemStack source : recipe.source) {
+				if(NEIClientUtils.areStacksSameTypeCrafting(source, ingredient)) {
+			        this.arecipes.add(getShape(recipe));
+			        break;
+				}
+			}
+		}
+	}
+	
+
+	
+	@Override
+	public void loadCraftingRecipes(String outputId, Object... results) {
+		if(outputId.equals("crafting") && getClass() == NEISolderingStationRecipeManager.class) {
+			for(SolderingStationRecipe recipe: SolderingStationRecipes.getRecipes()) {
+				this.arecipes.add(getShape(recipe));
+			}
+		} else {
+			super.loadCraftingRecipes(outputId, results);
+		}
 	}
 }

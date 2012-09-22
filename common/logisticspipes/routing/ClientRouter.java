@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
@@ -11,6 +12,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.transport.LogisticsItemTravelingHook;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -32,6 +34,8 @@ public class ClientRouter implements IRouter {
 	private final int _yCoord;
 	private final int _zCoord;
 	public boolean[] routedExit = new boolean[6];
+	
+	private int failed = 0;
 
 	public HashMap<UUID, ExitRoute> _adjacent = new HashMap<UUID, ExitRoute>();
 	
@@ -236,10 +240,22 @@ public class ClientRouter implements IRouter {
 	}
 
 	private void ensureRouteTableIsUpToDate(){
-		if (_LSDVersion > _lastLSDVersion){
-			CreateRouteTable();
-			_externalRoutersByCost = null;
-			_lastLSDVersion = _LSDVersion;
+		if (_LSDVersion > _lastLSDVersion) {
+			if(failed > 10) {
+				_lastLSDVersion = _LSDVersion;
+			} else {
+				try {
+					CreateRouteTable();
+					_externalRoutersByCost = null;
+					_lastLSDVersion = _LSDVersion;
+					failed = 0;
+				} catch(Exception e) {
+					if(LogisticsPipes.DEBUG) {
+						e.printStackTrace();
+					}
+					failed++;
+				}
+			}
 		}
 	}
 
@@ -259,7 +275,11 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public UUID getId() {
-		return id;
+		if(id != null) {
+			return id;
+		} else {
+			return id = UUID.randomUUID();
+		}
 	}
 
 	@Override

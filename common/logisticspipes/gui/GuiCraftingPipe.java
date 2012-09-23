@@ -67,7 +67,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if(5 < guibutton.id && guibutton.id < 11) {
+		if(5 <= guibutton.id && guibutton.id < 11) {
 			_logic.handleStackMove(guibutton.id - 5);
 		}
 		switch(guibutton.id){

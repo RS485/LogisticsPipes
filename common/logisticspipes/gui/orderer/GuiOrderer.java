@@ -133,10 +133,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		
 		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 24, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", xCenter - fontRenderer.getStringWidth(StackrequestCount+"") / 2, bottom - 14, 0x404040);
-		if (LogisticsPipes.DEBUG){
-			fontRenderer.drawString(i+","+j, 10, 10, 0xFFFFFF);
-			fontRenderer.drawString(lastClickedx+","+lastClickedy, 10, 30, 0xFFFFFF);
-		}
 		
 		//SearchInput
 		if(editsearch) {
@@ -217,23 +213,21 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
 	            int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 				
-	            if(!super.hasSubGui()) {
-					if (mouseX >= x && mouseX < x + panelxSize &&
-							mouseY >= y && mouseY < y + panelySize) {
-						drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
-						drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-						
-						tooltip = new Object[]{mouseX,mouseY,st};
-					}
+            	if (mouseX >= x && mouseX < x + panelxSize &&
+						mouseY >= y && mouseY < y + panelySize) {
+					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
+					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
 					
-					if (lastClickedx >= x && lastClickedx < x + panelxSize &&
-							lastClickedy >= y && lastClickedy < y + panelySize){
-						selectedItem = item;
-						drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-						drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
-						drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-					}
-	            }
+					tooltip = new Object[]{mouseX,mouseY,st};
+				}
+				
+				if (lastClickedx >= x && lastClickedx < x + panelxSize &&
+						lastClickedy >= y && lastClickedy < y + panelySize){
+					selectedItem = item;
+					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
+					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
+					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+				}
 				/*
 				renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 				String s;

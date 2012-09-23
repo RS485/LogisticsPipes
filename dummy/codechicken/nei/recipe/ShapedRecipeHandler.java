@@ -2,6 +2,7 @@ package codechicken.nei.recipe;
 
 import java.util.ArrayList;
 
+import net.minecraft.src.Container;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.ItemStack;
 import codechicken.nei.PositionedStack;
@@ -21,4 +22,6 @@ public class ShapedRecipeHandler extends TemplateRecipeHandler {
 	public String getGuiTexture(){return null;}
 
 	public void loadCraftingRecipes(ItemStack result) {}
+
+	public boolean hasOverlay(GuiContainer gui, Container container, int recipe) {return false;}
 }

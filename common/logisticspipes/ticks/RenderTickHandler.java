@@ -25,6 +25,21 @@ public class RenderTickHandler implements ITickHandler {
 	
 	private long renderTicks=0;
 	
+	private Method getSetupCameraTransformMethod() throws NoSuchMethodException {
+		Minecraft mc = FMLClientHandler.instance().getClient();
+		Class start = mc.entityRenderer.getClass();
+		do {
+			try {
+				return start.getDeclaredMethod("a", new Class[]{float.class, int.class});
+			} catch(Exception e) {
+				try {
+				return start.getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
+				} catch(Exception e1) {}
+			}
+		} while(!start.getSuperclass().equals(Object.class));
+		throw new NoSuchMethodException("Can't find setupCameraTransform or a to display HUD");
+	}
+	
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if(type.contains(TickType.RENDER)) {
@@ -44,12 +59,8 @@ public class RenderTickHandler implements ITickHandler {
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				//Orientation
-				try {Method camera;
-					try {
-						camera = mc.entityRenderer.getClass().getDeclaredMethod("a", new Class[]{float.class, int.class});
-					} catch(Exception e) {
-						camera = mc.entityRenderer.getClass().getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
-					}
+				try {
+					Method camera = getSetupCameraTransformMethod();
 					camera.setAccessible(true);
 					camera.invoke(mc.entityRenderer, new Object[]{tickData[0],1});
 					ActiveRenderInfo.updateRenderInfo(mc.thePlayer, mc.gameSettings.thirdPersonView == 2);

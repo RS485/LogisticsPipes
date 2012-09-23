@@ -1,24 +1,15 @@
 package logisticspipes.nei;
 
-import java.util.List;
-
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import net.minecraft.src.Container;
-import net.minecraft.src.CraftingManager;
 import net.minecraft.src.GuiContainer;
-import net.minecraft.src.IRecipe;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ShapedRecipes;
-import codechicken.nei.DefaultOverlayRenderer;
 import codechicken.nei.NEIClientUtils;
-import codechicken.nei.NEICompatibility;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.ShapedRecipeHandler;
-import codechicken.nei.recipe.weakDependancy_Forge;
-import codechicken.nei.recipe.ShapedRecipeHandler.CachedShapedRecipe;
 
 public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 

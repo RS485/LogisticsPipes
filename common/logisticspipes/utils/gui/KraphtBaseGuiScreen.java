@@ -8,15 +8,19 @@
 
 package logisticspipes.utils.gui;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Container;
 import net.minecraft.src.GuiContainer;
+import net.minecraft.src.RenderHelper;
+
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiIDHandlerProvider, ISubGuiControler {
 	
@@ -99,18 +103,57 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	public void resetSubGui() {
 		subGui = null;
 	}
-	
+
 	@Override
-	public void drawScreen(int par1, int par2, float par3){
-		super.drawScreen(par1, par2, par3);
+	public void drawDefaultBackground() {
+		if(subGui == null) {
+			super.drawDefaultBackground();
+		}
+	}
+
+	@Override
+	public void drawScreen(int par1, int par2, float par3) {
 		if(subGui != null) {
+			//Save Mouse Pos
+			int x = Mouse.getX();
+			int y = Mouse.getY();
+			//Set Pos 0,0
+			try {
+				Field fX = Mouse.class.getDeclaredField("x");
+				Field fY = Mouse.class.getDeclaredField("y");
+				fX.setAccessible(true);
+				fY.setAccessible(true);
+				fX.set(null, 0);
+				fY.set(null, 0);
+			} catch (Exception e) {
+				if(LogisticsPipes.DEBUG) e.printStackTrace();
+			}
+			//Draw super class (maybe NEI)
+			super.drawScreen(0, 0, par3);
+			//Resore Mouse Pos
+			try {
+				Field fX = Mouse.class.getDeclaredField("x");
+				Field fY = Mouse.class.getDeclaredField("y");
+				fX.setAccessible(true);
+				fY.setAccessible(true);
+				fX.set(null, x);
+				fY.set(null, y);
+			} catch (Exception e) {
+				if(LogisticsPipes.DEBUG) e.printStackTrace();
+			}
+	        RenderHelper.disableStandardItemLighting();
 			GL11.glTranslatef(0.0F, 0.0F, 101.0F);
 			if(!subGui.hasSubGui()) {
+		        GL11.glDisable(GL11.GL_DEPTH_TEST);
 				super.drawDefaultBackground();
+		        GL11.glEnable(GL11.GL_DEPTH_TEST);
 			}
 			subGui.drawScreen(par1, par2, par3);
 			GL11.glTranslatef(0.0F, 0.0F, -101.0F);
+	        RenderHelper.enableStandardItemLighting();
 		} else {
+			super.drawScreen(par1, par2, par3);
+	        RenderHelper.disableStandardItemLighting();
 			for(IRenderSlot slot:slots) {
 				int mouseX = par1 - guiLeft;
 				int mouseY = par2 - guiTop;
@@ -126,6 +169,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 					}
 				}
 			}
+	        RenderHelper.enableStandardItemLighting();
 		}
 	}
 	

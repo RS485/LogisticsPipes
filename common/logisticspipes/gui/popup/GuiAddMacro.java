@@ -103,7 +103,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	
 	@Override
 	public void drawScreen(int par1, int par2, float par3){
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, false);
 		
 		fontRenderer.drawString("Add Macro", guiLeft + fontRenderer.getStringWidth("Add Macro") / 2, guiTop + 6, 0x404040);
 		

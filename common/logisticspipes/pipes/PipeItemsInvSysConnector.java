@@ -216,17 +216,18 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		if(CRP != null) {
 			CRP.refreshRender();
 		}
-		//dropFreqCard();
+		dropFreqCard();
 	}
 	
 
 	@Override
 	public void invalidate() {
-		//CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-		//if(CRP != null) {
-			//CRP.refreshRender();
-		//}
+		if(CRP != null) {
+			CRP.refreshRender();
+		}
+		init = false;
 		super.invalidate();
 	}
 	

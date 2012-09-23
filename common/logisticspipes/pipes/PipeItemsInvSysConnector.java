@@ -202,7 +202,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_INV_SYS_CONNECTOR, world, i, j, k);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, world, i, j, k);
 			return true;
 		}
 		return false;

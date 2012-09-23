@@ -164,7 +164,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 
 	@Override
 	public int getGuiID() {
-		return GuiIDs.GUI_INV_SYS_CONNECTOR;
+		return GuiIDs.GUI_Inv_Sys_Connector_ID;
 	}
 
 	public void handleContentAnswer(LinkedList<ItemIdentifierStack> _allItems2) {

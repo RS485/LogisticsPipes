@@ -7,6 +7,8 @@ public class GuiIDs {
 	public static final int GUI_ProviderPipe_ID = 12;
 	public static final int GUI_SatelitePipe_ID = 13;
 	public static final int GUI_SupplierPipe_ID = 14;
+	public static final int GUI_Freq_Card_ID = 15;
+	public static final int GUI_Inv_Sys_Connector_ID = 16;
 	
 	//Modules
 	public static final int GUI_Module_Extractor_ID = 20;
@@ -18,7 +20,6 @@ public class GuiIDs {
 	public static final int GUI_ChassiModule_ID = 26;
 	public static final int GUI_Module_Advanced_Extractor_ID = 27;
 	public static final int GUI_Module_Apiarist_Sink_ID = 28;
-	public static final int GUI_INV_SYS_CONNECTOR = 29;
 	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;

@@ -120,6 +120,8 @@ public class LogisticsPipes {
 	public static Item LogisticsApiaristAnalyserPipe;
 	public static Item LogisticsApiaristSinkPipe;
 	public static Item LogisticsInvSysCon;
+	public static Item LogisticsEntrance;
+	public static Item LogisticsDestination;
 	
 	
 	public static Item LogisticsNetworkMonitior;

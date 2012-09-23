@@ -37,6 +37,8 @@ public class Configs {
 	public static int LOGISTICSPIPE_APIARIST_ANALYSER_ID			= 6891;
 	public static int LOGISTICSPIPE_APIARIST_SINK_ID				= 6892;
 	public static int LOGISTICSPIPE_INVSYSCON_ID					= 6893;
+	public static int LOGISTICSPIPE_ENTRANCE_ID						= 6894;
+	public static int LOGISTICSPIPE_DESTINATION_ID					= 6895;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -153,6 +155,12 @@ public class Configs {
 		Property logisticInvSysConIdProperty = configuration.getOrCreateIntProperty("logisticInvSysCon.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_INVSYSCON_ID);
 		logisticInvSysConIdProperty.comment = "The item id for the inventory system connector pipe";
 
+		Property logisticEntranceIdProperty = configuration.getOrCreateIntProperty("logisticEntrance.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_ENTRANCE_ID);
+		logisticEntranceIdProperty.comment = "The item id for the logistics system entrance pipe";
+
+		Property logisticDestinationIdProperty = configuration.getOrCreateIntProperty("logisticDestination.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_DESTINATION_ID);
+		logisticDestinationIdProperty.comment = "The item id for the logistics system destination pipe";
+
 		Property logisticItemCardIdProperty = configuration.getOrCreateIntProperty("logisticItemCard.id", Configuration.CATEGORY_ITEM, ItemCardId);
 		logisticItemCardIdProperty.comment = "The item id for the logistics item card";
 
@@ -213,6 +221,8 @@ public class Configs {
 		LOGISTICSPIPE_REMOTE_ORDERER_ID		= Integer.parseInt(logisticPipeRemoteOrdererIdProperty.value);
 		LOGISTICSPIPE_APIARIST_ANALYSER_ID	= Integer.parseInt(logisticPipeApiaristAnalyserIdProperty.value);
 		LOGISTICSPIPE_APIARIST_SINK_ID		= Integer.parseInt(logisticPipeApiaristSinkIdProperty.value);
+		LOGISTICSPIPE_ENTRANCE_ID			= Integer.parseInt(logisticEntranceIdProperty.value);
+		LOGISTICSPIPE_DESTINATION_ID		= Integer.parseInt(logisticDestinationIdProperty.value);
 		LOGISTICSPIPE_INVSYSCON_ID			= Integer.parseInt(logisticInvSysConIdProperty.value);
 		LOGISTICS_SIGN_ID 					= Integer.parseInt(logisticsSignId.value);
 		LOGISTICS_SOLID_BLOCK_ID 			= Integer.parseInt(logisticsSolidBlockId.value);

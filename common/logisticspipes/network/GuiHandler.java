@@ -1,9 +1,11 @@
 package logisticspipes.network;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
+import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
 import logisticspipes.gui.GuiProviderPipe;
@@ -45,6 +47,8 @@ import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
+import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.EntityPlayer;
@@ -275,7 +279,7 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
 				return new DummyContainer(player.inventory, null);
 				
-			case GuiIDs.GUI_INV_SYS_CONNECTOR:
+			case GuiIDs.GUI_Inv_Sys_Connector_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector)pipe.pipe).inv);
 				
@@ -290,6 +294,22 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Soldering_Station:
 				if(!(tile instanceof LogisticsSolderingTileEntity)) return null;
 				return ((LogisticsSolderingTileEntity)tile).createContainer(player);
+				
+			case GuiIDs.GUI_Freq_Card_ID:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
+				IInventory inv = null;
+				if(pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
+					inv = ((PipeItemsSystemEntranceLogistics)pipe.pipe).inv;
+				} else if(pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
+					inv = ((PipeItemsSystemDestinationLogistics)pipe.pipe).inv;
+				}
+				
+				dummy = new DummyContainer(player.inventory, inv);
+				
+				dummy.addRestrictedSlot(0, inv, 40, 40, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+				dummy.addNormalSlotsForPlayerInventory(0, 0);
+				
+				return dummy;
 				
 			default:
 				return null;
@@ -497,13 +517,23 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
 				return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, 0);
 			
-			case GuiIDs.GUI_INV_SYS_CONNECTOR:
+			case GuiIDs.GUI_Inv_Sys_Connector_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				return new GuiInvSysConnector(player, (PipeItemsInvSysConnector)pipe.pipe);
 			
 			case GuiIDs.GUI_Soldering_Station:
 				if(!(tile instanceof LogisticsSolderingTileEntity)) return null;
 				return new GuiSolderingStation(player, (LogisticsSolderingTileEntity)tile);
+				
+			case GuiIDs.GUI_Freq_Card_ID:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsSystemEntranceLogistics) || (pipe.pipe instanceof PipeItemsSystemDestinationLogistics))) return null;
+				IInventory inv = null;
+				if(pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
+					inv = ((PipeItemsSystemEntranceLogistics)pipe.pipe).inv;
+				} else if(pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
+					inv = ((PipeItemsSystemDestinationLogistics)pipe.pipe).inv;
+				}
+				return new GuiFreqCardContent(player, inv);
 				
 			default:
 				return null;

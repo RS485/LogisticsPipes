@@ -17,6 +17,7 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
+import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
@@ -129,7 +130,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				int neededCount = needed.get(need);
 				boolean success = false;
 				do{ 
-					success = LogisticsManager.Request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe), getRouter().getIRoutersByCost(), null);
+					success = SimpleServiceLocator.logisticsManager.request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe, true), getRouter().getIRoutersByCost(), null);
 					if (success || neededCount == 1){
 						break;
 					}

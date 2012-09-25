@@ -79,7 +79,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 					}
 				}
 			}
-			if(_orderManager.hasOrders()) {
+			if(!_orderManager.hasOrders()) {
 				break;
 			}
 		}

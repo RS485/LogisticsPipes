@@ -373,5 +373,4 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
 	}
-	
 }

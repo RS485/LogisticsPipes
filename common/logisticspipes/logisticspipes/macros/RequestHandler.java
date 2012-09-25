@@ -8,6 +8,7 @@ import logisticspipes.main.ItemMessage;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.LogisticsTransaction;
+import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.src.EntityPlayer;
@@ -24,7 +25,7 @@ public class RequestHandler {
 	
 	public static RequestReply requestMacrolist(NBTTagCompound itemlist, IRequestItems requester, EntityPlayer player) {
 		NBTTagList list = itemlist.getTagList("inventar");
-		LogisticsTransaction transaction = new LogisticsTransaction();
+		LogisticsTransaction transaction = new LogisticsTransaction(true);
 		List<ItemMessage> items = new ArrayList<ItemMessage>();
 		for(int i = 0;i < list.tagCount();i++) {
 			NBTTagCompound itemnbt = (NBTTagCompound) list.tagAt(i);
@@ -33,13 +34,13 @@ public class RequestHandler {
 				itemNBTContent = null;
 			}
 			ItemIdentifierStack stack = ItemIdentifier.get(itemnbt.getInteger("id"),itemnbt.getInteger("data"),itemNBTContent).makeStack(itemnbt.getInteger("amount"));
-			transaction.addRequest(new LogisticsRequest(stack.getItem(), stack.stackSize, requester));
+			transaction.addRequest(new LogisticsRequest(stack.getItem(), stack.stackSize, requester, true));
 			items.add(new ItemMessage(stack));
 		}
 		List<ItemMessage> errors = new ArrayList<ItemMessage>();
 		RequestReply reply = new RequestReply();
-		if(LogisticsManager.Request(transaction, requester.getRouter().getIRoutersByCost(), errors, player, false)) {
-			LogisticsManager.Request(transaction, requester.getRouter().getIRoutersByCost(), errors, player, true);
+		if(SimpleServiceLocator.logisticsManager.request(transaction, requester.getRouter().getIRoutersByCost(), errors, false, false)) {
+			SimpleServiceLocator.logisticsManager.request(transaction, requester.getRouter().getIRoutersByCost(), errors, true, false);
 			reply.items = items;
 			reply.suceed = true;
 		} else {

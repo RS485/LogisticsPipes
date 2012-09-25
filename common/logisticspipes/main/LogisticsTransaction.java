@@ -11,6 +11,7 @@ package logisticspipes.main;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.utils.ItemIdentifier;
 
@@ -19,12 +20,18 @@ public class LogisticsTransaction {
 
 	private LinkedList<LogisticsRequest> _requests = new LinkedList<LogisticsRequest>();
 	private LinkedList<CraftingTemplate> _craftingTemplates = new LinkedList<CraftingTemplate>();
+	
+	private LinkedList<LogisticsPromise> _promises = new LinkedList<LogisticsPromise>();
+	
+	private boolean realRequest;
 
-	public LogisticsTransaction (LogisticsRequest originalRequest){
+	public LogisticsTransaction (LogisticsRequest originalRequest, boolean realRequest){
 		_requests.add(originalRequest);
+		this.realRequest = realRequest;
 	}
 
-	public LogisticsTransaction () {
+	public LogisticsTransaction (boolean realRequest) {
+		this.realRequest = realRequest;
 	}
 	
 	public LinkedList<LogisticsRequest> getRequests(){
@@ -32,7 +39,12 @@ public class LogisticsTransaction {
 	}
 	
 	public void addCraftingTemplate(CraftingTemplate template){
+		template.setRealRequest(realRequest);
 		_craftingTemplates.add(template);
+	}
+	
+	public boolean hasCraftingTemplates() {
+		return _craftingTemplates.size() > 0;
 	}
 	
 	public boolean isDeliverable(){
@@ -82,6 +94,14 @@ public class LogisticsTransaction {
 				ret.put(promise.item, ret.get(promise.item) + promise.numberOfItems);	
 			}
 		}
+		for(LogisticsPromise promise : _promises){
+			if (promise.sender != sender) continue;
+			if (!ret.containsKey(promise.item)) {
+				ret.put(promise.item, promise.numberOfItems);
+				continue;
+			}
+			ret.put(promise.item, ret.get(promise.item) + promise.numberOfItems);	
+		}
 		return ret;
 	}
 
@@ -92,4 +112,41 @@ public class LogisticsTransaction {
 		_requests.add(newRequest);
 	}
 
+	public void removeRequest(LogisticsRequest localRemain) {
+		_requests.remove(localRemain);
+	}
+
+	public LogisticsTransaction copyWithoutCrafter(ICraftItems crafter) {
+		LogisticsTransaction copy = new LogisticsTransaction(realRequest);
+		for(LogisticsRequest request : _requests) {
+			for(LogisticsPromise promise : request.getPromises()){
+				copy._promises.add(promise);
+			}
+		}
+		for(LogisticsPromise promise : this._promises){
+			copy._promises.add(promise);
+		}
+		for (CraftingTemplate template : _craftingTemplates){
+			if(!template.getCrafter().equals(crafter)) {
+				copy._craftingTemplates.add(template);
+			}
+		}
+		return copy;
+	}
+
+	public void setRealRequest(boolean realRequest) {
+		this.realRequest = realRequest;
+	}
+
+	public void insertRequests(LogisticsTransaction newtransaction) {
+		this._requests.addAll(newtransaction._requests);
+	}
+
+	public void insertPromises(LogisticsTransaction lastUsedTransaction) {
+		for(LogisticsRequest request : lastUsedTransaction._requests) {
+			for(LogisticsPromise promise : request.getPromises()){
+				this._promises.add(promise);
+			}
+		}
+	}
 }

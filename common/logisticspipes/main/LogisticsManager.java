@@ -27,120 +27,10 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 
 public class LogisticsManager implements ILogisticsManager {
-	/*
-	private class LogisticsValue {
-		int TotalThisCycle = 0;
-		int CompletedThisCycle = 0;
-		float cycleCompletedFraction;
-
-		public LogisticsValue(int TotalToDeliver) {
-			this.TotalThisCycle = TotalToDeliver;
-			recalc();
-		}
-		
-		public void deliverItem() {
-			CompletedThisCycle++;
-			recalc();
-		}
-		
-		public void setCompleted() {
-			CompletedThisCycle = TotalThisCycle;
-			recalc();
-		}
-		
-		private void recalc(){
-			cycleCompletedFraction = TotalThisCycle == 0 ? 1F : (1F / (float) TotalThisCycle) * (float) CompletedThisCycle;
-		}
-	}
-	*/
-	//private static HashMap<ItemIdentifier, HashMap<IRouter, LogisticsValue >>  _logisticsDatabase = new HashMap<ItemIdentifier, HashMap<IRouter,LogisticsValue>>();
-	//private static ILogisticsManager _instance;
 	
-	/*
-	static { //Workaround to create instances of internal class
-		_instance = new LogisticsManager();
-	}
-	*/
-	
-//	@Override
-//	@Deprecated
-//	public UUID getDestinationFor(ItemIdentifier item, Set<Router> validDestinations) {
-//		if (!_logisticsDatabase.containsKey(item)){
-//			_logisticsDatabase.put(item, new HashMap<Router, LogisticsValue>());
-//		}
-//		
-//		HashMap<Router, LogisticsValue> itemEntry = _logisticsDatabase.get(item);
-//		
-//		Router nextDestination = null;
-//		LogisticsValue nextDestinationValue = null;
-//		
-//		
-//		boolean allCompleted = true;
-//		for (Router r : validDestinations) {
-//			if (!itemEntry.containsKey(r)){
-//				CoreRoutedPipe pipe = r.getPipe();
-//				if (pipe == null) continue;
-//				if (!(pipe.logic instanceof LogicBasic)) continue;
-//				itemEntry.put(r, new LogisticsValue(((LogicBasic)pipe.logic).RequestsItem(item)));
-//			}
-//			LogisticsValue value = itemEntry.get(r);
-//			if (value.cycleCompletedFraction < 1F) {
-//				allCompleted = false;
-//				continue;
-//			}
-//		}
-//		
-//		if (allCompleted) {
-//			for (Router r : validDestinations){
-//				CoreRoutedPipe pipe = r.getPipe();
-//				if (pipe == null) continue;
-//				if (!(pipe.logic instanceof LogicBasic)) continue;
-//				itemEntry.put(r, new LogisticsValue(((LogicBasic)pipe.logic).RequestsItem(item)));				
-//			}
-//		}
-//		
-//		for (Router r : validDestinations) {
-//			LogisticsValue value = itemEntry.get(r);
-//			CoreRoutedPipe pipe = r.getPipe();
-//			if (pipe == null) continue;
-//			if (!(pipe.logic instanceof LogicBasic)) continue;
-//			//Ensure router still desires items
-//			int requested = ((LogicBasic)pipe.logic).RequestsItem(item);
-//			if (requested == 0){
-//				value.setCompleted();
-//			}
-//			
-//			if (value.cycleCompletedFraction == 1F)	{
-//				continue;
-//			}
-//			
-//			if (nextDestinationValue == null || value.cycleCompletedFraction < nextDestinationValue.cycleCompletedFraction)	{
-//				nextDestinationValue = value;
-//				nextDestination = r;
-//			}
-//		}
-//		
-//		if (nextDestinationValue != null){
-//			nextDestinationValue.deliverItem();
-//		}
-//		return nextDestination!=null?nextDestination.id:null;
-//	}
-
-//	public static int getAvailableCount(ItemIdentifier item, Set<Router> validDestinations){
-//		int count = 0;
-//		for (Router r : validDestinations) {
-//			if (r.getPipe() instanceof IProvideItems){
-//				IProvideItems provider = (IProvideItems) r.getPipe();
-//				count += provider.getAvailableItemCount(item);
-//			}
-//		}
-//		return count;
-//	}
-	
-	public static boolean Request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors){
+	/*public static boolean Request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors){
 		return Request(originalRequest, validDestinations, errors, null);
 	}
-	
 	
 	public static boolean Request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors, EntityPlayer player){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest);
@@ -325,4 +215,5 @@ public class LogisticsManager implements ILogisticsManager {
 		}
 		return craftableItems;
 	}
+	*/
 }

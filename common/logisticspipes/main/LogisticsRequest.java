@@ -24,10 +24,13 @@ public class LogisticsRequest {
 	private LinkedList<LogisticsPromise> _promises = new LinkedList<LogisticsPromise>();
 	private LinkedList<LogisticsPromise> _extraPromises = new LinkedList<LogisticsPromise>();
 	
-	public LogisticsRequest(ItemIdentifier item, int numberOfItems, IRequestItems destination){
+	public boolean realRequest;
+	
+	public LogisticsRequest(ItemIdentifier item, int numberOfItems, IRequestItems destination, boolean realRequest){
 		this._item = item;
 		this._count = numberOfItems;
 		this._destination = destination;
+		this.realRequest = realRequest;
 	}
 	
 	public ItemIdentifier getItem(){
@@ -65,7 +68,7 @@ public class LogisticsRequest {
 	}
 	
 	public void addPromise(LogisticsPromise promise){
-		if(LogisticsPipes.DisplayRequests)System.out.println("Adding promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
+		if(LogisticsPipes.DisplayRequests && realRequest)System.out.println("Adding promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
 		if (promise.numberOfItems < 1)
 			return;
 		//Ensure promise never exceeds what we need
@@ -76,8 +79,8 @@ public class LogisticsRequest {
 			extrasPromise.sender = promise.sender;
 			promise.numberOfItems = notYetAllocated();
 			_extraPromises.add(extrasPromise);
-			if(LogisticsPipes.DisplayRequests)System.out.println("\treduced promise to " + promise.numberOfItems);
-			if(LogisticsPipes.DisplayRequests)System.out.println("\tAdding EXTRA promise of " + extrasPromise.numberOfItems + " " + extrasPromise.item.getFriendlyName());
+			if(LogisticsPipes.DisplayRequests && realRequest)System.out.println("\treduced promise to " + promise.numberOfItems);
+			if(LogisticsPipes.DisplayRequests && realRequest)System.out.println("\tAdding EXTRA promise of " + extrasPromise.numberOfItems + " " + extrasPromise.item.getFriendlyName());
 		}
 		_promises.add(promise);
 	}
@@ -103,6 +106,25 @@ public class LogisticsRequest {
 			if(LogisticsPipes.DisplayRequests)System.out.println("\tUsing promise of " + promise.numberOfItems + " " + promise.item.getFriendlyName());
 			_extraPromises.remove(promise);
 		}
+	}
+
+	public LogisticsRequest copy() {
+		LogisticsRequest request = new LogisticsRequest(_item, _count, _destination, realRequest);
+		for(LogisticsPromise promise:_promises) {
+			request._promises.add(promise.copy());
+		}
+		for(LogisticsPromise promise:_extraPromises) {
+			request._extraPromises.add(promise.copy());
+		}
+		return request;
+	}
+	
+	public boolean equals(LogisticsRequest part) {
+		return part._count == this._count && part._destination.equals(this._destination) && part._item.equals(this._item);
+	}
+	
+	public String toString() {
+		return _count + "x" + _item.getDebugName();
 	}
 }
 

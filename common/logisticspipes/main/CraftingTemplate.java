@@ -22,6 +22,8 @@ public class CraftingTemplate {
 	private ICraftItems _crafter;
 	private HashMap<ItemIdentifierStack, IRequestItems> _required = new HashMap<ItemIdentifierStack, IRequestItems>();
 	
+	private boolean realRequest;
+	
 	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter){
 		_result = result;
 		_crafter = crafter;
@@ -42,7 +44,7 @@ public class CraftingTemplate {
 	public LinkedList<LogisticsRequest> generateRequests(){
 		LinkedList<LogisticsRequest> requests = new LinkedList<LogisticsRequest>();
 		for (ItemIdentifierStack stack : _required.keySet()){
-			requests.add(new LogisticsRequest(stack.getItem(), stack.stackSize, _required.get(stack)));
+			requests.add(new LogisticsRequest(stack.getItem(), stack.stackSize, _required.get(stack), realRequest));
 		}
 		return requests;
 	}
@@ -54,5 +56,12 @@ public class CraftingTemplate {
 	public ICraftItems getCrafter(){
 		return _crafter;
 	}
+	
+	public String toString() {
+		return "<Crafter>: " + _result.getItem().getDebugName();
+	}
 
+	public void setRealRequest(boolean b) {
+		realRequest = b;
+	}
 }

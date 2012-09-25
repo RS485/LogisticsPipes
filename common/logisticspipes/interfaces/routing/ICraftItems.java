@@ -9,10 +9,12 @@
 package logisticspipes.interfaces.routing;
 
 import logisticspipes.main.LogisticsTransaction;
+import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 
 public interface ICraftItems extends IProvideItems, IRequestItems{
 	void registerExtras(int count);
 	void canCraft(LogisticsTransaction transaction);
 	ItemIdentifier getCraftedItem();
+	IRouter getRouter();
 }

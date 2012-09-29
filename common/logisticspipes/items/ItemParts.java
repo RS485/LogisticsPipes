@@ -7,9 +7,9 @@ import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 
-public class ItemHUDParts extends Item {
+public class ItemParts extends Item {
 	
-	public ItemHUDParts(int par1) {
+	public ItemParts(int par1) {
 		super(par1);
 		this.setHasSubtypes(true);
 	}
@@ -22,6 +22,8 @@ public class ItemHUDParts extends Item {
     		return Textures.LOGISTICSITEMHUD_PART2_ICONINDEX;
     	case 2: //nose bridge
     		return Textures.LOGISTICSITEMHUD_PART3_ICONINDEX;
+    	case 3: //nano hopper
+    		return Textures.LOGISTICSITEM_NANOHOPPER_ICONINDEX;
     		default: return super.getIconFromDamage(par1);
     	}
     }
@@ -35,6 +37,8 @@ public class ItemHUDParts extends Item {
     		return "item.HUDglass";
     	case 2: //nose bridge
     		return "item.HUDnosebridge";
+    	case 3: 
+    		return "item.NanoHopper";
     	}
 		return super.getItemNameIS(par1ItemStack);
 	}
@@ -54,6 +58,7 @@ public class ItemHUDParts extends Item {
 		par3List.add(new ItemStack(this, 1, 0));
 		par3List.add(new ItemStack(this, 1, 1));
 		par3List.add(new ItemStack(this, 1, 2));
+		par3List.add(new ItemStack(this, 1, 3));
     }
 	
 }

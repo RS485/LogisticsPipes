@@ -26,12 +26,17 @@ import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
+import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 
 public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	
 	public PipeItemsCraftingLogisticsMk2(int itemID) {
 		super(itemID);
+	}
+
+	public PipeItemsCraftingLogisticsMk2(PipeTransport transport, int itemID) {
+		super(transport, itemID);
 	}
 
 	@Override

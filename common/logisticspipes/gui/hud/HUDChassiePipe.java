@@ -104,7 +104,7 @@ public class HUDChassiePipe extends BasicHUDGui {
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
-		GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
+		GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
 		super.renderHeadUpDisplay(distance, day, mc);
 		if(selected != -1) {
 			ILogisticsModule selectedmodule = module.getSubModule(selected);
@@ -137,11 +137,11 @@ public class HUDChassiePipe extends BasicHUDGui {
 				}
 				GL11.glTranslatef(-11.0F, -5.0F, 0.00005F);
 			} else {
-				GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
+				GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
 				mc.fontRenderer.drawString("Nothing" , -5, -15, 0);
 				mc.fontRenderer.drawString("to" , 9, -5, 0);
 				mc.fontRenderer.drawString("display" , -5, 5, 0);
-				GL11.glTranslatef(0.0F, 0.0F, 0.000005F);
+				GL11.glTranslatef(0.0F, 0.0F, 0.00005F);
 			}
 		} else {
 			GL11.glTranslatef(0.0F, 0.0F, -0.005F);
@@ -149,7 +149,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, true, true, true, true);
 		}
-		GL11.glTranslatef(0.0F, 0.0F, 0.000005F);
+		GL11.glTranslatef(0.0F, 0.0F, 0.00005F);
 	}
 
 	@Override
@@ -229,7 +229,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 
 		@Override
 		public void renderButton(boolean hover, boolean clicked) {
-			GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
+			GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			if(hover && !isSlotSelected(position)) {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);
@@ -258,7 +258,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			ItemStack module = inv.getStackInSlot(position);
 			List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
 			list.add(ItemIdentifierStack.GetFromStack(module));
-			GL11.glTranslatef(0.0F, 0.0F, -0.000005F);
+			GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
 			if(!this.buttonEnabled() && !isSlotSelected(position)) {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)32);
 			} else {
@@ -268,7 +268,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			if(hover) {
 				GL11.glTranslatef(0.0F, 0.0F, 0.01F);
 			}
-			GL11.glTranslatef(0.0F, 0.0F, 0.00001F);
+			GL11.glTranslatef(0.0F, 0.0F, 0.0001F);
 		}
 
 		@Override

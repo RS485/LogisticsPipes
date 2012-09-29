@@ -56,12 +56,18 @@ public final class ItemIdentifierStack {
 	public ItemIdentifierStack clone() {
 		return new ItemIdentifierStack(_item, stackSize);
 	}
-
+	
 	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv) {
+		return getListFromInventory(inv, false);
+	}
+		
+	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv, boolean removeNull) {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
 		for(int i=0;i<inv.getSizeInventory();i++) {
 			if(inv.getStackInSlot(i) == null) {
-				list.add(null);
+				if(!removeNull) {
+					list.add(null);
+				}
 			} else {
 				list.add(ItemIdentifierStack.GetFromStack(inv.getStackInSlot(i)));
 			}

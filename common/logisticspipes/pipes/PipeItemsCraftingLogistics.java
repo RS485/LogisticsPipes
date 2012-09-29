@@ -57,6 +57,7 @@ import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
+import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -79,6 +80,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		super(new BaseLogicCrafting(), itemID);
 	}
 	
+	public PipeItemsCraftingLogistics(PipeTransport transport, int itemID) {
+		super(transport, new BaseLogicCrafting(), itemID);
+	}
+
 	protected LinkedList<AdjacentTile> locateCrafters()	{
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();

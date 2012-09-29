@@ -153,4 +153,39 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 		onInventoryChanged();
 	}
+	
+	public int tryAddToSlot(int i, ItemStack stack) {
+		ItemStack slot = this.getStackInSlot(i);
+		if(slot == null) {
+			this.setInventorySlotContents(i, stack.copy());
+			return stack.stackSize;
+		}
+		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
+		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
+		if(slotIdent.equals(stackIdent)) {
+			slot.stackSize += stack.stackSize;
+			if(slot.stackSize > 127) {
+				int ans = stack.stackSize - (slot.stackSize - 127);
+				slot.stackSize = 127;
+				return ans;
+			} else {
+				return stack.stackSize;
+			}
+		} else {
+			return 0;
+		}
+	}
+	
+	public int addCompressed(ItemStack stack) {
+		stack = stack.copy();
+		for(int i=0; i<this._contents.length;i++) {
+			if(stack.stackSize <= 0) {
+				break;
+			}
+			int added = tryAddToSlot(i, stack);
+			stack.stackSize -= added;
+		}
+		onInventoryChanged();
+		return stack.stackSize;
+	}
 }

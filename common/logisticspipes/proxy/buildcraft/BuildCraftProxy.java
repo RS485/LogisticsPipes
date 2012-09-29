@@ -18,13 +18,13 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.main.ActionDisableLogistics;
 import logisticspipes.main.LogisticsTriggerProvider;
 import logisticspipes.main.TriggerSupplierFailed;
-import logisticspipes.nei.NEILogisticsPipesConfig;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
+import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
@@ -170,6 +170,7 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsInvSysCon = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", side);
 		LogisticsPipes.LogisticsEntrance = createPipe(Configs.LOGISTICSPIPE_ENTRANCE_ID, PipeItemsSystemEntranceLogistics.class, "Logistics System Entrance Pipe", side);
 		LogisticsPipes.LogisticsDestination = createPipe(Configs.LOGISTICSPIPE_DESTINATION_ID, PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
+		LogisticsPipes.LogisticsCraftingPipeMK3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
 		
 		LogisticsPipes.LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);

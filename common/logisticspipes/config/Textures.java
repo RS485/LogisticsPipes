@@ -38,6 +38,7 @@ public class Textures {
 	public static int LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE			= 0;
 	public static int LOGISTICSPIPE_ENTRANCE_TEXTURE				= 0;
 	public static int LOGISTICSPIPE_DESTINATION_TEXTURE				= 0;
+	public static int LOGISTICSPIPE_CRAFTERMK3_TEXTURE				= 0;
 	
 	// Standalone pipes
 	public static final String LOGISTICSPIPE_TEXTURE_FILE					= "/logisticspipes/pipes/basic.png";
@@ -59,6 +60,7 @@ public class Textures {
 	public static final String LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE 	= "/logisticspipes/pipes/invsyscon_mis.png";
 	public static final String LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE 			= "/logisticspipes/pipes/entrance.png";
 	public static final String LOGISTICSPIPE_DESTINATION_TEXTURE_FILE 		= "/logisticspipes/pipes/destination.png";
+	public static final String LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE		= "/logisticspipes/pipes/crafting_mk3.png";
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
 	public static final String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/not_routed.png";
@@ -84,6 +86,7 @@ public class Textures {
 	public static final int LOGISTICSITEMHUD_PART1_ICONINDEX = 0 * 16 + 6;
 	public static final int LOGISTICSITEMHUD_PART2_ICONINDEX = 0 * 16 + 7;
 	public static final int LOGISTICSITEMHUD_PART3_ICONINDEX = 0 * 16 + 8;
+	public static final int LOGISTICSITEM_NANOHOPPER_ICONINDEX = 0 * 16 + 9;
 
 	//Overrider
 	public static final String BASE_TEXTURE_FILE = "/logisticspipes/empty.png";
@@ -119,6 +122,7 @@ public class Textures {
 		LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE);
 		LOGISTICSPIPE_ENTRANCE_TEXTURE 				= registerTexture(LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE);
 		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
 		
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);

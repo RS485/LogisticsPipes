@@ -11,6 +11,7 @@ import net.minecraft.src.Block;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
 
 public class SolderingStationRecipes {
@@ -36,10 +37,12 @@ public class SolderingStationRecipes {
 				stack.stackTagCompound.setString("UUID", UUID.randomUUID().toString());
 			}
 		}));
-		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(LogisticsPipes.LogisticsHUDParts,1,0),null,new ItemStack(LogisticsPipes.LogisticsHUDParts,1,0),new ItemStack(LogisticsPipes.LogisticsHUDParts,1,1),new ItemStack(LogisticsPipes.LogisticsHUDParts,1,2),new ItemStack(LogisticsPipes.LogisticsHUDParts,1,1),null,null,null}, new ItemStack(LogisticsPipes.LogisticsHUDArmor,1,0), null));
-		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(Item.lightStoneDust,1,0),new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Block.glass,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0)}, new ItemStack(LogisticsPipes.LogisticsHUDParts,1,1), null));
-		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,null,null,new ItemStack(Item.diamond,1,0),new ItemStack(Item.diamond,1,0),new ItemStack(Item.diamond,1,0),null,null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3)}, new ItemStack(LogisticsPipes.LogisticsHUDParts,1,0), null));
-		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),null,new ItemStack(Item.diamond,1,0),null,new ItemStack(Item.diamond,1,0),null,null,null}, new ItemStack(LogisticsPipes.LogisticsHUDParts,1,2), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(LogisticsPipes.LogisticsParts,1,0),null,new ItemStack(LogisticsPipes.LogisticsParts,1,0),new ItemStack(LogisticsPipes.LogisticsParts,1,1),new ItemStack(LogisticsPipes.LogisticsParts,1,2),new ItemStack(LogisticsPipes.LogisticsParts,1,1),null,null,null}, new ItemStack(LogisticsPipes.LogisticsHUDArmor,1,0), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(Item.lightStoneDust,1,0),new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Block.glass,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0),new ItemStack(Item.lightStoneDust,1,0)}, new ItemStack(LogisticsPipes.LogisticsParts,1,1), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,null,null,new ItemStack(Item.diamond,1,0),new ItemStack(Item.diamond,1,0),new ItemStack(Item.diamond,1,0),null,null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3)}, new ItemStack(LogisticsPipes.LogisticsParts,1,0), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),null,new ItemStack(Item.diamond,1,0),null,new ItemStack(Item.diamond,1,0),null,null,null}, new ItemStack(LogisticsPipes.LogisticsParts,1,2), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),null,new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1)}, new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,new ItemStack(LogisticsPipes.LogisticsParts,1,3),null,null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),null,null,new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK2,1),null}, new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK3,1), null));
 	}
 	
 	public static List<SolderingStationRecipe> getRecipes() {

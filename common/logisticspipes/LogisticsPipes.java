@@ -34,7 +34,7 @@ import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
-import logisticspipes.items.ItemHUDParts;
+import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
@@ -122,6 +122,7 @@ public class LogisticsPipes {
 	public static Item LogisticsInvSysCon;
 	public static Item LogisticsEntrance;
 	public static Item LogisticsDestination;
+	public static Item LogisticsCraftingPipeMK3;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -130,7 +131,7 @@ public class LogisticsPipes {
 	public static ItemDisk LogisticsItemDisk;
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
-	public static Item LogisticsHUDParts;
+	public static Item LogisticsParts;
 	
 	public static ItemModule ModuleItem;
 	
@@ -258,9 +259,9 @@ public class LogisticsPipes {
 		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
 		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
 		
-		LogisticsHUDParts = new ItemHUDParts(Configs.ItemHUDPartsId);
-		LogisticsHUDParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
-		LogisticsHUDParts.setItemName("logisticsHUDParts");
+		LogisticsParts = new ItemParts(Configs.ItemPartsId);
+		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
+		LogisticsParts.setItemName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
@@ -281,9 +282,10 @@ public class LogisticsPipes {
 		ModLoader.addName(ModuleItem, "BlankModule");
 		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
 		LanguageRegistry.instance().addNameForObject(LogisticsHUDArmor, "en_US", "Logistics HUD Glasses");
-		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,0), "en_US", "Logistics HUD Bow");
-		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,1), "en_US", "Logistics HUD Glass");
-		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsHUDParts,1,2), "en_US", "Logistics HUD Nose Bridge");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,0), "en_US", "Logistics HUD Bow");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,1), "en_US", "Logistics HUD Glass");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		
 		RecipeManager.loadRecipes();
 		

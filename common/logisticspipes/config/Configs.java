@@ -10,7 +10,7 @@ import net.minecraftforge.common.Property;
 public class Configs {
 
 	// Ids
-	public static int ItemHUDPartsId								= 6867;
+	public static int ItemPartsId									= 6867;
 	public static int ItemHUDId										= 6868;
 	public static int ItemCardId									= 6869;
 	public static int ItemDiskId									= 6870;
@@ -39,6 +39,7 @@ public class Configs {
 	public static int LOGISTICSPIPE_INVSYSCON_ID					= 6893;
 	public static int LOGISTICSPIPE_ENTRANCE_ID						= 6894;
 	public static int LOGISTICSPIPE_DESTINATION_ID					= 6895;
+	public static int LOGISTICSPIPE_CRAFTING_MK3_ID					= 6896;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -116,6 +117,9 @@ public class Configs {
 		Property logisticPipeCraftingMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeCraftingMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK2_ID);
 		logisticPipeCraftingMK2IdProperty.comment = "The item id for the crafting logistics pipe MK2";
 		
+		Property logisticPipeCraftingMK3IdProperty = configuration.getOrCreateIntProperty("logisticsPipeCraftingMK3.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK3_ID);
+		logisticPipeCraftingMK3IdProperty.comment = "The item id for the crafting logistics pipe MK3";
+		
 		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
 
@@ -140,8 +144,8 @@ public class Configs {
 		Property logisticItemHUDIdProperty = configuration.getOrCreateIntProperty("logisticsHUD.id", Configuration.CATEGORY_ITEM, ItemHUDId);
 		logisticItemHUDIdProperty.comment = "The item id for the Logistics HUD glasses";
 
-		Property logisticItemHUDPartsIdProperty = configuration.getOrCreateIntProperty("logisticsHUDParts.id", Configuration.CATEGORY_ITEM, ItemHUDPartsId);
-		logisticItemHUDPartsIdProperty.comment = "The item id for the Logistics HUD glasses parts";
+		Property logisticItemPartsIdProperty = configuration.getOrCreateIntProperty("logisticsHUDParts.id", Configuration.CATEGORY_ITEM, ItemPartsId);
+		logisticItemPartsIdProperty.comment = "The item id for the Logistics item parts";
 
 		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
@@ -202,7 +206,7 @@ public class Configs {
 		ItemDiskId							= Integer.parseInt(logisticItemDiskIdProperty.value);
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
 		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);
-		ItemHUDPartsId						= Integer.parseInt(logisticItemHUDPartsIdProperty.value);
+		ItemPartsId							= Integer.parseInt(logisticItemPartsIdProperty.value);
 		 
 		LOGISTICSPIPE_BASIC_ID 				= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID			= Integer.parseInt(logisticPipeRequesterIdProperty.value);

@@ -93,6 +93,9 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerForegroundLayer() {
+		
+		refreshButtons();
+		
 		super.drawGuiContainerForegroundLayer();
 		
 		int left = width / 2 - xSize / 2;

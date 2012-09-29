@@ -6,6 +6,7 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
@@ -53,7 +54,12 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	public void initGui() {
 		super.initGui();
        controlList.clear();
-       controlList.add(new GuiButton(0, width / 2 + 40, height / 2 - 59, 45, 20, _provider.isExcludeFilter() ? "Exclude" : "Include"));
+       controlList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20, new GuiStringHandlerButton.StringHandler() {
+		@Override
+		public String getContent() {
+			return _provider.isExcludeFilter() ? "Exclude" : "Include";
+		}
+       }));
        controlList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 	
@@ -61,7 +67,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
-			((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
+			//((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
 			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();

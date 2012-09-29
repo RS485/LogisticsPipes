@@ -13,6 +13,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;
@@ -34,7 +35,11 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		super.initGui();
        //Default item toggle:
        controlList.clear();
-       controlList.add(new GuiButton(0, width / 2 + 50, height / 2 - 34, 30, 20, _itemSink.isDefaultRoute() ? "Yes" : "No"));
+       controlList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler(){
+		@Override
+		public String getContent() {
+			return _itemSink.isDefaultRoute() ? "Yes" : "No";
+		}}));
 	}
 	
 	@Override
@@ -43,7 +48,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		{
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
-				((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
+				//((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
 				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
 				break;
 		}
@@ -90,6 +95,4 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_ItemSink_ID;
 	}
-	
-	//int inventoryRows = 1;
 }

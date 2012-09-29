@@ -83,9 +83,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 			return 0;
 	}
 
-	public boolean findElectricItem(ItemStack item, boolean discharged, boolean partial)
-	{
-		//TODO doesn't work as intended
+	public boolean findElectricItem(ItemStack item, boolean discharged, boolean partial) {
 		if (!SimpleServiceLocator.electricItemProxy.isElectricItem(item)) return false;
 
 		for (int i = 0; i < _filterInventory.getSizeInventory(); i++){
@@ -133,6 +131,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 
 	@Override
 	public void tick() {
+		if(MainProxy.isClient()) return;
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 

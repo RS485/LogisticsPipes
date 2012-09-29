@@ -114,7 +114,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				if (countToRequest < 1) continue;
 				boolean success = false;
 				do{ 
-					success = SimpleServiceLocator.logisticsManager.request(new LogisticsRequest(need, countToRequest, (IRequestItems) this.container.pipe, true), getRouter().getIRoutersByCost(), null);
+					success = LogisticsManager.Request(new LogisticsRequest(need, countToRequest, (IRequestItems) this.container.pipe), getRouter().getIRoutersByCost(), null);
 					if (success || countToRequest == 1){
 						break;
 					}

@@ -9,7 +9,6 @@ import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.utils.ItemIdentifier;
@@ -27,9 +26,9 @@ public class NormalOrdererRequests {
 	}
 	
 	public static void request(EntityPlayerMP player, PacketRequestSubmit packet, CoreRoutedPipe pipe) {
-		LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
+		LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe);
 		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
-		boolean result = SimpleServiceLocator.logisticsManager.request(request, pipe.getRouter().getIRoutersByCost(), errors);
+		boolean result = LogisticsManager.Request(request, pipe.getRouter().getIRoutersByCost(), errors, player);
 		if (!result){
 			MessageManager.errors(player, errors);
 		}
@@ -46,12 +45,12 @@ public class NormalOrdererRequests {
 		LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 		
 		if (option == DisplayOptions.SupplyOnly || option == DisplayOptions.Both){
-			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getRouteTable().keySet());
+			_availableItems = LogisticsPipes.logisticsManager.getAvailableItems(pipe.getRouter().getRouteTable().keySet());
 		} else {
 			_availableItems = new HashMap<ItemIdentifier, Integer>();
 		}
 		if (option == DisplayOptions.CraftOnly || option == DisplayOptions.Both){
-			_craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getRouteTable().keySet());
+			_craftableItems = LogisticsPipes.logisticsManager.getCraftableItems(pipe.getRouter().getRouteTable().keySet());
 		} else {
 			_craftableItems = new LinkedList<ItemIdentifier>();
 		}

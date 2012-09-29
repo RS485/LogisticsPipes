@@ -21,8 +21,8 @@ import logisticspipes.utils.ItemIdentifier;
 public interface ILogisticsManager {
 //	@Deprecated
 //	public UUID getDestinationFor(ItemIdentifier item, Set<Router> validDestinations);
-	//@Deprecated
-	//public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations);
-	//@Deprecated
-	//public LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations);
+	@Deprecated
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations);
+	@Deprecated
+	public LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations);
 }

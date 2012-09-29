@@ -18,7 +18,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.main.GuiIDs;
 import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
@@ -64,7 +63,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		super.updateEntity();
 		if(MainProxy.isClient()) return;
 		if (this.worldObj.getWorldTime() % 1200 == 0){
-			_history.addLast(SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet()));
+			_history.addLast(LogisticsPipes.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet()));
 			if (_history.size() > 20){
 				_history.removeFirst();
 			}

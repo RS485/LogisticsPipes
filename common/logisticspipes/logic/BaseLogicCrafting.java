@@ -189,8 +189,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		System.out.println("Item lost");
 		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe(), true);
-			if (SimpleServiceLocator.logisticsManager.request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe());
+			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}

@@ -16,14 +16,5 @@ public class LogisticsPromise {
 	public int numberOfItems;
 	public IProvideItems sender;
 	public boolean extra;
-	
-	public LogisticsPromise copy() {
-		LogisticsPromise promise = new LogisticsPromise();
-		promise.item = this.item;
-		promise.numberOfItems = this.numberOfItems;
-		promise.sender = this.sender;
-		promise.extra = this.extra;
-		return promise;
-	}
 
 }

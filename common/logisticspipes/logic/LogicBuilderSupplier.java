@@ -15,7 +15,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
@@ -105,7 +104,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				int neededCount = needed.get(need);
 				boolean success = false;
 				do{ 
-					success = SimpleServiceLocator.logisticsManager.request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe, true), getRouter().getIRoutersByCost(), null);
+					success = LogisticsManager.Request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe), getRouter().getIRoutersByCost(), null);
 					if (success || neededCount == 1){
 						break;
 					}

@@ -17,7 +17,6 @@ import logisticspipes.main.GuiIDs;
 import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -147,8 +146,8 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe(), true);
-			if (SimpleServiceLocator.logisticsManager.request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe());
+			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}

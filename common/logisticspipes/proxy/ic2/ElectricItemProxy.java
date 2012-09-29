@@ -5,9 +5,9 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ic2.api.IElectricItem;
-import net.minecraft.src.ic2.api.Ic2Recipes;
-import net.minecraft.src.ic2.api.Items;
+import ic2.api.IElectricItem;
+import ic2.api.Ic2Recipes;
+import ic2.api.Items;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 

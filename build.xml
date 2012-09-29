@@ -36,7 +36,7 @@
     <property name="forge.version"       value="4.1.1.251" />
     <property name="bc.version"          value="3.2.0.pre7" />
     <property name="forestry.version"    value="1.5.0.0" />
-    <property name="ic2.version"         value="1.97" />
+    <property name="ic2.version"         value="1.106" />
     <property name="lp.version"          value="0.5.1" />
     <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
 	<property name="lp.version.full"     value="${lp.version}.pre9" />
@@ -57,7 +57,7 @@
         <get src="${downloadserver.full}minecraftforge-src-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}-src.zip" dest="${download.dir}" usetimestamp="True" />
+        <get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True" />
         
 		<echo message="Download finished"/>
 		
@@ -135,7 +135,7 @@
 		<echo message="Copied Forestry API"/>
 		
         <!-- Copy IC2 API source -->
-        <copy todir="${commonsrc.dir}/net/minecraft/src">
+        <copy todir="${commonsrc.dir}">
             <fileset dir="${ic2.dir}"/>
         </copy>
 		

@@ -28,7 +28,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	@Override
 	public CreativeTabs getCreativeTab() {
-		return CreativeTabs.tabDeco;
+		return CreativeTabs.tabDecorations;
 	}
 
 	@Override

@@ -44,10 +44,10 @@ public class MainProxy {
 	
 	public static int getDimensionForWorld(World world) {
 		if(world instanceof WorldServer) {
-			return ((WorldServer)world).provider.worldType;
+			return ((WorldServer)world).provider.dimensionId;
 		}
 		if(world instanceof WorldClient) {
-			return ((WorldClient)world).provider.worldType;
+			return ((WorldClient)world).provider.dimensionId;
 		}
 		return world.getWorldInfo().getDimension();
 	}

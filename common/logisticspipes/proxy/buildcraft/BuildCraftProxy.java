@@ -50,6 +50,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
@@ -200,5 +201,9 @@ public class BuildCraftProxy {
 			}
 			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
 		}
+	}
+	
+	public boolean checkMaxItems() {
+		return BuildCraftTransport.maxItemsInPipes >= 1000;
 	}
 }

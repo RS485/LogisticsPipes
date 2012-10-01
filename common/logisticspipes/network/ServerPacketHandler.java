@@ -13,8 +13,6 @@ import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
-import logisticspipes.logisticspipes.macros.RequestHandler;
-import logisticspipes.logisticspipes.macros.RequestHandler.RequestReply;
 import logisticspipes.logisticspipes.modules.SneakyOrientation;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
@@ -45,8 +43,8 @@ import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.RequestHandler;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.NormalOrdererRequests;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -383,7 +381,7 @@ public class ServerPacketHandler {
 			return;
 		}
 
-		NormalOrdererRequests.request(player, packet, (CoreRoutedPipe) pipe.pipe);
+		RequestHandler.request(player, packet, (CoreRoutedPipe) pipe.pipe);
 	}
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
@@ -396,23 +394,23 @@ public class ServerPacketHandler {
 			return;
 		}
 
-		NormalOrdererRequests.DisplayOptions option;
+		RequestHandler.DisplayOptions option;
 		switch (packet.integer) {
 			case 0:
-				option = NormalOrdererRequests.DisplayOptions.Both;
+				option = RequestHandler.DisplayOptions.Both;
 				break;
 			case 1:
-				option = NormalOrdererRequests.DisplayOptions.SupplyOnly;
+				option = RequestHandler.DisplayOptions.SupplyOnly;
 				break;
 			case 2:
-				option = NormalOrdererRequests.DisplayOptions.CraftOnly;
+				option = RequestHandler.DisplayOptions.CraftOnly;
 				break;
 			default:
-				option = NormalOrdererRequests.DisplayOptions.Both;
+				option = RequestHandler.DisplayOptions.Both;
 				break;
 		}
 
-		NormalOrdererRequests.refresh(player, (CoreRoutedPipe) pipe.pipe, option);
+		RequestHandler.refresh(player, (CoreRoutedPipe) pipe.pipe, option);
 	}
 
 	private static void onItemSinkDefault(EntityPlayerMP player, PacketPipeInteger packet) {
@@ -821,8 +819,7 @@ public class ServerPacketHandler {
 			for(int i = 0;i < list.tagCount();i++) {
 				if(i == packet.integer) {
 					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
-					RequestReply reply = RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2)pipe.pipe,player);
-					PacketDispatcher.sendPacketToPlayer(new PacketItems(reply.items, !reply.suceed).getPacket(), (Player)player);
+					RequestHandler.requestMacrolist(itemlist, (PipeItemsRequestLogisticsMk2)pipe.pipe,player);
 					//mainGui.handleRequestAnswer(reply.items, reply.suceed, this, player);
 					break;
 				}

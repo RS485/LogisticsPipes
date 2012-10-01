@@ -30,18 +30,16 @@ import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
-import logisticspipes.interfaces.routing.ILogisticsManager;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
-import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.ItemParts;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.LogisticsItem;
-import logisticspipes.main.LogisticsManager;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
@@ -141,9 +139,6 @@ public class LogisticsPipes {
 	Block logisticsSign;
 	Block logisticsSolidBlock;
 	
-	@Deprecated
-	public static ILogisticsManager logisticsManager = new LogisticsManager();
-
 	@Init
 	public void init(FMLInitializationEvent event) {
 		

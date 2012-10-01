@@ -7,8 +7,6 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.GuiIDs;
-import logisticspipes.main.LogisticsManager;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
@@ -17,6 +15,7 @@ import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
@@ -27,7 +26,6 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.Slot;
 import buildcraft.api.core.Orientations;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
@@ -189,8 +187,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		System.out.println("Item lost");
 		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe());
-			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			if (RequestManager.request(iterator.next().makeStack(1), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}

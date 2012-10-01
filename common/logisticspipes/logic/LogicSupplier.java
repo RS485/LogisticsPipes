@@ -15,12 +15,11 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.GuiIDs;
-import logisticspipes.main.LogisticsManager;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -129,7 +128,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				int neededCount = needed.get(need);
 				boolean success = false;
 				do{ 
-					success = LogisticsManager.Request(new LogisticsRequest(need, neededCount, (IRequestItems) container.pipe), getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, getRouter().getIRoutersByCost(), null);
 					if (success || neededCount == 1){
 						break;
 					}

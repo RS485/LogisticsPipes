@@ -6,6 +6,7 @@ import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.proxy.MainProxy;
@@ -45,15 +46,21 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				ItemStack slot = inv.getStackInSlot(i);
 				if(slot == null) continue;
-				ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, tile.orientation.reverse(), true);
-				slot.stackSize -= added.stackSize;
-				if(added.stackSize != 0) {
-					change = true;
-				}
-				if(slot.stackSize <= 0) {
-					inv.setInventorySlotContents(i, null);
-				} else {
-					inv.setInventorySlotContents(i, slot);
+				//IC2 workAround
+				for(int j=0;j < 2 && !change;j++) {
+					if(j == 1 &&SimpleServiceLocator.electricItemProxy.isElectricItem(slot) && slot.hasTagCompound() && slot.getTagCompound().getName().equals("")) {
+						slot.getTagCompound().setName("tag");
+					}
+					ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, tile.orientation.reverse(), true);
+					slot.stackSize -= added.stackSize;
+					if(added.stackSize != 0) {
+						change = true;
+					}
+					if(slot.stackSize <= 0) {
+						inv.setInventorySlotContents(i, null);
+					} else {
+						inv.setInventorySlotContents(i, slot);
+					}
 				}
 			}
 		}
@@ -70,7 +77,11 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 
 	@Override
 	public int getCenterTexture() {
-		return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
+		} else {
+			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE_DIS;
+		}
 	}
 
 	@Override

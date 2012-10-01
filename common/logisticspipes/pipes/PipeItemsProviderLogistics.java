@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.config.Textures;
@@ -40,6 +41,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -170,6 +172,9 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		super.updateEntity();
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
+		
+		if(!this.getClass().equals(PipeItemsProviderLogistics.class)) return;
+		
 		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
 		if (sent > 0){
@@ -181,27 +186,23 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void canProvide(LogisticsTransaction transaction) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
 		
 		if (!isEnabled()){
 			return;
 		}
 		
 		// Check the transaction and see if we have helped already
-		HashMap<ItemIdentifier, Integer> commited = transaction.getTotalPromised(this);
-		for (LogisticsRequest request : transaction.getRemainingRequests()){
-			int canProvide = getAvailableItemCount(request.getItem());
-			if (commited.containsKey(request.getItem())){
-				canProvide -= commited.get(request.getItem());
-			}
-			if (canProvide < 1) continue;
-			LogisticsPromise promise = new LogisticsPromise();
-			promise.item = request.getItem();
-			promise.numberOfItems = Math.min(canProvide, request.notYetAllocated());
-			promise.sender = this;
-			request.addPromise(promise);
-			commited = transaction.getTotalPromised(this);
+		int canProvide = getAvailableItemCount(tree.getStack().getItem());
+		if (donePromisses.containsKey(tree.getStack().getItem())){
+			canProvide -= donePromisses.get(tree.getStack().getItem());
 		}
+		if (canProvide < 1) return;
+		LogisticsPromise promise = new LogisticsPromise();
+		promise.item = tree.getStack().getItem();
+		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
+		promise.sender = this;
+		tree.addPromise(promise);
 	}
 	
 	@Override

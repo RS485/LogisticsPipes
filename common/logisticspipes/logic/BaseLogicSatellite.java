@@ -14,14 +14,13 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.GuiIDs;
-import logisticspipes.main.LogisticsManager;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.RequestManager;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
@@ -146,8 +145,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			final LogisticsRequest request = new LogisticsRequest(iterator.next(), 1, getRoutedPipe());
-			if (LogisticsManager.Request(request, ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			if (RequestManager.request(iterator.next().makeStack(1), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}

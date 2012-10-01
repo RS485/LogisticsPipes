@@ -14,10 +14,9 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.GuiIDs;
-import logisticspipes.main.LogisticsManager;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -114,7 +113,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				if (countToRequest < 1) continue;
 				boolean success = false;
 				do{ 
-					success = LogisticsManager.Request(new LogisticsRequest(need, countToRequest, (IRequestItems) this.container.pipe), getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, getRouter().getIRoutersByCost(), null);
 					if (success || countToRequest == 1){
 						break;
 					}

@@ -234,6 +234,11 @@ public class ClientRouter implements IRouter {
 				continue;
 			}
 			
+			if(node == null || node.getId() == null || treeCost == null || treeCost.get(node) == null) {
+				System.out.println();
+				continue;
+			}
+			
 			_routeCosts.put(node.getId(), treeCost.get(node));
 			_routeTable.put(node.getId(), _adjacent.get(firstHop.getId()).exitOrientation);
 		}

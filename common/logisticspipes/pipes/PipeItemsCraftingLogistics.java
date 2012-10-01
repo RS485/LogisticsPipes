@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -28,10 +29,8 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.main.CraftingTemplate;
 import logisticspipes.main.LogisticsOrderManager;
 import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
@@ -42,6 +41,8 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -185,32 +186,30 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public int getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}
-	
-	public void canProvide(LogisticsTransaction transaction){
+
+	@Override
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
 		
 		if (!isEnabled()){
 			return;
 		}
 		
 		if (_extras < 1) return;
-		for (LogisticsRequest request : transaction.getRemainingRequests()){
-			ItemIdentifier providedItem = providedItem();
-			if (request.getItem() != providedItem) continue;
-			HashMap<ItemIdentifier, Integer> promised = transaction.getTotalPromised(this);
-			int alreadyPromised = promised.containsKey(providedItem) ? promised.get(providedItem) : 0; 
-			if (alreadyPromised >= _extras) continue;
-			int remaining = _extras - alreadyPromised;
-			LogisticsPromise promise = new LogisticsPromise();
-			promise.item = providedItem;
-			promise.numberOfItems = Math.min(remaining, request.notYetAllocated());
-			promise.sender = this;
-			promise.extra = true;
-			request.addPromise(promise);
-		}
+		ItemIdentifier providedItem = providedItem();
+		if (tree.getStack().getItem() != providedItem) return;
+		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
+		if (alreadyPromised >= _extras) return;
+		int remaining = _extras - alreadyPromised;
+		LogisticsPromise promise = new LogisticsPromise();
+		promise.item = providedItem;
+		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
+		promise.sender = this;
+		promise.extra = true;
+		tree.addPromise(promise);
 	}
 
 	@Override
-	public void canCraft(LogisticsTransaction transaction) {
+	public void addCrafting(LinkedList<CraftingTemplate> crafters) {
 		
 		if (!isEnabled()){
 			return;
@@ -235,7 +234,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			}
 				
 		}
-		transaction.addCraftingTemplate(template);
+		crafters.add(template);
 	}
 
 	@Override

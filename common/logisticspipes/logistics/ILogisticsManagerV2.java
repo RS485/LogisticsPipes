@@ -30,8 +30,7 @@ public interface ILogisticsManagerV2 {
 	LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations);
 	HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations);
 	String getBetterRouterName(IRouter r);
-	boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
-	boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);
-	boolean request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors);
-	
+	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
+	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);
+	//boolean request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors);
 }

@@ -22,7 +22,6 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.CraftingTemplate;
 import logisticspipes.main.ItemMessage;
 import logisticspipes.main.LogisticsPromise;
 import logisticspipes.main.LogisticsRequest;
@@ -32,12 +31,13 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.request.CraftingTemplate;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.src.ItemStack;
 
-public class LogisticsManagerV2 implements ILogisticsManagerV2{
+public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	
 	@Override
 	public boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource) {
@@ -146,6 +146,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 		return assignDestinationFor(item, currentRouter, false);
 	}
 
+	/*
 	@Override
 	public boolean request(LogisticsRequest originalRequest, List<IRouter> validDestinations, List<ItemMessage> errors){
 		LogisticsTransaction transaction = new LogisticsTransaction(originalRequest, true);
@@ -184,7 +185,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 		
 		for (IRouter r : validDestinations) {
 			if (r.getPipe() instanceof ICraftItems) {
-				((ICraftItems)r.getPipe()).canCraft(transaction);
+				//((ICraftItems)r.getPipe()).canCraft(transaction);
 			}
 		}
 		
@@ -240,7 +241,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 		if(!transaction.hasCraftingTemplates() && !denyCrafterAdding) {
 			for (IRouter r : validDestinations) {
 				if (r.getPipe() instanceof ICraftItems) {
-					((ICraftItems)r.getPipe()).canCraft(transaction);
+					//((ICraftItems)r.getPipe()).canCraft(transaction);
 				}
 			}
 		}
@@ -249,7 +250,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 	private boolean checkProviders(LogisticsTransaction transaction, List<IRouter> validDestinations) {
 		for(IRouter r : validDestinations) {
 			if (r.getPipe() instanceof IProvideItems){
-				((IProvideItems)r.getPipe()).canProvide(transaction);
+				//((IProvideItems)r.getPipe()).canProvide(transaction);
 				if (transaction.isDeliverable()) break;
 			}
 		}
@@ -327,7 +328,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 		}
 		return newvalidDestinations;
 	}
-
+*/
+	
 	@Override
 	public String getBetterRouterName(IRouter r){
 		
@@ -384,7 +386,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2{
 			
 			ICraftItems crafter = (ICraftItems) r.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
-			if (craftedItem != null){
+			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);
 			}
 		}

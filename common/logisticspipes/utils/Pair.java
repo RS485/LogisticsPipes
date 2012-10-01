@@ -1,5 +1,7 @@
 package logisticspipes.utils;
 
+import logisticspipes.interfaces.routing.IRequestItems;
+
 
 /*** What kind of language does not have a generic pair class???? ***/
 public class Pair<T1, T2> {

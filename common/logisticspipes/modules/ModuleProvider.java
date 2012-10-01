@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -22,6 +23,7 @@ import logisticspipes.main.LogisticsPromise;
 import logisticspipes.main.LogisticsRequest;
 import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
@@ -99,23 +101,18 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	}
 
 	@Override
-	public void canProvide(LogisticsTransaction transaction) {
-		// Check the transaction and see if we have helped already
-		HashMap<ItemIdentifier, Integer> commited = transaction.getTotalPromised((IProvideItems) _itemSender);
-		for (LogisticsRequest request : transaction.getRemainingRequests()){
-			int canProvide = getAvailableItemCount(request.getItem());
-			if (commited.containsKey(request.getItem())){
-				canProvide -= commited.get(request.getItem());
-			}
-			if (canProvide < 1) continue;
-			LogisticsPromise promise = new LogisticsPromise();
-			promise.item = request.getItem();
-			promise.numberOfItems = Math.min(canProvide, request.notYetAllocated());
-			//TODO: FIX THIS CAST
-			promise.sender = (IProvideItems) _itemSender;
-			request.addPromise(promise);
-			commited = transaction.getTotalPromised((IProvideItems) _itemSender);
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+		int canProvide = getAvailableItemCount(tree.getStack().getItem());
+		if (donePromisses.containsKey(tree.getStack().getItem())) {
+			canProvide -= donePromisses.get(tree.getStack().getItem());
 		}
+		if (canProvide < 1) return;
+		LogisticsPromise promise = new LogisticsPromise();
+		promise.item = tree.getStack().getItem();
+		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
+		//TODO: FIX THIS CAST
+		promise.sender = (IProvideItems) _itemSender;
+		tree.addPromise(promise);
 	}
 
 	@Override

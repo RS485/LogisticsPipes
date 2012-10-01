@@ -2,6 +2,7 @@ package logisticspipes.pipes;
 
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
@@ -13,7 +14,11 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 
 	@Override
 	public int getCenterTexture() {
-		return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
+		} else {
+			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE_DIS;
+		}
 	}
 
 	@Override
@@ -30,6 +35,9 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 				}
 				else {
 					_orderManager.sendFailed();
+				}
+				if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+					break;
 				}
 			}
 		}

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.config.Textures;
@@ -46,6 +47,7 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
@@ -339,7 +341,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(LogisticsTransaction transaction) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
 		
 		if (!isEnabled()){
 			return;
@@ -348,7 +350,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				((ILegacyActiveModule)x).canProvide(transaction);
+				((ILegacyActiveModule)x).canProvide(tree, donePromisses);
 			}
 		}
 	}

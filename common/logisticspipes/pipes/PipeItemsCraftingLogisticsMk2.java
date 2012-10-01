@@ -84,7 +84,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 					}
 				}
 			}
-			if(!_orderManager.hasOrders()) {
+			if(!_orderManager.hasOrders() || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
 				break;
 			}
 		}
@@ -92,7 +92,11 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 
 	@Override
 	public int getCenterTexture() {
-		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
+		} else {
+			return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE_DIS;
+		}
 	}
 
 	@Override

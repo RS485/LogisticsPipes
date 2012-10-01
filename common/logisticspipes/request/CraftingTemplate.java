@@ -6,14 +6,19 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.request;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.main.LogisticsPromise;
+import logisticspipes.main.LogisticsRequest;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair;
 
 
 public class CraftingTemplate {
@@ -47,6 +52,14 @@ public class CraftingTemplate {
 			requests.add(new LogisticsRequest(stack.getItem(), stack.stackSize, _required.get(stack), realRequest));
 		}
 		return requests;
+	}
+	
+	public List<Pair<ItemIdentifierStack,IRequestItems>> getSource() {
+		List<Pair<ItemIdentifierStack,IRequestItems>> result = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
+		for (ItemIdentifierStack stack : _required.keySet()) {
+			result.add(new Pair<ItemIdentifierStack,IRequestItems>(stack,_required.get(stack)));
+		}
+		return result;
 	}
 
 	public ItemIdentifierStack getResultStack() {

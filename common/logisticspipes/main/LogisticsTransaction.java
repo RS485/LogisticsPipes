@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.request.CraftingTemplate;
 import logisticspipes.utils.ItemIdentifier;
 
 

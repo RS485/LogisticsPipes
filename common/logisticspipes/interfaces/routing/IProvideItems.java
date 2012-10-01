@@ -9,16 +9,17 @@
 package logisticspipes.interfaces.routing;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsTransaction;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 
 
 
 public interface IProvideItems {
-	public void canProvide(LogisticsTransaction transaction);
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses);
 	public void fullFill(LogisticsPromise promise, IRequestItems destination);
 	public int getAvailableItemCount(ItemIdentifier item);
 	public HashMap<ItemIdentifier, Integer> getAllItems();

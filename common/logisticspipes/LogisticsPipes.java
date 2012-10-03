@@ -27,7 +27,10 @@ TODO later, maybe....
 package logisticspipes;
 
 import logisticspipes.blocks.LogisticsSignBlock;
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_IC2_BuildCraft;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
 import logisticspipes.items.CraftingSignCreator;
@@ -135,6 +138,8 @@ public class LogisticsPipes {
 	
 	private Textures textures = new Textures();
 	
+	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
+	
 	//Blocks
 	Block logisticsSign;
 	Block logisticsSolidBlock;
@@ -222,6 +227,7 @@ public class LogisticsPipes {
 				@Override public boolean isDischarged(ItemStack stack, boolean partial, Item electricItem) {return false;}
 				@Override public boolean isCharged(ItemStack stack, boolean partial, Item electricItem) {return false;}
 				@Override public void addCraftingRecipes() {}
+				@Override public boolean hasIC2() {return false;}
 			});
 			System.out.println("Loaded IC2 DummyProxy");
 		}
@@ -298,6 +304,14 @@ public class LogisticsPipes {
 		ModLoader.registerBlock(logisticsSign);
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
+		
+		//Power Junction
+		if(SimpleServiceLocator.electricItemProxy.hasIC2()) {
+			powerTileEntity = LogisticsPowerJuntionTileEntity_IC2_BuildCraft.class;
+		} else {
+			powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
+		}
+
 		MainProxy.proxy.registerTileEntitis();
 	}
 	

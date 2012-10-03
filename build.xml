@@ -87,7 +87,7 @@
         
         <unzip dest="${ic2.dir}">
             <fileset dir="${download.dir}">
-                <include name="industrialcraft-2-api_${ic2.version}-src.zip"/>
+                <include name="industrialcraft-2-api_${ic2.version}.zip"/>
             </fileset>
         </unzip>
         

@@ -19,6 +19,7 @@ public class Textures {
 	public static int LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE			= 0;
 	public static int LOGISTICSPIPE_ROUTED_TEXTURE					= 0;
 	public static int LOGISTICSPIPE_NOTROUTED_TEXTURE				= 0;
+	public static int LOGISTICSPIPE_POWERED_TEXTURE					= 0;
 	public static int LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE			= 0;
 	public static int LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE		= 0;
 	public static int LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE		= 0;
@@ -70,6 +71,7 @@ public class Textures {
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
 	public static final String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/not_routed.png";
+	public static final String LOGISTICSPIPE_POWERED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/powered.png";
 	// Chassi pipes
 	public static final String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk1.png";
 	public static final String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk2.png";
@@ -100,7 +102,6 @@ public class Textures {
 	// Misc
 	public static final String LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures.png";
 	public static final String LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures.png";
-
 	
 	public void load(FMLStateEvent event) {
 		if(event.getSide().isClient()) {
@@ -114,6 +115,7 @@ public class Textures {
 		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
 		LOGISTICSPIPE_ROUTED_TEXTURE 				= registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_NOTROUTED_TEXTURE 			= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(LOGISTICSPIPE_POWERED_TEXTURE_FILE);
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
 		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
@@ -133,7 +135,7 @@ public class Textures {
 		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK3_TEXTURE_DIS		= registerTexture(LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE_DIS);
-		
+
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE);

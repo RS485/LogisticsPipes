@@ -21,6 +21,7 @@ import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
@@ -29,13 +30,10 @@ import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.modules.ModuleExtractor;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
-import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -52,8 +50,6 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler {
 
@@ -291,6 +287,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	public ILogisticsPowerProvider getRoutedPowerProvider() {
+		if(MainProxy.isServer()) {
+			return ((ServerRouter)this.getRouter()).getPowerProvider();
+		} else {
+			return null;
+		}
+	}
+	
 	public boolean isEnabled(){
 		return enabled;
 	}
@@ -390,5 +394,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void itemCouldNotBeSend(ItemIdentifierStack item) {
 		//Override by subclasses //TODO
+	}
+
+	public boolean isLockedExit(Orientations orientation) {
+		return false;
 	}
 }

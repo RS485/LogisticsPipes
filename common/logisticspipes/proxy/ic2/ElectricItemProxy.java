@@ -86,4 +86,9 @@ public class ElectricItemProxy implements IElectricItemProxy {
 										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
 	}
 
+	@Override
+	public boolean hasIC2() {
+		return true;
+	}
+
 }

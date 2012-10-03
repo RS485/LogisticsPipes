@@ -30,10 +30,13 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	@Override
 	public IRouter getRouter(UUID id){
 		if(MainProxy.isClient()) {
-			for(IRouter router:_routersClient) {
-				if(router.getId().equals(id)) {
-					return router;
+			synchronized (_routersClient) {
+				for(IRouter router:_routersClient) {
+					if(router.getId().equals(id)) {
+						return router;
+					}
 				}
+				
 			}
 			return null;
 		} else {
@@ -44,13 +47,15 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	public void removeRouter(UUID id) {
 		if(MainProxy.isClient()) {
 			IRouter remove = null;
-			for(IRouter router:_routersClient) {
-				if(router.getId().equals(id)) {
-					remove = router;
+			synchronized (_routersClient) {
+				for(IRouter router:_routersClient) {
+					if(router.getId().equals(id)) {
+						remove = router;
+					}
 				}
-			}
-			if (remove != null){
-				_routersClient.remove(remove);
+				if (remove != null){
+					_routersClient.remove(remove);
+				}
 			}
 		} else {
 			if (_routersServer.containsKey(id)){
@@ -65,7 +70,9 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		if (r == null){
 			if(MainProxy.isClient()) {
 				r = new ClientRouter(id, dimension, xCoord, yCoord, zCoord);
-				_routersClient.add(r);
+				synchronized (_routersClient) {
+					_routersClient.add(r);
+				}
 			} else {
 				r = new ServerRouter(id, dimension, xCoord, yCoord, zCoord);
 				_routersServer.put(id, r);
@@ -77,9 +84,11 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	@Override
 	public boolean isRouter(UUID id) {
 		if(MainProxy.isClient()) {
-			for(IRouter router:_routersClient) {
-				if(router.getId().equals(id)) {
-					return true;
+			synchronized (_routersClient) {
+				for(IRouter router:_routersClient) {
+					if(router.getId().equals(id)) {
+						return true;
+					}
 				}
 			}
 			return false;
@@ -91,8 +100,10 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	public Map<UUID, IRouter> getRouters() {
 		if(MainProxy.isClient()) {
 			Map<UUID, IRouter> map = new HashMap<UUID, IRouter>();
-			for(IRouter router:_routersClient) {
-				map.put(router.getId(), router);
+			synchronized (_routersClient) {
+				for(IRouter router:_routersClient) {
+					map.put(router.getId(), router);
+				}
 			}
 			return Collections.unmodifiableMap(map);
 		} else {

@@ -30,7 +30,7 @@ import buildcraft.api.power.PowerFramework;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory , IGuiOpenControler{
+public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory , IGuiOpenControler {
 	
 	private IPowerProvider provider;
 	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);

@@ -23,4 +23,6 @@ public interface IElectricItemProxy {
 
 	public abstract void addCraftingRecipes();
 
+	public abstract boolean hasIC2();
+
 }

@@ -15,13 +15,13 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		super(par1);
 	}
 
-
-    @SideOnly(Side.CLIENT)
-    public String getItemDisplayName(ItemStack stack)
-    {
-    switch(stack.getItemDamage()) {
+	@SideOnly(Side.CLIENT)
+	public String getItemDisplayName(ItemStack stack) {
+		switch (stack.getItemDamage()) {
 		case LogisticsSolidBlock.SOLDERING_STATION:
 			return "Soldering Station";
+		case LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION:
+			return "Logistics Power Junction";
 		}
 		return super.getItemDisplayName(stack);
 	}
@@ -32,14 +32,13 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	}
 
 	@Override
-	public int getMetadata(int par1)
-    {
+	public int getMetadata(int par1) {
         return par1;
     }
 	
 	@Override
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this,1,0));
+		par3List.add(new ItemStack(this,1,1));
 	}
-
 }

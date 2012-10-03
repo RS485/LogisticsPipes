@@ -2,6 +2,7 @@ package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
 
+import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.AdjacentTile;
@@ -42,6 +43,14 @@ public class PipeTransportLayer extends TransportLayer{
 		
 		for (AdjacentTile tile : adjacentEntities){
 			if (tile.tile instanceof TileGenericPipe) continue;
+			
+			CoreRoutedPipe pipe = _router.getPipe();
+			if(pipe != null) {
+				if(pipe.isLockedExit(tile.orientation)) {
+					continue;
+				}
+			}
+			
 			possibleOrientations.add(tile.orientation);
 		}
 		if (possibleOrientations.size() != 0){
@@ -51,6 +60,14 @@ public class PipeTransportLayer extends TransportLayer{
 		// 2nd prio, deliver to non-routed exit
 		for (AdjacentTile tile : adjacentEntities){
 			if (_router.isRoutedExit(tile.orientation)) continue;
+			CoreRoutedPipe pipe = _router.getPipe();
+			
+			if(pipe != null) {
+				if(pipe.isLockedExit(tile.orientation)) {
+					continue;
+				}
+			}
+			
 			possibleOrientations.add(tile.orientation);
 		}
 		// 3rd prio, drop item

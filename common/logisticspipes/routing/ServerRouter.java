@@ -17,12 +17,15 @@ import cpw.mods.fml.common.network.Player;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
+import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.main.RoutedPipe;
 import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketRouterInformation;
+import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
@@ -33,7 +36,7 @@ import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
-public class ServerRouter implements IRouter {
+public class ServerRouter implements IRouter, IPowerRouter {
 
 	private class LSA {
 		public IRouter source;
@@ -445,6 +448,32 @@ public class ServerRouter implements IRouter {
 		CoreRoutedPipe pipe = this.getPipe();
 		if (pipe == null) return null;
 		return pipe.getLogisticsModule();
+	}
+
+	@Override
+	public ILogisticsPowerProvider getPowerProvider() {
+		if(getConnectedPowerProvider() != null) {
+			return getConnectedPowerProvider();
+		}
+		for(IRouter router:getIRoutersByCost()) {
+			if(router instanceof IPowerRouter) {
+				ILogisticsPowerProvider power = ((IPowerRouter)router).getConnectedPowerProvider();
+				if(power != null) {
+					return power;
+				}
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public ILogisticsPowerProvider getConnectedPowerProvider() {
+		CoreRoutedPipe pipe = getPipe();
+		if(pipe instanceof PipeItemsBasicLogistics) {
+			return ((PipeItemsBasicLogistics)pipe).getConnectedPowerProvider();
+		} else {
+			return null;
+		}
 	}
 }
 

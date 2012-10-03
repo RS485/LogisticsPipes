@@ -1,10 +1,9 @@
 package logisticspipes.blocks.powertile;
 
-import net.minecraft.src.TileEntity;
 import ic2.api.Direction;
 import ic2.api.IEnergySink;
 import ic2.common.EnergyNet;
-import ic2.common.IC2;
+import net.minecraft.src.TileEntity;
 
 public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPowerJuntionTileEntity_BuildCraft implements IEnergySink {
 

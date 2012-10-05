@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
-import logisticspipes.gui.hud.modules.HUDItemSink;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -20,18 +17,18 @@ import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SneakyOrientation;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
@@ -40,6 +37,8 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Orientations;
 import buildcraft.core.utils.Utils;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
@@ -49,6 +48,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	private boolean _itemsIncluded = true;
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
+	protected IChassiePowerProvider _power;
 	protected SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 	
 	private int slot = 0;
@@ -66,9 +66,10 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
+		_power = powerprovider;
 	}
 	
 	public SimpleInventory getFilterInventory() {
@@ -118,6 +119,10 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 
 	protected int itemsToExtract() {
 		return 1;
+	}
+	
+	protected int neededEnergy() {
+		return 6;
 	}
 	
 	public boolean connectedToSidedInventory() {
@@ -170,6 +175,16 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 			ItemStack slot = inventory.getStackInSlot(k);
 			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot))) {
 				if (doRemove) {
+					int count = Math.min(itemsToExtract(), slot.stackSize);
+
+					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+						count--;
+					}
+					
+					if(count <= 0) {
+						return null;
+					}
+					
 					return inventory.decrStackSize(k, itemsToExtract());
 				}
 				return slot;

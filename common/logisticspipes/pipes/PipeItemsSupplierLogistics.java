@@ -8,11 +8,13 @@
 
 package logisticspipes.pipes;
 
+import org.omg.CORBA._PolicyStub;
+
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicSupplier;
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 
 public class PipeItemsSupplierLogistics extends RoutedPipe implements IRequestItems{
 
@@ -20,6 +22,7 @@ public class PipeItemsSupplierLogistics extends RoutedPipe implements IRequestIt
 		
 	public PipeItemsSupplierLogistics(int itemID) {
 		super(new LogicSupplier(), itemID);
+		((LogicSupplier)this.logic)._power = this;
 	}
 	
 	@Override

@@ -1,8 +1,8 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.logisticspipes.modules.SinkReply;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.utils.SinkReply;
 import buildcraft.api.core.Orientations;
 
 public class ChassiTransportLayer extends TransportLayer{

@@ -1,4 +1,4 @@
-package logisticspipes.proxy;
+package logisticspipes.proxy.interfaces;
 
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;

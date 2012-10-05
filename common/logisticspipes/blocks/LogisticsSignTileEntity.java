@@ -3,8 +3,8 @@ package logisticspipes.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.main.CoreRoutedPipe;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.TileEntity;
 import buildcraft.transport.TileGenericPipe;

@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.items;
 
 import logisticspipes.config.Textures;
 import net.minecraft.src.Item;

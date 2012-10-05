@@ -11,4 +11,9 @@ public class ModuleAdvancedExtractorMK2 extends ModuleAdvancedExtractor {
 	protected int ticksToAction() {
 		return 20;
 	}
+
+	@Override
+	protected int neededEnergy() {
+		return 8;
+	}
 }

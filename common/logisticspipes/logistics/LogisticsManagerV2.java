@@ -8,33 +8,25 @@
 
 package logisticspipes.logistics;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.ItemMessage;
-import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsRequest;
-import logisticspipes.main.LogisticsTransaction;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.request.CraftingTemplate;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.SinkReply;
 import net.minecraft.src.ItemStack;
 
 public class LogisticsManagerV2 implements ILogisticsManagerV2 {

@@ -1,5 +1,6 @@
 package logisticspipes.transport;
 
+import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -8,10 +9,8 @@ import buildcraft.api.transport.IPipeEntry;
 import buildcraft.core.inventory.Transactor;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.EntityData;
-import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 
 public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	

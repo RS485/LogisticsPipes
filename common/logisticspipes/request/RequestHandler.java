@@ -7,14 +7,14 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.MessageManager;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.ItemMessage;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.ItemMessage;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
@@ -33,6 +33,9 @@ public class RequestHandler {
 	public static void request(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
 		//LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
 		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
+		if(!pipe.useEnergy(5)) {
+			player.sendChatToPlayer("No Energy");
+		}
 		boolean result = RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
@@ -97,6 +100,9 @@ public class RequestHandler {
 	
 
 	public static void requestMacrolist(NBTTagCompound itemlist, IRequestItems requester, final EntityPlayer player) {
+		if(!requester.useEnergy(5)) {
+			player.sendChatToPlayer("No Energy");
+		}
 		NBTTagList list = itemlist.getTagList("inventar");
 		LinkedList<ItemIdentifierStack> transaction = new LinkedList<ItemIdentifierStack>();
 		List<ItemMessage> items = new ArrayList<ItemMessage>();

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDPassiveSupplier;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -14,19 +15,19 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -38,6 +39,7 @@ public class ModulePassiveSupplier implements ILogisticsModule, IClientInformati
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 64);
 	private IInventoryProvider _invProvider;
+	private IChassiePowerProvider _power;
 	private int slot = 0;
 	private int xCoord = 0;
 	private int yCoord = 0;
@@ -53,8 +55,9 @@ public class ModulePassiveSupplier implements ILogisticsModule, IClientInformati
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
+		_power = powerprovider;
 	}
 
 	public IInventory getFilterInventory(){
@@ -76,7 +79,10 @@ public class ModulePassiveSupplier implements ILogisticsModule, IClientInformati
 		SinkReply reply = new SinkReply();
 		reply.fixedPriority = FixedPriority.PassiveSupplier;
 		reply.isPassive = true;
-		return reply;
+		if(_power.useEnergy(2)) {
+			return reply;
+		}
+		return null;
 	}
 
 	@Override

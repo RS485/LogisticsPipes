@@ -4,11 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-
 import logisticspipes.gui.hud.modules.HUDElectricManager;
-import logisticspipes.gui.hud.modules.HUDItemSink;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -18,22 +15,24 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -41,6 +40,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	private boolean _dischargeMode;
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
+	protected IChassiePowerProvider _power;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 	
@@ -70,9 +70,10 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
+		_power = powerprovider;
 	}
 
 	public static int getCharge(ItemStack item)
@@ -99,12 +100,13 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		if (findElectricItem(item, !isDischargeMode(), true))
-		{
+		if (findElectricItem(item, !isDischargeMode(), true)) {
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
-			return reply;
+			if(_power.useEnergy(2)) {
+				return reply;
+			}
 		}
 		return null;
 	}
@@ -140,7 +142,9 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if (item != null && findElectricItem(item, isDischargeMode(), false)) {
-				_itemSender.sendStack(inv.decrStackSize(i,1));
+				if(_power.useEnergy(6)) {
+					_itemSender.sendStack(inv.decrStackSize(i,1));
+				}
 			}
 		}
 	}

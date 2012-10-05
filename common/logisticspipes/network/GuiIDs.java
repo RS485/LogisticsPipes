@@ -1,4 +1,4 @@
-package logisticspipes.main;
+package logisticspipes.network;
 
 public class GuiIDs {
 	//Pipes

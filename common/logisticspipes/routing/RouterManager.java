@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
-import logisticspipes.main.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 
 

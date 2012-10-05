@@ -2,18 +2,16 @@ package logisticspipes.gui.hud.modules;
 
 import java.util.List;
 
+import logisticspipes.interfaces.IHUDButton;
+import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
-
-import logisticspipes.interfaces.IHUDButton;
-import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.modules.ModuleElectricManager;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.gui.BasicGuiHelper;
 
 public class HUDElectricManager implements IHUDModuleRenderer {
 	

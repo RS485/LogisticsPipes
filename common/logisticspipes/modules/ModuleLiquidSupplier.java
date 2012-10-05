@@ -3,18 +3,19 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -28,7 +29,7 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {}
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {}
 
 	@Override
 	public SinkReply sinksItem(ItemStack item) {

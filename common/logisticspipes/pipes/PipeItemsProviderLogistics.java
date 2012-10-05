@@ -31,17 +31,15 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.main.LogisticsOrderManager;
-import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsRequest;
-import logisticspipes.main.LogisticsTransaction;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.LogisticsOrderManager;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -174,6 +172,8 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
 		
 		if(!this.getClass().equals(PipeItemsProviderLogistics.class)) return;
+		
+		if(!useEnergy(1)) return;
 		
 		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());

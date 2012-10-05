@@ -8,8 +8,8 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiScreen;
 import net.minecraft.src.IInventory;

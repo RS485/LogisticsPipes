@@ -18,6 +18,7 @@ import java.util.UUID;
 import logisticspipes.config.Textures;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILegacyActiveModule;
@@ -37,18 +38,17 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsTransaction;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -268,7 +268,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			
 			if (stack.getItem() instanceof ItemModule){
 				ILogisticsModule current = _module.getModule(i);
-				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this);
+				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this, this);
 				next.registerPosition(xCoord, yCoord, zCoord, i);
 				if (current != next){
 					_module.installModule(i, next);

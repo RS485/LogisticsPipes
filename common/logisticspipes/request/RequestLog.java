@@ -2,7 +2,7 @@ package logisticspipes.request;
 
 import java.util.LinkedList;
 
-import logisticspipes.main.ItemMessage;
+import logisticspipes.utils.ItemMessage;
 
 public interface RequestLog {
 	public void handleMissingItems(LinkedList<ItemMessage> list);

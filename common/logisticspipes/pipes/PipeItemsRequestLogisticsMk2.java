@@ -2,7 +2,7 @@ package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;

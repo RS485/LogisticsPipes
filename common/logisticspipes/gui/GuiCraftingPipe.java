@@ -10,8 +10,7 @@ package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.BaseLogicCrafting;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;

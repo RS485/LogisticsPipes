@@ -1,7 +1,7 @@
 package logisticspipes.gui;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.EntityPlayer;

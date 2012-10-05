@@ -6,7 +6,6 @@ import net.minecraft.src.TileEntity;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
-import buildcraft.api.power.PowerProvider;
 
 public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider {
 	

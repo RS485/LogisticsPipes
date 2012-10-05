@@ -27,7 +27,6 @@ TODO later, maybe....
 package logisticspipes;
 
 import logisticspipes.blocks.LogisticsSignBlock;
-import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_IC2_BuildCraft;
@@ -38,16 +37,16 @@ import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
-import logisticspipes.main.LogisticsItem;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.ElectricItemProxy;

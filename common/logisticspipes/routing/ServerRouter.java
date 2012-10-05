@@ -8,25 +8,25 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.Packet250CustomPayload;
@@ -44,8 +44,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
-	//private final LinkedList<RoutedEntityItem> _outboundItems = new LinkedList<RoutedEntityItem>();
-	//private final LinkedList<RoutedEntityItem> _inboundItems = new LinkedList<RoutedEntityItem>();
 
 	private static int _LSDVersion = 0;
 	private int _lastLSDVersion = 0;
@@ -59,6 +57,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, Orientations> _routeTable = new HashMap<IRouter, Orientations>();
 	public HashMap<IRouter, Integer> _routeCosts = new HashMap<IRouter, Integer>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
+	
+	/** IRouter Tree **/
+	public LogisticsNetworkTree tree = new LogisticsNetworkTree(this, new LinkedHashMap<LogisticsNetworkTree, ExitRoute>(), null);
 
 	private boolean _blockNeedsUpdate;
 	private boolean init = false;
@@ -104,14 +105,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void ensureRouteTableIsUpToDate(){
 		if (_LSDVersion > _lastLSDVersion){
 			CreateRouteTable();
+			tree = getNetworkTree(null);
 			_externalRoutersByCost = null;
 			_lastLSDVersion = _LSDVersion;
-			
-			/*
-			CoreRoutedPipe pipe = getPipe();
-			if (pipe == null) return;
-			PipeTransportLogistics trans = (PipeTransportLogistics)pipe.transport;
-			*/
 		}
 	}
 
@@ -120,34 +116,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		ensureRouteTableIsUpToDate();
 		return _routeTable;
 	}
-	
-	/*
-	@Deprecated
-	@Override
-	public LinkedList<Router> getRoutersByCost(){
-		ensureRouteTableIsUpToDate();
-		if (_routersByCost == null){
-			_routersByCost = new LinkedList<Router>();
-			
-			LinkedList<RouterCost> tempList = new LinkedList<RouterCost>();
-			outer:
-			for (Router r : _routeCosts.keySet()){
-				for (int i = 0; i < tempList.size(); i++){
-					if (_routeCosts.get(r) < tempList.get(i).cost){
-						tempList.add(i, new RouterCost(r, _routeCosts.get(r)));
-						continue outer;
-					}
-				}
-				tempList.addLast(new RouterCost(r, _routeCosts.get(r)));
-			}
-			
-			while(tempList.size() > 0){
-				_routersByCost.addLast(tempList.removeFirst().router);
-			}
-		}
-		return _routersByCost;
-	}
-	*/
 	
 	@Override
 	public LinkedList<IRouter> getIRoutersByCost() {
@@ -224,7 +192,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		_LSDVersion++;
 		MainProxy.sendCompressedToAllPlayers((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, _xCoord , _yCoord, _zCoord, _dimension, this).getPacket());
-		CreateRouteTable();
+		//CreateRouteTable();
 	}
 	
 	/**
@@ -318,7 +286,29 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			_routeTable.put(node, _adjacent.get(firstPipe).exitOrientation);
 		}
 	}
-
+	
+	@Override
+	public LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded) {
+		if(excluded == null) {
+			excluded = new ArrayList<IRouter>();
+		}
+		LinkedHashMap<LogisticsNetworkTree, ExitRoute> list = new LinkedHashMap<LogisticsNetworkTree, ExitRoute>();
+		INetworkResistanceFilter filter = null;
+		if(getPipe() instanceof INetworkResistanceFilter) {
+			filter = (INetworkResistanceFilter) getPipe();
+		}
+		LogisticsNetworkTree tree = new LogisticsNetworkTree(this, list, filter);
+		ArrayList<IRouter> subExcluded = (ArrayList<IRouter>) excluded.clone();
+		subExcluded.add(this);
+		
+		for (RoutedPipe pipe :  _adjacent.keySet()) {
+			if(subExcluded.contains(pipe.getRouter())) continue;
+			list.put(pipe.getRouter().getNetworkTree((ArrayList<IRouter>) subExcluded.clone()), _adjacent.get(pipe));
+		}
+		
+		return tree;
+	}
+	
 	private LinkedList<Orientations> GetNonRoutedExits()	{
 		LinkedList<Orientations> ret = new LinkedList<Orientations>();
 		
@@ -346,34 +336,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public void displayRouteTo(IRouter r){
 		_laser.displayRoute(this, r);
 	}
-//	
-//	@Override
-//	public void startTrackingRoutedItem(RoutedEntityItem routedEntityItem){
-//		if(!_outboundItems.contains(routedEntityItem)){
-//			_outboundItems.add(routedEntityItem);
-//		}
-//	}
-//
-//	@Override
-//	public void startTrackingInboundItem(RoutedEntityItem routedEntityItem){
-//		if (!_inboundItems.contains(routedEntityItem)){
-//			_inboundItems.add(routedEntityItem);
-//		}
-//	}
-//	
-//	@Override
-//	public void outboundItemArrived(RoutedEntityItem routedEntityItem){
-//		if (_outboundItems.contains(routedEntityItem)){
-//			_outboundItems.remove(routedEntityItem);
-//		}
-//	}
 	
 	@Override
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem){
-/*		if (_inboundItems.contains(routedEntityItem)){
-			_inboundItems.remove(routedEntityItem);
-		}
-*/
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
@@ -387,16 +352,16 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	/**
-		 * Flags the last sent LSA as expired. Each router will be responsible of purging it from its database.
-		 */
-		@Override
-		public void destroy() {
-			if (SharedLSADatabase.contains(_myLsa)){
-				SharedLSADatabase.remove(_myLsa);
-				_LSDVersion++;
-			}
-			SimpleServiceLocator.routerManager.removeRouter(this.id);
+	 * Flags the last sent LSA as expired. Each router will be responsible of purging it from its database.
+	 */
+	@Override
+	public void destroy() {
+		if (SharedLSADatabase.contains(_myLsa)){
+			SharedLSADatabase.remove(_myLsa);
+			_LSDVersion++;
 		}
+		SimpleServiceLocator.routerManager.removeRouter(this.id);
+	}
 
 	@Override
 	public void update(boolean doFullRefresh){
@@ -451,28 +416,32 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	@Override
-	public ILogisticsPowerProvider getPowerProvider() {
-		if(getConnectedPowerProvider() != null) {
-			return getConnectedPowerProvider();
-		}
-		for(IRouter router:getIRoutersByCost()) {
-			if(router instanceof IPowerRouter) {
-				ILogisticsPowerProvider power = ((IPowerRouter)router).getConnectedPowerProvider();
-				if(power != null) {
-					return power;
-				}
+	public List<ILogisticsPowerProvider> getPowerProvider() {
+		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
+		addSubowerProvider(tree, list);
+		return list;
+	}
+	
+	private void addSubowerProvider(LogisticsNetworkTree node, List<ILogisticsPowerProvider> list) {
+		if(node.router instanceof ServerRouter) {
+			for(ILogisticsPowerProvider provider:((ServerRouter)node.router).getConnectedPowerProvider()) {
+				if(list.contains(provider)) continue;
+					list.add(provider);
 			}
 		}
-		return null;
+		for(LogisticsNetworkTree subNode:node.connection.keySet()) {
+			if(node.connection.get(subNode).isPipeLess) continue;
+			addSubowerProvider(subNode, list);
+		}
 	}
 
 	@Override
-	public ILogisticsPowerProvider getConnectedPowerProvider() {
+	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
 		CoreRoutedPipe pipe = getPipe();
 		if(pipe instanceof PipeItemsBasicLogistics) {
-			return ((PipeItemsBasicLogistics)pipe).getConnectedPowerProvider();
+			return ((PipeItemsBasicLogistics)pipe).getConnectedPowerProviders();
 		} else {
-			return null;
+			return new ArrayList<ILogisticsPowerProvider>();
 		}
 	}
 }

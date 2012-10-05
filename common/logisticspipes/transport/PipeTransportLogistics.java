@@ -12,17 +12,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.packets.PacketPipeLogisticsContent;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.Packet;
-import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.DefaultProps;
@@ -31,7 +30,6 @@ import buildcraft.core.network.PacketIds;
 import buildcraft.core.network.PacketPipeTransportContent;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
-import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -289,7 +287,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				break;
 			
 			}
-			item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
+			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost) - item.getSpeed();
+			if (_pipe == null){
+				_pipe = (RoutedPipe) container.pipe;
+			}
+			if(_pipe.useEnergy(Math.round(add * 25))) {
+				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
+			}
 		}
 	}
 

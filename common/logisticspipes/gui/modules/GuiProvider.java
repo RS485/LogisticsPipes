@@ -1,8 +1,8 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.logisticspipes.ExtractionMode;
-import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.utils.gui.DummyContainer;

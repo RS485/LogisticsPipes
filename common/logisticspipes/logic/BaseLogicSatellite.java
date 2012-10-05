@@ -13,12 +13,12 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.ItemIdentifier;

@@ -1,7 +1,7 @@
 package logisticspipes.gui;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;

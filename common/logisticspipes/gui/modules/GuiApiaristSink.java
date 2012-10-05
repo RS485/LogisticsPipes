@@ -1,12 +1,12 @@
 package logisticspipes.gui.modules;
 
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleApiaristSink.SinkSetting;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBeePacket;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;

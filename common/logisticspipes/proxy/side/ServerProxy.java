@@ -1,8 +1,9 @@
-package logisticspipes.proxy;
+package logisticspipes.proxy.side;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.proxy.interfaces.IProxy;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;
 import net.minecraftforge.common.DimensionManager;

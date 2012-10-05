@@ -11,7 +11,7 @@ package logisticspipes.routing;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldClient;

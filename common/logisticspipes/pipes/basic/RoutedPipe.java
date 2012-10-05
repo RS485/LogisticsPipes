@@ -6,12 +6,13 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.pipes.basic;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.logic.BaseRoutingLogic;
+import logisticspipes.main.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;

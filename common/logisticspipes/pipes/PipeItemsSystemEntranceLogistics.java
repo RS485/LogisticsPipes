@@ -2,14 +2,12 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import net.minecraft.src.EntityItem;
-
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.EntrencsLogic;
-import logisticspipes.logic.TemporaryLogic;
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.transport.EntrencsTransport;
+import net.minecraft.src.EntityItem;
 import buildcraft.core.utils.SimpleInventory;
 
 public class PipeItemsSystemEntranceLogistics extends RoutedPipe {

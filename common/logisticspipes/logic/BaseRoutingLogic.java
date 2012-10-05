@@ -9,8 +9,8 @@
 package logisticspipes.logic;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
 import net.minecraft.src.EntityPlayer;

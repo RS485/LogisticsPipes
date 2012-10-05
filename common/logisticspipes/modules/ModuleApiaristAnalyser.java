@@ -1,11 +1,12 @@
 package logisticspipes.modules;
 
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SinkReply;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -17,14 +18,17 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 	
+	private IChassiePowerProvider _power;
+	
 	public ModuleApiaristAnalyser() {
 		
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
+		_power = powerprovider;
 	}
 	
 	@Override
@@ -49,7 +53,9 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 				SinkReply reply = new SinkReply();
 				reply.fixedPriority = SinkReply.FixedPriority.APIARIST_Analyser;
 				reply.isPassive = true;
-				return reply;
+				if(_power.useEnergy(3)) {
+					return reply;
+				}
 			}
 		}
 		return null;
@@ -71,7 +77,9 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 			ItemStack item = inv.getStackInSlot(i);
 			if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 				if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-					_itemSender.sendStack(inv.decrStackSize(i,1));
+					if(_power.useEnergy(6)) {
+						_itemSender.sendStack(inv.decrStackSize(i,1));
+					}
 				}
 			}
 		}

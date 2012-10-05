@@ -1,13 +1,14 @@
 package logisticspipes.modules;
 
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.INBTPacketProvider;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SinkReply;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 
@@ -174,6 +175,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
+	private IChassiePowerProvider _power;
 	private int slotNumber;
 	
 	public ModuleApiaristSink() {
@@ -207,8 +209,9 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		this.worldProvider = world;
+		_power = powerprovider;
 	}
 
 	@Override
@@ -255,7 +258,9 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 					SinkReply reply = new SinkReply();
 					reply.fixedPriority = SinkReply.FixedPriority.APIARIST_BeeSink;
 					reply.isPassive = true;
-					return reply;
+					if(_power.useEnergy(2)) {
+						return reply;
+					}
 				}
 			}
 		}

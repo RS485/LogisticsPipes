@@ -2,7 +2,7 @@ package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
 
-import logisticspipes.main.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.AdjacentTile;

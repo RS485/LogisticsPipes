@@ -1,18 +1,18 @@
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketRouterInformation;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.transport.LogisticsItemTravelingHook;
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -242,6 +242,12 @@ public class ClientRouter implements IRouter {
 			_routeCosts.put(node.getId(), treeCost.get(node));
 			_routeTable.put(node.getId(), _adjacent.get(firstHop.getId()).exitOrientation);
 		}
+	}
+
+	@Override
+	public LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded) {
+		//Only Server Sided
+		throw new UnsupportedOperationException("This should only be called Server sided.");
 	}
 
 	private void ensureRouteTableIsUpToDate(){

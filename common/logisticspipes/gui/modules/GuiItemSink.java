@@ -8,8 +8,8 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.utils.gui.DummyContainer;

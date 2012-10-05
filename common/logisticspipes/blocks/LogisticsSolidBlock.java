@@ -2,7 +2,7 @@ package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import net.minecraft.src.BlockContainer;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityPlayer;

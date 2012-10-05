@@ -14,13 +14,14 @@ import java.util.UUID;
 
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
@@ -34,11 +35,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public UUID sourceUUID;
 	public UUID destinationUUID;
 	
-	//public UUID lastHop;
-	//private boolean _isDefaultRouted;
-	//private boolean _isPassive;
 	private boolean _doNotBuffer;
-	//private float _speedBoost;
+	
 	public boolean arrived;
 	
 	private TransportMode _transportMode = TransportMode.Unknown;
@@ -67,19 +65,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public boolean isKnownBy(EntityPlayer player) {
 		return knownBy.contains(player);
 	}
-	
-//	public boolean isDefaultRouted(){
-//		return _isDefaultRouted;
-//	}
-	
-//	public void setDefaultRouted(boolean isDefault){
-//		_isDefaultRouted = isDefault;
-//		refreshSpeed();
-//	}
-	
-//	public void refreshSpeed(){
-//		speed = Math.max(speed, Utils.pipeNormalSpeed * (_isDefaultRouted?core_LogisticsPipes.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER : core_LogisticsPipes.LOGISTICS_ROUTED_SPEED_MULTIPLIER));
-//	}
 	
 	public void changeDestination(UUID newDestination){
 		if (destinationUUID != null && SimpleServiceLocator.routerManager.isRouter(destinationUUID)){
@@ -138,26 +123,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		this.sourceUUID = source;
 		knownBy.clear();
 	}
-
-//	@Override
-//	public boolean isPassive() {
-//		return this._isPassive;
-//	}
-
-//	@Override
-//	public void setPassive(boolean isPassive) {
-//		this._isPassive = isPassive;
-//	}
-
-//	@Override
-//	public boolean isDefault() {
-//		return this._isDefaultRouted;
-//	}
-
-//	@Override
-//	public void setDefault(boolean isDefault) {
-//		this._isDefaultRouted = isDefault;
-//	}
 
 	@Override
 	public void setDoNotBuffer(boolean isBuffered) {
@@ -231,5 +196,28 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		} catch(Exception e) {
 			return true;
 		}
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		if(nbttagcompound.hasKey("sourceUUID")) {
+			sourceUUID = UUID.fromString(nbttagcompound.getString("sourceUUID"));
+		}
+		if(nbttagcompound.hasKey("destinationUUID")) {
+			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
+		}
+		arrived = nbttagcompound.getBoolean("arrived");
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		if(sourceUUID != null) {
+			nbttagcompound.setString("sourceUUID", sourceUUID.toString());
+		}
+		if(destinationUUID != null) {
+			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
+		}
+		nbttagcompound.setBoolean("arrived", arrived);
+		
 	}
 }

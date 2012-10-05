@@ -13,7 +13,6 @@ import java.util.HashMap;
 
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.main.LogisticsRequest;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;

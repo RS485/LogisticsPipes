@@ -17,19 +17,18 @@ import logisticspipes.logic.LogicInvSysConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.Pair3;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;
@@ -126,6 +125,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				ItemIdentifier ident = ItemIdentifier.get(stack);
 				for(Pair3<ItemIdentifier,UUID,UUID> pair:destination) {
 					if(pair.getValue1() == ident) {
+						if(!useEnergy(6)) break;
 						sendStack(stack.splitStack(1),pair.getValue2(),pair.getValue3(),dir);
 						destination.remove(pair);
 						if(stack.stackSize <=0 ) {

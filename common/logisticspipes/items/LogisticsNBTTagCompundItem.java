@@ -1,6 +1,5 @@
 package logisticspipes.items;
 
-import logisticspipes.main.LogisticsItem;
 
 public class LogisticsNBTTagCompundItem extends LogisticsItem {
 

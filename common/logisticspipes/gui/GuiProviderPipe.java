@@ -10,7 +10,7 @@ package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicProvider;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.utils.gui.DummyContainer;

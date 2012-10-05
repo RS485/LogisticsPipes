@@ -3,12 +3,6 @@ package logisticspipes.gui.hud.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
-
-import buildcraft.BuildCraftFactory;
-
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleAdvancedExtractor;
@@ -16,9 +10,10 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Block;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+
+import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	

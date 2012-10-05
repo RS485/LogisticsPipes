@@ -2,7 +2,7 @@ package logisticspipes.interfaces;
 
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
+import logisticspipes.utils.SinkReply;
 import net.minecraft.src.ItemStack;
 
 public interface ILogisticsModule extends ISaveState {
@@ -12,7 +12,7 @@ public interface ILogisticsModule extends ISaveState {
 	 * @param itemSender the handler to send items into the logistics system
 	 * @param world that the module is in.
 	 */
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world);
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider);
 	
 	/**
 	 * Registers the position to the module

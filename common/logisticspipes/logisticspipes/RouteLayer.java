@@ -8,8 +8,8 @@
 
 package logisticspipes.logisticspipes;
 
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;

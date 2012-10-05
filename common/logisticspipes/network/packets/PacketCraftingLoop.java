@@ -2,8 +2,8 @@ package logisticspipes.network.packets;
 
 import java.util.LinkedList;
 
-import logisticspipes.main.ItemMessage;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.utils.ItemMessage;
 
 
 

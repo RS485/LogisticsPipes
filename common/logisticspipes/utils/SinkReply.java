@@ -1,4 +1,4 @@
-package logisticspipes.logisticspipes.modules;
+package logisticspipes.utils;
 
 public class SinkReply {
 	

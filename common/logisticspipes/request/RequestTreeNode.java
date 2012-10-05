@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.main.LogisticsPromise;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifierStack;
 
 public class RequestTreeNode {

@@ -7,9 +7,9 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;

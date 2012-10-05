@@ -5,8 +5,7 @@ import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.KeyBoardProxy;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.CreativeTabs;
@@ -17,6 +16,9 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraftforge.common.DimensionManager;
+
+import org.lwjgl.input.Keyboard;
+
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 
@@ -46,7 +48,7 @@ public class RemoteOrderer extends Item {
 	public void addInformation(ItemStack itemstack, List list) {
 		//Add special tooltip in tribute to DireWolf
 		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.shiftedIndex){
-			if (KeyBoardProxy.isShiftDown()){
+			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 				list.add("a.k.a \"Requesting Tool\" - DW20");
 			}
 		}
@@ -90,10 +92,6 @@ public class RemoteOrderer extends Item {
 			}
 		}
 		stack.stackTagCompound.setInteger("connectedPipe-world-dim", dimension);
-		Random rand = new Random();
-		for (int l = 0; l < 32; ++l){
-			pipe.worldObj.spawnParticle("portal", pipe.xCoord + 0.5D, pipe.yCoord + 0.5D, pipe.zCoord + 0.5D, rand.nextGaussian() * 0.5D, 0.0D, rand.nextGaussian() * 0.5D);
-		}
 	}
 	
 	public static PipeItemsRemoteOrdererLogistics getPipe(ItemStack stack) {

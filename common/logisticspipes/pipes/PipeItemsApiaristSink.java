@@ -3,8 +3,8 @@ package logisticspipes.pipes;
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
-import logisticspipes.main.RoutedPipe;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.pipes.basic.RoutedPipe;
 
 public class PipeItemsApiaristSink extends RoutedPipe {
 	
@@ -13,7 +13,7 @@ public class PipeItemsApiaristSink extends RoutedPipe {
 	public PipeItemsApiaristSink(int itemID) {
 		super(new TemporaryLogic(), itemID);
 		sinkModule = new ModuleApiaristSink();
-		sinkModule.registerHandler(null, null, this);
+		sinkModule.registerHandler(null, null, this, this);
 	}
 
 	@Override

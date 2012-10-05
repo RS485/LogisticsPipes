@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
@@ -82,7 +82,7 @@ class PathFinder {
 	
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call 
 		if (startPipe.pipe instanceof RoutedPipe && visited.size() != 0) {
-			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(Orientations.Unknown, visited.size()));
+			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(Orientations.Unknown, visited.size(), false));
 			
 			return foundPipes;
 		}
@@ -153,6 +153,9 @@ class PathFinder {
 				for(RoutedPipe pipe : result.keySet()) 	{
 					//Update Result with the direction we took
 					result.get(pipe).exitOrientation = Orientations.values()[i];
+					if(isDirectConnection) {
+						result.get(pipe).isPipeLess = true;
+					}
 					if (!foundPipes.containsKey(pipe)) {  
 						// New path
 						foundPipes.put(pipe, result.get(pipe));

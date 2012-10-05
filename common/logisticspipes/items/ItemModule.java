@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.config.Textures;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -221,7 +222,7 @@ public class ItemModule extends ItemModuleProxy {
 		}
     }
 	
-	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world){
+	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider power){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.shiftedIndex) return null;
 		for(Module module:modules) {
@@ -232,7 +233,7 @@ public class ItemModule extends ItemModuleProxy {
 				}
 				ILogisticsModule newmodule = module.getILogisticsModule();
 				if(newmodule == null) return null;
-				newmodule.registerHandler(invProvider, itemSender, world);
+				newmodule.registerHandler(invProvider, itemSender, world, power);
 				return newmodule;
 			}
 		}

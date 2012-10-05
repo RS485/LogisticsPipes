@@ -12,7 +12,6 @@ import buildcraft.api.transport.PipeManager;
 import buildcraft.core.inventory.Transactor;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.EntityData;
-import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 

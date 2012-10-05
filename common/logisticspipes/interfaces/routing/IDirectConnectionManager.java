@@ -2,7 +2,7 @@ package logisticspipes.interfaces.routing;
 
 import java.util.UUID;
 
-import logisticspipes.main.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 
 public interface IDirectConnectionManager {

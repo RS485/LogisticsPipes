@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDItemSink;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -14,20 +15,20 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -45,6 +46,8 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 	private int zCoord = 0;
 	
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
+	
+	private IChassiePowerProvider _power;
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
@@ -65,7 +68,9 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {}
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+		_power = powerprovider;
+	}
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
@@ -82,7 +87,10 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
-			return reply;
+			if(_power.useEnergy(1)) {
+				return reply;
+			}
+			return null;
 		}
 		
 		if (_isDefaultRoute){
@@ -90,9 +98,11 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 			reply.fixedPriority = FixedPriority.DefaultRoute;
 			reply.isPassive = true;
 			reply.isDefault = true;
-			return reply;
+			if(_power.useEnergy(1)) {
+				return reply;
+			}
+			return null;
 		}
-
 		return null;
 	}
 

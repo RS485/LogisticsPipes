@@ -16,14 +16,16 @@ import buildcraft.api.core.Orientations;
 public class ExitRoute {
 	public Orientations exitOrientation;
 	public int metric;
+	public boolean isPipeLess;
 	
-	public ExitRoute(Orientations exitOrientation, int metric)
+	public ExitRoute(Orientations exitOrientation, int metric, boolean isPipeLess)
 	{
 		this.exitOrientation = exitOrientation;
 		this.metric = metric;
+		this.isPipeLess = isPipeLess;
 	}
 	
 	public String toString() {
-		return "{" + this.exitOrientation.name() + "," + metric + "}";
+		return "{" + this.exitOrientation.name() + "," + metric + ", Pipeless: " + isPipeLess + "}";
 	}
 }

@@ -6,9 +6,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.UUID;
 
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import buildcraft.api.core.Orientations;
 
@@ -46,6 +45,7 @@ public class PacketRouterInformation extends PacketCoordinates {
 			data.writeLong(id.getLeastSignificantBits());
 			data.writeByte(_adjacent.get(id).exitOrientation.ordinal());
 			data.writeInt(_adjacent.get(id).metric);
+			data.writeBoolean(_adjacent.get(id).isPipeLess);
 		}
 		data.writeBoolean(false);
 		for(int i=0;i<6;i++) {
@@ -60,7 +60,7 @@ public class PacketRouterInformation extends PacketCoordinates {
 		uuid = UUID.fromString(data.readUTF());
 		while(data.readBoolean()) {
 			UUID id = new UUID(data.readLong(), data.readLong());
-			_adjacent.put(id, new ExitRoute(Orientations.values()[data.readByte()],data.readInt()));
+			_adjacent.put(id, new ExitRoute(Orientations.values()[data.readByte()],data.readInt(), data.readBoolean()));
 		}
 		for(int i=0;i<6;i++) {
 			routedExit[i] = data.readBoolean();

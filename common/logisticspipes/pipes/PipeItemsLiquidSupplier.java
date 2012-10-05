@@ -5,8 +5,8 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -38,6 +38,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 			}
 		}, new LogicLiquidSupplier(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
+		((LogicLiquidSupplier) logic)._power = this;
 	}
 
 	@Override
@@ -60,7 +61,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		if (data.item.getItemStack() == null) return;
 		LiquidStack liquidId = LiquidManager.getLiquidForFilledItem(data.item.getItemStack());
 		if (liquidId == null) return;
-		while (data.item.getItemStack().stackSize > 0 && container.fill(data.orientation, liquidId, false) == liquidId.amount){
+		while (data.item.getItemStack().stackSize > 0 && container.fill(data.orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(data.orientation, liquidId, true);
 			data.item.getItemStack().stackSize--;
 			

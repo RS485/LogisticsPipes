@@ -12,4 +12,9 @@ public class ModuleExtractorMk2 extends ModuleExtractor{
 		return 20;
 	}
 
+	@Override
+	protected int neededEnergy() {
+		return 7;
+	}
+
 }

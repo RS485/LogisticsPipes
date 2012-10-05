@@ -2,13 +2,12 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import net.minecraft.src.ItemStack;
+
 import org.lwjgl.input.Keyboard;
 
-import net.minecraft.src.ItemStack;
 import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.asm.SideOnly;
-import logisticspipes.main.LogisticsItem;
-import logisticspipes.proxy.MainProxy;
 
 public class LogisticsItemCard extends LogisticsItem {
 

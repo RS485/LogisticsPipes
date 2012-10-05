@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -16,21 +17,19 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.LogisticsOrderManager;
-import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsRequest;
-import logisticspipes.main.LogisticsTransaction;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsOrderManager;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -39,6 +38,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
+	protected IChassiePowerProvider _power;
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
@@ -54,9 +54,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
+		_power = powerprovider;
 	}
 
 	@Override
@@ -80,6 +81,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		return GuiIDs.GUI_Module_Provider_ID;
 	}
 	
+	protected int neededEnergy() {
+		return 1;
+	}
+	
 	@Override	public SinkReply sinksItem(ItemStack item) {return null;}
 
 	@Override	public ILogisticsModule getSubModule(int slot) {return null;}
@@ -91,11 +96,14 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		while (_orderManager.hasOrders()) {
 			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-			if (sent > 0){
+			
+			if(!_power.useEnergy(neededEnergy())) break;
+			
+			if (sent > 0) {
 				_orderManager.sendSuccessfull(sent);
-			}
-			else {
+			} else {
 				_orderManager.sendFailed();
+				break;
 			}
 		}
 	}

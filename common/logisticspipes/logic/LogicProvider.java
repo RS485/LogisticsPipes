@@ -10,7 +10,7 @@ package logisticspipes.logic;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.ExtractionMode;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;

@@ -1,9 +1,9 @@
 package logisticspipes.utils.gui;
 
-import org.lwjgl.opengl.GL11;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.GuiScreen;
+
+import org.lwjgl.opengl.GL11;
 
 public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	protected int guiLeft;

@@ -1,11 +1,6 @@
 package logisticspipes.gui.hud;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 

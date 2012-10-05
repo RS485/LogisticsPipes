@@ -16,7 +16,7 @@ import logisticspipes.config.Textures;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -54,13 +54,15 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 			if ((!_orderManager.hasOrders() && _extras < 1)) break;
 			//if(!(!_orderManager.hasOrders() && _extras < 1))
 			for (AdjacentTile tile : locateCrafters()){
-				ItemStack extracted = null; 
-				if (tile.tile instanceof ISpecialInventory){
-					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile);
-				} else if (tile.tile instanceof IInventory) {
-					extracted = extractFromIInventory((IInventory)tile.tile);
+				ItemStack extracted = null;
+				if(useEnergy(15)) {
+					if (tile.tile instanceof ISpecialInventory){
+						extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile);
+					} else if (tile.tile instanceof IInventory) {
+						extracted = extractFromIInventory((IInventory)tile.tile);
+					}
 				}
-				if (extracted == null) continue;
+				if (extracted == null) break;
 				while (extracted.stackSize > 0){
 					ItemStack stackToSend = extracted.splitStack(1);
 					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);

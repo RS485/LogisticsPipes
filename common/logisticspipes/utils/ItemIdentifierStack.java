@@ -11,12 +11,10 @@ package logisticspipes.utils;
 import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.main.Pair3;
-import buildcraft.api.core.Orientations;
-
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
+import buildcraft.api.core.Orientations;
 
 public final class ItemIdentifierStack {
 	private final ItemIdentifier _item;

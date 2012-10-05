@@ -11,13 +11,14 @@ package logisticspipes.logic;
 import java.util.HashMap;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
@@ -49,6 +50,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 
 	public boolean pause = false;
 	
+	public IChassiePowerProvider _power;
 	
 	public LogicSupplier() {
 		this(new InventoryUtilFactory());
@@ -121,6 +123,8 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			}
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
+			
+			if(!_power.useEnergy(10)) break;
 			
 			//Make request
 			for (ItemIdentifier need : needed.keySet()){

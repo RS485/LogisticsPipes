@@ -2,17 +2,16 @@ package logisticspipes.gui.hud.modules;
 
 import java.util.List;
 
-import net.minecraft.client.Minecraft;
-
-import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.FMLClientHandler;
-
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import net.minecraft.client.Minecraft;
+
+import org.lwjgl.opengl.GL11;
+
+import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDPassiveSupplier implements IHUDModuleRenderer {
 	

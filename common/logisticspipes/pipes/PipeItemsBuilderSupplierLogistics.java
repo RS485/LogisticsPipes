@@ -12,7 +12,7 @@ import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicBuilderSupplier;
-import logisticspipes.main.RoutedPipe;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.utils.InventoryUtilFactory;
 
 public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRequestItems{

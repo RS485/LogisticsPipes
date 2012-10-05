@@ -7,10 +7,10 @@ import java.util.Map;
 
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.main.ItemMessage;
-import logisticspipes.main.LogisticsPromise;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.ItemMessage;
 
 public class RequestTree extends RequestTreeNode {
 	

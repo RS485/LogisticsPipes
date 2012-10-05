@@ -14,4 +14,9 @@ public class ModuleAdvancedExtractorMK3 extends ModuleAdvancedExtractorMK2 {
 	protected int itemsToExtract(){
 		return 64;
 	}
+
+	@Override
+	protected int neededEnergy() {
+		return 11;
+	}
 }

@@ -11,9 +11,9 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.logisticspipes.TransportLayer;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.modules.ModuleApiaristAnalyser;
+import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -30,7 +30,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public PipeItemsApiaristAnalyser(int itemID) {
 		super(new TemporaryLogic(), itemID);
 		analyserModule = new ModuleApiaristAnalyser();
-		analyserModule.registerHandler(this, this, this);
+		analyserModule.registerHandler(this, this, this, this);
 	}
 
 	@Override

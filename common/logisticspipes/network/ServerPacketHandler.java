@@ -13,9 +13,6 @@ import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
-import logisticspipes.logisticspipes.modules.SneakyOrientation;
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.GuiIDs;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
@@ -26,7 +23,6 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
-import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -42,12 +38,14 @@ import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
@@ -380,7 +378,7 @@ public class ServerPacketHandler {
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
 			return;
 		}
-
+		
 		RequestHandler.request(player, packet, (CoreRoutedPipe) pipe.pipe);
 	}
 

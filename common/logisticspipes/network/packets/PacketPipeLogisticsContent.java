@@ -2,17 +2,13 @@ package logisticspipes.network.packets;
 
 import java.util.UUID;
 
-import logisticspipes.main.CoreRoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
-import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
 import buildcraft.core.network.PacketPayload;
 import buildcraft.core.network.PacketPipeTransportContent;
-import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
 
 public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 	

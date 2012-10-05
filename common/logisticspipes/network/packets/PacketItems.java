@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.main.ItemMessage;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.utils.ItemMessage;
 
 
 

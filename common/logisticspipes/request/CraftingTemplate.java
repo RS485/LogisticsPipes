@@ -10,13 +10,11 @@ package logisticspipes.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsRequest;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
@@ -42,14 +40,6 @@ public class CraftingTemplate {
 		promise.numberOfItems = _result.stackSize;
 		promise.sender = _crafter;
 		return promise;
-	}
-	
-	public LinkedList<LogisticsRequest> generateRequests(){
-		LinkedList<LogisticsRequest> requests = new LinkedList<LogisticsRequest>();
-		for (ItemIdentifierStack stack : _required.keySet()){
-			requests.add(new LogisticsRequest(stack.getItem(), stack.stackSize, _required.get(stack)));
-		}
-		return requests;
 	}
 	
 	public List<Pair<ItemIdentifierStack,IRequestItems>> getSource() {

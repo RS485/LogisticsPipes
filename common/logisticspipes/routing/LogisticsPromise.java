@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.routing;
 
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.utils.ItemIdentifier;

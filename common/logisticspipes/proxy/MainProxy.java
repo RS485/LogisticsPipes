@@ -3,6 +3,7 @@ package logisticspipes.proxy;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Packet;
@@ -19,7 +20,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class MainProxy {
 	
-	@SidedProxy(clientSide="logisticspipes.proxy.ClientProxy", serverSide="logisticspipes.proxy.ServerProxy")
+	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
 	public static IProxy proxy;
 
 	public static boolean isClient(World world) {

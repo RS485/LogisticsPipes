@@ -11,9 +11,9 @@ package logisticspipes.interfaces.routing;
 import java.util.HashMap;
 import java.util.Map;
 
-import logisticspipes.main.LogisticsPromise;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 
 

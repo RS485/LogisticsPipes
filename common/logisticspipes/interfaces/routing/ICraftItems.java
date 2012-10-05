@@ -10,9 +10,7 @@ package logisticspipes.interfaces.routing;
 
 import java.util.LinkedList;
 
-import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.request.CraftingTemplate;
-import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 
 public interface ICraftItems extends IProvideItems, IRequestItems{

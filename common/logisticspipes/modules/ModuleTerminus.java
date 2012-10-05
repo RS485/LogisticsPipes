@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -16,23 +15,24 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SinkReply.FixedPriority;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class ModuleTerminus implements ILogisticsModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
@@ -42,6 +42,8 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 	private int yCoord;
 	private int zCoord;
 	private int slot;
+	
+	private IChassiePowerProvider _power;
 	
 	private IHUDModuleRenderer HUD = new HUDTerminatorModule(this);
 
@@ -56,7 +58,9 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 	}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {}
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+		_power = powerprovider;
+	}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
@@ -80,7 +84,9 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.Terminus;
 			reply.isPassive = true;
-			return reply;
+			if(_power.useEnergy(2)) {
+				return reply;
+			}
 		}
 
 		return null;

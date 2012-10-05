@@ -9,10 +9,10 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
-import logisticspipes.logisticspipes.modules.SneakyOrientation;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.utils.SneakyOrientation;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;

@@ -8,28 +8,26 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
+import logisticspipes.config.Configs;
+import logisticspipes.config.Textures;
+import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
+import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Packet3Chat;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.transport.TileGenericPipe;
-import logisticspipes.config.Configs;
-import logisticspipes.config.Textures;
-import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
-import logisticspipes.logic.LogicLiquidSupplier;
-import logisticspipes.logic.TemporaryLogic;
-import logisticspipes.main.LogisticsItem;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.WorldUtil;
 
 public class PipeItemsBasicLogistics extends RoutedPipe {
 	
@@ -46,11 +44,12 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 			}
 		}, new TemporaryLogic(), itemID);
 		itemSinkModule = new ModuleItemSink();
+		itemSinkModule.registerHandler(null, null, null, this);
 	}
 
 	@Override
 	public int getNonRoutedTexture(Orientations connection) {
-		if(getAdjacentTilePowerProvider() != null && getAdjacentTilePowerProvider().orientation == connection) {
+		if(isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
@@ -58,12 +57,23 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 
 	@Override
 	public boolean isLockedExit(Orientations orientation) {
-		if(getAdjacentTilePowerProvider() != null && getAdjacentTilePowerProvider().orientation == orientation) {
+		if(isPowerProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
-
+	
+	private boolean isPowerProvider(Orientations ori) {
+		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		for(AdjacentTile tile:adjacent) {
+			if(tile.tile instanceof ILogisticsPowerProvider && ori ==tile.orientation) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public int getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
@@ -82,8 +92,8 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Configs.ItemHUDId + 256 && MainProxy.isServer()) {
-			if(getRoutedPowerProvider() != null) {
-				MainProxy.sendToAllPlayers(new Packet3Chat("Connected Power: " + getRoutedPowerProvider().getPowerLevel() + " LP"));
+			if(getRoutedPowerProviders() != null && getRoutedPowerProviders().size() > 0) {
+				MainProxy.sendToAllPlayers(new Packet3Chat("Connected Power: " + getRoutedPowerProviders().get(0).getPowerLevel() + " LP"));
 			}
 			return true;
 		} else {
@@ -95,25 +105,15 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		return ori == Orientations.XPos || ori == Orientations.XNeg || ori == Orientations.ZPos || ori == Orientations.ZNeg;
 	}
 	
-	public ILogisticsPowerProvider getConnectedPowerProvider() {
+	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {
+		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
-				return (ILogisticsPowerProvider)tile.tile;
+				list.add((ILogisticsPowerProvider)tile.tile);
 			}
 		}
-		return null;
-	}
-	
-	public AdjacentTile getAdjacentTilePowerProvider() {
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
-		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
-				return tile;
-			}
-		}
-		return null;
+		return list;
 	}
 }

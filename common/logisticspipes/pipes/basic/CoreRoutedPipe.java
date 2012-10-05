@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.pipes.basic;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -32,12 +33,14 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
@@ -51,7 +54,7 @@ import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler {
+public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IChassiePowerProvider {
 
 	public enum ItemSendMode {
 		Normal,
@@ -287,14 +290,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
-	public ILogisticsPowerProvider getRoutedPowerProvider() {
-		if(MainProxy.isServer()) {
-			return ((ServerRouter)this.getRouter()).getPowerProvider();
-		} else {
-			return null;
-		}
-	}
-	
 	public boolean isEnabled(){
 		return enabled;
 	}
@@ -397,6 +392,28 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	public boolean isLockedExit(Orientations orientation) {
+		return false;
+	}
+	
+	/* Power System */
+	
+	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
+		if(MainProxy.isServer()) {
+			return ((ServerRouter)this.getRouter()).getPowerProvider();
+		} else {
+			return null;
+		}
+	}
+	
+	public boolean useEnergy(int amount) {
+		if(MainProxy.isClient()) return false;
+		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		for(ILogisticsPowerProvider provider: list) {
+			if(provider.canUseEnergy(amount)) {
+				provider.useEnergy(amount);
+				return true;
+			}
+		}
 		return false;
 	}
 }

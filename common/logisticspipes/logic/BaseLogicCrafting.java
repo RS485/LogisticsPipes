@@ -6,14 +6,14 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;

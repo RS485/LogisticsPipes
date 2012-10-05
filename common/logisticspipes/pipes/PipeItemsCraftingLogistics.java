@@ -29,20 +29,19 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.main.LogisticsOrderManager;
-import logisticspipes.main.LogisticsPromise;
-import logisticspipes.main.LogisticsTransaction;
-import logisticspipes.main.RoutedPipe;
-import logisticspipes.main.SimpleServiceLocator;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.LogisticsOrderManager;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -143,10 +142,12 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		
 		for (AdjacentTile tile : locateCrafters()){
 			ItemStack extracted = null; 
-			if (tile.tile instanceof ISpecialInventory){
-				extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile);
-			}else if (tile.tile instanceof IInventory) {
-				extracted = extractFromIInventory((IInventory)tile.tile);
+			if(useEnergy(10)) {
+				if (tile.tile instanceof ISpecialInventory){
+					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile);
+				} else if (tile.tile instanceof IInventory) {
+					extracted = extractFromIInventory((IInventory)tile.tile);
+				}
 			}
 			if (extracted == null) continue;
 			while (extracted.stackSize > 0){

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDExtractor;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -14,16 +15,14 @@ import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.logisticspipes.modules.SneakyOrientation;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
-import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -40,6 +39,7 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
+	private IChassiePowerProvider _power;
 	private SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 	
 	private int slot = 0;
@@ -56,9 +56,10 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
+		_power = powerprovider;
 	}
 
 	protected int ticksToAction(){
@@ -67,6 +68,10 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 
 	protected int itemsToExtract(){
 		return 1;
+	}
+	
+	protected int neededEnergy() {
+		return 5;
 	}
 	
 	public SneakyOrientation getSneakyOrientation(){
@@ -147,7 +152,17 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 			
 			if (!this.shouldSend(stackToSend)) continue;
 			
-			stackToSend = targetInventory.decrStackSize(i, itemsToExtract());
+			int count = Math.min(itemsToExtract(), stackToSend.stackSize);
+			
+			while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+				count--;
+			}
+			
+			if(count <= 0) {
+				break;
+			}
+			
+			stackToSend = targetInventory.decrStackSize(i, count);
 			_itemSender.sendStack(stackToSend);
 			break;
 		}

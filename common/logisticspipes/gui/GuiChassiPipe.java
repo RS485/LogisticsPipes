@@ -11,7 +11,7 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.items.ItemModule;
-import logisticspipes.main.GuiIDs;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeLogisticsChassi;

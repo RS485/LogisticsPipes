@@ -11,11 +11,12 @@ package logisticspipes.logic;
 import java.util.HashMap;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.main.GuiIDs;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
@@ -39,6 +40,8 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
+	
+	public IChassiePowerProvider _power;
 
 	public LogicLiquidSupplier(){
 		throttleTime = 100;
@@ -111,6 +114,11 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
 				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
 				if (countToRequest < 1) continue;
+				
+				if(!_power.useEnergy(11)) {
+					break;
+				}
+				
 				boolean success = false;
 				do{ 
 					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, getRouter().getIRoutersByCost(), null);

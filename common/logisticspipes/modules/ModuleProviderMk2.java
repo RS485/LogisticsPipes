@@ -2,13 +2,10 @@ package logisticspipes.modules;
 
 import java.util.UUID;
 
-import net.minecraft.src.ItemStack;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.main.CoreRoutedPipe.ItemSendMode;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import net.minecraft.src.ItemStack;
 
 public class ModuleProviderMk2 extends ModuleProvider {
 	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
@@ -22,5 +19,10 @@ public class ModuleProviderMk2 extends ModuleProvider {
 			maxCount--;
 		}
 		return sent;
+	}
+
+	@Override
+	protected int neededEnergy() {
+		return 2;
 	}
 }

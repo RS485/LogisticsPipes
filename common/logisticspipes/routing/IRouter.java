@@ -8,12 +8,13 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.main.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraft.src.ItemStack;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
@@ -41,4 +42,6 @@ public interface IRouter {
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public ILogisticsModule getLogisticsModule();
+	
+	LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded);
 }

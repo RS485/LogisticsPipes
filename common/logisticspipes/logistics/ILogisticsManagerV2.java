@@ -10,14 +10,10 @@ package logisticspipes.logistics;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.ItemMessage;
-import logisticspipes.main.LogisticsRequest;
-import logisticspipes.main.LogisticsTransaction;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.ItemStack;

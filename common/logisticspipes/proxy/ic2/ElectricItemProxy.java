@@ -1,13 +1,13 @@
 package logisticspipes.proxy.ic2;
 
+import ic2.api.IElectricItem;
+import ic2.api.Ic2Recipes;
+import ic2.api.Items;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import ic2.api.IElectricItem;
-import ic2.api.Ic2Recipes;
-import ic2.api.Items;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 

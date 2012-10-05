@@ -1,6 +1,5 @@
-package logisticspipes.main;
+package logisticspipes.utils;
 
-import logisticspipes.utils.Pair;
 
 public class Pair3<T1, T2, T3> extends Pair<T1, T2> {
 

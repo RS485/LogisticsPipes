@@ -2,10 +2,10 @@ package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
 
-import logisticspipes.main.ItemMessage;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketItems;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemMessage;
 import net.minecraft.src.EntityPlayer;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;

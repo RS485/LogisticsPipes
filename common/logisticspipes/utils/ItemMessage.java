@@ -1,9 +1,7 @@
-package logisticspipes.main;
+package logisticspipes.utils;
 
 import java.util.List;
 
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.src.NBTTagCompound;
 
 public class ItemMessage {

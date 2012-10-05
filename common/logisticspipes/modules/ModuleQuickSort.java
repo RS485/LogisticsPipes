@@ -1,11 +1,12 @@
 package logisticspipes.modules;
 
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.modules.SinkReply;
-import logisticspipes.main.SimpleServiceLocator;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SinkReply;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -19,13 +20,15 @@ public class ModuleQuickSort implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
+	private IChassiePowerProvider _power;
 	
 	public ModuleQuickSort() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
+		_power = powerprovider;
 	}
 
 	@Override
@@ -73,6 +76,8 @@ public class ModuleQuickSort implements ILogisticsModule {
 			if (stackToSend == null) continue;
 			
 			if (!this.shouldSend(stackToSend)) continue;
+			
+			if(!_power.useEnergy(500)) break;
 			_itemSender.sendStack(stackToSend);
 			targetInventory.setInventorySlotContents(i, null);
 			

@@ -61,7 +61,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		float energy = Math.max(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
+		float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
 		if(powerFramework.useEnergy(energy, energy, false) == energy) {
 			powerFramework.useEnergy(energy, energy, true);
 			addEnergy(energy * BuildCraftMultiplier);

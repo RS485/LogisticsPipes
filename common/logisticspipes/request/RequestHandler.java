@@ -35,6 +35,7 @@ public class RequestHandler {
 		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		if(!pipe.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
+			return;
 		}
 		boolean result = RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
 			@Override
@@ -102,6 +103,7 @@ public class RequestHandler {
 	public static void requestMacrolist(NBTTagCompound itemlist, IRequestItems requester, final EntityPlayer player) {
 		if(!requester.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
+			return;
 		}
 		NBTTagList list = itemlist.getTagList("inventar");
 		LinkedList<ItemIdentifierStack> transaction = new LinkedList<ItemIdentifierStack>();

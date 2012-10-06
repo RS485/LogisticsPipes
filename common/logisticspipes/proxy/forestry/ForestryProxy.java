@@ -7,6 +7,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
@@ -289,17 +290,28 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public void addCraftingRecipes() {
 		if(!has_all) return;
-		ModLoader.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "rBr", "CrC", 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "rBr", "CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		ModLoader.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { "CrC", "rBr", "CrC", 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { "CrC", "rBr", "CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)});
-		ModLoader.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[]{new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER),new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
-		ModLoader.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[]{new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK),new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
+
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { "CGC", "rBr", "CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { "CrC", "rBr", "CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
+
+		//ModLoader.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[]{new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER),new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
+		//ModLoader.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[]{new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK),new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
 	}
 	
 	@Override

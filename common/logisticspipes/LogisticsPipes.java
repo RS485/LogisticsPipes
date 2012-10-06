@@ -140,8 +140,8 @@ public class LogisticsPipes {
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	
 	//Blocks
-	Block logisticsSign;
-	Block logisticsSolidBlock;
+	public static Block logisticsSign;
+	public static Block logisticsSolidBlock;
 	
 	@Init
 	public void init(FMLInitializationEvent event) {
@@ -287,8 +287,6 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		
-		RecipeManager.loadRecipes();
-		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
@@ -312,6 +310,8 @@ public class LogisticsPipes {
 		}
 
 		MainProxy.proxy.registerTileEntitis();
+
+		RecipeManager.loadRecipes();
 	}
 	
 	@ServerStopping

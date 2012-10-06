@@ -24,6 +24,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
 		this.setCreativeTab(CreativeTabs.tabBlock);
+		this.setHardness(6.0F);
 	}
 
 	@Override

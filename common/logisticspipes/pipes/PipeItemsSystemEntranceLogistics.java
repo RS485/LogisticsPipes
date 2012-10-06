@@ -8,6 +8,7 @@ import logisticspipes.logic.EntrencsLogic;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.transport.EntrencsTransport;
 import net.minecraft.src.EntityItem;
+import net.minecraft.src.NBTTagCompound;
 import buildcraft.core.utils.SimpleInventory;
 
 public class PipeItemsSystemEntranceLogistics extends RoutedPipe {
@@ -39,6 +40,18 @@ public class PipeItemsSystemEntranceLogistics extends RoutedPipe {
 	@Override
 	public ILogisticsModule getLogisticsModule() {
 		return null;
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		super.writeToNBT(nbttagcompound);
+		inv.writeToNBT(nbttagcompound);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		super.readFromNBT(nbttagcompound);
+		inv.readFromNBT(nbttagcompound);
 	}
 
 	@Override

@@ -154,6 +154,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		
 		textures.load(event);
+		
 		if(event.getSide().isClient()) {
 			SimpleServiceLocator.buildCraftProxy.registerLocalization();
 		}

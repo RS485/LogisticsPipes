@@ -16,6 +16,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 
 
 public class ClientProxy implements IProxy {
+	
 	@Override
 	public String getSide() {
 		return "Client";

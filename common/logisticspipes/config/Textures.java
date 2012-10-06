@@ -102,12 +102,15 @@ public class Textures {
 	// Misc
 	public static final String LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures.png";
 	public static final String LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures.png";
+
+	public static final String LOGISTICS_SOLID_BLOCK = "/logisticspipes/blocks/logistics_solid_block.png";
 	
 	public void load(FMLStateEvent event) {
 		if(event.getSide().isClient()) {
 			initTextures();
 			MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
 			MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
+			MinecraftForgeClient.preloadTexture(LOGISTICS_SOLID_BLOCK);
 		}
 		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);

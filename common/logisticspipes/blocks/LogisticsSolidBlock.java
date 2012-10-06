@@ -2,13 +2,19 @@ package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.config.Textures;
+import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.proxy.side.ClientProxy;
 import net.minecraft.src.BlockContainer;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.IBlockAccess;
 import net.minecraft.src.Material;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.asm.SideOnly;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
@@ -44,27 +50,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public int getBlockTextureFromSideAndMetadata(int par1, int par2) {
-		switch (par2) {
-		case SOLDERING_STATION:
-			switch (par1) {
-			case 1:
-				return 43;
-			default:
-				return 22;
-			}
-		case LOGISTICS_POWER_JUNCTION:
-			switch (par1) {
-			case 1:
-				return 43;
-			default:
-				return 22;
-			}
-		default:
-			return super.getBlockTextureFromSideAndMetadata(par1, par2);
-		}
+	public int getBlockTextureFromSideAndMetadata(int side, int meta) {
+		return getRotatedTexture(meta, side, 2, 0);
 	}
 
+	//@Override
+	///public int getRenderType() {
+	//	return ClientProxy.solidBlockRenderId;
+	//}
+	
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
 		new UnsupportedOperationException("Please call createNewTileEntity(World,int) instead of createNewTileEntity(World).").printStackTrace();
@@ -89,4 +83,94 @@ public class LogisticsSolidBlock extends BlockContainer {
         		return null;
         }
     }
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public int getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
+		int meta = access.getBlockMetadata(x, y, z);
+		TileEntity tile = access.getBlockTileEntity(x, y, z);
+		if(tile instanceof IRotationProvider) {
+			return getRotatedTexture(meta, side, ((IRotationProvider)tile).getRotation(), ((IRotationProvider)tile).getFrontTexture());
+		} else {
+			return getRotatedTexture(meta, side, 3, 0);
+		}
+	}
+	
+	private int getRotatedTexture(int meta, int side, int rotation, int front) {
+		switch (meta) {
+		case SOLDERING_STATION:
+			if(front == 0) {
+				front = 17;
+			}
+			switch (side) {
+			case 1: //TOP
+				return 1;
+			case 6: //Bottom
+				return 2;
+			case 2: //East
+				switch(rotation) {
+				case 0:
+					return 16;
+				case 1:
+					return 18;
+				case 2:
+					return 19;
+				case 3:
+					return front;
+				}
+			case 3: //West
+				switch(rotation) {
+				case 0:
+					return 18;
+				case 1:
+					return 19;
+				case 2:
+					return front;
+				case 3:
+					return 16;
+				}
+				return 18;
+			case 4: //South
+				switch(rotation) {
+				case 0:
+					return 19;
+				case 1:
+					return front;
+				case 2:
+					return 16;
+				case 3:
+					return 18;
+				}
+				return 19;
+			case 5: //North
+				switch(rotation) {
+				case 0:
+					return front;
+				case 1:
+					return 16;
+				case 2:
+					return 18;
+				case 3:
+					return 19;
+				}
+				return front;
+			default:
+				return 0;
+			}
+		case LOGISTICS_POWER_JUNCTION:
+			switch (side) {
+			case 1:
+				return 43;
+			default:
+				return 22;
+			}
+		default:
+			return 0;
+		}
+	}
+	
+	@Override
+	public String getTextureFile() {
+		return Textures.LOGISTICS_SOLID_BLOCK;
+	}
 }

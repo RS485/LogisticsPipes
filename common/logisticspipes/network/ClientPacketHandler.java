@@ -504,7 +504,11 @@ public class ClientPacketHandler {
 		final TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSolderingTileEntity) {
 			LogisticsSolderingTileEntity station = (LogisticsSolderingTileEntity) tile;
+			int old = station.heat;
 			station.heat = packet.integer;
+			if((station.heat == 0 && old != 0) || (station.heat != 0 && old == 0)) {
+				FMLClientHandler.instance().getClient().theWorld.markBlockNeedsUpdate(packet.posX, packet.posY, packet.posZ);
+			}
 		}
 	}
 

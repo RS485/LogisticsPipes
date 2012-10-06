@@ -6,10 +6,12 @@ import java.util.List;
 
 import logisticspipes.interfaces.ICraftingResultHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import logisticspipes.utils.ItemIdentifier;
@@ -30,7 +32,7 @@ import buildcraft.api.power.PowerFramework;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory , IGuiOpenControler {
+public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory , IGuiOpenControler, IRotationProvider {
 	
 	private IPowerProvider provider;
 	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);
@@ -217,6 +219,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 	
 	private void updateHeat() {
+		PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 64, MainProxy.getDimensionForWorld(worldObj), new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket());
 		for(EntityPlayer player:listener) {
 			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket(), (Player)player);
 		}
@@ -236,6 +239,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	
 	@Override
 	public void updateEntity() {
+		if(MainProxy.isClient()) return;
 		if(hasWork() && heat < 100) {
 			if(provider.useEnergy(1, 100, false) >= 1) {
 				heat += provider.useEnergy(1, 100, true);
@@ -452,5 +456,20 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	@Override
 	public void guiClosedByPlayer(EntityPlayer player) {
 		listener.remove(player);
+	}
+
+	@Override
+	public int getRotation() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public int getFrontTexture() {
+		if(heat > 0) {
+			return 3;
+		} else {
+			return 17;
+		}
 	}
 }

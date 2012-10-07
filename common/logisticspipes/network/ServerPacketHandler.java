@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -50,6 +51,7 @@ import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.NetworkManager;
+import net.minecraft.src.Packet;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -253,6 +255,11 @@ public class ServerPacketHandler {
 					final PacketModuleInteger packetAj = new PacketModuleInteger();
 					packetAj.readData(data);
 					onElectricModuleStateChange(player, packetAj);
+					break;
+				case NetworkConstants.ROTATION_REQUEST:
+					final PacketCoordinates packetAk = new PacketCoordinates();
+					packetAk.readData(data);
+					onRotationRequest(player, packetAk);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -964,6 +971,13 @@ public class ServerPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleElectricManager) {
 			ModuleElectricManager module = (ModuleElectricManager) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
 			module.setDischargeMode(packet.integer == 1);
+		}
+	}
+
+	private static void onRotationRequest(EntityPlayerMP player, PacketCoordinates packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof IRotationProvider) {
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.ROTATION_SET, packet.posX, packet.posY, packet.posZ, ((IRotationProvider)tile).getRotation()).getPacket(), (Player)player);
 		}
 	}
 	

@@ -69,4 +69,6 @@ public class NetworkConstants {
 	public static final int ELECTRIC_MANAGER_SET = 63;
 	public static final int ELECTRIC_MANAGER_STATE = 64;
 	public static final int SEND_QUEUE_CONTENT = 65;
+	public static final int ROTATION_REQUEST = 66;
+	public static final int ROTATION_SET = 67;
 }

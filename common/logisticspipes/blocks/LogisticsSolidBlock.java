@@ -1,5 +1,7 @@
 package logisticspipes.blocks;
 
+import java.util.ArrayList;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.config.Textures;
@@ -8,8 +10,10 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.side.ClientProxy;
 import net.minecraft.src.BlockContainer;
 import net.minecraft.src.CreativeTabs;
+import net.minecraft.src.EntityLiving;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IBlockAccess;
+import net.minecraft.src.ItemStack;
 import net.minecraft.src.Material;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -51,14 +55,44 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
+	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving) {
+		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving);
+		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
+		if(tile instanceof IRotationProvider) {
+			double x = tile.xCoord - par5EntityLiving.posX;
+			double z = tile.zCoord - par5EntityLiving.posZ;
+			double w = Math.atan2(x, z);
+			double halfPI = Math.PI / 2;
+			double halfhalfPI = halfPI / 2;
+			w -= halfhalfPI;
+			if(w < 0) {
+				w += 2 * Math.PI;
+			}
+			if(0 < w && w <= halfPI) {
+				((IRotationProvider)tile).setRotation(1);
+			} else if(halfPI < w && w <= 2*halfPI) {
+				((IRotationProvider)tile).setRotation(2);
+			} else if(2*halfPI < w && w <= 3*halfPI) {
+				((IRotationProvider)tile).setRotation(0);
+			} else if(3*halfPI < w && w <= 4*halfPI) {
+				((IRotationProvider)tile).setRotation(3);
+			}
+		}
+	}
+
+	@Override
+	public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
+		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
+		if(tile instanceof LogisticsSolderingTileEntity) {
+			((LogisticsSolderingTileEntity)tile).onBlockBreak();
+		}
+		super.breakBlock(par1World, par2, par3, par4, par5, par6);
+	}
+
+	@Override
 	public int getBlockTextureFromSideAndMetadata(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
-
-	//@Override
-	///public int getRenderType() {
-	//	return ClientProxy.solidBlockRenderId;
-	//}
 	
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
@@ -84,6 +118,16 @@ public class LogisticsSolidBlock extends BlockContainer {
         		return null;
         }
     }
+
+	@Override
+	protected int damageDropped(int par1) {
+		switch(par1) {
+		case SOLDERING_STATION:
+		case LOGISTICS_POWER_JUNCTION:
+			return par1;
+		}
+		return super.damageDropped(par1);
+	}
 
 	@Override
 	@SideOnly(Side.CLIENT)

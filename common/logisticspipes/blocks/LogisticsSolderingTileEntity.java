@@ -9,6 +9,7 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
@@ -38,6 +39,9 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
+	
+	public int rotation = 0;
+	private boolean init = false;
 	
 	private List<EntityPlayer> listener = new ArrayList<EntityPlayer>();
 
@@ -206,12 +210,14 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public void readFromNBT(NBTTagCompound nbt) {
 		super.readFromNBT(nbt);
 		inv.readFromNBT(nbt, "");
+		rotation = nbt.getInteger("rotation");
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbt) {
 		super.writeToNBT(nbt);
 		inv.writeToNBT(nbt, "");
+		nbt.setInteger("rotation", rotation);
 	}
 
 	private boolean hasWork() {
@@ -239,7 +245,13 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	
 	@Override
 	public void updateEntity() {
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient()) {
+			if(!init) {
+				PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.ROTATION_REQUEST, xCoord, yCoord, zCoord).getPacket());
+				init = true;
+			}
+			return;
+		}
 		if(hasWork() && heat < 100) {
 			if(provider.useEnergy(1, 100, false) >= 1) {
 				heat += provider.useEnergy(1, 100, true);
@@ -457,11 +469,14 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public void guiClosedByPlayer(EntityPlayer player) {
 		listener.remove(player);
 	}
-
+	
+	public void onBlockBreak() {
+		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+	}
+	
 	@Override
 	public int getRotation() {
-		// TODO Auto-generated method stub
-		return 0;
+		return rotation;
 	}
 
 	@Override
@@ -471,5 +486,10 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		} else {
 			return 17;
 		}
+	}
+
+	@Override
+	public void setRotation(int rotation) {
+		this.rotation = rotation;
 	}
 }

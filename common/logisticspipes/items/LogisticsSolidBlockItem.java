@@ -13,6 +13,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 
 	public LogisticsSolidBlockItem(int par1) {
 		super(par1);
+		this.setHasSubtypes(true);
 	}
 
 	@SideOnly(Side.CLIENT)

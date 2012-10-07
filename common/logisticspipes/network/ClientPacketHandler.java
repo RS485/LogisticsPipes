@@ -13,6 +13,7 @@ import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -232,6 +233,10 @@ public class ClientPacketHandler {
 					packetAk.readData(data);
 					onSendQueueInventory(packetAk);
 					break;
+				case NetworkConstants.ROTATION_SET:
+					final PacketPipeInteger packetAl = new PacketPipeInteger();
+					packetAl.readData(data);
+					onRotationSet(packetAl);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -623,6 +628,14 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof ISendQueueContentRecieiver) {
 			ISendQueueContentRecieiver receiver = (ISendQueueContentRecieiver) pipe.pipe;
 			receiver.handleSendQueueItemIdentifierList(packet._allItems);
+		}
+	}
+
+	private static void onRotationSet(PacketPipeInteger packet) {
+		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof IRotationProvider) {
+			((IRotationProvider)tile).setRotation(packet.integer);
+			FMLClientHandler.instance().getClient().theWorld.markBlockNeedsUpdate(packet.posX, packet.posY, packet.posZ);
 		}
 	}
 

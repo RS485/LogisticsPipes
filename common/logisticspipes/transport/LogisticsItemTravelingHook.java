@@ -1,10 +1,13 @@
 package logisticspipes.transport;
 
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.utils.OrientationsUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import buildcraft.api.core.Orientations;
 import buildcraft.core.DefaultProps;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
@@ -18,6 +21,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 	private final int yCoord;
 	private final int zCoord;
 	private final PipeTransportLogistics pipe;
+	private CoreRoutedPipe routedPipe;
 	
 	public LogisticsItemTravelingHook(World world, int xCoord, int yCoord, int zCoord, PipeTransportLogistics pipe) {
 		this.world = world;
@@ -38,6 +42,20 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 		if(MainProxy.isServer()) {
 			if(data.item instanceof RoutedEntityItem) {
 				RoutedEntityItem routed = (RoutedEntityItem) data.item;
+				
+				if(routedPipe == null) {
+					if(pipe.container.pipe instanceof CoreRoutedPipe) {
+						routedPipe = (CoreRoutedPipe) pipe.container.pipe;
+					}
+				}
+				if(routedPipe != null) {
+					if(routedPipe.getRouter().getId().equals(routed.getDestination())) {
+						if(!routedPipe.getTransportLayer().stillWantItem(routed)) {
+							pipe.entityEntering(routed, OrientationsUtil.getOrientationOfTilewithPipe(pipe, tile).reverse());
+						}
+					}
+				}
+				
 				for(EntityPlayer player:MainProxy.getPlayerArround(world, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player)) {
 						PacketDispatcher.sendPacketToPlayer(pipe.createItemPacket(routed, data.orientation), (Player)player);

@@ -34,7 +34,7 @@ public abstract class BasicHUDGui implements IHeadUpDisplayRenderer {
 			if((button.getX() - 1 < x && x < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < y && y < (button.getY() + button.sizeY() + 1))) {
 				if(!button.isFocused() && !button.isblockFocused()) {
 					button.setFocused();
-				} else if(button.focusedTime() > 400) {
+				} else if(button.focusedTime() > 400 && !button.isblockFocused()) {
 					button.clicked();
 					button.blockFocused();
 				}

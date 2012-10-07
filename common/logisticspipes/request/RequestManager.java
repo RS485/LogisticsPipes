@@ -93,6 +93,7 @@ public class RequestManager {
 	
 	private static void handleRequestTree(RequestTree tree) {
 		tree.fullFillAll();
+		tree.registerExtras();
 	}
 	
 	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, LinkedList<CraftingTemplate> crafters, LinkedList<IProvideItems> providers) {

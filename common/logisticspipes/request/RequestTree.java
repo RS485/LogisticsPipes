@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsPromise;
@@ -107,6 +108,21 @@ public class RequestTree extends RequestTreeNode {
 		}
 		for(RequestTreeNode subNode:node.subRequests) {
 			sendMissingMessage(missing, subNode);
+		}
+	}
+	
+	public void registerExtras() {
+		
+	}
+	
+	private void registerExtras(RequestTreeNode node) {
+		for(LogisticsPromise promise:node.extrapromises) {
+			if(promise.sender instanceof ICraftItems) {
+				((ICraftItems)promise.sender).registerExtras(promise.numberOfItems);
+			}
+		}
+		for(RequestTreeNode subNode:node.subRequests) {
+			registerExtras(subNode);
 		}
 	}
 }

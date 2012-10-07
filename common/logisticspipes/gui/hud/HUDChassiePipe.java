@@ -126,7 +126,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 						if((button.getX() - 1 < (xCursor - 11) && (xCursor - 11) < (button.getX() + button.sizeX() + 1)) && (button.getY() - 1 < (yCursor - 5) && (yCursor - 5) < (button.getY() + button.sizeY() + 1))) {
 							if(!button.isFocused() && !button.isblockFocused()) {
 								button.setFocused();
-							} else if(button.focusedTime() > 400) {
+							} else if(button.focusedTime() > 400 && !button.isblockFocused()) {
 								button.clicked();
 								button.blockFocused();
 							}

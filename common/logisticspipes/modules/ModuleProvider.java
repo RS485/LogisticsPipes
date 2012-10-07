@@ -3,14 +3,20 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IHUDModuleHandler;
+import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IModuleInventoryReceive;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -18,6 +24,10 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketModuleInvContent;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
@@ -30,11 +40,14 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
-public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider {
+public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
@@ -50,6 +63,18 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	
 	protected boolean isExcludeFilter = false;
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
+	
+	private int slot = 0;
+	private int xCoord = 0;
+	private int yCoord = 0;
+	private int zCoord = 0;
+
+	public LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
+	public LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	
+	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
+
+	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
 	public ModuleProvider() {}
 
@@ -91,8 +116,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 
 	@Override
 	public void tick() {
+		if(MainProxy.isClient()) return;
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
+		checkUpdate(null);
 		while (_orderManager.hasOrders()) {
 			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
@@ -260,5 +287,58 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+		this.slot = slot;
+	}
+	
+	private void checkUpdate(EntityPlayer player) {
+		displayList.clear();
+		HashMap<ItemIdentifier, Integer> list = getAllItems();
+		for(ItemIdentifier item :list.keySet()) {
+			displayList.add(new ItemIdentifierStack(item, list.get(item)));
+		}
+		if(!oldList.equals(displayList)) {
+			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
+			oldList.clear();
+			oldList.addAll(displayList);
+		}
+		if(player != null) {
+			PacketDispatcher.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
+		}
+	}
+
+	@Override
+	public void startWatching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void stopWatching() {
+		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+		checkUpdate(player);
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
+	}
+
+	@Override
+	public IHUDModuleRenderer getRenderer() {
+		return HUD;
+	}
+
+	@Override
+	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+		displayList.clear();
+		displayList.addAll(list);
+	}
 }

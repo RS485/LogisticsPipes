@@ -60,7 +60,7 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 
 	@Override
 	public boolean demandsEnergy() {
-		return freeSpace() > 0;
+		return freeSpace() > IC2Multiplier;
 	}
 
 	@Override

@@ -11,6 +11,7 @@ package logisticspipes.logic;
 import java.util.Collection;
 import java.util.HashMap;
 
+import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
@@ -37,6 +38,8 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	
 	private boolean _requestPartials = false;
 
+	public IChassiePowerProvider _power;
+	
 	public boolean pause = false;
 	
 	
@@ -101,6 +104,11 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			for (ItemIdentifier need : needed.keySet()){
 				if (needed.get(need) < 1) continue;
 				int neededCount = needed.get(need);
+				
+				if(!_power.useEnergy(15)) {
+					break;
+				}
+				
 				boolean success = false;
 				do{ 
 					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, getRouter().getIRoutersByCost(), null);

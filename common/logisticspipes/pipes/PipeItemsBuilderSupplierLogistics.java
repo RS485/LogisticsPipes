@@ -23,6 +23,7 @@ public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRe
 		
 	public PipeItemsBuilderSupplierLogistics(int itemID) {
 		super(new LogicBuilderSupplier(), itemID);
+		((LogicBuilderSupplier)logic)._power = this;
 	}
 	
 	public PipeItemsBuilderSupplierLogistics(int itemID, InventoryUtilFactory inventoryUtilFactory) {

@@ -109,8 +109,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		if (itemstack == null) return null;
 		
 		ItemIdentifierStack targetItemStack = ItemIdentifierStack.GetFromStack(itemstack);
-		return invUtil.getMultipleItems(targetItemStack.getItem(), targetItemStack.stackSize);
-		//return invUtil.getSingleItem(targetItemStack.getItem());
+		//return invUtil.getMultipleItems(targetItemStack.getItem(), targetItemStack.stackSize);
+		return invUtil.getSingleItem(targetItemStack.getItem());
 	}
 	
 	public void enableUpdateRequest() {

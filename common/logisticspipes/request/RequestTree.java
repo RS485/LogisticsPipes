@@ -112,7 +112,7 @@ public class RequestTree extends RequestTreeNode {
 	}
 	
 	public void registerExtras() {
-		
+		registerExtras(this);
 	}
 	
 	private void registerExtras(RequestTreeNode node) {

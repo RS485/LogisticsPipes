@@ -86,7 +86,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 					}
 				}
 			}
-			if(!_orderManager.hasOrders() || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			if((!_orderManager.hasOrders() && _extras < 1) || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
 				break;
 			}
 		}

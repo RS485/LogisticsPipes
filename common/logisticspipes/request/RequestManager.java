@@ -112,6 +112,9 @@ public class RequestManager {
 	private static void checkExtras(RequestTree tree, RequestTreeNode treeNode) {
 		LinkedHashMap<LogisticsPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
 		for (LogisticsPromise extraPromise : map.keySet()){
+			if(treeNode.isDone()) {
+				break;
+			}
 			treeNode.addPromise(extraPromise);
 			map.get(extraPromise).usePromise(extraPromise);
 		}

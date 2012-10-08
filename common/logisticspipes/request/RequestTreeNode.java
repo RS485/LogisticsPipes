@@ -35,6 +35,7 @@ public class RequestTreeNode {
 	
 	public boolean addPromise(LogisticsPromise promise) {
 		if(promise.item != request.getItem()) return false;
+		if(getMissingItemCount() == 0) return false;
 		if(promise.numberOfItems > getMissingItemCount()) {
 			int more = promise.numberOfItems - getMissingItemCount();
 			promise.numberOfItems = getMissingItemCount();

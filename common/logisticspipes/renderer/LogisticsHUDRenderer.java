@@ -94,6 +94,7 @@ public class LogisticsHUDRenderer {
 	}
 	
 	public void renderPlayerDisplay(long renderTicks) {
+		/*
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		//Screen Rendering
@@ -128,6 +129,7 @@ public class LogisticsHUDRenderer {
 		String warning = "Warning: This is a WIP. Highly testing. Use on your own risk.";
 		ScaledResolution size = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
 		mc.fontRenderer.drawString(warning , 3, 3, 0xFFFF0000);
+		*/
 	}
 	
 	public void renderWorldRelative(long renderTicks) {

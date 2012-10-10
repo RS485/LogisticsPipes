@@ -105,4 +105,9 @@ public abstract class BasicHUDButton implements IHUDButton {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
 	}
+
+	@Override
+	public void renderAlways() {
+		
+	}
 }

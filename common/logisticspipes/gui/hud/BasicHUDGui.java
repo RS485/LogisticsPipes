@@ -20,6 +20,7 @@ public abstract class BasicHUDGui implements IHeadUpDisplayRenderer {
 	@Override
 	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc) {
 		for(IHUDButton button:buttons) {
+			button.renderAlways();
 			if(button.shouldRenderButton()) {
 				button.renderButton(button.isFocused(), button.isblockFocused());
 			}

@@ -13,6 +13,7 @@ public interface IHUDButton {
 	public int focusedTime();
 	public void clicked();
 	public void renderButton(boolean hover, boolean clicked);
+	public void renderAlways();
 	public boolean shouldRenderButton();
 	public boolean buttonEnabled();
 }

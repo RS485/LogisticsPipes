@@ -119,6 +119,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 				((IHUDModuleHandler)selectedmodule).getRenderer().renderContent();
 				if(((IHUDModuleHandler)selectedmodule).getRenderer().getButtons() != null) {
 					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getRenderer().getButtons()) {
+					button.renderAlways();
 						if(button.shouldRenderButton()) {
 							button.renderButton(button.isFocused(), button.isblockFocused());
 						}
@@ -271,9 +272,9 @@ public class HUDChassiePipe extends BasicHUDGui {
 			GL11.glTranslatef(0.0F, 0.0F, 0.0001F);
 		}
 
+
 		@Override
-		public boolean shouldRenderButton() {
-			boolean result = inv.getStackInSlot(position) != null && shouldDisplayButton(position);
+		public void renderAlways() {
 			if(inv.getStackInSlot(position) == null && shouldDisplayButton(position)) {
 				GL11.glPushMatrix();
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
@@ -282,6 +283,11 @@ public class HUDChassiePipe extends BasicHUDGui {
 				BasicGuiHelper.drawGuiBackGround(mc, posX * 2, posY * 2, (posX + sizeX) * 2, (posY + sizeY) * 2, 0, false);
 				GL11.glPopMatrix();
 			}
+		}
+		
+		@Override
+		public boolean shouldRenderButton() {
+			boolean result = inv.getStackInSlot(position) != null && shouldDisplayButton(position);
 			return result;
 		}
 

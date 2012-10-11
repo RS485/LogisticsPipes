@@ -150,7 +150,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 			switch (side) {
 			case 1: //TOP
 				return 1;
-			case 6: //Bottom
+			case 0: //Bottom
 				return 2;
 			case 2: //East
 				switch(rotation) {
@@ -204,10 +204,12 @@ public class LogisticsSolidBlock extends BlockContainer {
 			}
 		case LOGISTICS_POWER_JUNCTION:
 			switch (side) {
-			case 1:
-				return 43;
-			default:
-				return 22;
+			case 1: //TOP
+				return 4;
+			case 0: //Bottom
+				return 5;
+			default: //Front
+				return 6;
 			}
 		default:
 			return 0;

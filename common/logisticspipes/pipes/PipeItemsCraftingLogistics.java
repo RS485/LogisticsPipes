@@ -220,7 +220,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		ItemStack stack = craftingLogic.getCraftedItem(); 
 		if ( stack == null) return;
 		
-		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this);
+		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
 		//Check all materials
 		boolean hasSatellite = craftingLogic.isSatelliteConnected(); 

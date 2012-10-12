@@ -261,6 +261,16 @@ public class ServerPacketHandler {
 					packetAk.readData(data);
 					onRotationRequest(player, packetAk);
 					break;
+				case NetworkConstants.CRAFTING_PIPE_PRIORITY_UP:
+					final PacketCoordinates packetAl = new PacketCoordinates();
+					packetAl.readData(data);
+					onPriorityUp(player, packetAl);
+					break;
+				case NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN:
+					final PacketCoordinates packetAm = new PacketCoordinates();
+					packetAm.readData(data);
+					onPriorityDown(player, packetAm);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -979,6 +989,32 @@ public class ServerPacketHandler {
 		if(tile instanceof IRotationProvider) {
 			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.ROTATION_SET, packet.posX, packet.posY, packet.posZ, ((IRotationProvider)tile).getRotation()).getPacket(), (Player)player);
 		}
+	}
+
+	private static void onPriorityUp(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).priorityUp(player);
+	}
+
+	private static void onPriorityDown(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).priorityDown(player);
 	}
 	
 	// BuildCraft method

@@ -35,9 +35,7 @@ import cpw.mods.fml.common.network.Player;
 public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
 	protected SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
-	//protected final InventoryUtilFactory _invUtilFactory;
-	//protected final InventoryUtil _dummyInvUtil;
-
+	
 	@TileNetworkData
 	public int signEntityX = 0;
 	@TileNetworkData
@@ -51,13 +49,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@TileNetworkData
 	public int satelliteId = 0;
 
-	public BaseLogicCrafting() {
-	/*	this(new InventoryUtilFactory());
-	}
+	@TileNetworkData
+	public int priority = 0;
 
-	public BaseLogicCrafting(InventoryUtilFactory invUtilFactory) {
-		_invUtilFactory = invUtilFactory;
-		_dummyInvUtil = _invUtilFactory.getInventoryUtil(_dummyInventory);*/
+	public BaseLogicCrafting() {
 		throttleTime = 40;
 	}
 
@@ -131,15 +126,6 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		return null;
 	}
 
-	/* ** OTHER CODE ** */
-
-	/*public int RequestsItem(ItemIdentifier item) {
-		if (item == null) {
-			return 0;
-		}
-		return _dummyInvUtil.getItemCount(item);
-	}*/
-
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
@@ -148,6 +134,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		signEntityX = nbttagcompound.getInteger("CraftingSignEntityX");
 		signEntityY = nbttagcompound.getInteger("CraftingSignEntityY");
 		signEntityZ = nbttagcompound.getInteger("CraftingSignEntityZ");
+		
+		priority = nbttagcompound.getInteger("priority");
 	}
 
 	@Override
@@ -159,6 +147,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		nbttagcompound.setInteger("CraftingSignEntityX", signEntityX);
 		nbttagcompound.setInteger("CraftingSignEntityY", signEntityY);
 		nbttagcompound.setInteger("CraftingSignEntityZ", signEntityZ);
+		
+		nbttagcompound.setInteger("priority", priority);
 	}
 
 	@Override
@@ -268,7 +258,29 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			}
 		}
 	}
-
+	
+	public void priorityUp(EntityPlayer player) {
+		priority++;
+		if(MainProxy.isClient()) {
+			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
+		} else if(MainProxy.isServer() && player != null) {
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
+		}
+	}
+	
+	public void priorityDown(EntityPlayer player) {
+		priority--;
+		if(MainProxy.isClient()) {
+			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
+		} else if(MainProxy.isServer() && player != null) {
+			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
+		}
+	}
+	
+	public void setPriority(int amount) {
+		priority = amount;
+	}
+	
 	/* ** INTERFACE TO PIPE ** */
 	public ItemStack getCraftedItem() {
 		return _dummyInventory.getStackInSlot(9);

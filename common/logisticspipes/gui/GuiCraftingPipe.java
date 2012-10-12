@@ -61,6 +61,8 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			controlList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 20 + 18 * i, (height - ySize) / 2 + 37, 10,10, ">"));
 			buttonarray[i].drawButton = false;
 		}
+		controlList.add(new SmallGuiButton(20, (width-xSize) / 2 + 164, (height - ySize) / 2 + 85, 10,10, ">"));
+		controlList.add(new SmallGuiButton(21, (width-xSize) / 2 + 129, (height - ySize) / 2 + 85, 10,10, "<"));
 	}
 	
 	
@@ -85,6 +87,12 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		case 4:
 			_logic.openAttachedGui(_player);
 			return;
+		case 20:
+			_logic.priorityUp(_player);
+			return;
+		case 21:
+			_logic.priorityDown(_player);
+			return;
 		default:
 			super.actionPerformed(guibutton);
 			return;
@@ -107,21 +115,23 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		
 		if (_logic.satelliteId == 0){
 			fontRenderer.drawString("Off", 144, 52, 0x404040);
-			return;
+		} else {
+			fontRenderer.drawString(""+_logic.satelliteId , 155 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
+			/*
+			if (_logic.isSatelliteConnected()){
+				MinecraftForgeClient.bindTexture(mod_LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
+			}else{
+				MinecraftForgeClient.bindTexture(mod_LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
+			}*/
+			//TODO /\ /\ ???
+	
+			//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			//drawRect(0,1000,0,10000, 0xFFFF0000);
+			//drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
+			//MinecraftForgeClient.unbindTexture();
 		}
-		/*
-		if (_logic.isSatelliteConnected()){
-			MinecraftForgeClient.bindTexture(mod_LogisticsPipes.LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-		}else{
-			MinecraftForgeClient.bindTexture(mod_LogisticsPipes.LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
-		}*/
-		//TODO /\ /\ ???
-
-		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//drawRect(0,1000,0,10000, 0xFFFF0000);
-		//drawTexturedModalRect(155, 50, 10 * (xSize / 16) , 0, 10, 10);
-		//MinecraftForgeClient.unbindTexture();
-		fontRenderer.drawString(""+_logic.satelliteId , 155 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
+		fontRenderer.drawString("Priority:" , 132 , 75, 0x404040);
+		fontRenderer.drawString(""+_logic.priority , 152 - (fontRenderer.getStringWidth(""+_logic.priority) / 2) , 87, 0x404040);
 	}
 	
 	@Override

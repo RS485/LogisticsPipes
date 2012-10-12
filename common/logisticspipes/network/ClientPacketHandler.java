@@ -27,6 +27,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.packets.PacketBufferTransfer;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
@@ -52,6 +53,7 @@ import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.SneakyOrientation;
+import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
@@ -237,6 +239,12 @@ public class ClientPacketHandler {
 					final PacketPipeInteger packetAl = new PacketPipeInteger();
 					packetAl.readData(data);
 					onRotationSet(packetAl);
+					break;
+				case NetworkConstants.CRAFTING_PIPE_PRIORITY:
+					final PacketPipeInteger packetAm = new PacketPipeInteger();
+					packetAm.readData(data);
+					onPrioritySet(packetAm);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -637,6 +645,19 @@ public class ClientPacketHandler {
 			((IRotationProvider)tile).setRotation(packet.integer);
 			FMLClientHandler.instance().getClient().theWorld.markBlockNeedsUpdate(packet.posX, packet.posY, packet.posZ);
 		}
+	}
+
+	private static void onPrioritySet(PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).setPriority(packet.integer);
 	}
 
 	// BuildCraft method

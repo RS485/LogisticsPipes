@@ -73,7 +73,21 @@ public class RequestManager {
 		for(IRouter r : validDestinations) {
 			CoreRoutedPipe pipe = r.getPipe();
 			if (pipe instanceof ICraftItems){
-				((ICraftItems)pipe).addCrafting(crafters);
+				LinkedList<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
+				((ICraftItems)pipe).addCrafting(added);
+				for(CraftingTemplate template:added) {
+					boolean done = false;
+					for(int i=0; i<crafters.size();i++) {
+						if(template.getPriority() > crafters.get(i).getPriority()) {
+							crafters.add(i, template);
+							done = true;
+							break;
+						}
+					}
+					if(!done) {
+						crafters.addLast(template);
+					}
+				}
 			}
 		}
 		return crafters;

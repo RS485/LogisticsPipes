@@ -71,4 +71,7 @@ public class NetworkConstants {
 	public static final int SEND_QUEUE_CONTENT = 65;
 	public static final int ROTATION_REQUEST = 66;
 	public static final int ROTATION_SET = 67;
+	public static final int CRAFTING_PIPE_PRIORITY = 68;
+	public static final int CRAFTING_PIPE_PRIORITY_UP = 69;
+	public static final int CRAFTING_PIPE_PRIORITY_DOWN = 70;
 }

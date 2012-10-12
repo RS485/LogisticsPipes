@@ -24,10 +24,12 @@ public class CraftingTemplate {
 	private ItemIdentifierStack _result;
 	private ICraftItems _crafter;
 	private HashMap<ItemIdentifierStack, IRequestItems> _required = new HashMap<ItemIdentifierStack, IRequestItems>();
+	private final int priority;
 	
-	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter){
+	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
 		_result = result;
 		_crafter = crafter;
+		this.priority = priority;
 	}
 	
 	public void addRequirement(ItemIdentifierStack stack, IRequestItems crafter){
@@ -57,5 +59,8 @@ public class CraftingTemplate {
 	public ICraftItems getCrafter(){
 		return _crafter;
 	}
-
+	
+	public int getPriority() {
+		return priority;
+	}
 }

@@ -41,11 +41,11 @@ public class LogisticsSolidBlock extends BlockContainer {
 		if(!par5EntityPlayer.isSneaking()) {
 			switch(par1World.getBlockMetadata(par2, par3, par4)) {
 			case SOLDERING_STATION:
-				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Soldering_Station, par1World, par2, par3, par4);
+				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Soldering_Station_ID, par1World, par2, par3, par4);
 				return true;
 			case LOGISTICS_POWER_JUNCTION:
-				
-				return false;
+				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Junction_ID, par1World, par2, par3, par4);
+				return true;
 				default:break;
 			}
 			return false;

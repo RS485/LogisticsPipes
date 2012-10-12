@@ -2,12 +2,14 @@ package logisticspipes.network;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
+import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.GuiSolderingStation;
@@ -289,7 +291,7 @@ public class GuiHandler implements IGuiHandler {
 				
 				return dummy;
 			
-			case GuiIDs.GUI_Soldering_Station:
+			case GuiIDs.GUI_Soldering_Station_ID:
 				if(!(tile instanceof LogisticsSolderingTileEntity)) return null;
 				return ((LogisticsSolderingTileEntity)tile).createContainer(player);
 				
@@ -308,6 +310,10 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(0, 0);
 				
 				return dummy;
+				
+			case GuiIDs.GUI_Power_Junction_ID:
+				if(!(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft)) return null;
+				return ((LogisticsPowerJuntionTileEntity_BuildCraft)tile).createContainer(player);
 				
 			default:
 				return null;
@@ -519,7 +525,7 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				return new GuiInvSysConnector(player, (PipeItemsInvSysConnector)pipe.pipe);
 			
-			case GuiIDs.GUI_Soldering_Station:
+			case GuiIDs.GUI_Soldering_Station_ID:
 				if(!(tile instanceof LogisticsSolderingTileEntity)) return null;
 				return new GuiSolderingStation(player, (LogisticsSolderingTileEntity)tile);
 				
@@ -532,6 +538,10 @@ public class GuiHandler implements IGuiHandler {
 					inv = ((PipeItemsSystemDestinationLogistics)pipe.pipe).inv;
 				}
 				return new GuiFreqCardContent(player, inv);
+				
+			case GuiIDs.GUI_Power_Junction_ID:
+				if(!(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft)) return null;
+				return new GuiPowerJunction(player, (LogisticsPowerJuntionTileEntity_BuildCraft) tile);
 				
 			default:
 				return null;

@@ -98,8 +98,8 @@ public class DummyContainer extends Container{
 	/**
 	 * Disable whatever this is 
 	 **/
-	@Override
-	public void updateCraftingResults() {}
+	//@Override
+	//public void updateCraftingResults() {}
 	
 	/**
 	 * Disable shift-clicking to transfer items

@@ -74,4 +74,5 @@ public class NetworkConstants {
 	public static final int CRAFTING_PIPE_PRIORITY = 68;
 	public static final int CRAFTING_PIPE_PRIORITY_UP = 69;
 	public static final int CRAFTING_PIPE_PRIORITY_DOWN = 70;
+	public static final int POWER_JUNCTION_POWER_LEVEL = 71;
 }

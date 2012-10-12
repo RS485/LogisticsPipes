@@ -22,7 +22,7 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 
 	@Override
 	public int getGuiID() {
-		return GuiIDs.GUI_Soldering_Station;
+		return GuiIDs.GUI_Soldering_Station_ID;
 	}
 
 	@Override

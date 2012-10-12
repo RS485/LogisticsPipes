@@ -60,12 +60,15 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 
 	@Override
 	public boolean demandsEnergy() {
-		return freeSpace() > IC2Multiplier;
+		return freeSpace() > 0;
 	}
 
 	@Override
 	public int injectEnergy(Direction directionFrom, int amount) {
 		int addAmount = Math.min(amount, freeSpace() / IC2Multiplier);
+		if(freeSpace() > 0 && addAmount == 0) {
+			addAmount = 1;
+		}
 		addEnergy(addAmount * IC2Multiplier);
 		return amount - addAmount;
 	}

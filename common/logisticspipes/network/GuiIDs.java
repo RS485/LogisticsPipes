@@ -30,7 +30,8 @@ public class GuiIDs {
 	public static final int GUI_Module_ElectricManager_ID = 40;
 	
 	//Blocks
-	public static final int GUI_Soldering_Station = 50;
+	public static final int GUI_Soldering_Station_ID = 50;
+	public static final int GUI_Power_Junction_ID = 51;
 
 	//SubModules 
 	//All IDS above 120 and so on...

@@ -1,20 +1,32 @@
 package logisticspipes.blocks.powertile;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.gui.DummyContainer;
+import net.minecraft.src.Container;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
 
-public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider {
+public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler {
 	
 	public final int BuildCraftMultiplier = 5;
-	public final int MAX_STORAGE = 20000000;
+	public final int MAX_STORAGE = 2000000;
 	
 	private IPowerProvider powerFramework;
 	
-	protected int internalStorage = 0;
+	private List<EntityPlayer> guiListener = new ArrayList<EntityPlayer>();
+	
+	private int internalStorage = 0;
 	
 	public LogisticsPowerJuntionTileEntity_BuildCraft() {
 		powerFramework = PowerFramework.currentFramework.createPowerProvider();
@@ -25,6 +37,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public boolean useEnergy(int amount) {
 		if(canUseEnergy(amount)) {
 			internalStorage -= amount;
+			updateClients();
 			return true;
 		}
 		return false;
@@ -32,6 +45,10 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	
 	public int freeSpace() {
 		return MAX_STORAGE - internalStorage;
+	}
+	
+	public void updateClients() {
+		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), guiListener);
 	}
 	
 	@Override
@@ -44,6 +61,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		if(internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
 		}
+		updateClients();
 	}
 	
 	@Override
@@ -62,6 +80,9 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void updateEntity() {
 		super.updateEntity();
 		float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
+		if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
+			energy = 1;
+		}
 		if(powerFramework.useEnergy(energy, energy, false) == energy) {
 			powerFramework.useEnergy(energy, energy, true);
 			addEnergy(energy * BuildCraftMultiplier);
@@ -89,5 +110,31 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public int getPowerLevel() {
 		return internalStorage;
+	}
+
+	public int getChargeState() {
+		return internalStorage * 100 / MAX_STORAGE;
+	}
+
+	public Container createContainer(EntityPlayer player) {
+		DummyContainer dummy = new DummyContainer(player, null, this);
+		dummy.addNormalSlotsForPlayerInventory(8, 80);
+		return dummy;
+	}
+
+	@Override
+	public void guiOpenedByPlayer(EntityPlayer player) {
+		guiListener.add(player);
+	}
+
+	@Override
+	public void guiClosedByPlayer(EntityPlayer player) {
+		guiListener.remove(player);
+	}
+
+	public void handlePowerPacket(PacketPipeInteger packet) {
+		if(MainProxy.isClient()) {
+			internalStorage = packet.integer;
+		}
 	}
 }

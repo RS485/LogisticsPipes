@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
@@ -244,6 +245,11 @@ public class ClientPacketHandler {
 					final PacketPipeInteger packetAm = new PacketPipeInteger();
 					packetAm.readData(data);
 					onPrioritySet(packetAm);
+					break;
+				case NetworkConstants.POWER_JUNCTION_POWER_LEVEL:
+					final PacketPipeInteger packetAn = new PacketPipeInteger();
+					packetAn.readData(data);
+					onPowerLevel(packetAn);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -658,6 +664,13 @@ public class ClientPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).setPriority(packet.integer);
+	}
+
+	private static void onPowerLevel(PacketPipeInteger packet) {
+		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
+			((LogisticsPowerJuntionTileEntity_BuildCraft)tile).handlePowerPacket(packet);
+		}
 	}
 
 	// BuildCraft method

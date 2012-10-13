@@ -15,7 +15,6 @@ import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ScaledResolution;
 
 import org.lwjgl.opengl.GL11;
 

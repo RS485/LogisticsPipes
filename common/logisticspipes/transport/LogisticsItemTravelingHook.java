@@ -7,7 +7,6 @@ import logisticspipes.utils.OrientationsUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
 import buildcraft.core.DefaultProps;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;

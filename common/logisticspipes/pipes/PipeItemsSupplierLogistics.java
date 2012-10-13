@@ -8,8 +8,6 @@
 
 package logisticspipes.pipes;
 
-import org.omg.CORBA._PolicyStub;
-
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;

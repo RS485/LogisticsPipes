@@ -1,7 +1,6 @@
 package logisticspipes.items;
 
 import java.util.List;
-import java.util.Random;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;

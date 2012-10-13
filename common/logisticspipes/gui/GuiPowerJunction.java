@@ -1,12 +1,7 @@
 package logisticspipes.gui;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.EntityPlayer;
 

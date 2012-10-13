@@ -2,7 +2,6 @@ package logisticspipes.utils;
 
 import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
-import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 
 public class OrientationsUtil {

@@ -28,7 +28,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
 import logisticspipes.utils.Pair4;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.EntityItem;

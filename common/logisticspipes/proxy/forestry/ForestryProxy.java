@@ -10,7 +10,6 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.BuildCraftCore;

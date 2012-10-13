@@ -18,7 +18,6 @@ import java.util.UUID;
 import logisticspipes.config.Textures;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.ILegacyActiveModule;

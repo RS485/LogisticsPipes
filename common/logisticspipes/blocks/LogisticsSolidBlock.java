@@ -1,19 +1,15 @@
 package logisticspipes.blocks;
 
-import java.util.ArrayList;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.proxy.side.ClientProxy;
 import net.minecraft.src.BlockContainer;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityLiving;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.ItemStack;
 import net.minecraft.src.Material;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;

@@ -26,6 +26,7 @@ TODO later, maybe....
 
 package logisticspipes;
 
+import buildcraft.transport.TileGenericPipe;
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
@@ -45,6 +46,7 @@ import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
@@ -61,6 +63,7 @@ import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.ticks.RenderTickHandler;
+import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.Block;
@@ -91,6 +94,7 @@ import cpw.mods.fml.common.registry.TickRegistry;
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
 	
+
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
 
@@ -137,7 +141,9 @@ public class LogisticsPipes {
 	
 	private Textures textures = new Textures();
 	
-	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
+	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;	
+	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe;
+	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	//Blocks
 	public static Block logisticsSign;
@@ -162,6 +168,8 @@ public class LogisticsPipes {
 		if(event.getSide().equals(Side.CLIENT)) {
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}
+		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
+		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
 		if(event.getSide() == Side.CLIENT) {
 			new PacketBufferHandlerThread(Side.CLIENT);
 			new PacketBufferHandlerThread(Side.SERVER);	
@@ -309,7 +317,10 @@ public class LogisticsPipes {
 		} else {
 			powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
 		}
-
+		
+		//LogisticsTileGenerticPipe
+		logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
+		
 		MainProxy.proxy.registerTileEntitis();
 
 		RecipeManager.loadRecipes();

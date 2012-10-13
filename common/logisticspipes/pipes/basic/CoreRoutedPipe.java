@@ -36,6 +36,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -44,6 +45,7 @@ import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Orientations;
@@ -146,9 +148,26 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public abstract ItemSendMode getItemSendMode();
 	
+	private void checkTileEntity() {
+		if(worldObj.getWorldTime() % 10 == 0) {
+			if(this.container.getClass() != LogisticsPipes.logisticsTileGenericPipe) {
+				TileEntity tile = worldObj.getBlockTileEntity(xCoord, yCoord, zCoord);
+				if(tile != this.container) {
+					System.out.println("LocalCodeError");
+				}
+				if(MainProxy.isClient()) {
+					WorldTickHandler.clientPipesToReplace.add(this.container);
+				} else {
+					WorldTickHandler.serverPipesToReplace.add(this.container);
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		checkTileEntity();
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){

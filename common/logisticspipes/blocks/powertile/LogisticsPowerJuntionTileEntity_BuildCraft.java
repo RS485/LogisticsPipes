@@ -3,21 +3,32 @@ package logisticspipes.blocks.powertile;
 import java.util.ArrayList;
 import java.util.List;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
+
+import logisticspipes.gui.hud.HUDPowerJunction;
+import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
+import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.Container;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
+import net.minecraft.src.World;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
 
-public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler {
+public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int MAX_STORAGE = 2000000;
@@ -28,9 +39,14 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	
 	private int internalStorage = 0;
 	
+	private boolean init = false;
+	private List<EntityPlayer> watcherList = new ArrayList<EntityPlayer>();
+	private IHeadUpDisplayRenderer HUD;
+	
 	public LogisticsPowerJuntionTileEntity_BuildCraft() {
 		powerFramework = PowerFramework.currentFramework.createPowerProvider();
 		powerFramework.configure(0, 1, 250, 1, 750);
+		HUD = new HUDPowerJunction(this);
 	}
 	
 	@Override
@@ -49,6 +65,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	
 	public void updateClients() {
 		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), guiListener);
+		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), watcherList);
 	}
 	
 	@Override
@@ -79,13 +96,45 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
-		if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
-			energy = 1;
+		if(MainProxy.isServer()) {
+			float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
+			if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
+				energy = 1;
+			}
+			if(powerFramework.useEnergy(energy, energy, false) == energy) {
+				powerFramework.useEnergy(energy, energy, true);
+				addEnergy(energy * BuildCraftMultiplier);
+			}
 		}
-		if(powerFramework.useEnergy(energy, energy, false) == energy) {
-			powerFramework.useEnergy(energy, energy, true);
-			addEnergy(energy * BuildCraftMultiplier);
+		if(!init) {
+			if(MainProxy.isClient()) {
+				LogisticsHUDRenderer.providers.add(this);
+			}
+			init = true;
+		}
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		if(MainProxy.isClient()) {
+			LogisticsHUDRenderer.providers.remove(this);
+		}
+	}
+
+	@Override
+	public void validate() {
+		super.validate();
+		if(MainProxy.isClient()) {
+			LogisticsHUDRenderer.providers.add(this);
+		}
+	}
+
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if(MainProxy.isClient()) {
+			LogisticsHUDRenderer.providers.remove(this);
 		}
 	}
 
@@ -136,5 +185,56 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		if(MainProxy.isClient()) {
 			internalStorage = packet.integer;
 		}
+	}
+
+	@Override
+	public IHeadUpDisplayRenderer getRenderer() {
+		return HUD ;
+	}
+
+	@Override
+	public int getX() {
+		return xCoord;
+	}
+
+	@Override
+	public int getY() {
+		return yCoord;
+	}
+
+	@Override
+	public int getZ() {
+		return zCoord;
+	}
+
+	@Override
+	public World getWorld() {
+		return worldObj;
+	}
+
+	@Override
+	public void startWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+	}
+
+	@Override
+	public void stopWaitching() {
+		PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+	}
+
+	@Override
+	public void playerStartWatching(EntityPlayer player) {
+		watcherList.add(player);
+		updateClients();
+	}
+
+	@Override
+	public void playerStopWatching(EntityPlayer player) {
+		watcherList.remove(player);
+	}
+
+	@Override
+	public boolean isExistend() {
+		return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 }

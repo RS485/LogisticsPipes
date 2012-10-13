@@ -75,4 +75,6 @@ public class NetworkConstants {
 	public static final int CRAFTING_PIPE_PRIORITY_UP = 69;
 	public static final int CRAFTING_PIPE_PRIORITY_DOWN = 70;
 	public static final int POWER_JUNCTION_POWER_LEVEL = 71;
+	public static final int HUD_START_WATCHING_BLOCK = 72;
+	public static final int HUD_STOP_WATCHING_BLOCK = 73;
 }

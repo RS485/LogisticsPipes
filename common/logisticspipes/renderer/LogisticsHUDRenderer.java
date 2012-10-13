@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -29,6 +31,8 @@ public class LogisticsHUDRenderer {
 	private boolean warned = false;
 	private int warned_progress = 0;
 	private long lastTick = 0;
+	
+	public static ArrayList<IHeadUpDisplayBlockRendererProvider> providers = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
 	
 	private static LogisticsHUDRenderer renderer = null;
 	
@@ -56,6 +60,25 @@ public class LogisticsHUDRenderer {
 				}
 			}
 		}
+		
+		List<IHeadUpDisplayBlockRendererProvider> remove = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
+		for(IHeadUpDisplayBlockRendererProvider provider:providers) {
+			if(MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
+				double dis = Math.hypot(provider.getX() - x + 0.5,Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
+				if(dis < 15 && dis > 0.75 && !provider.isInvalid() && provider.isExistend()) {
+					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,provider));
+					if(!list.contains(provider)) {
+						provider.startWaitching();
+					}
+				} else if(provider.isInvalid() || !provider.isExistend()) {
+					remove.add(provider);
+				}
+			}
+		}
+		for(IHeadUpDisplayBlockRendererProvider provider:remove) {
+			providers.remove(provider);
+		}
+		
 		if(newList.size() < 1) return;
 		Object[] sorter = newList.toArray();
 		Arrays.sort(sorter, new Comparator() {
@@ -151,7 +174,7 @@ public class LogisticsHUDRenderer {
 					double x = renderer.getX() + 0.5 - player.posX;
 					double y = renderer.getY() + 0.5 - player.posY;
 					double z = renderer.getZ() + 0.5 - player.posZ;
-					if(Math.hypot(x,Math.hypot(y, z)) < 0.75) {
+					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isExistend()))) {
 						refreshList(player.posX,player.posY,player.posZ);
 				        GL11.glPopMatrix();
 						break;

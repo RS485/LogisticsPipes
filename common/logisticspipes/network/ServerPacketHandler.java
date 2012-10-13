@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
@@ -269,6 +270,16 @@ public class ServerPacketHandler {
 					final PacketCoordinates packetAm = new PacketCoordinates();
 					packetAm.readData(data);
 					onPriorityDown(player, packetAm);
+					break;
+				case NetworkConstants.HUD_START_WATCHING_BLOCK:
+					final PacketCoordinates packetAn = new PacketCoordinates();
+					packetAn.readData(data);
+					onHUDBlockWatch(player, packetAn, true);
+					break;
+				case NetworkConstants.HUD_STOP_WATCHING_BLOCK:
+					final PacketCoordinates packetAo = new PacketCoordinates();
+					packetAo.readData(data);
+					onHUDBlockWatch(player, packetAo, false);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1014,6 +1025,17 @@ public class ServerPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).priorityDown(player);
+	}
+
+	private static void onHUDBlockWatch(EntityPlayerMP player, PacketCoordinates packet, boolean flag) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof IBlockWatchingHandler) {
+			if(flag) {
+				((IBlockWatchingHandler)tile).playerStartWatching(player);
+			} else {
+				((IBlockWatchingHandler)tile).playerStopWatching(player);	
+			}
+		}
 	}
 	
 	// BuildCraft method

@@ -55,6 +55,10 @@ public class Configs {
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
 	
 
+	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
+	public static boolean LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = false;
+	
+
 	//GuiOrderer Popup setting
 	public static boolean displayPopup = true;
 	
@@ -75,128 +79,134 @@ public class Configs {
 		configuration = new Configuration(configFile);
 		configuration.load();
 		
-		Property logisticRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSREMOTEORDERER_ID);
+		Property logisticRemoteOrdererIdProperty = configuration.get("logisticsRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSREMOTEORDERER_ID);
 		logisticRemoteOrdererIdProperty.comment = "The item id for the remote orderer";
 		
-		Property logisticNetworkMonitorIdProperty = configuration.getOrCreateIntProperty("logisticsNetworkMonitor.id", Configuration.CATEGORY_ITEM, LOGISTICSNETWORKMONITOR_ID);
+		Property logisticNetworkMonitorIdProperty = configuration.get("logisticsNetworkMonitor.id", Configuration.CATEGORY_ITEM, LOGISTICSNETWORKMONITOR_ID);
 		logisticNetworkMonitorIdProperty.comment = "The item id for the network monitor";
 		
-		Property logisticPipeIdProperty = configuration.getOrCreateIntProperty("logisticsPipe.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_BASIC_ID);
+		Property logisticPipeIdProperty = configuration.get("logisticsPipe.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_BASIC_ID);
 		logisticPipeIdProperty.comment = "The item id for the basic logistics pipe";
 		
-		Property logisticPipeRequesterIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequester.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_ID);
+		Property logisticPipeRequesterIdProperty = configuration.get("logisticsPipeRequester.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_ID);
 		logisticPipeRequesterIdProperty.comment = "The item id for the requesting logistics pipe";
 		
-		Property logisticPipeProviderIdProperty = configuration.getOrCreateIntProperty("logisticsPipeProvider.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_ID);
+		Property logisticPipeProviderIdProperty = configuration.get("logisticsPipeProvider.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_ID);
 		logisticPipeProviderIdProperty.comment = "The item id for the providing logistics pipe";
 		
-		Property logisticPipeCraftingIdProperty = configuration.getOrCreateIntProperty("logisticsPipeCrafting.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_ID);
+		Property logisticPipeCraftingIdProperty = configuration.get("logisticsPipeCrafting.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_ID);
 		logisticPipeCraftingIdProperty.comment = "The item id for the crafting logistics pipe";
 
-		Property logisticPipeSatelliteIdProperty = configuration.getOrCreateIntProperty("logisticsPipeSatellite.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_SATELLITE_ID);
+		Property logisticPipeSatelliteIdProperty = configuration.get("logisticsPipeSatellite.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_SATELLITE_ID);
 		logisticPipeSatelliteIdProperty.comment = "The item id for the crafting satellite pipe";
 		
-		Property logisticPipeSupplierIdProperty = configuration.getOrCreateIntProperty("logisticsPipeSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_SUPPLIER_ID);
+		Property logisticPipeSupplierIdProperty = configuration.get("logisticsPipeSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_SUPPLIER_ID);
 		logisticPipeSupplierIdProperty.comment = "The item id for the supplier pipe";
 		
-		Property logisticPipeChassi1IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi1.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI1_ID);
+		Property logisticPipeChassi1IdProperty = configuration.get("logisticsPipeChassi1.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI1_ID);
 		logisticPipeChassi1IdProperty.comment = "The item id for the chassi1";
 		
-		Property logisticPipeChassi2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI2_ID);
+		Property logisticPipeChassi2IdProperty = configuration.get("logisticsPipeChassi2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI2_ID);
 		logisticPipeChassi2IdProperty.comment = "The item id for the chassi2";
 		
-		Property logisticPipeChassi3IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi3.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI3_ID);
+		Property logisticPipeChassi3IdProperty = configuration.get("logisticsPipeChassi3.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI3_ID);
 		logisticPipeChassi3IdProperty.comment = "The item id for the chassi3";
 		
-		Property logisticPipeChassi4IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi4.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI4_ID);
+		Property logisticPipeChassi4IdProperty = configuration.get("logisticsPipeChassi4.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI4_ID);
 		logisticPipeChassi4IdProperty.comment = "The item id for the chassi4";
 		
-		Property logisticPipeChassi5IdProperty = configuration.getOrCreateIntProperty("logisticsPipeChassi5.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI5_ID);
+		Property logisticPipeChassi5IdProperty = configuration.get("logisticsPipeChassi5.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CHASSI5_ID);
 		logisticPipeChassi5IdProperty.comment = "The item id for the chassi5";
 
-		Property logisticPipeCraftingMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeCraftingMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK2_ID);
+		Property logisticPipeCraftingMK2IdProperty = configuration.get("logisticsPipeCraftingMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK2_ID);
 		logisticPipeCraftingMK2IdProperty.comment = "The item id for the crafting logistics pipe MK2";
 		
-		Property logisticPipeCraftingMK3IdProperty = configuration.getOrCreateIntProperty("logisticsPipeCraftingMK3.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK3_ID);
+		Property logisticPipeCraftingMK3IdProperty = configuration.get("logisticsPipeCraftingMK3.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_CRAFTING_MK3_ID);
 		logisticPipeCraftingMK3IdProperty.comment = "The item id for the crafting logistics pipe MK3";
 		
-		Property logisticPipeRequesterMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
+		Property logisticPipeRequesterMK2IdProperty = configuration.get("logisticsPipeRequesterMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
 
-		Property logisticPipeProviderMK2IdProperty = configuration.getOrCreateIntProperty("logisticsPipeProviderMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_MK2_ID);
+		Property logisticPipeProviderMK2IdProperty = configuration.get("logisticsPipeProviderMK2.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_PROVIDER_MK2_ID);
 		logisticPipeProviderMK2IdProperty.comment = "The item id for the provider logistics pipe MK2";
 
-		Property logisticPipeApiaristAnalyserIdProperty = configuration.getOrCreateIntProperty("logisticsPipeApiaristAnalyser.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_ANALYSER_ID);
+		Property logisticPipeApiaristAnalyserIdProperty = configuration.get("logisticsPipeApiaristAnalyser.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_ANALYSER_ID);
 		logisticPipeApiaristAnalyserIdProperty.comment = "The item id for the apiarist logistics analyser pipe";
 
-		Property logisticPipeRemoteOrdererIdProperty = configuration.getOrCreateIntProperty("logisticsPipeRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REMOTE_ORDERER_ID);
+		Property logisticPipeRemoteOrdererIdProperty = configuration.get("logisticsPipeRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_REMOTE_ORDERER_ID);
 		logisticPipeRemoteOrdererIdProperty.comment = "The item id for the remote orderer logistics pipe";
 		
-		Property logisticPipeApiaristSinkIdProperty = configuration.getOrCreateIntProperty("logisticsPipeApiaristSink.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_SINK_ID);
+		Property logisticPipeApiaristSinkIdProperty = configuration.get("logisticsPipeApiaristSink.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_APIARIST_SINK_ID);
 		logisticPipeApiaristSinkIdProperty.comment = "The item id for the apiarist logistics sink pipe";
 
-		Property logisticModuleIdProperty = configuration.getOrCreateIntProperty("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
+		Property logisticModuleIdProperty = configuration.get("logisticsModules.id", Configuration.CATEGORY_ITEM, ItemModuleId);
 		logisticModuleIdProperty.comment = "The item id for the modules";
 
-		Property logisticItemDiskIdProperty = configuration.getOrCreateIntProperty("logisticsDisk.id", Configuration.CATEGORY_ITEM, ItemDiskId);
+		Property logisticItemDiskIdProperty = configuration.get("logisticsDisk.id", Configuration.CATEGORY_ITEM, ItemDiskId);
 		logisticItemDiskIdProperty.comment = "The item id for the disk";
 		
-		Property logisticItemHUDIdProperty = configuration.getOrCreateIntProperty("logisticsHUD.id", Configuration.CATEGORY_ITEM, ItemHUDId);
+		Property logisticItemHUDIdProperty = configuration.get("logisticsHUD.id", Configuration.CATEGORY_ITEM, ItemHUDId);
 		logisticItemHUDIdProperty.comment = "The item id for the Logistics HUD glasses";
 
-		Property logisticItemPartsIdProperty = configuration.getOrCreateIntProperty("logisticsHUDParts.id", Configuration.CATEGORY_ITEM, ItemPartsId);
+		Property logisticItemPartsIdProperty = configuration.get("logisticsHUDParts.id", Configuration.CATEGORY_ITEM, ItemPartsId);
 		logisticItemPartsIdProperty.comment = "The item id for the Logistics item parts";
 
-		Property logisticCraftingSignCreatorIdProperty = configuration.getOrCreateIntProperty("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
+		Property logisticCraftingSignCreatorIdProperty = configuration.get("logisticsCraftingSignCreator.id", Configuration.CATEGORY_ITEM, LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
 		
-		Property logisticPipeBuilderSupplierIdProperty = configuration.getOrCreateIntProperty("logisticsPipeBuilderSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_BUILDERSUPPLIER_ID);
+		Property logisticPipeBuilderSupplierIdProperty = configuration.get("logisticsPipeBuilderSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_BUILDERSUPPLIER_ID);
 		logisticPipeBuilderSupplierIdProperty.comment = "The item id for the builder supplier pipe";
 		
-		Property logisticPipeLiquidSupplierIdProperty = configuration.getOrCreateIntProperty("logisticsPipeLiquidSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_LIQUIDSUPPLIER_ID);
+		Property logisticPipeLiquidSupplierIdProperty = configuration.get("logisticsPipeLiquidSupplier.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_LIQUIDSUPPLIER_ID);
 		logisticPipeLiquidSupplierIdProperty.comment = "The item id for the liquid supplier pipe";
 
-		Property logisticInvSysConIdProperty = configuration.getOrCreateIntProperty("logisticInvSysCon.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_INVSYSCON_ID);
+		Property logisticInvSysConIdProperty = configuration.get("logisticInvSysCon.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_INVSYSCON_ID);
 		logisticInvSysConIdProperty.comment = "The item id for the inventory system connector pipe";
 
-		Property logisticEntranceIdProperty = configuration.getOrCreateIntProperty("logisticEntrance.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_ENTRANCE_ID);
+		Property logisticEntranceIdProperty = configuration.get("logisticEntrance.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_ENTRANCE_ID);
 		logisticEntranceIdProperty.comment = "The item id for the logistics system entrance pipe";
 
-		Property logisticDestinationIdProperty = configuration.getOrCreateIntProperty("logisticDestination.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_DESTINATION_ID);
+		Property logisticDestinationIdProperty = configuration.get("logisticDestination.id", Configuration.CATEGORY_ITEM, LOGISTICSPIPE_DESTINATION_ID);
 		logisticDestinationIdProperty.comment = "The item id for the logistics system destination pipe";
 
-		Property logisticItemCardIdProperty = configuration.getOrCreateIntProperty("logisticItemCard.id", Configuration.CATEGORY_ITEM, ItemCardId);
+		Property logisticItemCardIdProperty = configuration.get("logisticItemCard.id", Configuration.CATEGORY_ITEM, ItemCardId);
 		logisticItemCardIdProperty.comment = "The item id for the logistics item card";
 
 		
-		Property detectionLength = configuration.getOrCreateIntProperty("detectionLength", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_LENGTH);
+		Property detectionLength = configuration.get("detectionLength", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_LENGTH);
 		detectionLength.comment = "The maximum shortest length between logistics pipes. This is an indicator on the maxim depth of the recursion algorithm to discover logistics neighbours. A low value might use less CPU, a high value will allow longer pipe sections";
 		
-		Property detectionCount = configuration.getOrCreateIntProperty("detectionCount", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_COUNT);
+		Property detectionCount = configuration.get("detectionCount", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_COUNT);
 		detectionCount.comment = "The maximum number of buildcraft pipees (including forks) between logistics pipes. This is an indicator of the maximum ammount of nodes the recursion algorithm will visit before giving up. As it is possible to fork a pipe connection using standard BC pipes the algorithm will attempt to discover all available destinations through that pipe. Do note that the logistics system will not interfere with the operation of non-logistics pipes. So a forked pipe will usually be sup-optimal, but it is possible. A low value might reduce CPU usage, a high value will be able to handle more complex pipe setups. If you never fork your connection between the logistics pipes this has the same meaning as detectionLength and the lower of the two will be used";
 		
-		Property detectionFrequency = configuration.getOrCreateIntProperty("detectionFrequency", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_FREQUENCY);
+		Property detectionFrequency = configuration.get("detectionFrequency", Configuration.CATEGORY_GENERAL, LOGISTICS_DETECTION_FREQUENCY);
 		detectionFrequency.comment = "The amount of time that passes between checks to see if it is still connected to its neighbours. A low value will mean that it will detect changes faster but use more CPU. A high value means detection takes longer, but CPU consumption is reduced. A value of 20 will check about every second";
 		
-		Property countInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererCountInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_COUNT_INVERTWHEEL);
+		Property countInvertWheelProperty = configuration.get("ordererCountInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_COUNT_INVERTWHEEL);
 		countInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order number of items"; 
 
-		Property pageInvertWheelProperty = configuration.getOrCreateBooleanProperty("ordererPageInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_PAGE_INVERTWHEEL);
+		Property pageInvertWheelProperty = configuration.get("ordererPageInvertWheel", Configuration.CATEGORY_GENERAL, LOGISTICS_ORDERER_PAGE_INVERTWHEEL);
 		pageInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order pages";
 
-		Property pageDisplayPopupProperty = configuration.getOrCreateBooleanProperty("displayPopup", Configuration.CATEGORY_GENERAL, displayPopup);
+		Property pageDisplayPopupProperty = configuration.get("displayPopup", Configuration.CATEGORY_GENERAL, displayPopup);
 		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
 
-		if(configuration.blockProperties.containsKey("logisticsBlockId")) {
-			Property logisticsBlockId = configuration.getOrCreateIntProperty("logisticsBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_SIGN_ID);
+		if(configuration.categories.get(Configuration.CATEGORY_BLOCK).containsKey("logisticsBlockId")) {
+			Property logisticsBlockId = configuration.get("logisticsBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_SIGN_ID);
 			LOGISTICS_SIGN_ID = Integer.parseInt(logisticsBlockId.value);
-			configuration.blockProperties.remove("logisticsBlockId");
+			configuration.categories.get(Configuration.CATEGORY_BLOCK).remove("logisticsBlockId");
 		}
-		Property logisticsSignId = configuration.getOrCreateIntProperty("logisticsSignId", Configuration.CATEGORY_BLOCK, LOGISTICS_SIGN_ID);
+		Property logisticsSignId = configuration.get("logisticsSignId", Configuration.CATEGORY_BLOCK, LOGISTICS_SIGN_ID);
 		logisticsSignId.comment = "The ID of the LogisticsPipes Sign";
 		
-		Property logisticsSolidBlockId = configuration.getOrCreateIntProperty("logisticsSolidBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_SOLID_BLOCK_ID);
+		Property logisticsSolidBlockId = configuration.get("logisticsSolidBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_SOLID_BLOCK_ID);
 		logisticsSolidBlockId.comment = "The ID of the LogisticsPipes Solid Block";
+		
+		Property logsiticsPowerUsageDisable = configuration.get("powerUsageDisabled", Configuration.CATEGORY_GENERAL, LOGISTICS_POWER_USAGE_DISABLED);
+		logsiticsPowerUsageDisable.comment = "Diable the power usage trough LogisticsPipes";
+		
+		Property logsiticsTileGenericReplacementDisable = configuration.get("TileReplaceDisabled", Configuration.CATEGORY_GENERAL, LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED);
+		logsiticsTileGenericReplacementDisable.comment = "Diable the Replacement of the TileGenericPipe trough the LogisticsTileGenericPipe";
 		
 		configuration.save();
 		
@@ -237,11 +247,21 @@ public class Configs {
 		LOGISTICS_ORDERER_COUNT_INVERTWHEEL = Boolean.parseBoolean(countInvertWheelProperty.value);
 		LOGISTICS_ORDERER_PAGE_INVERTWHEEL 	= Boolean.parseBoolean(pageInvertWheelProperty.value);
 		
+		LOGISTICS_POWER_USAGE_DISABLED	 	= Boolean.parseBoolean(logsiticsPowerUsageDisable.value);
+		LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = Boolean.parseBoolean(logsiticsTileGenericReplacementDisable.value);
+		
 		LOGISTICSCRAFTINGSIGNCREATOR_ID		= Integer.parseInt(logisticCraftingSignCreatorIdProperty.value);
 		
 		displayPopup 						= Boolean.parseBoolean(pageDisplayPopupProperty.value);
 
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID	= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID		= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
+	}
+
+	public static void savePopupState() {
+		Property pageDisplayPopupProperty = configuration.get("displayPopup", Configuration.CATEGORY_GENERAL, displayPopup);
+		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
+		pageDisplayPopupProperty.value = Boolean.toString(displayPopup);
+		configuration.save();
 	}
 }

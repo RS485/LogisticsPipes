@@ -470,6 +470,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
 			Configs.displayPopup = button.change();
+			Configs.savePopupState();
 		}
 		
 		super.actionPerformed(guibutton);

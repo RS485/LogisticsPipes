@@ -168,8 +168,10 @@ public class LogisticsPipes {
 		if(event.getSide().equals(Side.CLIENT)) {
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}
-		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
-		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
+		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
+			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
+			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
+		}
 		if(event.getSide() == Side.CLIENT) {
 			new PacketBufferHandlerThread(Side.CLIENT);
 			new PacketBufferHandlerThread(Side.SERVER);	

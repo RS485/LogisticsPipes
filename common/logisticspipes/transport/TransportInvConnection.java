@@ -32,7 +32,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 		super.scheduleRemoval(item);
 		EntityData data = getEntityData(item);
 		if(data == null) return;
-		Position destPos = new Position(xCoord, yCoord, zCoord, data.orientation);
+		Position destPos = new Position(xCoord, yCoord, zCoord, data.output);
 
 		destPos.moveForwards(1.0);
 
@@ -45,13 +45,13 @@ public class TransportInvConnection extends PipeTransportLogistics {
 	
 	private void handleTileReached(EntityData data, TileEntity tile) {
 		if (tile instanceof IPipeEntry)
-			((IPipeEntry) tile).entityEntering(data.item, data.orientation);
+			((IPipeEntry) tile).entityEntering(data.item, data.output);
 		else if (tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportItems) {
 			TileGenericPipe pipe = (TileGenericPipe) tile;
 
-			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.orientation);
+			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
-			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.orientation.reverse(), true);
+			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.output.reverse(), true);
 
 			if (!CoreProxy.proxy.isRenderWorld(worldObj))
 				if(added.stackSize >= data.item.getItemStack().stackSize) {
@@ -61,7 +61,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 					}
 				} else {
 					data.item.getItemStack().stackSize -= added.stackSize;
-					EntityItem dropped = data.item.toEntityItem(data.orientation);
+					EntityItem dropped = data.item.toEntityItem(data.output);
 
 					if (dropped != null)
 						// On SMP, the client side doesn't actually drops
@@ -72,7 +72,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 			if (travelHook != null)
 				travelHook.drop(this, data);
 
-			EntityItem dropped = data.item.toEntityItem(data.orientation);
+			EntityItem dropped = data.item.toEntityItem(data.output);
 
 			if (dropped != null)
 				// On SMP, the client side doesn't actually drops

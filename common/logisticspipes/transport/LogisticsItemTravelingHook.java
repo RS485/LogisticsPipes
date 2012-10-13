@@ -58,7 +58,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 				
 				for(EntityPlayer player:MainProxy.getPlayerArround(world, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player)) {
-						PacketDispatcher.sendPacketToPlayer(pipe.createItemPacket(routed, data.orientation), (Player)player);
+						PacketDispatcher.sendPacketToPlayer(pipe.createItemPacket(data), (Player)player);
 						if(routed.getDestination() != null) { 
 							routed.addKnownPlayer(player);
 						}

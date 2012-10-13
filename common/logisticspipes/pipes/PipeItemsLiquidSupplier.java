@@ -61,8 +61,8 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		if (data.item.getItemStack() == null) return;
 		LiquidStack liquidId = LiquidManager.getLiquidForFilledItem(data.item.getItemStack());
 		if (liquidId == null) return;
-		while (data.item.getItemStack().stackSize > 0 && container.fill(data.orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
-			container.fill(data.orientation, liquidId, true);
+		while (data.item.getItemStack().stackSize > 0 && container.fill(data.output, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
+			container.fill(data.output, liquidId, true);
 			data.item.getItemStack().stackSize--;
 			
 			if (data.item.getItemStack().itemID >= 0 && data.item.getItemStack().itemID < Item.itemsList.length){
@@ -71,7 +71,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 					Item containerItem = item.getContainerItem();
 					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(new ItemStack(containerItem, 1), this.worldObj);
 					itemToSend.setSource(this.getRouter().getId());
-					this.queueRoutedItem(itemToSend, data.orientation);
+					this.queueRoutedItem(itemToSend, data.output);
 				}
 			}
 		}

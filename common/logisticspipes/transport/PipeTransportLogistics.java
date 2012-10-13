@@ -27,11 +27,11 @@ import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.network.PacketIds;
-import buildcraft.core.network.PacketPipeTransportContent;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.network.PacketPipeTransportContent;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
@@ -104,11 +104,12 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	@Override
 	public void entityEntering(IPipedItem item, Orientations orientation) {
 		if(MainProxy.isServer()) {
-			if(item instanceof RoutedEntityItem) {
+			EntityData data = travelingEntities.get(item.getEntityId());
+			if(data != null && item instanceof RoutedEntityItem) {
 				RoutedEntityItem routed = (RoutedEntityItem) item;
 				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player)) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(routed, orientation), (Player)player);
+						PacketDispatcher.sendPacketToPlayer(createItemPacket(data), (Player)player);
 						if(routed.getDestination() != null) { 
 							routed.addKnownPlayer(player);
 						}
@@ -145,7 +146,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		if (value == Orientations.Unknown && !routedItem.getDoNotBuffer()){
 			if(MainProxy.isServer()) {
-				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(routedItem.getEntityPassiveItem(), value));
+				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
 			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
@@ -160,7 +161,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				RoutedEntityItem routed = (RoutedEntityItem) routedItem;
 				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player) || forcePacket) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(routed, value), (Player)player);
+						PacketDispatcher.sendPacketToPlayer(createItemPacket(data), (Player)player);
 						if(!forcePacket) {
 							routed.addKnownPlayer(player);
 						}
@@ -318,19 +319,20 @@ public class PipeTransportLogistics extends PipeTransportItems {
 
 		item.setPosition(packet.getPosX(), packet.getPosY(), packet.getPosZ());
 		item.setSpeed(packet.getSpeed());
-		item.setDeterministicRandomization(packet.getRandomization());
 		
-
 		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)) {
 			if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
 				if (item.getContainer() != null) {
 					((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
 				}
-				travelingEntities.put(new Integer(item.getEntityId()), new EntityData(item, packet.getOrientation()));
+				EntityData entity = new EntityData(item, packet.getInputOrientation());
+				entity.output = packet.getOutputOrientation();
+				travelingEntities.put(new Integer(item.getEntityId()), entity);
 				item.setContainer(container);
 			} else {
 				travelingEntities.get(new Integer(item.getEntityId())).item = item;
-				travelingEntities.get(new Integer(item.getEntityId())).orientation = packet.getOrientation();
+				travelingEntities.get(new Integer(item.getEntityId())).input = packet.getInputOrientation();
+				travelingEntities.get(new Integer(item.getEntityId())).output = packet.getOutputOrientation();
 			}
 			PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
 			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
@@ -350,11 +352,14 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			if (item.getContainer() != null) {
 				((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
 			}
-			travelingEntities.put(new Integer(item.getEntityId()), new EntityData(item, packet.getOrientation()));
+			EntityData entity = new EntityData(item, packet.getInputOrientation());
+			entity.output = packet.getOutputOrientation();
+			travelingEntities.put(new Integer(item.getEntityId()), entity);
 			item.setContainer(container);
 		} else {
 			travelingEntities.get(new Integer(item.getEntityId())).item = item;
-			travelingEntities.get(new Integer(item.getEntityId())).orientation = packet.getOrientation();
+			travelingEntities.get(new Integer(item.getEntityId())).input = packet.getInputOrientation();
+			travelingEntities.get(new Integer(item.getEntityId())).output = packet.getOutputOrientation();
 		}
 	}
 
@@ -366,14 +371,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	 * @return
 	 */
 	@Override
-	public Packet createItemPacket(IPipedItem item, Orientations orientation) {
-		if(item instanceof RoutedEntityItem) {
-			item.setDeterministicRandomization(item.getDeterministicRandomization() + worldObj.rand.nextInt(6));
-			PacketPipeLogisticsContent packet = new PacketPipeLogisticsContent(container.xCoord, container.yCoord, container.zCoord, (RoutedEntityItem)item, orientation);
+	public Packet createItemPacket(EntityData data) {
+		if(data.item instanceof RoutedEntityItem) {
+			PacketPipeLogisticsContent packet = new PacketPipeLogisticsContent(container.xCoord, container.yCoord, container.zCoord, data);
 
 			return packet.getPacket();
 		} else {
-			return super.createItemPacket(item, orientation);
+			return super.createItemPacket(data);
 		}
 	}
 

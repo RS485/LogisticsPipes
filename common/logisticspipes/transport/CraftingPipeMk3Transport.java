@@ -29,13 +29,13 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	
 	private void handleTileReached(EntityData data, TileEntity tile) {
 		if (tile instanceof IPipeEntry)
-			((IPipeEntry) tile).entityEntering(data.item, data.orientation);
+			((IPipeEntry) tile).entityEntering(data.item, data.output);
 		else if (tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportItems) {
 			TileGenericPipe pipe = (TileGenericPipe) tile;
 
-			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.orientation);
+			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
-			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.orientation.reverse(), true);
+			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.input.reverse(), true);
 
 			if (!CoreProxy.proxy.isRenderWorld(worldObj))
 				if(added.stackSize >= data.item.getItemStack().stackSize)
@@ -46,7 +46,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 					data.item.getItemStack().stackSize = pipe.inv.addCompressed(data.item.getItemStack());
 					
 					if(data.item.getItemStack().stackSize > 0) {
-						EntityItem dropped = data.item.toEntityItem(data.orientation);
+						EntityItem dropped = data.item.toEntityItem(data.output);
 						if (dropped != null)
 							// On SMP, the client side doesn't actually drops
 							// items
@@ -57,7 +57,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 			if (travelHook != null)
 				travelHook.drop(this, data);
 
-			EntityItem dropped = data.item.toEntityItem(data.orientation);
+			EntityItem dropped = data.item.toEntityItem(data.output);
 
 			if (dropped != null)
 				// On SMP, the client side doesn't actually drops

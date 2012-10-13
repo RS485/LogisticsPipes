@@ -46,18 +46,6 @@ public class WorldTickHandler implements ITickHandler {
 					try {
 						field.setAccessible(true);
 						field.set(newTile, field.get(tile));
-						//Empty old TileGenericPipe
-						try {
-							field.set(tile, null);
-						} catch(Exception e) {
-							try {
-								field.set(tile, false);
-							} catch(Exception e1) {
-								try {
-									field.set(tile, 0);
-								} catch(Exception e2) {}
-							}
-						}
 					} catch (IllegalArgumentException e) {
 						e.printStackTrace();
 					} catch (IllegalAccessException e) {
@@ -65,6 +53,7 @@ public class WorldTickHandler implements ITickHandler {
 					}
 				}
 				world.setBlockTileEntity(x, y, z, newTile);
+				tile.pipe = null;
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
 				}

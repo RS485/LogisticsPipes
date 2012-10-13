@@ -319,6 +319,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		item.setPosition(packet.getPosX(), packet.getPosY(), packet.getPosZ());
 		item.setSpeed(packet.getSpeed());
 		item.setDeterministicRandomization(packet.getRandomization());
+		
 
 		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)) {
 			if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
@@ -335,6 +336,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
 			routed.setSource(newpacket.getSourceUUID(this.worldObj));
 			routed.setDestination(newpacket.getDestUUID(this.worldObj));
+			routed.setTransportMode(newpacket.getTransportMode());
 			travelingEntities.get(new Integer(item.getEntityId())).item = routed.getEntityPassiveItem();
 			return;
 		}
@@ -342,6 +344,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.worldObj,item);
 		routed.setSource(newpacket.getSourceUUID(this.worldObj));
 		routed.setDestination(newpacket.getDestUUID(this.worldObj));
+		routed.setTransportMode(newpacket.getTransportMode());
 		item = routed.getEntityPassiveItem();
 		if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
 			if (item.getContainer() != null) {

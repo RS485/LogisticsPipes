@@ -2,6 +2,7 @@ package logisticspipes.network.packets;
 
 import java.util.UUID;
 
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
@@ -29,7 +30,7 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 		final IRouter routerSource = SimpleServiceLocator.routerManager.getRouter(item.getSource());
 		final IRouter routerDest = SimpleServiceLocator.routerManager.getRouter(item.getDestination());
 		
-		PacketPayload additions = new PacketPayload(0,0,2);
+		PacketPayload additions = new PacketPayload(1,0,2);
 		if(routerSource != null) {
 			additions.stringPayload[0] = routerSource.getId().toString();
 		} else {
@@ -41,6 +42,8 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 		} else {
 			additions.stringPayload[1] = "";
 		}
+		
+		additions.intPayload[0] = item.getTransportMode().ordinal();
 		
 		if(super.payload == null) {
 			super.payload = new PacketPayload(6, 4, 0);
@@ -85,5 +88,12 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 			return null;
 		}
 		return UUID.fromString(payload.stringPayload[1]);
+	}
+	
+	public TransportMode getTransportMode() {
+		if(this.payload.intPayload.length < 7) {
+			return TransportMode.Default;
+		}
+		return TransportMode.values()[this.payload.intPayload[7]];
 	}
 }

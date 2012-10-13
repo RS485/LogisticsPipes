@@ -34,6 +34,7 @@ public class PacketBufferHandlerThread extends Thread {
 	public PacketBufferHandlerThread(Side side) {
 		super("LogisticsPipes Packet Compressor " + side.toString());
 		this.side = side;
+		this.setDaemon(true);
 		this.start();
 	}
 	

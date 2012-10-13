@@ -10,6 +10,7 @@ public class UnlockThreadSecure extends Thread {
 		this.running = true;
 		this.stopTime = System.currentTimeMillis() + delay;
 		this.thread = thread;
+		this.setDaemon(true);
 		this.start();
 	}
 	

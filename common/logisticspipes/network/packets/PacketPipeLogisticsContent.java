@@ -96,6 +96,6 @@ public class PacketPipeLogisticsContent extends PacketPipeTransportContent {
 		if(this.payload.intPayload.length < 7) {
 			return TransportMode.Default;
 		}
-		return TransportMode.values()[this.payload.intPayload[7]];
+		return TransportMode.values()[this.payload.intPayload[6]];
 	}
 }

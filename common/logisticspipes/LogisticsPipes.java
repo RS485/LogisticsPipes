@@ -59,6 +59,7 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
+import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
@@ -332,5 +333,8 @@ public class LogisticsPipes {
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		ServerRouter.resetStatics();
+		if(event.getSide().equals(Side.CLIENT)) {
+			LogisticsHUDRenderer.providers.clear();
+		}
 	}
 }

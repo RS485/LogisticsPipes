@@ -79,7 +79,10 @@ public class LogisticsHUDRenderer {
 			providers.remove(provider);
 		}
 		
-		if(newList.size() < 1) return;
+		if(newList.size() < 1) { 
+			clearList(false);
+			return;
+		}
 		Object[] sorter = newList.toArray();
 		Arrays.sort(sorter, new Comparator() {
 			@Override
@@ -205,8 +208,9 @@ public class LogisticsHUDRenderer {
 		
 		GL11.glScalef(0.01F, 0.01F, 1F);
 		
-		float var3 = mc.theWorld.getWorldTime();
-		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)),(var3 % 24000) > 12700, mc);
+		float light = mc.theWorld.getBlockLightValue(renderer.getX(), renderer.getY(), renderer.getZ());
+		boolean dark = light < 11;
+		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)),dark, mc);
 	}
 	
 	private float getAngle(double x, double y) {

@@ -20,12 +20,14 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cc.interfaces.ISpecialCCPipe;
+import logisticspipes.request.RequestHandler;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;
 import buildcraft.BuildCraftCore;
 
-public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems{
+public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems, ISpecialCCPipe {
 	
 	private final LinkedList<HashMap<ItemIdentifier, Integer>> _history = new LinkedList<HashMap<ItemIdentifier,Integer>>(); 
 
@@ -80,8 +82,22 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		return ItemSendMode.Normal;
 	}
 
-//	@Override
-//	public Router getRouter() {
-//		return router;
-//	}
+	@Override
+	public String getType() {
+		return "Request";
+	}
+
+	@Override
+	public String[] getMethodNames() {
+		return new String[]{"makeRequest"};
+	}
+
+	@Override
+	public Object[] callMethod(int method, Object[] arguments) throws Exception {
+		if(arguments.length != 2) throw new Exception("Wrong Argument count");
+		if(!(arguments[0] instanceof Double) || !(arguments[1] instanceof Double)) throw new Exception("Wrong Arguments");
+		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
+		if(item == null) throw new Exception("Invalid ItemIdentifierID");
+		return new Object[]{RequestHandler.computerRequest(item.makeStack((int)Math.floor((Double)arguments[1])), this)};
+	}
 }

@@ -12,7 +12,7 @@ import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public class CraftingPipeMk3Transport extends CraftingPipeTransport {
+public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	
 	public PipeItemsCraftingLogisticsMk3 pipe;
 	

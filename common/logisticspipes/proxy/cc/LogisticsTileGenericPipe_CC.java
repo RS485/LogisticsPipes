@@ -9,6 +9,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.ISpecialCCPipe;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.NBTTagCompound;
@@ -41,7 +42,6 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		if(pipe instanceof ISpecialCCPipe) {
 			return "LogisticsPipes:" + ((ISpecialCCPipe)pipe).getType();
 		}
-		// TODO Auto-generated method stub
 		return "LogisticsPipes:Normal";
 	}
 
@@ -54,6 +54,10 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		list.add("getRouterId");
 		list.add("setTurtleConnect");
 		list.add("getTurtleConnect");
+		list.add("getItemID");
+		list.add("getItemDamage");
+		list.add("getNBTTagCompound");
+		list.add("getItemIdentifierIDFor");
 		return list.toArray(new String[list.size()]);
 	}
 
@@ -62,8 +66,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		if(getCPipe() == null) throw new InternalError("Pipe in not a LogisticsPipe");
 		if(pipe instanceof ISpecialCCPipe) {
 			if(((ISpecialCCPipe)pipe).getMethodNames().length > method) {
-				
-				return null;
+				return ((ISpecialCCPipe)pipe).callMethod(method, arguments);
 			} else {
 				method -= ((ISpecialCCPipe)pipe).getMethodNames().length;
 			}
@@ -79,6 +82,28 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			return null;
 		case 2: // getTurtleConnect
 			return new Object[]{turtleConnect[connections.get(computer).ordinal()]};
+		case 3: // getItemID
+			if(arguments.length != 1) throw new Exception("Wrong Argument count");
+			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
+			ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
+			if(item == null) throw new Exception("Invalid ItemIdentifierID");
+			return new Object[]{item.itemID};
+		case 4: // getItemDamage
+			if(arguments.length != 1) throw new Exception("Wrong Argument count");
+			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
+			ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
+			if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
+			return new Object[]{itemd.itemDamage};
+		case 5: // getNBTTagCompound
+			if(arguments.length != 1) throw new Exception("Wrong Argument count");
+			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
+			ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
+			if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
+			return itemn.getNBTTagCompoundAsObject();
+		case 6: // getItemIdentifierIDFor
+			if(arguments.length != 2) throw new Exception("Wrong Argument count");
+			if(!(arguments[0] instanceof Double) || !(arguments[1] instanceof Double)) throw new Exception("Wrong Arguments");
+			return new Object[]{ItemIdentifier.get((int)Math.floor((Double)arguments[0]), (int)Math.floor((Double)arguments[1]), null).getId()};
 		default:return null;
 		}
 	}
@@ -134,5 +159,9 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		}
 	}
 	
-	
+	public void queueEvent(String event, Object[] arguments) {
+		for(IComputerAccess computer: connections.keySet()) {
+			computer.queueEvent(event, arguments);
+		}
+	}
 }

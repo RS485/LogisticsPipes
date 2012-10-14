@@ -9,4 +9,5 @@ public interface ICCProxy {
 	public boolean isComputer(TileEntity tile);
 	public boolean isCC();
 	public Orientations getOrientation(IComputerAccess computer, String computerSide, TileEntity pipe);
+	public boolean isLuaThread(Thread thread);
 }

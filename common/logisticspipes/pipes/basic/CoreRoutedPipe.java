@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import dan200.computer.api.IComputerAccess;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
@@ -34,6 +36,7 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.WorldTickHandler;
@@ -447,5 +450,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 		}
 		return false;
+	}
+	
+	public void queueEvent(String event, Object[] arguments) {
+		if(this.container instanceof LogisticsTileGenericPipe_CC) {
+			((LogisticsTileGenericPipe_CC)this.container).queueEvent(event, arguments);
+		}
 	}
 }

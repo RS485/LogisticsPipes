@@ -1,5 +1,6 @@
 package logisticspipes.proxy;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,18 +25,20 @@ public class MainProxy {
 	public static IProxy proxy;
 
 	public static boolean isClient(World world) {
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
+		return isClient();
 	}
 	
 	public static boolean isClient() {
+		if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(Thread.currentThread())) return false;
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
 	}
 	
 	public static boolean isServer(World world) {
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER;
+		return isServer();
 	}
 	
 	public static boolean isServer() {
+		if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(Thread.currentThread())) return true;
 		return FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER;
 	}
 

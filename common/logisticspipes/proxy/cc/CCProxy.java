@@ -117,4 +117,34 @@ public class CCProxy implements ICCProxy {
 		}
 		return Orientations.Unknown;
 	}
+
+	private static Runnable getTaget(Thread thread) {
+		Field target;
+		try {
+			target = Thread.class.getDeclaredField("target");
+			target.setAccessible(true);
+			return (Runnable) target.get(thread);
+		} catch (NoSuchFieldException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	@Override
+	public boolean isLuaThread(Thread thread) {
+		if(getTaget(thread) == null) {
+			return false;
+		}
+		return getTaget(thread).getClass().getName().contains("org.luaj.vm2.LuaThread");
+	}
 }

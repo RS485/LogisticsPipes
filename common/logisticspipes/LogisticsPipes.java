@@ -50,6 +50,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
+import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.ElectricItemProxy;
@@ -66,6 +68,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -179,6 +182,7 @@ public class LogisticsPipes {
 			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
 			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
 		}
+		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
 		if(event.getSide() == Side.CLIENT) {
 			new PacketBufferHandlerThread(Side.CLIENT);
 			new PacketBufferHandlerThread(Side.SERVER);	
@@ -258,6 +262,7 @@ public class LogisticsPipes {
 				@Override public boolean isComputer(TileEntity tile) {return false;}
 				@Override public boolean isCC() {return false;}
 				@Override public Orientations getOrientation(IComputerAccess computer, String computerSide, TileEntity tile) {return Orientations.Unknown;}
+				@Override public boolean isLuaThread(Thread thread) {return false;}
 			});
 			System.out.println("Loaded CC DummyProxy");
 		}
@@ -336,9 +341,17 @@ public class LogisticsPipes {
 		
 		//Power Junction
 		if(SimpleServiceLocator.electricItemProxy.hasIC2()) {
-			powerTileEntity = LogisticsPowerJuntionTileEntity_IC2_BuildCraft.class;
+			if(SimpleServiceLocator.ccProxy.isCC()) {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
+			} else {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_IC2_BuildCraft.class;
+			}
 		} else {
-			powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
+			if(SimpleServiceLocator.ccProxy.isCC()) {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_BuildCraft.class;
+			} else {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
+			}
 		}
 		
 		//LogisticsTileGenerticPipe

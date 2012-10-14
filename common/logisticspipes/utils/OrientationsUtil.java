@@ -14,7 +14,8 @@ public class OrientationsUtil {
 					return Orientations.XNeg;
 				}
 			}
-		} else if(pipe.xCoord == tile.xCoord) {
+		}
+		if(pipe.xCoord == tile.xCoord) {
 			if(pipe.zCoord == tile.zCoord) {
 				if(pipe.yCoord < tile.yCoord) {
 					return Orientations.YPos;
@@ -22,7 +23,39 @@ public class OrientationsUtil {
 					return Orientations.YNeg;
 				}
 			}
-		} else if(pipe.xCoord == tile.xCoord) {
+		}
+		if(pipe.xCoord == tile.xCoord) {
+			if(pipe.yCoord == tile.yCoord) {
+				if(pipe.zCoord < tile.zCoord) {
+					return Orientations.ZPos;
+				} else if(pipe.zCoord > tile.zCoord) {
+					return Orientations.ZNeg;
+				}
+			}
+		}
+		return Orientations.Unknown;
+	}
+	
+	public static Orientations getOrientationOfTilewithTile(TileEntity pipe,TileEntity tile) {
+		if(pipe.zCoord == tile.zCoord) {
+			if(pipe.yCoord == tile.yCoord) {
+				if(pipe.xCoord < tile.xCoord) {
+					return Orientations.XPos;
+				} else if(pipe.xCoord > tile.xCoord) {
+					return Orientations.XNeg;
+				}
+			}
+		}
+		if(pipe.xCoord == tile.xCoord) {
+			if(pipe.zCoord == tile.zCoord) {
+				if(pipe.yCoord < tile.yCoord) {
+					return Orientations.YPos;
+				} else if(pipe.yCoord > tile.yCoord) {
+					return Orientations.YNeg;
+				}
+			}
+		}
+		if(pipe.xCoord == tile.xCoord) {
 			if(pipe.yCoord == tile.yCoord) {
 				if(pipe.zCoord < tile.zCoord) {
 					return Orientations.ZPos;

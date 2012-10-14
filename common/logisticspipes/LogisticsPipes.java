@@ -26,7 +26,6 @@ TODO later, maybe....
 
 package logisticspipes;
 
-import buildcraft.transport.TileGenericPipe;
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
@@ -50,8 +49,13 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
+import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
+import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.ElectricItemProxy;
+import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
@@ -64,6 +68,7 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -74,6 +79,8 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import buildcraft.api.core.Orientations;
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -91,6 +98,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import dan200.computer.api.IComputerAccess;
 
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -174,6 +182,7 @@ public class LogisticsPipes {
 			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
 			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
 		}
+		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
 		if(event.getSide() == Side.CLIENT) {
 			new PacketBufferHandlerThread(Side.CLIENT);
 			new PacketBufferHandlerThread(Side.SERVER);	
@@ -242,6 +251,20 @@ public class LogisticsPipes {
 				@Override public boolean hasIC2() {return false;}
 			});
 			System.out.println("Loaded IC2 DummyProxy");
+		}
+		if(Loader.isModLoaded("ComputerCraft") && Loader.isModLoaded("CCTurtle")) {
+			SimpleServiceLocator.setCCProxy(new CCProxy());
+			System.out.println("Loaded CCProxy");
+		} else {
+			//DummyProxy
+			SimpleServiceLocator.setCCProxy(new ICCProxy() {
+				@Override public boolean isTurtle(TileEntity tile) {return false;}
+				@Override public boolean isComputer(TileEntity tile) {return false;}
+				@Override public boolean isCC() {return false;}
+				@Override public Orientations getOrientation(IComputerAccess computer, String computerSide, TileEntity tile) {return Orientations.Unknown;}
+				@Override public boolean isLuaThread(Thread thread) {return false;}
+			});
+			System.out.println("Loaded CC DummyProxy");
 		}
 		SimpleServiceLocator.buildCraftProxy.registerTeleportPipes();
 				
@@ -318,13 +341,25 @@ public class LogisticsPipes {
 		
 		//Power Junction
 		if(SimpleServiceLocator.electricItemProxy.hasIC2()) {
-			powerTileEntity = LogisticsPowerJuntionTileEntity_IC2_BuildCraft.class;
+			if(SimpleServiceLocator.ccProxy.isCC()) {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
+			} else {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_IC2_BuildCraft.class;
+			}
 		} else {
-			powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
+			if(SimpleServiceLocator.ccProxy.isCC()) {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_BuildCraft.class;
+			} else {
+				powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
+			}
 		}
 		
 		//LogisticsTileGenerticPipe
-		logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
+		if(SimpleServiceLocator.ccProxy.isCC()) {
+			logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
+		} else {
+			logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
+		}
 		
 		MainProxy.proxy.registerTileEntitis();
 

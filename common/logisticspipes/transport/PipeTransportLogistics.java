@@ -17,6 +17,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -174,6 +175,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			//Reduce the speed of items being dropped so they don't go all over the place
 			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
 		}
+		
+		_pipe.queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
 		
 		return value;
 		

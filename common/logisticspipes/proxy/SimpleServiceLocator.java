@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
@@ -36,6 +37,11 @@ public final class SimpleServiceLocator {
 	public static IForestryProxy forestryProxy;
 	public static  void setForestryProxy(final IForestryProxy fProxy){
 		forestryProxy = fProxy;
+	}
+	
+	public static ICCProxy ccProxy;
+	public static  void setCCProxy(final ICCProxy cProxy){
+		ccProxy = cProxy;
 	}
 	
 	public static IDirectConnectionManager connectionManager;

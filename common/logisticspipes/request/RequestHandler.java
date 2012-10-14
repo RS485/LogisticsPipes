@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.MessageManager;
@@ -12,6 +13,7 @@ import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -23,7 +25,9 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class RequestHandler {
-
+	
+	private static int request_id = 0;
+	
 	public enum DisplayOptions {
 		Both,
 		SupplyOnly,
@@ -135,5 +139,36 @@ public class RequestHandler {
 				PacketDispatcher.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
 			}
 		});
+	}
+
+	public static int computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe) {
+		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
+		if(!pipe.useEnergy(15)) {
+			return -1;
+		}
+		request_id++;
+		QueuedTasks.queueTask(new Callable() {
+			@Override
+			public Object call() throws Exception {
+				RequestManager.request(makeStack, pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+					@Override
+					public void handleSucessfullRequestOf(ItemMessage item) {
+						pipe.queueEvent("request_successfull", new Object[]{request_id});
+					}
+					
+					@Override
+					public void handleMissingItems(LinkedList<ItemMessage> list) {
+						pipe.queueEvent("request_failed", new Object[]{request_id});
+					}
+
+					@Override
+					public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+						//Not needed here
+					}
+				});
+				return null;
+			}
+		});
+		return request_id;
 	}
 }

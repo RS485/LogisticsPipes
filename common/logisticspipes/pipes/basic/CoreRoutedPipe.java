@@ -65,6 +65,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private IRouter router;
 	private String routerId;
+	private Object routerIdLock = new Object();
 	private static int pipecount = 0;
 	private int _delayOffset = 0;
 	protected int _nextTexture = getCenterTexture();
@@ -267,9 +268,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
-		if (routerId == null || routerId == ""){
-			routerId = UUID.randomUUID().toString();
+		
+		synchronized (routerIdLock) {
+			if (routerId == null || routerId == ""){
+				routerId = UUID.randomUUID().toString();
+			}
 		}
+		
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);
@@ -282,7 +287,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		routerId = nbttagcompound.getString("routerId");
+		
+		synchronized (routerIdLock) {
+			routerId = nbttagcompound.getString("routerId");
+		}
 		
 		stat_lifetime_sent = nbttagcompound.getLong("stat_lifetime_sent");
 		stat_lifetime_recieved = nbttagcompound.getLong("stat_lifetime_recieved");
@@ -295,17 +303,21 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public IRouter getRouter() {
 		if (router == null){
-			if (routerId == null || routerId == ""){
-				routerId = UUID.randomUUID().toString();
+			synchronized (routerIdLock) {
+				if (routerId == null || routerId == ""){
+					routerId = UUID.randomUUID().toString();
+				}
+				router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
 			}
-			router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
 		}
 		return router;
 	}
 	
 	public void refreshRouterIdFromRouter() {
 		if(router != null) {
-			routerId = router.getId().toString();
+			synchronized (routerIdLock) {
+				routerId = router.getId().toString();
+			}
 		}
 	}
 	

@@ -42,6 +42,8 @@ import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.transport.CraftingPipeTransport;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -55,6 +57,7 @@ import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.api.liquids.ITankContainer;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransport;
@@ -77,7 +80,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	private boolean init = false;
 	
 	public PipeItemsCraftingLogistics(int itemID) {
-		super(new BaseLogicCrafting(), itemID);
+		super(new CraftingPipeTransport(), new BaseLogicCrafting(), itemID);
 	}
 	
 	public PipeItemsCraftingLogistics(PipeTransport transport, int itemID) {

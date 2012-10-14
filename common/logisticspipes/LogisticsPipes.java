@@ -54,6 +54,7 @@ import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.ElectricItemProxy;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
@@ -302,6 +303,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
+		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());

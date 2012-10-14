@@ -46,10 +46,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
 		super(world, entityItem.getEntityId());
 		container = entityItem.getContainer();
-		deterministicRandomization = entityItem.getDeterministicRandomization();
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
-		synchroTracker = entityItem.getSynchroTracker();
 		item = entityItem.getItemStack(); 
 	}
 	
@@ -65,14 +63,15 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public boolean isKnownBy(EntityPlayer player) {
 		return knownBy.contains(player);
 	}
-	
+
+	@Override
 	public void changeDestination(UUID newDestination){
 		if (destinationUUID != null && SimpleServiceLocator.routerManager.isRouter(destinationUUID)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationUUID);
 
 			destinationRouter.itemDropped(this);
 			
-			if (!arrived && destinationRouter .getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
+			if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifier.get(item));
 			}
 		}
@@ -218,5 +217,15 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		}
 		nbttagcompound.setBoolean("arrived", arrived);
 		
+	}
+
+	@Override
+	public EntityPassiveItem getNewEntityPassiveItem() {
+		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
+		Entityitem.setContainer(container);
+		Entityitem.setPosition(position.x, position.y, position.z);
+		Entityitem.setSpeed(speed);
+		Entityitem.setItemStack(item);
+		return Entityitem;
 	}
 }

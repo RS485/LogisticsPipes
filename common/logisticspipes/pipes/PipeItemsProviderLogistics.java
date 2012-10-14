@@ -169,6 +169,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	public void updateEntity() {
 		super.updateEntity();
 		
+		if(MainProxy.isClient()) return;
+		
+		if(worldObj.getWorldTime() % 6 == 0) {
+			updateInv(false);
+		}
+		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
 		
 		if(!this.getClass().equals(PipeItemsProviderLogistics.class)) return;

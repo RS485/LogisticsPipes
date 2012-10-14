@@ -122,6 +122,17 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	
 	@Override
+	public void unscheduleRemoval(IPipedItem item) {
+		super.unscheduleRemoval(item);
+		if(item instanceof IRoutedItem) {
+			IRoutedItem routed = (IRoutedItem)item;
+			routed.changeDestination(null);
+			EntityData data = travelingEntities.get(item.getEntityId());
+			data.item = routed.getNewEntityPassiveItem();
+		}
+	}
+
+	@Override
 	public Orientations resolveDestination(EntityData data) {
 		
 		if (_pipe == null){

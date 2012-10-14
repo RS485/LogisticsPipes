@@ -13,6 +13,7 @@ import java.util.UUID;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
+import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 
 /**
@@ -31,6 +32,7 @@ public interface IRoutedItem {
 	
 	public UUID getDestination();
 	public void setDestination(UUID destination);
+	public void changeDestination(UUID destination);
 	public UUID getSource();
 	public void setSource(UUID source);
 	
@@ -51,6 +53,7 @@ public interface IRoutedItem {
 	//public float getSpeedBoost();
 	
 	public EntityPassiveItem getEntityPassiveItem();
+	public EntityPassiveItem getNewEntityPassiveItem();
 	
 	@Deprecated
 	public void setArrived();

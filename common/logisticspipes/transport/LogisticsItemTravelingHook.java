@@ -50,6 +50,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 				if(routedPipe != null) {
 					if(routedPipe.getRouter().getId().equals(routed.getDestination())) {
 						if(!routedPipe.getTransportLayer().stillWantItem(routed)) {
+							routed.setDestination(null);
 							pipe.entityEntering(routed, OrientationsUtil.getOrientationOfTilewithPipe(pipe, tile).reverse());
 						}
 					}

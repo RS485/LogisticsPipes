@@ -59,7 +59,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public LinkedList<IRouter> _externalRoutersByCost = null;
 	
 	/** IRouter Tree **/
-	public LogisticsNetworkTree tree = new LogisticsNetworkTree(this, new LinkedHashMap<LogisticsNetworkTree, ExitRoute>(), null);
+	//public LogisticsNetworkTree tree = new LogisticsNetworkTree(this, new LinkedHashMap<LogisticsNetworkTree, ExitRoute>(), null);
 
 	private boolean _blockNeedsUpdate;
 	private boolean init = false;
@@ -105,7 +105,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void ensureRouteTableIsUpToDate(){
 		if (_LSDVersion > _lastLSDVersion){
 			CreateRouteTable();
-			tree = getNetworkTree(null);
+			//tree = getNetworkTree(null, 0);
 			_externalRoutersByCost = null;
 			_lastLSDVersion = _LSDVersion;
 		}
@@ -287,8 +287,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 	}
 	
+	/*
 	@Override
-	public LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded) {
+	public LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded, int deep) {
 		if(excluded == null) {
 			excluded = new ArrayList<IRouter>();
 		}
@@ -298,16 +299,20 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			filter = (INetworkResistanceFilter) getPipe();
 		}
 		LogisticsNetworkTree tree = new LogisticsNetworkTree(this, list, filter);
-		ArrayList<IRouter> subExcluded = (ArrayList<IRouter>) excluded.clone();
-		subExcluded.add(this);
+		excluded.add(this);
 		
-		for (RoutedPipe pipe :  _adjacent.keySet()) {
-			if(subExcluded.contains(pipe.getRouter())) continue;
-			list.put(pipe.getRouter().getNetworkTree((ArrayList<IRouter>) subExcluded.clone()), _adjacent.get(pipe));
+		deep++;
+		
+		if(deep < 20) { //TODO config Option
+			for (RoutedPipe pipe :  _adjacent.keySet()) {
+				if(excluded.contains(pipe.getRouter())) continue;
+				list.put(pipe.getRouter().getNetworkTree((ArrayList<IRouter>) excluded.clone(), deep), _adjacent.get(pipe));
+			}
 		}
 		
 		return tree;
 	}
+	*/
 	
 	private LinkedList<Orientations> GetNonRoutedExits()	{
 		LinkedList<Orientations> ret = new LinkedList<Orientations>();
@@ -418,15 +423,24 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	@Override
 	public List<ILogisticsPowerProvider> getPowerProvider() {
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
-		addSubowerProvider(tree, list);
+		//addSubowerProvider(tree, list);
+		for(IRouter router:_routeTable.keySet()) {
+			if(router instanceof ServerRouter) {
+				for(ILogisticsPowerProvider provider:((ServerRouter)router).getConnectedPowerProvider()) {
+					if(list.contains(provider)) continue;
+					list.add(provider);
+				}
+			}
+		}
 		return list;
 	}
 	
+	/*
 	private void addSubowerProvider(LogisticsNetworkTree node, List<ILogisticsPowerProvider> list) {
 		if(node.router instanceof ServerRouter) {
 			for(ILogisticsPowerProvider provider:((ServerRouter)node.router).getConnectedPowerProvider()) {
 				if(list.contains(provider)) continue;
-					list.add(provider);
+				list.add(provider);
 			}
 		}
 		for(LogisticsNetworkTree subNode:node.connection.keySet()) {
@@ -434,7 +448,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			addSubowerProvider(subNode, list);
 		}
 	}
-
+	*/
+	
 	@Override
 	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
 		CoreRoutedPipe pipe = getPipe();

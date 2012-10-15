@@ -43,5 +43,5 @@ public interface IRouter {
 	
 	public ILogisticsModule getLogisticsModule();
 	
-	LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded);
+	//LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded, int deep);
 }

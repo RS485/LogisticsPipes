@@ -11,6 +11,7 @@ package logisticspipes.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Random;
@@ -236,9 +237,13 @@ public final class ItemIdentifier {
 			return list.toArray();
 		} else if(nbt instanceof NBTTagCompound) {
 			LinkedList<Object> list = new LinkedList<Object>();
+			HashMap internal = new HashMap();
+			Field fMap = NBTTagCompound.class.getDeclaredField("tagMap");
+			fMap.setAccessible(true);
+			internal = (HashMap) fMap.get(nbt);
 			list.add("{");
 			list.add(nbt.getName());
-			for(Object object:((NBTTagCompound)nbt).tagMap.values()) {
+			for(Object object:internal.values()) {
 				if(object instanceof NBTBase) {
 					list.add("[");
 					list.addAll(Arrays.asList(getNBTBaseAsObject((NBTBase)object)));

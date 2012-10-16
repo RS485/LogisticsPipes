@@ -245,9 +245,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				if (lsa.source != lowestCostCandidateRouter) continue;				
 				for (IRouter newCandidate: lsa.neighboursWithMetric.keySet()){
 					if (tree.containsKey(newCandidate)) {
-						if(!treeCost.get(newCandidate).getValue2() || isPipeLess) {
-							continue;
+						if(treeCost.get(newCandidate).getValue2() && !isPipeLess) {
+							treeCost.get(newCandidate).setValue2(false);
 						}
+						continue;
 					}
 					int candidateCost = lowestCost + lsa.neighboursWithMetric.get(newCandidate).getValue1();
 					if (candidates.containsKey(newCandidate) && candidatesCost.get(newCandidate).getValue1() <= candidateCost){

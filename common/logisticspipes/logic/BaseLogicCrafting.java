@@ -193,6 +193,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void openAttachedGui(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
+			player.closeScreen();
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
 			PacketDispatcher.sendPacketToServer(packet.getPacket());
 			return;

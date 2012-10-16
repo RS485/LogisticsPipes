@@ -244,14 +244,6 @@ public class ClientRouter implements IRouter {
 		}
 	}
 
-	/*
-	@Override
-	public LogisticsNetworkTree getNetworkTree(ArrayList<IRouter> excluded, int deep) {
-		//Only Server Sided
-		throw new UnsupportedOperationException("This should only be called Server sided.");
-	}
-	*/
-
 	private void ensureRouteTableIsUpToDate(){
 		if (_LSDVersion > _lastLSDVersion) {
 			if(failed > 10) {

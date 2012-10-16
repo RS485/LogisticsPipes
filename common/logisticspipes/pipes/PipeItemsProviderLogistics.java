@@ -61,6 +61,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public final LinkedList<ItemIdentifierStack> oldManagerList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
 	
@@ -351,9 +352,9 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	@Override
 	public void listenedChanged() {
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
-		if(!oldList.equals(all)) {
-			oldList.clear();
-			oldList.addAll(all);
+		if(!oldManagerList.equals(all)) {
+			oldManagerList.clear();
+			oldManagerList.addAll(all);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
 		}
 	}

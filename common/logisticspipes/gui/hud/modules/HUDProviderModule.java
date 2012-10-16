@@ -70,7 +70,7 @@ public class HUDProviderModule implements IHUDModuleRenderer {
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		GL11.glScalef(1.0F, 1.0F, -0.00001F);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(module.displayList, null, page, -25, -24, 3, 9, 18, 18, mc, false, false, true, true);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(module.displayList, null, page, -25, -24, 3, 9, 18, 18, mc, true, true, true, true);
 		GL11.glScalef(1.0F, 1.0F, 1 / -0.00001F);
 	}
 

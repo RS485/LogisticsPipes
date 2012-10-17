@@ -1,6 +1,5 @@
 package codechicken.nei;
 
-import net.minecraft.src.ItemStack;
 
 public class PositionedStack {
 	public int relx;

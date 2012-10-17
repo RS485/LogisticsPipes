@@ -55,6 +55,8 @@ public class Configs {
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
 	
 
+	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
+	
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
 	public static boolean LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = false;
 	
@@ -208,6 +210,9 @@ public class Configs {
 		Property logsiticsTileGenericReplacementDisable = configuration.get("TileReplaceDisabled", Configuration.CATEGORY_GENERAL, LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED);
 		logsiticsTileGenericReplacementDisable.comment = "Diable the Replacement of the TileGenericPipe trough the LogisticsTileGenericPipe";
 		
+		Property logsiticsHUDRenderDistance = configuration.get("HUDRenderDistance", Configuration.CATEGORY_GENERAL, LOGISTICS_HUD_RENDER_DISTANCE);
+		logsiticsHUDRenderDistance.comment = "The max. distance between a player and the HUD that get's shown in blocks.";
+		
 		configuration.save();
 		
 		LOGISTICSNETWORKMONITOR_ID			= Integer.parseInt(logisticNetworkMonitorIdProperty.value);
@@ -251,6 +256,8 @@ public class Configs {
 		LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = Boolean.parseBoolean(logsiticsTileGenericReplacementDisable.value);
 		
 		LOGISTICSCRAFTINGSIGNCREATOR_ID		= Integer.parseInt(logisticCraftingSignCreatorIdProperty.value);
+
+		LOGISTICS_HUD_RENDER_DISTANCE 		= Integer.parseInt(logsiticsHUDRenderDistance.value);
 		
 		displayPopup 						= Boolean.parseBoolean(pageDisplayPopupProperty.value);
 

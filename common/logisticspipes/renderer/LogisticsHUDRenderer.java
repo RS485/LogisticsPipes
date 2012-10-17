@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -52,7 +53,7 @@ public class LogisticsHUDRenderer {
 			if(!(pipe instanceof IHeadUpDisplayRendererProvider)) continue;
 			if(MainProxy.getDimensionForWorld(pipe.worldObj) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
 				double dis = Math.hypot(pipe.xCoord - x + 0.5,Math.hypot(pipe.yCoord - y + 0.5, pipe.zCoord - z + 0.5));
-				if(dis < 15 && dis > 0.75) {
+				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,(IHeadUpDisplayRendererProvider)pipe));
 					if(!list.contains(pipe)) {
 						((IHeadUpDisplayRendererProvider)pipe).startWaitching();
@@ -65,7 +66,7 @@ public class LogisticsHUDRenderer {
 		for(IHeadUpDisplayBlockRendererProvider provider:providers) {
 			if(MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
 				double dis = Math.hypot(provider.getX() - x + 0.5,Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
-				if(dis < 15 && dis > 0.75 && !provider.isInvalid() && provider.isExistend()) {
+				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isInvalid() && provider.isExistend()) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,provider));
 					if(!list.contains(provider)) {
 						provider.startWaitching();

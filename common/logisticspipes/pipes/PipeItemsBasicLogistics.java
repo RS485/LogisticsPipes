@@ -22,6 +22,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Packet3Chat;
@@ -39,7 +40,13 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 			@Override
 			public boolean isPipeConnected(TileEntity tile) {
 				if(super.isPipeConnected(tile)) return true;
-				if(tile instanceof ILogisticsPowerProvider) return true;
+				if(tile instanceof ILogisticsPowerProvider) {
+					Orientations ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+					if(ori == null || ori == Orientations.Unknown || ori == Orientations.YNeg || ori == Orientations.YPos) {
+						return false;
+					}
+					return true;
+				}
 				return false;
 			}
 		}, new TemporaryLogic(), itemID);

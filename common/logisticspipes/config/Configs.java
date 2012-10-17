@@ -2,6 +2,7 @@ package logisticspipes.config;
 
 import java.io.File;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.ModLoader;
 import net.minecraftforge.common.Configuration;
@@ -54,12 +55,12 @@ public class Configs {
 	public static final float LOGISTICS_ROUTED_SPEED_MULTIPLIER	= 20F;
 	public static final float LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER = 10F;
 	
-
 	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
 	
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
 	public static boolean LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = false;
 	
+	public static boolean ToolTipInfo = LogisticsPipes.DEBUG;
 
 	//GuiOrderer Popup setting
 	public static boolean displayPopup = true;

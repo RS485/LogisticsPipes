@@ -6,17 +6,27 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.Item;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
+import codechicken.nei.forge.GuiContainerManager;
 import cpw.mods.fml.common.Mod;
 
 public class NEILogisticsPipesConfig implements IConfigureNEI {
 	
+	public static boolean added = false;
+	
 	@Override
 	public void loadConfig() {
+		
+		if(Configs.ToolTipInfo && !added) {
+			GuiContainerManager.addTooltipHandler(new DebugHelper());
+			added = true;
+		}
+		
 		MultiItemRange main = new MultiItemRange();
 		main.add(LogisticsPipes.LogisticsNetworkMonitior);
 		main.add(LogisticsPipes.LogisticsRemoteOrderer);

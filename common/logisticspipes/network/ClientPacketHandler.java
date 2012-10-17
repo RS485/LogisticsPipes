@@ -3,8 +3,10 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
@@ -27,6 +29,7 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketInventoryChange;
@@ -254,6 +257,9 @@ public class ClientPacketHandler {
 					final PacketRoutingStats packetAo = new PacketRoutingStats();
 					packetAo.readData(data);
 					onStatUpdate(packetAo);
+					break;
+				case NetworkConstants.ACTIVATNBTDEBUG:
+					enableNBTDEBUG();
 					break;
 			}
 		} catch (final Exception ex) {
@@ -697,6 +703,20 @@ public class ClientPacketHandler {
 		cPipe.server_routing_table_size = packet.server_routing_table_size;
 	}
 
+	private static void enableNBTDEBUG() {
+		try {
+			Class.forName("codechicken.nei.forge.GuiContainerManager");
+			Configs.ToolTipInfo = true;
+			LoadingHelper.LoadNeiNBTDebugHelper();
+		} catch(ClassNotFoundException e) {
+			
+		} catch(Exception e1) {
+			if(LogisticsPipes.DEBUG) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
 	// BuildCraft method
 	/**
 	 * Retrieves pipe at specified coordinates if any.

@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
@@ -22,6 +23,7 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;

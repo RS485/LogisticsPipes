@@ -13,6 +13,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.ServerRouter;
 import net.minecraft.src.EntityPlayer;
 import buildcraft.transport.pipes.PipeLogic;
 
@@ -75,58 +76,24 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	}
 	
 	private void doDebugStuff(EntityPlayer entityplayer){
-		entityplayer.worldObj.setWorldTime(4951);
+		//entityplayer.worldObj.setWorldTime(4951);
 		System.out.println("***");
 		IRouter r = getRouter();
-//		
+		if(!(r instanceof ServerRouter)) return;
+		ServerRouter sr = (ServerRouter) r;
+		
 		System.out.println("ID: " + r.getId().toString());
-//		System.out.println("---------CONNECTED TO---------------");
-//		for (RoutedPipe adj : r._adjacent.keySet())
-//		{
-//			System.out.println(adj.getRouterId());
-//		}
-//		System.out.println("*******ROUTE TABLE**************");
-//		for (Router p : r.getRouteTable().keySet())
-//		{
-//			System.out.println(p.getId() + " -> " + r.getRouteTable().get(p).toString());
-//		}
+		System.out.println("---------CONNECTED TO---------------");
+		for (RoutedPipe adj : sr._adjacent.keySet()) {
+			System.out.println(adj.getRouter().getId());
+		}
+		System.out.println("*******ROUTE TABLE**************");
+		for (IRouter p : r.getRouteTable().keySet()) {
+			System.out.println(p.getId() + " -> " + r.getRouteTable().get(p).toString());
+		}
 		
 		System.out.println();
 		System.out.println();
-//			//Give stuff! for debug purpose, ensure commented before release
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftFactory.autoWorkbenchBlock, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.chest, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftCore.woodenGearItem, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.wood, 64));				
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.brick, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.dirt, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.cobblestone, 64));		
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Item.pickaxeDiamond, 1));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Item.shovelDiamond, 1));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.cobblestone, 64));						
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.torchRedstoneActive, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Item.coal, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(mod_zAdditionalPipes.pipeItemTeleport, 64));
-		//entityplayer.inventory.addItemStackToInventory(new ItemStack(Item.redstone, 64));
-		//entityplayer.inventory.addItemStackToInventory(new ItemStack(BuildCraftCore.diamondGearItem, 64));
-		//entityplayer.inventory.addItemStackToInventory(new ItemStack(Item.diamond, 64));
-		
-		
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftTransport.pipeItemsDiamond, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftTransport.pipeItemsWood, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(BuildCraftEnergy.engineBlock, 64, 0));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.torchRedstoneActive, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Item.redstone, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.torchWood, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftTransport.pipeItemsIron, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftTransport.pipeItemsObsidian, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(net.minecraft.src.BuildCraftCore.wrenchItem, 1));
-
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.glass, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(BuildCraftCore.goldGearItem, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(BuildCraftTransport.pipeItemsDiamond, 64));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(Block.torchRedstoneActive, 1));
-//			entityplayer.inventory.addItemStackToInventory(new ItemStack(BuildCraftFactory.autoWorkbenchBlock, 64));
 	}
 
 }

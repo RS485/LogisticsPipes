@@ -7,5 +7,5 @@ package logisticspipes.logisticspipes;
  */
 public interface ITrackStatistics {
 	void recievedItem(int count);
-
+	void relayedItem(int count);
 }

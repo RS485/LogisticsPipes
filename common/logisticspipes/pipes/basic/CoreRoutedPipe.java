@@ -15,6 +15,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
+
 import dan200.computer.api.IComputerAccess;
 
 import logisticspipes.LogisticsPipes;
@@ -33,6 +36,7 @@ import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
+import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -87,6 +91,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public long stat_lifetime_sent;
 	public long stat_lifetime_recieved;
 	public long stat_lifetime_relayed;
+	
+	public int server_routing_table_size = 0;
 	
 	protected final LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>>(); 
 	
@@ -148,6 +154,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		stat_lifetime_sent++;
 		stat_session_sent++;
+		updateStats();
 	}
 	
 	public abstract ItemSendMode getItemSendMode();
@@ -400,11 +407,19 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	/***  --  ITrackStatistics  --  ***/
-	
+
 	@Override
 	public void recievedItem(int count) {
 		stat_session_recieved += count;
 		stat_lifetime_recieved += count;
+		updateStats();
+	}
+	
+	@Override
+	public void relayedItem(int count) {
+		stat_session_relayed += count;
+		stat_lifetime_relayed += count;
+		updateStats();
 	}
 
 	@Override
@@ -414,14 +429,25 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
-		watchers.add(player);
+		if(mode == 0) {
+			watchers.add(player);
+			PacketDispatcher.sendPacketToPlayer(new PacketRoutingStats(NetworkConstants.STAT_UPDATE, this).getPacket(), (Player)player);
+		}
 	}
 
 	@Override
 	public void playerStopWatching(EntityPlayer player, int mode) {
-		watchers.remove(player);
+		if(mode == 0) {
+			watchers.remove(player);
+		}
 	}
-
+	
+	public void updateStats() {
+		if(watchers.size() > 0) {
+			MainProxy.sendToPlayerList(new PacketRoutingStats(NetworkConstants.STAT_UPDATE, this).getPacket(), watchers);
+		}
+	}
+	
 	@Override
 	public void itemCouldNotBeSend(ItemIdentifierStack item) {
 		//Override by subclasses //TODO

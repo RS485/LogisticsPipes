@@ -11,6 +11,7 @@ import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
 import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
+import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.GuiSupplierPipe;
@@ -26,6 +27,7 @@ import logisticspipes.gui.modules.GuiTerminus;
 import logisticspipes.gui.modules.GuiWithPreviousGuiContainer;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
+import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
@@ -65,7 +67,7 @@ import cpw.mods.fml.common.network.Player;
 public class GuiHandler implements IGuiHandler {
 
 	@Override
-	public Object getServerGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
+	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
 		if(!world.blockExists(x, y, z))
 			return null;
 		
@@ -76,6 +78,7 @@ public class GuiHandler implements IGuiHandler {
 		if(tile instanceof TileGenericPipe) {
 			pipe = (TileGenericPipe)tile;
 		}
+		final TileGenericPipe fpipe = pipe;
 		
 		DummyContainer dummy;
 		int xOffset;
@@ -269,7 +272,17 @@ public class GuiHandler implements IGuiHandler {
 				/*** Basic ***/
 			case GuiIDs.GUI_RoutingStats_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
-				return new DummyContainer(player.inventory, null);
+				return new DummyContainer(player, null, new IGuiOpenControler() {
+					@Override
+					public void guiOpenedByPlayer(EntityPlayer player) {
+						((CoreRoutedPipe)fpipe.pipe).playerStartWatching(player, 0);
+					}
+					
+					@Override
+					public void guiClosedByPlayer(EntityPlayer player) {
+						((CoreRoutedPipe)fpipe.pipe).playerStopWatching(player, 0);
+					}
+				});
 				
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
@@ -509,6 +522,10 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleElectricManager)) return null;
 				return new GuiElectricManager(player.inventory, pipe.pipe, (ModuleElectricManager) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), ModLoader.getMinecraftInstance().currentScreen, 0);				
 				
+			case GuiIDs.GUI_RoutingStats_ID:
+				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
+				return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRouter());
+
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new NormalGuiOrderer(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe(), player);

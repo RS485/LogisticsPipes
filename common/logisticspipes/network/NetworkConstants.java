@@ -77,4 +77,5 @@ public class NetworkConstants {
 	public static final int POWER_JUNCTION_POWER_LEVEL = 71;
 	public static final int HUD_START_WATCHING_BLOCK = 72;
 	public static final int HUD_STOP_WATCHING_BLOCK = 73;
+	public static final int STAT_UPDATE = 74;
 }

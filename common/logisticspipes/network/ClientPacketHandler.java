@@ -46,6 +46,7 @@ import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.PacketRoutingStats;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ClientRouter;
 import logisticspipes.routing.IRouter;
@@ -248,6 +249,11 @@ public class ClientPacketHandler {
 					final PacketPipeInteger packetAn = new PacketPipeInteger();
 					packetAn.readData(data);
 					onPowerLevel(packetAn);
+					break;
+				case NetworkConstants.STAT_UPDATE:
+					final PacketRoutingStats packetAo = new PacketRoutingStats();
+					packetAo.readData(data);
+					onStatUpdate(packetAo);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -669,6 +675,26 @@ public class ClientPacketHandler {
 		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
 			((LogisticsPowerJuntionTileEntity_BuildCraft)tile).handlePowerPacket(packet);
 		}
+	}
+
+	private static void onStatUpdate(PacketRoutingStats packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe.pipe;
+
+		cPipe.stat_session_sent = packet.stat_session_sent;
+		cPipe.stat_session_recieved = packet.stat_session_recieved;
+		cPipe.stat_session_relayed = packet.stat_session_relayed;
+		cPipe.stat_lifetime_sent = packet.stat_lifetime_sent;
+		cPipe.stat_lifetime_recieved = packet.stat_lifetime_recieved;
+		cPipe.stat_lifetime_relayed = packet.stat_lifetime_relayed;
+		cPipe.server_routing_table_size = packet.server_routing_table_size;
 	}
 
 	// BuildCraft method

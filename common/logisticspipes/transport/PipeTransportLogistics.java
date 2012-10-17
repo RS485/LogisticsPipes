@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.network.packets.PacketPipeLogisticsContent;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -137,6 +138,10 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		
 		if (_pipe == null){
 			_pipe = (RoutedPipe) container.pipe;
+		}
+		
+		if(data.item != null && data.item.getItemStack() != null) {
+			_pipe.relayedItem(data.item.getItemStack().stackSize);
 		}
 		
 		boolean forcePacket = false;

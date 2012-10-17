@@ -136,7 +136,12 @@ public class DebugHelper implements IContainerTooltipHandler {
 			node.add(type);
 		} else if(nbt instanceof NBTTagList) {
 			ArrayList internal = new ArrayList();
-			Field fList = NBTTagList.class.getDeclaredField("tagList");
+			Field fList;
+			try {
+				fList = NBTTagList.class.getDeclaredField("tagList");
+			} catch(Exception e) {
+				fList = NBTTagList.class.getDeclaredField("a");
+			}
 			fList.setAccessible(true);
 			internal = (ArrayList) fList.get(nbt);
 			
@@ -158,7 +163,12 @@ public class DebugHelper implements IContainerTooltipHandler {
 			node.add(type);
 		} else if(nbt instanceof NBTTagCompound) {
 			HashMap internal = new HashMap();
-			Field fMap = NBTTagCompound.class.getDeclaredField("tagMap");
+			Field fMap;
+			try {
+				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
+			} catch(Exception e) {
+				fMap = NBTTagCompound.class.getDeclaredField("a");
+			}
 			fMap.setAccessible(true);
 			internal = (HashMap) fMap.get(nbt);
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagCompound");

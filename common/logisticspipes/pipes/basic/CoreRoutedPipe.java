@@ -152,8 +152,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public abstract ItemSendMode getItemSendMode();
 	
-	private void checkTileEntity() {
-		if(worldObj.getWorldTime() % 10 == 0) {
+	private boolean checkTileEntity(boolean force) {
+		if(worldObj.getWorldTime() % 10 == 0 || force) {
 			if(this.container.getClass() != LogisticsPipes.logisticsTileGenericPipe) {
 				TileEntity tile = worldObj.getBlockTileEntity(xCoord, yCoord, zCoord);
 				if(tile != this.container) {
@@ -164,14 +164,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				} else {
 					WorldTickHandler.serverPipesToReplace.add(this.container);
 				}
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		checkTileEntity();
+		if(checkTileEntity(_initialInit)) return;
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){

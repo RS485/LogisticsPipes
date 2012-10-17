@@ -167,7 +167,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			ExitRoute newExit = adjacent.get(pipe);
 			ExitRoute oldExit = _adjacent.get(pipe);
 			
-			if (newExit.exitOrientation != oldExit.exitOrientation || newExit.metric != oldExit.metric)	{
+			if (newExit.exitOrientation != oldExit.exitOrientation || newExit.metric != oldExit.metric || newExit.isPipeLess != oldExit.isPipeLess)	{
 				adjacentChanged = true;
 				break;
 			}

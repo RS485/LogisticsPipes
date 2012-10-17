@@ -147,7 +147,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(_pipe.worldObj, data);
-		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem, _pipe.worldObj);
+		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);

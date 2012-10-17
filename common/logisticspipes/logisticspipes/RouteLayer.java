@@ -29,11 +29,7 @@ public class RouteLayer {
 		_transport = transport;
 	}
 	
-	public Orientations getOrientationForItem(IRoutedItem item, World world){
-
-		if(item.getDestination() == null && MainProxy.isClient(world)) {
-			return null;
-		}
+	public Orientations getOrientationForItem(IRoutedItem item){
 		
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
 		if (item.getDestination() == null){
@@ -46,16 +42,17 @@ public class RouteLayer {
 				item = SimpleServiceLocator.logisticsManager.destinationUnreachable(item, _router.getId());
 		}
 		
-		//If we still have no destination, drop it
-		if (item.getDestination() == null){ 
+		//If we still have no destination or client side unroutable, drop it
+		if (item.getDestination() == null) { 
 			return Orientations.Unknown;
 		}
+
 		
 		//Is the destination ourself? Deliver it
 		if (item.getDestination().equals(_router.getId())){
 			
 			if (!_transport.stillWantItem(item)){
-				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true), world);
+				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true));
 			}
 			
 			item.setDoNotBuffer(true);

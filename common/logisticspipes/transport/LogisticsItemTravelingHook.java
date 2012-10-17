@@ -20,7 +20,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 	private final int yCoord;
 	private final int zCoord;
 	private final PipeTransportLogistics pipe;
-	private CoreRoutedPipe routedPipe;
+	//private CoreRoutedPipe routedPipe;
 	
 	public LogisticsItemTravelingHook(World world, int xCoord, int yCoord, int zCoord, PipeTransportLogistics pipe) {
 		this.world = world;
@@ -41,7 +41,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 		if(MainProxy.isServer()) {
 			if(data.item instanceof RoutedEntityItem) {
 				RoutedEntityItem routed = (RoutedEntityItem) data.item;
-				
+				/*
 				if(routedPipe == null) {
 					if(pipe.container.pipe instanceof CoreRoutedPipe) {
 						routedPipe = (CoreRoutedPipe) pipe.container.pipe;
@@ -55,7 +55,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 						}
 					}
 				}
-				
+				*/
 				for(EntityPlayer player:MainProxy.getPlayerArround(world, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player)) {
 						PacketDispatcher.sendPacketToPlayer(pipe.createItemPacket(data), (Player)player);

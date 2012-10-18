@@ -478,8 +478,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public void queueEvent(String event, Object[] arguments) {
-		if(this.container instanceof LogisticsTileGenericPipe_CC) {
-			((LogisticsTileGenericPipe_CC)this.container).queueEvent(event, arguments);
+		if(this.container instanceof LogisticsTileGenericPipe) {
+			((LogisticsTileGenericPipe)this.container).queueEvent(event, arguments);
 		}
 	}
 }

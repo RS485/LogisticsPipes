@@ -159,6 +159,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		}
 	}
 	
+	@Override
 	public void queueEvent(String event, Object[] arguments) {
 		for(IComputerAccess computer: connections.keySet()) {
 			computer.queueEvent(event, arguments);

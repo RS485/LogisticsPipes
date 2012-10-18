@@ -35,7 +35,6 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.WorldTickHandler;

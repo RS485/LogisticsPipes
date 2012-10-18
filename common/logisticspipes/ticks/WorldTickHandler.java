@@ -7,6 +7,8 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.World;
+import buildcraft.transport.EntityData;
+import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -50,6 +52,11 @@ public class WorldTickHandler implements ITickHandler {
 				tile.pipe = null;
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
+					if(newTile.pipe.transport instanceof PipeTransportItems) {
+						for(EntityData entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
+							entity.item.setContainer(newTile);
+						}
+					}
 				}
 			} catch (InstantiationException e) {
 				e.printStackTrace();

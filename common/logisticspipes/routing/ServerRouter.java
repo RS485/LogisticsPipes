@@ -399,8 +399,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public List<ILogisticsPowerProvider> getPowerProvider() {
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
 		//addSubowerProvider(tree, list);
-		for(IRouter router:_routeCosts.keySet()) {
-			if(_routeCosts.get(router).getValue2()) {
+		for(IRouter router:_routeTable.keySet()) {
+			if(_routeCosts.get(router) != null && _routeCosts.get(router).getValue2()) {
 				continue;
 			}
 			if(router instanceof ServerRouter) {

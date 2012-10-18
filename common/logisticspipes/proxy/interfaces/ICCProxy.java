@@ -1,8 +1,8 @@
 package logisticspipes.proxy.interfaces;
 
+import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
 import dan200.computer.api.IComputerAccess;
-import net.minecraft.src.TileEntity;
 
 public interface ICCProxy {
 	public boolean isTurtle(TileEntity tile);

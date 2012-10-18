@@ -1,16 +1,12 @@
 package logisticspipes.gui.hud;
 
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.interfaces.IHeadUpDisplayRenderer;
+import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.src.Tessellator;
 
 import org.lwjgl.opengl.GL11;
-
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.interfaces.IHUDButton;
-import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.utils.gui.BasicGuiHelper;
 
 public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRenderer {
 	

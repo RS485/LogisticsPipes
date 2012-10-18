@@ -3,10 +3,8 @@ package logisticspipes.pipes.basic;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.nio.channels.UnsupportedAddressTypeException;
 
 import logisticspipes.network.packets.PacketCoordinates;
-import logisticspipes.proxy.MainProxy;
 
 public class PacketRoutingStats extends PacketCoordinates {
 

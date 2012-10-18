@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.network.packets.PacketPipeLogisticsContent;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;

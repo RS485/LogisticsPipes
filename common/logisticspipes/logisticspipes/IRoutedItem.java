@@ -13,7 +13,6 @@ import java.util.UUID;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
-import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 
 /**

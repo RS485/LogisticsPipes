@@ -99,7 +99,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
 			ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
 			if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
-			return itemn.getNBTTagCompoundAsObject();
+			return new Object[]{itemn.getNBTTagCompoundAsMap()};
 		case 6: // getItemIdentifierIDFor
 			if(arguments.length != 2) throw new Exception("Wrong Argument count");
 			if(!(arguments[0] instanceof Double) || !(arguments[1] instanceof Double)) throw new Exception("Wrong Arguments");

@@ -14,6 +14,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import logisticspipes.proxy.MainProxy;
@@ -189,10 +191,10 @@ public final class ItemIdentifier {
 		}
 	}
 	
-	public Object[] getNBTTagCompoundAsObject() {
+	public Map<Object, Object> getNBTTagCompoundAsMap() {
 		if(tag != null) {
 			try {
-				return getNBTBaseAsObject(tag);
+				return getNBTBaseAsMap(tag);
 			} catch(Exception e) {
 				e.printStackTrace();
 				return null;
@@ -202,24 +204,77 @@ public final class ItemIdentifier {
 		}
 	}
 	
-	private Object[] getNBTBaseAsObject(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+	private Map<Integer, Object> getArrayAsMap(int[] array) {
+		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+		int i = 0;
+		for(int object: array) {
+			map.put(i, object);
+			i++;
+		}
+		return map;
+	}
+	
+	private Map<Integer, Object> getArrayAsMap(byte[] array) {
+		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
+		int i = 0;
+		for(byte object: array) {
+			map.put(i, object);
+			i++;
+		}
+		return map;
+	}
+	
+	private <T> Map<Integer, T> getListAsMap(List<T> array) {
+		HashMap<Integer, T> map = new HashMap<Integer, T>();
+		int i = 0;
+		for(T object: array) {
+			map.put(i, object);
+			i++;
+		}
+		return map;
+	}
+	
+	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
 			return null;
 		}
 		if(nbt instanceof NBTTagByte) {
-			return new Object[]{nbt.getName(), ((NBTTagByte)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagByte");
+			map.put("value", ((NBTTagByte)nbt).data);
+			return map;
 		} else if(nbt instanceof NBTTagByteArray) {
-			return new Object[]{nbt.getName(), ((NBTTagByteArray)nbt).byteArray};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagByteArray");
+			map.put("value", getArrayAsMap(((NBTTagByteArray)nbt).byteArray));
+			return map;
 		} else if(nbt instanceof NBTTagDouble) {
-			return new Object[]{nbt.getName(), ((NBTTagDouble)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagDouble");
+			map.put("value", ((NBTTagDouble)nbt).data);
+			return map;
 		} else if(nbt instanceof NBTTagFloat) {
-			return new Object[]{nbt.getName(), ((NBTTagFloat)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagFloat");
+			map.put("value", ((NBTTagFloat)nbt).data);
+			return map;
 		} else if(nbt instanceof NBTTagInt) {
-			return new Object[]{nbt.getName(), ((NBTTagInt)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagInt");
+			map.put("value", ((NBTTagInt)nbt).data);
+			return map;
 		} else if(nbt instanceof NBTTagIntArray) {
-			return new Object[]{nbt.getName(), ((NBTTagIntArray)nbt).intArray};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagIntArray");
+			map.put("value", getArrayAsMap(((NBTTagIntArray)nbt).intArray));
+			return map;
 		} else if(nbt instanceof NBTTagList) {
-			LinkedList<Object> list = new LinkedList<Object>();
 			ArrayList internal = new ArrayList();
 			Field fList;
 			try {
@@ -229,19 +284,21 @@ public final class ItemIdentifier {
 			}
 			fList.setAccessible(true);
 			internal = (ArrayList) fList.get(nbt);
-			list.add("{");
-			list.add(nbt.getName());
+			
+			HashMap<Integer, Object> content = new HashMap<Integer, Object>();
+			int i = 0;
 			for(Object object:internal) {
 				if(object instanceof NBTBase) {
-					list.add("[");
-					list.addAll(Arrays.asList(getNBTBaseAsObject((NBTBase)object)));
-					list.add("]");
+					content.put(i, getNBTBaseAsMap((NBTBase)object));
 				}
+				i++;
 			}
-			list.add("}");
-			return list.toArray();
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagList");
+			map.put("value", content);
+			return map;
 		} else if(nbt instanceof NBTTagCompound) {
-			LinkedList<Object> list = new LinkedList<Object>();
 			HashMap internal = new HashMap();
 			Field fMap;
 			try {
@@ -251,23 +308,40 @@ public final class ItemIdentifier {
 			}
 			fMap.setAccessible(true);
 			internal = (HashMap) fMap.get(nbt);
-			list.add("{");
-			list.add(nbt.getName());
-			for(Object object:internal.values()) {
-				if(object instanceof NBTBase) {
-					list.add("[");
-					list.addAll(Arrays.asList(getNBTBaseAsObject((NBTBase)object)));
-					list.add("]");
+			HashMap<Object, Object> content = new HashMap<Object, Object>();
+			HashMap<Integer, Object> keys = new HashMap<Integer, Object>();
+			int i = 0;
+			for(Object object:internal.keySet()) {
+				if(internal.get(object) instanceof NBTBase) {
+					content.put(object, getNBTBaseAsMap((NBTBase)internal.get(object)));
+					keys.put(i, object);
 				}
+				i++;
 			}
-			list.add("}");
-			return list.toArray();
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagCompound");
+			map.put("value", content);
+			map.put("keys", keys);
+			return map;
 		} else if(nbt instanceof NBTTagLong) {
-			return new Object[]{nbt.getName(), ((NBTTagLong)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagLong");
+			map.put("value", ((NBTTagLong)nbt).data);
+			return map;
 		} else if(nbt instanceof NBTTagShort) {
-			return new Object[]{nbt.getName(), ((NBTTagShort)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagShort");
+			map.put("value", ((NBTTagShort)nbt).data);
+			return map;
 		} else if(nbt instanceof NBTTagString) {
-			return new Object[]{nbt.getName(), ((NBTTagString)nbt).data};
+			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			map.put("name", nbt.getName());
+			map.put("type", "NBTTagString");
+			map.put("value", ((NBTTagString)nbt).data);
+			return map;
 		} else {
 			throw new UnsupportedOperationException("Unsupported NBTBase of type:" + nbt.getClass().getName());
 		}

@@ -53,24 +53,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		allowBouncing = true;
 		travelHook = new LogisticsItemTravelingHook(worldObj, xCoord, yCoord, zCoord, this);
 	}
-
-//	private ResolvedRoute resolveRoute(EntityData data){
-//		ResolvedRoute route = new ResolvedRoute();
-//		
-//		ResolvedDestination p = SimpleServiceLocator.logisticsManager.getPassiveDestinationFor(ItemIdentifier.get(data.item.item), _pipe.getRouter().getId());
-//		
-//		if (p != null){
-//			route.bestRouter = p.bestRouter;
-//			route.isDefault = p.isDefault;
-//		} else {
-//			route.bestRouter = core_LogisticsPipes.logisticsManager.getDestinationFor(ItemIdentifier.get(data.item.item), _pipe.getRouter().getRouteTable().keySet());
-//			if (route.bestRouter == null){
-//				route.bestRouter = core_LogisticsPipes.logisticsManager.getDestinationFor(null, _pipe.getRouter().getRouteTable().keySet());
-//				route.isDefault = true;
-//			}
-//		}
-//		return route;
-//	}
+	
+	private RoutedPipe getPipe() {
+		if (_pipe == null){
+			_pipe = (RoutedPipe) container.pipe;
+		}
+		return _pipe;
+	}
 	
 	@Override
 	public void updateEntity() {
@@ -128,30 +117,30 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			IRoutedItem routed = (IRoutedItem)item;
 			routed.changeDestination(null);
 			EntityData data = travelingEntities.get(item.getEntityId());
-			data.item = routed.getNewEntityPassiveItem();
+			IRoutedItem newRoute = routed.getNewUnRoutedItem();
+			data.item = newRoute.getEntityPassiveItem();
+			newRoute.setReRoute(true);
+			newRoute.addToJamList(getPipe().getRouter());
 		}
 	}
-
+	
 	@Override
 	public Orientations resolveDestination(EntityData data) {
 		
-		if (_pipe == null){
-			_pipe = (RoutedPipe) container.pipe;
-		}
-		
 		if(data.item != null && data.item.getItemStack() != null) {
-			_pipe.relayedItem(data.item.getItemStack().stackSize);
+			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
 		
 		boolean forcePacket = false;
 		if(!(data.item instanceof IRoutedItem)) {
 			forcePacket = true;
-		} else if(((IRoutedItem)data.item).getDestination() == null) {
+		} else if(((IRoutedItem)data.item).getDestination() == null || ((IRoutedItem)data.item).isUnRouted()) {
 			forcePacket = true;
 		}
 		
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(_pipe.worldObj, data);
-		Orientations value =_pipe.getRouteLayer().getOrientationForItem(routedItem);
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
+		Orientations value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
+		routedItem.setReRoute(false);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);
@@ -191,72 +180,9 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
 		}
 		
-		_pipe.queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
+		getPipe().queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
 		
 		return value;
-		
-//		if (!(data.item instanceof RoutedEntityItem )){
-//			ResolvedRoute bestRoute = resolveRoute(data);
-//			
-//			if (bestRoute.bestRouter == null){
-//				//No idea where to send this. Drop it
-//				return Orientations.Unknown;
-//			}
-//			
-//			RoutedEntityItem newItem = new RoutedEntityItem(this.worldObj, data.item);
-//			newItem.setDefaultRouted(bestRoute.isDefault);
-//			newItem.sourceUUID = _pipe.getRouter().getId();
-//			newItem.destinationUUID = bestRoute.bestRouter;
-//			_pipe.getRouter().startTrackingRoutedItem(newItem);
-//			SimpleServiceLocator.routerManager.getRouter(bestRoute.bestRouter).startTrackingInboundItem(newItem);
-//			data.item = newItem;
-//			
-//			if (bestRoute.bestRouter != _pipe.getRouter().getId()){
-//				return _pipe.getRouter().getExitFor(bestRoute.bestRouter);
-//			}
-//			
-//			//If the best destination is the current router, continue
-//		}
-//		RoutedEntityItem item = (RoutedEntityItem)data.item;
-//		//a routed item with destination stripped. Check if we can get new route		
-//		if (item.destinationUUID == null)	{
-//			ResolvedRoute bestRoute = resolveRoute(data);
-//			
-//			if (bestRoute.bestRouter == null){
-//				//Unable to find a new destination, drop it
-//				return Orientations.Unknown;
-//			}
-//			item.setDefaultRouted(bestRoute.isDefault);
-//			item.destinationUUID = bestRoute.bestRouter;
-//			SimpleServiceLocator.routerManager.getRouter(bestRoute.bestRouter).startTrackingInboundItem(item);
-//		}
-//		
-//		if (item.destinationUUID == _pipe.getRouter().getId()){
-//			return destinationReached(item);
-//		}
-//
-//		Orientations exit = _pipe.getRouter().getExitFor(item.destinationUUID); 
-//		if (exit != null) {
-//			item.refreshSpeed();
-//			if (item.sourceUUID != _pipe.getRouter().getId()){
-//				_pipe.stat_lifetime_relayed++;
-//				_pipe.stat_session_relayed++;
-//			}
-//			return(exit);
-//		}
-//		
-//		//No route, attempt to reroute!
-//		ResolvedRoute bestRoute = resolveRoute(data);
-//		if (bestRoute.bestRouter == null){
-//			//Failed, drop package
-//			return Orientations.Unknown;
-//		}
-//		item.changeDestination(bestRoute.bestRouter);
-//		item.setDefaultRouted(bestRoute.isDefault);
-//		if (item.destinationUUID == _pipe.getRouter().getId()){
-//			return destinationReached(item);
-//		}
-//		return _pipe.getRouter().getExitFor(item.destinationUUID);
 	}
 	
 	@Override
@@ -307,10 +233,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			
 			}
 			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost) - item.getSpeed();
-			if (_pipe == null){
-				_pipe = (RoutedPipe) container.pipe;
-			}
-			if(_pipe.useEnergy(Math.round(add * 25))) {
+			if(getPipe().useEnergy(Math.round(add * 25))) {
 				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
 			}
 		}
@@ -398,60 +321,4 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			return super.createItemPacket(data);
 		}
 	}
-
-	/*	private Orientations destinationReached(RoutedEntityItem item) {
-//		item.arrived = true;
-//		if (item.sourceUUID != null && SimpleServiceLocator.routerManager.getRouter(item.sourceUUID) != null){
-//			SimpleServiceLocator.routerManager.getRouter(item.sourceUUID).outboundItemArrived(item);
-//		}
-//		if  (item.destinationUUID != null && SimpleServiceLocator.routerManager.getRouter(item.destinationUUID) != null){
-//			SimpleServiceLocator.routerManager.getRouter(item.destinationUUID).inboundItemArrived(item);
-//		}
-//		
-//		_pipe.stat_lifetime_recieved++;
-//		_pipe.stat_session_recieved++;
-//		
-//		item.destinationUUID = null;
-//		
-//		//0) Deliver according to chassi orientation
-//		if (this._pipe instanceof PipeLogisticsChassi){
-//			
-//			return ((PipeLogisticsChassi)this._pipe).getPointedOrientation();
-//		}
-//		
-//		//1) Deliver to attached chest/non-pipe
-//		LinkedList<Orientations> possible = getPossibleMovements(getPosition(), item);
-//		Iterator<Orientations> iterator = possible.iterator();
-//		while (iterator.hasNext())	{
-//			Position p = new Position(_pipe.xCoord, _pipe.yCoord, _pipe.zCoord, iterator.next());
-//			p.moveForwards(1);
-//			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
-//			if (tile instanceof TileGenericPipe){
-//				iterator.remove();
-//			}
-//		}
-//		if (possible.size() > 0){
-//			return possible.get(worldObj.rand.nextInt(possible.size()));
-//		}
-//		
-//		//2) deliver to attached pipe that does not have a route
-//		LinkedList<Orientations> nonRoutes = _pipe.getRouter().GetNonRoutedExits();
-//		iterator = nonRoutes.iterator();
-//		while(iterator.hasNext()) {
-//			Position p = new Position(_pipe.xCoord, _pipe.yCoord, _pipe.zCoord, iterator.next());
-//			p.moveForwards(1);
-//			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z); 
-//			if (tile == null || !( tile instanceof TileGenericPipe) || !((TileGenericPipe)tile).acceptItems()){
-//				iterator.remove();
-//			}
-//		}
-//
-//		if (nonRoutes.size() != 0){
-//			return nonRoutes.get(worldObj.rand.nextInt(nonRoutes.size()));
-//		}
-//		
-//		//3) Eject				
-//		return Orientations.Unknown;
-//	}
- */
 }

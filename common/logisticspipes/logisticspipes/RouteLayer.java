@@ -32,7 +32,7 @@ public class RouteLayer {
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
 		if (item.getDestination() == null){
 			if (item.getSource() != null) return Orientations.Unknown;
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), false);
+			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), item.isReRoute());
 		}
 		
 		//If the destination is unknown / unroutable		

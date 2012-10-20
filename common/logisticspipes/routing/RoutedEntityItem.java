@@ -38,10 +38,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	private boolean _doNotBuffer;
 	
 	public boolean arrived;
+	public boolean reRoute;
+	public boolean isUnrouted;
 	
 	private TransportMode _transportMode = TransportMode.Unknown;
 	
 	private List<EntityPlayer> knownBy = new ArrayList<EntityPlayer>();
+	
+	public List<UUID> jamlist = new ArrayList<UUID>();
 	
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
 		super(world, entityItem.getEntityId());
@@ -77,6 +81,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		}
 		destinationUUID = newDestination;
 		knownBy.clear();
+		if(newDestination != null) {
+			isUnrouted = false;
+		}
 	}
 	
 	@Override
@@ -110,6 +117,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public void setDestination(UUID destination) {
 		this.destinationUUID = destination;
 		knownBy.clear();
+		if(destination != null) {
+			isUnrouted = false;
+		}
 	}
 
 	@Override
@@ -220,12 +230,40 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public EntityPassiveItem getNewEntityPassiveItem() {
+	public IRoutedItem getNewUnRoutedItem() {
 		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
 		Entityitem.setContainer(container);
 		Entityitem.setPosition(position.x, position.y, position.z);
 		Entityitem.setSpeed(speed);
 		Entityitem.setItemStack(item);
-		return Entityitem;
+		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
+		routed.isUnrouted = true;
+		routed.jamlist.addAll(jamlist);
+		return routed;
+	}
+
+	@Override
+	public boolean isReRoute() {
+		return reRoute;
+	}
+
+	@Override
+	public void setReRoute(boolean flag) {
+		reRoute = flag;
+	}
+
+	@Override
+	public void addToJamList(IRouter router) {
+		jamlist.add(router.getId());
+	}
+
+	@Override
+	public List<UUID> getJamList() {
+		return jamlist;
+	}
+
+	@Override
+	public boolean isUnRouted() {
+		return isUnrouted;
 	}
 }

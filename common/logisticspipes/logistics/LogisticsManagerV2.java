@@ -8,8 +8,10 @@
 
 package logisticspipes.logistics;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,19 +36,23 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
-		Pair<UUID, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource);
+		Pair<UUID, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource, new ArrayList<UUID>());
 		
 		if (search.getValue2() == null) return false;
 		
 		return (allowDefault || !search.getValue2().isDefault);
 	}
 	
-	private Pair<UUID, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource){
+	private Pair<UUID, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource, List<UUID> jamList){
 		UUID potentialDestination = null;
 		SinkReply bestReply = null;
 		
 		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
-			if (excludeSource && candidateRouter.getId().equals(sourceRouter.getId())) continue;
+			if (excludeSource) {
+				if(candidateRouter.getId().equals(sourceRouter.getId())) continue;
+				if(jamList.contains(candidateRouter.getId())) continue;
+			}
+			
 			ILogisticsModule module = candidateRouter.getLogisticsModule();
 			if (candidateRouter.getPipe() == null || !candidateRouter.getPipe().isEnabled()) continue;
 			if (module == null) continue;
@@ -91,7 +97,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 //		UUID potentialDestination = null;
 //		SinkReply bestReply = null;
 		
-		Pair<UUID, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource);
+		Pair<UUID, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource, item.getJamList());
 		
 //		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
 //			if (excludeSource && candidateRouter.getId().equals(sourceRouterUUID)) continue;

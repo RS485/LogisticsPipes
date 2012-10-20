@@ -8,8 +8,10 @@
 
 package logisticspipes.logisticspipes;
 
+import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.routing.IRouter;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
@@ -52,12 +54,19 @@ public interface IRoutedItem {
 	//public float getSpeedBoost();
 	
 	public EntityPassiveItem getEntityPassiveItem();
-	public EntityPassiveItem getNewEntityPassiveItem();
+	public IRoutedItem getNewUnRoutedItem();
 	
 	@Deprecated
 	public void setArrived();
 	
 	public IRoutedItem split(World worldObj, int itemsToTake, Orientations orientation);
 	public void SetPosition(double x, double y, double z);
-		
+	
+	public boolean isReRoute();
+	public void setReRoute(boolean flag);
+	
+	public void addToJamList(IRouter router);
+	public List<UUID> getJamList();
+	
+	public boolean isUnRouted();
 }

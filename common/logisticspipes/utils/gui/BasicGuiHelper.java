@@ -390,6 +390,13 @@ public class BasicGuiHelper {
         }
 	}
 
+	public static void drawPlayerHotbarBackground(Minecraft mc, int xOffset, int yOffset) {
+		//Player "hotbar"
+        for(int i1 = 0; i1 < 9; i1++) {
+        	drawSlotBackground(mc, xOffset + i1 * 18 - 1, yOffset - 1);
+        }
+	}
+
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

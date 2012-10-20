@@ -1,5 +1,6 @@
 package logisticspipes.gui.hud;
 
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
@@ -90,7 +91,7 @@ public class HUDProvider extends BasicHUDGui {
 	}
 
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -104,7 +105,7 @@ public class HUDProvider extends BasicHUDGui {
         }
 		
 		GL11.glTranslatef(0.0F, 0.0F, -0.01F);
-		super.renderHeadUpDisplay(distance, day, mc);
+		super.renderHeadUpDisplay(distance, day, mc, config);
 		
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
 		GL11.glScalef(1.5F, 1.5F, 0.0001F);
@@ -135,8 +136,8 @@ public class HUDProvider extends BasicHUDGui {
 	}
 
 	@Override
-	public boolean display() {
-		return pipe.itemList.size() > 0;
+	public boolean display(HUDConfig config) {
+		return pipe.itemList.size() > 0 && config.isHUDProvider();
 	}
 	
 	@Override

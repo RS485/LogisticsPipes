@@ -3,6 +3,7 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -20,7 +21,7 @@ public class HUDCrafting extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc) {
+	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, HUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -63,8 +64,8 @@ public class HUDCrafting extends BasicHUDGui {
 	}
 
 	@Override
-	public boolean display() {
-		return (pipe.canRegisterSign() && ((BaseLogicCrafting)pipe.logic).getCraftedItem() != null) || pipe.hasOrder();
+	public boolean display(HUDConfig config) {
+		return config.isHUDCrafting() && ((pipe.canRegisterSign() && ((BaseLogicCrafting)pipe.logic).getCraftedItem() != null) || pipe.hasOrder());
 	}
 
 

@@ -8,6 +8,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -170,9 +171,10 @@ public class LogisticsHUDRenderer {
 			lastZPos = player.posZ;
 		}
 		boolean cursorHandled = false;
+		HUDConfig config = new HUDConfig(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
 		for(IHeadUpDisplayRendererProvider renderer:list) {
 			if(renderer.getRenderer() == null) continue;
-			if(renderer.getRenderer().display()) {
+			if(renderer.getRenderer().display(config)) {
 				GL11.glPushMatrix();
 				if(!cursorHandled) {
 					double x = renderer.getX() + 0.5 - player.posX;
@@ -187,14 +189,14 @@ public class LogisticsHUDRenderer {
 				}
 		        GL11.glPopMatrix();
 				GL11.glPushMatrix();
-				displayOneView(renderer);
+				displayOneView(renderer, config);
 		        GL11.glPopMatrix();
 			}
 		}
 	}
 
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		double x = renderer.getX() + 0.5 - player.posX;
@@ -211,7 +213,7 @@ public class LogisticsHUDRenderer {
 		
 		float light = mc.theWorld.getBlockLightValue(renderer.getX(), renderer.getY(), renderer.getZ());
 		boolean dark = light < 11;
-		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)),dark, mc);
+		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)),dark, mc, config);
 	}
 	
 	private float getAngle(double x, double y) {

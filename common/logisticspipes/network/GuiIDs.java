@@ -26,12 +26,14 @@ public class GuiIDs {
 	public static final int GUI_Normal_Orderer_ID = 31;
 	public static final int GUI_OrdererStats_ID = 32;
 	public static final int GUI_Normal_Mk2_Orderer_ID = 34;
+	public static final int GUI_HUD_Settings = 35;
 
 	public static final int GUI_Module_ElectricManager_ID = 40;
 	
 	//Blocks
 	public static final int GUI_Soldering_Station_ID = 50;
 	public static final int GUI_Power_Junction_ID = 51;
+	
 
 	//SubModules 
 	//All IDS above 120 and so on...

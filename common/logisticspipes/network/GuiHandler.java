@@ -15,6 +15,7 @@ import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiApiaristSink;
 import logisticspipes.gui.modules.GuiElectricManager;
@@ -68,12 +69,15 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
-		if(!world.blockExists(x, y, z))
-			return null;
+		/*if(!world.blockExists(x, y, z))
+			return null;*/
 		
 		
 		
-		TileEntity tile = world.getBlockTileEntity(x, y, z);
+		TileEntity tile = null;
+		if(y != -1) {
+			tile = world.getBlockTileEntity(x, y, z);
+		}
 		TileGenericPipe pipe = null;
 		if(tile instanceof TileGenericPipe) {
 			pipe = (TileGenericPipe)tile;
@@ -328,6 +332,11 @@ public class GuiHandler implements IGuiHandler {
 				if(!(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft)) return null;
 				return ((LogisticsPowerJuntionTileEntity_BuildCraft)tile).createContainer(player);
 				
+			case GuiIDs.GUI_HUD_Settings:
+				dummy = new DummyContainer(player.inventory, null);
+				dummy.addRestrictedHotbarForPlayerInventory(8, 160);
+				return dummy;
+				
 			default:
 				return null;
 			}
@@ -440,8 +449,8 @@ public class GuiHandler implements IGuiHandler {
 
 	@Override
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world, int x, int y, int z) {
-		if(!world.blockExists(x, y, z))
-			return null;
+		/*if(!world.blockExists(x, y, z))
+			return null;*/
 
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
 		TileGenericPipe pipe = null;
@@ -559,6 +568,9 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Power_Junction_ID:
 				if(!(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft)) return null;
 				return new GuiPowerJunction(player, (LogisticsPowerJuntionTileEntity_BuildCraft) tile);
+
+			case GuiIDs.GUI_HUD_Settings:
+				return new GuiHUDSettings(player, x);
 				
 			default:
 				return null;

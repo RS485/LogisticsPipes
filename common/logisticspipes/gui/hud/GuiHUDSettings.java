@@ -1,0 +1,71 @@
+package logisticspipes.gui.hud;
+
+import cpw.mods.fml.common.network.PacketDispatcher;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.hud.HUDConfig;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketHUDSettings;
+import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.gui.GuiCheckBox;
+import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.GuiButton;
+
+public class GuiHUDSettings extends KraphtBaseGuiScreen {
+
+	private int slot;
+	private EntityPlayer player;
+	
+	public GuiHUDSettings(EntityPlayer player, int slot) {
+		super(180, 160, 0, 0);
+		this.slot = slot;
+		this.player = player;
+		DummyContainer dummy = new DummyContainer(player.inventory, null);
+		dummy.addRestrictedHotbarForPlayerInventory(8, 134);
+		this.inventorySlots = dummy;
+	}
+	
+	@Override
+	public void initGui() {
+		super.initGui();
+		HUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
+		this.controlList.add(new GuiCheckBox(0, guiLeft + 10, guiTop +  10, 12, 12, config.isHUDChassie()));
+		this.controlList.add(new GuiCheckBox(1, guiLeft + 10, guiTop +  30, 12, 12, config.isHUDCrafting()));
+		this.controlList.add(new GuiCheckBox(2, guiLeft + 10, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
+		this.controlList.add(new GuiCheckBox(3, guiLeft + 10, guiTop +  70, 12, 12, config.isHUDPowerJunction()));
+		this.controlList.add(new GuiCheckBox(4, guiLeft + 10, guiTop +  90, 12, 12, config.isHUDProvider()));
+		this.controlList.add(new GuiCheckBox(5, guiLeft + 10, guiTop + 110, 12, 12, config.isHUDSatellite()));
+	}
+	
+	@Override
+	public int getGuiID() {
+		return GuiIDs.GUI_HUD_Settings;
+	}
+
+	@Override
+	protected void actionPerformed(GuiButton button) {
+		if(this.controlList.get(button.id) instanceof GuiCheckBox) {
+			((GuiCheckBox)this.controlList.get(button.id)).change();
+			PacketDispatcher.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.controlList.get(button.id)).getState(), slot).getPacket());
+		}
+		//super.actionPerformed(par1GuiButton);
+	}
+
+	@Override
+	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
+		if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.shiftedIndex) {
+			this.mc.thePlayer.closeScreen();
+		}
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
+		mc.fontRenderer.drawString("HUD Chassie Pipe", guiLeft + 30, guiTop + 13, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Crafting Pipe", guiLeft + 30, guiTop + 33, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD InvSysCon Pipe", guiLeft + 30, guiTop + 53, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Power Junction", guiLeft + 30, guiTop + 73, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Provider Pipe", guiLeft + 30, guiTop + 93, 0x4c4c4c);
+		mc.fontRenderer.drawString("HUD Satellite Pipe", guiLeft + 30, guiTop + 113, 0x4c4c4c);
+		BasicGuiHelper.drawPlayerHotbarBackground(mc, guiLeft + 8, guiTop + 134);
+	}
+}

@@ -1,5 +1,6 @@
 package logisticspipes.gui.hud;
 
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -54,7 +55,7 @@ public class HUDSatellite extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
 		if(pipe.itemList.size() > 0) {
 			if(day) {
 	        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
@@ -70,7 +71,7 @@ public class HUDSatellite extends BasicHUDGui {
 
 
 			GL11.glTranslatef(0.0F, 0.0F, -0.01F);
-			super.renderHeadUpDisplay(distance, day, mc);
+			super.renderHeadUpDisplay(distance, day, mc, config);
 			
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			String message = "ID: " + Integer.toString(((BaseLogicSatellite)pipe.logic).satelliteId);
@@ -94,7 +95,7 @@ public class HUDSatellite extends BasicHUDGui {
 	        }
 
 			GL11.glTranslatef(0.0F, 0.0F, -0.01F);
-			super.renderHeadUpDisplay(distance, day, mc);
+			super.renderHeadUpDisplay(distance, day, mc, config);
 
 			GL11.glScalef(3F, 3F, 0.0001F);
 			String message = Integer.toString(((BaseLogicSatellite)pipe.logic).satelliteId);
@@ -111,8 +112,8 @@ public class HUDSatellite extends BasicHUDGui {
 	}
 	
 	@Override
-	public boolean display() {
-		return true;
+	public boolean display(HUDConfig config) {
+		return config.isHUDSatellite();
 	}
 
 	@Override

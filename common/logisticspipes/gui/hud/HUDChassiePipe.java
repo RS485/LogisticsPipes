@@ -3,6 +3,7 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -92,7 +93,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	}
 
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -104,8 +105,8 @@ public class HUDChassiePipe extends BasicHUDGui {
         } else {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
-		GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
-		super.renderHeadUpDisplay(distance, day, mc);
+		GL11.glTranslatef(0.0F, 0.0F,(float) (-0.00005F * distance));
+		super.renderHeadUpDisplay(distance, day, mc, config);
 		if(selected != -1) {
 			ILogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule == null) return;
@@ -115,7 +116,7 @@ public class HUDChassiePipe extends BasicHUDGui {
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
 
 			if(selectedmodule instanceof IHUDModuleHandler && ((IHUDModuleHandler)selectedmodule).getRenderer() != null) {
-				GL11.glTranslatef(11.0F, 5.0F, -0.00005F);
+				GL11.glTranslatef(11.0F, 5.0F, (float) (-0.00005F * distance));
 				((IHUDModuleHandler)selectedmodule).getRenderer().renderContent();
 				if(((IHUDModuleHandler)selectedmodule).getRenderer().getButtons() != null) {
 					for(IHUDButton button:((IHUDModuleHandler)selectedmodule).getRenderer().getButtons()) {
@@ -136,25 +137,26 @@ public class HUDChassiePipe extends BasicHUDGui {
 						}
 					}
 				}
-				GL11.glTranslatef(-11.0F, -5.0F, 0.00005F);
+				GL11.glTranslatef(-11.0F, -5.0F, (float) (0.00005F * distance));
 			} else {
-				GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
+				GL11.glTranslatef(0.0F, 0.0F, (float) (-0.00005F * distance));
 				mc.fontRenderer.drawString("Nothing" , -5, -15, 0);
 				mc.fontRenderer.drawString("to" , 9, -5, 0);
 				mc.fontRenderer.drawString("display" , -5, 5, 0);
-				GL11.glTranslatef(0.0F, 0.0F, 0.00005F);
+				GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 			}
 		} else {
-			GL11.glTranslatef(0.0F, 0.0F, -0.005F);
+			GL11.glTranslatef(0.0F, 0.0F, (float) (-0.005F * distance));
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			GL11.glScalef(0.8F, 0.8F, -1F);
 			BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, 0, -15, -35, 3, 12, 18, 18, mc, true, true, true, true);
 		}
-		GL11.glTranslatef(0.0F, 0.0F, 0.00005F);
+		GL11.glTranslatef(0.0F, 0.0F, (float) (0.00005F * distance));
 	}
 
 	@Override
-	public boolean display() {
+	public boolean display(HUDConfig config) {
+		if(!config.isHUDChassie()) return false;
 		for(int i=0;i<moduleInventory.getSizeInventory();i++) {
 			ItemStack stack = moduleInventory.getStackInSlot(i);
 			if(stack != null && stack.itemID != 0) {

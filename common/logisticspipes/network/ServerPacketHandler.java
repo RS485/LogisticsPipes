@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
@@ -23,6 +24,7 @@ import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketHUDSettings;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
@@ -281,6 +283,10 @@ public class ServerPacketHandler {
 					packetAo.readData(data);
 					onHUDBlockWatch(player, packetAo, false);
 					break;
+				case NetworkConstants.HUD_SETTING_SET:
+					final PacketHUDSettings packetAp = new PacketHUDSettings();
+					packetAp.readData(data);
+					onHUDSettings(player, packetAp);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1035,6 +1041,64 @@ public class ServerPacketHandler {
 			} else {
 				((IBlockWatchingHandler)tile).playerStopWatching(player);	
 			}
+		}
+	}
+
+	private static void onHUDSettings(EntityPlayerMP player, PacketHUDSettings packet) {
+		if(player.inventory.getStackInSlot(packet.slot) == null) return;
+		HUDConfig config = new HUDConfig(player.inventory.getStackInSlot(packet.slot));
+		switch(packet.buttonId) {
+		case 0:
+			config.setHUDChassie(packet.state);
+			if(config.isHUDChassie()) {
+				player.sendChatToPlayer("Enabled Chassie.");
+			} else {
+				player.sendChatToPlayer("Disabled Chassie.");
+			}
+			break;
+		case 1:
+			config.setHUDCrafting(packet.state);
+			if(config.isHUDCrafting()) {
+				player.sendChatToPlayer("Enabled Crafting.");
+			} else {
+				player.sendChatToPlayer("Disabled Crafting.");
+			}
+			break;
+		case 2:
+			config.setHUDInvSysCon(packet.state);
+			if(config.isHUDInvSysCon()) {
+				player.sendChatToPlayer("Enabled InvSysCon.");
+			} else {
+				player.sendChatToPlayer("Disabled InvSysCon.");
+			}
+			break;
+		case 3:
+			config.setHUDPowerJunction(packet.state);
+			if(config.isHUDPowerJunction()) {
+				player.sendChatToPlayer("Enabled Power Junction.");
+			} else {
+				player.sendChatToPlayer("Disabled Power Junction.");
+			}
+			break;
+		case 4:
+			config.setHUDProvider(packet.state);
+			if(config.isHUDProvider()) {
+				player.sendChatToPlayer("Enabled Provider.");
+			} else {
+				player.sendChatToPlayer("Disabled Provider.");
+			}
+			break;
+		case 5:
+			config.setHUDSatellite(packet.state);
+			if(config.isHUDSatellite()) {
+				player.sendChatToPlayer("Enabled Satellite.");
+			} else {
+				player.sendChatToPlayer("Disabled Satellite.");
+			}
+			break;
+		}
+		if(player.inventorySlots != null) {
+			player.inventorySlots.updateCraftingResults();
 		}
 	}
 	

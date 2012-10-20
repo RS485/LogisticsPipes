@@ -1,6 +1,7 @@
 package logisticspipes.gui.hud;
 
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
@@ -17,7 +18,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)32);
         } else {
@@ -30,7 +31,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)127);	
         }
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		super.renderHeadUpDisplay(distance, day, mc);
+		super.renderHeadUpDisplay(distance, day, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/power_junction.png");
 		mc.renderEngine.bindTexture(i);
@@ -57,8 +58,8 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
     }
 
 	@Override
-	public boolean display() {
-		return !junction.isInvalid();
+	public boolean display(HUDConfig config) {
+		return !junction.isInvalid() && config.isHUDPowerJunction();
 	}
 
 	@Override

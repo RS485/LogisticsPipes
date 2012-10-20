@@ -121,7 +121,7 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, boolean isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || !(slot instanceof DummySlot)) {
+		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
 			if(stack2 != null && stack2.getItem().shiftedIndex == Configs.ItemModuleId + 256) {
@@ -131,10 +131,15 @@ public class DummyContainer extends Container{
 			}
 			return stack1;
 		}
-
+		
 		InventoryPlayer inventoryplayer = entityplayer.inventory;
 		
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
+		
+		if(slot instanceof UnmodifiableSlot) {
+			return currentlyEquippedStack;
+		}
+		
 		if (currentlyEquippedStack == null){
 			if (slot.getStack() != null && mouseButton == 1){
 				if (isShift){
@@ -195,5 +200,15 @@ public class DummyContainer extends Container{
 	protected void retrySlotClick(int i, int j, boolean flag,
 			EntityPlayer entityplayer) {
 		
+	}
+
+	public void addRestrictedHotbarForPlayerInventory(int xOffset, int yOffset) {
+		if (_playerInventory == null){
+			return;
+		}
+		//Player "hotbar"
+        for(int i1 = 0; i1 < 9; i1++) {
+        	addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset));
+        }
 	}
 }

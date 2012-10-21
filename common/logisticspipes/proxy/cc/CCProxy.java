@@ -25,6 +25,7 @@ public class CCProxy implements ICCProxy {
 	private Class<?> turtleClass;
 	private Class<?> computerClass;
 	private Class<?> peripheralAPIClass;
+	private Field target;
 	
 	private boolean valid = false;
 	
@@ -45,6 +46,8 @@ public class CCProxy implements ICCProxy {
 			parseSide.setAccessible(true);
 			m_peripherals = peripheralAPIClass.getDeclaredField("m_peripherals");
 			m_peripherals.setAccessible(true);
+			target = Thread.class.getDeclaredField("target");
+			target.setAccessible(true);
 			valid = true;
 		} catch(Exception e) {
 			if(LogisticsPipes.DEBUG) {
@@ -118,33 +121,31 @@ public class CCProxy implements ICCProxy {
 		return Orientations.Unknown;
 	}
 
-	private static Runnable getTaget(Thread thread) {
-		Field target;
+	private Runnable getTaget(Thread thread) {
 		try {
-			target = Thread.class.getDeclaredField("target");
-			target.setAccessible(true);
 			return (Runnable) target.get(thread);
-		} catch (NoSuchFieldException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(LogisticsPipes.DEBUG) {
+				e.printStackTrace();
+			}
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(LogisticsPipes.DEBUG) {
+				e.printStackTrace();
+			}
 		} catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			if(LogisticsPipes.DEBUG) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}
 	
 	@Override
 	public boolean isLuaThread(Thread thread) {
-		if(getTaget(thread) == null) {
+		Runnable tar = getTaget(thread);
+		if(tar == null) {
 			return false;
 		}
-		return getTaget(thread).getClass().getName().contains("org.luaj.vm2.LuaThread");
+		return tar.getClass().getName().contains("org.luaj.vm2.LuaThread");
 	}
 }

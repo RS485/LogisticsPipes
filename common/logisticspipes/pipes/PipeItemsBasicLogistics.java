@@ -95,7 +95,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-	
+/*
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Configs.ItemHUDId + 256 && MainProxy.isServer()) {
@@ -107,7 +107,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 			return super.blockActivated(world, i, j, k, entityplayer);
 		}
 	}
-
+*/
 	private boolean isSideOrientation(Orientations ori) {
 		return ori == Orientations.XPos || ori == Orientations.XNeg || ori == Orientations.ZPos || ori == Orientations.ZNeg;
 	}

@@ -8,6 +8,7 @@
 
 package logisticspipes.utils.gui;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
@@ -124,7 +125,7 @@ public class DummyContainer extends Container{
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if(stack2 != null && stack2.getItem().shiftedIndex == Configs.ItemModuleId + 256) {
+			if(stack2 != null && stack2.getItem().shiftedIndex == LogisticsPipes.ModuleItem.shiftedIndex) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 					((EntityPlayerMP)entityplayer).updateCraftingInventorySlot(this, slotId, stack2);
 				}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
@@ -37,7 +38,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		super(180,200,0,0);
 		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
 		
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, Configs.ItemCardId + 256);
+		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.shiftedIndex);
 		
 		dummy.addNormalSlotsForPlayerInventory(10, 115);
 		

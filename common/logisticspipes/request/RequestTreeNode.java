@@ -62,7 +62,11 @@ public class RequestTreeNode {
 	}
 	
 	public boolean isDone() {
-		return getMissingItemCount() <= 0;
+		boolean result = getMissingItemCount() <= 0;
+		for(RequestTreeNode node:subRequests) {
+			result &= node.isDone();
+		}
+		return result;
 	}
 
 

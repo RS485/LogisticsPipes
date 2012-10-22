@@ -106,7 +106,7 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	private void sendMissingMessage(LinkedList<ItemMessage> missing, RequestTreeNode node) {
-		if(!node.isDone()) {
+		if(node.getMissingItemCount() != 0) {
 			ItemIdentifierStack stack = node.getStack().clone();
 			stack.stackSize = node.getMissingItemCount();
 			missing.add(new ItemMessage(stack));

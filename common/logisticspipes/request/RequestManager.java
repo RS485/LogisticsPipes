@@ -159,6 +159,12 @@ public class RequestManager {
 				}
 			}
 			boolean failed = false;
+			if(lastNode != null && lastNode.size() > 0) {
+				for(RequestTreeNode subNode:lastNode) {
+					subNode.revertExtraUsage();
+				}
+			}
+			
 			lastNode = new ArrayList<RequestTreeNode>();
 			lastNodeTemplate = template;
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {

@@ -193,6 +193,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 	
 	public boolean hasContributions() {
+		return true;
+		/*
 		//prevent groupEntities()
 		try {
 			@SuppressWarnings("restriction")
@@ -204,10 +206,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		} catch(Exception e) {
 			return true;
 		}
+		*/
 	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		super.readFromNBT(nbttagcompound);
 		if(nbttagcompound.hasKey("sourceUUID")) {
 			sourceUUID = UUID.fromString(nbttagcompound.getString("sourceUUID"));
 		}
@@ -219,6 +223,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		super.writeToNBT(nbttagcompound);
 		if(sourceUUID != null) {
 			nbttagcompound.setString("sourceUUID", sourceUUID.toString());
 		}

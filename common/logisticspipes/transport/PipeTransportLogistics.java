@@ -180,7 +180,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
 		}
 		
-		getPipe().queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
+		//getPipe().queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
 		
 		return value;
 	}

@@ -28,7 +28,11 @@ public class RequestTree extends RequestTreeNode {
 	private void chechSubPromisses(IProvideItems provider, RequestTreeNode node, Map<ItemIdentifier, Integer> result) {
 		for(LogisticsPromise promise: node.promises) {
 			if(promise.sender == provider) {
-				result.put(promise.item, promise.numberOfItems);
+				if(result.containsKey(promise.item)) {
+					result.put(promise.item, promise.numberOfItems + result.get(promise.item));
+				} else {
+					result.put(promise.item, promise.numberOfItems);
+				}
 			}
 		}
 		for(RequestTreeNode subNode:node.subRequests) {

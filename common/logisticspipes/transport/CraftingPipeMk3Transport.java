@@ -46,11 +46,10 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 					data.item.getItemStack().stackSize = pipe.inv.addCompressed(data.item.getItemStack());
 					
 					if(data.item.getItemStack().stackSize > 0) {
-						EntityItem dropped = data.item.toEntityItem(data.output);
-						if (dropped != null)
-							// On SMP, the client side doesn't actually drops
-							// items
-							onDropped(dropped);	
+						data.toCenter = true;
+						data.input = data.output.reverse();
+						unscheduleRemoval(data.item);
+						entityEntering(data.item, data.output.reverse());
 					}
 				}
 		} else {

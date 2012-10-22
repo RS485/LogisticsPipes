@@ -258,7 +258,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	}
 	
 	@Override
-	public void drawGuiContainerForegroundLayer() {
+	public void drawGuiContainerForegroundLayer(int par1, int par2) {
 		if(super.hasSubGui()) return;
 		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}

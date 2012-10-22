@@ -23,8 +23,8 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
-		super.drawGuiContainerForegroundLayer();
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		
 	}
 
@@ -33,8 +33,8 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/power_junction.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
+		int j = guiLeft;
+		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		int level = 100 - junction.getChargeState();
 		drawTexturedModalRect(j + 10, k + 11 + (level * 59 / 100), 176, level * 59 / 100, 5, 59 - (level * 59 / 100));

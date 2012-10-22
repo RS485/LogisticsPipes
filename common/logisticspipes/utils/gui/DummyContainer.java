@@ -106,7 +106,7 @@ public class DummyContainer extends Container{
 	 * Disable shift-clicking to transfer items
 	 */
 	@Override
-	public ItemStack transferStackInSlot(int i)
+	public ItemStack func_82846_b(EntityPlayer pl, int i)
     {
 		return null;
 //		Slot slot = (Slot)inventorySlots.get(i);
@@ -119,7 +119,7 @@ public class DummyContainer extends Container{
 	 * Clone/clear itemstacks for items
 	 */
 	@Override
-	public ItemStack slotClick(int slotId, int mouseButton, boolean isShift, EntityPlayer entityplayer) {
+	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot))) {
@@ -143,7 +143,7 @@ public class DummyContainer extends Container{
 		
 		if (currentlyEquippedStack == null){
 			if (slot.getStack() != null && mouseButton == 1){
-				if (isShift){
+				if (isShift == 1){
 					slot.getStack().stackSize = Math.min(127, slot.getStack().stackSize * 2);
 				} else {
 					slot.getStack().stackSize/=2;
@@ -170,7 +170,7 @@ public class DummyContainer extends Container{
 		ItemIdentifier slotItem = ItemIdentifier.get(slot.getStack());
 		if (currentItem == slotItem){
 			//Do manual shift-checking to play nice with NEI
-			int counter = isShift?10:1;
+			int counter = isShift == 1?10:1;
 			if (mouseButton == 1 && slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
 				slot.getStack().stackSize += counter;
 				return currentlyEquippedStack;

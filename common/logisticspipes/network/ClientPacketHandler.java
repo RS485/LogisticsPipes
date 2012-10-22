@@ -57,8 +57,8 @@ import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.SneakyOrientation;
+import net.minecraft.src.INetworkManager;
 import net.minecraft.src.ItemStack;
-import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -68,7 +68,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class ClientPacketHandler {
 	
-	public static void onPacketData(NetworkManager manager, Packet250CustomPayload packet, Player player) {
+	public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
 		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
 		onPacketData(data, player);
 	}

@@ -22,6 +22,8 @@ import net.minecraftforge.client.ForgeHooksClient;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.client.FMLClientHandler;
+
 public class BasicGuiHelper {
 	
 	public static String getCuttedString(String input, int maxLength, FontRenderer renderer) {
@@ -100,12 +102,12 @@ public class BasicGuiHelper {
 			        {
 			            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.field_77024_a, renderItem.zLevel, (float)x, (float)y))
 			            {
-			            	renderItem.drawItemIntoGui(fontRenderer, mc.renderEngine, st.itemID, st.getItemDamage(), st.getIconIndex(), x, y);
+			            	renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 			            }
 			        }
 
 				} else {
-					renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+					renderItem.func_82406_b(fontRenderer, mc.renderEngine, st, x, y);
 				}
 			}
 			
@@ -190,7 +192,7 @@ public class BasicGuiHelper {
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
-			try {
+			/*try {
 				if(forceminecraft) {
 					throw new Exception();
 				}
@@ -209,11 +211,12 @@ public class BasicGuiHelper {
 				}
 				
 				drawToolTip(((Integer)tooltip[0]).intValue(), ((Integer)tooltip[1]).intValue(),list,((ItemStack)tooltip[2]).getRarity().rarityColor, forceminecraft);
-			} catch(Exception e) {
+			} catch(Exception e) {*/
 				try {
 					//Use minecraft vanilla code
+					Minecraft mc = FMLClientHandler.instance().getClient();
 					ItemStack var22 = (ItemStack) tooltip[2];
-					List var24 = var22.getItemNameandInformation();
+					List var24 = var22.func_82840_a(mc.thePlayer, mc.gameSettings.field_82882_x);
 
 	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
 	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
@@ -224,7 +227,7 @@ public class BasicGuiHelper {
 	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor, forceminecraft);
 	            }
 	            catch(Exception e1) {}
-			}
+			//}
 		}
 	}
 	

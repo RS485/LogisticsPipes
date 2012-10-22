@@ -111,6 +111,18 @@ public class Textures {
 			MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
 			MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
 			MinecraftForgeClient.preloadTexture(LOGISTICS_SOLID_BLOCK);
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/itemsink.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/extractor.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/supplier.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/soldering_station.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/satellite.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/power_junction.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/crafting.png");
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/crafting.png");
+			for(int i=1;i<=4;i++) {
+				MinecraftForgeClient.preloadTexture("/logisticspipes/gui/chassipipe_size"+ i +".png");
+			}
+			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/chassipipe_size8.png");
 		}
 		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
@@ -152,6 +164,7 @@ public class Textures {
 	public int registerTexture(String fileName) {
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			RenderingRegistry.addTextureOverride(Textures.BASE_TEXTURE_FILE, fileName, index);
+			MinecraftForgeClient.preloadTexture(fileName);
 		}
 		return index++;
 	}

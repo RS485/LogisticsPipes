@@ -44,7 +44,7 @@ public class RemoteOrderer extends Item {
 	}
 	
 	@Override
-	public void addInformation(ItemStack itemstack, List list) {
+	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		//Add special tooltip in tribute to DireWolf
 		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.shiftedIndex){
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
@@ -56,7 +56,7 @@ public class RemoteOrderer extends Item {
 			list.add("\u00a77Has Remote Pipe");
 		}
 		
-		super.addInformation(itemstack, list);
+		super.addInformation(itemstack, player, list, flag);
 	}
 	
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)

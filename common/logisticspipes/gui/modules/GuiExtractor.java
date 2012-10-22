@@ -92,11 +92,11 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		
 		refreshButtons();
 		
-		super.drawGuiContainerForegroundLayer();
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		
 		int left = width / 2 - xSize / 2;
 		int top = height / 2 - ySize / 2;
@@ -114,8 +114,8 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
+		int j = guiLeft;
+		int k = guiTop;
 		//drawRect(width/2 - xSize / 2, height / 2 - ySize /2, width/2 + xSize / 2, height / 2 + ySize /2, 0xFF404040);
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}

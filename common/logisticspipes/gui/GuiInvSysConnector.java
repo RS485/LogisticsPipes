@@ -75,8 +75,8 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
-		super.drawGuiContainerForegroundLayer();
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, null, page, 9, 59, 9, 27, 18, 18, mc, true, true);
 		
 		int ppi = 0;

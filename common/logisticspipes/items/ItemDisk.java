@@ -3,6 +3,7 @@ package logisticspipes.items;
 import java.util.List;
 
 import net.minecraft.src.CreativeTabs;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 
 
@@ -25,7 +26,7 @@ public class ItemDisk extends LogisticsNBTTagCompundItem {
     }
 
 	@Override
-	public void addInformation(ItemStack itemStack, List list) {
+	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		if(itemStack.hasTagCompound()) {
 			if(itemStack.getTagCompound().hasKey("name")) {
 				String name = "\u00a78" + itemStack.getTagCompound().getString("name");

@@ -194,7 +194,7 @@ public class Configs {
 		Property pageDisplayPopupProperty = configuration.get("displayPopup", Configuration.CATEGORY_GENERAL, displayPopup);
 		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
 
-		if(configuration.categories.get(Configuration.CATEGORY_BLOCK).containsKey("logisticsBlockId")) {
+		if(configuration.categories.containsKey(Configuration.CATEGORY_BLOCK) && configuration.categories.get(Configuration.CATEGORY_BLOCK).containsKey("logisticsBlockId")) {
 			Property logisticsBlockId = configuration.get("logisticsBlockId", Configuration.CATEGORY_BLOCK, LOGISTICS_SIGN_ID);
 			LOGISTICS_SIGN_ID = Integer.parseInt(logisticsBlockId.value);
 			configuration.categories.get(Configuration.CATEGORY_BLOCK).remove("logisticsBlockId");

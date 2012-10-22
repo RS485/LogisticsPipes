@@ -24,8 +24,8 @@ public class GuiRoutingStats extends KraphtBaseGuiScreen {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
-		super.drawGuiContainerForegroundLayer();
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 
 		String pipeName = ItemIdentifier.get(_router.getPipe().itemID, 0, null).getFriendlyName();
 		fontRenderer.drawString(pipeName, (170 - fontRenderer.getStringWidth(pipeName))/2, 10, 0x83601c);

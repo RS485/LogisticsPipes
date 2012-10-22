@@ -23,6 +23,8 @@ import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.Block;
 import net.minecraft.src.EntityPlayer;
+import net.minecraft.src.EntityPlayerMP;
+import net.minecraft.src.EntityPlayerSP;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -193,7 +195,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void openAttachedGui(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			player.closeScreen();
+			if(player instanceof EntityPlayerMP) {
+				((EntityPlayerMP)player).closeScreen();
+			} else if(player instanceof EntityPlayerSP) {
+				((EntityPlayerSP)player).closeScreen();
+			}
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
 			PacketDispatcher.sendPacketToServer(packet.getPacket());
 			return;

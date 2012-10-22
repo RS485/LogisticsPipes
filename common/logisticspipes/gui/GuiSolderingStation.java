@@ -26,8 +26,8 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 	}
 
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
-		super.drawGuiContainerForegroundLayer();
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 	}
 
 	@Override
@@ -35,8 +35,8 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/soldering_station.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
+		int j = guiLeft;
+		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(tile.getRecipeForTagetAsItemIdentifierStackList(), null, 0, guiLeft + 30, guiTop + 17, 3, 9, 18, 18, mc, false, false);
 		mc.renderEngine.bindTexture(i);

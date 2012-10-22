@@ -203,7 +203,8 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		this.slots.add(slot);
 	}
 	
-	protected void drawGuiContainerForegroundLayer() {
+	@Override
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		for(IRenderSlot slot:slots) {
 			if(slot instanceof IItemTextureRenderSlot) {
 				if(slot.drawSlotBackground()) 

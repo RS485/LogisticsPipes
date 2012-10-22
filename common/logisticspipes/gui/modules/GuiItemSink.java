@@ -74,7 +74,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(_itemSink.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 		fontRenderer.drawString("Default route:", 65, 45, 0x404040);
@@ -86,8 +86,8 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 				
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
+		int j = guiLeft;
+		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 

@@ -51,9 +51,9 @@ import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.src.EntityPlayerMP;
+import net.minecraft.src.INetworkManager;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NetworkManager;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
@@ -63,7 +63,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler {
 	
-	public static void onPacketData(NetworkManager manager, Packet250CustomPayload packet250, Player playerFML) {
+	public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet250, Player playerFML) {
 		
 		EntityPlayerMP player = (EntityPlayerMP) playerFML;
 		

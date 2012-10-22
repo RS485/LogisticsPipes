@@ -116,7 +116,7 @@ public class LogisticsSolidBlock extends BlockContainer {
     }
 
 	@Override
-	protected int damageDropped(int par1) {
+	public int damageDropped(int par1) {
 		switch(par1) {
 		case SOLDERING_STATION:
 		case LOGISTICS_POWER_JUNCTION:

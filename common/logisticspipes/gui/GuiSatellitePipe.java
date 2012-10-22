@@ -60,8 +60,8 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	}
 	
 	@Override
-	protected void drawGuiContainerForegroundLayer() {
-		super.drawGuiContainerForegroundLayer();
+	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
+		super.drawGuiContainerForegroundLayer(par1, par2);
 		fontRenderer.drawString("Satellite ID", 33, 10, 0x404040);
 		if(_satellite == null) return;
 		fontRenderer.drawString(_satellite.satelliteId+"", 59 - fontRenderer.getStringWidth(_satellite.satelliteId+"")/2, 31, 0x404040);
@@ -73,8 +73,8 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(i);
-		int j = (width - xSize) / 2;
-		int k = (height - ySize) / 2;
+		int j = guiLeft;
+		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 
 	}

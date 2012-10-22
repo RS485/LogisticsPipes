@@ -1,9 +1,9 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 
@@ -18,8 +18,9 @@ public class ModuleSlot extends RestrictedSlot {
 		_moduleIndex = i;
 	}
 	
-	public void onPickupFromSlot(ItemStack itemStack) {
+	@Override
+	public void func_82870_a(EntityPlayer pl, ItemStack itemStack) {
 		ItemModuleInformationManager.saveInfotmation(itemStack, _pipe.getLogisticsModule().getSubModule(_moduleIndex), _pipe.worldObj);
-        super.onPickupFromSlot(itemStack);
+        super.func_82870_a(pl, itemStack);
     }
 }

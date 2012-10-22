@@ -40,6 +40,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.AdjacentTile;
@@ -201,11 +202,11 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
 		if (alreadyPromised >= _extras) return;
 		int remaining = _extras - alreadyPromised;
-		LogisticsPromise promise = new LogisticsPromise();
+		LogisticsExtraPromise promise = new LogisticsExtraPromise();
 		promise.item = providedItem;
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
 		promise.sender = this;
-		promise.extra = true;
+		promise.extraSource = tree;
 		tree.addPromise(promise);
 	}
 
@@ -240,7 +241,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		if (promise.extra){
+		if (promise instanceof LogisticsExtraPromise){
 			_extras -= promise.numberOfItems;
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);

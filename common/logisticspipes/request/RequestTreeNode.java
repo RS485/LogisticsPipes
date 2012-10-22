@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifierStack;
 
@@ -19,7 +20,7 @@ public class RequestTreeNode {
 	protected final ItemIdentifierStack request;
 	protected List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
 	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
-	protected List<LogisticsPromise> extrapromises = new ArrayList<LogisticsPromise>();
+	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
 	
 	public int getPromiseItemCount() {
 		int count = 0;
@@ -40,8 +41,8 @@ public class RequestTreeNode {
 			int more = promise.numberOfItems - getMissingItemCount();
 			promise.numberOfItems = getMissingItemCount();
 			//Add Extra
-			LogisticsPromise extra = new LogisticsPromise();
-			extra.extra = true;
+			LogisticsExtraPromise extra = new LogisticsExtraPromise();
+			extra.extraSource = this;
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
@@ -64,10 +65,28 @@ public class RequestTreeNode {
 		return getMissingItemCount() <= 0;
 	}
 
+
+
 	public ItemIdentifierStack getStack() {
 		return request;
 	}
 
+	public void revertExtraUsage() {
+		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>();
+		for(LogisticsPromise promise:promises) {
+			if(promise instanceof LogisticsExtraPromise) {
+				((LogisticsExtraPromise)promise).extraSource.addPromise(promise);
+				toRemove.add(promise);
+			}
+		}
+		for(LogisticsPromise promise:toRemove) {
+			promises.remove(promise);
+		}
+		for(RequestTreeNode node:subRequests) {
+			node.revertExtraUsage();
+		}
+	}
+	
 	public RequestTreeNode copy() {
 		RequestTreeNode result = new RequestTreeNode(request, target);
 		for(RequestTreeNode subNode:subRequests) {
@@ -76,7 +95,7 @@ public class RequestTreeNode {
 		for(LogisticsPromise subpromises:promises) {
 			result.promises.add(subpromises.copy());
 		}
-		for(LogisticsPromise subpromises:extrapromises) {
+		for(LogisticsExtraPromise subpromises:extrapromises) {
 			result.extrapromises.add(subpromises.copy());
 		}
 		return result;

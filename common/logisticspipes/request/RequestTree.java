@@ -8,6 +8,7 @@ import java.util.Map;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -60,7 +61,7 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedHashMap<LogisticsPromise,RequestTreeNode> extras) {
-		for(LogisticsPromise extra:extrapromises) {
+		for(LogisticsPromise extra:node.extrapromises) {
 			if(extra.item == item) {
 				extras.put(extra, node);
 			}
@@ -78,7 +79,7 @@ public class RequestTree extends RequestTreeNode {
 		for(LogisticsPromise subpromises:promises) {
 			result.promises.add(subpromises.copy());
 		}
-		for(LogisticsPromise subpromises:extrapromises) {
+		for(LogisticsExtraPromise subpromises:extrapromises) {
 			result.extrapromises.add(subpromises.copy());
 		}
 		return result;

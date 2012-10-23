@@ -8,6 +8,7 @@ import java.util.Map;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -53,14 +54,14 @@ public class RequestTree extends RequestTreeNode {
 		return done;
 	}
 	
-	public LinkedHashMap<LogisticsPromise,RequestTreeNode> getExtrasFor(ItemIdentifier item) {
-		LinkedHashMap<LogisticsPromise,RequestTreeNode> extras = new LinkedHashMap<LogisticsPromise,RequestTreeNode>();
+	public LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> getExtrasFor(ItemIdentifier item) {
+		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras = new LinkedHashMap<LogisticsExtraPromise,RequestTreeNode>();
 		checkForExtras(item,this,extras);
 		return extras;
 	}
 
-	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedHashMap<LogisticsPromise,RequestTreeNode> extras) {
-		for(LogisticsPromise extra:extrapromises) {
+	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras) {
+		for(LogisticsExtraPromise extra:node.extrapromises) {
 			if(extra.item == item) {
 				extras.put(extra, node);
 			}
@@ -78,7 +79,7 @@ public class RequestTree extends RequestTreeNode {
 		for(LogisticsPromise subpromises:promises) {
 			result.promises.add(subpromises.copy());
 		}
-		for(LogisticsPromise subpromises:extrapromises) {
+		for(LogisticsExtraPromise subpromises:extrapromises) {
 			result.extrapromises.add(subpromises.copy());
 		}
 		return result;
@@ -105,7 +106,7 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	private void sendMissingMessage(LinkedList<ItemMessage> missing, RequestTreeNode node) {
-		if(!node.isDone()) {
+		if(node.getMissingItemCount() != 0) {
 			ItemIdentifierStack stack = node.getStack().clone();
 			stack.stackSize = node.getMissingItemCount();
 			missing.add(new ItemMessage(stack));

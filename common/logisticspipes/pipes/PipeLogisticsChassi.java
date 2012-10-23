@@ -42,6 +42,7 @@ import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -291,6 +292,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		if(stillNeedReplace) return;
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
 			if(MainProxy.isServer(this.worldObj)) {

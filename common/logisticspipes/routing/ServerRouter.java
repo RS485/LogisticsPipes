@@ -34,6 +34,7 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
+import buildcraft.api.power.PowerProvider;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
@@ -41,9 +42,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private class LSA {
 		public IRouter source;
 		public HashMap<IRouter, Pair<Integer,Boolean>> neighboursWithMetric;
+		public List<ILogisticsPowerProvider> power;
 	}
 	
 	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
+	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 
 	private static int _LSDVersion = 0;
 	private int _lastLSDVersion = 0;
@@ -56,6 +59,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	/** Map of router -> orientation for all known destinations **/
 	public HashMap<IRouter, Orientations> _routeTable = new HashMap<IRouter, Orientations>();
 	public HashMap<IRouter, Pair<Integer,Boolean>> _routeCosts = new HashMap<IRouter, Pair<Integer,Boolean>>();
+	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
 	
 	private boolean _blockNeedsUpdate;
@@ -82,6 +86,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		_myLsa = new LSA();
 		_myLsa.source = this;
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer,Boolean>>();
+		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
 		SharedLSADatabase.add(_myLsa);
 	}
 
@@ -153,9 +158,21 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		CoreRoutedPipe thisPipe = getPipe();
 		if (thisPipe == null) return;
 		HashMap<RoutedPipe, ExitRoute> adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH);
+		List<ILogisticsPowerProvider> power = this.getConnectedPowerProvider();
+		
+		for(RoutedPipe pipe : adjacent.keySet()) {
+			if(pipe.stillNeedReplace()) {
+				return;
+			}
+		}
 		
 		for (RoutedPipe pipe : _adjacent.keySet()){
 			if(!adjacent.containsKey(pipe))
+				adjacentChanged = true;
+		}
+		
+		for (ILogisticsPowerProvider provider : _powerAdjacent){
+			if(!power.contains(provider))
 				adjacentChanged = true;
 		}
 		
@@ -173,8 +190,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			}
 		}
 		
+		for (ILogisticsPowerProvider provider : power){
+			if(!_powerAdjacent.contains(provider))
+				adjacentChanged = true;
+		}
+		
 		if (adjacentChanged){
 			_adjacent = adjacent;
+			_powerAdjacent = power;
 			_blockNeedsUpdate = true;
 			SendNewLSA();
 		}
@@ -183,8 +206,12 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void SendNewLSA()
 	{
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer,Boolean>>();
+		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
 		for (RoutedPipe adjacent : _adjacent.keySet()){
 			_myLsa.neighboursWithMetric.put(adjacent.getRouter(), new Pair(_adjacent.get(adjacent).metric, _adjacent.get(adjacent).isPipeLess));
+		}
+		for (ILogisticsPowerProvider provider : _powerAdjacent){
+			_myLsa.power.add(provider);
 		}
 		_LSDVersion++;
 		MainProxy.sendCompressedToAllPlayers((Packet250CustomPayload) new PacketRouterInformation(NetworkConstants.ROUTER_UPDATE_CONTENT, _xCoord , _yCoord, _zCoord, _dimension, this).getPacket());
@@ -200,6 +227,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		HashMap<IRouter, LinkedList<IRouter>> tree =  new HashMap<IRouter, LinkedList<IRouter>>();
 		/** The cost to get to an "approved" router **/
 		HashMap<IRouter, Pair<Integer,Boolean>> treeCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
+		
+		_powerTable = new ArrayList<ILogisticsPowerProvider>();
 		
 		//Init root(er - lol)
 		tree.put(this,  new LinkedList<IRouter>());
@@ -242,7 +271,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			
 			//Add new candidates from the newly approved route
 			for (LSA lsa : SharedLSADatabase){
-				if (lsa.source != lowestCostCandidateRouter) continue;				
+				if (lsa.source != lowestCostCandidateRouter) continue;
+				if(!isPipeLess) {
+					_powerTable.addAll(lsa.power);
+				}
 				for (IRouter newCandidate: lsa.neighboursWithMetric.keySet()){
 					if (tree.containsKey(newCandidate)) {
 						if(treeCost.get(newCandidate).getValue2() && !isPipeLess) {
@@ -255,7 +287,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 						continue;
 					}
 					candidates.put(newCandidate, lowestCostCandidateRouter);
-					candidatesCost.put(newCandidate, new Pair(candidateCost,isPipeLess ||  lsa.neighboursWithMetric.get(newCandidate).getValue2()));
+					candidatesCost.put(newCandidate, new Pair(candidateCost, isPipeLess || lsa.neighboursWithMetric.get(newCandidate).getValue2()));
 				}
 			}
 		}
@@ -397,6 +429,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public List<ILogisticsPowerProvider> getPowerProvider() {
+		/*
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
 		//addSubowerProvider(tree, list);
 		for(IRouter router:_routeTable.keySet()) {
@@ -410,7 +443,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				}
 			}
 		}
-		return list;
+		*/
+		return _powerTable;
+		//return list;
 	}
 	
 	@Override

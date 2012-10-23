@@ -32,7 +32,7 @@ public class ChassiTransportLayer extends TransportLayer{
 			if (o==null || o == Orientations.Unknown) o = Orientations.YPos;
 			
 			IRoutedItem newItem = item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o.reverse());
-			return false;
+			//return false;
 		}
 		
 		return module.sinksItem(item.getItemStack()) != null;	

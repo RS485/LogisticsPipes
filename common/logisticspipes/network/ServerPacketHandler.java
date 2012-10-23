@@ -741,6 +741,7 @@ public class ServerPacketHandler {
 			return;
 		}
 		PacketDispatcher.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) playerEntity);
+		((CoreRoutedPipe)pipe.pipe).refreshRender();
 	}
 
 	private static void onCraftingPipeUpdateRequest(EntityPlayerMP player, PacketCoordinates packet) {

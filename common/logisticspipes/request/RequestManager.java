@@ -11,7 +11,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -124,8 +124,8 @@ public class RequestManager {
 	}
 
 	private static void checkExtras(RequestTree tree, RequestTreeNode treeNode) {
-		LinkedHashMap<LogisticsPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
-		for (LogisticsPromise extraPromise : map.keySet()){
+		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
+		for (LogisticsExtraPromise extraPromise : map.keySet()){
 			if(treeNode.isDone()) {
 				break;
 			}
@@ -159,6 +159,12 @@ public class RequestManager {
 				}
 			}
 			boolean failed = false;
+			if(lastNode != null && lastNode.size() > 0) {
+				for(RequestTreeNode subNode:lastNode) {
+					subNode.revertExtraUsage();
+				}
+			}
+			
 			lastNode = new ArrayList<RequestTreeNode>();
 			lastNodeTemplate = template;
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {

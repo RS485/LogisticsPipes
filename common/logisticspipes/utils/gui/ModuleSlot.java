@@ -23,4 +23,11 @@ public class ModuleSlot extends RestrictedSlot {
 		ItemModuleInformationManager.saveInfotmation(itemStack, _pipe.getLogisticsModule().getSubModule(_moduleIndex), _pipe.worldObj);
         super.func_82870_a(pl, itemStack);
     }
+
+	@Override
+	public boolean isItemValid(ItemStack par1ItemStack) {
+		if(par1ItemStack.getItemDamage() == 0) return false;
+		return super.isItemValid(par1ItemStack);
+	}
+	
 }

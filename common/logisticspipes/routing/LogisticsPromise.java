@@ -15,15 +15,12 @@ public class LogisticsPromise {
 	public ItemIdentifier item;
 	public int numberOfItems;
 	public IProvideItems sender;
-	public boolean extra;
 	
 	public LogisticsPromise copy() {
 		LogisticsPromise result = new LogisticsPromise();
 		result.item = item;
 		result.numberOfItems = numberOfItems;
 		result.sender = sender;
-		result.extra = extra;
 		return result;
 	}
-	
 }

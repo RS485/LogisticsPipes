@@ -207,6 +207,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
 		promise.sender = this;
 		promise.extraSource = tree;
+		promise.provided = true;
 		tree.addPromise(promise);
 	}
 
@@ -241,7 +242,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		if (promise instanceof LogisticsExtraPromise){
+		if (promise instanceof LogisticsExtraPromise && ((LogisticsExtraPromise)promise).provided) {
 			_extras -= promise.numberOfItems;
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
@@ -252,15 +253,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return 0;
 	}
 
-//	@Override
-//	public Router getRouter() {
-//		return router;
-//	}
-
 	@Override
 	public void registerExtras(int count) {
 		_extras += count;
-		if(LogisticsPipes.DisplayRequests)System.out.println(count + " extras registered");
+		if(LogisticsPipes.DisplayRequests) System.out.println(count + " extras registered");
 	}
 
 	@Override

@@ -46,7 +46,11 @@ public class RequestTreeNode {
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
-			extrapromises.add(extra);
+			if(promise instanceof LogisticsExtraPromise) {
+				((LogisticsExtraPromise)promise).extraSource.addExtraPromise(extra);
+			} else {
+				extrapromises.add(extra);
+			}
 		}
 		if(promise.numberOfItems > 0) {
 			promises.add(promise);
@@ -61,7 +65,7 @@ public class RequestTreeNode {
 		}
 	}
 
-	public void revertPromise(LogisticsExtraPromise promise) {
+	public void addExtraPromise(LogisticsExtraPromise promise) {
 		extrapromises.add(promise);
 	}
 	
@@ -73,8 +77,6 @@ public class RequestTreeNode {
 		return result;
 	}
 
-
-
 	public ItemIdentifierStack getStack() {
 		return request;
 	}
@@ -83,8 +85,10 @@ public class RequestTreeNode {
 		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>();
 		for(LogisticsPromise promise:promises) {
 			if(promise instanceof LogisticsExtraPromise) {
-				((LogisticsExtraPromise)promise).extraSource.revertPromise((LogisticsExtraPromise)promise);
-				toRemove.add(promise);
+				if(((LogisticsExtraPromise)promise).extraSource != this) {
+					((LogisticsExtraPromise)promise).extraSource.addExtraPromise((LogisticsExtraPromise)promise);
+					toRemove.add(promise);
+				}
 			}
 		}
 		for(LogisticsPromise promise:toRemove) {

@@ -6,6 +6,7 @@ import logisticspipes.utils.ItemIdentifier;
 
 public class LogisticsExtraPromise extends LogisticsPromise {
 	public RequestTreeNode extraSource;
+	public boolean provided;
 	
 	public LogisticsExtraPromise copy() {
 		LogisticsExtraPromise result = new LogisticsExtraPromise();
@@ -13,6 +14,7 @@ public class LogisticsExtraPromise extends LogisticsPromise {
 		result.numberOfItems = numberOfItems;
 		result.sender = sender;
 		result.extraSource = extraSource;
+		result.provided = provided;
 		return result;
 	}
 }

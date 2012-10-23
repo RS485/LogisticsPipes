@@ -66,6 +66,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		Fast
 	}
 	
+	protected boolean stillNeedReplace = true;
+	
 	private IRouter router;
 	private String routerId;
 	private Object routerIdLock = new Object();
@@ -176,7 +178,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(checkTileEntity(_initialInit)) return;
+		if(checkTileEntity(_initialInit)) {
+			stillNeedReplace = true;
+			return;
+		} else {
+			stillNeedReplace = false;
+		}
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
@@ -480,5 +487,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(this.container instanceof LogisticsTileGenericPipe) {
 			((LogisticsTileGenericPipe)this.container).queueEvent(event, arguments);
 		}
+	}
+	
+	public boolean stillNeedReplace() {
+		return stillNeedReplace;
 	}
 }

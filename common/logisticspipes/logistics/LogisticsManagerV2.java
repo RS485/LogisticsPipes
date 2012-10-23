@@ -50,8 +50,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
 			if (excludeSource) {
 				if(candidateRouter.getId().equals(sourceRouter.getId())) continue;
-				if(jamList.contains(candidateRouter.getId())) continue;
 			}
+			if(jamList.contains(candidateRouter.getId())) continue;
 			
 			ILogisticsModule module = candidateRouter.getLogisticsModule();
 			if (candidateRouter.getPipe() == null || !candidateRouter.getPipe().isEnabled()) continue;

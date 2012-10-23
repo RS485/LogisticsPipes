@@ -8,6 +8,8 @@
 
 package logisticspipes.logisticspipes;
 
+import java.util.UUID;
+
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import buildcraft.api.core.Orientations;
@@ -32,7 +34,7 @@ public class RouteLayer {
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
 		if (item.getDestination() == null){
 			if (item.getSource() != null) return Orientations.Unknown;
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), item.isReRoute());
+			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true);
 		}
 		
 		//If the destination is unknown / unroutable		
@@ -49,9 +51,9 @@ public class RouteLayer {
 		//Is the destination ourself? Deliver it
 		if (item.getDestination().equals(_router.getId())){
 			
-			if (!_transport.stillWantItem(item)){
-				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true));
-			}
+			//if (!_transport.stillWantItem(item)){
+			//	return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true));
+			//}
 			
 			item.setDoNotBuffer(true);
 			Orientations o =_transport.itemArrived(item);

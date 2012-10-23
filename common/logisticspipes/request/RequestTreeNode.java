@@ -55,10 +55,14 @@ public class RequestTreeNode {
 		return false;
 	}
 
-	public void usePromise(LogisticsPromise promise) {
+	public void usePromise(LogisticsExtraPromise promise) {
 		if (extrapromises.contains(promise)){
 			extrapromises.remove(promise);
 		}
+	}
+
+	public void revertPromise(LogisticsExtraPromise promise) {
+		extrapromises.add(promise);
 	}
 	
 	public boolean isDone() {
@@ -79,7 +83,7 @@ public class RequestTreeNode {
 		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>();
 		for(LogisticsPromise promise:promises) {
 			if(promise instanceof LogisticsExtraPromise) {
-				((LogisticsExtraPromise)promise).extraSource.addPromise(promise);
+				((LogisticsExtraPromise)promise).extraSource.revertPromise((LogisticsExtraPromise)promise);
 				toRemove.add(promise);
 			}
 		}

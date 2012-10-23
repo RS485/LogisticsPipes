@@ -54,14 +54,14 @@ public class RequestTree extends RequestTreeNode {
 		return done;
 	}
 	
-	public LinkedHashMap<LogisticsPromise,RequestTreeNode> getExtrasFor(ItemIdentifier item) {
-		LinkedHashMap<LogisticsPromise,RequestTreeNode> extras = new LinkedHashMap<LogisticsPromise,RequestTreeNode>();
+	public LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> getExtrasFor(ItemIdentifier item) {
+		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras = new LinkedHashMap<LogisticsExtraPromise,RequestTreeNode>();
 		checkForExtras(item,this,extras);
 		return extras;
 	}
 
-	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedHashMap<LogisticsPromise,RequestTreeNode> extras) {
-		for(LogisticsPromise extra:node.extrapromises) {
+	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras) {
+		for(LogisticsExtraPromise extra:node.extrapromises) {
 			if(extra.item == item) {
 				extras.put(extra, node);
 			}

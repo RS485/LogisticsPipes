@@ -21,7 +21,8 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.interfaces.ISpecialCCPipe;
+import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
@@ -29,7 +30,8 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;
 import buildcraft.BuildCraftCore;
 
-public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems, ISpecialCCPipe {
+@CCType(name = "LogisticsPipes:Request")
+public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems {
 	
 	private final LinkedList<HashMap<ItemIdentifier, Integer>> _history = new LinkedList<HashMap<ItemIdentifier,Integer>>(); 
 
@@ -83,60 +85,46 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-
-	@Override
-	public String getType() {
-		return "Request";
+	
+	@CCCommand
+	public int makeRequest(Double itemId, Double amount) throws Exception {
+		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
+		if(item == null) throw new Exception("Invalid ItemIdentifierID");
+		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this);
 	}
 
-	@Override
-	public String[] getMethodNames() {
-		return new String[]{"makeRequest", "getAvailableItems", "getCraftableItems"};
+	@CCCommand
+	public void getAvailableItems() {
+		QueuedTasks.queueTask(new Callable() {
+			@Override
+			public Object call() throws Exception {
+				HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet());
+				int i = 0;
+				for(ItemIdentifier item:items.keySet()) {
+					int amount = items.get(item);
+					queueEvent("available_items_return", new Object[]{i, item.getId(), amount});
+					i++;
+				}
+				queueEvent("available_items_return_done", new Object[]{});
+				return null;
+			}
+		});
 	}
 
-	@Override
-	public Object[] callMethod(int method, Object[] arguments) throws Exception {
-		switch(method) {
-		case 0: //makeRequest
-			if(arguments.length != 2) throw new Exception("Wrong Argument count");
-			if(!(arguments[0] instanceof Double) || !(arguments[1] instanceof Double)) throw new Exception("Wrong Arguments");
-			ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
-			if(item == null) throw new Exception("Invalid ItemIdentifierID");
-			return new Object[]{RequestHandler.computerRequest(item.makeStack((int)Math.floor((Double)arguments[1])), this)};
-		case 1: //getAvailableItems
-			if(arguments.length != 0) throw new Exception("Wrong Argument count");
-			QueuedTasks.queueTask(new Callable() {
-				@Override
-				public Object call() throws Exception {
-					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet());
-					int i = 0;
-					for(ItemIdentifier item:items.keySet()) {
-						int amount = items.get(item);
-						queueEvent("available_items_return", new Object[]{i, item.getId(), amount});
-						i++;
-					}
-					queueEvent("available_items_return_done", new Object[]{});
-					return null;
+	@CCCommand
+	public void getCraftableItems() {
+		QueuedTasks.queueTask(new Callable() {
+			@Override
+			public Object call() throws Exception {
+				LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getRouteTable().keySet());
+				int i = 0;
+				for(ItemIdentifier item:items) {
+					queueEvent("craftable_items_return", new Object[]{i, item.getId()});
+					i++;
 				}
-			});
-			return new Object[]{};
-		case 2: //getCraftableItems
-			if(arguments.length != 0) throw new Exception("Wrong Argument count");
-			QueuedTasks.queueTask(new Callable() {
-				@Override
-				public Object call() throws Exception {
-					LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getRouteTable().keySet());
-					int i = 0;
-					for(ItemIdentifier item:items) {
-						queueEvent("craftable_items_return", new Object[]{i, item.getId()});
-						i++;
-					}
-					queueEvent("craftable_items_return_done", new Object[]{});
-					return null;
-				}
-			});
-			return new Object[]{};
-		}
-		return new Object[]{};
+				queueEvent("craftable_items_return_done", new Object[]{});
+				return null;
+			}
+		});
 	}
 }

@@ -35,7 +35,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 
 			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
-			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.input.reverse(), true);
+			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.output.reverse(), true);
 
 			if (!CoreProxy.proxy.isRenderWorld(worldObj))
 				if(added.stackSize >= data.item.getItemStack().stackSize)

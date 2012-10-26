@@ -64,30 +64,34 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if (!_itemBuffer.isEmpty()){
-			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
-			while (iterator.hasNext()){
-				ItemStack next = iterator.next();
-				int currentTimeOut = _itemBuffer.get(next);
-				if (currentTimeOut > 0){
-					_itemBuffer.put(next, currentTimeOut - 1 );
-				} else {
-					EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
-					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
-					routedItem.setDoNotBuffer(true);
-					this.entityEntering(routedItem.getEntityPassiveItem(), Orientations.YPos);
-					iterator.remove();
+		synchronized (_itemBuffer) {
+			if (!_itemBuffer.isEmpty()){
+				Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
+				while (iterator.hasNext()){
+					ItemStack next = iterator.next();
+					int currentTimeOut = _itemBuffer.get(next);
+					if (currentTimeOut > 0){
+						_itemBuffer.put(next, currentTimeOut - 1 );
+					} else {
+						EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
+						IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
+						routedItem.setDoNotBuffer(true);
+						this.entityEntering(routedItem.getEntityPassiveItem(), Orientations.YPos);
+						iterator.remove();
+					}
 				}
 			}
 		}
 	}
 	
 	public void dropBuffer(){
-		Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
-		while (iterator.hasNext()){
-			ItemStack next = iterator.next();
-			SimpleServiceLocator.buildCraftProxy.dropItems(this.container.worldObj, next, this.xCoord, this.yCoord, this.zCoord);
-			iterator.remove();
+		synchronized (_itemBuffer) {
+			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
+			while (iterator.hasNext()){
+				ItemStack next = iterator.next();
+				SimpleServiceLocator.buildCraftProxy.dropItems(this.container.worldObj, next, this.xCoord, this.yCoord, this.zCoord);
+				iterator.remove();
+			}
 		}
 	}
 	
@@ -153,7 +157,9 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			if(MainProxy.isServer()) {
 				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
 			}
-			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
+			synchronized (_itemBuffer) {
+				_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
+			}
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
 			scheduleRemoval(data.item);			
 			return Orientations.XNeg;
@@ -189,12 +195,15 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 
-		_itemBuffer.clear();
-		
-        NBTTagList nbttaglist = nbttagcompound.getTagList("buffercontents");
-        for(int i = 0; i < nbttaglist.tagCount(); i++) {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), _bufferTimeOut);
+
+		synchronized (_itemBuffer) {
+			_itemBuffer.clear();
+			
+	        NBTTagList nbttaglist = nbttagcompound.getTagList("buffercontents");
+	        for(int i = 0; i < nbttaglist.tagCount(); i++) {
+	            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
+	            _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), _bufferTimeOut);
+	        }
         }
 	}
 	
@@ -204,10 +213,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 
 		NBTTagList nbttaglist = new NBTTagList();
         //ItemStack[] offspring = spawn.toArray(new ItemStack[spawn.size()]);
-		for (ItemStack stack : _itemBuffer.keySet()){
-			NBTTagCompound nbttagcompound1 = new NBTTagCompound();
-            stack.writeToNBT(nbttagcompound1);
-            nbttaglist.appendTag(nbttagcompound1);
+
+		synchronized (_itemBuffer) {
+			for (ItemStack stack : _itemBuffer.keySet()){
+				NBTTagCompound nbttagcompound1 = new NBTTagCompound();
+	            stack.writeToNBT(nbttagcompound1);
+	            nbttaglist.appendTag(nbttagcompound1);
+			}
 		}
         nbttagcompound.setTag("buffercontents", nbttaglist);
 		

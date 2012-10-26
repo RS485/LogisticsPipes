@@ -541,7 +541,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	@CCCommand
-	public int getItemIdentifierIDFor(Double itemID, double itemDamage) {
-		return ItemIdentifier.get((int)Math.floor(itemID), (int)itemDamage, null).getId();
+	public int getItemIdentifierIDFor(Double itemID, Double itemDamage) {
+		return ItemIdentifier.get((int)Math.floor(itemID), (int)Math.floor(itemDamage), null).getId();
+	}
+
+	@CCCommand
+	public String getItemName(Double itemId) throws Exception {
+		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
+		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
+		return itemd.getFriendlyName();
 	}
 }

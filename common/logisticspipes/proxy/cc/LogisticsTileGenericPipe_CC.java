@@ -55,6 +55,11 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			while(true) {
 				for(Method method:clazz.getDeclaredMethods()) {
 					if(!method.isAnnotationPresent(CCCommand.class)) continue;
+					for(Class param:method.getParameterTypes()) {
+						if(!param.getName().startsWith("java")) {
+							throw new InternalError("Internel Excption (Code: 2)");
+						}
+					}
 					commandMap.put(i++, method.getName());
 					commands.add(method);
 				}
@@ -101,18 +106,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	public String[] getMethodNames() {
 		init();
 		LinkedList<String> list = new LinkedList<String>();
-		/*
-		if(pipe instanceof ISpecialCCPipe) {
-			list.addAll(Arrays.asList(((ISpecialCCPipe)pipe).getMethodNames()));
-		}
-		list.add("getRouterId");
-		list.add("setTurtleConnect");
-		list.add("getTurtleConnect");
-		list.add("getItemID");
-		list.add("getItemDamage");
-		list.add("getNBTTagCompound");
-		list.add("getItemIdentifierIDFor");
-		*/
+		list.add("help");
 		for(int i=0;i<commandMap.size();i++) {
 			list.add(commandMap.get(i));
 		}
@@ -124,6 +118,29 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		if(getCPipe() == null) throw new InternalError("Pipe in not a LogisticsPipe");
 		init();
 		lastPC = computer;
+		if(methodId == 0) {
+			StringBuilder help = new StringBuilder();
+			help.append("PipeType: ");
+			help.append(typeName);
+			help.append("\n");
+			help.append("Commads: ");
+			for(Method method:commands) {
+				help.append("\n");
+				help.append(method.getName());
+				help.append("(");
+				boolean a = false;
+				for(Class clazz:method.getParameterTypes()) {
+					if(a) {
+						help.append(", ");
+					}
+					help.append(clazz.getSimpleName());
+					a = true;
+				}
+				help.append(")");
+			}
+			return new Object[]{help.toString()};
+		}
+		methodId--;
 		String name = commandMap.get(methodId);
 		
 		Method match = null;

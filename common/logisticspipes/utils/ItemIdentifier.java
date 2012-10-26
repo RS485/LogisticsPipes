@@ -159,7 +159,6 @@ public final class ItemIdentifier {
 			}
 		}
 		return name;
-
 	}
 	
 	public String getFriendlyName() {

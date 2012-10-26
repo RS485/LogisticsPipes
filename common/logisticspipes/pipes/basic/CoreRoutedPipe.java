@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -35,11 +36,14 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
@@ -59,6 +63,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
+@CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IChassiePowerProvider {
 
 	public enum ItemSendMode {
@@ -491,5 +496,59 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public boolean stillNeedReplace() {
 		return stillNeedReplace;
+	}
+	
+	/* --- CCCommands --- */
+	@CCCommand
+	public String getRouterId() {
+		return getRouter().getId().toString();
+	}
+
+	@CCCommand
+	public void setTurtleConnect(Boolean flag) {
+		if(this.container instanceof LogisticsTileGenericPipe) {
+			((LogisticsTileGenericPipe)this.container).setTurtrleConnect(flag);
+		}
+	}
+
+	@CCCommand
+	public boolean getTurtleConnect() {
+		if(this.container instanceof LogisticsTileGenericPipe) {
+			return ((LogisticsTileGenericPipe)this.container).getTurtrleConnect();
+		}
+		return false;
+	}
+
+	@CCCommand
+	public int getItemID(Double itemId) throws Exception {
+		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
+		if(item == null) throw new Exception("Invalid ItemIdentifierID");
+		return item.itemID;
+	}
+
+	@CCCommand
+	public int getItemDamage(Double itemId) throws Exception {
+		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
+		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
+		return itemd.itemDamage;
+	}
+
+	@CCCommand
+	public Map<Object,Object> getNBTTagCompound(Double itemId) throws Exception {
+		ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor(itemId));
+		if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
+		return itemn.getNBTTagCompoundAsMap();
+	}
+
+	@CCCommand
+	public int getItemIdentifierIDFor(Double itemID, Double itemDamage) {
+		return ItemIdentifier.get((int)Math.floor(itemID), (int)Math.floor(itemDamage), null).getId();
+	}
+
+	@CCCommand
+	public String getItemName(Double itemId) throws Exception {
+		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
+		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
+		return itemd.getFriendlyName();
 	}
 }

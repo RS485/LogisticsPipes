@@ -88,8 +88,8 @@ public class CraftingSignCreator extends LogisticsItem {
 						Pipe secondpipe = ((TileGenericPipe)secondTile).pipe;
 						if(secondpipe != null) {
 							if(secondpipe instanceof PipeItemsCraftingLogistics) {
-								double disX = x - player.posX;
-								double disZ = z - player.posZ;
+								double disX = x + 0.5 - player.posX;
+								double disZ = z + 0.5 - player.posZ;
 								int secondSignX = x;
 								int secondSignY = y;
 								int secondSignZ = z;
@@ -135,12 +135,12 @@ public class CraftingSignCreator extends LogisticsItem {
 										}
 									}
 								}
-								this.onItemUseFirst(itemStack, player ,world, pipechecksignX, pipechecksignY, pipechecksignZ, side + 10);
+								this.onItemUseFirst(itemStack, player ,world, pipechecksignX, pipechecksignY, pipechecksignZ, side + 10, hitX, hitY, hitZ);
 							}
 						}	
 					} else if(selfcalled) {
-						double disX = x - player.posX;
-						double disZ = z - player.posZ;
+						double disX = x + 0.5 - player.posX;
+						double disZ = z + 0.5 - player.posZ;
 						int secondSignX = x;
 						int secondSignY = y;
 						int secondSignZ = z;

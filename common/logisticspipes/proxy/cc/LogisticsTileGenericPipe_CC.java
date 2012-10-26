@@ -1,15 +1,17 @@
 package logisticspipes.proxy.cc;
 
-import java.util.Arrays;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.cc.interfaces.ISpecialCCPipe;
+import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.NBTTagCompound;
@@ -23,6 +25,58 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	private boolean turtleConnect[] = new boolean[7];
 	
 	private HashMap<IComputerAccess, Orientations> connections = new HashMap<IComputerAccess, Orientations>();
+	
+	private boolean init = false;
+	private HashMap<Integer, String> commandMap = new HashMap<Integer, String>();
+	private List<Method> commands = new ArrayList<Method>();
+	private String typeName = "";
+	
+	private IComputerAccess lastPC = null;
+	
+	private CCType getType(Class clazz) {
+		while(true) {
+			CCType type = (CCType) clazz.getAnnotation(CCType.class);
+			if(type != null) return type;
+			if(clazz.getSuperclass() == Object.class) return null;
+			clazz = clazz.getSuperclass();
+		}
+	}
+	
+	private void init() {
+		if(!init) {
+			init = true;
+			CoreRoutedPipe pipe = getCPipe();
+			if(pipe == null) return;
+			CCType type = getType(pipe.getClass());
+			if(type == null) return;
+			typeName = type.name();
+			int i = 0;
+			Class clazz = pipe.getClass();
+			while(true) {
+				for(Method method:clazz.getDeclaredMethods()) {
+					if(!method.isAnnotationPresent(CCCommand.class)) continue;
+					for(Class param:method.getParameterTypes()) {
+						if(!param.getName().startsWith("java")) {
+							throw new InternalError("Internel Excption (Code: 2)");
+						}
+					}
+					commandMap.put(i++, method.getName());
+					commands.add(method);
+				}
+				if(clazz.getSuperclass() == Object.class) break;
+				clazz = clazz.getSuperclass();
+			}
+		}
+	}
+	
+	private boolean argumentsMatch(Method method, Object[] arguments) {
+		int i=0;
+		for(Class args:method.getParameterTypes()) {
+			if(!arguments[i].getClass().equals(args)) return false;
+			i++;
+		}
+		return true;
+	}
 	
 	@Override
 	public boolean isPipeConnected(TileEntity with) {
@@ -39,73 +93,103 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	
 	@Override
 	public String getType() {
+		/*
 		if(pipe instanceof ISpecialCCPipe) {
 			return "LogisticsPipes:" + ((ISpecialCCPipe)pipe).getType();
 		}
 		return "LogisticsPipes:Normal";
+		*/
+		return typeName;
 	}
-
+	
 	@Override
 	public String[] getMethodNames() {
+		init();
 		LinkedList<String> list = new LinkedList<String>();
-		if(pipe instanceof ISpecialCCPipe) {
-			list.addAll(Arrays.asList(((ISpecialCCPipe)pipe).getMethodNames()));
+		list.add("help");
+		for(int i=0;i<commandMap.size();i++) {
+			list.add(commandMap.get(i));
 		}
-		list.add("getRouterId");
-		list.add("setTurtleConnect");
-		list.add("getTurtleConnect");
-		list.add("getItemID");
-		list.add("getItemDamage");
-		list.add("getNBTTagCompound");
-		list.add("getItemIdentifierIDFor");
 		return list.toArray(new String[list.size()]);
 	}
 
 	@Override
-	public Object[] callMethod(IComputerAccess computer, int method, Object[] arguments) throws Exception {
+	public Object[] callMethod(IComputerAccess computer, int methodId, Object[] arguments) throws Exception {
 		if(getCPipe() == null) throw new InternalError("Pipe in not a LogisticsPipe");
-		if(pipe instanceof ISpecialCCPipe) {
-			if(((ISpecialCCPipe)pipe).getMethodNames().length > method) {
-				return ((ISpecialCCPipe)pipe).callMethod(method, arguments);
-			} else {
-				method -= ((ISpecialCCPipe)pipe).getMethodNames().length;
+		init();
+		lastPC = computer;
+		if(methodId == 0) {
+			StringBuilder help = new StringBuilder();
+			help.append("PipeType: ");
+			help.append(typeName);
+			help.append("\n");
+			help.append("Commads: ");
+			for(Method method:commands) {
+				help.append("\n");
+				help.append(method.getName());
+				help.append("(");
+				boolean a = false;
+				for(Class clazz:method.getParameterTypes()) {
+					if(a) {
+						help.append(", ");
+					}
+					help.append(clazz.getSimpleName());
+					a = true;
+				}
+				help.append(")");
 			}
+			return new Object[]{help.toString()};
 		}
-		switch(method) {
-		case 0: //getRouterId
-			return new Object[]{getCPipe().getRouter().getId().toString()};
-		case 1: //setTurtleConnect
-			if(arguments.length != 1) throw new Exception("Wrong Arguments");
-			if(!(arguments[0] instanceof Boolean)) throw new Exception("Wrong Arguments");
-			turtleConnect[connections.get(computer).ordinal()] = ((Boolean)arguments[0]).booleanValue();
-			scheduleNeighborChange();
-			return null;
-		case 2: // getTurtleConnect
-			return new Object[]{turtleConnect[connections.get(computer).ordinal()]};
-		case 3: // getItemID
-			if(arguments.length != 1) throw new Exception("Wrong Argument count");
-			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
-			ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
-			if(item == null) throw new Exception("Invalid ItemIdentifierID");
-			return new Object[]{item.itemID};
-		case 4: // getItemDamage
-			if(arguments.length != 1) throw new Exception("Wrong Argument count");
-			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
-			ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
-			if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
-			return new Object[]{itemd.itemDamage};
-		case 5: // getNBTTagCompound
-			if(arguments.length != 1) throw new Exception("Wrong Argument count");
-			if(!(arguments[0] instanceof Double)) throw new Exception("Wrong Arguments");
-			ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor((Double)arguments[0]));
-			if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
-			return new Object[]{itemn.getNBTTagCompoundAsMap()};
-		case 6: // getItemIdentifierIDFor
-			if(arguments.length != 2) throw new Exception("Wrong Argument count");
-			if(!(arguments[0] instanceof Double) || !(arguments[1] instanceof Double)) throw new Exception("Wrong Arguments");
-			return new Object[]{ItemIdentifier.get((int)Math.floor((Double)arguments[0]), (int)Math.floor((Double)arguments[1]), null).getId()};
-		default:return null;
+		methodId--;
+		String name = commandMap.get(methodId);
+		
+		Method match = null;
+		
+		for(Method method:commands) {
+			if(!method.getName().equalsIgnoreCase(name)) continue;
+			if(!argumentsMatch(method, arguments)) continue;
+			match = method;
+			break;
 		}
+		
+		if(match == null) {
+			StringBuilder error = new StringBuilder();
+			error.append("No such method.");
+			boolean handled = false;
+			for(Method method:commands) {
+				if(!method.getName().equalsIgnoreCase(name)) continue;
+				if(handled) {
+					error.append("\n");
+				}
+				handled = true;
+				error.append(method.getName());
+				error.append("(");
+				boolean a = false;
+				for(Class clazz:method.getParameterTypes()) {
+					if(a) {
+						error.append(", ");
+					}
+					error.append(clazz.getName());
+					a = true;
+				}
+				error.append(")");
+			}
+			if(!handled) {
+				error = new StringBuilder();
+				error.append("Internel Excption (Code: 1, ");
+				error.append(name);
+				error.append(")");
+			}
+			throw new UnsupportedOperationException(error.toString());
+		}
+		
+		Object result = match.invoke(pipe, arguments);
+		if(!(result instanceof Object[])) {
+			if(result == null) return null;
+			result = new Object[]{result};
+		}
+		
+		return (Object[]) result;
 	}
 
 	@Override
@@ -164,5 +248,16 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		for(IComputerAccess computer: connections.keySet()) {
 			computer.queueEvent(event, arguments);
 		}
+	}
+	
+	@Override
+	public void setTurtrleConnect(boolean flag) {
+		turtleConnect[connections.get(lastPC).ordinal()] = flag;
+		scheduleNeighborChange();
+	}
+
+	@Override
+	public boolean getTurtrleConnect() {
+		return turtleConnect[connections.get(lastPC).ordinal()];
 	}
 }

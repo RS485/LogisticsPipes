@@ -36,7 +36,7 @@
     <property name="mcp.version"         value="7.19" />
     <property name="forge.version"       value="6.0.1.343" />
     <property name="bc.version"          value="fbd0fa7" />
-    <property name="forestry.version"    value="1.5.0.0" />
+    <property name="forestry.version"    value="1.5.0.1" />
     <property name="ic2.version"         value="1.108.52-lf" />
     <property name="cc.version"          value="1.41" />
     <property name="lp.version"          value="0.6.0" />

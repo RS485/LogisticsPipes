@@ -33,15 +33,15 @@
     <property name="downloadserver.dir"  value="rs485/" />
     <property name="downloadserver.full" value="${downloadserver}/${downloadserver.dir}" />
           
-    <property name="mcp.version"         value="72" />
-    <property name="forge.version"       value="4.2.5.299" />
-    <property name="bc.version"          value="3.2.0.pre8b" />
+    <property name="mcp.version"         value="7.19" />
+    <property name="forge.version"       value="6.0.1.343" />
+    <property name="bc.version"          value="fbd0fa7" />
     <property name="forestry.version"    value="1.5.0.0" />
-    <property name="ic2.version"         value="1.106" />
+    <property name="ic2.version"         value="1.108.52-lf" />
     <property name="cc.version"          value="1.41" />
-    <property name="lp.version"          value="0.5.1" />
+    <property name="lp.version"          value="0.6.0" />
     <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-    <property name="lp.version.full"     value="${lp.version}.pre11" />
+    <property name="lp.version.full"     value="${lp.version}.pre1" />
     
     <echo message="Starting build for ${lp.version.full}" />
 	

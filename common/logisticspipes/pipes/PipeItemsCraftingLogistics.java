@@ -137,7 +137,11 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		
 		LinkedList<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ){
-			_orderManager.sendFailed();
+			if (_orderManager.hasOrders()) {
+				_orderManager.sendFailed();
+			} else {
+				_extras = 0;
+			}
 			return;
 		}
 		

@@ -46,7 +46,11 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 		
 		LinkedList<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ) {
-			_orderManager.sendFailed();
+			if (_orderManager.hasOrders()) {
+				_orderManager.sendFailed();
+			} else {
+				_extras = 0;
+			}
 			return;
 		}
 		

@@ -403,7 +403,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -416,7 +416,8 @@ public class ServerPacketHandler {
 	}
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		int dimension = (packet.integer - (packet.integer % 10)) / 10;
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -426,7 +427,7 @@ public class ServerPacketHandler {
 		}
 
 		RequestHandler.DisplayOptions option;
-		switch (packet.integer) {
+		switch (packet.integer % 10) {
 			case 0:
 				option = RequestHandler.DisplayOptions.Both;
 				break;
@@ -440,7 +441,6 @@ public class ServerPacketHandler {
 				option = RequestHandler.DisplayOptions.Both;
 				break;
 		}
-
 		RequestHandler.refresh(player, (CoreRoutedPipe) pipe.pipe, option);
 	}
 

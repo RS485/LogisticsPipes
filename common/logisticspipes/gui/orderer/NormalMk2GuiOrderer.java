@@ -4,6 +4,7 @@ import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
@@ -19,11 +20,9 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	private SmallGuiButton Macrobutton;
 	
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
-		super(RequestPipeMK2, entityPlayer);
+		super(RequestPipeMK2.xCoord, RequestPipeMK2.yCoord, RequestPipeMK2.zCoord, MainProxy.getDimensionForWorld(RequestPipeMK2.worldObj), entityPlayer);
 		pipe = RequestPipeMK2;
-		//if(APIProxy.isRemote()) {
 		PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
-		//}
 	}
 	
 	@Override

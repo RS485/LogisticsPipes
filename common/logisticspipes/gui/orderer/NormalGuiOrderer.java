@@ -26,8 +26,8 @@ public class NormalGuiOrderer extends GuiOrderer {
 	
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	
-	public NormalGuiOrderer(IRequestItems itemRequester, EntityPlayer entityPlayer) {
-		super(itemRequester, entityPlayer);
+	public NormalGuiOrderer(int x, int y, int z, int dim, EntityPlayer entityPlayer) {
+		super(x, y, z, dim, entityPlayer);
 		refreshItems();
 	}
 	
@@ -37,43 +37,6 @@ public class NormalGuiOrderer extends GuiOrderer {
 	}
 	
 	protected void refreshItems(){
-		/*if(!CoreProxy.isRemote()) {
-			if (displayOptions == DisplayOptions.SupplyOnly || displayOptions == DisplayOptions.Both){
-				_availableItems = mod_LogisticsPipes.logisticsManager.getAvailableItems(_itemRequester.getRouter().getRouteTable().keySet());
-			} else {
-				_availableItems = new HashMap<ItemIdentifier, Integer>();
-			}
-			if (displayOptions == DisplayOptions.CraftOnly || displayOptions == DisplayOptions.Both){
-				_craftableItems = mod_LogisticsPipes.logisticsManager.getCraftableItems(_itemRequester.getRouter().getRouteTable().keySet());
-			} else {
-				_craftableItems = new LinkedList<ItemIdentifier>();
-			}
-			_allItems.clear();
-			
-			outer:
-			for (ItemIdentifier item : _availableItems.keySet()){
-				for (int i = 0; i <_allItems.size(); i++){
-					if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
-						_allItems.add(i, item.makeStack(_availableItems.get(item)));
-						continue outer;
-					}
-				}
-				_allItems.addLast(item.makeStack(_availableItems.get(item)));
-			}
-			
-			outer:
-			for (ItemIdentifier item : _craftableItems){
-				if (_availableItems.containsKey(item)) continue;
-				for (int i = 0; i <_allItems.size(); i++){
-					if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
-						_allItems.add(i, item.makeStack(0));
-						continue outer;
-					}
-				}
-				_allItems.addLast(item.makeStack(0));
-			}
-		} else {*/
-			CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
 			int integer;
 			switch(displayOptions) {
 			case Both:
@@ -88,8 +51,8 @@ public class NormalGuiOrderer extends GuiOrderer {
 			default: 
 				integer = 3;
 			}
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,integer).getPacket());
-		//}
+			integer += (dimension * 10);
+			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
 	}
 
 	protected void actionPerformed(GuiButton guibutton) {

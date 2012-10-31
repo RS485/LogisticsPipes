@@ -15,17 +15,19 @@ public class PacketRequestSubmit extends PacketCoordinates {
 	public int dataValue;
 	public int amount;
 	public NBTTagCompound tag;
+	public int dimension;
 
 	public PacketRequestSubmit() {
 		super();
 	}
 
-	public PacketRequestSubmit(int x, int y, int z, ItemIdentifier selectedItem, int amount) {
+	public PacketRequestSubmit(int x, int y, int z, int dim, ItemIdentifier selectedItem, int amount) {
 		super(NetworkConstants.REQUEST_SUBMIT, x, y, z);
 		itemID = selectedItem.itemID;
 		dataValue = selectedItem.itemDamage;
 		tag = selectedItem.tag;
 		this.amount = amount;
+		this.dimension = dim;
 	}
 
 	@Override
@@ -35,6 +37,7 @@ public class PacketRequestSubmit extends PacketCoordinates {
 		data.writeInt(dataValue);
 		data.writeInt(amount);
 		SendNBTTagCompound.writeNBTTagCompound(tag, data);
+		data.writeInt(dimension);
 	}
 
 	@Override
@@ -44,5 +47,6 @@ public class PacketRequestSubmit extends PacketCoordinates {
 		dataValue = data.readInt();
 		amount = data.readInt();
 		tag = SendNBTTagCompound.readNBTTagCompound(data);
+		dimension = data.readInt();
 	}
 }

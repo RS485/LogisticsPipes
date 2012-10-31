@@ -13,6 +13,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftSilicon;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;
@@ -294,6 +295,11 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "rBr", "CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
 		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { "CrC", "rBr", "CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('r'), Item.redstone, 
@@ -302,6 +308,11 @@ public class ForestryProxy implements IForestryProxy {
 		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { "CGC", "rBr", "CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { "CGC", "rBr", "CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
 		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { "CrC", "rBr", "CrC", 

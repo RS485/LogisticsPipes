@@ -42,7 +42,7 @@ import cpw.mods.fml.common.network.PacketDispatcher;
 
 public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch {
 
-	protected final IRequestItems _itemRequester;
+	//protected final IRequestItems _itemRequester;
 	public final EntityPlayer _entityPlayer;
 	protected ItemIdentifier selectedItem = null;
 	public final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
@@ -69,10 +69,18 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	protected Object[] tooltip = null;
 	
 	protected boolean listbyserver = false;
+
+	protected final int xCoord;
+	protected final int yCoord;
+	protected final int zCoord;
+	protected final int dimension;
 	
-	public GuiOrderer(IRequestItems itemRequester, EntityPlayer entityPlayer) {
+	public GuiOrderer(int x, int y, int z, int dim, EntityPlayer entityPlayer) {
 		super(220,240,0,0);
-		_itemRequester = itemRequester;
+		xCoord = x;
+		yCoord = y;
+		zCoord = z;
+		dimension = dim;
 		_entityPlayer = entityPlayer;
 	}
 
@@ -439,8 +447,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				}
 				refreshItems();
 			} else {*/
-				CoreRoutedPipe requestPipe = (CoreRoutedPipe)_itemRequester;
-				PacketDispatcher.sendPacketToServer(new PacketRequestSubmit(requestPipe.xCoord,requestPipe.yCoord,requestPipe.zCoord,selectedItem,requestCount).getPacket());
+				PacketDispatcher.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem,requestCount).getPacket());
 				refreshItems();
 			//}
 		} else if (guibutton.id == 1){

@@ -53,6 +53,7 @@ import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiScreen;
@@ -536,8 +537,7 @@ public class GuiHandler implements IGuiHandler {
 				return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRouter());
 
 			case GuiIDs.GUI_Normal_Orderer_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
-				return new NormalGuiOrderer(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe(), player);
+				return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);
 				
 			case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;

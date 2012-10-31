@@ -16,25 +16,20 @@ import dan200.computer.api.IComputerAccess;
 
 public class CCProxy implements ICCProxy {
 
-	private Field Turtle_m_computer;
 	private Field Computer_m_computer;
 	private Field Net_m_computer;
 	private Field m_apis;
 	private Field m_peripherals;
 	private Method parseSide;
-	private Class<?> turtleClass;
 	private Class<?> computerClass;
 	private Class<?> peripheralAPIClass;
 	private Field target;
 	
-	private boolean valid = false;
+	protected boolean valid = false;
 	
 	public CCProxy() {
 		try {
-			turtleClass = Class.forName("dan200.turtle.shared.TileEntityTurtle");
 			computerClass = Class.forName("dan200.computer.shared.TileEntityComputer");
-			Turtle_m_computer = turtleClass.getDeclaredField("m_computer");
-			Turtle_m_computer.setAccessible(true);
 			Computer_m_computer = computerClass.getDeclaredField("m_computer");
 			Computer_m_computer.setAccessible(true);
 			Net_m_computer = Class.forName("dan200.computer.shared.NetworkedComputerHelper").getDeclaredField("m_computer");
@@ -59,8 +54,7 @@ public class CCProxy implements ICCProxy {
 	
 	@Override
 	public boolean isTurtle(TileEntity tile) {
-		if(!valid) return false;
-		return turtleClass.isAssignableFrom(tile.getClass());
+		return false;
 	}
 	
 	@Override
@@ -73,7 +67,14 @@ public class CCProxy implements ICCProxy {
 	public boolean isCC() {
 		return valid;
 	}
-
+	
+	protected Object get_local_tile_m_computer(TileEntity tile) throws IllegalArgumentException, IllegalAccessException {
+		if(computerClass.isAssignableFrom(tile.getClass())) {
+			return Computer_m_computer.get(tile);
+		}
+		return null;
+	}
+	
 	@Override
 	public Orientations getOrientation(IComputerAccess computer, String computerSide, TileEntity pipe) {
 		if(!valid) return Orientations.Unknown;
@@ -81,12 +82,7 @@ public class CCProxy implements ICCProxy {
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
 		for(AdjacentTile aTile: adjacent) {
 			try {
-				Object local_tile_m_computer = null;
-				if(turtleClass.isAssignableFrom(aTile.tile.getClass())) {
-					local_tile_m_computer = Turtle_m_computer.get(aTile.tile);
-				} else if(computerClass.isAssignableFrom(aTile.tile.getClass())) {
-					local_tile_m_computer = Computer_m_computer.get(aTile.tile);
-				}
+				Object local_tile_m_computer = get_local_tile_m_computer(aTile.tile);
 				if(local_tile_m_computer != null) {
 					Object local_net_m_omputer = Net_m_computer.get(local_tile_m_computer);
 					ArrayList local_m_apis = (ArrayList) m_apis.get(local_net_m_omputer);

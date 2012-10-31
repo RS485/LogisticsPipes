@@ -192,15 +192,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
-			if(getItemSendMode() == ItemSendMode.Normal) {
+			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
 				Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
-				for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
-					if (!_sendQueue.isEmpty()){
-						itemToSend = _sendQueue.getFirst();
-						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
-						_sendQueue.removeFirst();
+				if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+					for(int i=0;i < 16 && !_sendQueue.isEmpty() && _sendQueue.getFirst().getValue3() == ItemSendMode.Fast;i++) {
+						if (!_sendQueue.isEmpty()){
+							itemToSend = _sendQueue.getFirst();
+							sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
+							_sendQueue.removeFirst();
+						}
 					}
 				}
 				sendQueueChanged();

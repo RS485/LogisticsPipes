@@ -10,6 +10,8 @@ package logisticspipes.transport;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.packets.PacketPipeLogisticsContent;
@@ -17,7 +19,6 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
-import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -65,6 +66,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	public void updateEntity() {
 		super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
+			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
 			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
 			while (iterator.hasNext()){
 				ItemStack next = iterator.next();
@@ -75,9 +77,12 @@ public class PipeTransportLogistics extends PipeTransportItems {
 					EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
 					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
 					routedItem.setDoNotBuffer(true);
-					this.entityEntering(routedItem.getEntityPassiveItem(), Orientations.YPos);
+					toAdd.add(routedItem);
 					iterator.remove();
 				}
+			}
+			for(IRoutedItem item:toAdd) {
+				this.entityEntering(item.getEntityPassiveItem(), Orientations.YPos);
 			}
 		}
 	}
@@ -189,6 +194,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
 
+
 		_itemBuffer.clear();
 		
         NBTTagList nbttaglist = nbttagcompound.getTagList("buffercontents");
@@ -204,6 +210,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 
 		NBTTagList nbttaglist = new NBTTagList();
         //ItemStack[] offspring = spawn.toArray(new ItemStack[spawn.size()]);
+
 		for (ItemStack stack : _itemBuffer.keySet()){
 			NBTTagCompound nbttagcompound1 = new NBTTagCompound();
             stack.writeToNBT(nbttagcompound1);

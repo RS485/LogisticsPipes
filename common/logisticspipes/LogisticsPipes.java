@@ -51,6 +51,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.CCProxy;
+import logisticspipes.proxy.cc.CCTurtleProxy;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
@@ -255,9 +256,14 @@ public class LogisticsPipes {
 			});
 			System.out.println("Loaded IC2 DummyProxy");
 		}
-		if(Loader.isModLoaded("ComputerCraft") && Loader.isModLoaded("CCTurtle")) {
-			SimpleServiceLocator.setCCProxy(new CCProxy());
-			System.out.println("Loaded CCProxy");
+		if(Loader.isModLoaded("ComputerCraft")) {
+			if(Loader.isModLoaded("CCTurtle")) {
+				SimpleServiceLocator.setCCProxy(new CCTurtleProxy());
+				System.out.println("Loaded CCTurtleProxy");
+			} else {
+				SimpleServiceLocator.setCCProxy(new CCProxy());
+				System.out.println("Loaded CCProxy");
+			}
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setCCProxy(new ICCProxy() {

@@ -236,6 +236,7 @@ public class Configs {
 		LOGISTICSPIPE_CHASSI4_ID			= Integer.parseInt(logisticPipeChassi4IdProperty.value);
 		LOGISTICSPIPE_CHASSI5_ID			= Integer.parseInt(logisticPipeChassi5IdProperty.value);
 		LOGISTICSPIPE_CRAFTING_MK2_ID		= Integer.parseInt(logisticPipeCraftingMK2IdProperty.value);
+		LOGISTICSPIPE_CRAFTING_MK3_ID       = Integer.parseInt(logisticPipeCraftingMK3IdProperty.value);
 		LOGISTICSPIPE_REQUEST_MK2_ID		= Integer.parseInt(logisticPipeRequesterMK2IdProperty.value);
 		LOGISTICSPIPE_PROVIDER_MK2_ID		= Integer.parseInt(logisticPipeProviderMK2IdProperty.value);
 		LOGISTICSPIPE_REMOTE_ORDERER_ID		= Integer.parseInt(logisticPipeRemoteOrdererIdProperty.value);

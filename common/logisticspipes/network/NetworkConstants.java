@@ -80,4 +80,5 @@ public class NetworkConstants {
 	public static final int STAT_UPDATE = 74;
 	public static final int ACTIVATNBTDEBUG = 75;
 	public static final int HUD_SETTING_SET = 76;
+	public static final int REQUEST_GUI_DIMENSION = 77;
 }

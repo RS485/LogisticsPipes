@@ -338,8 +338,7 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addRestrictedHotbarForPlayerInventory(8, 160);
 				return dummy;
 				
-			default:
-				return null;
+			default:break;
 			}
 		} else {
 			if(pipe == null) return null;
@@ -441,11 +440,11 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
 				PacketDispatcher.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,slot,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getPacket(), (Player)player);
 				return new DummyContainer(player.inventory, null);
-			    
-			default:
-			    return null;
+				
+			default:break;
 			}
 		}
+		return null;
 	}
 
 	@Override
@@ -459,7 +458,6 @@ public class GuiHandler implements IGuiHandler {
 			pipe = (TileGenericPipe)tile;
 		}
 
-		
 		if(ID > 10000) {
 			ID -= 10000;
 			if(ModLoader.getMinecraftInstance().currentScreen instanceof GuiWithPreviousGuiContainer) {
@@ -572,8 +570,7 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_HUD_Settings:
 				return new GuiHUDSettings(player, x);
 				
-			default:
-				return null;
+			default:break;
 			}
 		} else {
 			if(pipe == null) return null;
@@ -615,11 +612,11 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
 				return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, slot + 1);
-				
-			default:
-				return null;
+			
+			default:break;
 			}
 		}
+		return null;
 	}
 
 }

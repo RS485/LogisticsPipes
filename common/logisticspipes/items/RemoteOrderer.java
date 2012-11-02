@@ -1,10 +1,13 @@
 package logisticspipes.items;
 
+import java.nio.channels.NetworkChannel;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.CreativeTabs;
@@ -17,6 +20,9 @@ import net.minecraft.src.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
+
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
@@ -70,6 +76,7 @@ public class RemoteOrderer extends Item {
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
 		if(pipe != null) {
 			if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
+				PacketDispatcher.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
 				par3EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 			}
 			return par1ItemStack.copy();

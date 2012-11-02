@@ -36,7 +36,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 		controlList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
 	}
 	
-	protected void refreshItems(){
+	public void refreshItems(){
 			int integer;
 			switch(displayOptions) {
 			case Both:

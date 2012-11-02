@@ -6,13 +6,14 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import dan200.computer.api.IComputerAccess;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
-import dan200.computer.api.IComputerAccess;
 
 public class CCProxy implements ICCProxy {
 
@@ -76,8 +77,10 @@ public class CCProxy implements ICCProxy {
 	}
 	
 	@Override
-	public Orientations getOrientation(IComputerAccess computer, String computerSide, TileEntity pipe) {
+	public Orientations getOrientation(Object cObject, String computerSide, TileEntity pipe) {
 		if(!valid) return Orientations.Unknown;
+		if(!(cObject instanceof IComputerAccess)) return Orientations.Unknown;
+		IComputerAccess computer = (IComputerAccess) cObject;
 		WorldUtil world = new WorldUtil(pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
 		for(AdjacentTile aTile: adjacent) {

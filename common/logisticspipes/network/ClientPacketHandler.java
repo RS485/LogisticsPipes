@@ -19,6 +19,7 @@ import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.items.PacketInteger;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -260,6 +261,11 @@ public class ClientPacketHandler {
 					break;
 				case NetworkConstants.ACTIVATNBTDEBUG:
 					enableNBTDEBUG();
+					break;
+				case NetworkConstants.REQUEST_GUI_DIMENSION:
+					final PacketInteger packetAq = new PacketInteger();
+					packetAq.readData(data);
+					onRequestDimension(packetAq);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -714,6 +720,16 @@ public class ClientPacketHandler {
 			if(LogisticsPipes.DEBUG) {
 				e1.printStackTrace();
 			}
+		}
+	}
+
+	private static void onRequestDimension(PacketInteger packet) {
+		if(FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).dimension = packet.value;
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).refreshItems();
+		} else {
+			GuiOrderer.dimensioncache = packet.value;
+			GuiOrderer.cachetime = System.currentTimeMillis();
 		}
 	}
 	

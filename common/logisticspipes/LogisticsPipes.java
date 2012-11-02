@@ -102,7 +102,6 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
-import dan200.computer.api.IComputerAccess;
 
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -270,7 +269,7 @@ public class LogisticsPipes {
 				@Override public boolean isTurtle(TileEntity tile) {return false;}
 				@Override public boolean isComputer(TileEntity tile) {return false;}
 				@Override public boolean isCC() {return false;}
-				@Override public Orientations getOrientation(IComputerAccess computer, String computerSide, TileEntity tile) {return Orientations.Unknown;}
+				@Override public Orientations getOrientation(Object computer, String computerSide, TileEntity tile) {return Orientations.Unknown;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 			});
 			System.out.println("Loaded CC DummyProxy");

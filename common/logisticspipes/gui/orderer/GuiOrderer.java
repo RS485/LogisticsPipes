@@ -70,21 +70,28 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	
 	protected boolean listbyserver = false;
 
-	protected final int xCoord;
-	protected final int yCoord;
-	protected final int zCoord;
-	protected final int dimension;
+	public final int xCoord;
+	public final int yCoord;
+	public final int zCoord;
+	public int dimension;
+	
+	public static int dimensioncache;
+	public static long cachetime;
 	
 	public GuiOrderer(int x, int y, int z, int dim, EntityPlayer entityPlayer) {
 		super(220,240,0,0);
 		xCoord = x;
 		yCoord = y;
 		zCoord = z;
-		dimension = dim;
+		if(cachetime + 100 < System.currentTimeMillis()) {
+			dimension = dim;
+		} else {
+			dimension = dimensioncache;
+		}
 		_entityPlayer = entityPlayer;
 	}
 
-	protected abstract void refreshItems();
+	public abstract void refreshItems();
 
 	public void handlePacket(PacketRequestGuiContent packet) {
 		listbyserver = true;

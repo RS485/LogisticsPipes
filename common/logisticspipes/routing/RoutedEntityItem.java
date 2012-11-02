@@ -52,7 +52,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		container = entityItem.getContainer();
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
-		item = entityItem.getItemStack(); 
+		item = entityItem.getItemStack();
 	}
 	
 	@Override
@@ -245,6 +245,16 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		routed.isUnrouted = true;
 		routed.jamlist.addAll(jamlist);
 		return routed;
+	}
+
+	@Override
+	public EntityPassiveItem getNewEntityPassiveItem() {
+		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
+		Entityitem.setContainer(container);
+		Entityitem.setPosition(position.x, position.y, position.z);
+		Entityitem.setSpeed(speed);
+		Entityitem.setItemStack(item);
+		return Entityitem;
 	}
 
 	@Override

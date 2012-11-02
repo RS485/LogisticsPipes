@@ -15,6 +15,7 @@ import logisticspipes.routing.IRouter;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
+import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 
 /**
@@ -55,6 +56,7 @@ public interface IRoutedItem {
 	
 	public EntityPassiveItem getEntityPassiveItem();
 	public IRoutedItem getNewUnRoutedItem();
+	public IPipedItem getNewEntityPassiveItem();
 	
 	@Deprecated
 	public void setArrived();

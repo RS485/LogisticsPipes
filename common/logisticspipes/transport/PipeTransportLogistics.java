@@ -187,6 +187,10 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		
 		//getPipe().queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
 		
+		if(!getPipe().getRouter().isRoutedExit(value)) {
+			data.item = routedItem.getNewEntityPassiveItem();
+		}
+		
 		return value;
 	}
 	

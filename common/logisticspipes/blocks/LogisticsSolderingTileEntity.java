@@ -429,7 +429,9 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 						if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
 							ItemStack slot = inv.getStackInSlot(i);
 							if(slot == null) {
-								inv.setInventorySlotContents(i, stack);
+								ItemStack stacktoAdd = stack.copy();
+								stacktoAdd.stackSize = toAdd;
+								inv.setInventorySlotContents(i, stacktoAdd);
 								inv.onInventoryChanged();
 								break;
 							} else if(slot.stackSize == min) {

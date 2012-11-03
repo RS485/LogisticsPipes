@@ -1,13 +1,11 @@
 package logisticspipes.items;
 
-import java.nio.channels.NetworkChannel;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.CreativeTabs;
@@ -21,11 +19,10 @@ import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
-
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class RemoteOrderer extends Item {
 	

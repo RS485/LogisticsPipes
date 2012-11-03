@@ -1,18 +1,16 @@
 package logisticspipes.gui.hud;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketHUDSettings;
-import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiHUDSettings extends KraphtBaseGuiScreen {
 

@@ -3,7 +3,6 @@ package logisticspipes.network;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFreqCardContent;

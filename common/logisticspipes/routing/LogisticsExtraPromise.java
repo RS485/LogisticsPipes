@@ -1,8 +1,6 @@
 package logisticspipes.routing;
 
-import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.utils.ItemIdentifier;
 
 public class LogisticsExtraPromise extends LogisticsPromise {
 	public RequestTreeNode extraSource;

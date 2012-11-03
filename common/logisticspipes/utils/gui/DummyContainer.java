@@ -9,7 +9,6 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.pipes.PipeLogisticsChassi;

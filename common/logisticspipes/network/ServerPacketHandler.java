@@ -11,7 +11,6 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWatchingHandler;
-import logisticspipes.items.PacketInteger;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;

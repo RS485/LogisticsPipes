@@ -6,14 +6,13 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import dan200.computer.api.IComputerAccess;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.TileEntity;
 import buildcraft.api.core.Orientations;
+import dan200.computer.api.IComputerAccess;
 
 public class CCProxy implements ICCProxy {
 

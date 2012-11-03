@@ -8,8 +8,6 @@
 
 package logisticspipes.logisticspipes;
 
-import java.util.UUID;
-
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import buildcraft.api.core.Orientations;

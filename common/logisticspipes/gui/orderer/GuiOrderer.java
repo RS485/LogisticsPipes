@@ -14,11 +14,9 @@ import java.util.List;
 
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
-import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;

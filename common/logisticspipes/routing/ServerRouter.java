@@ -34,7 +34,6 @@ import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
-import buildcraft.api.power.PowerProvider;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {

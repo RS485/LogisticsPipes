@@ -3,10 +3,8 @@ package logisticspipes.gui.orderer;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;

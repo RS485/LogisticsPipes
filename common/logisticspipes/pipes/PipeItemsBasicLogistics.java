@@ -12,22 +12,17 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.config.Configs;
 import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Packet3Chat;
 import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
 import buildcraft.api.core.Orientations;
 
 public class PipeItemsBasicLogistics extends RoutedPipe {

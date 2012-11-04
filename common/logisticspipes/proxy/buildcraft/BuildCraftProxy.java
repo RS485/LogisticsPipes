@@ -55,6 +55,7 @@ import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
 import buildcraft.api.transport.IPipedItem;
+import buildcraft.api.tools.IToolWrench;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
@@ -205,5 +206,9 @@ public class BuildCraftProxy {
 	
 	public boolean checkMaxItems() {
 		return BuildCraftTransport.maxItemsInPipes >= 1000;
+	}
+	
+	public boolean isWrench(Item item) {
+		return (item instanceof IToolWrench);
 	}
 }

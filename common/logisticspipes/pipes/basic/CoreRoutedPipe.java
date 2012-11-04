@@ -363,7 +363,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == BuildCraftCore.wrenchItem && !(entityplayer.isSneaking())){
+		if (entityplayer.getCurrentEquippedItem() != null && SimpleServiceLocator.buildCraftProxy.isWrench(entityplayer.getCurrentEquippedItem().getItem()) && !(entityplayer.isSneaking())) {
 			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
 				if(MainProxy.isServer(world)) {
 					entityplayer.openGui(LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);

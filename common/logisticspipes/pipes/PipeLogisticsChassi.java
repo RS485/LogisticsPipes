@@ -330,7 +330,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, i, j, k, entityplayer);
 		
-		if (entityplayer.getCurrentEquippedItem().getItem() == buildcraft.BuildCraftCore.wrenchItem){
+		if (SimpleServiceLocator.buildCraftProxy.isWrench(entityplayer.getCurrentEquippedItem().getItem())) {
 			if (entityplayer.isSneaking()){
 				((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				return true;

@@ -62,7 +62,9 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 
 	@Override
 	public boolean demandsEnergy() {
-		internalBuffer = injectEnergy(null, internalBuffer);
+		if(internalBuffer > 0 && freeSpace() > 0) {
+			internalBuffer = injectEnergy(null, internalBuffer);
+		}
 		return freeSpace() > 0;
 	}
 

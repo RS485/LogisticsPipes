@@ -75,7 +75,9 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		if(internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
 		}
-		updateClients();
+		if(amount != 0) {
+			updateClients();
+		}
 	}
 	
 	@Override
@@ -171,6 +173,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		guiListener.add(player);
+		updateClients();
 	}
 
 	@Override

@@ -173,7 +173,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 			}
 			
 			ItemStack slot = inventory.getStackInSlot(k);
-			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot))) {
+			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot)) && (shouldSend(slot))) {
 				if (doRemove) {
 					int count = Math.min(itemsToExtract(), slot.stackSize);
 
@@ -194,10 +194,6 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	}
 
 	public boolean CanExtract(ItemStack item) {
-		if(!shouldSend(item)) {
-			return false;
-		}
-		
 		for (int i = 0; i < this._filterInventory.getSizeInventory(); i++) {
 			
 			ItemStack stack = this._filterInventory.getStackInSlot(i);

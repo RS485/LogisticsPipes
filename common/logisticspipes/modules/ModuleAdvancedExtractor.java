@@ -185,7 +185,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 						return null;
 					}
 					
-					return inventory.decrStackSize(k, itemsToExtract());
+					return inventory.decrStackSize(k, count);
 				}
 				return slot;
 			}

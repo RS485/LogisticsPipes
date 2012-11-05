@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
@@ -112,11 +113,25 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	public void dropContents(World worldObj, int xCoord, int yCoord, int zCoord) {
 		if(MainProxy.isServer(worldObj)) {
-			SimpleServiceLocator.buildCraftProxy.dropItems(worldObj, this, xCoord, yCoord, zCoord);
 			for(int i=0;i<_contents.length;i++) {
-				_contents[i] = null;
+				while(_contents[i] != null) {
+					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
+			    	dropItems(worldObj, todrop, xCoord, yCoord, zCoord);
+				}
 			}
 		}
+	}
+
+	private static void dropItems(World world, ItemStack stack, int i, int j, int k) {
+		if(stack.stackSize <= 0)
+			return;
+		float f1 = 0.7F;
+		double d = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
+		double d1 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
+		double d2 = (world.rand.nextFloat() * f1) + (1.0F - f1) * 0.5D;
+		EntityItem entityitem = new EntityItem(world, i + d, j + d1, k + d2, stack);
+		entityitem.delayBeforeCanPickup = 10;
+		world.spawnEntityInWorld(entityitem);
 	}
 	
 	public void addListener(ISimpleInventoryEventHandler listner){

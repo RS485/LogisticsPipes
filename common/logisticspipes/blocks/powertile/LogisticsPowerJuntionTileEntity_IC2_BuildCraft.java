@@ -12,6 +12,8 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 	private boolean addedToEnergyNet = false;
 	private boolean doinit = false;
 	
+	private int internalBuffer = 0;
+	
 	@Override
 	public boolean acceptsEnergyFrom(TileEntity emitter, Direction direction) {
 		return true;
@@ -60,6 +62,7 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 
 	@Override
 	public boolean demandsEnergy() {
+		internalBuffer = injectEnergy(null, internalBuffer);
 		return freeSpace() > 0;
 	}
 
@@ -70,7 +73,10 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 			addAmount = 1;
 		}
 		addEnergy(addAmount * IC2Multiplier);
+		if(addAmount == 0 && directionFrom != null) {
+			internalBuffer += amount;
+			return 0;
+		}
 		return amount - addAmount;
 	}
-
 }

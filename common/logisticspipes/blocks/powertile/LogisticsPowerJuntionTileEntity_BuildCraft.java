@@ -35,6 +35,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	private List<EntityPlayer> guiListener = new ArrayList<EntityPlayer>();
 	
 	private int internalStorage = 0;
+  	private int lastUpdateStorage = 0;
 	
 	private boolean init = false;
 	private List<EntityPlayer> watcherList = new ArrayList<EntityPlayer>();
@@ -50,7 +51,6 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public boolean useEnergy(int amount) {
 		if(canUseEnergy(amount)) {
 			internalStorage -= amount;
-			updateClients();
 			return true;
 		}
 		return false;
@@ -63,6 +63,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void updateClients() {
 		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), guiListener);
 		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), watcherList);
+		lastUpdateStorage = internalStorage;
 	}
 	
 	@Override
@@ -74,9 +75,6 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		internalStorage += amount;
 		if(internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
-		}
-		if(amount != 0) {
-			updateClients();
 		}
 	}
 	
@@ -104,6 +102,9 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 				powerFramework.useEnergy(energy, energy, true);
 				addEnergy(energy * BuildCraftMultiplier);
 			}
+		  	if(internalStorage != lastUpdateStorage) {
+		  		updateClients();
+		  	}
 		}
 		if(!init) {
 			if(MainProxy.isClient()) {

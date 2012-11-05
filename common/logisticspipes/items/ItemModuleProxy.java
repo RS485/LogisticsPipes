@@ -5,6 +5,7 @@ import java.util.List;
 import logisticspipes.config.Textures;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTBase;
 import net.minecraft.src.NBTTagCompound;
@@ -39,7 +40,8 @@ public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 		SpriteHelper.registerSpriteMapForFile(Textures.LOGISTICSITEMS_TEXTURE_FILE, getTextureMap());
 	}
 	
-	public void addInformation(ItemStack itemStack, List list) {
+	@Override
+	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		if(itemStack.hasTagCompound()) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 				NBTTagCompound nbt = itemStack.getTagCompound();
@@ -74,13 +76,6 @@ public abstract class ItemModuleProxy extends LogisticsNBTTagCompundItem {
 					}
 				}
 			}
-			/*if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) {
-				NBTTagCompound nbt = itemStack.getTagCompound();
-				list.add(nbt.toString());
-				for(Object obj:nbt.getTags().toArray()) {
-					list.add(obj.toString());				
-				}
-			}*/
 		}
 	}
 	

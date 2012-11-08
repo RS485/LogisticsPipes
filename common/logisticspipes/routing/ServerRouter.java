@@ -227,7 +227,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		/** The cost to get to an "approved" router **/
 		HashMap<IRouter, Pair<Integer,Boolean>> treeCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
 		
-		_powerTable = new ArrayList<ILogisticsPowerProvider>();
+		_powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
 		//Init root(er - lol)
 		tree.put(this,  new LinkedList<IRouter>());

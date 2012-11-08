@@ -174,17 +174,22 @@
         </exec>
 		
 		<echo message="Regenerated MD5s"/>
-		
-        <!-- Copy LP source -->
+	
+    </target>
+
+
+    <target name="copySRC" depends="setup">
+        
+	<!-- Copy LP source -->
         <copy todir="${commonsrc.dir}">
             <fileset dir="${src.dir}/common"/>
         </copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
-		
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>		
     </target>
     
-    <target name="compile" depends="setup">
+
+    <target name="compile" depends="copySRC">
         
 		<echo message="Compiling version ${lp.version.full}"/>
 	

@@ -43,6 +43,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.src.CraftingManager;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -55,6 +56,7 @@ import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
 import buildcraft.api.transport.IPipedItem;
+import buildcraft.api.tools.IToolWrench;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
@@ -205,5 +207,9 @@ public class BuildCraftProxy {
 	
 	public boolean checkMaxItems() {
 		return BuildCraftTransport.maxItemsInPipes >= 1000;
+	}
+	
+	public boolean isWrenchEquipped(EntityPlayer entityplayer) {
+		return (entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench);
 	}
 }

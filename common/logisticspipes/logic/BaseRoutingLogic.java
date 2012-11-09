@@ -12,6 +12,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import net.minecraft.src.EntityPlayer;
@@ -51,19 +52,19 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	
 	@Override
 	public boolean blockActivated(EntityPlayer entityplayer) {
-		if (entityplayer.getCurrentEquippedItem() == null)	{
+		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
 			getRouter().displayRoutes();
 			if (LogisticsPipes.DEBUG) {
 				doDebugStuff(entityplayer);
 			}
 			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior){
+		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, worldObj, xCoord, yCoord, zCoord);
 			}
 			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == buildcraft.BuildCraftCore.wrenchItem){
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
 			onWrenchClicked(entityplayer);
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {

@@ -133,6 +133,10 @@
 				<exclude name="**/buildcraft/devel"/>
 			</fileset>
         </copy>
+        <copy todir="${commonsrc.dir}">
+            <fileset dir="${buildcraft.dir}/buildcraft_resources">
+            </fileset>
+        </copy>
         
 		<echo message="Copied BC files"/>
 		

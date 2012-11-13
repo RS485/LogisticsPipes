@@ -97,26 +97,37 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	public TileEntity getPointedTileEntity(){
+		if(ChassiLogic.orientation == Orientations.Unknown) return null;
 		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
 		pos.moveForwards(1.0);
 		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 	}
 	
 	public void nextOrientation() {
+		boolean found = false;
 		for (int l = 0; l < 6; ++l) {
 			ChassiLogic.orientation = Orientations.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
-			if (!isValidOrientation(ChassiLogic.orientation)) continue;
-			return;
+			if(isValidOrientation(ChassiLogic.orientation)) {
+				found = true;
+				break;
+			}
 		}
+		if (!found) {
+			ChassiLogic.orientation = Orientations.Unknown;
+		}
+		PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
+		refreshRender();
 	}
 	
 	private boolean isValidOrientation(Orientations connection){
+		if (connection == Orientations.Unknown) return false;
 		if (getRouter().isRoutedExit(connection)) return false;
 		Position pos = new Position(xCoord, yCoord, zCoord, connection);
 		pos.moveForwards(1.0);
 		TileEntity tile = worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 
 		if (tile == null) return false;
+		if (tile instanceof TileGenericPipe) return false;
 		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile);
 	}
 	
@@ -147,7 +158,6 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if (!isValidOrientation(ChassiLogic.orientation)){
 			if(MainProxy.isServer(this.worldObj)) {
 				nextOrientation();
-				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
 			}
 		}
 	};
@@ -220,7 +230,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound, "");
-			ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 6];
+			ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 7];
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
@@ -296,7 +306,6 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			switchOrientationOnTick = false;
 			if(MainProxy.isServer(this.worldObj)) {
 				nextOrientation();
-				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
 			}
 		}
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
@@ -332,7 +341,9 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
 			if (entityplayer.isSneaking()){
-				((PipeLogisticsChassi)this.container.pipe).nextOrientation();
+				if(MainProxy.isServer(this.worldObj)) {
+					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
+				}
 				return true;
 			}
 		}

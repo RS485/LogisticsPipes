@@ -136,6 +136,19 @@ public class CraftingSignCreator extends LogisticsItem {
 									}
 								}
 								this.onItemUseFirst(itemStack, player ,world, pipechecksignX, pipechecksignY, pipechecksignZ, side + 10, hitX, hitY, hitZ);
+							} else {
+								if(world.getBlockId(signX, signY, signZ) == 0) {
+									if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
+										world.setBlockAndMetadataWithNotify(signX, signY, signZ, Configs.LOGISTICS_SIGN_ID, LogisticsSignBlock.SignBlockID);
+										TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
+										if(tilesign instanceof LogisticsSignTileEntity) {
+											((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
+											itemStack.damageItem(1, player); 
+										} else {
+											world.setBlockAndMetadataWithNotify(signX, signY, signZ, 0, 0);
+										}
+									}
+								}
 							}
 						}	
 					} else if(selfcalled) {

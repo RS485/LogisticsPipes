@@ -126,7 +126,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void validate() {
 		super.validate();
 		if(MainProxy.isClient()) {
-			LogisticsHUDRenderer.providers.add(this);
+			init = false;
 		}
 	}
 

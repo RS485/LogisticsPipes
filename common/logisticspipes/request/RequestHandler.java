@@ -12,6 +12,7 @@ import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
@@ -21,7 +22,6 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class RequestHandler {
@@ -100,7 +100,7 @@ public class RequestHandler {
 			}
 			_allItems.addLast(item.makeStack(0));
 		}
-		PacketDispatcher.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
 	}
 	
 
@@ -126,7 +126,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				PacketDispatcher.sendPacketToPlayer(new PacketItems(items, false).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketItems(items, false).getPacket(), (Player)player);
 			}
 			
 			@Override
@@ -136,7 +136,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				PacketDispatcher.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
 			}
 		});
 	}

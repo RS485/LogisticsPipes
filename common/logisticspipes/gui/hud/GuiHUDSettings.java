@@ -4,13 +4,13 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.packets.PacketHUDSettings;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiHUDSettings extends KraphtBaseGuiScreen {
 
@@ -47,7 +47,7 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		if(this.controlList.get(button.id) instanceof GuiCheckBox) {
 			((GuiCheckBox)this.controlList.get(button.id)).change();
-			PacketDispatcher.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.controlList.get(button.id)).getState(), slot).getPacket());
+			MainProxy.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.controlList.get(button.id)).getState(), slot).getPacket());
 		}
 		//super.actionPerformed(par1GuiButton);
 	}

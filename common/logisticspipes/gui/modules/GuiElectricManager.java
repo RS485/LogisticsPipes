@@ -12,6 +12,7 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.src.GuiButton;
@@ -21,7 +22,6 @@ import net.minecraft.src.IInventory;
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 
@@ -50,7 +50,7 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
 				//((GuiButton)controlList.get(0)).displayString = _module.isDischargeMode() ? "Yes" : "No";
-				PacketDispatcher.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
 				break;
 		}
 	}

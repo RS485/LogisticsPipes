@@ -9,11 +9,11 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.LogisticsPipesPacket;
+import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.CommandBase;
 import net.minecraft.src.ICommandSender;
 import net.minecraft.src.WrongUsageException;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class LogisticsPipesCommand extends CommandBase {
@@ -46,7 +46,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Trying to Enable NBTDebug");
-        	PacketDispatcher.sendPacketToPlayer(new LogisticsPipesPacket() {
+        	MainProxy.sendPacketToPlayer(new LogisticsPipesPacket() {
 				@Override public void writeData(DataOutputStream data) throws IOException {}
 				@Override public void readData(DataInputStream data) throws IOException {}
 				@Override public int getID() {return NetworkConstants.ACTIVATNBTDEBUG;}

@@ -16,7 +16,6 @@ import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.Packet250CustomPayload;
 import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class PacketBufferHandlerThread extends Thread {
@@ -116,7 +115,7 @@ public class PacketBufferHandlerThread extends Thread {
 									byte[] newbuffer = Arrays.copyOfRange(serverBuffer.get(player), Math.min(1024 * 32, serverBuffer.get(player).length), serverBuffer.get(player).length);
 									serverBuffer.put(player, newbuffer);
 									byte[] compressed = compress(sendbuffer);
-									PacketDispatcher.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player);
+									MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player);
 								}
 							}
 						}

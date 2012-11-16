@@ -19,7 +19,6 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import buildcraft.core.inventory.Transactor;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
@@ -105,7 +104,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		super.playerStartWatching(player, mode);
 		if(mode == 1) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
 		}
 	}
 

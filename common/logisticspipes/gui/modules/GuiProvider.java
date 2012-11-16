@@ -5,6 +5,7 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.src.GuiButton;
@@ -14,7 +15,6 @@ import net.minecraft.src.IInventory;
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiProvider extends GuiWithPreviousGuiContainer {
 	
@@ -68,10 +68,10 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			//((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
 		}
 		super.actionPerformed(guibutton);
 	}

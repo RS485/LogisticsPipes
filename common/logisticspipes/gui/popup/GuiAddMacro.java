@@ -6,6 +6,7 @@ import java.util.List;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketItem;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -21,8 +22,6 @@ import net.minecraft.src.NBTTagList;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
@@ -431,7 +430,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					nbt.setTag("inventar", inventar);
 					list.appendTag(nbt);
 					this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
-					PacketDispatcher.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+					MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
 					//this.controler.resetSubGui();
 					//this.controler.setSubGui(new GuiMessagePopup("Saving will come soon", "Would be saved as: "+name1+name2));
 					this.exitGui();

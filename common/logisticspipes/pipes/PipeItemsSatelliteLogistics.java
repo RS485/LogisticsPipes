@@ -35,7 +35,6 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
@@ -90,12 +89,12 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 
 	@Override
 	public void startWaitching() {
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
 	}
 
 	@Override
 	public void stopWaitching() {
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
 	}
 	
 	private IInventory getRawInventory(ForgeDirection ori) {
@@ -146,7 +145,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, ((BaseLogicSatellite)this.logic).satelliteId).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, ((BaseLogicSatellite)this.logic).satelliteId).getPacket(), (Player)player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);

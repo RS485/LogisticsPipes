@@ -12,6 +12,7 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiScreen;
@@ -20,7 +21,6 @@ import net.minecraft.src.IInventory;
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 
@@ -46,13 +46,13 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
 				((GuiButton)controlList.get(0)).displayString = _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
 				break;
 			case 1:
 				if(!_advancedExtractor.connectedToSidedInventory()) {
 					controlList.remove(1);
 				}
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
 				break;
 		}
 		

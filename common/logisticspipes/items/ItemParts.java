@@ -4,7 +4,6 @@ import java.util.List;
 
 import logisticspipes.config.Textures;
 import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 
 public class ItemParts extends LogisticsItem {

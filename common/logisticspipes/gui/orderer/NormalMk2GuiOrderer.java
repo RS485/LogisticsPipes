@@ -12,8 +12,6 @@ import net.minecraft.src.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	
 	public PipeItemsRequestLogisticsMk2 pipe;
@@ -22,7 +20,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
 		super(RequestPipeMK2.xCoord, RequestPipeMK2.yCoord, RequestPipeMK2.zCoord, MainProxy.getDimensionForWorld(RequestPipeMK2.worldObj), entityPlayer);
 		pipe = RequestPipeMK2;
-		PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
 	}
 	
 	@Override
@@ -48,7 +46,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		//Click on Disk
 		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
 			if (lastClickedx >= right - 39 && lastClickedx < right - 19 && lastClickedy >= bottom - 47 && lastClickedy < bottom - 27) {
-				PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+				MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
 			}
@@ -59,7 +57,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
 			this.setSubGui(new GuiDiskPopup(this));
 		}
 	}

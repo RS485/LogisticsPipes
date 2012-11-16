@@ -59,19 +59,43 @@ public class MainProxy {
 		return proxy.getWorld(_dimension);
 	}
 	
+	public static void sendPacketToPlayer(Packet packet, Player player) {
+		if(!isDirectSendPacket(packet)) {
+			PacketBufferHandlerThread.addPacketToCompressor((Packet250CustomPayload) packet, player);
+		} else {
+			PacketDispatcher.sendPacketToPlayer(packet, player);
+		}
+	}
+	
+	public static void sendPacketToAllAround(double X, double Y, double Z, double range, int dimensionId, Packet packet) {
+		if(!isDirectSendPacket(packet)) {
+			new Exception("Packet size to big").printStackTrace();
+		}
+		PacketDispatcher.sendPacketToAllAround(X, Y, Z, range, dimensionId, packet);
+	}
+	
+	public static void sendPacketToServer(Packet packet) {
+		if(!isDirectSendPacket(packet)) {
+			new Exception("Packet size to big").printStackTrace();
+		}
+		PacketDispatcher.sendPacketToServer(packet);
+	}
+	
 	public static void sendToPlayerList(Packet packet, List<EntityPlayer> players) {
 		for(EntityPlayer player:players) {
-			PacketDispatcher.sendPacketToPlayer(packet, (Player)player);
+			if(!isDirectSendPacket(packet)) {
+				PacketBufferHandlerThread.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
+			} else {
+				PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
+			}
 		}
 	}
 
 	public static void sendToAllPlayers(Packet packet) {
-		for(World world: DimensionManager.getWorlds()) {
-			for(Object playerObject:world.playerEntities) {
-				Player player = (Player) playerObject;
-				PacketDispatcher.sendPacketToPlayer(packet, player);
-			}
+		if(!isDirectSendPacket(packet)) {
+			new Exception("Packet size to big").printStackTrace();
 		}
+		PacketDispatcher.sendPacketToAllPlayers(packet);
 	}
 
 	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
@@ -94,5 +118,17 @@ public class MainProxy {
 				PacketBufferHandlerThread.addPacketToCompressor(packet, player);
 			}
 		}
+	}
+	
+	private static boolean isDirectSendPacket(Packet packet) {
+		if(packet instanceof Packet250CustomPayload) {
+			Packet250CustomPayload packet250 = (Packet250CustomPayload) packet;
+			if(packet250.data != null) {
+				if(packet250.data.length > 32767 && packet250.channel.equals("BCLP")) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 }

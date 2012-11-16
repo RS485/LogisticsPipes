@@ -25,7 +25,6 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
 import buildcraft.core.network.TileNetworkData;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReliableTransport {
@@ -89,10 +88,10 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_NEXT, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 		updateWatchers();
 	}
@@ -102,10 +101,10 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_PREV, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(),(Player) player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
 		updateWatchers();
 	}
@@ -113,7 +112,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	private void updateWatchers() {
 		for(EntityPlayer player : ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers) {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(),(Player) player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
 	}
 
@@ -130,7 +129,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 			// Send the satellite id when opening gui
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
 
 		}

@@ -19,7 +19,6 @@ import net.minecraft.src.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class ClientRouter implements IRouter {
 
@@ -56,7 +55,7 @@ public class ClientRouter implements IRouter {
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_ROUTER_UPDATE, _xCoord, _yCoord, _zCoord, _dimension).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_ROUTER_UPDATE, _xCoord, _yCoord, _zCoord, _dimension).getPacket());
 		_myLsa = new LSA();
 		_myLsa.source = this;
 		_myLsa.neighboursWithMetric = new HashMap<UUID, Pair<Integer, Boolean>>();

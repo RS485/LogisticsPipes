@@ -10,6 +10,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -23,8 +24,6 @@ import net.minecraft.src.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	
@@ -110,7 +109,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	
 	private void refreshPacket() {
 		PacketCoordinates packet = new PacketCoordinates(NetworkConstants.INC_SYS_CON_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord);
-		PacketDispatcher.sendPacketToServer(packet.getPacket());
+		MainProxy.sendPacketToServer(packet.getPacket());
 	}
 	
 	private void pageDown() {
@@ -158,7 +157,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			}
 		} else if(button.id == 5) {
 			pipe.resistance = localresistance;
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
 		}
 	}
 

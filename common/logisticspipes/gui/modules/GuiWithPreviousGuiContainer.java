@@ -3,11 +3,11 @@ package logisticspipes.gui.modules;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.src.Container;
 import net.minecraft.src.GuiScreen;
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
 	
@@ -36,7 +36,7 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 		if (i == 1 || c == 'e') {
 			if (prevGuiID != -1) {
 				super.keyTyped(c,i);
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID + 10000).getPacket());
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID + 10000).getPacket());
 			} else {
 				super.keyTyped(c, i);
 			}

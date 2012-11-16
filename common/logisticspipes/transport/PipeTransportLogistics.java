@@ -34,7 +34,6 @@ import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.network.PacketPipeTransportContent;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeTransportLogistics extends PipeTransportItems {
@@ -104,7 +103,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				RoutedEntityItem routed = (RoutedEntityItem) item;
 				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player)) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(data), (Player)player);
+						MainProxy.sendPacketToPlayer(createItemPacket(data), (Player)player);
 						if(routed.getDestination() != null) { 
 							routed.addKnownPlayer(player);
 						}
@@ -156,7 +155,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer()){
 			if(MainProxy.isServer()) {
-				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
+				MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
 			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
@@ -171,7 +170,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				RoutedEntityItem routed = (RoutedEntityItem) routedItem;
 				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player) || forcePacket) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(data), (Player)player);
+						MainProxy.sendPacketToPlayer(createItemPacket(data), (Player)player);
 						if(!forcePacket) {
 							routed.addKnownPlayer(player);
 						}

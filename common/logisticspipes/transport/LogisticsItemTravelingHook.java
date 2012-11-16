@@ -9,7 +9,6 @@ import buildcraft.core.DefaultProps;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class LogisticsItemTravelingHook implements IItemTravelingHook {
@@ -56,7 +55,7 @@ public class LogisticsItemTravelingHook implements IItemTravelingHook {
 				*/
 				for(EntityPlayer player:MainProxy.getPlayerArround(world, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
 					if(!routed.isKnownBy(player)) {
-						PacketDispatcher.sendPacketToPlayer(pipe.createItemPacket(data), (Player)player);
+						MainProxy.sendPacketToPlayer(pipe.createItemPacket(data), (Player)player);
 						if(routed.getDestination() != null) { 
 							routed.addKnownPlayer(player);
 						}

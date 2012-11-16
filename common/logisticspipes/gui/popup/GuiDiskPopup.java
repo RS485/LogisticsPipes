@@ -4,6 +4,7 @@ import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeString;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -14,8 +15,6 @@ import net.minecraft.src.NBTTagList;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiDiskPopup extends SubGuiScreen {
 	
@@ -65,7 +64,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	
 	private void writeDiskName() {
 		editname = false;
-		PacketDispatcher.sendPacketToServer(new PacketPipeString(NetworkConstants.DISK_SET_NAME, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, name1 + name2).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeString(NetworkConstants.DISK_SET_NAME, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, name1 + name2).getPacket());
 		NBTTagCompound nbt = new NBTTagCompound();
 		if(mainGui.getDisk().hasTagCompound()) {
 			nbt = mainGui.getDisk().getTagCompound();
@@ -206,7 +205,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 				}
 			}
 		} else {*/
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.DISK_MACRO_REQUEST, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, selected).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.DISK_MACRO_REQUEST, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, selected).getPacket());
 		//}
 	}
 	

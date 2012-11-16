@@ -12,6 +12,7 @@ import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.SneakyOrientation;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
@@ -21,7 +22,6 @@ import net.minecraft.src.IInventory;
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiExtractor extends GuiWithPreviousGuiContainer {
 
@@ -85,7 +85,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 			break;
 		}
 		
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
 		
 		refreshButtons();
 		super.actionPerformed(guibutton);

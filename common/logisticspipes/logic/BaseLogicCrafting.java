@@ -31,7 +31,6 @@ import net.minecraft.src.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
@@ -84,10 +83,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		satelliteId = getNextConnectSatelliteId(false);
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 
 	}
@@ -101,10 +100,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		satelliteId = getNextConnectSatelliteId(true);
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 	}
 
@@ -201,7 +200,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				((EntityPlayerSP)player).closeScreen();
 			}
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 			return;
 		}
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
@@ -240,18 +239,18 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (MainProxy.isClient(player.worldObj)) {
 			// Send packet asking for import
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else{
 			// Send inventory as packet
 			final PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 
 		}
 	}
 
 	public void handleStackMove(int number) {
 		if(MainProxy.isClient()) {
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
 		}
 		ItemStack stack = _dummyInventory.getStackInSlot(number);
 		if(stack == null ) return;
@@ -268,18 +267,18 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public void priorityUp(EntityPlayer player) {
 		priority++;
 		if(MainProxy.isClient()) {
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
 		} else if(MainProxy.isServer() && player != null) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
 		}
 	}
 	
 	public void priorityDown(EntityPlayer player) {
 		priority--;
 		if(MainProxy.isClient()) {
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
 		} else if(MainProxy.isServer() && player != null) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
 		}
 	}
 	

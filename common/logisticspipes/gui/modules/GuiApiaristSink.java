@@ -6,6 +6,7 @@ import logisticspipes.modules.ModuleApiaristSink.SinkSetting;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBeePacket;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -15,7 +16,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiScreen;
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
@@ -88,7 +88,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.FilterTypeDown();
 			}
 			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
 		@Override
@@ -156,7 +156,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.filterGroupDown();
 			}
 			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
 		@Override
@@ -277,7 +277,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				}
 			}
 			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
 		@Override

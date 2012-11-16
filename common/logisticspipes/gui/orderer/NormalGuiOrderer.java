@@ -5,11 +5,11 @@ import java.util.LinkedList;
 
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.GuiButton;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class NormalGuiOrderer extends GuiOrderer {
 
@@ -50,7 +50,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 				integer = 3;
 			}
 			integer += (dimension * 10);
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
 	}
 
 	protected void actionPerformed(GuiButton guibutton) {

@@ -13,14 +13,13 @@ import logisticspipes.logic.LogicSupplier;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.src.GuiButton;
 import net.minecraft.src.GuiContainer;
 import net.minecraft.src.IInventory;
 
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
@@ -85,7 +84,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		

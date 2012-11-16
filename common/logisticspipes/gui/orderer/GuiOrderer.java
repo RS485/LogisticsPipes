@@ -17,6 +17,7 @@ import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -35,8 +36,6 @@ import net.minecraft.src.Tessellator;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch {
 
@@ -452,7 +451,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				}
 				refreshItems();
 			} else {*/
-				PacketDispatcher.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem,requestCount).getPacket());
+				MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem,requestCount).getPacket());
 				refreshItems();
 			//}
 		} else if (guibutton.id == 1){

@@ -33,7 +33,7 @@ public class PipeTransportLayer extends TransportLayer{
 			_trackStatistics.recievedItem(item.getItemStack().stackSize);
 		}
 		
-		item.setArrived(); //NOT TESTED
+		item.setArrived(true);
 		this._router.inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
 		
 		LinkedList<AdjacentTile> adjacentEntities = _worldAccess.getConnectedEntities();

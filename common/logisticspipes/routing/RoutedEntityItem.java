@@ -37,6 +37,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	private boolean _doNotBuffer;
 	
+	private int bufferCounter = 0;
+	
 	public boolean arrived;
 	public boolean reRoute;
 	public boolean isUnrouted;
@@ -150,8 +152,13 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	@Deprecated
-	public void setArrived() {
-		this.arrived = true;
+	public void setArrived(boolean flag) {
+		this.arrived = flag;
+	}
+
+	@Override
+	public boolean getArrived() {
+		return this.arrived;
 	}
 
 	@Override
@@ -219,6 +226,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
 		}
 		arrived = nbttagcompound.getBoolean("arrived");
+		bufferCounter = nbttagcompound.getInteger("bufferCounter");
 	}
 
 	@Override
@@ -231,6 +239,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
 		}
 		nbttagcompound.setBoolean("arrived", arrived);
+		nbttagcompound.setInteger("bufferCounter", bufferCounter);
 		
 	}
 
@@ -280,5 +289,15 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public boolean isUnRouted() {
 		return isUnrouted;
+	}
+
+	@Override
+	public int getBufferCounter() {
+		return bufferCounter;
+	}
+
+	@Override
+	public void setBufferCounter(int counter) {
+		bufferCounter = counter;
 	}
 }

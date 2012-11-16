@@ -19,6 +19,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.utils.Pair;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
@@ -47,7 +48,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	private RoutedPipe _pipe = null;
 	
-	private final HashMap<ItemStack,Integer> _itemBuffer = new HashMap<ItemStack, Integer>(); 
+	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
@@ -69,13 +70,14 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
 			while (iterator.hasNext()){
 				ItemStack next = iterator.next();
-				int currentTimeOut = _itemBuffer.get(next);
+				int currentTimeOut = _itemBuffer.get(next).getValue1();
 				if (currentTimeOut > 0){
-					_itemBuffer.put(next, currentTimeOut - 1 );
+					_itemBuffer.get(next).setValue1(currentTimeOut - 1);
 				} else {
 					EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
 					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
 					routedItem.setDoNotBuffer(true);
+					routedItem.setBufferCounter(_itemBuffer.get(next).getValue2() + 1);
 					toAdd.add(routedItem);
 					iterator.remove();
 				}
@@ -157,8 +159,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			if(MainProxy.isServer()) {
 				MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
 			}
-			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
-			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
+			_itemBuffer.put(routedItem.getItemStack().copy(), new Pair<Integer,Integer>(20 * 2, routedItem.getBufferCounter()));
+			routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
 			scheduleRemoval(data.item);			
 			return ForgeDirection.WEST;
 		}
@@ -184,12 +186,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
 		}
 		
-		//getPipe().queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
-		
-		if(!getPipe().getRouter().isRoutedExit(value)) {
-			data.item = routedItem.getNewEntityPassiveItem();
-		}
-		
 		return value;
 	}
 	
@@ -203,7 +199,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
         NBTTagList nbttaglist = nbttagcompound.getTagList("buffercontents");
         for(int i = 0; i < nbttaglist.tagCount(); i++) {
             NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), _bufferTimeOut);
+            _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), new Pair<Integer, Integer>(_bufferTimeOut, 0));
         }
 	}
 	

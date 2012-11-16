@@ -48,6 +48,9 @@ public interface IRoutedItem {
 	
 	public void setDoNotBuffer(boolean doNotBuffer);
 	public boolean getDoNotBuffer();
+
+	public int getBufferCounter();
+	public void setBufferCounter(int counter);
 	
 	public ItemStack getItemStack();
 	
@@ -58,8 +61,8 @@ public interface IRoutedItem {
 	public IRoutedItem getNewUnRoutedItem();
 	public IPipedItem getNewEntityPassiveItem();
 	
-	@Deprecated
-	public void setArrived();
+	public void setArrived(boolean flag);
+	public boolean getArrived();
 	
 	public IRoutedItem split(World worldObj, int itemsToTake, ForgeDirection orientation);
 	public void SetPosition(double x, double y, double z);

@@ -16,7 +16,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 	@Override
 	public ForgeDirection resolveDestination(EntityData data) {
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(container.worldObj, data);
-		if(routedItem.getDestination() == null) {
+		if(routedItem.getDestination() == null || routedItem.getArrived()) {
 			if(pipe.getLocalFreqUUID() != null) {
 				if(pipe.useEnergy(5)) {
 					for(IRouter router:pipe.getRouter().getIRoutersByCost()) {
@@ -26,6 +26,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 							if(dPipe.getTargetUUID() != null) {
 								if(dPipe.getTargetUUID().equals(pipe.getLocalFreqUUID())) {
 									routedItem.setDestination(dPipe.getRouter().getId());
+									routedItem.setArrived(false);
 								}
 							}
 						}

@@ -1,13 +1,13 @@
 package logisticspipes.utils;
 
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 public class AdjacentTile {
 	public TileEntity tile;
-	public Orientations orientation;
+	public ForgeDirection orientation;
 
-	public AdjacentTile(TileEntity tile, Orientations orientation){
+	public AdjacentTile(TileEntity tile, ForgeDirection orientation){
 		this.tile = tile;
 		this.orientation = orientation;
 	}

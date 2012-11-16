@@ -107,7 +107,7 @@ public class BasicGuiHelper {
 			        }
 
 				} else {
-					renderItem.func_82406_b(fontRenderer, mc.renderEngine, st, x, y);
+					renderItem.renderItemAndEffectIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 				}
 			}
 			
@@ -216,7 +216,7 @@ public class BasicGuiHelper {
 					//Use minecraft vanilla code
 					Minecraft mc = FMLClientHandler.instance().getClient();
 					ItemStack var22 = (ItemStack) tooltip[2];
-					List var24 = var22.func_82840_a(mc.thePlayer, mc.gameSettings.field_82882_x);
+					List var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
 
 	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
 	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	

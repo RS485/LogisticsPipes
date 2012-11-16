@@ -27,8 +27,8 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.inventory.ISpecialInventory;
 import cpw.mods.fml.common.network.PacketDispatcher;
 
@@ -114,19 +114,19 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 		//Extract Item
 		IInventory targetInventory = _invProvider.getRawInventory();
 		if (targetInventory == null) return;
-		Orientations extractOrientation;
+		ForgeDirection extractOrientation;
 		switch (_sneakyOrientation){
 			case Bottom:
-				extractOrientation = Orientations.YNeg;
+				extractOrientation = ForgeDirection.DOWN;
 				break;
 			case Top:
-				extractOrientation = Orientations.YPos;
+				extractOrientation = ForgeDirection.UP;
 				break;
 			case Side:
-				extractOrientation = Orientations.ZPos;
+				extractOrientation = ForgeDirection.SOUTH;
 				break;
 			default:
-				extractOrientation = _invProvider.inventoryOrientation().reverse();
+				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
 		
 		if (targetInventory instanceof ISpecialInventory){

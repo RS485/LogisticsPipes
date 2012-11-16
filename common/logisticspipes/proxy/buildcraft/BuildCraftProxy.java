@@ -55,8 +55,8 @@ import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
-import buildcraft.api.transport.IPipedItem;
 import buildcraft.api.tools.IToolWrench;
+import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
@@ -183,6 +183,7 @@ public class BuildCraftProxy {
 	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
 		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
 		res.setItemName(clas.getSimpleName());
+		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		
 		if(side.isClient()) {
 			LanguageRegistry.addName(res, descr);

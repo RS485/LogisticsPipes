@@ -15,8 +15,8 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldClient;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.LaserKind;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.EntityBlock;
 import buildcraft.core.utils.Utils;
@@ -37,11 +37,11 @@ class RouteLaser implements IPaintPath{
 		_lasers = new LinkedList<EntityBlock>();
 	}
 	
-	private void addLeg(World worldObj, Position start, Orientations o){
+	private void addLeg(World worldObj, Position start, ForgeDirection o){
 		Position end = new Position(start.x, start.y, start.z, o);			
 		end.moveForwards(1);
 		switch(o){
-			case XNeg: case YNeg: case ZNeg:
+			case WEST: case DOWN: case NORTH:
 				_lasers.add(Utils.createLaser(worldObj, end, start, _pewpewLazors));
 				break;
 			default:
@@ -82,8 +82,8 @@ class RouteLaser implements IPaintPath{
 			boolean found = false;
 			
 			//Get the first exit
-			Orientations next = r.getRouteTable().get(targetRouter);
-			if (next == Orientations.Unknown){
+			ForgeDirection next = r.getRouteTable().get(targetRouter);
+			if (next == ForgeDirection.UNKNOWN){
 				System.out.println("BAAAD MOJO");
 			}
 			
@@ -133,7 +133,7 @@ class RouteLaser implements IPaintPath{
 		//OLD PAINT PATH LOGIC
 //		Position p1 = new Position(r.getPipe().container.xCoord, r.getPipe().container.yCoord, r.getPipe().zCoord);
 //		for (int i = 0; i < 6; i++){
-//			Orientations o = Orientations.values()[i];
+//			ForgeDirection o = ForgeDirection.values()[i];
 //			if (!r.isRoutedExit(o)) continue;
 //			Position firstPos = new Position(p1.x, p1.y, p1.z, o);
 //			addLeg(r.getPipe().worldObj, firstPos, o);
@@ -160,7 +160,7 @@ class RouteLaser implements IPaintPath{
 //				return true;
 //			}
 //			for (int i = 0; i < 6; i++)	{
-//				Orientations nextOrientation = Orientations.values()[i];
+//				ForgeDirection nextOrientation = ForgeDirection.values()[i];
 //				if (nextOrientation.reverse() == start.orientation) continue;
 //				Position nextPos = new Position(start.x, start.y, start.z, nextOrientation);
 //				
@@ -175,7 +175,7 @@ class RouteLaser implements IPaintPath{
 //	}
 
 	@Override
-	public void addLaser(World worldObj, Position start, Orientations o) {
+	public void addLaser(World worldObj, Position start, ForgeDirection o) {
 		addLeg(worldObj, start, o);
 		
 	}

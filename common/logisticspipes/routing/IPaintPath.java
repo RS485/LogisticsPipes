@@ -9,9 +9,9 @@
 package logisticspipes.routing;
 
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
 public interface IPaintPath {
-	public void addLaser(World worldObj, Position start, Orientations o);
+	public void addLaser(World worldObj, Position start, ForgeDirection o);
 }

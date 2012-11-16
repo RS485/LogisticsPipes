@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
+import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.DamageSource;
 import net.minecraft.src.EntityLiving;
 import net.minecraft.src.EntityPlayer;
@@ -66,5 +67,10 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 	
 	private void useItem(EntityPlayer player, World world) {
 		player.openGui(LogisticsPipes.instance, GuiIDs.GUI_HUD_Settings, world, player.inventory.currentItem, -1, 0);
+	}
+
+	@Override
+	public CreativeTabs[] getCreativeTabs() {
+        return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
 	}
 }

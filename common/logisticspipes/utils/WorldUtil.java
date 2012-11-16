@@ -12,7 +12,7 @@ import java.util.LinkedList;
 
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
 public class WorldUtil {
@@ -32,8 +32,8 @@ public class WorldUtil {
 	public LinkedList<AdjacentTile> getAdjacentTileEntities() {
 		// TODO Auto-generated method stub
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
-		for (Orientations o : Orientations.values()){
-			if (o == Orientations.Unknown) continue;
+		for (ForgeDirection o : ForgeDirection.values()){
+			if (o == ForgeDirection.UNKNOWN) continue;
 			Position p = new Position(_x, _y, _z, o);
 			p.moveForwards(1);
 			TileEntity tile = _worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
@@ -44,7 +44,7 @@ public class WorldUtil {
 		return foundTiles;
 	}
 	
-	public TileEntity getAdjecentTile(Orientations direction){
+	public TileEntity getAdjecentTile(ForgeDirection direction){
 		Position pos = new Position(_x, _y, _z, direction);
 		pos.moveForwards(1.0);
 		return _worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);

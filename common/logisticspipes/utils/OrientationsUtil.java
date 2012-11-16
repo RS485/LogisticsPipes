@@ -1,69 +1,69 @@
 package logisticspipes.utils;
 
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.PipeTransportItems;
 
 public class OrientationsUtil {
-	public static Orientations getOrientationOfTilewithPipe(PipeTransportItems pipe,TileEntity tile) {
+	public static ForgeDirection getOrientationOfTilewithPipe(PipeTransportItems pipe,TileEntity tile) {
 		if(pipe.zCoord == tile.zCoord) {
 			if(pipe.yCoord == tile.yCoord) {
 				if(pipe.xCoord < tile.xCoord) {
-					return Orientations.XPos;
+					return ForgeDirection.EAST;
 				} else if(pipe.xCoord > tile.xCoord) {
-					return Orientations.XNeg;
+					return ForgeDirection.WEST;
 				}
 			}
 		}
 		if(pipe.xCoord == tile.xCoord) {
 			if(pipe.zCoord == tile.zCoord) {
 				if(pipe.yCoord < tile.yCoord) {
-					return Orientations.YPos;
+					return ForgeDirection.UP;
 				} else if(pipe.yCoord > tile.yCoord) {
-					return Orientations.YNeg;
+					return ForgeDirection.DOWN;
 				}
 			}
 		}
 		if(pipe.xCoord == tile.xCoord) {
 			if(pipe.yCoord == tile.yCoord) {
 				if(pipe.zCoord < tile.zCoord) {
-					return Orientations.ZPos;
+					return ForgeDirection.SOUTH;
 				} else if(pipe.zCoord > tile.zCoord) {
-					return Orientations.ZNeg;
+					return ForgeDirection.NORTH;
 				}
 			}
 		}
-		return Orientations.Unknown;
+		return ForgeDirection.UNKNOWN;
 	}
 	
-	public static Orientations getOrientationOfTilewithTile(TileEntity pipe,TileEntity tile) {
+	public static ForgeDirection getOrientationOfTilewithTile(TileEntity pipe,TileEntity tile) {
 		if(pipe.zCoord == tile.zCoord) {
 			if(pipe.yCoord == tile.yCoord) {
 				if(pipe.xCoord < tile.xCoord) {
-					return Orientations.XPos;
+					return ForgeDirection.EAST;
 				} else if(pipe.xCoord > tile.xCoord) {
-					return Orientations.XNeg;
+					return ForgeDirection.WEST;
 				}
 			}
 		}
 		if(pipe.xCoord == tile.xCoord) {
 			if(pipe.zCoord == tile.zCoord) {
 				if(pipe.yCoord < tile.yCoord) {
-					return Orientations.YPos;
+					return ForgeDirection.UP;
 				} else if(pipe.yCoord > tile.yCoord) {
-					return Orientations.YNeg;
+					return ForgeDirection.DOWN;
 				}
 			}
 		}
 		if(pipe.xCoord == tile.xCoord) {
 			if(pipe.yCoord == tile.yCoord) {
 				if(pipe.zCoord < tile.zCoord) {
-					return Orientations.ZPos;
+					return ForgeDirection.SOUTH;
 				} else if(pipe.zCoord > tile.zCoord) {
-					return Orientations.ZNeg;
+					return ForgeDirection.NORTH;
 				}
 			}
 		}
-		return Orientations.Unknown;
+		return ForgeDirection.UNKNOWN;
 	}
 }

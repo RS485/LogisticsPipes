@@ -23,7 +23,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
@@ -56,7 +56,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 	
 	@Override
-	public EntityItem toEntityItem(Orientations dir) {
+	public EntityItem toEntityItem(ForgeDirection dir) {
 		return super.toEntityItem(dir);
 	}
 	
@@ -155,7 +155,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public IRoutedItem split(World worldObj, int itemsToTake, Orientations orientation) {
+	public IRoutedItem split(World worldObj, int itemsToTake, ForgeDirection orientation) {
 		EntityPassiveItem newItem = new EntityPassiveItem(worldObj);
 		newItem.setPosition(position.x, position.y, position.z);
 		newItem.setSpeed(this.speed);
@@ -164,7 +164,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		if (this.container instanceof TileGenericPipe && ((TileGenericPipe)this.container).pipe.transport instanceof PipeTransportItems){
 			if (((TileGenericPipe)this.container).pipe instanceof PipeLogisticsChassi){
 				PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((TileGenericPipe)this.container).pipe;
-				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation.reverse());
+				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation.getOpposite());
 			} else {
 				((PipeTransportItems)((TileGenericPipe)this.container).pipe.transport).entityEntering(newItem, orientation);
 			}

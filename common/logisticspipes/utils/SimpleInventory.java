@@ -12,7 +12,6 @@ import java.util.LinkedList;
 
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;

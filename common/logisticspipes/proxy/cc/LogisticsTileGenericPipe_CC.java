@@ -16,7 +16,7 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.IPeripheral;
 
@@ -24,7 +24,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	
 	private boolean turtleConnect[] = new boolean[7];
 	
-	private HashMap<IComputerAccess, Orientations> connections = new HashMap<IComputerAccess, Orientations>();
+	private HashMap<IComputerAccess, ForgeDirection> connections = new HashMap<IComputerAccess, ForgeDirection>();
 	
 	private boolean init = false;
 	private HashMap<Integer, String> commandMap = new HashMap<Integer, String>();
@@ -218,7 +218,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 
 	@Override
 	public void attach(IComputerAccess computer, String computerSide) {
-		Orientations ori = SimpleServiceLocator.ccProxy.getOrientation(computer, computerSide, this);
+		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, computerSide, this);
 		connections.put(computer, ori);
 	}
 

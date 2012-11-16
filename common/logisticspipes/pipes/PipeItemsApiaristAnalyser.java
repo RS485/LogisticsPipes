@@ -17,8 +17,8 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
@@ -42,7 +42,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public TransportLayer getTransportLayer() {
 		if (this._transportLayer == null){
 			_transportLayer = new TransportLayer() {
-				@Override public Orientations itemArrived(IRoutedItem item) {return getPointedOrientation();}
+				@Override public ForgeDirection itemArrived(IRoutedItem item) {return getPointedOrientation();}
 				@Override public boolean stillWantItem(IRoutedItem item) {return true;}
 			};
 		}
@@ -50,7 +50,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 	
 	@Override
-	public int getNonRoutedTexture(Orientations connection) {
+	public int getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(getPointedOrientation())){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
@@ -84,8 +84,8 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 	
-	private Orientations getPointedOrientation() {
-		for(Orientations ori:Orientations.values()) {
+	private ForgeDirection getPointedOrientation() {
+		for(ForgeDirection ori:ForgeDirection.values()) {
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
 			pos.moveForwards(1);
@@ -100,7 +100,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 	
 	private TileEntity getPointedTileEntity() {
-		for(Orientations ori:Orientations.values()) {
+		for(ForgeDirection ori:ForgeDirection.values()) {
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
 			pos.moveForwards(1);
@@ -125,12 +125,12 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	@Override
 	public IInventory getInventory() {
 		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().reverse());
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
 		return rawInventory;
 	}
 	
 	@Override
-	public Orientations inventoryOrientation() {
+	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();
 	}
 

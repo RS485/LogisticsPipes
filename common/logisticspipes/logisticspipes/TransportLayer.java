@@ -8,7 +8,7 @@
 
 package logisticspipes.logisticspipes;
 
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 /**
  * This class is responsible for handling items arriving at its destination
@@ -19,7 +19,7 @@ import buildcraft.api.core.Orientations;
 public abstract class TransportLayer {
 	
 	public abstract boolean stillWantItem(IRoutedItem item);
-	public abstract Orientations itemArrived(IRoutedItem item);
+	public abstract ForgeDirection itemArrived(IRoutedItem item);
 	
 //	public void SendItem(EntityData data){
 //		

@@ -15,19 +15,19 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraft.src.ItemStack;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
 public interface IRouter {
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
-	public boolean isRoutedExit(Orientations connection);
+	public boolean isRoutedExit(ForgeDirection connection);
 	public boolean hasRoute(UUID id);
-	public Orientations getExitFor(UUID id);
+	public ForgeDirection getExitFor(UUID id);
 	
 	@Deprecated
-	public HashMap<IRouter, Orientations> getRouteTable();
+	public HashMap<IRouter, ForgeDirection> getRouteTable();
 	public LinkedList<IRouter> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	

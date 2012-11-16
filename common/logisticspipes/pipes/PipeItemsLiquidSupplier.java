@@ -11,9 +11,11 @@ import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.ITankContainer;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidDictionary.LiquidRegisterEvent;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
@@ -31,7 +33,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 				if(tile instanceof TileGenericPipe) return false;
 				if (tile instanceof ITankContainer) {
 					ITankContainer liq = (ITankContainer) tile;
-					if (liq.getTanks() != null && liq.getTanks().length > 0)
+					if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
 						return true;
 				}
 				return false;
@@ -59,7 +61,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		//container.getLiquidSlots()[0].getLiquidQty();
 		if (data.item == null) return;
 		if (data.item.getItemStack() == null) return;
-		LiquidStack liquidId = LiquidManager.getLiquidForFilledItem(data.item.getItemStack());
+		LiquidStack liquidId = LiquidContainerRegistry.getLiquidForFilledItem(data.item.getItemStack());
 		if (liquidId == null) return;
 		while (data.item.getItemStack().stackSize > 0 && container.fill(data.output, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(data.output, liquidId, true);

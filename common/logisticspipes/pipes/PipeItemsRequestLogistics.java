@@ -28,7 +28,6 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;
-import buildcraft.BuildCraftCore;
 
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems {

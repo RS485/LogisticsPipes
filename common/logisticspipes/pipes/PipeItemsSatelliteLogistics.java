@@ -30,8 +30,8 @@ import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
@@ -98,7 +98,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
 	}
 	
-	private IInventory getRawInventory(Orientations ori) {
+	private IInventory getRawInventory(ForgeDirection ori) {
 		Position pos = new Position(this.xCoord, this.yCoord, this.zCoord, ori);
 		pos.moveForwards(1);
 		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
@@ -107,9 +107,9 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 		return Utils.getInventory((IInventory) tile);
 	}
 	
-	private IInventory getInventory(Orientations ori) {
+	private IInventory getInventory(ForgeDirection ori) {
 		IInventory rawInventory = getRawInventory(ori);
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, ori.reverse());
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, ori.getOpposite());
 		return rawInventory;
 	}
 	
@@ -125,7 +125,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 	
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for(Orientations ori:Orientations.values()) {
+		for(ForgeDirection ori:ForgeDirection.values()) {
 			IInventory inv = getInventory(ori);
 			if(inv != null) {
 				for(int i=0;i<inv.getSizeInventory();i++) {

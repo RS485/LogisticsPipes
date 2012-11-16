@@ -16,7 +16,7 @@ import logisticspipes.utils.Pair;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -39,7 +39,7 @@ public class ClientRouter implements IRouter {
 
 	public HashMap<UUID, ExitRoute> _adjacent = new HashMap<UUID, ExitRoute>();
 	
-	private HashMap<UUID, Orientations> _routeTable = new HashMap<UUID, Orientations>();
+	private HashMap<UUID, ForgeDirection> _routeTable = new HashMap<UUID, ForgeDirection>();
 	public HashMap<UUID, Pair<Integer,Boolean>> _routeCosts = new HashMap<UUID, Pair<Integer,Boolean>>();
 	private LinkedList<IRouter> _externalRoutersByCost = null;
 	
@@ -83,8 +83,8 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean isRoutedExit(Orientations connection) {
-		if(connection == Orientations.Unknown) {
+	public boolean isRoutedExit(ForgeDirection connection) {
+		if(connection == ForgeDirection.UNKNOWN) {
 			return false;
 		}
 		return routedExit[connection.ordinal()];
@@ -102,17 +102,17 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public Orientations getExitFor(UUID id) {
+	public ForgeDirection getExitFor(UUID id) {
 		ensureRouteTableIsUpToDate();
 		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id));
 	}
 
 	@Override
-	public HashMap<IRouter, Orientations> getRouteTable() {
+	public HashMap<IRouter, ForgeDirection> getRouteTable() {
 		ensureRouteTableIsUpToDate();
-		HashMap<IRouter, Orientations> list = new HashMap<IRouter, Orientations>();
+		HashMap<IRouter, ForgeDirection> list = new HashMap<IRouter, ForgeDirection>();
 		for(UUID id: _routeTable.keySet()) {
-			Orientations ori = _routeTable.get(id);
+			ForgeDirection ori = _routeTable.get(id);
 			IRouter router =  SimpleServiceLocator.routerManager.getRouter(id);
 			if(router != null) {
 				list.put(router, ori);
@@ -222,13 +222,13 @@ public class ClientRouter implements IRouter {
 		
 		
 		//Build route table
-		_routeTable = new HashMap<UUID, Orientations>();
+		_routeTable = new HashMap<UUID, ForgeDirection>();
 		_routeCosts = new HashMap<UUID, Pair<Integer, Boolean>>();
 		for (IRouter node : tree.keySet())
 		{
 			LinkedList<IRouter> route = tree.get(node);
 			if (route.size() == 0){
-				_routeTable.put(node.getId(), Orientations.Unknown);
+				_routeTable.put(node.getId(), ForgeDirection.UNKNOWN);
 				continue;
 			}
 			

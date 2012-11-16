@@ -14,7 +14,7 @@ import java.util.UUID;
 import logisticspipes.routing.IRouter;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 
@@ -61,7 +61,7 @@ public interface IRoutedItem {
 	@Deprecated
 	public void setArrived();
 	
-	public IRoutedItem split(World worldObj, int itemsToTake, Orientations orientation);
+	public IRoutedItem split(World worldObj, int itemsToTake, ForgeDirection orientation);
 	public void SetPosition(double x, double y, double z);
 	
 	public boolean isReRoute();

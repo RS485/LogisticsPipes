@@ -8,17 +8,17 @@
 
 package logisticspipes.routing;
 
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 /**
  * Defines direction with a cost
  */
 public class ExitRoute {
-	public Orientations exitOrientation;
+	public ForgeDirection exitOrientation;
 	public int metric;
 	public boolean isPipeLess;
 	
-	public ExitRoute(Orientations exitOrientation, int metric, boolean isPipeLess)
+	public ExitRoute(ForgeDirection exitOrientation, int metric, boolean isPipeLess)
 	{
 		this.exitOrientation = exitOrientation;
 		this.metric = metric;

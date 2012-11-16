@@ -25,7 +25,7 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
@@ -376,7 +376,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public int addItem(ItemStack stack, boolean doAdd, Orientations from) {
+	public int addItem(ItemStack stack, boolean doAdd, ForgeDirection from) {
 		if(stack == null) return 0;
 		if(stack.getItem() == null) return 0;
 		if (stack.getItem() == Item.ingotIron) {
@@ -453,7 +453,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public ItemStack[] extractItem(boolean doRemove, Orientations from, int maxItemCount) {
+	public ItemStack[] extractItem(boolean doRemove, ForgeDirection from, int maxItemCount) {
 		ItemStack[] tmp = new ItemStack[] { inv.getStackInSlot(10) };
 		if (doRemove) {
 			inv.setInventorySlotContents(10, null);

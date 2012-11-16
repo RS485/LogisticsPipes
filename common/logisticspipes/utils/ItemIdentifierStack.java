@@ -14,7 +14,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 public final class ItemIdentifierStack {
 	private final ItemIdentifier _item;
@@ -73,9 +73,9 @@ public final class ItemIdentifierStack {
 		return list;
 	}
 
-	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue) {
+	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue) {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair3<IRoutedItem, Orientations, ItemSendMode> part:_sendQueue) {
+		for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> part:_sendQueue) {
 			if(part == null) {
 				list.add(null);
 			} else {

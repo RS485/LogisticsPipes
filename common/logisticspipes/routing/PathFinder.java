@@ -18,7 +18,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
@@ -44,7 +44,7 @@ class PathFinder {
 		return newSearch.getConnectedRoutingPipes(startPipe,  new LinkedList<TileGenericPipe>(), null);
 	}
 	
-	public static HashMap<RoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, Orientations startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
+	public static HashMap<RoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength);
 		LinkedList<TileGenericPipe> visited = new LinkedList<TileGenericPipe>();
 		visited.add(startPipe);
@@ -82,7 +82,7 @@ class PathFinder {
 	
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call 
 		if (startPipe.pipe instanceof RoutedPipe && visited.size() != 0) {
-			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(Orientations.Unknown, visited.size(), false));
+			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, visited.size(), false));
 			
 			return foundPipes;
 		}
@@ -104,7 +104,7 @@ class PathFinder {
 					for (Pipe telepipe : pipez){
 						HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)telepipe.container), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
 						for(RoutedPipe pipe : result.keySet()) 	{
-							result.get(pipe).exitOrientation = Orientations.Unknown;
+							result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
 							if (!foundPipes.containsKey(pipe)) {  
 								// New path
 								foundPipes.put(pipe, result.get(pipe));
@@ -124,7 +124,7 @@ class PathFinder {
 		
 		//Recurse in all directions
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, Orientations.values()[i]);
+			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, ForgeDirection.values()[i]);
 			p.moveForwards(1);
 			TileEntity tile = startPipe.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			
@@ -152,7 +152,7 @@ class PathFinder {
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
 				for(RoutedPipe pipe : result.keySet()) 	{
 					//Update Result with the direction we took
-					result.get(pipe).exitOrientation = Orientations.values()[i];
+					result.get(pipe).exitOrientation = ForgeDirection.values()[i];
 					if(isDirectConnection) {
 						result.get(pipe).isPipeLess = true;
 					}
@@ -171,7 +171,7 @@ class PathFinder {
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
 					p.moveBackwards(1);
-					pathPainter.addLaser(startPipe.worldObj, p, Orientations.values()[i]);
+					pathPainter.addLaser(startPipe.worldObj, p, ForgeDirection.values()[i]);
 				}
 			}
 		}

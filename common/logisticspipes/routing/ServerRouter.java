@@ -32,7 +32,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.Packet250CustomPayload;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
@@ -56,7 +56,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private LSA _myLsa = new LSA();
 		
 	/** Map of router -> orientation for all known destinations **/
-	public HashMap<IRouter, Orientations> _routeTable = new HashMap<IRouter, Orientations>();
+	public HashMap<IRouter, ForgeDirection> _routeTable = new HashMap<IRouter, ForgeDirection>();
 	public HashMap<IRouter, Pair<Integer,Boolean>> _routeCosts = new HashMap<IRouter, Pair<Integer,Boolean>>();
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
@@ -112,7 +112,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	@Override
-	public HashMap<IRouter, Orientations> getRouteTable(){
+	public HashMap<IRouter, ForgeDirection> getRouteTable(){
 		ensureRouteTableIsUpToDate();
 		return _routeTable;
 	}
@@ -293,13 +293,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		
 		//Build route table
-		_routeTable = new HashMap<IRouter, Orientations>();
+		_routeTable = new HashMap<IRouter, ForgeDirection>();
 		_routeCosts = new HashMap<IRouter, Pair<Integer, Boolean>>();
 		for (IRouter node : tree.keySet())
 		{
 			LinkedList<IRouter> route = tree.get(node);
 			if (route.size() == 0){
-				_routeTable.put(node, Orientations.Unknown);
+				_routeTable.put(node, ForgeDirection.UNKNOWN);
 				continue;
 			}
 			
@@ -320,12 +320,12 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 	}
 	
-	private LinkedList<Orientations> GetNonRoutedExits()	{
-		LinkedList<Orientations> ret = new LinkedList<Orientations>();
+	private LinkedList<ForgeDirection> GetNonRoutedExits()	{
+		LinkedList<ForgeDirection> ret = new LinkedList<ForgeDirection>();
 		
 		outer:
 		for (int i = 0 ; i < 6; i++){
-			Orientations o = Orientations.values()[i];
+			ForgeDirection o = ForgeDirection.values()[i];
 			boolean found = false;
 			for(ExitRoute route : _adjacent.values()) {
 				if (route.exitOrientation == o){
@@ -399,12 +399,12 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	@Override
-	public boolean isRoutedExit(Orientations o){
+	public boolean isRoutedExit(ForgeDirection o){
 		return !GetNonRoutedExits().contains(o);
 	}
 
 	@Override
-	public Orientations getExitFor(UUID id) {
+	public ForgeDirection getExitFor(UUID id) {
 		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id));
 	}
 	

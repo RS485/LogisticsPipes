@@ -23,7 +23,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 public class PipeItemsBasicLogistics extends RoutedPipe {
 	
@@ -36,8 +36,8 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 			public boolean isPipeConnected(TileEntity tile) {
 				if(super.isPipeConnected(tile)) return true;
 				if(tile instanceof ILogisticsPowerProvider) {
-					Orientations ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
-					if(ori == null || ori == Orientations.Unknown || ori == Orientations.YNeg || ori == Orientations.YPos) {
+					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
 						return false;
 					}
 					return true;
@@ -50,7 +50,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	}
 
 	@Override
-	public int getNonRoutedTexture(Orientations connection) {
+	public int getNonRoutedTexture(ForgeDirection connection) {
 		if(isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
@@ -58,14 +58,14 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	}
 
 	@Override
-	public boolean isLockedExit(Orientations orientation) {
+	public boolean isLockedExit(ForgeDirection orientation) {
 		if(isPowerProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
 	
-	private boolean isPowerProvider(Orientations ori) {
+	private boolean isPowerProvider(ForgeDirection ori) {
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
 		for(AdjacentTile tile:adjacent) {
@@ -103,8 +103,8 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		}
 	}
 */
-	private boolean isSideOrientation(Orientations ori) {
-		return ori == Orientations.XPos || ori == Orientations.XNeg || ori == Orientations.ZPos || ori == Orientations.ZNeg;
+	private boolean isSideOrientation(ForgeDirection ori) {
+		return ori == ForgeDirection.EAST || ori == ForgeDirection.WEST || ori == ForgeDirection.SOUTH || ori == ForgeDirection.NORTH;
 	}
 	
 	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {

@@ -53,7 +53,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
@@ -97,7 +97,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 	
 	protected ItemStack extractFromISpecialInventory(ISpecialInventory inv){
-		ItemStack[] stack = inv.extractItem(true, Orientations.Unknown, 1);
+		ItemStack[] stack = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
 		if(stack.length < 1) return null;
 		return stack[0];
 	}
@@ -170,7 +170,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 				}else{
 					_extras--;
 					if(LogisticsPipes.DisplayRequests)System.out.println("Extra dropped, " + _extras + " remaining");
-					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
+					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
 					entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);

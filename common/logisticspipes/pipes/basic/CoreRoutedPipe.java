@@ -52,8 +52,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.BuildCraftCore;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
@@ -97,7 +96,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public int server_routing_table_size = 0;
 	
-	protected final LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>>(); 
+	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>(); 
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 	
@@ -135,23 +134,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return payload;
 	}
 	
-	public void queueRoutedItem(IRoutedItem routedItem, Orientations from) {
-		_sendQueue.addLast(new Pair3<IRoutedItem, Orientations, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
+	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
+		_sendQueue.addLast(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged();
 	}
 
-	public void queueRoutedItem(IRoutedItem routedItem, Orientations from, ItemSendMode mode) {
-		_sendQueue.addLast(new Pair3<IRoutedItem, Orientations, ItemSendMode>(routedItem, from, mode));
+	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
+		_sendQueue.addLast(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
 		sendQueueChanged();
 	}
 	
 	protected void sendQueueChanged() {}
 	
-	private void sendRoutedItem(IRoutedItem routedItem, Orientations from){
+	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
 		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()) + 0.5F, this.zCoord + 0.5F, from);
 		p.moveForwards(0.5F);
 		routedItem.SetPosition(p.x, p.y, p.z);
-		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.reverse());
+		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
 		
@@ -193,7 +192,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-				Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
+				Pair<IRoutedItem, ForgeDirection> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
 				if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
@@ -209,7 +208,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			} else if(getItemSendMode() == ItemSendMode.Fast) {
 				for(int i=0;i < 16;i++) {
 					if (!_sendQueue.isEmpty()){
-						Pair<IRoutedItem, Orientations> itemToSend = _sendQueue.getFirst();
+						Pair<IRoutedItem, ForgeDirection> itemToSend = _sendQueue.getFirst();
 						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 						_sendQueue.removeFirst();
 					}
@@ -264,9 +263,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	@Override
-	public final int getTextureIndex(Orientations connection) {
+	public final int getTextureIndex(ForgeDirection connection) {
 
-		if (connection == Orientations.Unknown){
+		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
 		}
 		
@@ -279,11 +278,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
-	public int getRoutedTexture(Orientations connection){
+	public int getRoutedTexture(ForgeDirection connection){
 		return Textures.LOGISTICSPIPE_ROUTED_TEXTURE;
 	}
 	
-	public int getNonRoutedTexture(Orientations connection){
+	public int getNonRoutedTexture(ForgeDirection connection){
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
 	
@@ -463,7 +462,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		//Override by subclasses //TODO
 	}
 
-	public boolean isLockedExit(Orientations orientation) {
+	public boolean isLockedExit(ForgeDirection orientation) {
 		return false;
 	}
 	

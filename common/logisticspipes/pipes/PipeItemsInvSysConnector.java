@@ -37,9 +37,8 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.BuildCraftCore;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
@@ -104,21 +103,21 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	private void checkConnectedInvs() {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(xCoord, yCoord, zCoord, Orientations.values()[i]);
+			Position p = new Position(xCoord, yCoord, zCoord, ForgeDirection.values()[i]);
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(tile instanceof IInventory) {
 				IInventory inv = Utils.getInventory((IInventory) tile);
 				if(inv instanceof ISidedInventory) {
-					inv = new SidedInventoryAdapter((ISidedInventory)inv, Orientations.values()[i].reverse());
+					inv = new SidedInventoryAdapter((ISidedInventory)inv, ForgeDirection.values()[i].getOpposite());
 				}
-				checkOneConnectedInv(inv,Orientations.values()[i]);
+				checkOneConnectedInv(inv,ForgeDirection.values()[i]);
 				break;
 			}
 		}
 	}
 	
-	private void checkOneConnectedInv(IInventory inv, Orientations dir) {
+	private void checkOneConnectedInv(IInventory inv, ForgeDirection dir) {
 		for(int i=0; i<inv.getSizeInventory();i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if(stack != null) {
@@ -141,7 +140,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		}
 	}
 
-	public void sendStack(ItemStack stack, UUID source, UUID destination, Orientations dir, TransportMode mode) {
+	public void sendStack(ItemStack stack, UUID source, UUID destination, ForgeDirection dir, TransportMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(source);
 		itemToSend.setDestination(destination);
@@ -252,7 +251,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(xCoord, yCoord, zCoord, Orientations.values()[i]);
+			Position p = new Position(xCoord, yCoord, zCoord, ForgeDirection.values()[i]);
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(tile instanceof IInventory) {
@@ -292,7 +291,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(xCoord, yCoord, zCoord, Orientations.values()[i]);
+			Position p = new Position(xCoord, yCoord, zCoord, ForgeDirection.values()[i]);
 			p.moveForwards(1);
 			TileEntity lTile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(lTile instanceof IInventory) {

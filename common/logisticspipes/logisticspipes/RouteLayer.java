@@ -10,7 +10,7 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 /**
  * @author Krapht
@@ -27,11 +27,11 @@ public class RouteLayer {
 		_transport = transport;
 	}
 	
-	public Orientations getOrientationForItem(IRoutedItem item){
+	public ForgeDirection getOrientationForItem(IRoutedItem item){
 		
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
 		if (item.getDestination() == null){
-			if (item.getSource() != null) return Orientations.Unknown;
+			if (item.getSource() != null) return ForgeDirection.UNKNOWN;
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true);
 		}
 		
@@ -42,7 +42,7 @@ public class RouteLayer {
 		
 		//If we still have no destination or client side unroutable, drop it
 		if (item.getDestination() == null) { 
-			return Orientations.Unknown;
+			return ForgeDirection.UNKNOWN;
 		}
 
 		
@@ -54,13 +54,13 @@ public class RouteLayer {
 			//}
 			
 			item.setDoNotBuffer(true);
-			Orientations o =_transport.itemArrived(item);
-			return o != null?o:Orientations.Unknown;
+			ForgeDirection o =_transport.itemArrived(item);
+			return o != null?o:ForgeDirection.UNKNOWN;
 		}
 		
 		//Do we now know the destination?
 		if (!_router.hasRoute(item.getDestination())){
-			return Orientations.Unknown;
+			return ForgeDirection.UNKNOWN;
 		}
 		//Which direction should we send it
 		return _router.getExitFor(item.getDestination());

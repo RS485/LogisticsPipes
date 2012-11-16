@@ -28,7 +28,7 @@ import net.minecraft.src.EntityPlayerSP;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.PacketDispatcher;
@@ -61,7 +61,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	/* ** SATELLITE CODE ** */
 
 	protected int getNextConnectSatelliteId(boolean prev) {
-		final HashMap<IRouter, Orientations> routes = getRouter().getRouteTable();
+		final HashMap<IRouter, ForgeDirection> routes = getRouter().getRouteTable();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (routes.containsKey(satellite.getRouter())) {

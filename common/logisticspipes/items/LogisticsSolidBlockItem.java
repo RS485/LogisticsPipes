@@ -2,6 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.ItemBlock;
@@ -41,5 +42,10 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this,1,0));
 		par3List.add(new ItemStack(this,1,1));
+	}
+
+	@Override
+	public CreativeTabs[] getCreativeTabs() {
+        return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
 	}
 }

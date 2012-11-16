@@ -51,7 +51,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 					if(j == 1 &&SimpleServiceLocator.electricItemProxy.isElectricItem(slot) && slot.hasTagCompound() && slot.getTagCompound().getName().equals("")) {
 						slot.getTagCompound().setName("tag");
 					}
-					ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, tile.orientation.reverse(), true);
+					ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, tile.orientation.getOpposite(), true);
 					slot.stackSize -= added.stackSize;
 					if(added.stackSize != 0) {
 						change = true;

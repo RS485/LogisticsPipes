@@ -34,8 +34,8 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Orientations;
 import buildcraft.core.utils.Utils;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
@@ -138,35 +138,35 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 		IInventory inventory = _invProvider.getRawInventory();
 		if (inventory == null) return;
 		if (inventory instanceof ISidedInventory) {
-			Orientations extractOrientation;
+			ForgeDirection extractOrientation;
 			switch (_sneakyOrientation){
 			case Bottom:
-				extractOrientation = Orientations.YNeg;
+				extractOrientation = ForgeDirection.DOWN;
 				break;
 			case Top:
-				extractOrientation = Orientations.YPos;
+				extractOrientation = ForgeDirection.UP;
 				break;
 			case Side:
-				extractOrientation = Orientations.ZPos;
+				extractOrientation = ForgeDirection.SOUTH;
 				break;
 			default:
-				extractOrientation = _invProvider.inventoryOrientation().reverse();
+				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 			}
 			inventory = new SidedInventoryAdapter((ISidedInventory) inventory, extractOrientation);
 		}
 		
-		ItemStack stack = checkExtract(inventory, true, _invProvider.inventoryOrientation().reverse());
+		ItemStack stack = checkExtract(inventory, true, _invProvider.inventoryOrientation().getOpposite());
 		if (stack == null) return;
 		_itemSender.sendStack(stack);
 	}
 
-	public ItemStack checkExtract(IInventory inventory, boolean doRemove, Orientations from) {
+	public ItemStack checkExtract(IInventory inventory, boolean doRemove, ForgeDirection from) {
 		IInventory inv = Utils.getInventory(inventory);
 		ItemStack result = checkExtractGeneric(inv, doRemove, from);
 		return result;
 	}
 
-	public ItemStack checkExtractGeneric(IInventory inventory, boolean doRemove, Orientations from) {
+	public ItemStack checkExtractGeneric(IInventory inventory, boolean doRemove, ForgeDirection from) {
 		for (int k = 0; k < inventory.getSizeInventory(); k++) {
 			if ((inventory.getStackInSlot(k) == null) || (inventory.getStackInSlot(k).stackSize <= 0)) {
 				continue;

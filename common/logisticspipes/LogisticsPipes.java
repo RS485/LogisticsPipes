@@ -43,6 +43,7 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
+import logisticspipes.main.CreativeTabLP;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
@@ -81,7 +82,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
@@ -157,6 +158,8 @@ public class LogisticsPipes {
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;	
 	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
+	
+	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
 	
 	//Blocks
 	public static Block logisticsSign;
@@ -269,7 +272,7 @@ public class LogisticsPipes {
 				@Override public boolean isTurtle(TileEntity tile) {return false;}
 				@Override public boolean isComputer(TileEntity tile) {return false;}
 				@Override public boolean isCC() {return false;}
-				@Override public Orientations getOrientation(Object computer, String computerSide, TileEntity tile) {return Orientations.Unknown;}
+				@Override public ForgeDirection getOrientation(Object computer, String computerSide, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 			});
 			System.out.println("Loaded CC DummyProxy");

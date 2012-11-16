@@ -49,8 +49,8 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
@@ -92,7 +92,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		
 		
 		int count = 0;
-		for (Orientations o : Orientations.values()){
+		for (ForgeDirection o : ForgeDirection.values()){
 			Position p = new Position(xCoord, yCoord, zCoord, o);
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
@@ -107,7 +107,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
 		int sent = 0;
-		for (Orientations o : Orientations.values()){
+		for (ForgeDirection o : ForgeDirection.values()){
 			Position p = new Position(xCoord, yCoord, zCoord, o);
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
@@ -226,7 +226,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			return allItems;
 		}
 		
-		for (Orientations o : Orientations.values()){
+		for (ForgeDirection o : ForgeDirection.values()){
 			Position p = new Position(xCoord, yCoord, zCoord, o);
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
@@ -299,7 +299,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
 	}
 	
-	private IInventory getRawInventory(Orientations ori) {
+	private IInventory getRawInventory(ForgeDirection ori) {
 		Position pos = new Position(this.xCoord, this.yCoord, this.zCoord, ori);
 		pos.moveForwards(1);
 		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
@@ -308,9 +308,9 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return Utils.getInventory((IInventory) tile);
 	}
 	
-	private IInventory getInventory(Orientations ori) {
+	private IInventory getInventory(ForgeDirection ori) {
 		IInventory rawInventory = getRawInventory(ori);
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, ori.reverse());
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, ori.getOpposite());
 		return rawInventory;
 	}
 	
@@ -326,7 +326,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for(Orientations ori:Orientations.values()) {
+		for(ForgeDirection ori:ForgeDirection.values()) {
 			LogicProvider providerLogic = (LogicProvider) logic;
 			IInventory inv = getInventory(ori);
 			if(inv != null) {

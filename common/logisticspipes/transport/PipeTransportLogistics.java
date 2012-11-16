@@ -24,7 +24,7 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
 import net.minecraft.src.Packet;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.EntityPassiveItem;
@@ -82,7 +82,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				}
 			}
 			for(IRoutedItem item:toAdd) {
-				this.entityEntering(item.getEntityPassiveItem(), Orientations.YPos);
+				this.entityEntering(item.getEntityPassiveItem(), ForgeDirection.UP);
 			}
 		}
 	}
@@ -97,7 +97,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	
 	@Override
-	public void entityEntering(IPipedItem item, Orientations orientation) {
+	public void entityEntering(IPipedItem item, ForgeDirection orientation) {
 		if(MainProxy.isServer()) {
 			EntityData data = travelingEntities.get(item.getEntityId());
 			if(data != null && item instanceof RoutedEntityItem) {
@@ -130,7 +130,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	
 	@Override
-	public Orientations resolveDestination(EntityData data) {
+	public ForgeDirection resolveDestination(EntityData data) {
 		
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
@@ -144,24 +144,24 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
-		Orientations value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
+		ForgeDirection value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
 		routedItem.setReRoute(false);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);
-			return Orientations.Unknown;
+			return ForgeDirection.UNKNOWN;
 		} else if (value == null) {
 			System.out.println("THIS IS NOT SUPPOSED TO HAPPEN!");
-			return Orientations.Unknown;
+			return ForgeDirection.UNKNOWN;
 		}
-		if (value == Orientations.Unknown && !routedItem.getDoNotBuffer()){
+		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer()){
 			if(MainProxy.isServer()) {
 				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
 			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
 			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
 			scheduleRemoval(data.item);			
-			return Orientations.XNeg;
+			return ForgeDirection.WEST;
 		}
 		
 		readjustSpeed(routedItem.getEntityPassiveItem());
@@ -180,7 +180,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			}
 		}
 		
-		if (value == Orientations.Unknown ){ 
+		if (value == ForgeDirection.UNKNOWN ){ 
 			//Reduce the speed of items being dropped so they don't go all over the place
 			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
 		}

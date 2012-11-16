@@ -35,7 +35,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 
 			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
-			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.output.reverse(), true);
+			ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), data.output.getOpposite(), true);
 
 			if (!CoreProxy.proxy.isRenderWorld(worldObj))
 				if(added.stackSize >= data.item.getItemStack().stackSize)
@@ -47,9 +47,9 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 					
 					if(data.item.getItemStack().stackSize > 0) {
 						data.toCenter = true;
-						data.input = data.output.reverse();
+						data.input = data.output.getOpposite();
 						unscheduleRemoval(data.item);
-						entityEntering(data.item, data.output.reverse());
+						entityEntering(data.item, data.output.getOpposite());
 					}
 				}
 		} else {

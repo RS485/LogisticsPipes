@@ -27,10 +27,11 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
-import buildcraft.api.liquids.ILiquidTank;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.ILiquidTank;
+import net.minecraftforge.liquids.ITankContainer;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireReliableTransport{
@@ -59,7 +60,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
 			if (!(tile.tile instanceof ITankContainer) || tile.tile instanceof TileGenericPipe) continue;
 			ITankContainer container = (ITankContainer) tile.tile;
-			if (container.getTanks() == null || container.getTanks().length == 0) continue;
+			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;
 			
 			//How much do I want?
 			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(dummyInventory);
@@ -67,7 +68,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
 			for (ItemIdentifier item : wantContainers.keySet()){
 				ItemStack wantItem = item.makeNormalStack(1);
-				LiquidStack liquidstack = LiquidManager.getLiquidForFilledItem(wantItem);
+				LiquidStack liquidstack = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 				if (liquidstack == null) continue;
 				wantLiquids.put(LiquidIdentifier.get(liquidstack), wantContainers.get(item) * liquidstack.amount);
 			}
@@ -75,7 +76,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			//How much do I have?
 			HashMap<LiquidIdentifier, Integer> haveLiquids = new HashMap<LiquidIdentifier, Integer>();
 			
-			ILiquidTank[] result = container.getTanks();
+			ILiquidTank[] result = container.getTanks(ForgeDirection.UNKNOWN);
 			for (ILiquidTank slot : result){
 				if (slot.getLiquid() == null || !wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
 				if (!haveLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))){
@@ -97,9 +98,9 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			for (LiquidIdentifier liquidId : wantLiquids.keySet()){
 				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
 					ItemStack wantItem = requestedItem.makeNormalStack(1);
-					LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(wantItem);
+					LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 					if (requestedLiquidId == null) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidManager.getLiquidForFilledItem(requestedItem.makeNormalStack(1)).amount);
+					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidContainerRegistry.getLiquidForFilledItem(requestedItem.makeNormalStack(1)).amount);
 				}
 			}
 			
@@ -109,10 +110,10 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			HashMap<ItemIdentifier, Integer> allNeededContainers = invUtil.getItemsAndCount();
 			for (ItemIdentifier need : allNeededContainers.keySet()){
-				LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1));
+				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1));
 				if (requestedLiquidId == null) continue;
 				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
-				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
+				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
 				if (countToRequest < 1) continue;
 				
 				if(!_power.useEnergy(11)) {

@@ -58,8 +58,8 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.Utils;
@@ -92,12 +92,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
 	
-	public Orientations getPointedOrientation(){
+	public ForgeDirection getPointedOrientation(){
 		return ChassiLogic.orientation;
 	}
 	
 	public TileEntity getPointedTileEntity(){
-		if(ChassiLogic.orientation == Orientations.Unknown) return null;
+		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
 		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
 		pos.moveForwards(1.0);
 		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
@@ -106,21 +106,21 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public void nextOrientation() {
 		boolean found = false;
 		for (int l = 0; l < 6; ++l) {
-			ChassiLogic.orientation = Orientations.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
+			ChassiLogic.orientation = ForgeDirection.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
 			if(isValidOrientation(ChassiLogic.orientation)) {
 				found = true;
 				break;
 			}
 		}
 		if (!found) {
-			ChassiLogic.orientation = Orientations.Unknown;
+			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
 		}
 		PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
 		refreshRender();
 	}
 	
-	private boolean isValidOrientation(Orientations connection){
-		if (connection == Orientations.Unknown) return false;
+	private boolean isValidOrientation(ForgeDirection connection){
+		if (connection == ForgeDirection.UNKNOWN) return false;
 		if (getRouter().isRoutedExit(connection)) return false;
 		Position pos = new Position(xCoord, yCoord, zCoord, connection);
 		pos.moveForwards(1.0);
@@ -141,12 +141,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public int getRoutedTexture(Orientations connection) {
+	public int getRoutedTexture(ForgeDirection connection) {
 		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
 	
 	@Override
-	public int getNonRoutedTexture(Orientations connection) {
+	public int getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(ChassiLogic.orientation)){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
@@ -182,12 +182,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public IInventory getInventory() {
 		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().reverse());
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
 		return rawInventory;
 	}
 
 	@Override
-	public Orientations inventoryOrientation() {
+	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();
 	}
 	
@@ -230,7 +230,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound, "");
-			ChassiLogic.orientation = Orientations.values()[nbttagcompound.getInteger("Orientation") % 7];
+			ChassiLogic.orientation = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
@@ -309,7 +309,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
-			ChassiLogic.orientation = Orientations.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord) % 6];
+			ChassiLogic.orientation = ForgeDirection.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord) % 6];
 			worldObj.setBlockMetadata(xCoord, yCoord, zCoord, 0);
 		}
 		if(!init) {

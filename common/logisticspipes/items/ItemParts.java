@@ -7,7 +7,7 @@ import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 
-public class ItemParts extends Item {
+public class ItemParts extends LogisticsItem {
 	
 	public ItemParts(int par1) {
 		super(par1);
@@ -41,11 +41,6 @@ public class ItemParts extends Item {
     		return "item.NanoHopper";
     	}
 		return super.getItemNameIS(par1ItemStack);
-	}
-
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 
 	@Override

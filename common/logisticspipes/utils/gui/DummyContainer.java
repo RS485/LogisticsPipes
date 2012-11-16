@@ -105,7 +105,7 @@ public class DummyContainer extends Container{
 	 * Disable shift-clicking to transfer items
 	 */
 	@Override
-	public ItemStack func_82846_b(EntityPlayer pl, int i)
+	public ItemStack transferStackInSlot(EntityPlayer pl, int i)
     {
 		return null;
 //		Slot slot = (Slot)inventorySlots.get(i);

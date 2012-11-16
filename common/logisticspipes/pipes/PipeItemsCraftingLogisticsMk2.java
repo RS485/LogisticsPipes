@@ -82,7 +82,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 					}else{
 						_extras--;
 						if(LogisticsPipes.DisplayRequests)System.out.println("Extra dropped, " + _extras + " remaining");
-						Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.reverse());
+						Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
 						entityPos.moveForwards(0.5);
 						EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
 						entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);

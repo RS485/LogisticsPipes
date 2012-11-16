@@ -6,7 +6,7 @@ import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.EntityData;
 
 public class EntrencsTransport extends PipeTransportLogistics {
@@ -14,7 +14,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 	public PipeItemsSystemEntranceLogistics pipe;
 	
 	@Override
-	public Orientations resolveDestination(EntityData data) {
+	public ForgeDirection resolveDestination(EntityData data) {
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(container.worldObj, data);
 		if(routedItem.getDestination() == null) {
 			if(pipe.getLocalFreqUUID() != null) {

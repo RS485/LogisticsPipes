@@ -50,6 +50,7 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SneakyOrientation;
+import net.minecraft.src.Container;
 import net.minecraft.src.EntityPlayerMP;
 import net.minecraft.src.INetworkManager;
 import net.minecraft.src.NBTTagCompound;
@@ -1098,8 +1099,8 @@ public class ServerPacketHandler {
 			}
 			break;
 		}
-		if(player.inventorySlots != null) {
-			player.inventorySlots.updateCraftingResults();
+		if(player.inventoryContainer != null) {
+			player.inventoryContainer.updateCraftingResults();
 		}
 	}
 	

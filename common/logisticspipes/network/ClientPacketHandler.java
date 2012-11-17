@@ -542,7 +542,7 @@ public class ClientPacketHandler {
 			int old = station.heat;
 			station.heat = packet.integer;
 			if((station.heat == 0 && old != 0) || (station.heat != 0 && old == 0)) {
-				FMLClientHandler.instance().getClient().theWorld.markBlockNeedsUpdate(packet.posX, packet.posY, packet.posZ);
+				FMLClientHandler.instance().getClient().theWorld.markBlockForUpdate(packet.posX, packet.posY, packet.posZ);
 			}
 		}
 	}
@@ -665,7 +665,7 @@ public class ClientPacketHandler {
 		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof IRotationProvider) {
 			((IRotationProvider)tile).setRotation(packet.integer);
-			FMLClientHandler.instance().getClient().theWorld.markBlockNeedsUpdate(packet.posX, packet.posY, packet.posZ);
+			FMLClientHandler.instance().getClient().theWorld.markBlockForUpdate(packet.posX, packet.posY, packet.posZ);
 		}
 	}
 

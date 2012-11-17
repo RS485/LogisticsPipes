@@ -126,7 +126,7 @@ public class DummyContainer extends Container{
 			ItemStack stack2 = slot.getStack();
 			if(stack2 != null && stack2.getItem().shiftedIndex == LogisticsPipes.ModuleItem.shiftedIndex) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
-					((EntityPlayerMP)entityplayer).updateCraftingInventorySlot(this, slotId, stack2);
+					((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, stack2);
 				}
 			}
 			return stack1;

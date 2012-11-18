@@ -18,7 +18,7 @@ public class PacketRouterInformation extends PacketCoordinates {
 	public int _dimension;
 	public boolean[] routedExit = new boolean[6];
 	
-	public PacketRouterInformation(int id,int x, int y, int z, int dimension, ServerRouter router) {
+	private PacketRouterInformation(int id,int x, int y, int z, int dimension, ServerRouter router) {
 		super(id, x, y, z);
 		for(RoutedPipe pipe:router._adjacent.keySet()) {
 			_adjacent.put(pipe.getRouter().getId(), router._adjacent.get(pipe));
@@ -30,7 +30,7 @@ public class PacketRouterInformation extends PacketCoordinates {
 		}
 	}
 
-	public PacketRouterInformation() {
+	private PacketRouterInformation() {
 		super();
 	}
 

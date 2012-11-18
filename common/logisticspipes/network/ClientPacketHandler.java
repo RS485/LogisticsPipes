@@ -43,7 +43,6 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
-import logisticspipes.network.packets.PacketRouterInformation;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
@@ -51,9 +50,6 @@ import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.PacketRoutingStats;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.routing.ClientRouter;
-import logisticspipes.routing.IRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
@@ -203,11 +199,6 @@ public class ClientPacketHandler {
 					final PacketPipeInvContent packetX = new PacketPipeInvContent();
 					packetX.readData(data);
 					onOrderManagerContent(player, packetX);
-					break;
-				case NetworkConstants.ROUTER_UPDATE_CONTENT:
-					final PacketRouterInformation packetY = new PacketRouterInformation();
-					packetY.readData(data);
-					onRouterInformation(player, packetY);
 					break;
 				case NetworkConstants.BUFFERED_PACKET_TRANSFER:
 					final PacketBufferTransfer packetZ = new PacketBufferTransfer();
@@ -584,20 +575,6 @@ public class ClientPacketHandler {
 		}
 		if(tile.pipe instanceof IOrderManagerContentReceiver) {
 			((IOrderManagerContentReceiver)tile.pipe).setOrderManagerContent(packet._allItems);
-		}
-	}
-
-	private static void onRouterInformation(Player player, PacketRouterInformation packet) {
-		World world = MainProxy.getWorld(packet._dimension);
-		final TileGenericPipe pipe = getPipe(world, packet.posX, packet.posY, packet.posZ);
-		if(pipe == null) {
-			return;
-		}
-		if(pipe.pipe instanceof CoreRoutedPipe) {
-			IRouter router = ((CoreRoutedPipe)pipe.pipe).getRouter();
-			if(router instanceof ClientRouter) {
-				((ClientRouter)router).handleRouterPacket(packet);
-			}
 		}
 	}
 

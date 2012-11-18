@@ -44,6 +44,7 @@ import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
+import logisticspipes.main.LogisticsWorldManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
@@ -73,6 +74,7 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
+import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
@@ -83,6 +85,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.MinecraftForge;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
@@ -195,6 +198,11 @@ public class LogisticsPipes {
 		} else {
 			new PacketBufferHandlerThread(Side.SERVER);	
 		}
+		int MultiThread = 4;
+		for(int i=0;i<MultiThread;i++) {
+			new RoutingTableUpdateThread(i);
+		}
+		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 	}
 	
 	@PreInit

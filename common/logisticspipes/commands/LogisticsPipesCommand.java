@@ -10,6 +10,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.LogisticsPipesPacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.ticks.RoutingTableUpdateThread;
 import net.minecraft.src.CommandBase;
 import net.minecraft.src.ICommandSender;
 import net.minecraft.src.WrongUsageException;
@@ -52,10 +53,14 @@ public class LogisticsPipesCommand extends CommandBase {
 				@Override public int getID() {return NetworkConstants.ACTIVATNBTDEBUG;}
 			}.getPacket(), (Player)sender);
         	return;
+        } else if(arguments[0].equalsIgnoreCase("routingthread") || arguments[0].equalsIgnoreCase("rt")) {
+        	sender.sendChatToPlayer("RoutingTableUpdateThread: TODO: " + RoutingTableUpdateThread.size());
+        	return;
         } else if(arguments[0].equalsIgnoreCase("help")) {
         	sender.sendChatToPlayer("Format: '"+ this.getCommandName() +" <command> <arguments>'");
         	sender.sendChatToPlayer("Available commands:");
         	sender.sendChatToPlayer("- version : Version information.");
+        	sender.sendChatToPlayer("- routingthread : Display Routing thread status information.");
         	return;
         }
     	throw new WrongUsageException(this.getCommandUsage(sender));

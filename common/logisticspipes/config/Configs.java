@@ -9,7 +9,9 @@ import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 
 public class Configs {
-
+	
+	public static final String CATEGORY_MULTITHREAD = "multiThread";
+	
 	// Ids
 	public static int ItemPartsId									= 6867;
 	public static int ItemHUDId										= 6868;
@@ -68,6 +70,11 @@ public class Configs {
 	//BlockID
 	public static int LOGISTICS_SIGN_ID = 1100;
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
+	
+	//MultiThread
+	public static boolean multiThreadEnabled = false;
+	public static int multiThreadNumber = 4;
+	public static int multiThreadPriority = Thread.NORM_PRIORITY;
 	
 	private static void readoldconfig() {
 		Property logisticRemoteOrdererIdProperty = configuration.get("logisticsRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSREMOTEORDERER_ID);
@@ -314,7 +321,14 @@ public class Configs {
 		Property logisticsHUDRenderDistance = configuration.get(Configuration.CATEGORY_GENERAL, "HUDRenderDistance", LOGISTICS_HUD_RENDER_DISTANCE);
 		logisticsHUDRenderDistance.comment = "The max. distance between a player and the HUD that get's shown in blocks.";
 		
-		configuration.save();
+		Property multiThread = configuration.get(CATEGORY_MULTITHREAD, "enabled", multiThreadEnabled);
+		multiThread.comment = "Enabled the Logistics Pipes multiThread function to allow the network.";
+		
+		Property multiThreadCount = configuration.get(CATEGORY_MULTITHREAD, "count", multiThreadNumber);
+		multiThreadCount.comment = "Number of running Threads.";
+		
+		Property multiThreadPrio = configuration.get(CATEGORY_MULTITHREAD, "priority", multiThreadPriority);
+		multiThreadPrio.comment = "Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest";
 		
 		LOGISTICSNETWORKMONITOR_ID			= Integer.parseInt(logisticNetworkMonitorIdProperty.value);
 		LOGISTICSREMOTEORDERER_ID			= Integer.parseInt(logisticRemoteOrdererIdProperty.value);
@@ -365,6 +379,20 @@ public class Configs {
 
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID	= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID		= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
+	
+		multiThreadEnabled					= multiThread.getBoolean(multiThreadEnabled);
+		multiThreadNumber					= multiThreadCount.getInt();
+		if(multiThreadNumber < 1) {
+			multiThreadNumber = 1;
+			multiThreadCount.value = Integer.toString(multiThreadNumber);
+		}
+		multiThreadPriority					= multiThreadPrio.getInt();
+		if(multiThreadPriority < 1 || multiThreadPriority > 10) {
+			multiThreadPriority = Thread.NORM_PRIORITY;
+			multiThreadPrio.value = Integer.toString(Thread.NORM_PRIORITY);
+		}
+		
+		configuration.save();
 	}
 
 	public static void savePopupState() {

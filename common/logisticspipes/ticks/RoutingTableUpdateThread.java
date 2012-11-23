@@ -2,6 +2,8 @@ package logisticspipes.ticks;
 
 import java.util.LinkedList;
 
+import logisticspipes.config.Configs;
+
 public class RoutingTableUpdateThread extends Thread {
 	
 	private static LinkedList<Runnable> updateCalls = new LinkedList<Runnable>();
@@ -9,7 +11,7 @@ public class RoutingTableUpdateThread extends Thread {
 	public RoutingTableUpdateThread(int i) {
 		super("LogisticsPipes RoutingTableUpdateThread #" + i);
 		this.setDaemon(true);
-		//this.setPriority(MAX_PRIORITY); //TODO Config
+		this.setPriority(Configs.multiThreadPriority);
 		this.start();
 	}
 

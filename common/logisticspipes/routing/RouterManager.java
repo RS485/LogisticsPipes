@@ -27,6 +27,9 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	
 	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
 
+	private long lastRouterAdded = -1;
+	private static int DELAY_TIME = 2 * 1000;
+
 	@Override
 	public IRouter getRouter(UUID id){
 		if(MainProxy.isClient()) {
@@ -77,6 +80,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 				r = new ServerRouter(id, dimension, xCoord, yCoord, zCoord);
 				_routersServer.put(id, r);
 			}
+			lastRouterAdded = System.currentTimeMillis();
 		}
 		return r;
 	}
@@ -197,5 +201,11 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	public void serverStopClean() {
 		connectedPipes.clear();
 		_routersServer.clear();
+		lastRouterAdded = -1;
+	}
+
+	@Override
+	public boolean routerAddingDone() {
+		return lastRouterAdded != -1 && lastRouterAdded + DELAY_TIME < System.currentTimeMillis();
 	}
 }

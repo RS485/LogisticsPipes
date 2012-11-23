@@ -32,6 +32,8 @@ import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagList;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -57,6 +59,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		@Override
 		public void run() {
+			if(!run) return;
 			try {
 				CreateRouteTable();
 				synchronized (_externalRoutersByCostLock) {
@@ -103,7 +106,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public LinkedList<IRouter> _externalRoutersByCost = null;
 
 	private boolean _blockNeedsUpdate;
-	private boolean forceUpdate = false;
+	private boolean forceUpdate = true;
 	
 	public final UUID id;
 	private int _dimension;
@@ -148,15 +151,16 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return (CoreRoutedPipe) pipe.pipe;
 	}
 
-	private void ensureRouteTableIsUpToDate(){
+	private void ensureRouteTableIsUpToDate(boolean force){
 		if (_LSDVersion > _lastLSDVersion) {
-			if(LogisticsPipes.DEBUG) {
+			if(Configs.multiThreadEnabled && !force && SimpleServiceLocator.routerManager.routerAddingDone()) {
 				updateThreadreadLock.lock();
 				if(updateThread != null) {
 					if(updateThread.newVersion == _LSDVersion) {
 						updateThreadreadLock.unlock();
 						return;
 					}
+					updateThread.run = false;
 					RoutingTableUpdateThread.remove(updateThread);
 				}
 				updateThreadreadLock.unlock();
@@ -176,13 +180,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public HashMap<IRouter, ForgeDirection> getRouteTable(){
-		ensureRouteTableIsUpToDate();
+		ensureRouteTableIsUpToDate(true);
 		return _routeTable;
 	}
 	
 	@Override
 	public LinkedList<IRouter> getIRoutersByCost() {
-		ensureRouteTableIsUpToDate();
+		ensureRouteTableIsUpToDate(true);
 		synchronized (_externalRoutersByCostLock) {
 			if (_externalRoutersByCost  == null){
 				LinkedList<IRouter> externalRoutersByCost = new LinkedList<IRouter>();
@@ -463,7 +467,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				forceUpdate = true;
 			}
 		}
-		ensureRouteTableIsUpToDate();
+		ensureRouteTableIsUpToDate(false);
 	}
 
 	/************* IROUTER *******************/

@@ -19,4 +19,5 @@ public interface IRouterManager {
 	public void removeRouter(UUID id);
 	public Map<UUID, IRouter> getRouters();
 	public void serverStopClean();
+	public boolean routerAddingDone();
 }

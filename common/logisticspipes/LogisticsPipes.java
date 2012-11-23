@@ -198,8 +198,7 @@ public class LogisticsPipes {
 		} else {
 			new PacketBufferHandlerThread(Side.SERVER);	
 		}
-		int MultiThread = 4;
-		for(int i=0;i<MultiThread;i++) {
+		for(int i=0;i<Configs.multiThreadNumber && Configs.multiThreadEnabled;i++) {
 			new RoutingTableUpdateThread(i);
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());

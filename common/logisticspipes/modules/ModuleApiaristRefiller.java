@@ -33,22 +33,26 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 			if ((saidInventory.getSizeInventory()) <= maxInvSize) {
 				ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
 				ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
-				if ((SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) || (apiarySlot1 != null && apiarySlot2 != null)) {
-					//TODO remove debugging line here:
-					System.out.println("check is false because queen in slot 1 or both slots full.");
+				if (SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) {
+					return false;
+				}
+				if (SimpleServiceLocator.forestryProxy.isDrone(item) && (apiarySlot2 != null)) {
+					return false;
+				}
+				if (SimpleServiceLocator.forestryProxy.isPrincess(item) && (apiarySlot1 !=null)) {
 					return false;
 				}
 				return true;
 			}
 		}
-		
 		return false;
 	}
+	
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		boolean invStatus = apiaryCheck(item);
-		if (invStatus) {
-			if (_power.useEnergy(30)) {
+		boolean decision = apiaryCheck(item);
+		if (decision) {
+			if (_power.useEnergy(50)) {
 				SinkReply reply = new SinkReply();
 				reply.fixedPriority = FixedPriority.APIARIST_Refiller;
 				reply.isDefault = false;

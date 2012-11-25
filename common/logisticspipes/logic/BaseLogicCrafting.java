@@ -236,6 +236,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			}
 		}
 		
+		if(player == null) return;
+		
 		if (MainProxy.isClient(player.worldObj)) {
 			// Send packet asking for import
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord);

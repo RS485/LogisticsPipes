@@ -18,13 +18,6 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	
 	public CraftingPipeMk3Transport() {
 		super();
-		travelHook = new LogisticsItemTravelingHook(worldObj, xCoord, yCoord, zCoord, this) {
-			@Override
-			public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-				scheduleRemoval(data.item);
-				handleTileReached(data, tile);
-			}
-		};
 	}
 	
 	private void handleTileReached(EntityData data, TileEntity tile) {

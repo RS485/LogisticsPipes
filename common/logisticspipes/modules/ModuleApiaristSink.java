@@ -123,12 +123,14 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 			}
 			firstBee = nbttagcompound.getString("firstBeeString");
 			secondBee = nbttagcompound.getString("secondBeeString");
+			filterGroup = nbttagcompound.getInteger("filterGroup");
 		}
 
 		public void writeToNBT(NBTTagCompound nbttagcompound) {
 			nbttagcompound.setInteger("filterType", filterType.ordinal());
 			nbttagcompound.setString("firstBeeString", firstBee);
 			nbttagcompound.setString("secondBeeString", secondBee);
+			nbttagcompound.setInteger("filterGroup", filterGroup);
 		}
 
 		private boolean allAllele(ItemStack bee) {

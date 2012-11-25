@@ -100,10 +100,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 			currentTicksEmpty = 0;
 			functionalStatus = false;
 		}
-		if (functionalStatus == false) {
-			if (apiarySlot1 != null || apiarySlot2 != null) {
-				functionalStatus = true;
-			}
+		if (apiarySlot1 != null || apiarySlot2 != null) {
+			functionalStatus = true;
+			currentTicksEmpty = 0;
 		}
 	}
 	

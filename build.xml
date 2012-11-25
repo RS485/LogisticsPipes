@@ -33,15 +33,16 @@
     <property name="downloadserver.dir"  value="rs485/" />
     <property name="downloadserver.full" value="${downloadserver}/${downloadserver.dir}" />
           
-    <property name="mcp.version"         value="7.19" />
-    <property name="forge.version"       value="6.0.1.343" />
-    <property name="bc.version"          value="fbd0fa7" />
-    <property name="forestry.version"    value="1.5.0.1" />
+    <property name="mcp.version"         value="723" />
+    <property name="mc.version"          value="1.4.5" />
+    <property name="forge.version"       value="6.4.0.396" />
+    <property name="bc.version"          value="3.2.0" />
+    <property name="forestry.version"    value="1.6.2.0" />
     <property name="ic2.version"         value="1.108.52-lf" />
     <property name="cc.version"          value="1.41" />
     <property name="lp.version"          value="0.6.0" />
     <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-    <property name="lp.version.full"     value="${lp.version}.pre2" />
+    <property name="lp.version.full"     value="${lp.version}.pre3" />
     
     <echo message="Starting build for ${lp.version.full}" />
 	
@@ -56,7 +57,7 @@
         <mkdir dir="${download.dir}"/>
         
         <get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}minecraftforge-src-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
+        <get src="${downloadserver.full}minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True" />
@@ -72,7 +73,7 @@
         
         <unzip dest="${mcp.dir}">
             <fileset dir="${download.dir}">
-                <include name="minecraftforge-src-${forge.version}.zip"/>
+                <include name="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
             </fileset>
         </unzip>
         
@@ -102,10 +103,12 @@
         
 		<echo message="Unpacking finished"/>
 		
+		<!--
         <copy todir="${mcp.dir}/jars">
             <fileset dir="${files.minecraft.dir}"/>
         </copy>
-        
+        -->
+		
         <chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
         <chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
         <chmod file="${mcp.dir}/recompile.sh" perm="+x"/>

@@ -17,6 +17,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
 	private int maxInvSize = 12;
+	private int currentTicksEmpty = 0;
+	private int maxTicksEmpty = 50;
+	private boolean functionalStatus = true;
 	
 	public ModuleApiaristRefiller() {}
 	
@@ -50,17 +53,17 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		boolean decision = apiaryCheck(item);
-		if (decision) {
-			if (_power.useEnergy(50)) {
-				SinkReply reply = new SinkReply();
-				reply.fixedPriority = FixedPriority.APIARIST_Refiller;
-				reply.isDefault = false;
-				reply.isPassive = true;
-				return reply;
+		if (functionalStatus) {
+			if (apiaryCheck(item)) {
+				if (_power.useEnergy(50)) {
+					SinkReply reply = new SinkReply();
+					reply.fixedPriority = FixedPriority.APIARIST_Refiller;
+					reply.isDefault = false;
+					reply.isPassive = true;
+					return reply;
+				}
 			}
 		}
-		
 		return null;
 	}
 	
@@ -84,7 +87,25 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 
 	@Override
-	public void tick() {}
+	public void tick() {
+		/* Disables modules if inventory has been empty for too long */
+		ItemStack apiarySlot1 = _invProvider.getInventory().getStackInSlot(0);
+		ItemStack apiarySlot2 = _invProvider.getInventory().getStackInSlot(1);
+		if (functionalStatus == true) {
+			if (apiarySlot1 == null && apiarySlot2 == null) {
+				currentTicksEmpty++;
+			}
+		}
+		if (currentTicksEmpty > maxTicksEmpty) {
+			currentTicksEmpty = 0;
+			functionalStatus = false;
+		}
+		if (functionalStatus == false) {
+			if (apiarySlot1 != null || apiarySlot2 != null) {
+				functionalStatus = true;
+			}
+		}
+	}
 	
 	
 

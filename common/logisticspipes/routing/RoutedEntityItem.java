@@ -45,8 +45,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	private TransportMode _transportMode = TransportMode.Unknown;
 	
-	private List<EntityPlayer> knownBy = new ArrayList<EntityPlayer>();
-	
 	public List<UUID> jamlist = new ArrayList<UUID>();
 	
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
@@ -62,14 +60,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		return super.toEntityItem(dir);
 	}
 	
-	public void addKnownPlayer(EntityPlayer player) {
-		knownBy.add(player);
-	}
-	
-	public boolean isKnownBy(EntityPlayer player) {
-		return knownBy.contains(player);
-	}
-
 	@Override
 	public void changeDestination(UUID newDestination){
 		if (destinationUUID != null && SimpleServiceLocator.routerManager.isRouter(destinationUUID)){
@@ -82,7 +72,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			}
 		}
 		destinationUUID = newDestination;
-		knownBy.clear();
 		if(newDestination != null) {
 			isUnrouted = false;
 		}
@@ -118,7 +107,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setDestination(UUID destination) {
 		this.destinationUUID = destination;
-		knownBy.clear();
 		if(destination != null) {
 			isUnrouted = false;
 		}
@@ -132,7 +120,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setSource(UUID source) {
 		this.sourceUUID = source;
-		knownBy.clear();
 	}
 
 	@Override
@@ -177,15 +164,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			}
 		}
 		
-		knownBy.clear();
-		
 		return SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem);
 	}
 
 	@Override
 	public void SetPosition(double x, double y, double z) {
 		this.position = new Position(x,y,z);
-		knownBy.clear();
 	}
 
 	@Override

@@ -47,7 +47,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
-		travelHook = new LogisticsItemTravelingHook(worldObj, xCoord, yCoord, zCoord, this);
 	}
 	
 	private RoutedPipe getPipe() {
@@ -90,25 +89,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			SimpleServiceLocator.buildCraftProxy.dropItems(this.container.worldObj, next, this.xCoord, this.yCoord, this.zCoord);
 			iterator.remove();
 		}
-	}
-	
-	@Override
-	public void entityEntering(IPipedItem item, ForgeDirection orientation) {
-		if(MainProxy.isServer()) {
-			EntityData data = travelingEntities.get(item.getEntityId());
-			if(data != null && item instanceof RoutedEntityItem) {
-				RoutedEntityItem routed = (RoutedEntityItem) item;
-				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-					if(!routed.isKnownBy(player)) {
-						MainProxy.sendPacketToPlayer(createItemPacket(data), (Player)player);
-						if(routed.getDestination() != null) { 
-							routed.addKnownPlayer(player);
-						}
-					}
-				}
-			}
-		}
-		super.entityEntering(item, orientation);
 	}
 	
 	@Override
@@ -161,20 +141,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		
 		readjustSpeed(routedItem.getEntityPassiveItem());
-		
-		if(MainProxy.isServer()) {
-			if(routedItem instanceof RoutedEntityItem) {
-				RoutedEntityItem routed = (RoutedEntityItem) routedItem;
-				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-					if(!routed.isKnownBy(player) || forcePacket) {
-						MainProxy.sendPacketToPlayer(createItemPacket(data), (Player)player);
-						if(!forcePacket) {
-							routed.addKnownPlayer(player);
-						}
-					}
-				}
-			}
-		}
 		
 		if (value == ForgeDirection.UNKNOWN ){ 
 			//Reduce the speed of items being dropped so they don't go all over the place

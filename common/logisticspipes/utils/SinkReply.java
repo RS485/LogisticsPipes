@@ -5,10 +5,10 @@ public class SinkReply {
 	public enum FixedPriority {
 		DefaultRoute,
 		Terminus,
+		APIARIST_BeeSink,
 		APIARIST_Analyser,
 		APIARIST_Refiller,
 		ItemSink,
-		APIARIST_BeeSink,
 		PassiveSupplier,
 	}
 	

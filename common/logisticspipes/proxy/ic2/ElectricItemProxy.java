@@ -71,45 +71,73 @@ public class ElectricItemProxy implements IElectricItemProxy {
 
 	public void addCraftingRecipes()
 	{
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGD", "rBr", "DrC", 
-										Character.valueOf('C'), Items.getItem("electronicCircuit"),
-										Character.valueOf('D'), Items.getItem("reBattery"),
-										Character.valueOf('G'), BuildCraftCore.goldGearItem,
-										Character.valueOf('r'), Item.redstone,
-										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGD", "rBr", "DrC", 
-										Character.valueOf('C'), Items.getItem("electronicCircuit"),
-										Character.valueOf('D'), Items.getItem("chargedReBattery"),
-										Character.valueOf('G'), BuildCraftCore.goldGearItem,
-										Character.valueOf('r'), Item.redstone,
-										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGc", "rBr", "DrC", 
-										Character.valueOf('C'), Items.getItem("electronicCircuit"),
-										Character.valueOf('c'), Items.getItem("reBattery"),
-										Character.valueOf('D'), Items.getItem("chargedReBattery"),
-										Character.valueOf('G'), BuildCraftCore.goldGearItem,
-										Character.valueOf('r'), Item.redstone,
-										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { "CGc", "rBr", "DrC", 
-										Character.valueOf('C'), Items.getItem("electronicCircuit"),
-										Character.valueOf('c'), Items.getItem("chargedReBattery"),
-										Character.valueOf('D'), Items.getItem("reBattery"),
-										Character.valueOf('G'), BuildCraftCore.goldGearItem,
-										Character.valueOf('r'), Item.redstone,
-										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+			"CGD", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), Items.getItem("reBattery"),
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+			"CGD", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), Items.getItem("chargedReBattery"),
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+			"CGc", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), Items.getItem("electronicCircuit"),
+			Character.valueOf('c'), Items.getItem("reBattery"),
+			Character.valueOf('D'), Items.getItem("chargedReBattery"),
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+			"CGc", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), Items.getItem("electronicCircuit"),
+			Character.valueOf('c'), Items.getItem("chargedReBattery"),
+			Character.valueOf('D'), Items.getItem("reBattery"),
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
 
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { " G ", "rBr", "DrC", 
-										Character.valueOf('C'), Items.getItem("electronicCircuit"),
-										Character.valueOf('D'), Items.getItem("reBattery"),
-										Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-										Character.valueOf('r'), Item.redstone,
-										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { " G ", "rBr", "DrC", 
-										Character.valueOf('C'), Items.getItem("electronicCircuit"),
-										Character.valueOf('D'), Items.getItem("chargedReBattery"),
-										Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-										Character.valueOf('r'), Item.redstone,
-										Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+			" G ", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), Items.getItem("reBattery"),
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+			" G ", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), Items.getItem("electronicCircuit"),
+			Character.valueOf('D'), Items.getItem("chargedReBattery"),
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
 	}
 
 	@Override

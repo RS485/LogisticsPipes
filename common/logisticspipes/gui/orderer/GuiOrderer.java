@@ -55,6 +55,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	
 	protected int lastClickedx = 0;
 	protected int lastClickedy = 0;
+	protected int lastClickedk = 0;
 	
 	protected final String _title = "Request items";
 	protected boolean clickWasButton = false;
@@ -173,6 +174,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				editsearch = true;
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
+				if(lastClickedk == 1) {
+					searchinput1 = "";
+					searchinput2 = "";
+				}
 			} else {
 				editsearch = false;
 			}
@@ -314,6 +319,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			selectedItem = null;
 			lastClickedx = i;
 			lastClickedy = j;
+			lastClickedk = k;
 		}
 	}
 	

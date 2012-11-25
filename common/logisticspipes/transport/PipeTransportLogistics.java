@@ -14,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.network.packets.PacketPipeLogisticsContent;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -24,17 +23,13 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
-import net.minecraft.src.Packet;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.network.PacketIds;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.network.PacketPipeTransportContent;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeTransportLogistics extends PipeTransportItems {
@@ -242,89 +237,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			if(getPipe().useEnergy(Math.round(add * 25))) {
 				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
 			}
-		}
-	}
-
-	/**
-	 * Handles a packet describing a stack of items inside a pipe.
-	 * 
-	 * @param packet
-	 */
-	@Override
-	public void handleItemPacket(PacketPipeTransportContent packet) {
-		if (packet.getID() != PacketIds.PIPE_CONTENTS)
-			return;
-		
-		if(!PacketPipeLogisticsContent.isPacket(packet)) {
-			super.handleItemPacket(packet);
-			return;
-		}
-		
-		IPipedItem item = EntityPassiveItem.getOrCreate(worldObj, packet.getEntityId());
-
-		item.setItemStack(new ItemStack(packet.getItemId(), packet.getStackSize(), packet.getItemDamage()));
-
-		item.setPosition(packet.getPosX(), packet.getPosY(), packet.getPosZ());
-		item.setSpeed(packet.getSpeed());
-		
-		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)) {
-			if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
-				if (item.getContainer() != null) {
-					((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
-				}
-				EntityData entity = new EntityData(item, packet.getInputOrientation());
-				entity.output = packet.getOutputOrientation();
-				travelingEntities.put(new Integer(item.getEntityId()), entity);
-				item.setContainer(container);
-			} else {
-				travelingEntities.get(new Integer(item.getEntityId())).item = item;
-				travelingEntities.get(new Integer(item.getEntityId())).input = packet.getInputOrientation();
-				travelingEntities.get(new Integer(item.getEntityId())).output = packet.getOutputOrientation();
-			}
-			PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
-			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
-			routed.setSource(newpacket.getSourceUUID(this.worldObj));
-			routed.setDestination(newpacket.getDestUUID(this.worldObj));
-			routed.setTransportMode(newpacket.getTransportMode());
-			travelingEntities.get(new Integer(item.getEntityId())).item = routed.getEntityPassiveItem();
-			return;
-		}
-		PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
-		IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.worldObj,item);
-		routed.setSource(newpacket.getSourceUUID(this.worldObj));
-		routed.setDestination(newpacket.getDestUUID(this.worldObj));
-		routed.setTransportMode(newpacket.getTransportMode());
-		item = routed.getEntityPassiveItem();
-		if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
-			if (item.getContainer() != null) {
-				((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
-			}
-			EntityData entity = new EntityData(item, packet.getInputOrientation());
-			entity.output = packet.getOutputOrientation();
-			travelingEntities.put(new Integer(item.getEntityId()), entity);
-			item.setContainer(container);
-		} else {
-			travelingEntities.get(new Integer(item.getEntityId())).item = item;
-			travelingEntities.get(new Integer(item.getEntityId())).input = packet.getInputOrientation();
-			travelingEntities.get(new Integer(item.getEntityId())).output = packet.getOutputOrientation();
-		}
-	}
-
-	/**
-	 * Creates a packet describing a stack of items inside a pipe.
-	 * 
-	 * @param item
-	 * @param orientation
-	 * @return
-	 */
-	@Override
-	public Packet createItemPacket(EntityData data) {
-		if(data.item instanceof RoutedEntityItem) {
-			PacketPipeLogisticsContent packet = new PacketPipeLogisticsContent(container.xCoord, container.yCoord, container.zCoord, data);
-
-			return packet.getPacket();
-		} else {
-			return super.createItemPacket(data);
 		}
 	}
 }

@@ -173,11 +173,11 @@
 		
         <!-- Refresh MD5 -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c updatemd5.bat -f"/>
+            <arg line="/c updatemd5.bat -f --client"/>
         </exec>
         
         <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg line="updatemd5.sh -f" />
+            <arg line="updatemd5.sh -f --client" />
         </exec>
 		
 		<echo message="Regenerated MD5s"/>

@@ -369,7 +369,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('r'), Item.redstone, 
 		});
 		
-		if (Configs.MANDATORY_CARPENTER_RECIPIES) return;
+		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
 				
 		/* Regular recipes */
 		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 

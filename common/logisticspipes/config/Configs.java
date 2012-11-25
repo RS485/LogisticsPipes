@@ -63,7 +63,7 @@ public class Configs {
 	public static boolean LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = false;
 	
 	public static boolean ToolTipInfo = LogisticsPipes.DEBUG;
-	public static boolean MANDATORY_CARPENTER_RECIPIES = true;
+	public static boolean MANDATORY_CARPENTER_RECIPES = true;
 
 	//GuiOrderer Popup setting
 	public static boolean displayPopup = true;
@@ -76,7 +76,8 @@ public class Configs {
 	public static boolean multiThreadEnabled = false;
 	public static int multiThreadNumber = 4;
 	public static int multiThreadPriority = Thread.NORM_PRIORITY;
-	
+
+
 	private static void readoldconfig() {
 		Property logisticRemoteOrdererIdProperty = configuration.get("logisticsRemoteOrderer.id", Configuration.CATEGORY_ITEM, LOGISTICSREMOTEORDERER_ID);
 		Property logisticNetworkMonitorIdProperty = configuration.get("logisticsNetworkMonitor.id", Configuration.CATEGORY_ITEM, LOGISTICSNETWORKMONITOR_ID);
@@ -125,7 +126,7 @@ public class Configs {
 		Property logisticsPowerUsageDisable = configuration.get("powerUsageDisabled", Configuration.CATEGORY_GENERAL, LOGISTICS_POWER_USAGE_DISABLED);
 		Property logisticsTileGenericReplacementDisable = configuration.get("TileReplaceDisabled", Configuration.CATEGORY_GENERAL, LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED);
 		Property logisticsHUDRenderDistance = configuration.get("HUDRenderDistance", Configuration.CATEGORY_GENERAL, LOGISTICS_HUD_RENDER_DISTANCE);
-		Property mandatoryCarpenterRecipies = configuration.get("mandatoryCarpenterRecipies", Configuration.CATEGORY_GENERAL, MANDATORY_CARPENTER_RECIPIES);
+		Property mandatoryCarpenterRecipies = configuration.get("mandatoryCarpenterRecipies", Configuration.CATEGORY_GENERAL, MANDATORY_CARPENTER_RECIPES);
 		
 		LOGISTICSNETWORKMONITOR_ID			= Integer.parseInt(logisticNetworkMonitorIdProperty.value);
 		LOGISTICSREMOTEORDERER_ID			= Integer.parseInt(logisticRemoteOrdererIdProperty.value);
@@ -176,7 +177,7 @@ public class Configs {
 
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID	= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID		= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
-		MANDATORY_CARPENTER_RECIPIES		= Boolean.parseBoolean(mandatoryCarpenterRecipies.value);
+		MANDATORY_CARPENTER_RECIPES		= Boolean.parseBoolean(mandatoryCarpenterRecipies.value);
 	}
 	
 	public static void load() {
@@ -324,8 +325,8 @@ public class Configs {
 		Property logisticsHUDRenderDistance = configuration.get(Configuration.CATEGORY_GENERAL, "HUDRenderDistance", LOGISTICS_HUD_RENDER_DISTANCE);
 		logisticsHUDRenderDistance.comment = "The max. distance between a player and the HUD that get's shown in blocks.";
 		
-		Property mandatoryCarpenterRecipies = configuration.get(Configuration.CATEGORY_GENERAL, "mandatoryCarpenterRecipies", MANDATORY_CARPENTER_RECIPIES);
-		mandatoryCarpenterRecipies.comment = "Whether or not the Carpenter is required to craft Forestry related pipes/modules.";
+		Property mandatoryCarpenterRecipes = configuration.get(Configuration.CATEGORY_GENERAL, "mandatoryCarpenterRecipes", MANDATORY_CARPENTER_RECIPES);
+		mandatoryCarpenterRecipes.comment = "Whether or not the Carpenter is required to craft Forestry related pipes/modules.";
 		
 		Property multiThread = configuration.get(CATEGORY_MULTITHREAD, "enabled", multiThreadEnabled);
 		multiThread.comment = "Enabled the Logistics Pipes multiThread function to allow the network.";
@@ -385,7 +386,7 @@ public class Configs {
 
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID	= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID		= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
-		MANDATORY_CARPENTER_RECIPIES		= Boolean.parseBoolean(mandatoryCarpenterRecipies.value);
+		MANDATORY_CARPENTER_RECIPES		= Boolean.parseBoolean(mandatoryCarpenterRecipes.value);
 	
 		multiThreadEnabled					= multiThread.getBoolean(multiThreadEnabled);
 		multiThreadNumber					= multiThreadCount.getInt();

@@ -341,6 +341,16 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('r'), Item.redstone,
 		});
 		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+			"CGD", 
+			"r r", 
+			"DrC", 
+			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
+			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('G'), pollen, 
+			Character.valueOf('r'), Item.redstone, 
+		});
+		
 		
 		
 		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
@@ -412,6 +422,17 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
 		});
 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+			"CGD", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
+			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('G'), pollen, 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
 		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
 			"CGC", 
 			"rBr", 

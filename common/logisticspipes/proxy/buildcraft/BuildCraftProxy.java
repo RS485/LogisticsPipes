@@ -70,11 +70,6 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 
 public class BuildCraftProxy {
 
-	/** Support for teleport pipes **/
-	public static boolean teleportPipeDetected = false;
-	public static Class<? extends Pipe> PipeItemTeleport;
-	public static Method teleportPipeMethod;
-
 	public static List<Item> pipelist = new ArrayList<Item>();
 	
 	public static Trigger LogisticsFailedTrigger;
@@ -118,28 +113,6 @@ public class BuildCraftProxy {
 	public IRoutedItem CreateRoutedItem(ItemStack payload, World worldObj) {
 		EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, 0, 0, 0, payload);
 		return CreateRoutedItem(worldObj, entityItem);
-	}
-
-	public void registerTeleportPipes() {
-		try {
-			PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
-			//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
-			teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-			teleportPipeDetected = true;
-			ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
-
-		} catch (Exception e) {
-			try {
-				//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
-				PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
-				teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-				teleportPipeDetected = true;
-				ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
-
-			} catch (Exception e1) {
-				ModLoader.getLogger().fine("Additional pipes not detected: " + e1.getMessage());
-			}
-		}
 	}
 
 	public void registerTrigger() {

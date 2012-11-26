@@ -10,17 +10,16 @@ package logisticspipes.routing;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.pipes.PipeItemsIron;
 import buildcraft.transport.pipes.PipeItemsObsidian;
@@ -95,30 +94,27 @@ class PathFinder {
 			return foundPipes;
 		}
 		
-		if(startPipe.pipe != null && BuildCraftProxy.PipeItemTeleport != null) {
-			//Special check for teleport pipes
-			if (BuildCraftProxy.teleportPipeDetected && BuildCraftProxy.PipeItemTeleport.isAssignableFrom(startPipe.pipe.getClass())){
-				
-				try {
-					LinkedList<? extends Pipe> pipez = (LinkedList<? extends Pipe>) BuildCraftProxy.teleportPipeMethod.invoke(startPipe.pipe, false);
-					for (Pipe telepipe : pipez){
-						HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)telepipe.container), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
-						for(RoutedPipe pipe : result.keySet()) 	{
-							result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
-							if (!foundPipes.containsKey(pipe)) {  
-								// New path
-								foundPipes.put(pipe, result.get(pipe));
-							}
-							else if (result.get(pipe).metric < foundPipes.get(pipe).metric)	{ 
-								//If new path is better, replace old path, otherwise do nothing
-								foundPipes.put(pipe, result.get(pipe));
-							}
+		if(startPipe.pipe != null) {
+			//Special check for unnormal pipes
+			try {
+				List<TileGenericPipe> pipez = SimpleServiceLocator.specialconnection.getConnectedPipes(startPipe);
+				for (TileGenericPipe specialpipe : pipez){
+					HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe, (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
+					for(RoutedPipe pipe : result.keySet()) 	{
+						result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
+						if (!foundPipes.containsKey(pipe)) {  
+							// New path
+							foundPipes.put(pipe, result.get(pipe));
+						}
+						else if (result.get(pipe).metric < foundPipes.get(pipe).metric)	{ 
+							//If new path is better, replace old path, otherwise do nothing
+							foundPipes.put(pipe, result.get(pipe));
 						}
 					}
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		

@@ -17,6 +17,7 @@ import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.utils.InventoryUtilFactory;
 
@@ -71,4 +72,8 @@ public final class SimpleServiceLocator {
 		}
 	}
 	
+	public static SpecialConnection specialconnection;
+	public static  void setSpecialConnectionHandler(final SpecialConnection special){
+		specialconnection = special;
+	}
 }

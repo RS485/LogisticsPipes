@@ -66,6 +66,8 @@ import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
+import logisticspipes.proxy.specialconnection.SpecialConnection;
+import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -177,6 +179,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setDirectConnectionManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
+		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
 		
 		textures.load(event);
 		
@@ -284,8 +287,9 @@ public class LogisticsPipes {
 			});
 			System.out.println("Loaded CC DummyProxy");
 		}
-		SimpleServiceLocator.buildCraftProxy.registerTeleportPipes();
-				
+		
+		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
+		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");

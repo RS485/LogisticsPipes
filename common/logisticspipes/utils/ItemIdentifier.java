@@ -11,10 +11,12 @@ package logisticspipes.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.Item;
@@ -32,6 +34,9 @@ import net.minecraft.src.NBTTagLong;
 import net.minecraft.src.NBTTagShort;
 import net.minecraft.src.NBTTagString;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+
 /**
  * @author Krapht
  * 
@@ -43,8 +48,15 @@ import net.minecraft.src.NBTTagString;
  */
 public final class ItemIdentifier {
 
-	private final static LinkedHashMap<ItemIdentifier, Integer> _itemIdentifierCacheServer = new LinkedHashMap<ItemIdentifier, Integer>();
-	private final static LinkedHashMap<ItemIdentifier, Integer> _itemIdentifierCacheClient = new LinkedHashMap<ItemIdentifier, Integer>();
+	private final static HashMap<ItemIdentifier, Integer> _itemIdentifierIdCache = new HashMap<ItemIdentifier, Integer>();
+
+	private final static ArrayList<ItemIdentifier> _itemIdentifierTagCache = new ArrayList<ItemIdentifier>();
+	
+	private final static Table<Integer, Integer, ItemIdentifier> _itemIdentifierCache = HashBasedTable.create();
+	
+	private static ReadWriteLock lock = new ReentrantReadWriteLock();
+	private static Lock readLock = lock.readLock();
+	private static Lock writeLock = lock.writeLock();
 	
 	//Hide default constructor
 	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag) {
@@ -60,15 +72,38 @@ public final class ItemIdentifier {
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
-		for(ItemIdentifier item : MainProxy.isClient() ? _itemIdentifierCacheClient.keySet() : _itemIdentifierCacheServer.keySet()) {
-			if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
-				return item;
+		if(tag == null) {
+			readLock.lock();
+			if(_itemIdentifierCache.contains(itemID, itemUndamagableDamage)) {
+				ItemIdentifier ident = _itemIdentifierCache.get(itemID, itemUndamagableDamage);
+				readLock.unlock();
+				return ident;
 			}
+			readLock.unlock();
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag);
+			int id = getUnusedId();
+			writeLock.lock();
+			_itemIdentifierCache.put(itemID, itemUndamagableDamage, unknownItem);
+			_itemIdentifierIdCache.put(unknownItem, id);
+			writeLock.unlock();
+			return(unknownItem);
+		} else {
+			readLock.lock();
+			for(ItemIdentifier item : _itemIdentifierTagCache) {
+				if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
+					readLock.unlock();
+					return item;
+				}
+			}
+			readLock.unlock();
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag);
+			int id = getUnusedId();
+			writeLock.lock();
+			_itemIdentifierTagCache.add(unknownItem);
+			_itemIdentifierIdCache.put(unknownItem, id);
+			writeLock.unlock();
+			return(unknownItem);
 		}
-		ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag);
-		int id = getUnusedId();
-		(MainProxy.isClient() ? _itemIdentifierCacheClient : _itemIdentifierCacheServer).put(unknownItem, id);
-		return(unknownItem);
 	}
 	
 	public static ItemIdentifier get(ItemStack itemStack) {
@@ -83,11 +118,14 @@ public final class ItemIdentifier {
 	}
 	
 	public static ItemIdentifier getForId(int id) {
-		for(ItemIdentifier item : MainProxy.isClient() ? _itemIdentifierCacheClient.keySet() : _itemIdentifierCacheServer.keySet()) {
-			if(id == (MainProxy.isClient() ? _itemIdentifierCacheClient : _itemIdentifierCacheServer).get(item).intValue()) {
+		readLock.lock();
+		for(ItemIdentifier item :_itemIdentifierIdCache.keySet()) {
+			if(id == _itemIdentifierIdCache.get(item).intValue()) {
+				readLock.unlock();
 				return item;
 			}
 		}
+		readLock.unlock();
 		return null;
 	}
 	
@@ -100,11 +138,14 @@ public final class ItemIdentifier {
 	}
 	
 	private static boolean isIdUsed(int id) {
-		for(Integer value : MainProxy.isClient() ? _itemIdentifierCacheClient.values() : _itemIdentifierCacheServer.values()) {
+		readLock.lock();
+		for(Integer value : _itemIdentifierIdCache.values()) {
 			if(id == value.intValue()) {
+				readLock.unlock();
 				return true;
 			}
 		}
+		readLock.unlock();
 		return false;
 	}
 	
@@ -177,7 +218,10 @@ public final class ItemIdentifier {
 	}
 	
 	public int getId() {
-		return (MainProxy.isClient() ? _itemIdentifierCacheClient : _itemIdentifierCacheServer).get(this);
+		readLock.lock();
+		int id = _itemIdentifierIdCache.get(this);
+		readLock.unlock();
+		return id;
 	}
 	
 	public String getNBTTagCompoundName() {

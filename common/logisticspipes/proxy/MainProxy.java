@@ -1,6 +1,7 @@
 package logisticspipes.proxy;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import logisticspipes.proxy.interfaces.IProxy;
@@ -8,6 +9,8 @@ import logisticspipes.ticks.PacketBufferHandlerThread;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Packet;
 import net.minecraft.src.Packet250CustomPayload;
+import net.minecraft.src.ServerListenThread;
+import net.minecraft.src.ThreadMinecraftServer;
 import net.minecraft.src.World;
 import net.minecraft.src.WorldClient;
 import net.minecraft.src.WorldServer;
@@ -22,14 +25,39 @@ public class MainProxy {
 	
 	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
 	public static IProxy proxy;
-
+	
+	private static HashMap<Thread, Side> threadSideMap = new HashMap<Thread, Side>();
+	
+	private static Side getEffectiveSide() {
+		Thread thr = Thread.currentThread();
+		if(threadSideMap.containsKey(thr)) {
+			return threadSideMap.get(thr);
+		}
+		Side side = getEffectiveSide(thr);
+		if(threadSideMap.size() > 50) {
+			threadSideMap.clear();
+		}
+		threadSideMap.put(thr, side);
+		return side;
+	}
+	
+	private static Side getEffectiveSide(Thread thr) {
+        if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(thr)) {
+        	return Side.SERVER;
+        }
+        if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread))
+        {
+            return Side.SERVER;
+        }
+        return Side.CLIENT;
+    }
+	
 	public static boolean isClient(World world) {
 		return isClient();
 	}
 	
 	public static boolean isClient() {
-		if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(Thread.currentThread())) return false;
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.CLIENT;
+		return getEffectiveSide() == Side.CLIENT;
 	}
 	
 	public static boolean isServer(World world) {
@@ -37,8 +65,7 @@ public class MainProxy {
 	}
 	
 	public static boolean isServer() {
-		if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(Thread.currentThread())) return true;
-		return FMLCommonHandler.instance().getEffectiveSide() == Side.SERVER;
+		return getEffectiveSide() == Side.SERVER;
 	}
 
 	public static World getClientMainWorld() {

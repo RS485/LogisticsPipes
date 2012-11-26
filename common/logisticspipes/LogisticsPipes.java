@@ -68,6 +68,7 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
+import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -180,6 +181,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
+		SimpleServiceLocator.setSpecialInventoryHandler(new SpecialInventoryHandler());
 		
 		textures.load(event);
 		

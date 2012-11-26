@@ -10,6 +10,8 @@ package logisticspipes.utils;
 
 import java.util.HashMap;
 
+import logisticspipes.proxy.SimpleServiceLocator;
+
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 
@@ -23,56 +25,52 @@ public class InventoryUtil {
 		_hideOne = hideOne;
 	}
 	
-	public int itemCount(final ItemIdentifier item){
-		int count = 0;
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) continue;
-			if (ItemIdentifier.get(stack) == item) {
-				count += stack.stackSize - (_hideOne?1:0);
-			}
+	public int itemCount(final ItemIdentifier item) {
+		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
+		if(map.containsKey(item)) {
+			return map.get(item);
 		}
-		return count;
+		return 0;
 	}
 	
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount(){
-		HashMap<ItemIdentifier, Integer> items = new HashMap<ItemIdentifier, Integer>();
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) continue;
-			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			int stackSize = stack.stackSize - (_hideOne?1:0);
-			if (!items.containsKey(itemId)){
-				items.put(itemId, stackSize);
-			} else {
-				items.put(itemId, items.get(itemId) + stackSize);
-			}
-		}	
-		return items;
-	}
-	
-	public int getItemCount(ItemIdentifier item){
-		HashMap<ItemIdentifier, Integer> itemsAndCount = getItemsAndCount();
-		if (!itemsAndCount.containsKey(item)){
-			return 0;
-		}
-		return itemsAndCount.get(item);
-	}
-	
-	public ItemStack getSingleItem(ItemIdentifier item){
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) continue;
-			if (_hideOne && stack.stackSize == 1) continue;
-			if (ItemIdentifier.get(stack) == item) {
-				ItemStack removed = stack.splitStack(1);
-				if (stack.stackSize == 0){
-					_inventory.setInventorySlotContents(i,  null);
+	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
+		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
+			return SimpleServiceLocator.specialinventory.getItemsAndCount(_inventory);
+		} else {
+			HashMap<ItemIdentifier, Integer> items = new HashMap<ItemIdentifier, Integer>();
+			for (int i = 0; i < _inventory.getSizeInventory(); i++){
+				ItemStack stack = _inventory.getStackInSlot(i);
+				if (stack == null) continue;
+				ItemIdentifier itemId = ItemIdentifier.get(stack);
+				int stackSize = stack.stackSize - (_hideOne?1:0);
+				if (!items.containsKey(itemId)){
+					items.put(itemId, stackSize);
+				} else {
+					items.put(itemId, items.get(itemId) + stackSize);
 				}
-				return removed;
-			}
+			}	
+			return items;
 		}
-		return null;
+	}
+	
+	public ItemStack getSingleItem(ItemIdentifier item) {
+		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
+			return SimpleServiceLocator.specialinventory.getSingleItem(_inventory, item);
+		} else {
+			for (int i = 0; i < _inventory.getSizeInventory(); i++){
+				ItemStack stack = _inventory.getStackInSlot(i);
+				if (stack == null) continue;
+				if (_hideOne && stack.stackSize == 1) continue;
+				if (ItemIdentifier.get(stack) == item) {
+					ItemStack removed = stack.splitStack(1);
+					if (stack.stackSize == 0){
+						_inventory.setInventorySlotContents(i,  null);
+					}
+					return removed;
+				}
+			}
+			return null;
+		}
 	}
 	
 	public ItemStack getMultipleItems(ItemIdentifier item, int count){
@@ -91,29 +89,36 @@ public class InventoryUtil {
 	
 	//Will not hide 1 item;
 	public boolean containsItem(ItemIdentifier item){
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) continue;
-			if (ItemIdentifier.get(stack) == item) return true;
+		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
+			return SimpleServiceLocator.specialinventory.containsItem(_inventory, item);
+		} else {
+			for (int i = 0; i < _inventory.getSizeInventory(); i++){
+				ItemStack stack = _inventory.getStackInSlot(i);
+				if (stack == null) continue;
+				if (ItemIdentifier.get(stack) == item) return true;
+			}
+			return false;
 		}
-		return false;
 	}
 	
 	//Will not hide 1 item;
 	public int roomForItem(ItemIdentifier item){
-		int totalRoom = 0;
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null){
-				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()); 
-				continue;
+		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
+			return SimpleServiceLocator.specialinventory.roomForItem(_inventory, item);
+		} else {
+			int totalRoom = 0;
+			for (int i = 0; i < _inventory.getSizeInventory(); i++){
+				ItemStack stack = _inventory.getStackInSlot(i);
+				if (stack == null){
+					totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()); 
+					continue;
+				}
+				if (ItemIdentifier.get(stack) != item) continue;
+				
+				totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()) - stack.stackSize);
 			}
-			if (ItemIdentifier.get(stack) != item) continue;
-			
-			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()) - stack.stackSize);
+			return totalRoom;
 		}
-		return totalRoom;
-		
 	}
 
 	public boolean hasRoomForItem(ItemIdentifier item) {

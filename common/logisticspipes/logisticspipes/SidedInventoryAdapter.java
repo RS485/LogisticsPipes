@@ -21,7 +21,7 @@ import net.minecraftforge.common.ISidedInventory;
  */
 public class SidedInventoryAdapter implements IInventory {
 
-	private final ISidedInventory _sidedInventory;
+	public final ISidedInventory _sidedInventory;
 	private final ForgeDirection _side;
 	private final int _slotOffset;
 	

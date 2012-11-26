@@ -71,9 +71,9 @@ public class ModulePassiveSupplier implements ILogisticsModule, IClientInformati
 		InventoryUtil filterUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(_filterInventory);
 		if (!filterUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
-		int targetCount = filterUtil.getItemCount(ItemIdentifier.get(item));
+		int targetCount = filterUtil.itemCount(ItemIdentifier.get(item));
 		InventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		if (targetCount <= targetUtil.getItemCount(ItemIdentifier.get(item))) return null;
+		if (targetCount <= targetUtil.itemCount(ItemIdentifier.get(item))) return null;
 		
 		SinkReply reply = new SinkReply();
 		reply.fixedPriority = FixedPriority.PassiveSupplier;

@@ -476,8 +476,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public boolean useEnergy(int amount) {
-		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		if(MainProxy.isClient()) return false;
+		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount)) {

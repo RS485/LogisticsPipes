@@ -130,6 +130,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	
 	@Override
 	public void tick() {
+		if(MainProxy.isClient()) return;
 		if (++currentTick < ticksToAction())
 			return;
 		currentTick = 0;

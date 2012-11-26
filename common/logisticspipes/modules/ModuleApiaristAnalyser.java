@@ -5,6 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.src.IInventory;
@@ -68,6 +69,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 
 	@Override
 	public void tick() {
+		if(MainProxy.isClient()) return;
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 		

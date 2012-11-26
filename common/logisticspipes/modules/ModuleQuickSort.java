@@ -5,6 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.src.IInventory;
@@ -54,6 +55,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 	@Override
 	public void tick() {
+		if(MainProxy.isClient()) return;
 		if (sent){
 			ticksToResend = 6;
 			sent = false;

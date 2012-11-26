@@ -37,6 +37,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
+		if(MainProxy.isClient()) return;
 		//Add from interal buffer
 		LinkedList<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;

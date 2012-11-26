@@ -130,6 +130,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			}
 			init = true;
 		}
+		if(MainProxy.isClient()) return;
 		if(this instanceof PipeItemsCraftingLogisticsMk2) {
 			return;
 		}

@@ -27,7 +27,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -423,7 +423,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
-			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifier.get(routedEntityItem.getItemStack()));
+			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
 		}
 	}
 

@@ -17,7 +17,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -92,7 +92,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			destinationRouter.itemDropped(this);
 			
 			if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
-				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifier.get(item));
+				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
 		}
 		destinationUUID = newDestination;
@@ -112,7 +112,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationUUID); 
 			destinationRouter.itemDropped(this);
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
-				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifier.get(item));
+				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
 		}
 		super.remove();

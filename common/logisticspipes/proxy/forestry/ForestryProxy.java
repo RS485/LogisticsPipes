@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.utils.ItemIdentifier;
@@ -12,13 +13,18 @@ import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
+import net.minecraftforge.liquids.LiquidDictionary;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
+import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {
 	
@@ -41,6 +47,10 @@ public class ForestryProxy implements IForestryProxy {
 			propolisField = ForestryItem.getDeclaredField("propolis");
 			propolisField.setAccessible(true);
 			propolis = (Item) propolisField.get(null);
+			pollenField = ForestryItem.getDeclaredField("pollen");
+			pollenField.setAccessible(true);
+			pollen = (Item) pollenField.get(null);
+			honey = LiquidDictionary.getLiquid("honey", 1500);	
 			has_all = true;
 		} catch(Exception e) {
 			if(LogisticsPipes.DEBUG) {
@@ -61,6 +71,9 @@ public class ForestryProxy implements IForestryProxy {
 	private Item beeDroneGE;
 	private Field propolisField;
 	private Item propolis;
+	private Field pollenField;
+	private Item pollen;
+	private LiquidStack honey;
 	private boolean has_all;
 
 	@Override
@@ -286,39 +299,168 @@ public class ForestryProxy implements IForestryProxy {
 			return input;
 		}
 	}
-
+	
 	@Override
 	public void addCraftingRecipes() {
 		if(!has_all) return;
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "rBr", "CrC", 
+		
+		/* Carpenter recipes */
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+			"CGC", 
+			"r r", 
+			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { "CGC", "rBr", "CrC", 
+		});
+		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+			"CGC", 
+			"r r", 
+			"CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+		});
+		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
+			"CrC", 
+			"r r", 
+			"CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('r'), Item.redstone, 
+		});
+				
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
+			" p ",
+			"r r",
+			"CwC",
+			Character.valueOf('p'), pollen,
+			Character.valueOf('C'), propolis,
+			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
+			Character.valueOf('r'), Item.redstone,
+		});
+		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+			"CGD", 
+			"r r", 
+			"DrC", 
+			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
+			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('G'), pollen, 
+			Character.valueOf('r'), Item.redstone, 
+		});
+		
+		
+		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
+			"CGC", 
+			"r r", 
+			"CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('r'), Item.redstone, 
+		});
+		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
+			"CGC", 
+			"r r", 
+			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)});
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { "CrC", "rBr", "CrC", 
+		});
+		
+		RecipeManagers.carpenterManager.addRecipe(25, honey, new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0), new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
+			"CrC", 
+			"r r", 
+			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)});
+		});
+		
+		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
+				
+		/* Regular recipes */
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+			"CGC", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+			"CGC", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
+			"CrC", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), propolis,
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
+		});
+		
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
+			" p ",
+			"rBr",
+			"CwC",
+			Character.valueOf('p'), pollen,
+			Character.valueOf('C'), propolis,
+			Character.valueOf('w'), BuildCraftTransport.pipeItemsWood,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
+		});
 
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { "CGC", "rBr", "CrC", 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+			"CGD", 
+			"rBr", 
+			"DrC", 
+			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
+			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('G'), pollen, 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
+			"CGC", 
+			"rBr", 
+			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { "CGC", "rBr", "CrC", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
+		});
+		
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
+			"CGC", 
+			"rBr", 
+			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
-		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { "CrC", "rBr", "CrC", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
+		});
+		
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
+			"CrC", 
+			"rBr", 
+			"CrC", 
 			Character.valueOf('C'), propolis,
 			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
+		});
 
 		//ModLoader.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[]{new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER),new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});
 		//ModLoader.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[]{new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK),new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)});

@@ -14,7 +14,9 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import logisticspipes.modules.ModuleAdvancedExtractorMK3;
 import logisticspipes.modules.ModuleApiaristAnalyser;
+import logisticspipes.modules.ModuleApiaristRefiller;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleApiaristTerminus;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
@@ -35,7 +37,7 @@ public class ItemModule extends ItemModuleProxy {
 	//Texture Map
 	public static final String textureMap =	"0000111111111111" +
 											"0000011111111111" +
-											"0000000001111111" +
+											"0000000000001111" +
 											"1110111011111111" +
 											"1110111011111111" +
 											"0111111111111111" +
@@ -62,6 +64,8 @@ public class ItemModule extends ItemModuleProxy {
 	public static final int ADVANCED_EXTRACTOR = 7;
 	public static final int BEEANALYZER = 8;
 	public static final int BEESINK = 9;
+	public static final int APIARISTREFILLER = 10;
+	public static final int APIARISTTERMINUS = 11;
 
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
@@ -160,6 +164,8 @@ public class ItemModule extends ItemModuleProxy {
 		registerModule(ELECTRICMANAGER			, "Electric Manager module"		, ModuleElectricManager.class, 96);
 		registerModule(BEEANALYZER				, "Bee Analyzer module"			, ModuleApiaristAnalyser.class);
 		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);
+		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);
+		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
 	}
 	
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {

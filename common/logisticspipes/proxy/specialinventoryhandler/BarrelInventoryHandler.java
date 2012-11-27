@@ -46,7 +46,11 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 				int value = (int) getItemCount.invoke(tile, new Object[]{});
 				map.put(ItemIdentifier.get(itemStack), value);
 			}
-		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return map;
@@ -63,7 +67,11 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 				return max - value;
 			}
 			return max;
-		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return 0;
@@ -84,7 +92,11 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 				}
 			}
 			return null;
-		} catch (IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -98,7 +110,9 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 				return ItemIdentifier.get(itemStack) == itemIdent;
 			}
 			return false;
-		} catch (IllegalArgumentException | IllegalAccessException e) {
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		}
 		return false;

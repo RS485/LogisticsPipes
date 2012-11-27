@@ -36,7 +36,7 @@ public class SpecialInventoryHandler {
 	
 	public boolean isSpecialType(IInventory inv) {
 		TileEntity tile = getTileEntityFromInventory(inv);
-		if(tile == null) return true;
+		if(tile == null) return false;
 		for(ISpecialInventoryHandler invHandler:handler) {
 			if(invHandler.isType(tile)) {
 				return true;

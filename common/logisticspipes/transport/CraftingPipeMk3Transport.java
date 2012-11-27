@@ -9,6 +9,7 @@ import buildcraft.api.transport.IPipeEntry;
 import buildcraft.core.inventory.Transactor;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.EntityData;
+import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
@@ -18,6 +19,22 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	
 	public CraftingPipeMk3Transport() {
 		super();
+		travelHook = new IItemTravelingHook() {
+			@Override
+			public void endReached(PipeTransportItems pipe, EntityData data,
+					TileEntity tile) {
+				scheduleRemoval(data.item);
+				handleTileReached(data, tile);
+			}
+
+			@Override
+			public void drop(PipeTransportItems pipe, EntityData data) {
+			}
+
+			@Override
+			public void centerReached(PipeTransportItems pipe, EntityData data) {
+			}
+		};
 	}
 	
 	private void handleTileReached(EntityData data, TileEntity tile) {

@@ -68,6 +68,7 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
+import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
@@ -291,6 +292,8 @@ public class LogisticsPipes {
 		}
 		
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
+		
+		SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);

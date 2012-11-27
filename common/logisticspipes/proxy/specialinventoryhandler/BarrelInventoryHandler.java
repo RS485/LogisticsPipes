@@ -43,7 +43,7 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(tile);
 			if(itemStack != null) {
-				int value = (int) getItemCount.invoke(tile, new Object[]{});
+				int value = (Integer) getItemCount.invoke(tile, new Object[]{});
 				map.put(ItemIdentifier.get(itemStack), value);
 			}
 		} catch (IllegalArgumentException e) {
@@ -60,10 +60,10 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 	public int roomForItem(TileEntity tile, ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(tile);
-			int max = (int) getMaxSize.invoke(tile, new Object[]{});
+			int max = (Integer) getMaxSize.invoke(tile, new Object[]{});
 			if(itemStack != null) {
 				if(ItemIdentifier.get(itemStack) != itemIdent) return 0;
-				int value = (int) getItemCount.invoke(tile, new Object[]{});
+				int value = (Integer) getItemCount.invoke(tile, new Object[]{});
 				return max - value;
 			}
 			return max;
@@ -83,7 +83,7 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 			ItemStack itemStack = (ItemStack) item.get(tile);
 			if(itemStack != null) {
 				if(ItemIdentifier.get(itemStack) != itemIdent) return null;
-				int value = (int) getItemCount.invoke(tile, new Object[]{});
+				int value = (Integer) getItemCount.invoke(tile, new Object[]{});
 				if(value > 0) {
 					setItemCount.invoke(tile, new Object[]{value - 1});
 					ItemStack ret = itemStack.copy();

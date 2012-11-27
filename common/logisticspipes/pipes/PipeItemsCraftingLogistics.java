@@ -383,7 +383,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 	
 	/* ComputerCraftCommands */
-	@CCCommand
+	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
 	public void reimport() {
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
 	}

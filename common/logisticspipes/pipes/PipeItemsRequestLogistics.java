@@ -85,14 +85,14 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		return ItemSendMode.Normal;
 	}
 	
-	@CCCommand
+	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	public int makeRequest(Double itemId, Double amount) throws Exception {
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
 		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this);
 	}
 
-	@CCCommand
+	@CCCommand(description="Asks for all available ItemIdentifier inside the Logistics Network")
 	public void getAvailableItems() {
 		QueuedTasks.queueTask(new Callable() {
 			@Override
@@ -110,7 +110,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		});
 	}
 
-	@CCCommand
+	@CCCommand(description="Asks for all craftable ItemIdentifier inside the Logistics Network")
 	public void getCraftableItems() {
 		QueuedTasks.queueTask(new Callable() {
 			@Override

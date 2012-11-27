@@ -499,19 +499,19 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	/* --- CCCommands --- */
-	@CCCommand
+	@CCCommand(description="Returns the Router UUID as String")
 	public String getRouterId() {
 		return getRouter().getId().toString();
 	}
 
-	@CCCommand
+	@CCCommand(description="Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
 	public void setTurtleConnect(Boolean flag) {
 		if(this.container instanceof LogisticsTileGenericPipe) {
 			((LogisticsTileGenericPipe)this.container).setTurtrleConnect(flag);
 		}
 	}
 
-	@CCCommand
+	@CCCommand(description="Returns the TurtleConnect flag for this Turtle on this LogisticsPipe")
 	public boolean getTurtleConnect() {
 		if(this.container instanceof LogisticsTileGenericPipe) {
 			return ((LogisticsTileGenericPipe)this.container).getTurtrleConnect();
@@ -519,33 +519,33 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 
-	@CCCommand
+	@CCCommand(description="Returns the Item Id for given ItemIdentifier Id.")
 	public int getItemID(Double itemId) throws Exception {
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
 		return item.itemID;
 	}
 
-	@CCCommand
+	@CCCommand(description="Returns the Item damage for the given ItemIdentifier Id.")
 	public int getItemDamage(Double itemId) throws Exception {
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.itemDamage;
 	}
 
-	@CCCommand
+	@CCCommand(description="Returns the NBTTagCompound for the given ItemIdentifier Id.")
 	public Map<Object,Object> getNBTTagCompound(Double itemId) throws Exception {
 		ItemIdentifier itemn = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemn == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemn.getNBTTagCompoundAsMap();
 	}
 
-	@CCCommand
+	@CCCommand(description="Returns the ItemIdentifier Id for the given Item id and damage.")
 	public int getItemIdentifierIDFor(Double itemID, Double itemDamage) {
 		return ItemIdentifier.get((int)Math.floor(itemID), (int)Math.floor(itemDamage), null).getId();
 	}
 
-	@CCCommand
+	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
 	public String getItemName(Double itemId) throws Exception {
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");

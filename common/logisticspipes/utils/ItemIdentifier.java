@@ -224,6 +224,13 @@ public final class ItemIdentifier {
 		return stack;
 	}
 	
+	public int getMaxStackSize() {
+		if(Item.itemsList[this.itemID].isDamageable() && this.itemDamage > 0) {
+			return 1;
+		}
+		return Item.itemsList[this.itemID].getItemStackLimit();
+	}
+	
 	public int getId() {
 		readLock.lock();
 		int id = _itemIdentifierIdCache.get(this);

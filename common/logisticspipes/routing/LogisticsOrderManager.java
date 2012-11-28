@@ -80,6 +80,15 @@ public class LogisticsOrderManager {
 	}
 
 	public void addOrder(ItemIdentifierStack stack, IRequestItems requester) {
+		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
+			if (request.getValue1().getItem() == stack.getItem()) {
+				if(request.getValue2() == requester) {
+					request.getValue1().stackSize += stack.stackSize;
+					listen();
+					return;
+				}
+			}
+		}
 		_orders.addLast(new Pair<ItemIdentifierStack,IRequestItems>(stack,requester));
 		listen();
 	}

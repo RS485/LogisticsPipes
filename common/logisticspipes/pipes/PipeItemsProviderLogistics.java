@@ -105,30 +105,51 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return count;
 	}
 
-	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
-		int sent = 0;
+	protected int neededEnergy() {
+		return 1;
+	}
+	
+	protected int itemsToExtract() {
+		return 8;
+	}
+
+	protected int stacksToExtract() {
+		return 1;
+	}
+	
+	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination) {
+		ItemIdentifier item = stack.getItem();
+		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			
-			InventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile);
+			InventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile); 
+			int available = inv.itemCount(item);
+			if (available == 0) continue;
 			
-			if (inv.itemCount(item)> 0){
-				ItemStack removed = inv.getSingleItem(item);
-				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
-				routedItem.setSource(this.getRouter().getId());
-				routedItem.setDestination(destination);
-				routedItem.setTransportMode(TransportMode.Active);
-				super.queueRoutedItem(routedItem, tile.orientation);
-				//super.sendRoutedItem(removed, destination, p);
-				sent++;
-				maxCount--;
-				if (maxCount < 1) break;
-			}			
+			int wanted = Math.min(available, stack.stackSize);
+			wanted = Math.min(wanted, maxCount);
+			wanted = Math.min(wanted, item.getMaxStackSize());
+			
+			if(!useEnergy(wanted * neededEnergy())) {
+				return 0;
+			}
+			ItemStack removed = inv.getMultipleItems(item, wanted);
+			int sent = removed.stackSize;
+
+			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
+			routedItem.setSource(this.getRouter().getId());
+			routedItem.setDestination(destination);
+			routedItem.setTransportMode(TransportMode.Active);
+			super.queueRoutedItem(routedItem, tile.orientation);
+			
+			_orderManager.sendSuccessfull(sent);
+			return sent;
 		}
-		updateInv(false);
-		return sent;
+		_orderManager.sendFailed();
+		return 0;
 	}
 	
 	private InventoryUtil getAdaptedInventoryUtil(IInventory base){
@@ -174,20 +195,19 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		}
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
-		
-		if(!this.getClass().equals(PipeItemsProviderLogistics.class)) return;
-		
-		if(!useEnergy(1)) return;
-		
-		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
-		if (sent > 0){
-			_orderManager.sendSuccessfull(sent);
+
+		int itemsleft = itemsToExtract();
+		int stacksleft = stacksToExtract();
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
+			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId());
+			if (sent == 0)
+				break;
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
+			stacksleft -= 1;
+			itemsleft -= sent;
 		}
-		else {
-			_orderManager.sendFailed();
-		}
+		updateInv(false);
 	}
 
 	@Override

@@ -395,60 +395,61 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			return toAdd;
 		}
 		ItemStack[] recipe = getRecipeForTaget();
-		if(recipe != null) {
-			boolean found = false;
-			int min = Integer.MAX_VALUE;
-			int i=0;
-			for(ItemStack itemstack:recipe) {
-				if(itemstack == null) {
-					i++;
-					continue;
-				}
-				if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
-					found = true;
-					ItemStack slot = inv.getStackInSlot(i);
-					if(slot != null) {
-						min = Math.min(slot.stackSize, min);
-					} else {
-						min = 0;
-					}
-				}
+		if(recipe == null) return 0;
+		
+		int availableslots = 0;
+		int itemsinslots = 0;
+		int i=0;
+		for(ItemStack itemstack:recipe) {
+			if(itemstack == null) {
 				i++;
+				continue;
 			}
-			if(found) {
-				int freespace = 64 - min;
-				int toAdd = Math.min(stack.stackSize, freespace);
-				if(doAdd) {
-					i=0;
-					for(ItemStack itemstack:recipe) {
-						if(itemstack == null) {
-							i++;
-							continue;
-						}
-						if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
-							ItemStack slot = inv.getStackInSlot(i);
-							if(slot == null) {
-								ItemStack stacktoAdd = stack.copy();
-								stacktoAdd.stackSize = toAdd;
-								inv.setInventorySlotContents(i, stacktoAdd);
-								inv.onInventoryChanged();
-								break;
-							} else if(slot.stackSize == min) {
-								slot.stackSize += toAdd;
-								inv.setInventorySlotContents(i, slot);
-								inv.onInventoryChanged();
-								break;
-							}
-						}
-						i++;
-					}
+			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+				availableslots++;
+				ItemStack slot = inv.getStackInSlot(i);
+				if(slot != null) {
+					itemsinslots += slot.stackSize;
 				}
-				return toAdd;
-			} else {
-				return 0;
 			}
+			i++;
 		}
-		return 0;
+		int toadd = Math.min(availableslots * 64 - itemsinslots, stack.stackSize);
+		if(!doAdd) {
+			return toadd;
+		}
+		if(toadd <= 0) {
+			return 0;
+		}
+		itemsinslots += toadd;
+		int itemsperslot = itemsinslots / availableslots;
+		int itemsextra = itemsinslots - (itemsperslot * availableslots);
+		i = 0;
+		for(ItemStack itemstack:recipe) {
+			if(itemstack == null) {
+				i++;
+				continue;
+			}
+			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+				if(itemsperslot == 0 && itemsextra == 0) {
+					inv.setInventorySlotContents(i, null);
+				} else {
+					ItemStack slot = inv.getStackInSlot(i);
+					if(slot == null) {
+						slot = stack.copy();
+					}
+					slot.stackSize = itemsperslot;
+					if(itemsextra > 0) {
+						slot.stackSize++;
+						itemsextra--;
+					}
+					inv.setInventorySlotContents(i, slot);
+				}
+			}
+			i++;
+		}
+		inv.onInventoryChanged();
+		return toadd;
 	}
 
 	@Override

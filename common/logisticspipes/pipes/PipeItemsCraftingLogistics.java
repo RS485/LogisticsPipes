@@ -81,6 +81,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	
 	protected int _extras;
 	private boolean init = false;
+	private boolean doContentUpdate = true;
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new BaseLogicCrafting(), itemID);
@@ -167,6 +168,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			init = true;
 		}
 		if(MainProxy.isClient()) return;
+		
+		if (doContentUpdate) {
+			checkContentUpdate();
+		}
 		
 		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
 		
@@ -408,7 +413,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, _orderManager.getContentList()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, oldList).getPacket(), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -422,6 +427,11 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public void listenedChanged() {
+		doContentUpdate = true;
+	}
+
+	private void checkContentUpdate() {
+		doContentUpdate = false;
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
 		if(!oldList.equals(all)) {
 			oldList.clear();

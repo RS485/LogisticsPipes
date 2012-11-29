@@ -58,6 +58,7 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
@@ -70,6 +71,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 	//private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
+	private boolean doContentUpdate = true;
 		
 	public PipeItemsProviderLogistics(int itemID) {
 		super(new LogicProvider(), itemID);
@@ -191,7 +193,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		if(MainProxy.isClient()) return;
 		
 		if(worldObj.getWorldTime() % 6 == 0) {
-			updateInv(false);
+			updateInv();
+		}
+		
+		if (doContentUpdate) {
+			checkContentUpdate();
 		}
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
@@ -207,7 +213,6 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}
-		updateInv(false);
 	}
 
 	@Override
@@ -315,13 +320,13 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
 	}
 	
-	private void updateInv(boolean force) {
+	private void updateInv() {
 		itemList.clear();
 		HashMap<ItemIdentifier, Integer> list = getAllItems();
 		for(ItemIdentifier item :list.keySet()) {
 			itemList.add(new ItemIdentifierStack(item, list.get(item)));
 		}
-		if(!itemList.equals(oldList) || force) {
+		if(!itemList.equals(oldList)) {
 			oldList.clear();
 			oldList.addAll(itemList);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, itemList).getPacket(), localModeWatchers);
@@ -330,6 +335,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	@Override
 	public void listenedChanged() {
+		doContentUpdate = true;
+	}
+
+	private void checkContentUpdate() {
+		doContentUpdate = false;
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
 		if(!oldManagerList.equals(all)) {
 			oldManagerList.clear();
@@ -337,13 +347,13 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
 		}
 	}
-
+	
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			updateInv(true);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, _orderManager.getContentList()).getPacket(), localModeWatchers);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, oldList).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, oldManagerList).getPacket(), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}

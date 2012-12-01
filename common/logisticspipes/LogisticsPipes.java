@@ -69,6 +69,7 @@ import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
@@ -291,9 +292,15 @@ public class LogisticsPipes {
 			System.out.println("Loaded CC DummyProxy");
 		}
 		
-		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
+		if(Loader.isModLoaded("factorization")) {
+			SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
+		}
 		
-		SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
+		if(Loader.isModLoaded("GregTech_Addon")) {
+			SimpleServiceLocator.specialinventory.registerHandler(new QuantumChestHandler());
+		}
+
+		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);

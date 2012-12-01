@@ -6,6 +6,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
@@ -14,9 +15,13 @@ import java.util.zip.GZIPOutputStream;
 import logisticspipes.network.ClientPacketHandler;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Pair;
 import net.minecraft.src.Packet250CustomPayload;
+import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.common.registry.TickRegistry;
 
 public class PacketBufferHandlerThread extends Thread {
 
@@ -30,11 +35,39 @@ public class PacketBufferHandlerThread extends Thread {
 	private static Object queueLock = new Object();
 	private static LinkedList<byte[]> queue = new LinkedList<byte[]>();
 	
+	private static LinkedList<Pair<Player,byte[]>> clientPacketBuffer = new LinkedList<Pair<Player,byte[]>>();
+	
 	public PacketBufferHandlerThread(Side side) {
 		super("LogisticsPipes Packet Compressor " + side.toString());
 		this.side = side;
 		this.setDaemon(true);
 		this.start();
+		if(side == Side.CLIENT) {
+			TickRegistry.registerTickHandler(new ITickHandler() {
+				@Override
+				public EnumSet<TickType> ticks() {
+					return EnumSet.of(TickType.CLIENT);
+				}
+				
+				@Override
+				public void tickStart(EnumSet<TickType> type, Object... tickData) {}
+	
+				@Override
+				public void tickEnd(EnumSet<TickType> type, Object... tickData) {
+					Pair<Player,byte[]> part;
+					synchronized (clientPacketBuffer) {
+						if(clientPacketBuffer.size() < 1) return;
+						part = clientPacketBuffer.pop();
+					}
+					ClientPacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+				}
+				
+				@Override
+				public String getLabel() {
+					return "LogisticsPipes Packet Compressor Tick";
+				}
+			}, Side.CLIENT);
+		}
 	}
 	
 	public synchronized static void addPacketToCompressor(Packet250CustomPayload packet, Player player) {
@@ -87,7 +120,10 @@ public class PacketBufferHandlerThread extends Thread {
 						if(size + 4 <= clientBuffer.length) {
 							byte[] packet = Arrays.copyOfRange(clientBuffer, 4, size + 4);
 							clientBuffer = Arrays.copyOfRange(clientBuffer, size + 4, clientBuffer.length);
-							ClientPacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(packet)), (Player) MainProxy.proxy.getClientPlayer());
+							synchronized (clientPacketBuffer) {
+								clientPacketBuffer.add(new Pair<Player,byte[]>((Player) MainProxy.proxy.getClientPlayer(),packet));
+							}
+							//ClientPacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(packet)), (Player) MainProxy.proxy.getClientPlayer());
 						}
 					}
 				} else if(side.equals(Side.SERVER)) {

@@ -38,13 +38,12 @@
     <property name="forge.version"       value="6.4.0.396" />
     <property name="bc.version"          value="3.2.0" />
     <property name="forestry.version"    value="1.6.2.0" />
-    <property name="ic2.version"         value="1.108.52-lf" />
+    <property name="ic2.version"         value="1.109.113-lf" />
     <property name="cc.version"          value="1.41" />
-    <property name="lp.version"          value="0.6.0" />
-    <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-    <property name="lp.version.full"     value="${lp.version}.pre3" />
+    <property name="lp.version"          value="0.6.1" />
+    <property name="lp.version.full"     value="${lp.version}.pre.${BUILD_NUMBER}" />
     
-    <echo message="Starting build for ${lp.version.full}" />
+    <echo message="Starting build for ${lp.version.full} for MC ${mc.version}" />
 	
     <!-- Targets -->
     
@@ -202,20 +201,20 @@
 	
         <!-- Recompile -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c recompile.bat"/>
+            <arg line="/c recompile.bat --client"/>
         </exec>
         
         <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg value="recompile.sh" />
+            <arg value="recompile.sh --client" />
         </exec>
         
         <!-- Reobf -->
         <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c reobfuscate.bat"/>
+            <arg line="/c reobfuscate.bat --client"/>
         </exec>
         
         <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg value="reobfuscate.sh" />
+            <arg value="reobfuscate.sh --client" />
         </exec>
         
         <!-- Copy LP classes -->

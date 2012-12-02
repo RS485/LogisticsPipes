@@ -141,11 +141,11 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 					con.Router2 = null;
 				}
 			} else {
-				if(con.Router1 == null) {
+				if(con.Router1 == null || con.Router1.equals(router.getId())) {
 					con.Router1 = router.getId();
 					added = true;
 					break;
-				} else if(con.Router2 == null) {
+				} else if(con.Router2 == null || con.Router2.equals(router.getId())) {
 					con.Router2 = router.getId();
 					added = true;
 					break;

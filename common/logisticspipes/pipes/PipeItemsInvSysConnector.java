@@ -231,6 +231,17 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	
 	
 	@Override
+	public void onChunkUnload() {
+		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
+		if(CRP != null) {
+			CRP.refreshRender();
+		}
+		init = false;
+		super.onChunkUnload();
+	}
+
+	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		inv.writeToNBT(nbttagcompound, "");

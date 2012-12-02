@@ -313,8 +313,8 @@ public class ForestryProxy implements IForestryProxy {
 			"CGD", 
 			"r r", 
 			"DrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
-			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('C'), "dyeBlack",
+			Character.valueOf('D'), "dyePurple",
 			Character.valueOf('G'), pollen, 
 			Character.valueOf('r'), Item.redstone, 
 		});
@@ -394,8 +394,8 @@ public class ForestryProxy implements IForestryProxy {
 			"CGD", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
-			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('C'), "dyeBlack",
+			Character.valueOf('D'), "dyePurple",
 			Character.valueOf('G'), pollen, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)

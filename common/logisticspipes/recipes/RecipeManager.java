@@ -8,28 +8,35 @@ import net.minecraft.src.CraftingManager;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 
 public class RecipeManager {
+	
 	public static void loadRecipes() {
-		CraftingManager craftingManager = CraftingManager.getInstance();
+		class LocalCraftingManager {
+			private CraftingManager craftingManager = CraftingManager.getInstance();
+			@SuppressWarnings("unchecked")
+			public void addRecipe(ItemStack stack, Object... objects) {
+				craftingManager.getRecipeList().add(new ShapedOreRecipe(stack,objects));
+			}
+		};
+		LocalCraftingManager craftingManager = new LocalCraftingManager();
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBuilderSupplierPipe, 1), new Object[] {
 			"iPy", 
-			Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), 
+			Character.valueOf('i'), "dyeBlack", 
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('y'), new ItemStack(Item.dyePowder, 1,11)
+			Character.valueOf('y'), "dyeYellow"
 		});
-		
-		//craftingManager.addRecipe(new ItemStack(LogisticsNetworkMonitior, 1), new Object[] { "g g", " G ", " g ", Character.valueOf('g'), Item.ingotGold, Character.valueOf('G'), BuildCraftCore.goldGearItem});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSupplierPipe, 1), new Object[] {
 			" B ", 
 			"lPl", 
 			" B ", 
-			Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4), 
+			Character.valueOf('l'), "dyeBlue", 
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
 			Character.valueOf('B'), Item.bucketEmpty
 		});
@@ -98,7 +105,7 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSupplierPipe, 1), new Object[] { 
 			"lPl", 
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('l'), new ItemStack(Item.dyePowder, 1, 4)
+			Character.valueOf('l'), "dyeBlue"
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipe, 1), new Object[] { 
@@ -158,21 +165,21 @@ public class RecipeManager {
 			"U", 
 			"B", 
 			Character.valueOf('B'), LogisticsPipes.LogisticsProviderPipe, 
-			Character.valueOf('U'), new ItemStack(Item.dyePowder, 1, 2)
+			Character.valueOf('U'), "dyeGreen"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsDestination, 1), new Object[] {
 			"U", 
 			"B", 
 			Character.valueOf('B'), LogisticsPipes.LogisticsProviderPipe, 
-			Character.valueOf('U'), new ItemStack(Item.dyePowder, 1, 1)
+			Character.valueOf('U'), "dyeRed"
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsItemDisk, 1), new Object[] { 
 			"igi", 
 			"grg", 
 			"igi", 
-			Character.valueOf('i'), new ItemStack(Item.dyePowder, 1, 0), 
+			Character.valueOf('i'), "dyeBlack", 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('g'), Item.goldNugget
 		});
@@ -190,7 +197,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 2),
+			Character.valueOf('C'), "dyeGreen",
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -200,7 +207,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 2),
+			Character.valueOf('C'), "dyeGreen",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -210,7 +217,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr",
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 1),
+			Character.valueOf('C'), "dyeRed",
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -220,7 +227,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 1),
+			Character.valueOf('C'), "dyeRed",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -230,7 +237,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
+			Character.valueOf('C'), "dyeBlue",
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -240,7 +247,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
+			Character.valueOf('C'), "dyeBlue",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -313,7 +320,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 14),
+			Character.valueOf('C'), "dyeMagenta",
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -323,7 +330,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 14),
+			Character.valueOf('C'), "dyeMagenta",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -333,7 +340,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
+			Character.valueOf('C'), "dyeBlue",
 			Character.valueOf('G'), BuildCraftCore.diamondGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -343,7 +350,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
+			Character.valueOf('C'), "dyeBlue",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -353,8 +360,8 @@ public class RecipeManager {
 			"CGD", 
 			"rBr", 
 			"DrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
-			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('C'), "dyeBlack",
+			Character.valueOf('D'), "dyePurple",
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -364,8 +371,8 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrD", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 0),
-			Character.valueOf('D'), new ItemStack(Item.dyePowder, 1, 5),
+			Character.valueOf('C'), "dyeBlack",
+			Character.valueOf('D'), "dyePurple",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -375,7 +382,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
+			Character.valueOf('C'), "dyeBlue",
 			Character.valueOf('G'), BuildCraftCore.goldGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -385,7 +392,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), new ItemStack(Item.dyePowder, 1, 4),
+			Character.valueOf('C'), "dyeBlue",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)

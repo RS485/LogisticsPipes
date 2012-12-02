@@ -21,6 +21,8 @@ import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
+import forestry.api.apiculture.IAlleleBeeSpecies;
+import forestry.api.core.ItemInterface;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
@@ -29,52 +31,35 @@ import forestry.api.recipes.RecipeManagers;
 public class ForestryProxy implements IForestryProxy {
 	
 	public ForestryProxy() {
+		boolean initsuccessful = false;
 		try {
 			tileMachine = Class.forName("forestry.core.gadgets.TileMachine");
 			machine_in_TileMachine = tileMachine.getDeclaredField("machine");
 			machine_in_TileMachine.setAccessible(true);
 			analyserClass = Class.forName("forestry.apiculture.gadgets.MachineAnalyzer");
-			enumFilterTypeClass = Class.forName("forestry.pipes.EnumFilterType");
-			getBeeType = enumFilterTypeClass.getDeclaredMethod("getType", new Class[]{ItemStack.class});
-			getBeeType.setAccessible(true);
-			stringUtil = Class.forName("forestry.core.utils.StringUtil");
+			Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
 			localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
 			localize.setAccessible(true);
-			ForestryItem = Class.forName("forestry.core.config.ForestryItem");
-			beeDroneGEField = ForestryItem.getDeclaredField("beeDroneGE");
-			beeDroneGEField.setAccessible(true);
-			beeDroneGE = (Item) beeDroneGEField.get(null);
-			propolisField = ForestryItem.getDeclaredField("propolis");
-			propolisField.setAccessible(true);
-			propolis = (Item) propolisField.get(null);
-			pollenField = ForestryItem.getDeclaredField("pollen");
-			pollenField.setAccessible(true);
-			pollen = (Item) pollenField.get(null);
+			propolis = ItemInterface.getItem("propolis").getItem();
+			pollen = ItemInterface.getItem("pollen").getItem();
 			honey = LiquidDictionary.getLiquid("honey", 1500);	
-			has_all = true;
+			initsuccessful = true;
 		} catch(Exception e) {
 			if(LogisticsPipes.DEBUG) {
 				e.printStackTrace();
 			}
 		}
+		has_all = initsuccessful;
 	}
 	
 	private Class<?> tileMachine;
 	private Field machine_in_TileMachine;
 	private Class<?> analyserClass;
-	private Class<?> enumFilterTypeClass;
-	private Method getBeeType;
-	private Class<?> stringUtil;
 	private Method localize;
-	private Class<?> ForestryItem;
-	private Field beeDroneGEField;
-	private Item beeDroneGE;
-	private Field propolisField;
 	private Item propolis;
-	private Field pollenField;
 	private Item pollen;
 	private LiquidStack honey;
-	private boolean has_all;
+	private final boolean has_all;
 
 	@Override
 	public boolean isBee(ItemIdentifier item) {
@@ -83,6 +68,7 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	public boolean isBee(ItemStack item) {
+		if(!has_all) return false;
 		return BeeManager.beeInterface.isBee(item);
 	}
 
@@ -93,25 +79,13 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	public boolean isAnalysedBee(ItemStack item) {
-		if(!BeeManager.beeInterface.isBee(item)) {
-			return false;
-		}
+		if(!isBee(item)) return false;
 		return BeeManager.beeInterface.getBee(item).isAnalyzed();
-	}
-	
-	public int getBeeAlleleCount() {
-		int counter = 0;
-		for(int i=0;i<AlleleManager.alleleRegistry.getRegisteredAlleles().size();i++) {
-			if(AlleleManager.alleleRegistry.getRegisteredAlleles().get(i) instanceof IAlleleSpecies) counter++;
-		}
-		return counter;
 	}
 	
 	@Override
 	public boolean isTileAnalyser(TileEntity tile) {
-		if(!has_all) {
-			return false;
-		}
+		if(!has_all) return false;
 		try {
 			if(tileMachine.isAssignableFrom(tile.getClass())) {
 				Object obj = machine_in_TileMachine.get(tile);
@@ -134,35 +108,47 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	public boolean isKnownAlleleId(String allele, World world) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleSpecies)) return false;
+		if(!has_all) return false;
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
 		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
 		return BeeManager.breedingManager.getApiaristTracker(world).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	@Override
 	public String getAlleleName(String uid) {
+		if(!has_all) return "";
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) return "";
 		return ((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid)).getName();
 	}
 	
-	private String getFirstValidAllele() {
+	private String getFirstValidAllele(World world) {
 		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleSpecies) {
+			if(allele instanceof IAlleleBeeSpecies && isKnownAlleleId(allele.getUID(), world)) {
 				return allele.getUID();
 			}
 		}
 		return "";
 	}
 	
+	private String getLastValidAllele(World world) {
+		String uid = "";
+		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
+			if(allele instanceof IAlleleBeeSpecies && isKnownAlleleId(allele.getUID(), world)) {
+				uid = allele.getUID();
+			}
+		}
+		return uid;
+	}
+
 	@Override
 	public String getNextAlleleId(String uid, World world) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
-			return getFirstValidAllele();
+		if(!has_all) return "";
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
+			return getFirstValidAllele(world);
 		}
-		IAllele nowAllele = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		boolean next = false;
 		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleSpecies) {
+			if(allele instanceof IAlleleBeeSpecies) {
 				if(next && isKnownAlleleId(allele.getUID(), world)) {
 					return allele.getUID();
 				} else if(allele.getUID().equals(uid)) {
@@ -175,13 +161,13 @@ public class ForestryProxy implements IForestryProxy {
 	
 	@Override
 	public String getPrevAlleleId(String uid, World world) {
-		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies)) { 
-			return getFirstValidAllele();
+		if(!has_all) return "";
+		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleBeeSpecies)) {
+			return getLastValidAllele(world);
 		}
-		IAllele nowAllele = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		IAllele lastAllele = null;
 		for(IAllele allele:AlleleManager.alleleRegistry.getRegisteredAlleles().values()) {
-			if(allele instanceof IAlleleSpecies) {
+			if(allele instanceof IAlleleBeeSpecies) {
 				if(allele.getUID().equals(uid)) {
 					if(lastAllele == null) {
 						return "";
@@ -197,93 +183,75 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	public String getFirstAlleleId(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return ""; 
+		if(!isBee(bee)) return "";
 		return BeeManager.beeInterface.getBee(bee).getGenome().getPrimaryAsBee().getUID();
 	}
 
 	@Override
 	public String getSecondAlleleId(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return ""; 
+		if(!isBee(bee)) return "";
 		return BeeManager.beeInterface.getBee(bee).getGenome().getSecondaryAsBee().getUID();
 	}
 
 	@Override
 	public boolean isDrone(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.isDrone(bee);
 	}
 
 	@Override
 	public boolean isPrincess(ItemStack bee) {
-		if(!has_all) return false;
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
-		try {
-			Object answer = getBeeType.invoke(null, new Object[]{bee});
-			Enum enumAnswer = (Enum) answer;
-			return enumAnswer.name().equals("PRINCESS");
-		} catch (Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
-			return false;
-		}
+		if(!isBee(bee)) return false;
+		if(isQueen(bee)) return false;
+		if(isDrone(bee)) return false;
+		return true;
 	}
 
 	@Override
 	public boolean isQueen(ItemStack bee) {
-		if(!has_all) return false;
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
-		try {
-			Object answer = getBeeType.invoke(null, new Object[]{bee});
-			Enum enumAnswer = (Enum) answer;
-			return enumAnswer.name().equals("QUEEN");
-		} catch (Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
-			return false;
-		}
+		if(!isBee(bee)) return false;
+		return BeeManager.beeInterface.isMated(bee);
 	}
 
 	@Override
 	public boolean isPurebred(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.SPECIES);
 	}
 
 	@Override
 	public boolean isNocturnal(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).getGenome().getNocturnal();
 	}
 
 	@Override
 	public boolean isPureNocturnal(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).getGenome().getNocturnal() && BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.NOCTURNAL);
 	}
 
 	@Override
 	public boolean isFlyer(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).getGenome().getTolerantFlyer();
 	}
 
 	@Override
 	public boolean isPureFlyer(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).getGenome().getTolerantFlyer() && BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER);
 	}
 
 	@Override
 	public boolean isCave(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).getGenome().getCaveDwelling();
 	}
 
 	@Override
 	public boolean isPureCave(ItemStack bee) {
-		if(!BeeManager.beeInterface.isBee(bee)) return false;
+		if(!isBee(bee)) return false;
 		return BeeManager.beeInterface.getBee(bee).getGenome().getCaveDwelling() && BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.CAVE_DWELLING);
 	}
 
@@ -468,10 +436,10 @@ public class ForestryProxy implements IForestryProxy {
 	
 	@Override
 	public int getIconIndexForAlleleId(String uid, int phase) {
+		if(!has_all) return 0;
 		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies))
 			return 0;
-		IAlleleSpecies species = (IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry
-				.getAllele(uid);
+		IAlleleSpecies species = (IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		int indexOffset = 0;
 		if (species != null) {
 			indexOffset = 16 * species.getBodyType();
@@ -486,10 +454,10 @@ public class ForestryProxy implements IForestryProxy {
 
 	@Override
 	public int getColorForAlleleId(String uid, int phase) {
+		if(!has_all) return 0;
 		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies))
 			return 0;
-		IAlleleSpecies species = (IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry
-				.getAllele(uid);
+		IAlleleSpecies species = (IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		if (species != null) {
 			if (phase == 0)
 				return species.getPrimaryColor();

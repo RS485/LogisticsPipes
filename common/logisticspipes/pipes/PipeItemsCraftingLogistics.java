@@ -130,8 +130,12 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			if(!useEnergy(neededEnergy() * stack.stackSize)) break;
 			
 			stacks = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
-			if(stacks == null || stacks.length < 1 || stacks[0] == null || !ItemStack.areItemStacksEqual(stack, stacks[0])) {
-				LogisticsPipes.requestLog.info("crafting extract got a unexpected item!");
+			if(stacks == null || stacks.length < 1 || stacks[0] == null) {
+				LogisticsPipes.requestLog.info("crafting extractItem(true) got nothing from " + ((TileEntity)inv).toString());
+				break;
+			}
+			if(!ItemStack.areItemStacksEqual(stack, stacks[0])) {
+				LogisticsPipes.requestLog.info("crafting extract got a unexpected item from " + ((TileEntity)inv).toString());
 			}
 			if(retstack == null) {
 				retstack = stack;

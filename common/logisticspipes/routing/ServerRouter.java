@@ -43,7 +43,6 @@ import buildcraft.transport.TileGenericPipe;
 public class ServerRouter implements IRouter, IPowerRouter {
 
 	private class LSA {
-		public IRouter source;
 		public HashMap<IRouter, Pair<Integer,Boolean>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
 	}
@@ -96,7 +95,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private static final Lock updateThreadwriteLock = updateThreadLock.writeLock();
 	public Object _externalRoutersByCostLock = new Object();
 	
-	private static final LinkedList<LSA> SharedLSADatabase = new LinkedList<LSA>();
+	private static final HashMap<IRouter,LSA> SharedLSADatabase = new HashMap<IRouter,LSA>();
 	private LSA _myLsa = new LSA();
 		
 	/** Map of router -> orientation for all known destinations **/
@@ -129,11 +128,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
 		_myLsa = new LSA();
-		_myLsa.source = this;
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer,Boolean>>();
 		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
 		SharedLSADatabasewriteLock.lock();
-		SharedLSADatabase.add(_myLsa);
+		SharedLSADatabase.put(this, _myLsa);
 		SharedLSADatabasewriteLock.unlock();
 	}
 
@@ -286,9 +284,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		for (ILogisticsPowerProvider provider : _powerAdjacent){
 			power.add(provider);
 		}
+		SharedLSADatabasewriteLock.lock();
 		_myLsa.neighboursWithMetric = neighboursWithMetric;
 		_myLsa.power = power;
 		_LSDVersion++;
+		SharedLSADatabasewriteLock.unlock();
 	}
 	
 	/**
@@ -345,8 +345,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			
 			//Add new candidates from the newly approved route
 			SharedLSADatabasereadLock.lock();
-			for (LSA lsa : SharedLSADatabase){
-				if (lsa.source != lowestCostCandidateRouter) continue;
+			LSA lsa = SharedLSADatabase.get(lowestCostCandidateRouter);
+			if(lsa != null) {
 				if(!isPipeLess) {
 					powerTable.addAll(lsa.power);
 				}
@@ -442,8 +442,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	@Override
 	public void destroy() {
 		SharedLSADatabasewriteLock.lock();
-		if (SharedLSADatabase.contains(_myLsa)){
-			SharedLSADatabase.remove(_myLsa);
+		if (SharedLSADatabase.containsKey(this)) {
+			SharedLSADatabase.remove(this);
 			_LSDVersion++;
 		}
 		SharedLSADatabasewriteLock.unlock();

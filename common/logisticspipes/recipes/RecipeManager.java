@@ -320,7 +320,7 @@ public class RecipeManager {
 			"CGC", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), "dyeMagenta",
+			Character.valueOf('C'), "dyeOrange",
 			Character.valueOf('G'), BuildCraftCore.ironGearItem, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
@@ -330,7 +330,7 @@ public class RecipeManager {
 			" G ", 
 			"rBr", 
 			"CrC", 
-			Character.valueOf('C'), "dyeMagenta",
+			Character.valueOf('C'), "dyeOrange",
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)

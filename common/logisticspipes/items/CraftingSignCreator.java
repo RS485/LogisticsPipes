@@ -1,8 +1,8 @@
 package logisticspipes.items;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSignTileEntity;
-import logisticspipes.config.Configs;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.RoutedPipe;
@@ -72,7 +72,7 @@ public class CraftingSignCreator extends LogisticsItem {
 				if(!(world.getBlockTileEntity(pipechecksignX, pipechecksignY, pipechecksignZ) instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof PipeItemsCraftingLogistics) && !selfcalled) {
 					if(world.getBlockId(signX, signY, signZ) == 0) {
 						if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-							world.setBlockAndMetadataWithNotify(signX, signY, signZ, Configs.LOGISTICS_SIGN_ID, LogisticsSignBlock.SignBlockID);
+							world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
 							TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
 							if(tilesign instanceof LogisticsSignTileEntity) {
 								((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
@@ -125,7 +125,7 @@ public class CraftingSignCreator extends LogisticsItem {
 								}
 								if(world.getBlockId(secondSignX, secondSignY, secondSignZ) == 0) {
 									if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-										world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, Configs.LOGISTICS_SIGN_ID, LogisticsSignBlock.SignBlockID);
+										world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
 										TileEntity tilesign = world.getBlockTileEntity(secondSignX, secondSignY, secondSignZ);
 										if(tilesign instanceof LogisticsSignTileEntity) {
 											((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
@@ -139,7 +139,7 @@ public class CraftingSignCreator extends LogisticsItem {
 							} else {
 								if(world.getBlockId(signX, signY, signZ) == 0) {
 									if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-										world.setBlockAndMetadataWithNotify(signX, signY, signZ, Configs.LOGISTICS_SIGN_ID, LogisticsSignBlock.SignBlockID);
+										world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
 										TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
 										if(tilesign instanceof LogisticsSignTileEntity) {
 											((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
@@ -189,7 +189,7 @@ public class CraftingSignCreator extends LogisticsItem {
 						}
 						if(world.getBlockId(secondSignX, secondSignY, secondSignZ) == 0) {
 							if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-								world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, Configs.LOGISTICS_SIGN_ID, LogisticsSignBlock.SignBlockID);
+								world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
 								TileEntity tilesign = world.getBlockTileEntity(secondSignX, secondSignY, secondSignZ);
 								if(tilesign instanceof LogisticsSignTileEntity) {
 									((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);

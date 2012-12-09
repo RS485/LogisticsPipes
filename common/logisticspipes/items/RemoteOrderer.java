@@ -3,11 +3,11 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.textures.Textures;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Item;

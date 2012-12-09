@@ -13,7 +13,6 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.TemporaryLogic;
@@ -24,6 +23,8 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.src.EntityPlayer;
@@ -39,7 +40,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_REQUESTER_TEXTURE;
 	}
 

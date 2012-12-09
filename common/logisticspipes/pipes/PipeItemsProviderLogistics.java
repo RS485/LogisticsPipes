@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -40,6 +39,8 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -153,7 +154,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_PROVIDER_TEXTURE;
 	}
 

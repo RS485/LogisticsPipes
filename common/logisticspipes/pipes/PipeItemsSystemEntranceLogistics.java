@@ -2,10 +2,11 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.EntrencsLogic;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.EntrencsTransport;
 import net.minecraft.src.EntityItem;
 import net.minecraft.src.NBTTagCompound;
@@ -33,7 +34,7 @@ public class PipeItemsSystemEntranceLogistics extends RoutedPipe {
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_ENTRANCE_TEXTURE;
 	}
 

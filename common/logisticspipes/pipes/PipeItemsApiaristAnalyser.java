@@ -2,7 +2,6 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.logic.TemporaryLogic;
@@ -14,6 +13,8 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.TileEntity;
@@ -34,7 +35,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE;
 	}
 
@@ -50,7 +51,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 	
 	@Override
-	public int getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(getPointedOrientation())){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}

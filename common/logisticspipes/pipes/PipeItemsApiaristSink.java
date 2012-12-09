@@ -1,10 +1,11 @@
 package logisticspipes.pipes;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 
 public class PipeItemsApiaristSink extends RoutedPipe {
 	
@@ -17,7 +18,7 @@ public class PipeItemsApiaristSink extends RoutedPipe {
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_APIARIST_SINK_TEXTURE;
 	}
 

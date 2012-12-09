@@ -32,7 +32,6 @@ import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraf
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_IC2_BuildCraft;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.config.Configs;
-import logisticspipes.config.Textures;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
@@ -76,6 +75,7 @@ import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.textures.Textures;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;

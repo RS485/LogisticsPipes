@@ -17,7 +17,6 @@ import java.util.Map;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.config.Configs;
-import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -39,12 +38,13 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
-import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -191,7 +191,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CRAFTER_TEXTURE;
 	}
 

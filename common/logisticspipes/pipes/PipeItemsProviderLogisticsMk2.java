@@ -1,9 +1,10 @@
 package logisticspipes.pipes;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
@@ -14,7 +15,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
 			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
 		} else {

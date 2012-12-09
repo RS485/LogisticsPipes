@@ -1,12 +1,13 @@
 package logisticspipes.pipes;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
@@ -43,7 +44,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE;
 	} 
 

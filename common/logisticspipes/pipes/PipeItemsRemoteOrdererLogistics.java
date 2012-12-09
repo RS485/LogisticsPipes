@@ -1,13 +1,14 @@
 package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.World;
@@ -19,7 +20,7 @@ public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequ
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE;
 	}
 

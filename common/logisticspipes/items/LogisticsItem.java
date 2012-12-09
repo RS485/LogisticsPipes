@@ -9,7 +9,7 @@
 package logisticspipes.items;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
+import logisticspipes.textures.Textures;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.Item;
 

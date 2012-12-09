@@ -8,7 +8,7 @@
 
 package logisticspipes.main;
 
-import logisticspipes.config.Textures;
+import logisticspipes.textures.Textures;
 import buildcraft.api.gates.Action;
 
 public class ActionDisableLogistics extends Action{

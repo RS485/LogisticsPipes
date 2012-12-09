@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
@@ -50,7 +51,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	}
 
 	@Override
-	public int getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if(isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
@@ -77,7 +78,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	}
 	
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
 

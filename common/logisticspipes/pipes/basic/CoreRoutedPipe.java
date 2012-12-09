@@ -18,7 +18,6 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IWatchingHandler;
@@ -40,6 +39,8 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -76,7 +77,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	private Object routerIdLock = new Object();
 	private static int pipecount = 0;
 	private int _delayOffset = 0;
-	protected int _nextTexture = getCenterTexture();
+	
+	private boolean _textureBufferPowered;
 	
 	private boolean _initialInit = true;
 	
@@ -219,6 +221,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				throw new UnsupportedOperationException("getItemSendMode() returned unhandled value. " + getItemSendMode().name() + " in "+this.getClass().getName());
 			}
 		}
+		checkTexturePowered();
 		if (getLogisticsModule() == null) return;
 		if (!isEnabled()) return;
 		getLogisticsModule().tick();
@@ -254,34 +257,62 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		super.invalidate();
 	}
 	
-	public abstract int getCenterTexture();
+	public void checkTexturePowered() {
+		if(MainProxy.isClient()) return;
+		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
+		if(worldObj.getWorldTime() % 10 != 0) return;
+		boolean flag;
+		if((flag = canUsePower()) != _textureBufferPowered) {
+			_textureBufferPowered = flag;
+			refreshRender();
+		}
+	}
+	
+	private boolean canUsePower() {
+		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		for(ILogisticsPowerProvider provider: list) {
+			if(provider.canUseEnergy(1)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public abstract TextureType getCenterTexture();
 	
 	@Override
 	public String getTextureFile() {
 		return Textures.BASE_TEXTURE_FILE;
 	}
-
+	
 	@Override
 	public final int getTextureIndex(ForgeDirection connection) {
-
+		TextureType texture = getTextureType(connection);
+		if(_textureBufferPowered) {
+			return texture.powered;
+		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
+			return texture.normal;
+		} else {
+			return texture.unpowered;
+		}
+	}
+	
+	public TextureType getTextureType(ForgeDirection connection) {
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
-		}
-		
-		if (getRouter().isRoutedExit(connection)) {
+		} else if (getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
-		}
-		else {
+		} else {
 			return getNonRoutedTexture(connection);
 		}
 	}
 	
-	public int getRoutedTexture(ForgeDirection connection){
+	public TextureType getRoutedTexture(ForgeDirection connection){
 		return Textures.LOGISTICSPIPE_ROUTED_TEXTURE;
 	}
 	
-	public int getNonRoutedTexture(ForgeDirection connection){
+	public TextureType getNonRoutedTexture(ForgeDirection connection){
 		return Textures.LOGISTICSPIPE_NOTROUTED_TEXTURE;
 	}
 	

@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import logisticspipes.config.Textures;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -48,6 +47,8 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -135,17 +136,17 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
 	
 	@Override
-	public int getRoutedTexture(ForgeDirection connection) {
+	public TextureType getRoutedTexture(ForgeDirection connection) {
 		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
 	
 	@Override
-	public int getNonRoutedTexture(ForgeDirection connection) {
+	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(ChassiLogic.orientation)){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}

@@ -1,9 +1,9 @@
 package logisticspipes.items;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.textures.Textures;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.DamageSource;
 import net.minecraft.src.EntityLiving;

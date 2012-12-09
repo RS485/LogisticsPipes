@@ -41,6 +41,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
 import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.src.CraftingManager;
 import net.minecraft.src.EntityPlayer;
@@ -51,6 +52,7 @@ import net.minecraft.src.ModLoader;
 import net.minecraft.src.TileEntity;
 import net.minecraft.src.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
@@ -157,6 +159,11 @@ public class BuildCraftProxy {
 		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
 		res.setItemName(clas.getSimpleName());
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
+		
+		Pipe pipe = BlockGenericPipe.createPipe(res.shiftedIndex);
+		if(pipe instanceof CoreRoutedPipe) {
+			res.setTextureIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+		}
 		
 		if(side.isClient()) {
 			LanguageRegistry.addName(res, descr);

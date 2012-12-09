@@ -12,12 +12,13 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -99,7 +100,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
 			return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
 		} else {

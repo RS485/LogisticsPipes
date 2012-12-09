@@ -2,7 +2,6 @@ package logisticspipes.pipes;
 
 import java.util.LinkedList;
 
-import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -10,6 +9,8 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -76,7 +77,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
 			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
 		} else {

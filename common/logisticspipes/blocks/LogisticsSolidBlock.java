@@ -2,9 +2,9 @@ package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.textures.Textures;
 import net.minecraft.src.BlockContainer;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.EntityLiving;

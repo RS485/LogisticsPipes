@@ -8,8 +8,8 @@
 
 package logisticspipes.main;
 
-import logisticspipes.config.Textures;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
+import logisticspipes.textures.Textures;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.Trigger;
 import buildcraft.transport.ITriggerPipe;

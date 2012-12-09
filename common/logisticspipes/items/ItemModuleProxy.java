@@ -2,7 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.config.Textures;
+import logisticspipes.textures.Textures;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.EntityPlayer;

@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -28,6 +27,7 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.textures.Textures;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.ItemStack;
 import cpw.mods.fml.client.registry.RenderingRegistry;

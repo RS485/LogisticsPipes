@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDInvSysConnector;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
@@ -25,6 +24,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -272,7 +273,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return hasRemoteConnection() ? inventoryConnected() ? Textures.LOGISTICSPIPE_INVSYSCON_CON_TEXTURE : Textures.LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE : Textures.LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE;
 	}
 

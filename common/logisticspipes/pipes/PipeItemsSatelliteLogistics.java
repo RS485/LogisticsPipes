@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.config.Textures;
 import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -26,6 +25,8 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.IInventory;
@@ -49,7 +50,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_SATELLITE_TEXTURE;
 	}
 

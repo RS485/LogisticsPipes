@@ -2,7 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.config.Textures;
+import logisticspipes.textures.Textures;
 import net.minecraft.src.CreativeTabs;
 import net.minecraft.src.ItemStack;
 

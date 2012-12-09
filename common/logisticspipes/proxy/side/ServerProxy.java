@@ -44,4 +44,9 @@ public class ServerProxy implements IProxy {
 	public boolean isMainThreadRunning() {
 		return FMLServerHandler.instance().getServer().isServerRunning();
 	}
+
+	@Override
+	public void addLogisticsPipesOverride(int index, String override1, String override2) {
+		//Only Client Side
+	}
 }

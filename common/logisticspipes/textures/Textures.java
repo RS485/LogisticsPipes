@@ -1,9 +1,7 @@
 package logisticspipes.textures;
 
+import logisticspipes.proxy.MainProxy;
 import net.minecraftforge.client.MinecraftForgeClient;
-import cpw.mods.fml.client.SpriteHelper;
-import cpw.mods.fml.client.TextureFXManager;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLStateEvent;
 
@@ -186,13 +184,13 @@ public class Textures {
 		texture.unpowered = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
 			MinecraftForgeClient.preloadTexture(fileName);
-			TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(texture.normal, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE));
+			MainProxy.proxy.addLogisticsPipesOverride(texture.normal, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);
 			if(flag) {
-				TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(texture.powered, fileName, LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE));
-				TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(texture.unpowered, fileName, LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE));
+				MainProxy.proxy.addLogisticsPipesOverride(texture.powered, fileName, LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE);
+				MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered, fileName, LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE);
 			} else {
-				TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(texture.powered, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE));
-				TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(texture.unpowered, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE));	
+				MainProxy.proxy.addLogisticsPipesOverride(texture.powered, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);
+				MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);	
 			}
 		}
 		return texture;

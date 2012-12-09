@@ -106,13 +106,13 @@ public class LogisticsHUDRenderer {
 			return;
 		}
 		@SuppressWarnings("unchecked")
-		Pair<Double,IHeadUpDisplayRendererProvider>[] sorter = (Pair<Double,IHeadUpDisplayRendererProvider>[]) newList.toArray();
-		Arrays.sort(sorter, new Comparator<Pair<Double,IHeadUpDisplayRendererProvider>>() {
+		Object[] sorter = newList.toArray();
+		Arrays.sort(sorter, new Comparator() {
 			@Override
-			public int compare(Pair<Double,IHeadUpDisplayRendererProvider> o1, Pair<Double,IHeadUpDisplayRendererProvider> o2) {
-				if(o1.getValue1() < o2.getValue1()) {
+			public int compare(Object o1, Object o2) {
+				if(((Pair<Double,IHeadUpDisplayRendererProvider>)o1).getValue1() < ((Pair<Double,IHeadUpDisplayRendererProvider>)o2).getValue1()) {
 					return -1;
-				} else if(o1.getValue1() > o2.getValue1()) {
+				} else if(((Pair<Double,IHeadUpDisplayRendererProvider>)o1).getValue1() > ((Pair<Double,IHeadUpDisplayRendererProvider>)o2).getValue1()) {
 					return 1;
 				} else {
 					return 0;
@@ -132,8 +132,8 @@ public class LogisticsHUDRenderer {
 			}
 		}
 		clearList(false);
-		for(Pair<Double,IHeadUpDisplayRendererProvider> part:sorter) {
-			list.addLast(part.getValue2());
+		for(Object part:sorter) {
+			list.addLast(((Pair<Double,IHeadUpDisplayRendererProvider>)part).getValue2());
 		}
 	}
 	

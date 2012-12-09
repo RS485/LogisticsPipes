@@ -107,7 +107,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		}
 		if(!init) {
 			if(MainProxy.isClient()) {
-				LogisticsHUDRenderer.providers.add(this);
+				LogisticsHUDRenderer.instance().add(this);
 			}
 			init = true;
 		}
@@ -117,7 +117,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void invalidate() {
 		super.invalidate();
 		if(MainProxy.isClient()) {
-			LogisticsHUDRenderer.providers.remove(this);
+			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
 
@@ -133,7 +133,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void onChunkUnload() {
 		super.onChunkUnload();
 		if(MainProxy.isClient()) {
-			LogisticsHUDRenderer.providers.remove(this);
+			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
 

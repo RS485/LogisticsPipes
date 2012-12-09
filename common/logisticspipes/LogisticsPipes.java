@@ -405,7 +405,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		ServerRouter.resetStatics();
 		if(event.getSide().equals(Side.CLIENT)) {
-			LogisticsHUDRenderer.providers.clear();
+			LogisticsHUDRenderer.instance().clear();
 		}
 	}
 	

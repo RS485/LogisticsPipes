@@ -11,6 +11,7 @@ package logisticspipes.routing;
 import java.util.HashMap;
 import java.util.LinkedList;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.src.World;
@@ -84,14 +85,14 @@ class RouteLaser implements IPaintPath{
 			//Get the first exit
 			ForgeDirection next = r.getRouteTable().get(targetRouter);
 			if (next == ForgeDirection.UNKNOWN){
-				System.out.println("BAAAD MOJO");
+				LogisticsPipes.log.warning("BAAAD MOJO");
 			}
 			
 			IRouter nextRouter = r;
 			LinkedList<IRouter> visited = new LinkedList<IRouter>();
 			while(nextRouter != targetRouter){
 				if (visited.contains(nextRouter)){
-					System.out.println("ROUTE LOOP");
+					LogisticsPipes.log.info("ROUTE LOOP");
 					break;
 				}
 				visited.add(nextRouter);
@@ -109,7 +110,7 @@ class RouteLaser implements IPaintPath{
 				//paintPath(r.getPipe().worldObj, firstPos, new LinkedList<TileEntity>(), discovered);
 				
 				if (discovered.isEmpty()){
-					System.out.println("BAD ROUTE");
+					LogisticsPipes.log.info("BAD ROUTE");
 				}
 				boolean ok = false;
 				for (IRouter dicoveredRouter : discovered){
@@ -124,7 +125,7 @@ class RouteLaser implements IPaintPath{
 					}
 				}
 				if (!ok){
-					System.out.println("DEAD ROUTE");
+					LogisticsPipes.log.info("DEAD ROUTE");
 					break;
 				}
 			}

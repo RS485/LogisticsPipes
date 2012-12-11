@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -127,7 +128,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			scheduleRemoval(data.item);
 			return ForgeDirection.UNKNOWN;
 		} else if (value == null) {
-			System.out.println("THIS IS NOT SUPPOSED TO HAPPEN!");
+			LogisticsPipes.log.severe("THIS IS NOT SUPPOSED TO HAPPEN!");
 			return ForgeDirection.UNKNOWN;
 		}
 		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer()){

@@ -167,7 +167,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(this.container.getClass() != LogisticsPipes.logisticsTileGenericPipe) {
 				TileEntity tile = worldObj.getBlockTileEntity(xCoord, yCoord, zCoord);
 				if(tile != this.container) {
-					System.out.println("LocalCodeError");
+					LogisticsPipes.log.severe("LocalCodeError");
 				}
 				if(MainProxy.isClient()) {
 					WorldTickHandler.clientPipesToReplace.add(this.container);

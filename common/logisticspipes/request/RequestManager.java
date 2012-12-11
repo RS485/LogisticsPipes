@@ -196,9 +196,6 @@ public class RequestManager {
 
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, LinkedList<IProvideItems> providers) {
 		for(IProvideItems provider : providers) {
-			if(provider instanceof PipeItemsProviderLogistics && treeNode.getStack().getItem().itemID == 5) {
-				System.out.println();
-			}
 			provider.canProvide(treeNode, tree.getAllPromissesFor(provider));
 		}
 	}

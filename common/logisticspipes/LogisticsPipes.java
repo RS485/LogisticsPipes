@@ -26,6 +26,9 @@ TODO later, maybe....
 
 package logisticspipes;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
@@ -173,6 +176,9 @@ public class LogisticsPipes {
 	public static Block logisticsSign;
 	public static Block logisticsSolidBlock;
 	
+	public static Logger log;
+	public static Logger requestLog;
+	
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
@@ -214,13 +220,20 @@ public class LogisticsPipes {
 	@PreInit
 	public void LoadConfig(FMLPreInitializationEvent evt) {
 		Configs.load();
+		log = evt.getModLog();
+		requestLog = Logger.getLogger("LogisticsPipes|Request");
+		requestLog.setParent(log);
+		if(DEBUG) {
+			log.setLevel(Level.ALL);
+			requestLog.setLevel(Level.ALL);
+		}
 	}
 	
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
 		if(Loader.isModLoaded("Forestry")) {
 			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
-			System.out.println("Loaded ForestryProxy");
+			log.info("Loaded ForestryProxy");
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setForestryProxy(new IForestryProxy() {
@@ -252,11 +265,11 @@ public class LogisticsPipes {
 				@Override public String getNextAlleleId(String uid, World world) {return "";}
 				@Override public String getPrevAlleleId(String uid, World world) {return "";}
 			});
-			System.out.println("Loaded Forestry DummyProxy");
+			log.info("Loaded Forestry DummyProxy");
 		}
 		if(Loader.isModLoaded("IC2")) {
 			SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy());
-			System.out.println("Loaded IC2Proxy");
+			log.info("Loaded IC2Proxy");
 		} else {
 			//DummyProxy
 			SimpleServiceLocator.setElectricItemProxy(new IElectricItemProxy() {
@@ -270,15 +283,15 @@ public class LogisticsPipes {
 				@Override public void addCraftingRecipes() {}
 				@Override public boolean hasIC2() {return false;}
 			});
-			System.out.println("Loaded IC2 DummyProxy");
+			log.info("Loaded IC2 DummyProxy");
 		}
 		if(Loader.isModLoaded("ComputerCraft")) {
 			if(Loader.isModLoaded("CCTurtle")) {
 				SimpleServiceLocator.setCCProxy(new CCTurtleProxy());
-				System.out.println("Loaded CCTurtleProxy");
+				log.info("Loaded CCTurtleProxy");
 			} else {
 				SimpleServiceLocator.setCCProxy(new CCProxy());
-				System.out.println("Loaded CCProxy");
+				log.info("Loaded CCProxy");
 			}
 		} else {
 			//DummyProxy
@@ -289,7 +302,7 @@ public class LogisticsPipes {
 				@Override public ForgeDirection getOrientation(Object computer, String computerSide, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 			});
-			System.out.println("Loaded CC DummyProxy");
+			log.info("Loaded CC DummyProxy");
 		}
 		
 		if(Loader.isModLoaded("factorization")) {

@@ -171,7 +171,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					_orderManager.sendSuccessfull(1);
 				}else{
 					_extras--;
-					if(LogisticsPipes.DisplayRequests)System.out.println("Extra dropped, " + _extras + " remaining");
+					LogisticsPipes.requestLog.info("Extra dropped, " + _extras + " remaining");
 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
@@ -262,7 +262,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	@Override
 	public void registerExtras(int count) {
 		_extras += count;
-		if(LogisticsPipes.DisplayRequests) System.out.println(count + " extras registered");
+		LogisticsPipes.requestLog.info(count + " extras registered");
 	}
 
 	@Override

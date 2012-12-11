@@ -49,7 +49,7 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 			e.printStackTrace();
 		}
 		ItemStack stack = ((IInventory)tile).getStackInSlot(1);
-		if(data.length < 1 || data[0] == null) return map;
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return map;
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
 		if(dataIdent != stackIdent) {
@@ -74,7 +74,7 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		if(data.length < 1 || data[0] == null) return result;
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return result;
 		ItemStack stack = ((IInventory)tile).getStackInSlot(1);
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
@@ -97,7 +97,7 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		if(data.length < 1 || data[0] == null) return null;
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return null;
 		ItemStack stack = ((IInventory)tile).getStackInSlot(1);
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
@@ -134,7 +134,7 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		if(data.length < 1 || data[0] == null) return false;
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return false;
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
 		return item == dataIdent;
 	}

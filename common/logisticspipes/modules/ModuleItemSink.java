@@ -87,6 +87,7 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
 			if(_power.useEnergy(1)) {
+				MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 				return reply;
 			}
 			return null;

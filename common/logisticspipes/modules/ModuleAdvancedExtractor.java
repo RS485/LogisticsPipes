@@ -178,6 +178,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 					int count = Math.min(itemsToExtract(), slot.stackSize);
 
 					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+						MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 						count--;
 					}
 					

@@ -7,12 +7,17 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.INBTPacketProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 
 public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider {
+	
+	int x;
+	int y;
+	int z;
 	
 	public enum FilterType {
 		Null("",0,0),
@@ -261,6 +266,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 					reply.fixedPriority = SinkReply.FixedPriority.APIARIST_BeeSink;
 					reply.isPassive = true;
 					if(_power.useEnergy(2)) {
+						MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
 						return reply;
 					}
 				}
@@ -288,5 +294,9 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
+	}
 }

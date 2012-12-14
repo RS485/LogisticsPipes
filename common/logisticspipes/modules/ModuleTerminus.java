@@ -84,6 +84,7 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 			reply.fixedPriority = FixedPriority.Terminus;
 			reply.isPassive = true;
 			if(_power.useEnergy(2)) {
+				MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 				return reply;
 			}
 		}

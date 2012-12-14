@@ -18,6 +18,9 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
+	int x;
+	int y;
+	int z;
 	
 	private IChassiePowerProvider _power;
 	
@@ -55,6 +58,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 				reply.fixedPriority = SinkReply.FixedPriority.APIARIST_Analyser;
 				reply.isPassive = true;
 				if(_power.useEnergy(3)) {
+					MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
 					return reply;
 				}
 			}
@@ -89,7 +93,8 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		// TODO Auto-generated method stub
-		
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
 	}
 }

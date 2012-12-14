@@ -34,6 +34,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 				if(!useEnergy(2)) return;
 				Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 				int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
+				MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 3);
 				if (sent > 0){
 					_orderManager.sendSuccessfull(sent);
 				}

@@ -104,6 +104,7 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
 			if(_power.useEnergy(2)) {
+				MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 				return reply;
 			}
 		}

@@ -1,9 +1,19 @@
 package logisticspipes.proxy.side;
 
+import java.util.HashMap;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.pipefxhandlers.EntityBlueSparkleFXProvider;
+import logisticspipes.pipefxhandlers.EntityGoldSparkleFXProvider;
+import logisticspipes.pipefxhandlers.EntityGreenSparkleFXProvider;
+import logisticspipes.pipefxhandlers.EntityOrangeSparkleFXProvider;
+import logisticspipes.pipefxhandlers.EntityRedSparkleFXProvider;
+import logisticspipes.pipefxhandlers.EntityVioletSparkleFXProvider;
+import logisticspipes.pipefxhandlers.EntityWhiteSparkleFXProvider;
+import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.textures.LogisticsPipesTextureStatic;
 import net.minecraft.src.EntityPlayer;
@@ -61,4 +71,23 @@ public class ClientProxy implements IProxy {
 	public void addLogisticsPipesOverride(int index, String override1, String override2) {
 		TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
 	}
+
+	@Override
+	public void spawnGenericParticle(String particle, double x, double y, double z, int amount) {
+		PipeFXRenderHandler.spawnGenericParticle(particle, x, y, z, amount);
+	}
+
+	@Override
+	public void registerParticles() {
+		HashMap particlemap = PipeFXRenderHandler.particlemap;
+		particlemap.put("WhiteParticle", new EntityWhiteSparkleFXProvider());
+		particlemap.put("RedParticle", new EntityRedSparkleFXProvider());
+		particlemap.put("BlueParticle", new EntityBlueSparkleFXProvider());
+		particlemap.put("GreenParticle", new EntityGreenSparkleFXProvider());
+		particlemap.put("GoldParticle", new EntityGoldSparkleFXProvider());
+		particlemap.put("VioletParticle", new EntityVioletSparkleFXProvider());
+		particlemap.put("OrangeParticle", new EntityOrangeSparkleFXProvider());
+	}
+	
+
 }

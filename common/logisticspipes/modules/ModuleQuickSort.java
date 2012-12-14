@@ -22,6 +22,9 @@ public class ModuleQuickSort implements ILogisticsModule {
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private IChassiePowerProvider _power;
+	int x;
+	int y;
+	int z;
 	
 	public ModuleQuickSort() {}
 
@@ -76,11 +79,10 @@ public class ModuleQuickSort implements ILogisticsModule {
 		for (int i = 0; i < targetInventory.getSizeInventory(); i++){
 			stackToSend = targetInventory.getStackInSlot(i);
 			if (stackToSend == null) continue;
-			
 			if (!this.shouldSend(stackToSend)) continue;
-			
 			if(!_power.useEnergy(500)) break;
 			_itemSender.sendStack(stackToSend);
+			MainProxy.proxy.spawnGenericParticle("VioletParticle", this.x, this.y, this.z, 8);
 			targetInventory.setInventorySlotContents(i, null);
 			
 			sent = true;
@@ -93,5 +95,9 @@ public class ModuleQuickSort implements ILogisticsModule {
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
+	}
 }

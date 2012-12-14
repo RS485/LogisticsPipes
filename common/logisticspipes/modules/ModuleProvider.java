@@ -124,7 +124,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
 			
 			if(!_power.useEnergy(neededEnergy())) break;
-			
+			MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 3);
 			if (sent > 0) {
 				_orderManager.sendSuccessfull(sent);
 			} else {

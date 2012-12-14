@@ -5,6 +5,7 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.DestinationLogic;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.src.EntityItem;
@@ -38,6 +39,7 @@ public class PipeItemsSystemDestinationLogistics extends RoutedPipe {
 		if(inv.getStackInSlot(0) == null) return null;
 		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
 		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
+		MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
 

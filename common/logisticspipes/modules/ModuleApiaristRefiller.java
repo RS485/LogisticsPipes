@@ -8,6 +8,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -20,6 +21,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	private int currentTicksEmpty = 0;
 	private int maxTicksEmpty = 50;
 	private boolean functionalStatus = true;
+	int x;
+	int y;
+	int z;
 	
 	public ModuleApiaristRefiller() {}
 	
@@ -60,6 +64,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 					reply.fixedPriority = FixedPriority.APIARIST_Refiller;
 					reply.isDefault = false;
 					reply.isPassive = true;
+					MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
 					return reply;
 				}
 			}
@@ -84,7 +89,11 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
 	
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
+	}
 
 	@Override
 	public void tick() {

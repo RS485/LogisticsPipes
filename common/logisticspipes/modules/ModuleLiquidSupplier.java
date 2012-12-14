@@ -10,6 +10,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -23,6 +24,9 @@ import net.minecraft.src.NBTTagCompound;
 public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformationProvider {
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested liquids", 1);
+	int x;
+	int y;
+	int z;
 	
 	public IInventory getFilterInventory(){
 		return _filterInventory;
@@ -38,6 +42,7 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
+			MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
 			return reply;
 		}
 
@@ -75,5 +80,9 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
+	}
 }

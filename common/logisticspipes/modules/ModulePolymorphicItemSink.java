@@ -5,6 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -18,6 +19,9 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
+	int x;
+	int y;
+	int z;
 	
 	public ModulePolymorphicItemSink() {}
 
@@ -40,6 +44,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		reply.isDefault = false;
 		reply.isPassive = true;
 		if(_power.useEnergy(3)) {
+			MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
 			return reply;
 		}
 		return null;
@@ -63,5 +68,9 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	public void tick() {}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.x = xCoord;
+		this.y = yCoord;
+		this.z = zCoord;
+	}
 }

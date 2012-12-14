@@ -154,7 +154,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
-		
+		MainProxy.proxy.spawnGenericParticle("OrangeParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
@@ -265,6 +265,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender();
+			MainProxy.proxy.spawnGenericParticle("RedParticle", this.xCoord, this.yCoord, this.zCoord, 4);
 		}
 	}
 	
@@ -411,6 +412,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
 			refreshRenderStateFiled.setAccessible(true);
 			refreshRenderStateFiled.set(this.container, true);
+			MainProxy.proxy.spawnGenericParticle("GreenParticle", this.xCoord, this.yCoord, this.zCoord, 4);
+
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchFieldException e) {
@@ -513,6 +516,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);
+				int particlecount = amount;
+				if (particlecount > 8) {
+					particlecount = 8;
+				}
+				MainProxy.proxy.spawnGenericParticle("GoldParticle", this.xCoord, this.yCoord, this.zCoord, particlecount);
 				return true;
 			}
 		}

@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -34,6 +35,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 				if(!useEnergy(2)) return;
 				Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 				int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
+				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
 				if (sent > 0){
 					_orderManager.sendSuccessfull(sent);
 				}

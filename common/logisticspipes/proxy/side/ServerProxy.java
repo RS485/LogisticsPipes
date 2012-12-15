@@ -49,4 +49,9 @@ public class ServerProxy implements IProxy {
 	public void addLogisticsPipesOverride(int index, String override1, String override2) {
 		//Only Client Side
 	}
+
+	@Override
+	public void registerParticles() {
+		//Only Client Side
+	}
 }

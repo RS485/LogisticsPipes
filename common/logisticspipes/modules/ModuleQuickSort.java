@@ -5,6 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -22,6 +23,10 @@ public class ModuleQuickSort implements ILogisticsModule {
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private IChassiePowerProvider _power;
+	private int xCoord;
+	private int yCoord;
+	private int zCoord;
+	private IWorldProvider _world;
 	
 	public ModuleQuickSort() {}
 
@@ -30,6 +35,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -76,11 +82,10 @@ public class ModuleQuickSort implements ILogisticsModule {
 		for (int i = 0; i < targetInventory.getSizeInventory(); i++){
 			stackToSend = targetInventory.getStackInSlot(i);
 			if (stackToSend == null) continue;
-			
 			if (!this.shouldSend(stackToSend)) continue;
-			
 			if(!_power.useEnergy(500)) break;
 			_itemSender.sendStack(stackToSend);
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 8);
 			targetInventory.setInventorySlotContents(i, null);
 			
 			sent = true;
@@ -93,5 +98,9 @@ public class ModuleQuickSort implements ILogisticsModule {
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+	}
 }

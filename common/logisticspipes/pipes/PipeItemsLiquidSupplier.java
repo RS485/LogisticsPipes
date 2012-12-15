@@ -5,6 +5,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -66,7 +67,6 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		while (data.item.getItemStack().stackSize > 0 && container.fill(data.output, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(data.output, liquidId, true);
 			data.item.getItemStack().stackSize--;
-			
 			if (data.item.getItemStack().itemID >= 0 && data.item.getItemStack().itemID < Item.itemsList.length){
 				Item item = Item.itemsList[data.item.getItemStack().itemID];
 				if (item.hasContainerItem()){

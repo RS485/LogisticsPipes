@@ -42,6 +42,7 @@ import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
@@ -50,6 +51,7 @@ import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.PacketRoutingStats;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
@@ -257,6 +259,11 @@ public class ClientPacketHandler {
 					final PacketInteger packetAq = new PacketInteger();
 					packetAq.readData(data);
 					onRequestDimension(packetAq);
+					break;
+				case NetworkConstants.PARTICLE_FX_RENDER_DATA:
+					final PacketRenderFX packetAr = new PacketRenderFX();
+					packetAr.readData(data);
+					onParticleRenderUpdate(packetAr);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -686,6 +693,15 @@ public class ClientPacketHandler {
 		cPipe.server_routing_table_size = packet.server_routing_table_size;
 	}
 
+	private static void onParticleRenderUpdate(PacketRenderFX packet) {
+		int x = packet.posX;
+		int y = packet.posY;
+		int z = packet.posZ;
+		int particle = packet.particle;
+		int amount = packet.amount;
+		MainProxy.spawnParticle(particle, x, y, z, amount);
+	}
+	
 	private static void enableNBTDEBUG() {
 		try {
 			Class.forName("codechicken.nei.forge.GuiContainerManager");

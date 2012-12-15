@@ -12,4 +12,5 @@ public interface IProxy {
 	public EntityPlayer getClientPlayer();
 	public boolean isMainThreadRunning();
 	public void addLogisticsPipesOverride(int index, String override1, String override2);
+	public void registerParticles();
 }

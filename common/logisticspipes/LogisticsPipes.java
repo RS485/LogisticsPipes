@@ -411,6 +411,9 @@ public class LogisticsPipes {
 		MainProxy.proxy.registerTileEntitis();
 
 		RecipeManager.loadRecipes();
+		
+		//Registering special particles
+		MainProxy.proxy.registerParticles();
 	}
 	
 	@ServerStopping

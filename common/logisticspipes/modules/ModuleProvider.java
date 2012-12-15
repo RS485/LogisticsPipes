@@ -27,6 +27,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -67,6 +68,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
+	private IWorldProvider _world;
 
 	public LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
@@ -82,6 +84,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -124,7 +127,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
 			
 			if(!_power.useEnergy(neededEnergy())) break;
-			
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
 			if (sent > 0) {
 				_orderManager.sendSuccessfull(sent);
 			} else {

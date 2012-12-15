@@ -10,6 +10,8 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -23,13 +25,19 @@ import net.minecraft.src.NBTTagCompound;
 public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformationProvider {
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested liquids", 1);
+	private int xCoord;
+	private int yCoord;
+	private int zCoord;
+	private IWorldProvider _world;
 	
 	public IInventory getFilterInventory(){
 		return _filterInventory;
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {}
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+		_world = world;
+	}
 
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
@@ -38,6 +46,7 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
+			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
 			return reply;
 		}
 
@@ -75,5 +84,9 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+	}
 }

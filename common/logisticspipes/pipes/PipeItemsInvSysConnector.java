@@ -20,6 +20,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -72,10 +73,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				}
 				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 				if(CRP != null) {
-					CRP.refreshRender();
+					CRP.refreshRender(true);
 				}
 				getRouter().update(true);
-				this.refreshRender();
+				this.refreshRender(true);
 				init = true;
 				idbuffer = getConnectionUUID();
 			}
@@ -85,7 +86,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 			if(CRP != null) {
-				CRP.refreshRender();
+				CRP.refreshRender(true);
 			}
 		}
 		if(init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
@@ -93,7 +94,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 			if(CRP != null) {
-				CRP.refreshRender();
+				CRP.refreshRender(true);
 			}
 		}
 		if(destination.size() > 0) {
@@ -146,6 +147,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
+		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -213,7 +215,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 		if(CRP != null) {
-			CRP.refreshRender();
+			CRP.refreshRender(true);
 		}
 		dropFreqCard();
 	}
@@ -224,7 +226,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 		if(CRP != null) {
-			CRP.refreshRender();
+			CRP.refreshRender(true);
 		}
 		init = false;
 		super.invalidate();
@@ -236,7 +238,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 		if(CRP != null) {
-			CRP.refreshRender();
+			CRP.refreshRender(true);
 		}
 		init = false;
 		super.onChunkUnload();
@@ -325,6 +327,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 						for(int i=0; i < data.item.getItemStack().stackSize;i++) {
 							pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getSource(), routed.getDestination(), routed.getTransportMode());
+							MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
 						}
 					}
 				}

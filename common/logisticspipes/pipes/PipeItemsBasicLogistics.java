@@ -47,7 +47,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 			}
 		}, new TemporaryLogic(), itemID);
 		itemSinkModule = new ModuleItemSink();
-		itemSinkModule.registerHandler(null, null, null, this);
+		itemSinkModule.registerHandler(null, null, this, this);
 	}
 
 	@Override

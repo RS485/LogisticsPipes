@@ -16,7 +16,7 @@ public class GenericSparkleFactory {
 	    float length = boundry + world.rand.nextInt(pipeWidth) / 10.0F;
 	    float height = world.rand.nextInt(7) / 10.0F + 0.2F;
 
-	    effect = new EntitySparkleFX(world, x + length, y + height, z + width, 1.5F, 1, 10 + world.rand.nextInt(5));
+	    effect = new EntitySparkleFX(world, x + length, y + height, z + width, 1F, 1, 10 + world.rand.nextInt(5));
 	    
 		
 		effect.setGravity(0.07F);

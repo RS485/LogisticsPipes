@@ -2,7 +2,11 @@ package logisticspipes.pipefxhandlers;
 
 import java.util.HashMap;
 
+import buildcraft.core.DefaultProps;
+
 import logisticspipes.LogisticsPipes;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.proxy.MainProxy;
 
 import net.minecraft.client.Minecraft;
@@ -33,6 +37,7 @@ import net.minecraft.src.EntitySplashFX;
 import net.minecraft.src.EntitySuspendFX;
 import net.minecraft.src.Item;
 import net.minecraft.src.Material;
+import net.minecraft.src.Packet;
 import net.minecraft.src.WorldClient;
 
 public class PipeFXRenderHandler {
@@ -41,8 +46,6 @@ public class PipeFXRenderHandler {
 	
 	public static void spawnGenericParticle(String particle, double x, double y, double z, int amount) {
 		if (MainProxy.getClientMainWorld() == null) return;
-		if (!MainProxy.proxy.isMainThreadRunning()) return;
-		if (MainProxy.proxy.getWorld() == null) return;
 		try {
 		Minecraft mc = Minecraft.getMinecraft();
 		int var14 = mc.gameSettings.particleSetting;
@@ -61,21 +64,21 @@ public class PipeFXRenderHandler {
 
 		ParticleProvider provider = particlemap.get(particle);
 		if (provider == null) return;
+		//Send packets
+		if (MainProxy.isServer()) {
+			Packet packet = new PacketRenderFX(NetworkConstants.PARTICLE_FX_RENDER_DATA, (int) x, (int) y, (int) z, particle, amount).getPacket();
+			MainProxy.sendPacketToAllAround(x, y, z, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(mc.theWorld), packet);
+			
+		}
 		
 		
 		for (int i = 0; i < amount; i++) {
 			effect = provider.createGenericParticle(mc.theWorld, x, y, z);
-			renderActualParticle(effect, effectObject);
+			if (effect != null) {
+				mc.effectRenderer.addEffect((EntityFX) effect, effectObject);
+			}
 		}
 		
 		} catch (NullPointerException e) {}
-	}
-	
-	
-	private static void renderActualParticle(EntityFX effect, Object effectObject) {
-		Minecraft mc = Minecraft.getMinecraft();
-		if (effect != null) {
-			mc.effectRenderer.addEffect((EntityFX) effect, effectObject);
-		}
 	}
 }

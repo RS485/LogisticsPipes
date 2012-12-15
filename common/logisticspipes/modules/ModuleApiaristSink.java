@@ -15,9 +15,9 @@ import net.minecraft.src.NBTTagCompound;
 
 public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider {
 	
-	int x;
-	int y;
-	int z;
+	private int xCoord;
+	private int yCoord;
+	private int zCoord;
 	
 	public enum FilterType {
 		Null("",0,0),
@@ -266,7 +266,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 					reply.fixedPriority = SinkReply.FixedPriority.APIARIST_BeeSink;
 					reply.isPassive = true;
 					if(_power.useEnergy(2)) {
-						MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
+						MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 						return reply;
 					}
 				}
@@ -295,8 +295,8 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.x = xCoord;
-		this.y = yCoord;
-		this.z = zCoord;
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
 	}
 }

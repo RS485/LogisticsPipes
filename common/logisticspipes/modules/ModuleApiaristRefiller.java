@@ -21,9 +21,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	private int currentTicksEmpty = 0;
 	private int maxTicksEmpty = 50;
 	private boolean functionalStatus = true;
-	int x;
-	int y;
-	int z;
+	private int xCoord;
+	private int yCoord;
+	private int zCoord;
 	
 	public ModuleApiaristRefiller() {}
 	
@@ -64,7 +64,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 					reply.fixedPriority = FixedPriority.APIARIST_Refiller;
 					reply.isDefault = false;
 					reply.isPassive = true;
-					MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
+					MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 					return reply;
 				}
 			}
@@ -90,9 +90,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.x = xCoord;
-		this.y = yCoord;
-		this.z = zCoord;
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
 	}
 
 	@Override

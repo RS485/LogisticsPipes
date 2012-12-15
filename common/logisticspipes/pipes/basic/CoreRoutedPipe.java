@@ -520,6 +520,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				if (particlecount > 8) {
 					particlecount = 8;
 				}
+				if (particlecount == 0) {
+					particlecount = 1;
+				}
 				MainProxy.proxy.spawnGenericParticle("GoldParticle", this.xCoord, this.yCoord, this.zCoord, particlecount);
 				return true;
 			}

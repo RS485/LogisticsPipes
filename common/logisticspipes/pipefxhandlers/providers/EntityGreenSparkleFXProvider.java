@@ -1,17 +1,19 @@
-package logisticspipes.pipefxhandlers;
+package logisticspipes.pipefxhandlers.providers;
 
+import logisticspipes.pipefxhandlers.EntitySparkleFX;
+import logisticspipes.pipefxhandlers.GenericSparkleFactory;
+import logisticspipes.pipefxhandlers.ParticleProvider;
 import net.minecraft.src.EntityFX;
 import net.minecraft.src.WorldClient;
 
-public class EntityRedSparkleFXProvider implements ParticleProvider {
+public class EntityGreenSparkleFXProvider implements ParticleProvider {
 
-	float red = 1F;
-	float green = 0.03F;
-	float blue = 0.02F;
-	
+	float red = 0F;
+	float green = 1F;
+	float blue = 0F;
+
 	@Override
 	public EntityFX createGenericParticle(WorldClient world, double x, double y, double z) {
-	
 		EntitySparkleFX effect = GenericSparkleFactory.getSparkleInstance(world, x, y, z);
 		
 		effect.setRed(red);
@@ -20,9 +22,6 @@ public class EntityRedSparkleFXProvider implements ParticleProvider {
 		
 		return effect;
 
-		
 	}
 
-	
-	
 }

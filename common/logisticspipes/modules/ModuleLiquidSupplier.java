@@ -24,9 +24,9 @@ import net.minecraft.src.NBTTagCompound;
 public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformationProvider {
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested liquids", 1);
-	int x;
-	int y;
-	int z;
+	private int xCoord;
+	private int yCoord;
+	private int zCoord;
 	
 	public IInventory getFilterInventory(){
 		return _filterInventory;
@@ -42,7 +42,7 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
-			MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
+			MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 			return reply;
 		}
 
@@ -81,8 +81,8 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.x = xCoord;
-		this.y = yCoord;
-		this.z = zCoord;
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
 	}
 }

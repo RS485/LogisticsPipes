@@ -81,4 +81,5 @@ public class NetworkConstants {
 	public static final int ACTIVATNBTDEBUG = 75;
 	public static final int HUD_SETTING_SET = 76;
 	public static final int REQUEST_GUI_DIMENSION = 77;
+	public static final int PARTICLE_FX_RENDER_DATA = 78;
 }

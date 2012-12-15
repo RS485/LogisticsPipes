@@ -19,9 +19,9 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
-	int x;
-	int y;
-	int z;
+	private int xCoord;
+	private int yCoord;
+	private int zCoord;
 	
 	public ModulePolymorphicItemSink() {}
 
@@ -44,7 +44,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		reply.isDefault = false;
 		reply.isPassive = true;
 		if(_power.useEnergy(3)) {
-			MainProxy.proxy.spawnGenericParticle("BlueParticle", this.x, this.y, this.z, 2);
+			MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
 			return reply;
 		}
 		return null;
@@ -69,8 +69,8 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.x = xCoord;
-		this.y = yCoord;
-		this.z = zCoord;
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
 	}
 }

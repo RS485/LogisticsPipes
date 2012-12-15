@@ -33,6 +33,7 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
@@ -154,7 +155,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
-		MainProxy.proxy.spawnGenericParticle("OrangeParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
@@ -265,7 +266,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender();
-			MainProxy.proxy.spawnGenericParticle("RedParticle", this.xCoord, this.yCoord, this.zCoord, 4);
+			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 4);
 		}
 	}
 	
@@ -412,7 +413,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
 			refreshRenderStateFiled.setAccessible(true);
 			refreshRenderStateFiled.set(this.container, true);
-			MainProxy.proxy.spawnGenericParticle("GreenParticle", this.xCoord, this.yCoord, this.zCoord, 4);
+			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 4);
 
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -523,7 +524,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				if (particlecount == 0) {
 					particlecount = 1;
 				}
-				MainProxy.proxy.spawnGenericParticle("GoldParticle", this.xCoord, this.yCoord, this.zCoord, particlecount);
+				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
 				return true;
 			}
 		}

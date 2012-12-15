@@ -5,6 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -25,6 +26,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
+	private IWorldProvider _world;
 	
 	public ModuleQuickSort() {}
 
@@ -33,6 +35,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -82,7 +85,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 			if (!this.shouldSend(stackToSend)) continue;
 			if(!_power.useEnergy(500)) break;
 			_itemSender.sendStack(stackToSend);
-			MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 8);
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 8);
 			targetInventory.setInventorySlotContents(i, null);
 			
 			sent = true;

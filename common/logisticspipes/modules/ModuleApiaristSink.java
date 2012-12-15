@@ -7,6 +7,7 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.INBTPacketProvider;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -266,7 +267,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 					reply.fixedPriority = SinkReply.FixedPriority.APIARIST_BeeSink;
 					reply.isPassive = true;
 					if(_power.useEnergy(2)) {
-						MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, worldProvider.getWorld(), 2);
 						return reply;
 					}
 				}

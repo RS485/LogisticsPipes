@@ -33,6 +33,7 @@ import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -184,7 +185,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		
 		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
 		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-		MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 3);
+		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
 		if (sent > 0){
 			_orderManager.sendSuccessfull(sent);
 		}

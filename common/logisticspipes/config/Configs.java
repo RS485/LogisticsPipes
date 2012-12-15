@@ -64,6 +64,7 @@ public class Configs {
 	
 	public static boolean ToolTipInfo = LogisticsPipes.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
+	public static boolean ENABLE_PARTICLE_FX = true;
 
 	//GuiOrderer Popup setting
 	public static boolean displayPopup = true;
@@ -127,6 +128,7 @@ public class Configs {
 		Property logisticsTileGenericReplacementDisable = configuration.get("TileReplaceDisabled", Configuration.CATEGORY_GENERAL, LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED);
 		Property logisticsHUDRenderDistance = configuration.get("HUDRenderDistance", Configuration.CATEGORY_GENERAL, LOGISTICS_HUD_RENDER_DISTANCE);
 		Property mandatoryCarpenterRecipies = configuration.get("mandatoryCarpenterRecipies", Configuration.CATEGORY_GENERAL, MANDATORY_CARPENTER_RECIPES);
+		Property enableParticleFX = configuration.get("enableParticleFX", Configuration.CATEGORY_GENERAL, ENABLE_PARTICLE_FX);
 		
 		LOGISTICSNETWORKMONITOR_ID			= Integer.parseInt(logisticNetworkMonitorIdProperty.value);
 		LOGISTICSREMOTEORDERER_ID			= Integer.parseInt(logisticRemoteOrdererIdProperty.value);
@@ -177,7 +179,8 @@ public class Configs {
 
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID	= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID		= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
-		MANDATORY_CARPENTER_RECIPES		= Boolean.parseBoolean(mandatoryCarpenterRecipies.value);
+		MANDATORY_CARPENTER_RECIPES			= Boolean.parseBoolean(mandatoryCarpenterRecipies.value);
+		ENABLE_PARTICLE_FX 					= Boolean.parseBoolean(enableParticleFX.value);
 	}
 	
 	public static void load() {
@@ -328,6 +331,9 @@ public class Configs {
 		Property mandatoryCarpenterRecipes = configuration.get(Configuration.CATEGORY_GENERAL, "mandatoryCarpenterRecipes", MANDATORY_CARPENTER_RECIPES);
 		mandatoryCarpenterRecipes.comment = "Whether or not the Carpenter is required to craft Forestry related pipes/modules.";
 		
+		Property enableParticleFX = configuration.get(Configuration.CATEGORY_GENERAL, "enableParticleFX", ENABLE_PARTICLE_FX);
+		enableParticleFX.comment = "Whether or not special particles will spawn.";
+		
 		Property multiThread = configuration.get(CATEGORY_MULTITHREAD, "enabled", multiThreadEnabled);
 		multiThread.comment = "Enabled the Logistics Pipes multiThread function to allow the network.";
 		
@@ -386,7 +392,8 @@ public class Configs {
 
 		LOGISTICSPIPE_BUILDERSUPPLIER_ID	= Integer.parseInt(logisticPipeBuilderSupplierIdProperty.value);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID		= Integer.parseInt(logisticPipeLiquidSupplierIdProperty.value);
-		MANDATORY_CARPENTER_RECIPES		= Boolean.parseBoolean(mandatoryCarpenterRecipes.value);
+		MANDATORY_CARPENTER_RECIPES			= Boolean.parseBoolean(mandatoryCarpenterRecipes.value);
+		ENABLE_PARTICLE_FX					= Boolean.parseBoolean(enableParticleFX.value);
 	
 		multiThreadEnabled					= multiThread.getBoolean(multiThreadEnabled);
 		multiThreadNumber					= multiThreadCount.getInt();

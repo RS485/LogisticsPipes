@@ -7,6 +7,7 @@ import java.util.List;
 import buildcraft.core.DefaultProps;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
@@ -19,6 +20,7 @@ import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.PacketBufferHandlerThread;
+import net.minecraft.client.Minecraft;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.Packet;
 import net.minecraft.src.Packet250CustomPayload;
@@ -173,6 +175,7 @@ public class MainProxy {
 	}
 
 	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
+		if(!Configs.ENABLE_PARTICLE_FX) return;
 		if(MainProxy.isServer()) {
 			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(dimension), new PacketRenderFX(NetworkConstants.PARTICLE_FX_RENDER_DATA, xCoord, yCoord, zCoord, particle, amount).getPacket());
 		} else {
@@ -181,6 +184,7 @@ public class MainProxy {
 	}
 	
 	public static void spawnParticle(int particle, int xCoord, int yCoord, int zCoord, int amount) {
+		if(!Configs.ENABLE_PARTICLE_FX || !Minecraft.isFancyGraphicsEnabled()) return;
 		if(MainProxy.isClient()) {
 			PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
 		} else {

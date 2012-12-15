@@ -9,8 +9,8 @@ import net.minecraft.src.WorldClient;
 public class EntityRedSparkleFXProvider implements ParticleProvider {
 
 	float red = 1F;
-	float green = 0.03F;
-	float blue = 0.02F;
+	float green = 0F;
+	float blue = 0F;
 	
 	@Override
 	public EntityFX createGenericParticle(WorldClient world, double x, double y, double z) {

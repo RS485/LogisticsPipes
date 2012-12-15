@@ -266,7 +266,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender();
-			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 4);
+			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 		}
 	}
 	
@@ -413,7 +413,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
 			refreshRenderStateFiled.setAccessible(true);
 			refreshRenderStateFiled.set(this.container, true);
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 4);
+			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 
 		} catch (SecurityException e) {
 			e.printStackTrace();
@@ -518,8 +518,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);
 				int particlecount = amount;
-				if (particlecount > 8) {
-					particlecount = 8;
+				if (particlecount > 5) {
+					particlecount = 5;
 				}
 				if (particlecount == 0) {
 					particlecount = 1;

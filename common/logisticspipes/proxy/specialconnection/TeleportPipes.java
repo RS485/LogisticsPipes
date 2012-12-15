@@ -7,7 +7,6 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 

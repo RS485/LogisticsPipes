@@ -1,7 +1,5 @@
 package logisticspipes.proxy.side;
 
-import java.util.HashMap;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignTileEntity;

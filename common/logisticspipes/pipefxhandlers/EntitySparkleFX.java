@@ -6,6 +6,7 @@ import net.minecraft.src.EntityFX;
 import net.minecraft.src.Tessellator;
 import net.minecraft.src.World;
 import net.minecraftforge.client.ForgeHooksClient;
+
 import org.lwjgl.opengl.GL11;
 
 public class EntitySparkleFX extends EntityFX

@@ -18,9 +18,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.Pair;
-import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
@@ -31,7 +29,6 @@ import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
-import cpw.mods.fml.common.network.Player;
 
 public class PipeTransportLogistics extends PipeTransportItems {
 

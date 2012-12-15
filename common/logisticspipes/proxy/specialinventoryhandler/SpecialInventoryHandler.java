@@ -4,14 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
-
 import logisticspipes.interfaces.ISpecialInventoryHandler;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.SimpleInventory;
+import net.minecraft.src.IInventory;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.TileEntity;
 
 public class SpecialInventoryHandler {
 	

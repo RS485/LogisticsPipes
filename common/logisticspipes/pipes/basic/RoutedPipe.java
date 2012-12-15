@@ -13,8 +13,6 @@ import java.util.LinkedList;
 
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.main.ActionDisableLogistics;
-import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;

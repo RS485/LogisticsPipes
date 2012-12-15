@@ -1,6 +1,5 @@
 package logisticspipes.proxy.interfaces;
 
-import logisticspipes.textures.LogisticsPipesTextureStatic;
 import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.World;
 

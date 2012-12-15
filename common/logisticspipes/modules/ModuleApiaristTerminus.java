@@ -1,7 +1,5 @@
 package logisticspipes.modules;
 
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -12,6 +10,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import net.minecraft.src.ItemStack;
+import net.minecraft.src.NBTTagCompound;
 
 public class ModuleApiaristTerminus implements ILogisticsModule {
 

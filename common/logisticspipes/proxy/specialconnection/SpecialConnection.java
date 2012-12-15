@@ -3,9 +3,8 @@ package logisticspipes.proxy.specialconnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import buildcraft.transport.TileGenericPipe;
-
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
+import buildcraft.transport.TileGenericPipe;
 
 public class SpecialConnection {
 	

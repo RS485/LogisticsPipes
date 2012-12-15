@@ -4,8 +4,6 @@ import java.util.List;
 
 import buildcraft.transport.TileGenericPipe;
 
-import net.minecraft.src.TileEntity;
-
 public interface ISpecialPipedConnection {
 	public boolean init();
 	public boolean isType(TileGenericPipe tile);

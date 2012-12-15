@@ -1,6 +1,5 @@
 package logisticspipes.pipefxhandlers;
 
-import net.minecraft.src.EntityFX;
 import net.minecraft.src.World;
 
 public class GenericSparkleFactory {

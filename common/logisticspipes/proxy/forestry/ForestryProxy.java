@@ -16,7 +16,6 @@ import net.minecraft.src.World;
 import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import forestry.api.apiculture.BeeManager;

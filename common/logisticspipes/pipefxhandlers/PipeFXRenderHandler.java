@@ -2,43 +2,9 @@ package logisticspipes.pipefxhandlers;
 
 import java.util.HashMap;
 
-import buildcraft.core.DefaultProps;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.proxy.MainProxy;
-
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityAuraFX;
-import net.minecraft.src.EntityBreakingFX;
-import net.minecraft.src.EntityBubbleFX;
-import net.minecraft.src.EntityCloudFX;
-import net.minecraft.src.EntityCritFX;
-import net.minecraft.src.EntityDiggingFX;
-import net.minecraft.src.EntityDropParticleFX;
-import net.minecraft.src.EntityEnchantmentTableParticleFX;
-import net.minecraft.src.EntityExplodeFX;
 import net.minecraft.src.EntityFX;
-import net.minecraft.src.EntityFlameFX;
-import net.minecraft.src.EntityFootStepFX;
-import net.minecraft.src.EntityHeartFX;
-import net.minecraft.src.EntityHugeExplodeFX;
-import net.minecraft.src.EntityLargeExplodeFX;
-import net.minecraft.src.EntityLavaFX;
-import net.minecraft.src.EntityNoteFX;
-import net.minecraft.src.EntityPortalFX;
-import net.minecraft.src.EntityReddustFX;
-import net.minecraft.src.EntitySmokeFX;
-import net.minecraft.src.EntitySnowShovelFX;
-import net.minecraft.src.EntitySpellParticleFX;
-import net.minecraft.src.EntitySplashFX;
-import net.minecraft.src.EntitySuspendFX;
-import net.minecraft.src.Item;
-import net.minecraft.src.Material;
-import net.minecraft.src.Packet;
-import net.minecraft.src.WorldClient;
 
 public class PipeFXRenderHandler {
 	

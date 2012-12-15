@@ -22,6 +22,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -34,6 +35,7 @@ import net.minecraft.src.IInventory;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.core.utils.Utils;
@@ -54,6 +56,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
+	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 	
@@ -69,6 +72,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 	
 	public SimpleInventory getFilterInventory() {
@@ -178,7 +182,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 					int count = Math.min(itemsToExtract(), slot.stackSize);
 
 					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-						MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 						count--;
 					}
 					

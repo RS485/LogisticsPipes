@@ -694,12 +694,12 @@ public class ClientPacketHandler {
 	}
 
 	private static void onParticleRenderUpdate(PacketRenderFX packet) {
-		double x = packet.posX;
-		double y = packet.posY;
-		double z = packet.posZ;
-		String particle = packet.particle;
+		int x = packet.posX;
+		int y = packet.posY;
+		int z = packet.posZ;
+		int particle = packet.particle;
 		int amount = packet.amount;
-		MainProxy.proxy.spawnGenericParticle(particle, x, y, z, amount);
+		MainProxy.spawnParticle(particle, x, y, z, amount);
 	}
 	
 	private static void enableNBTDEBUG() {

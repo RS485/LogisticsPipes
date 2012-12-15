@@ -5,6 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -18,9 +19,11 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
+	
 	private int xCoord;
-	int yCoord;
-	int zCoord;
+	private int yCoord;
+	private int zCoord;
+	private IWorldProvider _world;
 	
 	private IChassiePowerProvider _power;
 	
@@ -33,6 +36,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 	
 	@Override
@@ -58,7 +62,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 				reply.fixedPriority = SinkReply.FixedPriority.APIARIST_Analyser;
 				reply.isPassive = true;
 				if(_power.useEnergy(3)) {
-					MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 					return reply;
 				}
 			}

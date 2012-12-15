@@ -19,6 +19,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -41,6 +42,7 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 	private int yCoord;
 	private int zCoord;
 	private int slot;
+	private IWorldProvider _world;
 	
 	private IChassiePowerProvider _power;
 	
@@ -59,6 +61,7 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -84,7 +87,7 @@ public class ModuleTerminus implements ILogisticsModule, IClientInformationProvi
 			reply.fixedPriority = FixedPriority.Terminus;
 			reply.isPassive = true;
 			if(_power.useEnergy(2)) {
-				MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
 				return reply;
 			}
 		}

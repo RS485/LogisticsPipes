@@ -20,6 +20,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -146,7 +147,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
-		MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 4);
+		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -326,7 +327,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 						for(int i=0; i < data.item.getItemStack().stackSize;i++) {
 							pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getSource(), routed.getDestination(), routed.getTransportMode());
-							MainProxy.proxy.spawnGenericParticle("VioletParticle", this.xCoord, this.yCoord, this.zCoord, 4);
+							MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
 						}
 					}
 				}

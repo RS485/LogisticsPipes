@@ -20,6 +20,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -43,6 +44,7 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
+	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
 	
@@ -69,6 +71,7 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -87,7 +90,7 @@ public class ModuleItemSink implements ILogisticsModule, IClientInformationProvi
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
 			if(_power.useEnergy(1)) {
-				MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
 				return reply;
 			}
 			return null;

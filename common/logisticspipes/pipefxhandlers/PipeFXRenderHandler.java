@@ -42,9 +42,9 @@ import net.minecraft.src.WorldClient;
 
 public class PipeFXRenderHandler {
 	
-	public static HashMap<String, ParticleProvider> particlemap = new HashMap<String, ParticleProvider> ();
+	private static HashMap<Integer, ParticleProvider> particlemap = new HashMap<Integer, ParticleProvider> ();
 	
-	public static void spawnGenericParticle(String particle, double x, double y, double z, int amount) {
+	public static void spawnGenericParticle(int particle, double x, double y, double z, int amount) {
 		if (MainProxy.getClientMainWorld() == null) return;
 		try {
 		Minecraft mc = Minecraft.getMinecraft();
@@ -64,12 +64,6 @@ public class PipeFXRenderHandler {
 
 		ParticleProvider provider = particlemap.get(particle);
 		if (provider == null) return;
-		//Send packets
-		if (MainProxy.isServer()) {
-			Packet packet = new PacketRenderFX(NetworkConstants.PARTICLE_FX_RENDER_DATA, (int) x, (int) y, (int) z, particle, amount).getPacket();
-			MainProxy.sendPacketToAllAround(x, y, z, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(mc.theWorld), packet);
-			
-		}
 		
 		
 		for (int i = 0; i < amount; i++) {
@@ -80,5 +74,11 @@ public class PipeFXRenderHandler {
 		}
 		
 		} catch (NullPointerException e) {}
+	}
+	
+	public static void registerParticleHandler(int particle, ParticleProvider provider) {
+		if(!particlemap.containsKey(particle)) {
+			particlemap.put(particle, provider);
+		}
 	}
 }

@@ -51,12 +51,7 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public void spawnGenericParticle(String particle, double x, double y, double z, int amount) {
-		//Client Side Only
-	}
-
-	@Override
 	public void registerParticles() {
-		//Client Side Only
+		//Only Client Side
 	}
 }

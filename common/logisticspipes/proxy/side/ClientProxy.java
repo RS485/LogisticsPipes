@@ -6,6 +6,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityGoldSparkleFXProvider;
@@ -73,21 +74,13 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public void spawnGenericParticle(String particle, double x, double y, double z, int amount) {
-		PipeFXRenderHandler.spawnGenericParticle(particle, x, y, z, amount);
-	}
-
-	@Override
 	public void registerParticles() {
-		HashMap particlemap = PipeFXRenderHandler.particlemap;
-		particlemap.put("WhiteParticle", new EntityWhiteSparkleFXProvider());
-		particlemap.put("RedParticle", new EntityRedSparkleFXProvider());
-		particlemap.put("BlueParticle", new EntityBlueSparkleFXProvider());
-		particlemap.put("GreenParticle", new EntityGreenSparkleFXProvider());
-		particlemap.put("GoldParticle", new EntityGoldSparkleFXProvider());
-		particlemap.put("VioletParticle", new EntityVioletSparkleFXProvider());
-		particlemap.put("OrangeParticle", new EntityOrangeSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.WhiteParticle, new EntityWhiteSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.RedParticle, new EntityRedSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.BlueParticle, new EntityBlueSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.GreenParticle, new EntityGreenSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.GoldParticle, new EntityGoldSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.VioletParticle, new EntityVioletSparkleFXProvider());
+		PipeFXRenderHandler.registerParticleHandler(Particles.OrangeParticle, new EntityOrangeSparkleFXProvider());
 	}
-	
-
 }

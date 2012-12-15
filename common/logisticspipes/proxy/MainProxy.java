@@ -4,6 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import buildcraft.core.DefaultProps;
+
+import logisticspipes.LogisticsPipes;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketRenderFX;
+import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
+import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityGoldSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityGreenSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityOrangeSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
+import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import net.minecraft.src.EntityPlayer;
@@ -157,5 +170,21 @@ public class MainProxy {
 			}
 		}
 		return true;
+	}
+
+	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
+		if(MainProxy.isServer()) {
+			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(dimension), new PacketRenderFX(NetworkConstants.PARTICLE_FX_RENDER_DATA, xCoord, yCoord, zCoord, particle, amount).getPacket());
+		} else {
+			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
+		}
+	}
+	
+	public static void spawnParticle(int particle, int xCoord, int yCoord, int zCoord, int amount) {
+		if(MainProxy.isClient()) {
+			PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
+		} else {
+			LogisticsPipes.log.severe("Client only method on Server (Particle Spawning)");
+		}
 	}
 }

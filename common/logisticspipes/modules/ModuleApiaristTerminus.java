@@ -7,6 +7,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -19,6 +20,7 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
+	private IWorldProvider _world;
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {}
@@ -29,7 +31,8 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider) {
 		_invProvider = invProvider;
-		_power = powerProvider;	
+		_power = powerProvider;
+		_world = world;
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 				reply.fixedPriority = FixedPriority.Terminus;
 				reply.isDefault = false;
 				reply.isPassive = true;
-				MainProxy.proxy.spawnGenericParticle("BlueParticle", this.xCoord, this.yCoord, this.zCoord, 2);
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
 				return reply;
 			}
 		}

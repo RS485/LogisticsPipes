@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
@@ -183,6 +186,19 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			throw new UnsupportedOperationException(error.toString());
 		}
 		
+		if(match.getAnnotation(CCQueued.class) != null) {
+			final Method m = match;
+			final Object[] a = arguments;
+			QueuedTasks.queueTask(new Callable() {
+				@Override
+				public Object call() throws Exception {
+					m.invoke(pipe, a);
+					return null;
+				}
+			});
+			return null;
+		}
+
 		Object result = match.invoke(pipe, arguments);
 		if(!(result instanceof Object[])) {
 			if(result == null) return null;

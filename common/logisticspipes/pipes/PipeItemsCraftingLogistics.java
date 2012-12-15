@@ -38,6 +38,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsExtraPromise;
@@ -384,6 +385,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	
 	/* ComputerCraftCommands */
 	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
+	@CCQueued
 	public void reimport() {
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
 	}

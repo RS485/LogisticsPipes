@@ -74,8 +74,8 @@ class PathFinder {
 			return foundPipes;
 		}
 		
-		//Break recursion after certain amount of nodes visited or if we end up where we have been before		
-		if (visited.size() > maxLength || visited.contains(startPipe))	{
+		//Break recursion after certain amount of nodes visited
+		if (visited.size() > maxLength)	{
 			return foundPipes;
 		}
 	
@@ -99,6 +99,10 @@ class PathFinder {
 			try {
 				List<TileGenericPipe> pipez = SimpleServiceLocator.specialconnection.getConnectedPipes(startPipe);
 				for (TileGenericPipe specialpipe : pipez){
+					if (visited.contains(specialpipe)) {
+						//Don't go where we have been before
+						continue;
+					}
 					HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe, (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
 					for(RoutedPipe pipe : result.keySet()) 	{
 						result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
@@ -144,6 +148,10 @@ class PathFinder {
 			if (tile == null) continue;
 			
 			if (tile instanceof TileGenericPipe && (isDirectConnection || SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile))) {
+				if (visited.contains(tile)) {
+					//Don't go where we have been before
+					continue;
+				}
 				int beforeRecurseCount = foundPipes.size();
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), (LinkedList<TileGenericPipe>)visited.clone(), pathPainter);
 				for(RoutedPipe pipe : result.keySet()) 	{

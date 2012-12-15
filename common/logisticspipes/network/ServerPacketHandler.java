@@ -732,7 +732,7 @@ public class ServerPacketHandler {
 			return;
 		}
 		MainProxy.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) playerEntity);
-		((CoreRoutedPipe)pipe.pipe).refreshRender();
+		((CoreRoutedPipe)pipe.pipe).refreshRender(true);
 	}
 
 	private static void onCraftingPipeUpdateRequest(EntityPlayerMP player, PacketCoordinates packet) {

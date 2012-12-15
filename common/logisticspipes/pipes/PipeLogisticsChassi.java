@@ -117,7 +117,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
 		}
 		MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
-		refreshRender();
+		refreshRender(true);
 	}
 	
 	private boolean isValidOrientation(ForgeDirection connection){

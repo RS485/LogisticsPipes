@@ -265,7 +265,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		boolean flag;
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
-			refreshRender();
+			refreshRender(false);
 			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 		}
 	}
@@ -407,13 +407,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
 	
-	public void refreshRender() {
+	public void refreshRender(boolean spawnPart) {
 		Field refreshRenderStateFiled;
 		try {
 			refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
 			refreshRenderStateFiled.setAccessible(true);
 			refreshRenderStateFiled.set(this.container, true);
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
+			if (spawnPart) {
+				MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
+			}
 
 		} catch (SecurityException e) {
 			e.printStackTrace();

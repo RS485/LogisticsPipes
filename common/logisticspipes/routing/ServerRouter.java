@@ -460,7 +460,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 					CoreRoutedPipe pipe = getPipe();
 					if (pipe == null) return;
 					pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
-					pipe.refreshRender();
+					pipe.refreshRender(true);
 					_blockNeedsUpdate = false;
 				}
 			} else {

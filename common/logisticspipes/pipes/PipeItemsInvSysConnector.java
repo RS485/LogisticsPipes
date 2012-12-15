@@ -73,10 +73,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				}
 				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 				if(CRP != null) {
-					CRP.refreshRender();
+					CRP.refreshRender(true);
 				}
 				getRouter().update(true);
-				this.refreshRender();
+				this.refreshRender(true);
 				init = true;
 				idbuffer = getConnectionUUID();
 			}
@@ -86,7 +86,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 			if(CRP != null) {
-				CRP.refreshRender();
+				CRP.refreshRender(true);
 			}
 		}
 		if(init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
@@ -94,7 +94,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 			if(CRP != null) {
-				CRP.refreshRender();
+				CRP.refreshRender(true);
 			}
 		}
 		if(destination.size() > 0) {
@@ -215,7 +215,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 		if(CRP != null) {
-			CRP.refreshRender();
+			CRP.refreshRender(true);
 		}
 		dropFreqCard();
 	}
@@ -226,7 +226,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 		if(CRP != null) {
-			CRP.refreshRender();
+			CRP.refreshRender(true);
 		}
 		init = false;
 		super.invalidate();
@@ -238,7 +238,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
 		if(CRP != null) {
-			CRP.refreshRender();
+			CRP.refreshRender(true);
 		}
 		init = false;
 		super.onChunkUnload();

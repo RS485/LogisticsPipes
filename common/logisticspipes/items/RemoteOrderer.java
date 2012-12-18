@@ -42,9 +42,14 @@ public class RemoteOrderer extends Item {
 
 	@Override
 	public int getIconFromDamage(int par1) {
-    	return Textures.LOGISTICSREMOTEORDERER_ICONINDEX;
+		if(par1 == 0) {
+			return Textures.LOGISTICSREMOTEORDERER_ICONINDEX;
+		} else {
+			return Textures.LOGISTICSREMOTEORDERERCOLORED_ICONINDEX + par1 - 1;
+		}
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		//Add special tooltip in tribute to DireWolf
@@ -129,5 +134,13 @@ public class RemoteOrderer extends Item {
 	public CreativeTabs getCreativeTab()
     {
         return CreativeTabs.tabTools;
+    }
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+		for(int i=0;i<17;i++) {
+			par3List.add(new ItemStack(par1, 1, i));
+		}
     }
 }

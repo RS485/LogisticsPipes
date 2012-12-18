@@ -3,12 +3,15 @@ package logisticspipes.recipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.items.ItemModule;
+import logisticspipes.items.RemoteOrderer;
 import net.minecraft.src.Block;
 import net.minecraft.src.CraftingManager;
+import net.minecraft.src.InventoryCrafting;
 import net.minecraft.src.Item;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraftforge.oredict.ShapedOreRecipe;
+import net.minecraftforge.oredict.ShapelessOreRecipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
@@ -21,6 +24,23 @@ public class RecipeManager {
 			@SuppressWarnings("unchecked")
 			public void addRecipe(ItemStack stack, Object... objects) {
 				craftingManager.getRecipeList().add(new ShapedOreRecipe(stack,objects));
+			}
+			@SuppressWarnings("unchecked")
+			public void addOrdererRecipe(ItemStack stack, String dye, ItemStack orderer) {
+				craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack, new Object[] {dye, orderer}) {
+					@Override
+					public ItemStack getCraftingResult(InventoryCrafting var1) {
+						ItemStack result = super.getCraftingResult(var1);
+						for(int i=0;i<var1.getInventoryStackLimit();i++) {
+							ItemStack stack = var1.getStackInSlot(i);
+							if(stack != null && stack.getItem() instanceof RemoteOrderer) {
+								result.setTagCompound(stack.getTagCompound());
+								break;
+							}
+						}
+						return result;
+					}
+				});
 			}
 		};
 		LocalCraftingManager craftingManager = new LocalCraftingManager();
@@ -423,7 +443,7 @@ public class RecipeManager {
 				} catch(Exception e) {
 					force = true;
 				}
-				if(!nbt.equals(new NBTTagCompound())) {
+				if(!nbt.equals(new NBTTagCompound()) || force) {
 					registerShapelessResetRecipe(LogisticsPipes.ModuleItem, i, LogisticsPipes.ModuleItem, i);
 				}
 			}
@@ -514,7 +534,7 @@ public class RecipeManager {
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1), new Object[] { 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, 0), new Object[] { 
 			"gg", 
 			"gg", 
 			"DD", 
@@ -522,7 +542,7 @@ public class RecipeManager {
 			Character.valueOf('D'), BuildCraftCore.diamondGearItem
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1), new Object[] { 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, 0), new Object[] { 
 			"gg", 
 			"gg", 
 			"DD", 
@@ -530,6 +550,36 @@ public class RecipeManager {
 			Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)
 		});
 		
+		String[] dyes = 
+	        {
+	            "dyeBlack",
+	            "dyeRed",
+	            "dyeGreen",
+	            "dyeBrown",
+	            "dyeBlue",
+	            "dyePurple",
+	            "dyeCyan",
+	            "dyeLightGray",
+	            "dyeGray",
+	            "dyePink",
+	            "dyeLime",
+	            "dyeYellow",
+	            "dyeLightBlue",
+	            "dyeMagenta",
+	            "dyeOrange",
+	            "dyeWhite"
+	        };
+		
+		for(int i=1;i<17;i++) {
+			for(int j=0;j<17;j++) {
+				if(i == j) continue;
+				craftingManager.addOrdererRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, i), 
+					dyes[i - 1], 
+					new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, j)
+				);
+			}
+			registerShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, i, LogisticsPipes.LogisticsRemoteOrderer, i);
+		}
 		registerShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0, LogisticsPipes.LogisticsRemoteOrderer, 0);
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingSignCreator, 1), new Object[] {

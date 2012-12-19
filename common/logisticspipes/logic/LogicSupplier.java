@@ -8,10 +8,13 @@
 
 package logisticspipes.logic;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
@@ -21,6 +24,7 @@ import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
+import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -33,6 +37,7 @@ import net.minecraft.src.NBTTagCompound;
 import buildcraft.core.utils.Utils;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
+import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -125,13 +130,40 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			if(!_power.useEnergy(10)) break;
 			
+			LinkedList<IRouter> valid = getRouter().getIRoutersByCost();
+			
+			/*
+			//TODO Double Chests, Simplyfication
+			// Filter out providers attached to this inventory so that we don't get stuck in an
+			// endless supply/provide loop on this inventory.
+
+			WorldUtil invWU = new WorldUtil(tile.tile.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
+			ArrayList<IProvideItems> invProviders = new ArrayList<IProvideItems>();
+
+			for (AdjacentTile atile : invWU.getAdjacentTileEntities()) {
+				if ((atile.tile instanceof TileGenericPipe)) {
+					Pipe p = ((TileGenericPipe) atile.tile).pipe;
+					if ((p instanceof IProvideItems)) {
+						invProviders.add((IProvideItems) p);
+					}
+				}
+			}
+
+			for (IRouter r : valid) {
+				CoreRoutedPipe cp = r.getPipe();
+				if (((cp instanceof IProvideItems)) && (invProviders.contains((IProvideItems) cp))) {
+					valid.remove(r);
+				}
+			}
+			*/
+			
 			//Make request
 			for (ItemIdentifier need : needed.keySet()){
 				if (needed.get(need) < 1) continue;
 				int neededCount = needed.get(need);
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, valid, null);
 					if (success || neededCount == 1){
 						break;
 					}

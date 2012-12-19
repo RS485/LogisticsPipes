@@ -266,4 +266,8 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 			drawPoint(x2, --lasty, color);
 		}
 	}
+	
+	public void closeGui() {
+		this.keyTyped(' ', 1);
+	}
 }

@@ -23,9 +23,11 @@ import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Position;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
+import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
@@ -56,7 +58,30 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public EntityItem toEntityItem(ForgeDirection dir) {
-		return super.toEntityItem(dir);
+		if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
+			if (getItemStack().stackSize <= 0) {
+				return null;
+			}
+
+			Position motion = new Position(0, 0, 0, dir);
+			motion.moveForwards(0.1 + getSpeed() * 2F);
+
+			EntityItem entityitem = new EntityItem(worldObj, position.x, position.y, position.z, getItemStack());
+
+			entityitem.lifespan = BuildCraftCore.itemLifespan;
+			entityitem.delayBeforeCanPickup = 10;
+
+			float f3 = 0.00F + worldObj.rand.nextFloat() * 0.01F - 0.02F;
+			entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.x;
+			entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.y;
+			entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.z;
+			worldObj.spawnEntityInWorld(entityitem);
+			remove();
+
+			return entityitem;
+		} else {
+			return null;
+		}
 	}
 	
 	@Override

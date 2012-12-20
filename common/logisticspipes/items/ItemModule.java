@@ -27,15 +27,22 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
-import logisticspipes.textures.Textures;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.SimpleInventory;
 import net.minecraft.src.CreativeTabs;
+import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
-import cpw.mods.fml.client.registry.RenderingRegistry;
+import net.minecraft.src.NBTBase;
+import net.minecraft.src.NBTTagCompound;
+import net.minecraft.src.NBTTagList;
+import net.minecraft.src.NBTTagString;
 
-public class ItemModule extends ItemModuleProxy {
+import org.lwjgl.input.Keyboard;
+
+public class ItemModule extends LogisticsItem {
 	
 	//Texture Map
-	public static final String textureMap =	"0000111111111111" +
+	/*public static final String textureMap =	"0000111111111111" +
 											"0000011111111111" +
 											"0000000000001111" +
 											"1110111011111111" +
@@ -51,7 +58,7 @@ public class ItemModule extends ItemModuleProxy {
 											"1111111111111111" +
 											"1111111111111111" +
 											"1111111111111111";
-
+	 */
 	
 	//PASSIVE MODULES
 	public static final int BLANK = 0;
@@ -146,7 +153,6 @@ public class ItemModule extends ItemModuleProxy {
 	}
 	
 	public void loadModules() {
-		super.loadModules();
 		registerModule(BLANK					, "Blank module"				, null);
 		registerModule(ITEMSINK					, "ItemSink module"				, ModuleItemSink.class);
 		registerModule(PASSIVE_SUPPLIER			, "Passive Supplier module"		, ModulePassiveSupplier.class);
@@ -200,10 +206,6 @@ public class ItemModule extends ItemModuleProxy {
 		}
 	}
 	
-	public int addOverlay(String newFileName) {
-		return RenderingRegistry.addTextureOverride(Textures.LOGISTICSITEMS_TEXTURE_FILE, newFileName);
-	}
-	
 	public int[] getRegisteredModulesIDs() {
 		int[] array = new int[modules.size()];
 		int i = 0;
@@ -213,13 +215,13 @@ public class ItemModule extends ItemModuleProxy {
 		return array;
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public CreativeTabs getCreativeTab()
     {
         return CreativeTabs.tabRedstone;
     }
-	
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
     {
@@ -247,7 +249,7 @@ public class ItemModule extends ItemModuleProxy {
 	}
 
 	@Override
-	public String getModuleDisplayName(ItemStack itemstack) {
+	public String getItemDisplayName(ItemStack itemstack) {
 		for(Module module:modules) {
 			if(itemstack.getItemDamage() == module.getId()) {
 				return module.getName();
@@ -257,7 +259,7 @@ public class ItemModule extends ItemModuleProxy {
 	}
 	
 	@Override
-	public int getModuleIconFromDamage(int i) {
+	public int getIconFromDamage(int i) {
 		for(Module module:modules) {
 			if(module.getId() == i) {
 				if(module.getTextureIndex() != -1) {
@@ -281,8 +283,43 @@ public class ItemModule extends ItemModuleProxy {
 		return 2 * 16 + i;
 	}
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public String getTextureMap() {
-		return textureMap;
+	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
+		if(itemStack.hasTagCompound()) {
+			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+				NBTTagCompound nbt = itemStack.getTagCompound();
+				if(nbt.hasKey("informationList")) {
+					NBTTagList nbttaglist = nbt.getTagList("informationList");
+					for(int i=0;i<nbttaglist.tagCount();i++) {
+						NBTBase nbttag = nbttaglist.tagAt(i);
+						String data = ((NBTTagString)nbttag).data;
+						if(data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
+							nbttag = nbttaglist.tagAt(i + 1);
+							data = ((NBTTagString)nbttag).data;
+							if(data.startsWith("<that>")) {
+								String prefix = data.substring(6);
+								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");
+								SimpleInventory inv = new SimpleInventory(module.getTagList(prefix + "items").tagCount(), "InformationTempInventory", Integer.MAX_VALUE);
+								inv.readFromNBT(module, prefix);
+								for(int pos=0;pos < inv.getSizeInventory();pos++) {
+									ItemStack stack = inv.getStackInSlot(pos);
+									if(stack != null) {
+										if(stack.stackSize > 1) {
+											list.add("  " + stack.stackSize+"x " + ItemIdentifier.get(stack).getFriendlyName());	
+										} else {
+											list.add("  " + ItemIdentifier.get(stack).getFriendlyName());
+										}
+									}
+								}
+							}
+							i++;
+						} else {
+							list.add(data);
+						}
+					}
+				}
+			}
+		}
 	}
 }

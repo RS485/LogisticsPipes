@@ -39,6 +39,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsExtraPromise;
@@ -46,6 +47,7 @@ import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -61,12 +63,12 @@ import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
+@CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver {
 
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
@@ -83,7 +85,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		super(new BaseLogicCrafting(), itemID);
 	}
 	
-	public PipeItemsCraftingLogistics(PipeTransport transport, int itemID) {
+	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, int itemID) {
 		super(transport, new BaseLogicCrafting(), itemID);
 	}
 

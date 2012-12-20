@@ -34,6 +34,7 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
@@ -58,7 +59,6 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
@@ -88,6 +88,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	private RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
 	
+	private UpgradeManager upgradeManager = new UpgradeManager();
+	
 	public int stat_session_sent;
 	public int stat_session_recieved;
 	public int stat_session_relayed;
@@ -106,7 +108,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		this(new PipeTransportLogistics(), logic, itemID);
 	}
 	
-	public CoreRoutedPipe(PipeTransport transport, BaseRoutingLogic logic, int itemID) {
+	public CoreRoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
 		super(transport, logic, itemID);
 		((PipeTransportItems) transport).allowBouncing = true;
 		
@@ -128,6 +130,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			_transportLayer = new PipeTransportLayer(this, this, getRouter());
 		}
 		return _transportLayer;
+	}
+
+	public UpgradeManager getUpgradeManager() {
+		return upgradeManager;
 	}
 	
 	public logisticspipes.network.packets.PacketPayload getLogisticsNetworkPacket() {
@@ -335,6 +341,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if (getLogisticsModule() != null){
 			getLogisticsModule().writeToNBT(nbttagcompound, "");
 		}
+		NBTTagCompound upgradeNBT = new NBTTagCompound();
+		upgradeManager.writeToNBT(upgradeNBT);
+		nbttagcompound.setCompoundTag("upgradeManager", upgradeNBT);
 	}
 	
 	@Override
@@ -351,6 +360,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if (getLogisticsModule() != null){
 			getLogisticsModule().readFromNBT(nbttagcompound, "");
 		}
+		upgradeManager.readFromNBT(nbttagcompound.getCompoundTag("upgradeManager"));
 	}
 	
 	@Override

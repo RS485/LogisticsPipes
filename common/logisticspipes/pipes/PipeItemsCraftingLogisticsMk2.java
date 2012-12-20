@@ -19,6 +19,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -28,7 +29,6 @@ import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 
 public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
@@ -37,7 +37,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 		super(itemID);
 	}
 
-	public PipeItemsCraftingLogisticsMk2(PipeTransport transport, int itemID) {
+	public PipeItemsCraftingLogisticsMk2(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
 	}
 

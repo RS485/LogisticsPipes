@@ -14,9 +14,9 @@ import java.util.LinkedList;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.main.ActionDisableLogistics;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.transport.PipeTransportLogistics;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
-import buildcraft.transport.PipeTransport;
 
 public abstract class RoutedPipe extends CoreRoutedPipe {
 	
@@ -24,7 +24,7 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 		super(logic, itemID);
 	}
 	
-	public RoutedPipe(PipeTransport transport, BaseRoutingLogic logic, int itemID) {
+	public RoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
 		super(transport, logic, itemID);
 	}
 

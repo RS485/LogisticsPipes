@@ -40,6 +40,7 @@ import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
@@ -161,8 +162,9 @@ public class LogisticsPipes {
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
-	
+
 	public static ItemModule ModuleItem;
+	public static ItemUpgrade UpgradeItem;
 	
 	private Textures textures = new Textures();
 	
@@ -355,6 +357,11 @@ public class LogisticsPipes {
 		LogisticsItemDisk = new ItemDisk(Configs.ItemDiskId);
 		LogisticsItemDisk.setItemName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
+		
+		UpgradeItem = new ItemUpgrade(Configs.ItemUpgradeId);
+		UpgradeItem.setItemName("itemUpgrade");
+		UpgradeItem.loadUpgrades();
+		
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		

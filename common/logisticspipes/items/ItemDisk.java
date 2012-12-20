@@ -7,7 +7,7 @@ import net.minecraft.src.EntityPlayer;
 import net.minecraft.src.ItemStack;
 
 
-public class ItemDisk extends LogisticsNBTTagCompundItem {
+public class ItemDisk extends LogisticsItem {
 
 	public ItemDisk(int i) {
 		super(i);

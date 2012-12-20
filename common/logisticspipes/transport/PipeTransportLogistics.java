@@ -8,6 +8,8 @@
 
 package logisticspipes.transport;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,35 +18,62 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.Pair;
+import net.minecraft.src.EntityItem;
+import net.minecraft.src.IInventory;
 import net.minecraft.src.ItemStack;
 import net.minecraft.src.NBTTagCompound;
 import net.minecraft.src.NBTTagList;
+import net.minecraft.src.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.transport.IPipeEntry;
 import buildcraft.api.transport.IPipedItem;
-import buildcraft.core.DefaultProps;
 import buildcraft.core.EntityPassiveItem;
+import buildcraft.core.inventory.Transactor;
+import buildcraft.core.proxy.CoreProxy;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
+import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 
 public class PipeTransportLogistics extends PipeTransportItems {
 
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
-	
-//	private class ResolvedRoute{
-//		UUID bestRouter;
-//		boolean isDefault;
-//	}
-	
 	private RoutedPipe _pipe = null;
-	
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
+	private Method reverseItem = null;
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
+		travelHook = new IItemTravelingHook() {
+			@Override
+			public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+				scheduleRemoval(data.item);
+				handleTileReached(data, tile);
+			}
+
+			@Override
+			public void drop(PipeTransportItems pipe, EntityData data) {
+				//Reduce Drop Speed
+				data.item.setSpeed(0.0F);
+			}
+
+			@Override
+			public void centerReached(PipeTransportItems pipe, EntityData data) {
+			}
+		};
+		try {
+			reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
+			reverseItem.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private RoutedPipe getPipe() {
@@ -110,13 +139,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
 		
-		boolean forcePacket = false;
-		if(!(data.item instanceof IRoutedItem)) {
-			forcePacket = true;
-		} else if(((IRoutedItem)data.item).getDestination() == null || ((IRoutedItem)data.item).isUnRouted()) {
-			forcePacket = true;
-		}
-		
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
 		ForgeDirection value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
 		routedItem.setReRoute(false);
@@ -129,21 +151,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			return ForgeDirection.UNKNOWN;
 		}
 		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer()){
-			if(MainProxy.isServer()) {
-				MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
-			}
 			_itemBuffer.put(routedItem.getItemStack().copy(), new Pair<Integer,Integer>(20 * 2, routedItem.getBufferCounter()));
 			routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
-			scheduleRemoval(data.item);			
-			return ForgeDirection.WEST;
+			scheduleRemoval(data.item);
+			return ForgeDirection.UNKNOWN;
 		}
 		
 		readjustSpeed(routedItem.getEntityPassiveItem());
-		
-		if (value == ForgeDirection.UNKNOWN ){ 
-			//Reduce the speed of items being dropped so they don't go all over the place
-			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
-		}
 		
 		return value;
 	}
@@ -195,12 +209,79 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			case Active:
 				defaultBoost = 30F;
 				break;
+			case Unknown:
+				break;
+			default:
+				break;
 			
 			}
-			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost) - item.getSpeed();
+			
+			float multiplyer = 1.0F + (0.2F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
+			
+			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyer) - item.getSpeed();
 			if(getPipe().useEnergy(Math.round(add * 25))) {
-				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
+				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyer));
 			}
+		}
+	}
+	
+	//BC copy
+	private void handleTileReached(EntityData data, TileEntity tile) {
+		if (tile instanceof IPipeEntry)
+			((IPipeEntry) tile).entityEntering(data.item, data.output);
+		else if (tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportItems) {
+			TileGenericPipe pipe = (TileGenericPipe) tile;
+			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
+		} else if (tile instanceof IInventory) {
+			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
+				//LogisticsPipes start
+				UpgradeManager manager = getPipe().getUpgradeManager();
+				ForgeDirection insertion = data.output.getOpposite();
+				if(manager.hasSneakyUpgrade()) {
+					insertion = manager.getSneakyUpgrade().getSneakyOrientation();
+					if(insertion == null) {
+						insertion = data.output.getOpposite();
+					}
+				}
+				ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
+				//LogisticsPipes end
+
+				data.item.getItemStack().stackSize -= added.stackSize;
+
+				if(data.item.getItemStack().stackSize > 0) {
+					reverseItem(data);
+				}
+			}
+		} else {
+			if (travelHook != null)
+				travelHook.drop(this, data);
+
+			EntityItem dropped = data.item.toEntityItem(data.output);
+
+			if (dropped != null)
+				// On SMP, the client side doesn't actually drops
+				// items
+				onDropped(dropped);
+		}
+	}
+	//BC copy end
+	
+	protected void reverseItem(EntityData data) {
+		if(reverseItem != null) {
+			try {
+				reverseItem.invoke(this, data);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				reverseItem = null;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				reverseItem = null;
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				reverseItem = null;
+			}
+		} else {
+			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");
 		}
 	}
 }

@@ -191,4 +191,8 @@ public class BuildCraftProxy {
 	public boolean isWrenchEquipped(EntityPlayer entityplayer) {
 		return (entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench);
 	}
+	
+	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
+		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.shiftedIndex;
+	}
 }

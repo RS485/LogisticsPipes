@@ -13,6 +13,7 @@ public class Configs {
 	public static final String CATEGORY_MULTITHREAD = "multiThread";
 	
 	// Ids
+	public static int ItemUpgradeManagerId							= 6865;
 	public static int ItemUpgradeId									= 6866;
 	public static int ItemPartsId									= 6867;
 	public static int ItemHUDId										= 6868;
@@ -268,6 +269,9 @@ public class Configs {
 		Property logisticUpgradeIdProperty = configuration.getItem("logisticsUpgrades.id", ItemUpgradeId);
 		logisticUpgradeIdProperty.comment = "The item id for the upgrades";
 
+		Property logisticUpgradeManagerIdProperty = configuration.getItem("logisticsUpgradeManager.id", ItemUpgradeManagerId);
+		logisticUpgradeManagerIdProperty.comment = "The item id for the upgrade manager";
+
 		Property logisticItemDiskIdProperty = configuration.getItem("logisticsDisk.id", ItemDiskId);
 		logisticItemDiskIdProperty.comment = "The item id for the disk";
 		
@@ -351,6 +355,7 @@ public class Configs {
 		LOGISTICSREMOTEORDERER_ID			= Integer.parseInt(logisticRemoteOrdererIdProperty.value);
 		ItemModuleId						= Integer.parseInt(logisticModuleIdProperty.value);
 		ItemUpgradeId						= Integer.parseInt(logisticUpgradeIdProperty.value);
+		ItemUpgradeManagerId				= Integer.parseInt(logisticUpgradeManagerIdProperty.value);
 		ItemDiskId							= Integer.parseInt(logisticItemDiskIdProperty.value);
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
 		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);

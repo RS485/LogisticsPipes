@@ -3,6 +3,7 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.src.EntityItem;
@@ -21,10 +22,14 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (MainProxy.isServer(this.worldObj)) {
-			openGui(entityplayer);
+		if(!SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer)) {
+			if (MainProxy.isServer(this.worldObj)) {
+				openGui(entityplayer);
+			}
+			return true;
+		} else {
+			return super.blockActivated(world, i, j, k, entityplayer);
 		}
-		return true;
 	}
 
 	@Override

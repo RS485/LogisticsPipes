@@ -162,6 +162,7 @@ public class LogisticsPipes {
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
+	public static Item LogisticsUpgradeManager;
 
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
@@ -362,6 +363,10 @@ public class LogisticsPipes {
 		UpgradeItem.setItemName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
+		LogisticsUpgradeManager = new LogisticsItem(Configs.ItemUpgradeManagerId);
+		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
+		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
+		
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -376,6 +381,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,1), "en_US", "Logistics HUD Glass");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
 		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();

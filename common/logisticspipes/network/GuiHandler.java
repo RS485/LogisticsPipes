@@ -14,6 +14,7 @@ import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.gui.GuiUpgradeManager;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiApiaristSink;
@@ -336,6 +337,10 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addRestrictedHotbarForPlayerInventory(8, 160);
 				return dummy;
 				
+			case GuiIDs.GUI_Upgrade_Manager:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
+				return ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getDummyContainer(player);
+				
 			default:break;
 			}
 		} else {
@@ -567,6 +572,11 @@ public class GuiHandler implements IGuiHandler {
 
 			case GuiIDs.GUI_HUD_Settings:
 				return new GuiHUDSettings(player, x);
+
+				
+			case GuiIDs.GUI_Upgrade_Manager:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
+				return new GuiUpgradeManager(player, (CoreRoutedPipe) pipe.pipe);
 				
 			default:break;
 			}

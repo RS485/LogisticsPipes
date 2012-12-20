@@ -98,7 +98,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class);
 		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class);
 		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class);
-		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class);
+		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 9 * 16 + 6);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
@@ -166,7 +166,6 @@ public class ItemUpgrade extends LogisticsItem {
 				}
 				IPipeUpgrade newupgrade = upgrade.getIPipeUpgrade();
 				if(newupgrade == null) return null;
-				//newmodule.registerHandler(invProvider, itemSender, world, power);
 				return newupgrade;
 			}
 		}
@@ -193,6 +192,6 @@ public class ItemUpgrade extends LogisticsItem {
 			}
 		}
 			
-		return 10 * 16 + i;
+		return 9 * 16 + i;
 	}
 }

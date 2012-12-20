@@ -95,7 +95,7 @@ public class Textures {
 	
 	//Armor
 	public static final String LOGISTICSPIPE_HUD_TEXTURE_FILE				= "/logisticspipes/HUD.png";
-	
+
 	public static final int LOGISTICSNETWORKMONITOR_ICONINDEX = 0 * 16 + 0;
 	public static final int LOGISTICSREMOTEORDERER_ICONINDEX = 0 * 16 + 1;
 	public static final int LOGISTICSREMOTEORDERERCOLORED_ICONINDEX = 8 * 16 + 0;
@@ -106,6 +106,7 @@ public class Textures {
 	public static final int LOGISTICSITEMHUD_PART2_ICONINDEX = 0 * 16 + 7;
 	public static final int LOGISTICSITEMHUD_PART3_ICONINDEX = 0 * 16 + 8;
 	public static final int LOGISTICSITEM_NANOHOPPER_ICONINDEX = 0 * 16 + 9;
+	public static final int LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX = 0 * 16 + 10;
 
 	//Overrider
 	public static final String BASE_TEXTURE_FILE = "/logisticspipes/empty.png";

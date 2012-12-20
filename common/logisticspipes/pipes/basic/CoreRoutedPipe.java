@@ -414,6 +414,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				}
 			}
 		}
+		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+			if(MainProxy.isServer()) {
+				return getUpgradeManager().openGui(entityplayer, this);
+			}
+		}
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
 	

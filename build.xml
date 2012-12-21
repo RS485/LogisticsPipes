@@ -243,6 +243,6 @@
 	
     </target>
     
-    <target name="main" depends="package"/>
+    <target name="main" depends="clean, setup, package"/>
 
 </project>

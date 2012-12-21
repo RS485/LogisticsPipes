@@ -82,7 +82,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				if (!haveLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))){
 					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), slot.getLiquid().amount);
 				} else {
-					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), haveLiquids.get(slot.getLiquid()) +  slot.getLiquid().amount);
+					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), haveLiquids.get(LiquidIdentifier.get(slot.getLiquid())) +  slot.getLiquid().amount);
 				}
 			}
 			

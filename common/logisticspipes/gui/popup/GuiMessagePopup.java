@@ -2,7 +2,7 @@ package logisticspipes.gui.popup;
 
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SubGuiScreen;
-import net.minecraft.src.GuiButton;
+import net.minecraft.client.gui.GuiButton;
 
 public class GuiMessagePopup extends SubGuiScreen {
 

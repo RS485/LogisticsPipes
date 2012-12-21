@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.World;
+import net.minecraft.world.World;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;

@@ -1,6 +1,6 @@
 package logisticspipes.logic;
 
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.network.TileNetworkData;
 

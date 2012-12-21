@@ -8,7 +8,7 @@ import java.util.Comparator;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import net.minecraft.src.Item;
+import net.minecraft.item.Item;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;

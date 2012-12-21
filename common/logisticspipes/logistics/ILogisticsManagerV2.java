@@ -16,7 +16,7 @@ import java.util.UUID;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public interface ILogisticsManagerV2 {
 	

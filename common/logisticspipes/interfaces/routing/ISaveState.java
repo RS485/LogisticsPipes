@@ -8,7 +8,7 @@
 
 package logisticspipes.interfaces.routing;
 
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 
 public interface ISaveState {
 	/**

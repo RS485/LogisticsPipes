@@ -1,7 +1,7 @@
 package logisticspipes.pipefxhandlers;
 
-import net.minecraft.src.EntityFX;
-import net.minecraft.src.WorldClient;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.particle.EntityFX;
 
 public interface ParticleProvider {
 

@@ -5,7 +5,7 @@ import java.util.UUID;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public class ModuleProviderMk2 extends ModuleProvider {
 	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {

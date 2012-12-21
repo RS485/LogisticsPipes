@@ -13,8 +13,8 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.Pipe;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {

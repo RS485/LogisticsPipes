@@ -4,7 +4,7 @@ import java.util.HashMap;
 
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityFX;
+import net.minecraft.client.particle.EntityFX;
 
 public class PipeFXRenderHandler {
 	

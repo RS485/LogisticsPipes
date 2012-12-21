@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class PacketPipeInvContent extends PacketCoordinates {
 

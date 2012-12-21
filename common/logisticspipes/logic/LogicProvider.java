@@ -18,8 +18,8 @@ import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 
 public class LogicProvider extends BaseRoutingLogic{

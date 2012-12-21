@@ -15,7 +15,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.pipes.PipeLogic;
 
 public abstract class BaseRoutingLogic extends PipeLogic{

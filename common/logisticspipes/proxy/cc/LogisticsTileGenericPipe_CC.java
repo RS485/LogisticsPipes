@@ -17,8 +17,8 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.IPeripheral;
@@ -35,6 +35,8 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	private String typeName = "";
 	
 	private IComputerAccess lastPC = null;
+	
+	private int lastCheckedSide = 0;
 	
 	private CCType getType(Class clazz) {
 		while(true) {
@@ -229,12 +231,13 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	@Override
 	public boolean canAttachToSide(int side) {
 		//All Sides are valid
+		lastCheckedSide = side;
 		return true;
 	}
 
 	@Override
-	public void attach(IComputerAccess computer, String computerSide) {
-		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, computerSide, this);
+	public void attach(IComputerAccess computer) {
+		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, lastCheckedSide, this);
 		connections.put(computer, ori);
 	}
 

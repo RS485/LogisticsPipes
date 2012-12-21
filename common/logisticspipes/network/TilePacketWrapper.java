@@ -10,7 +10,7 @@
 package logisticspipes.network;
 
 import logisticspipes.network.packets.PacketPayload;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.core.ByteBuffer;
 import buildcraft.core.network.ClassMapping;
 import buildcraft.core.network.ClassMapping.Indexes;

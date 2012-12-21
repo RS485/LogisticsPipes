@@ -9,8 +9,8 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.utils.SimpleInventory;
 
 public class PipeItemsSystemDestinationLogistics extends RoutedPipe {

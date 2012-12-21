@@ -13,11 +13,11 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Slot;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 
 import org.lwjgl.opengl.GL11;
 

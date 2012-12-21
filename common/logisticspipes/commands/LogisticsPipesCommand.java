@@ -11,9 +11,9 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.LogisticsPipesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
-import net.minecraft.src.CommandBase;
-import net.minecraft.src.ICommandSender;
-import net.minecraft.src.WrongUsageException;
+import net.minecraft.command.CommandBase;
+import net.minecraft.command.ICommandSender;
+import net.minecraft.command.WrongUsageException;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.network.Player;
 

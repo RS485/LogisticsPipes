@@ -3,7 +3,7 @@ package logisticspipes.logic;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class EntrencsLogic extends BaseRoutingLogic {
 	

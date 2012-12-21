@@ -15,9 +15,9 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Container;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.RenderHelper;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.client.renderer.RenderHelper;
+import net.minecraft.inventory.Container;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;

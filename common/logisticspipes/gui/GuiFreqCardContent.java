@@ -5,8 +5,8 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 
 public class GuiFreqCardContent extends KraphtBaseGuiScreen {
 

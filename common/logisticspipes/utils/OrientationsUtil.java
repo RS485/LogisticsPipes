@@ -1,6 +1,6 @@
 package logisticspipes.utils;
 
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.PipeTransportItems;
 

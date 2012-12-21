@@ -8,7 +8,7 @@
 
 package logisticspipes.utils;
 
-import net.minecraft.src.IInventory;
+import net.minecraft.inventory.IInventory;
 import buildcraft.core.utils.Utils;
 
 public class InventoryUtilFactory {

@@ -2,7 +2,7 @@ package logisticspipes.utils;
 
 import java.util.List;
 
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class ItemMessage {
 

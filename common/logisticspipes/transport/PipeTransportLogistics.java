@@ -22,12 +22,12 @@ import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.Pair;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.TileEntity;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipeEntry;
 import buildcraft.api.transport.IPipedItem;
@@ -215,12 +215,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				break;
 			
 			}
+
+			float multiplyerSpeed = 1.0F + (0.2F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
+			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
-			float multiplyer = 1.0F + (0.2F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
-			
-			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyer) - item.getSpeed();
+			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
 			if(getPipe().useEnergy(Math.round(add * 25))) {
-				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyer));
+				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.5F));
 			}
 		}
 	}

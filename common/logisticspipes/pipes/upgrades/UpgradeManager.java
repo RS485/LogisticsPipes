@@ -6,13 +6,14 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
-	private SimpleInventory inv = new SimpleInventory(9, "UpgradeInventory", 1);
+	private SimpleInventory inv = new SimpleInventory(9, "UpgradeInventory", 16);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[9];
 	
 	public UpgradeManager() {
@@ -70,7 +71,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade update = upgrades[i];
 			if(update instanceof SpeedUpgrade) {
-				count++;
+				count += inv.getStackInSlot(i).stackSize;
 			}
 		}
 		return count;
@@ -90,5 +91,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	    	dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, LogisticsPipes.UpgradeItem.shiftedIndex);
 	    }
 	    return dummy;
+	}
+	
+	public void dropUpgrades(World worldObj, int xCoord, int yCoord, int zCoord) {
+		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
 	}
 }

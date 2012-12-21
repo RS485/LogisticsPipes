@@ -1,10 +1,10 @@
 package logisticspipes.pipefxhandlers;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityClientPlayerMP;
-import net.minecraft.src.EntityFX;
-import net.minecraft.src.Tessellator;
-import net.minecraft.src.World;
+import net.minecraft.client.entity.EntityClientPlayerMP;
+import net.minecraft.client.particle.EntityFX;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.world.World;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.opengl.GL11;

@@ -3,8 +3,8 @@ package logisticspipes.interfaces;
 import java.util.HashMap;
 
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 public interface ISpecialInventoryHandler {
 	public boolean init();

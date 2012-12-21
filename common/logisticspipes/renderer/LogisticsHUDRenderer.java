@@ -18,7 +18,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 

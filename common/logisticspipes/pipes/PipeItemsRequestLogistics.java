@@ -27,8 +27,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.World;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.world.World;
 
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems {

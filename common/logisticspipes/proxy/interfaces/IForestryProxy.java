@@ -1,9 +1,9 @@
 package logisticspipes.proxy.interfaces;
 
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public interface IForestryProxy {
 	

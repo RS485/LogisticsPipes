@@ -3,7 +3,7 @@ package logisticspipes.interfaces;
 import java.util.UUID;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public interface ISendRoutedItem {
 	public UUID getSourceUUID();

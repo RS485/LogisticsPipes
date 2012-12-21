@@ -3,8 +3,8 @@ package logisticspipes.pipefxhandlers.providers;
 import logisticspipes.pipefxhandlers.EntitySparkleFX;
 import logisticspipes.pipefxhandlers.GenericSparkleFactory;
 import logisticspipes.pipefxhandlers.ParticleProvider;
-import net.minecraft.src.EntityFX;
-import net.minecraft.src.WorldClient;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.particle.EntityFX;
 
 public class EntityRedSparkleFXProvider implements ParticleProvider {
 

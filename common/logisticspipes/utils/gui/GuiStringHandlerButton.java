@@ -1,7 +1,7 @@
 package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.GuiButton;
+import net.minecraft.client.gui.GuiButton;
 
 public class GuiStringHandlerButton extends GuiButton {
 	

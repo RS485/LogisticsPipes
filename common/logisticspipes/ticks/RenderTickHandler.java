@@ -8,7 +8,7 @@ import java.util.List;
 
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.ActiveRenderInfo;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 
 import org.lwjgl.opengl.GL11;
 

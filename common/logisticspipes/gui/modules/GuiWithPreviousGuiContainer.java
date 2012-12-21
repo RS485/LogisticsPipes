@@ -5,8 +5,8 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
-import net.minecraft.src.Container;
-import net.minecraft.src.GuiScreen;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.Container;
 import buildcraft.transport.Pipe;
 
 public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {

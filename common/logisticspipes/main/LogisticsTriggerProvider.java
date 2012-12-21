@@ -12,8 +12,8 @@ import java.util.LinkedList;
 
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import net.minecraft.src.Block;
-import net.minecraft.src.TileEntity;
+import net.minecraft.block.Block;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.gates.ITriggerProvider;
 import buildcraft.api.transport.IPipe;

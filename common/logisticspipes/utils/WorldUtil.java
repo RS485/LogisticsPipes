@@ -10,8 +10,8 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 

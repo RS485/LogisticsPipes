@@ -10,8 +10,8 @@
 package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
-import net.minecraft.src.GuiButton;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.GuiButton;
 
 import org.lwjgl.opengl.GL11;
 

@@ -12,20 +12,20 @@ import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.PacketBufferHandlerThread;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Packet;
-import net.minecraft.src.Packet250CustomPayload;
-import net.minecraft.src.ServerListenThread;
-import net.minecraft.src.ThreadMinecraftServer;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldClient;
-import net.minecraft.src.WorldServer;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.network.packet.Packet;
+import net.minecraft.network.packet.Packet250CustomPayload;
+import net.minecraft.server.ServerListenThread;
+import net.minecraft.server.ThreadMinecraftServer;
+import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import buildcraft.core.DefaultProps;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
 
 public class MainProxy {
 	

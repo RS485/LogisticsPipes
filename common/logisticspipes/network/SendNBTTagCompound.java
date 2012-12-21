@@ -4,8 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import net.minecraft.src.CompressedStreamTools;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.nbt.CompressedStreamTools;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class SendNBTTagCompound {
 	public static void writeNBTTagCompound(NBTTagCompound tag, DataOutputStream data) throws IOException {

@@ -8,7 +8,7 @@
 
 package logisticspipes.routing;
 
-import net.minecraft.src.World;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 

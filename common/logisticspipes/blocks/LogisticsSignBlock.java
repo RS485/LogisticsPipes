@@ -1,13 +1,13 @@
 package logisticspipes.blocks;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.Material;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class LogisticsSignBlock extends BlockContainer {
 

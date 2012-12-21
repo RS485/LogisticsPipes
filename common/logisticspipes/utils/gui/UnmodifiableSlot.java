@@ -1,7 +1,7 @@
 package logisticspipes.utils.gui;
 
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Slot;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
 
 public class UnmodifiableSlot extends Slot {
 	public UnmodifiableSlot(IInventory par1iInventory, int par2, int par3, int par4) {

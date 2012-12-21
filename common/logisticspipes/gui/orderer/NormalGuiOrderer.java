@@ -8,8 +8,8 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class NormalGuiOrderer extends GuiOrderer {
 

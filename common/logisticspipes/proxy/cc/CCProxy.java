@@ -1,7 +1,6 @@
 package logisticspipes.proxy.cc;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -10,7 +9,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import dan200.computer.api.IComputerAccess;
 
@@ -20,7 +19,6 @@ public class CCProxy implements ICCProxy {
 	private Field Net_m_computer;
 	private Field m_apis;
 	private Field m_peripherals;
-	private Method parseSide;
 	private Class<?> computerClass;
 	private Class<?> peripheralAPIClass;
 	private Field target;
@@ -37,8 +35,6 @@ public class CCProxy implements ICCProxy {
 			m_apis = Class.forName("dan200.computer.core.Computer").getDeclaredField("m_apis");
 			m_apis.setAccessible(true);
 			peripheralAPIClass = Class.forName("dan200.computer.core.apis.PeripheralAPI");
-			parseSide = peripheralAPIClass.getDeclaredMethod("parseSide", new Class[]{Object[].class});
-			parseSide.setAccessible(true);
 			m_peripherals = peripheralAPIClass.getDeclaredField("m_peripherals");
 			m_peripherals.setAccessible(true);
 			target = Thread.class.getDeclaredField("target");
@@ -76,7 +72,7 @@ public class CCProxy implements ICCProxy {
 	}
 	
 	@Override
-	public ForgeDirection getOrientation(Object cObject, String computerSide, TileEntity pipe) {
+	public ForgeDirection getOrientation(Object cObject, int side, TileEntity pipe) {
 		if(!valid) return ForgeDirection.UNKNOWN;
 		if(!(cObject instanceof IComputerAccess)) return ForgeDirection.UNKNOWN;
 		IComputerAccess computer = (IComputerAccess) cObject;
@@ -90,7 +86,6 @@ public class CCProxy implements ICCProxy {
 					ArrayList local_m_apis = (ArrayList) m_apis.get(local_net_m_omputer);
 					for(Object api: local_m_apis) {
 						if(peripheralAPIClass.isAssignableFrom(api.getClass())) {
-							int side = ((Integer) parseSide.invoke(api, new Object[]{new Object[]{(Object)computerSide}})).intValue();
 							Object[] local_m_peripherals = (Object[]) m_peripherals.get(api);
 							if(local_m_peripherals[side] == computer) {
 								return aTile.orientation;
@@ -107,10 +102,6 @@ public class CCProxy implements ICCProxy {
 					e.printStackTrace();
 				}
 			} catch(ClassCastException e) {
-				if(LogisticsPipes.DEBUG) {
-					e.printStackTrace();
-				}
-			} catch (InvocationTargetException e) {
 				if(LogisticsPipes.DEBUG) {
 					e.printStackTrace();
 				}

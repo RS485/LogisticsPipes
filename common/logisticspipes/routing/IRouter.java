@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 

@@ -51,10 +51,10 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.core.utils.Utils;
@@ -250,6 +250,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (transport != null && transport instanceof PipeTransportLogistics){
 				((PipeTransportLogistics)transport).dropBuffer();
 			}
+			getUpgradeManager().dropUpgrades(worldObj, xCoord, yCoord, zCoord);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -1,7 +1,7 @@
 package logisticspipes.pipes.upgrades.sneaky;
 
-import net.minecraftforge.common.ForgeDirection;
 import logisticspipes.pipes.upgrades.SneakyUpgrade;
+import net.minecraftforge.common.ForgeDirection;
 
 public class SneakyUpgradeWEST extends SneakyUpgrade {
 

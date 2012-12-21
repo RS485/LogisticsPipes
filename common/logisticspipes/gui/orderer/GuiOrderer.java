@@ -27,11 +27,11 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.RenderItem;
-import net.minecraft.src.Tessellator;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;

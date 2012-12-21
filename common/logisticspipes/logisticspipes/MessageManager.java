@@ -7,7 +7,7 @@ import logisticspipes.network.packets.PacketItems;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
 public class MessageManager {

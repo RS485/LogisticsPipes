@@ -10,8 +10,8 @@ package logisticspipes.items;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.textures.Textures;
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.Item;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 
 public class LogisticsItem extends Item {
 

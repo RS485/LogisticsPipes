@@ -7,10 +7,10 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ICraftingResultHandler;
-import net.minecraft.src.Block;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
 

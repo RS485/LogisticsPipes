@@ -12,8 +12,8 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.ItemStack;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 
 public class ItemUpgrade extends LogisticsItem {
 	

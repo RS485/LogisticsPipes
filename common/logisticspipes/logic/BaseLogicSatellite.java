@@ -22,8 +22,8 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.network.TileNetworkData;
 import cpw.mods.fml.common.network.Player;
 

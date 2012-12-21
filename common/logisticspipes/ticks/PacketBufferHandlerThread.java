@@ -16,12 +16,12 @@ import logisticspipes.network.ClientPacketHandler;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Pair;
-import net.minecraft.src.Packet250CustomPayload;
+import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.TickType;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class PacketBufferHandlerThread extends Thread {
 

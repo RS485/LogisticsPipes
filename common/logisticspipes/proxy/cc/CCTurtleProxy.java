@@ -3,7 +3,7 @@ package logisticspipes.proxy.cc;
 import java.lang.reflect.Field;
 
 import logisticspipes.LogisticsPipes;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
 
 public class CCTurtleProxy extends CCProxy {
 	

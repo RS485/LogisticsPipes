@@ -29,7 +29,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	

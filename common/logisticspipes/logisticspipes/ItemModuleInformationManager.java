@@ -8,12 +8,12 @@ import java.util.Random;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTBase;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
-import net.minecraft.src.World;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
+import net.minecraft.world.World;
 
 public class ItemModuleInformationManager {
 	

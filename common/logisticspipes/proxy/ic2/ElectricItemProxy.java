@@ -6,8 +6,8 @@ import ic2.api.Items;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 

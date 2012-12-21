@@ -1,6 +1,6 @@
 package logisticspipes.logisticspipes;
 
-import net.minecraft.src.IInventory;
+import net.minecraft.inventory.IInventory;
 import net.minecraftforge.common.ForgeDirection;
 
 public interface IInventoryProvider {

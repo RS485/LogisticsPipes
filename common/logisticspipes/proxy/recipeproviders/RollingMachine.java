@@ -5,11 +5,11 @@ import java.lang.reflect.Method;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.InventoryCrafting;
-import net.minecraft.src.ItemStack;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class RollingMachine implements ICraftingRecipeProvider {
 

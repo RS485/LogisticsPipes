@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.routing.IRouter;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;

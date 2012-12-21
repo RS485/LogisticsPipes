@@ -3,8 +3,8 @@ package logisticspipes.proxy.recipeproviders;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.factory.TileAutoWorkbench;
 
 public class AutoWorkbench implements ICraftingRecipeProvider {

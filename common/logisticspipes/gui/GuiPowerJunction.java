@@ -3,7 +3,7 @@ package logisticspipes.gui;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 

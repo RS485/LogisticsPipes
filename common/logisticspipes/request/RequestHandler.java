@@ -9,6 +9,7 @@ import java.util.concurrent.Callable;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketRequestComponents;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -52,6 +53,28 @@ public class RequestHandler {
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
 				MessageManager.errors(player, list);
+			}
+
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+				//Not needed here
+			}
+		});
+	}
+	
+	public static void simulate(final EntityPlayerMP player, final PacketRequestComponents packet, CoreRoutedPipe pipe) {
+		//LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
+		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
+		
+		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(1), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+			@Override
+			public void handleSucessfullRequestOf(ItemMessage item) {
+				//Not needed
+			}
+			
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+				MessageManager.requested(player, list);
 			}
 
 			@Override

@@ -15,6 +15,7 @@ import java.util.List;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.packets.PacketRequestComponents;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.proxy.MainProxy;
@@ -112,6 +113,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
 		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.displayPopup)); // Popup
+		controlList.add(new GuiButton(13,  xCenter - 35, bottom - 55, 70,20, "Components")); // Component
 	}
 	
 	@Override
@@ -488,6 +490,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
 			Configs.displayPopup = button.change();
 			Configs.savePopupState();
+		} else if (guibutton.id == 13 && selectedItem != null){
+			MainProxy.sendPacketToServer(new PacketRequestComponents(xCoord,yCoord,zCoord,dimension,selectedItem).getPacket());
 		}
 		
 		super.actionPerformed(guibutton);

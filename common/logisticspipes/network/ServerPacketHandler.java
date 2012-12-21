@@ -32,6 +32,7 @@ import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.network.packets.PacketRequestComponents;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.PipeItemsApiaristSink;
@@ -278,6 +279,11 @@ public class ServerPacketHandler {
 					packetAp.readData(data);
 					onHUDSettings(player, packetAp);
 					break;
+				case NetworkConstants.REQUEST_COMPONENTS:
+					final PacketRequestComponents packetAq = new PacketRequestComponents();
+					packetAq.readData(data);
+					onRequestComponents(player, packetAq);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -404,6 +410,19 @@ public class ServerPacketHandler {
 		}
 		
 		RequestHandler.request(player, packet, (CoreRoutedPipe) pipe.pipe);
+	}
+	
+	private static void onRequestComponents(EntityPlayerMP player, PacketRequestComponents packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		
+		RequestHandler.simulate(player, packet, (CoreRoutedPipe) pipe.pipe);
 	}
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {

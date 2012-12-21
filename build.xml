@@ -237,7 +237,7 @@
         
 		<echo message="Packing version ${lp.version.full}"/>
 	
-        <jar destfile="${jar.dir}/LogisticsPipes-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
+        <jar destfile="${jar.dir}/LogisticsPipes-${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
         
 		<echo message="Packing finished"/>
 	

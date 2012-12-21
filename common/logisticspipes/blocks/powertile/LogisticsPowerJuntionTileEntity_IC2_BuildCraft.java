@@ -1,9 +1,11 @@
 package logisticspipes.blocks.powertile;
 
 import ic2.api.Direction;
-import ic2.api.EnergyNet;
-import ic2.api.IEnergySink;
+import ic2.api.energy.event.EnergyTileLoadEvent;
+import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergySink;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
 
 public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPowerJuntionTileEntity_BuildCraft implements IEnergySink {
 
@@ -28,7 +30,7 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 	public void invalidate() {
 		super.invalidate();
 		if(addedToEnergyNet) {
-			EnergyNet.getForWorld(worldObj).removeTileEntity(this);
+			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
 			addedToEnergyNet = false;
 		}
 	}
@@ -45,7 +47,7 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 	public void updateEntity() {
 		super.updateEntity();
 		if(doinit) {
-			EnergyNet.getForWorld(worldObj).addTileEntity(this);
+			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent(this));
 			addedToEnergyNet = true;
 			doinit = false;
 		}
@@ -55,17 +57,17 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 	public void onChunkUnload() {
 		super.onChunkUnload();
 		if(addedToEnergyNet) {
-			EnergyNet.getForWorld(worldObj).removeTileEntity(this);
+			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent(this));
 			addedToEnergyNet = false;
 		}
 	}
 
 	@Override
-	public boolean demandsEnergy() {
+	public int demandsEnergy() {
 		if(internalBuffer > 0 && freeSpace() > 0) {
 			internalBuffer = injectEnergy(null, internalBuffer);
 		}
-		return freeSpace() > 0;
+		return freeSpace();
 	}
 
 	@Override
@@ -80,5 +82,10 @@ public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPow
 			return 0;
 		}
 		return amount - addAmount;
+	}
+
+	@Override
+	public int getMaxSafeInput() {
+		return Integer.MAX_VALUE;
 	}
 }

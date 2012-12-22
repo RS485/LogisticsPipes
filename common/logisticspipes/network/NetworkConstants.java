@@ -83,4 +83,5 @@ public class NetworkConstants {
 	public static final int REQUEST_GUI_DIMENSION = 77;
 	public static final int PARTICLE_FX_RENDER_DATA = 78;
 	public static final int REQUEST_COMPONENTS = 79;
+	public static final int COMPONENT_LIST = 80;
 }

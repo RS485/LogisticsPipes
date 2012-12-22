@@ -75,7 +75,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				MessageManager.requested(player, list);
+				MessageManager.simulated(player, list);
 			}
 
 			@Override

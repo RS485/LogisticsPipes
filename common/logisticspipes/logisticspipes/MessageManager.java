@@ -2,12 +2,14 @@ package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
 
+import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketItems;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import cpw.mods.fml.common.network.Player;
 
 public class MessageManager {
@@ -24,6 +26,10 @@ public class MessageManager {
 
 	public static void requested(EntityPlayer player, LinkedList<ItemMessage> items) {
 		MainProxy.sendPacketToPlayer(new PacketItems(items,false).getPacket(), (Player)player);
+	}
+
+	public static void simulated(EntityPlayerMP player, LinkedList<ItemMessage> items) {
+		MainProxy.sendPacketToPlayer(new PacketItems(items,NetworkConstants.COMPONENT_LIST).getPacket(), (Player)player);		
 	}
 	
 }

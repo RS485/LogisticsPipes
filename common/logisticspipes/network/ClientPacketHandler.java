@@ -265,6 +265,11 @@ public class ClientPacketHandler {
 					packetAr.readData(data);
 					onParticleRenderUpdate(packetAr);
 					break;
+				case NetworkConstants.COMPONENT_LIST:
+					final PacketItems packetAs = new PacketItems();
+					packetAs.readData(data);
+					onComponentList(packetAs);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -723,6 +728,16 @@ public class ClientPacketHandler {
 		} else {
 			GuiOrderer.dimensioncache = packet.value;
 			GuiOrderer.cachetime = System.currentTimeMillis();
+		}
+	}
+
+	private static void onComponentList(PacketItems packet) {
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(packet.items,!packet.error,(GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer, true);
+		} else {
+			for (final ItemMessage items : packet.items) {
+				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Content: " + items);
+			}
 		}
 	}
 	

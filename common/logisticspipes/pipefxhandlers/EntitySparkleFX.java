@@ -1,5 +1,7 @@
 package logisticspipes.pipefxhandlers;
 
+import java.util.Random;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.particle.EntityFX;
@@ -37,7 +39,7 @@ public class EntitySparkleFX extends EntityFX
         this.particleGravity = 0.0F;
         this.motionX = this.motionY = this.motionZ = 0.0D;
         this.particleScale *= var8;
-        this.particleMaxAge = 4 * var12;
+        this.particleMaxAge = 2 * var12;
         this.multiplier = var12;
         this.noClip = false;
     }
@@ -177,7 +179,10 @@ public class EntitySparkleFX extends EntityFX
                 this.setDead();
             }
 
-            this.motionY -= 0.04D * (double)this.particleGravity;
+            this.motionX -=  0.05D * (double)this.particleGravity - 0.1D * (double)this.particleGravity * new Random().nextDouble();
+            this.motionY -=  0.05D * (double)this.particleGravity - 0.1D * (double)this.particleGravity * new Random().nextDouble();
+            this.motionZ -=  0.05D * (double)this.particleGravity - 0.1D * (double)this.particleGravity * new Random().nextDouble();
+            
             this.moveEntity(this.motionX, this.motionY, this.motionZ);
             this.motionX *= 0.9800000190734863D;
             this.motionY *= 0.9800000190734863D;

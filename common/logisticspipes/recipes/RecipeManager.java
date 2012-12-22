@@ -12,9 +12,13 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
+import buildcraft.BuildCraftBuilders;
 import buildcraft.BuildCraftCore;
+import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
+import buildcraft.api.core.BuildCraftAPI;
+import buildcraft.core.ItemWrench;
 
 public class RecipeManager {
 	
@@ -41,6 +45,10 @@ public class RecipeManager {
 						return result;
 					}
 				});
+			}
+			@SuppressWarnings("unchecked")
+			public void addShapelessRecipe(ItemStack stack, Object... objects) {
+				craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack,objects));
 			}
 		};
 		LocalCraftingManager craftingManager = new LocalCraftingManager();
@@ -628,7 +636,87 @@ public class RecipeManager {
 			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe, 
 			Character.valueOf('i'), Item.ingotIron
 		});
+		
+		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsUpgradeManager, 1), new Object[] { 
+			LogisticsPipes.LogisticsNetworkMonitior,
+			BuildCraftCore.wrenchItem
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 0), new Object[] { 
+			false, 
+			"srs", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.slimeBall
+		});
 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 1), new Object[] { 
+			false, 
+			"PrP", 
+			"rCr", 
+			"srs", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.slimeBall
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 2), new Object[] { 
+			false, 
+			"PsP", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.slimeBall
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 3), new Object[] {
+			false, 
+			"PrP", 
+			"rCr", 
+			"PsP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.slimeBall
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 4), new Object[] { 
+			false, 
+			"PrP", 
+			"rCs", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.slimeBall
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 5), new Object[] { 
+			false, 
+			"PrP", 
+			"sCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.slimeBall
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 20), new Object[] { 
+			false, 
+			"PrP", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.ingotGold, 
+			Character.valueOf('P'), Item.paper
+		});
 	}
 	
 	private static void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {

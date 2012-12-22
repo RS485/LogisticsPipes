@@ -26,8 +26,7 @@
     <property name="cc.dir"              value="${mcp.dir}/cc" />
       
     <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft" />
-    <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server" />
-    <property name="commonsrc.dir"       value="${mcp.dir}/src/common" />
+    <property name="commonsrc.dir"       value="${clientsrc.dir}" />
     
     <property name="downloadserver"      value="http://www.theZorro266.com" />
     <property name="downloadserver.dir"  value="rs485/" />

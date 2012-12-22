@@ -19,6 +19,7 @@ import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.inventory.Transactor;
 import cpw.mods.fml.common.network.Player;
 
@@ -47,21 +48,22 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				ItemStack slot = inv.getStackInSlot(i);
 				if(slot == null) continue;
-				//IC2 workAround
-				for(int j=0;j < 2 && !change;j++) {
-					if(j == 1 &&SimpleServiceLocator.electricItemProxy.isElectricItem(slot) && slot.hasTagCompound() && slot.getTagCompound().getName().equals("")) {
-						slot.getTagCompound().setName("tag");
+				ForgeDirection insertion = tile.orientation.getOpposite();
+				if(getUpgradeManager().hasSneakyUpgrade()) {
+					insertion = getUpgradeManager().getSneakyUpgrade().getSneakyOrientation();
+					if(insertion == null) {
+						insertion = tile.orientation.getOpposite();
 					}
-					ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, tile.orientation.getOpposite(), true);
-					slot.stackSize -= added.stackSize;
-					if(added.stackSize != 0) {
-						change = true;
-					}
-					if(slot.stackSize <= 0) {
-						inv.setInventorySlotContents(i, null);
-					} else {
-						inv.setInventorySlotContents(i, slot);
-					}
+				}
+				ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, insertion, true);
+				slot.stackSize -= added.stackSize;
+				if(added.stackSize != 0) {
+					change = true;
+				}
+				if(slot.stackSize <= 0) {
+					inv.setInventorySlotContents(i, null);
+				} else {
+					inv.setInventorySlotContents(i, slot);
 				}
 			}
 		}

@@ -42,7 +42,17 @@ public class ChassiModule implements ILogisticsModule{
 	
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		
+		SinkReply result = null;
+		for (ILogisticsModule module : _modules){
+			if (module != null){
+				result = module.sinksItem(item);
+				if (result != null){
+					break;
+				}
+			}
+		}
+
+		if (result == null) return null;
 		//Always deny items when we can't put the item anywhere
 		IInventory inv = _parentPipe.getInventory();
 		if (inv == null) return null;
@@ -50,17 +60,10 @@ public class ChassiModule implements ILogisticsModule{
 		int roomForItem = invUtil.roomForItem(ItemIdentifier.get(item)); 
 		
 		if (roomForItem < 1) return null;
-		
-		for (ILogisticsModule module : _modules){
-			if (module != null){
-				SinkReply result = module.sinksItem(item);
-				if (result != null){
-					result.maxNumberOfItems = roomForItem;
-					return result;
-				}
-			}
-		}
-		return null;
+
+		result.maxNumberOfItems = roomForItem;
+				
+		return result;
 	}
 
 

@@ -10,7 +10,7 @@ package logisticspipes.pipes;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.Callable;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -21,12 +21,13 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
@@ -70,14 +71,14 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		super.updateEntity();
 		if(MainProxy.isClient()) return;
 		if (this.worldObj.getWorldTime() % 1200 == 0){
-			_history.addLast(SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet()));
+			_history.addLast(SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost()));
 			if (_history.size() > 20){
 				_history.removeFirst();
 			}
 		}
 	}
 	
-	public LinkedList<HashMap<ItemIdentifier, Integer>>  getHistory(){
+	public LinkedList<HashMap<ItemIdentifier, Integer>> getHistory(){
 		return _history;
 	}
 
@@ -87,6 +88,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	}
 	
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
+	@CCQueued(event="request_successfull\n      ---request_failed", realQueue=false)
 	public int makeRequest(Double itemId, Double amount) throws Exception {
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
@@ -94,37 +96,21 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	}
 
 	@CCCommand(description="Asks for all available ItemIdentifier inside the Logistics Network")
-	public void getAvailableItems() {
-		QueuedTasks.queueTask(new Callable() {
-			@Override
-			public Object call() throws Exception {
-				HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getRouteTable().keySet());
-				int i = 0;
-				for(ItemIdentifier item:items.keySet()) {
-					int amount = items.get(item);
-					queueEvent("available_items_return", new Object[]{i, item.getId(), amount});
-					i++;
-				}
-				queueEvent("available_items_return_done", new Object[]{});
-				return null;
-			}
-		});
+	@CCQueued(event="available_items_return")
+	public List<Pair<ItemIdentifier, Integer>> getAvailableItems() {
+		HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
+		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<Pair<ItemIdentifier, Integer>>();
+		for(ItemIdentifier item:items.keySet()) {
+			int amount = items.get(item);
+			list.add(new Pair<ItemIdentifier,Integer>(item, amount));
+		}
+		return list;
 	}
 
 	@CCCommand(description="Asks for all craftable ItemIdentifier inside the Logistics Network")
-	public void getCraftableItems() {
-		QueuedTasks.queueTask(new Callable() {
-			@Override
-			public Object call() throws Exception {
-				LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getRouteTable().keySet());
-				int i = 0;
-				for(ItemIdentifier item:items) {
-					queueEvent("craftable_items_return", new Object[]{i, item.getId()});
-					i++;
-				}
-				queueEvent("craftable_items_return_done", new Object[]{});
-				return null;
-			}
-		});
+	@CCQueued(event="craftable_items_return")
+	public List<ItemIdentifier> getCraftableItems() {
+		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
+		return items;
 	}
 }

@@ -15,6 +15,7 @@ import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cc.CCHelper;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -90,12 +91,12 @@ public class RequestHandler {
 		LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 		
 		if (option == DisplayOptions.SupplyOnly || option == DisplayOptions.Both){
-			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getRouteTable().keySet());
+			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
 		} else {
 			_availableItems = new HashMap<ItemIdentifier, Integer>();
 		}
 		if (option == DisplayOptions.CraftOnly || option == DisplayOptions.Both){
-			_craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getRouteTable().keySet());
+			_craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getIRoutersByCost());
 		} else {
 			_craftableItems = new LinkedList<ItemIdentifier>();
 		}
@@ -181,7 +182,7 @@ public class RequestHandler {
 					
 					@Override
 					public void handleMissingItems(LinkedList<ItemMessage> list) {
-						pipe.queueEvent("request_failed", new Object[]{request_id});
+						pipe.queueEvent("request_failed", new Object[]{request_id, CCHelper.getAnswer(list)});
 					}
 
 					@Override

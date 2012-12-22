@@ -10,7 +10,7 @@ package logisticspipes.logistics;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -23,8 +23,8 @@ public interface ILogisticsManagerV2 {
 	public IRoutedItem assignDestinationFor(IRoutedItem item, UUID sourceRouterUUID, boolean excludeSource);
 	public IRoutedItem destinationUnreachable(IRoutedItem item, UUID currentRouter);
 	boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource);
-	LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations);
-	HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations);
+	LinkedList<ItemIdentifier> getCraftableItems(List<IRouter> linkedList);
+	HashMap<ItemIdentifier, Integer> getAvailableItems(List<IRouter> linkedList);
 	String getBetterRouterName(IRouter r);
 	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
 	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);

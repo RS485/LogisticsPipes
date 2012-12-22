@@ -12,13 +12,9 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
-import buildcraft.BuildCraftBuilders;
 import buildcraft.BuildCraftCore;
-import buildcraft.BuildCraftEnergy;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
-import buildcraft.api.core.BuildCraftAPI;
-import buildcraft.core.ItemWrench;
 
 public class RecipeManager {
 	

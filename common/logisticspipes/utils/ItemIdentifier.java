@@ -326,7 +326,7 @@ public final class ItemIdentifier {
 			internal = (ArrayList) fList.get(nbt);
 			
 			HashMap<Integer, Object> content = new HashMap<Integer, Object>();
-			int i = 0;
+			int i = 1;
 			for(Object object:internal) {
 				if(object instanceof NBTBase) {
 					content.put(i, getNBTBaseAsMap((NBTBase)object));
@@ -350,7 +350,7 @@ public final class ItemIdentifier {
 			internal = (HashMap) fMap.get(nbt);
 			HashMap<Object, Object> content = new HashMap<Object, Object>();
 			HashMap<Integer, Object> keys = new HashMap<Integer, Object>();
-			int i = 0;
+			int i = 1;
 			for(Object object:internal.keySet()) {
 				if(internal.get(object) instanceof NBTBase) {
 					content.put(object, getNBTBaseAsMap((NBTBase)internal.get(object)));

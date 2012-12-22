@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
@@ -171,7 +170,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations) {
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<IRouter> validDestinations) {
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(IRouter r: validDestinations){
 			if(r == null) continue;
@@ -192,7 +191,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	@Override
-	public LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations) {
+	public LinkedList<ItemIdentifier> getCraftableItems(List<IRouter> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
 		for (IRouter r : validDestinations){
 			if(r == null) continue;

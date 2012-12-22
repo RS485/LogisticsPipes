@@ -194,6 +194,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			stillNeedReplace = true;
 			return;
 		} else {
+			if(stillNeedReplace) {
+				worldObj.notifyBlockChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord, yCoord, zCoord));
+			}
 			stillNeedReplace = false;
 		}
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);

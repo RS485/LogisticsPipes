@@ -184,7 +184,7 @@
     </target>
 
 
-    <target name="copySRC" depends="setup">
+    <target name="copySRC" >
         
 	<!-- Copy LP source -->
         <copy todir="${commonsrc.dir}">
@@ -243,6 +243,6 @@
 	
     </target>
     
-    <target name="main" depends="clean,package"/>
+    <target name="main" depends="clean, setup, package"/>
 
 </project>

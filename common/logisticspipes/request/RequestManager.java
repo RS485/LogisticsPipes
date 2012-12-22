@@ -18,7 +18,6 @@ import logisticspipes.utils.Pair;
 
 public class RequestManager {
 
-
 	public static boolean request(LinkedList<ItemIdentifierStack> items, IRequestItems requester, LinkedList<IRouter> validDestinations, RequestLog log) {
 		LinkedList<IProvideItems> providers = getProviders(validDestinations);
 		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
@@ -64,6 +63,16 @@ public class RequestManager {
 				tree.sendMissingMessage(log);
 			}
 			return false;
+		}
+	}
+	
+	public static void simulate(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
+		LinkedList<IProvideItems> providers = new LinkedList<IProvideItems>();
+		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
+		RequestTree tree = new RequestTree(item, requester);
+		generateRequestTree(tree, tree, crafters, providers);
+		if(log != null) {
+				tree.sendMissingMessage(log);
 		}
 	}
 	

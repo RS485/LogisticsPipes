@@ -18,7 +18,7 @@ It is not allowed to use this mod in any mod packs, if not explicitly allowed.
 
 1. Clone this repo to a folder named src inside an empty folder
 
-2. Run ant
+2. Run `ant setup`
 
 ##Extended Description
 

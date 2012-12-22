@@ -689,7 +689,7 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 4), new Object[] { 
 			false, 
 			"PrP", 
-			"rCs", 
+			"sCr", 
 			"PrP", 
 			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
 			Character.valueOf('r'), Item.redstone, 
@@ -700,7 +700,7 @@ public class RecipeManager {
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 5), new Object[] { 
 			false, 
 			"PrP", 
-			"sCr", 
+			"rCs", 
 			"PrP", 
 			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
 			Character.valueOf('r'), Item.redstone, 

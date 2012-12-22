@@ -63,8 +63,15 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		if (data.item.getItemStack() == null) return;
 		LiquidStack liquidId = LiquidContainerRegistry.getLiquidForFilledItem(data.item.getItemStack());
 		if (liquidId == null) return;
-		while (data.item.getItemStack().stackSize > 0 && container.fill(data.output, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
-			container.fill(data.output, liquidId, true);
+		ForgeDirection orientation = data.output;
+		if(getUpgradeManager().hasSneakyUpgrade()) {
+			orientation = getUpgradeManager().getSneakyUpgrade().getSneakyOrientation();
+			if(orientation == null) {
+				orientation = data.output;
+			}
+		}
+		while (data.item.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
+			container.fill(orientation, liquidId, true);
 			data.item.getItemStack().stackSize--;
 			if (data.item.getItemStack().itemID >= 0 && data.item.getItemStack().itemID < Item.itemsList.length){
 				Item item = Item.itemsList[data.item.getItemStack().itemID];

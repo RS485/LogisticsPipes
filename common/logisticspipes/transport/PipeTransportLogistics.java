@@ -221,7 +221,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			
 			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
 			if(getPipe().useEnergy(Math.round(add * 25))) {
-				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.5F));
+				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
 			}
 		}
 	}

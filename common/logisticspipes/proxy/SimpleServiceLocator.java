@@ -17,6 +17,7 @@ import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.IRouterManager;
@@ -32,7 +33,7 @@ public final class SimpleServiceLocator {
 	}
 	
 	public static IElectricItemProxy electricItemProxy;
-	public static  void setElectricItemProxy(final IElectricItemProxy fProxy){
+	public static void setElectricItemProxy(final IElectricItemProxy fProxy){
 		electricItemProxy = fProxy;
 	}
 
@@ -57,12 +58,12 @@ public final class SimpleServiceLocator {
 	}
 	
 	public static ILogisticsManagerV2 logisticsManager;
-	public static  void setLogisticsManager(final ILogisticsManagerV2 logisticsMngr){
+	public static void setLogisticsManager(final ILogisticsManagerV2 logisticsMngr){
 		logisticsManager = logisticsMngr;
 	}
 	
 	public static InventoryUtilFactory inventoryUtilFactory;
-	public static  void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
+	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
 		inventoryUtilFactory = invUtilFactory;
 	}
 	
@@ -74,12 +75,17 @@ public final class SimpleServiceLocator {
 	}
 	
 	public static SpecialConnection specialconnection;
-	public static  void setSpecialConnectionHandler(final SpecialConnection special){
+	public static void setSpecialConnectionHandler(final SpecialConnection special){
 		specialconnection = special;
 	}
 	
 	public static SpecialInventoryHandler specialinventory;
-	public static  void setSpecialInventoryHandler(final SpecialInventoryHandler special){
+	public static void setSpecialInventoryHandler(final SpecialInventoryHandler special){
 		specialinventory = special;
+	}
+
+	public static IThaumCraftProxy thaumCraftProxy;
+	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
+		thaumCraftProxy = proxy;
 	}
 }

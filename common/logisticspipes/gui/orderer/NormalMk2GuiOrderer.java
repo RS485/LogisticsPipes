@@ -5,11 +5,14 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 public class NormalMk2GuiOrderer extends NormalGuiOrderer {
@@ -64,5 +67,10 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	
 	public ItemStack getDisk() {
 		return pipe.getDisk();
+	}
+
+	@Override
+	public void specialItemRendering(ItemIdentifier item, int x, int y) {
+		SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.makeNormalStack(1), guiLeft - 20, guiTop + 10, this);
 	}
 }

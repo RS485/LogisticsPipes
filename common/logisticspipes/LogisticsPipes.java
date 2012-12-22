@@ -65,6 +65,7 @@ import logisticspipes.proxy.ic2.ElectricItemProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
@@ -74,6 +75,7 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
+//import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -88,6 +90,7 @@ import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.block.Block;
+import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
@@ -116,7 +119,7 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
+@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
 	
@@ -307,6 +310,17 @@ public class LogisticsPipes {
 			});
 			log.info("Loaded CC DummyProxy");
 		}
+		
+		//TODO
+//		if(Loader.isModLoaded("Thaumcraft")) {
+//			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
+//			log.info("Loaced Thaumcraft Proxy");
+//		} else {
+			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
+				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
+			});
+			log.info("Loaced Thaumcraft DummyProxy");
+//		}
 		
 		if(Loader.isModLoaded("factorization")) {
 			SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());

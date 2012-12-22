@@ -19,6 +19,7 @@ import logisticspipes.network.packets.PacketRequestComponents;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -245,6 +246,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
 					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
 					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					specialItemRendering(item, x, y);
 				}
 				/*
 				renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
@@ -275,6 +277,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
+	
+	public abstract void specialItemRendering(ItemIdentifier item, int x, int y);
 	
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {

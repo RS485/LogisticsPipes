@@ -75,4 +75,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 			refreshItems();
 		}
 	}
+
+	@Override
+	public void specialItemRendering(ItemIdentifier item, int x, int y) {}
 }

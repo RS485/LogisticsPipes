@@ -6,6 +6,12 @@ import java.util.List;
 
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
+import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
+import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
+import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
+import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeSOUTH;
+import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeUP;
+import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeWEST;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeDOWN;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeEAST;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
@@ -16,7 +22,7 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 
 public class ItemUpgrade extends LogisticsItem {
-	
+
 	//Sneaky Upgrades
 	public static final int SNEAKY_UP = 0;
 	public static final int SNEAKY_DOWN = 1;
@@ -25,7 +31,15 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int SNEAKY_EAST = 4;
 	public static final int SNEAKY_WEST = 5;
 	
+	//Connection Upgrades
+	public static final int CONNECTION_UP = 10;
+	public static final int CONNECTION_DOWN = 11;
+	public static final int CONNECTION_NORTH = 12;
+	public static final int CONNECTION_SOUTH = 13;
+	public static final int CONNECTION_EAST = 14;
+	public static final int CONNECTION_WEST = 15;
 	
+	//Speed Upgrade
 	public static final int SPEED = 20;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
@@ -98,6 +112,12 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class);
 		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class);
 		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class);
+		registerUpgrade(CONNECTION_UP, "Disconnection Upgrade (UP)", ConnectionUpgradeUP.class, 9 * 16 + 7);
+		registerUpgrade(CONNECTION_DOWN, "Disconnection Upgrade (DOWN)", ConnectionUpgradeDOWN.class, 9 * 16 + 8);
+		registerUpgrade(CONNECTION_NORTH, "Disconnection Upgrade (NORTH)", ConnectionUpgradeNORTH.class, 9 * 16 + 9);
+		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, 9 * 16 + 10);
+		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, 9 * 16 + 11);
+		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 9 * 16 + 12);
 		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 9 * 16 + 6);
 	}
 	

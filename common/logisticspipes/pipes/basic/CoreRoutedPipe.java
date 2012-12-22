@@ -48,6 +48,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
@@ -88,7 +89,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	private RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
 	
-	private UpgradeManager upgradeManager = new UpgradeManager();
+	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
 	public int stat_session_sent;
 	public int stat_session_recieved;
@@ -521,8 +522,24 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
-	/* Power System */
+	@Override
+	public boolean isPipeConnected(TileEntity tile) {
+		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
+		if(getUpgradeManager().isSideDisconnected(side)) {
+			return false;
+		}
+		return super.isPipeConnected(tile);
+	}
 	
+	public void connectionUpdate() {
+		if(container != null && !stillNeedReplace) {
+			container.scheduleNeighborChange();
+			worldObj.notifyBlockChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord, yCoord, zCoord));
+		}
+	}
+	
+	/* Power System */
+
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
 		if(MainProxy.isServer()) {
 			return ((ServerRouter)this.getRouter()).getPowerProvider();

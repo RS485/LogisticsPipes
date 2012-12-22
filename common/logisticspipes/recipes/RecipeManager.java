@@ -713,6 +713,72 @@ public class RecipeManager {
 			Character.valueOf('r'), Item.ingotGold, 
 			Character.valueOf('P'), Item.paper
 		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), new Object[] { 
+			false, 
+			"srs", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.ingotIron
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 11), new Object[] { 
+			false, 
+			"PrP", 
+			"rCr", 
+			"srs", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.ingotIron
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 12), new Object[] { 
+			false, 
+			"PsP", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.ingotIron
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 13), new Object[] {
+			false, 
+			"PrP", 
+			"rCr", 
+			"PsP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.ingotIron
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 14), new Object[] { 
+			false, 
+			"PrP", 
+			"sCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.ingotIron
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 15), new Object[] { 
+			false, 
+			"PrP", 
+			"rCs", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper, 
+			Character.valueOf('s'), Item.ingotIron
+		});
 	}
 	
 	private static void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {

@@ -10,13 +10,16 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	private SimpleInventory inv = new SimpleInventory(9, "UpgradeInventory", 16);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[9];
+	private CoreRoutedPipe pipe;
 	
-	public UpgradeManager() {
+	public UpgradeManager(CoreRoutedPipe pipe) {
+		this.pipe = pipe;
 		inv.addListener(this);
 	}
 	
@@ -32,10 +35,20 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	private void updateModule(int slot) {
 		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
+		if(upgrades[slot].needsUpdate()) {
+			pipe.connectionUpdate();
+		}
 	}
 	
 	private void removeUpgrade(int slot) {
+		boolean needUpdate = false;
+		if(upgrades[slot].needsUpdate()) {
+			needUpdate = true;
+		}
 		upgrades[slot] = null;
+		if(needUpdate) {
+			pipe.connectionUpdate();
+		}
 	}
 	
 	@Override
@@ -95,5 +108,17 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public void dropUpgrades(World worldObj, int xCoord, int yCoord, int zCoord) {
 		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+	}
+
+	public boolean isSideDisconnected(ForgeDirection side) {
+		for(int i=0;i<upgrades.length;i++) {
+			IPipeUpgrade upgrade = upgrades[i];
+			if(upgrade instanceof ConnectionUpgrade) {
+				if(((ConnectionUpgrade)upgrade).getSide() == side) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }

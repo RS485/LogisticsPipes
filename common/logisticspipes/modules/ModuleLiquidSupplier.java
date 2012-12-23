@@ -5,6 +5,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -22,7 +23,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformationProvider {
+public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInformationProvider {
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested liquids", 1);
 	private int xCoord;
@@ -62,12 +63,12 @@ public class ModuleLiquidSupplier implements ILogisticsModule, IClientInformatio
 	public ILogisticsModule getSubModule(int slot) {return null;}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
     	_filterInventory.writeToNBT(nbttagcompound, "");
 	}
 

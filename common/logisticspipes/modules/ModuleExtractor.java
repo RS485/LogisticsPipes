@@ -8,6 +8,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -31,7 +32,7 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.inventory.ISpecialInventory;
 
-public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
@@ -96,12 +97,12 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	public ILogisticsModule getSubModule(int slot) {return null;}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_sneakyOrientation = SneakyOrientation.values()[nbttagcompound.getInteger("sneakyorientation")];
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		nbttagcompound.setInteger("sneakyorientation", _sneakyOrientation.ordinal());
 	}
 
@@ -211,5 +212,10 @@ public class ModuleExtractor implements ILogisticsModule, ISneakyOrientationrece
 	@Override
 	public IHUDModuleRenderer getRenderer() {
 		return HUD;
+	}
+
+	@Override
+	public int getZPos() {
+		return zCoord;
 	}
 }

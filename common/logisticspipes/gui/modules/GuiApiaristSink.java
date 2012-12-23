@@ -87,8 +87,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.FilterTypeDown();
 			}
-			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
-			MainProxy.sendPacketToServer(packet.getPacket());
+			if(gui.slot != 20) {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
+				MainProxy.sendPacketToServer(packet.getPacket());
+			} else {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.xCoord, module.yCoord, module.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 		}
 
 		@Override
@@ -155,8 +160,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.filterGroupDown();
 			}
-			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
-			MainProxy.sendPacketToServer(packet.getPacket());
+			if(gui.slot != 20) {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			} else {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.xCoord, module.yCoord, module.zCoord, gui.slot, row, 2, setting.filterGroup);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 		}
 
 		@Override
@@ -276,8 +286,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 					setting.secondBeeDown();
 				}
 			}
-			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
-			MainProxy.sendPacketToServer(packet.getPacket());
+			if(slot != 20) {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			} else {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.xCoord, module.yCoord, module.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 		}
 
 		@Override

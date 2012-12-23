@@ -24,9 +24,9 @@ import net.minecraft.item.ItemStack;
 
 public class DummyContainer extends Container{
 	
-	private final IInventory _playerInventory;
-	private final IInventory _dummyInventory;
-	private final IGuiOpenControler _controler;
+	protected IInventory _playerInventory;
+	protected IInventory _dummyInventory;
+	protected IGuiOpenControler _controler;
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory){
 		_playerInventory = playerInventory;

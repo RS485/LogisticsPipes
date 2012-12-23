@@ -80,20 +80,15 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	}
 	
 	@Override
-	public int getGuiHandlerID() {
-		return -1;
-	}
-	
-	@Override
 	public ILogisticsModule getSubModule(int slot) {
 		return null;
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {}
+	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
+	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {

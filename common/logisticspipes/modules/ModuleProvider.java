@@ -14,6 +14,7 @@ import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.ILegacyActiveModule;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -47,7 +48,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 
-public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
+public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
@@ -65,9 +66,9 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
 	
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+	public int xCoord = 0;
+	public int yCoord = 0;
+	public int zCoord = 0;
 	private IWorldProvider _world;
 
 	public LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
@@ -88,7 +89,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
 		_extractionMode = ExtractionMode.values()[nbttagcompound.getInteger("extractionMode")];
@@ -96,7 +97,7 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
     	nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
     	nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());

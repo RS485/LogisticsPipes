@@ -1,6 +1,7 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -14,7 +15,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class ChassiModule implements ILogisticsModule{
+public class ChassiModule implements ILogisticsGuiModule{
 	
 	private final ILogisticsModule[] _modules;
 	private final PipeLogisticsChassi _parentPipe;
@@ -79,23 +80,23 @@ public class ChassiModule implements ILogisticsModule{
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < _modules.length; i++){
 			if (_modules[i] != null){
 				NBTTagCompound slot = nbttagcompound.getCompoundTag("slot" + i);
 				if (slot != null){
-					_modules[i].readFromNBT(slot, "");
+					_modules[i].readFromNBT(slot);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < _modules.length; i++){
 			if (_modules[i] != null){
 				NBTTagCompound slot = new NBTTagCompound();
-				_modules[i].writeToNBT(slot, "");
+				_modules[i].writeToNBT(slot);
 				nbttagcompound.setTag("slot"+i, slot);
 			}
 		}

@@ -10,6 +10,7 @@ package logisticspipes.utils;
 
 import java.util.LinkedList;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.item.EntityItem;
@@ -86,17 +87,29 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public void closeChest() {}
 
 	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		readFromNBT(nbttagcompound, "");
+	}
+	
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items");
     	
     	for (int j = 0; j < nbttaglist.tagCount(); ++j) {    		
     		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
     		int index = nbttagcompound2.getInteger("index");
-    		_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+    		if(index < _contents.length) {
+    			_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+    		} else {
+    			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
+    		}
     	}
 	}
 
 	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		writeToNBT(nbttagcompound, "");
+	}
+
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = new NBTTagList();
     	for (int j = 0; j < _contents.length; ++j) {    		    		
@@ -108,6 +121,7 @@ public class SimpleInventory implements IInventory, ISaveState{
     		}     		
     	}
     	nbttagcompound.setTag(prefix + "items", nbttaglist);
+    	nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
 	}
 
 	public void dropContents(World worldObj, int xCoord, int yCoord, int zCoord) {

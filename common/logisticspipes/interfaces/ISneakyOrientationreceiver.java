@@ -5,4 +5,5 @@ import logisticspipes.utils.SneakyOrientation;
 public interface ISneakyOrientationreceiver {
 	public SneakyOrientation getSneakyOrientation();
 	public void setSneakyOrientation(SneakyOrientation sneakyOrientation);
+	public int getZPos();
 }

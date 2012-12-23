@@ -231,7 +231,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			super.readFromNBT(nbttagcompound);
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 			InventoryChanged(_moduleInventory);
-			_module.readFromNBT(nbttagcompound, "");
+			_module.readFromNBT(nbttagcompound);
 			ChassiLogic.orientation = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
@@ -246,7 +246,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
-		_module.writeToNBT(nbttagcompound, "");
+		_module.writeToNBT(nbttagcompound);
 		nbttagcompound.setInteger("Orientation", ChassiLogic.orientation.ordinal());
 	}
 
@@ -257,7 +257,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if(MainProxy.isServer(this.worldObj)) {
 			for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
 				if(_moduleInventory.getStackInSlot(i) != null) {
-					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i), this.worldObj);
+					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i));
 				}
 			}
 			_moduleInventory.dropContents(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
@@ -283,7 +283,9 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				next.registerPosition(xCoord, yCoord, zCoord, i);
 				if (current != next){
 					_module.installModule(i, next);
-					ItemModuleInformationManager.readInformation(stack, next, this.worldObj);
+					if(!MainProxy.isClient()) {
+						ItemModuleInformationManager.readInformation(stack, next);
+					}
 					ItemModuleInformationManager.removeInformation(stack);
 				}
 			}

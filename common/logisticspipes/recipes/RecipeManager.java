@@ -443,7 +443,7 @@ public class RecipeManager {
 				NBTTagCompound nbt = new NBTTagCompound();
 				boolean force = false;
 				try {
-					module.writeToNBT(nbt, "");
+					module.writeToNBT(nbt);
 				} catch(Exception e) {
 					force = true;
 				}

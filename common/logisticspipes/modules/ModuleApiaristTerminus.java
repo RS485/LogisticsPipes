@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -8,8 +9,10 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -23,10 +26,10 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 	private IWorldProvider _world;
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {}
+	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
+	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider) {
@@ -40,11 +43,6 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.zCoord = zCoord;
-	}
-
-	@Override
-	public int getGuiHandlerID() {
-		return -1;
 	}
 	
 	private boolean replyCheck(ItemStack item) {
@@ -77,6 +75,4 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 
 	@Override
 	public void tick() {}
-	
-
 }

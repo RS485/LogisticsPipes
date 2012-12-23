@@ -20,7 +20,7 @@ public class ModuleSlot extends RestrictedSlot {
 	
 	@Override
 	public void onPickupFromSlot(EntityPlayer pl, ItemStack itemStack) {
-		ItemModuleInformationManager.saveInfotmation(itemStack, _pipe.getLogisticsModule().getSubModule(_moduleIndex), _pipe.worldObj);
+		ItemModuleInformationManager.saveInfotmation(itemStack, _pipe.getLogisticsModule().getSubModule(_moduleIndex));
         super.onPickupFromSlot(pl, itemStack);
     }
 

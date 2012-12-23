@@ -20,12 +20,6 @@ public interface ILogisticsModule extends ISaveState {
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot);
 	
 	/**
-	 * 
-	 * @return The gui id of the given module; 
-	 */
-	public int getGuiHandlerID();
-	
-	/**
 	 * Gives an sink answer on the given itemstack 
 	 * @param item to sink
 	 * @return SinkReply wether the module sinks the item or not

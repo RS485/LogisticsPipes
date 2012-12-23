@@ -24,14 +24,14 @@ public class ItemModuleInformationManager {
 		Filter.add("Random-Stack-Prevent");
 	}
 	
-	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module, World world) {
+	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module) {
 		if(module == null) return;
 		NBTTagCompound nbt = new NBTTagCompound();
-        module.writeToNBT(nbt, "");
+        module.writeToNBT(nbt);
         if(nbt.equals(new NBTTagCompound())) {
         	return;
         }
-        if(MainProxy.isClient(world)) {
+        if(MainProxy.isClient()) {
 			 NBTTagList list = new NBTTagList();
 			String info1 = "Please reopen the window";
 			String info2 = "to see the information.";
@@ -63,14 +63,13 @@ public class ItemModuleInformationManager {
 		stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
 	}
 	
-	public static void readInformation(ItemStack itemStack, ILogisticsModule module, World world) {
+	public static void readInformation(ItemStack itemStack, ILogisticsModule module) {
 		if(module == null) return;
-		if(MainProxy.isClient(world)) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
 			if(nbt.hasKey("moduleInformation")) {
 				NBTTagCompound moduleInformation = nbt.getCompoundTag("moduleInformation");
-				module.readFromNBT(moduleInformation, "");
+				module.readFromNBT(moduleInformation);
 			}
 			
 		}

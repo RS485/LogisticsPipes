@@ -9,6 +9,7 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.items.ItemModule;
 import logisticspipes.network.GuiIDs;
@@ -85,7 +86,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)controlList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).getGuiHandlerID() != -1;
+				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
 			}
 		}
 	}
@@ -110,7 +111,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)controlList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i).getGuiHandlerID() != -1;
+				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {

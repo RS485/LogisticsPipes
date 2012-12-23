@@ -40,18 +40,13 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		
-	}
-
-	@Override
-	public int getGuiHandlerID() {
-		return -1;
 	}
 
 	@Override

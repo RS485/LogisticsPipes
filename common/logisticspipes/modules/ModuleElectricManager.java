@@ -9,6 +9,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -34,7 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 
-public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
+public class ModuleElectricManager implements ILogisticsGuiModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
@@ -45,9 +46,9 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	private int currentTick = 0;
 	
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+	public int xCoord = 0;
+	public int yCoord = 0;
+	public int zCoord = 0;
 	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDElectricManager(this);
@@ -123,13 +124,13 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	public ILogisticsModule getSubModule(int slot) {return null;}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		setDischargeMode(nbttagcompound.getBoolean("discharge"));
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("discharge", isDischargeMode());
 	}

@@ -4,7 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -27,6 +29,7 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleProviderMk2;
 import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.creativetab.CreativeTabs;
@@ -36,6 +39,7 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
+import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
@@ -229,7 +233,19 @@ public class ItemModule extends LogisticsItem {
 			par3List.add(new ItemStack(this, 1, module.getId()));
 		}
     }
-	
+
+	@Override
+	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer) {
+		if(MainProxy.isServer()) {
+			ILogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
+			if(module != null && module instanceof ILogisticsGuiModule) {
+				par3EntityPlayer.openGui(LogisticsPipes.instance, -1, par2World, ((ILogisticsGuiModule)module).getGuiHandlerID(), -1 ,par3EntityPlayer.inventory.currentItem);
+				return par1ItemStack;
+			}
+		}
+		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+	}
+
 	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider power){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.shiftedIndex) return null;
@@ -300,7 +316,11 @@ public class ItemModule extends LogisticsItem {
 							if(data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");
-								SimpleInventory inv = new SimpleInventory(module.getTagList(prefix + "items").tagCount(), "InformationTempInventory", Integer.MAX_VALUE);
+								int size = module.getTagList(prefix + "items").tagCount();
+								if(module.hasKey(prefix + "itemsCount")) {
+									size = module.getInteger(prefix + "itemsCount");
+								}
+								SimpleInventory inv = new SimpleInventory(size, "InformationTempInventory", Integer.MAX_VALUE);
 								inv.readFromNBT(module, prefix);
 								for(int pos=0;pos < inv.getSizeInventory();pos++) {
 									ItemStack stack = inv.getStackInSlot(pos);

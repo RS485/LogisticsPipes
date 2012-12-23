@@ -85,7 +85,11 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 			break;
 		}
 		
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
+		if(slot != 20) {
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
+		} else {
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, 0, -1, _orientationReceiver.getZPos(), guibutton.id + (slot * 10)).getPacket());	
+		}
 		
 		refreshButtons();
 		super.actionPerformed(guibutton);
@@ -131,5 +135,10 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Extractor_ID;
+	}
+	
+	public void setMode(SneakyOrientation o) {
+		_orientationReceiver.setSneakyOrientation(o);
+		refreshButtons();
 	}
 }

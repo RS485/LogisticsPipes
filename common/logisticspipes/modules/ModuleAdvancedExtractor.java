@@ -9,6 +9,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -40,7 +41,7 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.core.utils.Utils;
 import cpw.mods.fml.common.network.Player;
 
-public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
+public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
 	protected int currentTick = 0;
 
@@ -52,9 +53,9 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	protected SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 	
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+	public int xCoord = 0;
+	public int yCoord = 0;
+	public int zCoord = 0;
 	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
@@ -87,15 +88,15 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
-		_filterInventory.readFromNBT(nbttagcompound, prefix);
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
 		_sneakyOrientation = SneakyOrientation.values()[nbttagcompound.getInteger("sneakyorientation")];
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
-		_filterInventory.writeToNBT(nbttagcompound, prefix);
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		_filterInventory.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("itemsIncluded", areItemsIncluded());
 		nbttagcompound.setInteger("sneakyorientation", _sneakyOrientation.ordinal());
 	}
@@ -128,6 +129,7 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	}
 	
 	public boolean connectedToSidedInventory() {
+		if(_invProvider == null) return false;
 		return _invProvider.getRawInventory() instanceof ISidedInventory;
 	}
 	
@@ -281,5 +283,10 @@ public class ModuleAdvancedExtractor implements ILogisticsModule, ISneakyOrienta
 	@Override
 	public IHUDModuleRenderer getRenderer() {
 		return HUD;
+	}
+
+	@Override
+	public int getZPos() {
+		return zCoord;
 	}
 }

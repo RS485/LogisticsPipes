@@ -10,6 +10,8 @@ import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiSupplierPipe;
+import logisticspipes.gui.modules.GuiAdvancedExtractor;
+import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.popup.GuiDiskPopup;
@@ -56,6 +58,7 @@ import logisticspipes.ticks.PacketBufferHandlerThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.SneakyOrientation;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -346,6 +349,9 @@ public class ClientPacketHandler {
 	}
 
 	private static void onItemSinkStatusRecive(PacketModuleInteger packet) {
+		if(packet.slot == 20) {
+			return;
+		}
 		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
@@ -428,6 +434,12 @@ public class ClientPacketHandler {
 	}
 
 	private static void onModulePipeRecive(PacketModuleInteger packet) {
+		if(packet.slot == 20) {
+			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
+				((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).setMode(SneakyOrientation.values()[packet.integer]);
+			}
+			return;
+		}
 		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
@@ -459,6 +471,12 @@ public class ClientPacketHandler {
 	}
 
 	private static void onAdvancedExtractorModuleIncludeRecive(PacketModuleInteger packet) {
+		if(packet.slot == 20) {
+			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiAdvancedExtractor) {
+				((GuiAdvancedExtractor) FMLClientHandler.instance().getClient().currentScreen).setInclude(packet.integer == 1);
+			}
+			return;
+		}
 		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
@@ -507,6 +525,11 @@ public class ClientPacketHandler {
 	}
 
 	private static void handleBeePacketNBT(PacketModuleNBT packet) {
+		if(packet.slot == 20) {
+			//EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
+			//ItemStack module = player.inventory.mainInventory[packet.posZ];
+			return;
+		}
 		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(tile == null) {
 			return;

@@ -67,11 +67,18 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
-			//((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			if(_slot != 20) {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			} else {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _provider.xCoord, _provider.yCoord, _provider.zCoord, _slot).getPacket());	
+			}
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			if(_slot != 20) {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			} else {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _provider.xCoord, _provider.yCoord, _provider.zCoord, _slot).getPacket());
+				}
 		}
 		super.actionPerformed(guibutton);
 	}

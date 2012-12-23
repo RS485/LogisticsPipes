@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -11,14 +12,15 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider {
+public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvider {
 	
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
+	public int xCoord;
+	public int yCoord;
+	public int zCoord;
 	
 	public enum FilterType {
 		Null("",0,0),
@@ -196,7 +198,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		NBTTagCompound filters = nbttagcompound.getCompoundTag("filters");
 		for(int i=0;i < filter.length; i++) {
 			NBTTagCompound filterNBT = filters.getCompoundTag(""+i);
@@ -206,7 +208,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		NBTTagCompound filters = new NBTTagCompound();
 		for(int i=0; i < filter.length; i++) {
 			NBTTagCompound filterNBT = new NBTTagCompound();
@@ -286,12 +288,12 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 
 	@Override
 	public void readFromPacketNBT(NBTTagCompound tag) {
-		readFromNBT(tag,"");
+		readFromNBT(tag);
 	}
 
 	@Override
 	public void writeToPacketNBT(NBTTagCompound tag) {
-		writeToNBT(tag,"");
+		writeToNBT(tag);
 	}
 
 	@Override

@@ -21,9 +21,6 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 		if(prevGui instanceof IGuiIDHandlerProvider) {
 			this.prevGuiID = ((IGuiIDHandlerProvider)prevGui).getGuiID();
 		}
-		if(pipe == null) {
-			throw new NullPointerException("A pipe can't be null");
-		}
 		this.pipe = pipe;
 	}
 	
@@ -33,6 +30,10 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 	
 	@Override
 	protected void keyTyped(char c, int i) {
+		if(pipe == null) {
+			super.keyTyped(c, i);
+			return;
+		}
 		if (i == 1 || c == 'e') {
 			if (prevGuiID != -1) {
 				super.keyTyped(c,i);

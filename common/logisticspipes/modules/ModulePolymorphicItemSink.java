@@ -54,15 +54,10 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {}
+	public void readFromNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {}
-
-	@Override
-	public int getGuiHandlerID() {
-		return -1;
-	}
+	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 	
 	@Override
 	public ILogisticsModule getSubModule(int slot) {return null;}

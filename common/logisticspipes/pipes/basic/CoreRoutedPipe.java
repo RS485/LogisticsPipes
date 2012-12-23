@@ -19,6 +19,7 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -53,7 +54,6 @@ import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -345,7 +345,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);
 		nbttagcompound.setLong("stat_lifetime_relayed", stat_lifetime_relayed);
 		if (getLogisticsModule() != null){
-			getLogisticsModule().writeToNBT(nbttagcompound, "");
+			getLogisticsModule().writeToNBT(nbttagcompound);
 		}
 		NBTTagCompound upgradeNBT = new NBTTagCompound();
 		upgradeManager.writeToNBT(upgradeNBT);
@@ -364,7 +364,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		stat_lifetime_recieved = nbttagcompound.getLong("stat_lifetime_recieved");
 		stat_lifetime_relayed = nbttagcompound.getLong("stat_lifetime_relayed");
 		if (getLogisticsModule() != null){
-			getLogisticsModule().readFromNBT(nbttagcompound, "");
+			getLogisticsModule().readFromNBT(nbttagcompound);
 		}
 		upgradeManager.readFromNBT(nbttagcompound.getCompoundTag("upgradeManager"));
 	}
@@ -411,9 +411,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if (getLogisticsModule() != null && getLogisticsModule().getGuiHandlerID() != -1){
+			if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule){
 				if(MainProxy.isServer(world)) {
-					entityplayer.openGui(LogisticsPipes.instance, getLogisticsModule().getGuiHandlerID(), world, xCoord, yCoord, zCoord);
+					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
 					return true;
 				} else {
 					return false;

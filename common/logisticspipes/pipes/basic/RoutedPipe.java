@@ -13,6 +13,7 @@ import java.util.LinkedList;
 
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.main.ActionDisableLogistics;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.transport.PipeTransportLogistics;
 import buildcraft.api.gates.ActionManager;
@@ -31,7 +32,9 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 	@Override
 	public void onNeighborBlockChange(int blockId) {
 		super.onNeighborBlockChange(blockId);
-		onNeighborBlockChange_Logistics();
+		if(MainProxy.isServer()) {
+			onNeighborBlockChange_Logistics();
+		}
 	}
 
 	@Override

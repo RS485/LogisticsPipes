@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -336,9 +337,26 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		return _transportLayer;
 	}
 	
+	private boolean tryInsertingModule(EntityPlayer entityplayer) {
+		if(MainProxy.isClient()) return false;
+		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.shiftedIndex) {
+			if(entityplayer.getCurrentEquippedItem().getItemDamage() != LogisticsPipes.ModuleItem.BLANK) {
+				for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
+					ItemStack item = _moduleInventory.getStackInSlot(i);
+					if(item == null) {
+						_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+						InventoryChanged(_moduleInventory);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, i, j, k, entityplayer);
+	public boolean blockActivated(World world, int x, int y, int z,	EntityPlayer entityplayer) {
+		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, x, y, z, entityplayer);
 		
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
 			if (entityplayer.isSneaking()){
@@ -348,7 +366,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				return true;
 			}
 		}
-		return super.blockActivated(world, i, j, k, entityplayer);
+
+		if(tryInsertingModule(entityplayer)) {
+			return true;
+		}
+		
+		return super.blockActivated(world, x, y, z, entityplayer);
 	}
 	
 	/*** IProvideItems ***/

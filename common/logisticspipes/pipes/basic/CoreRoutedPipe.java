@@ -53,6 +53,7 @@ import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -424,6 +425,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				return getUpgradeManager().openGui(entityplayer, this);
 			}
 		}
+
+		
+		if(getUpgradeManager().tryIserting(entityplayer)) {
+			return true;
+		}
+		
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
 	

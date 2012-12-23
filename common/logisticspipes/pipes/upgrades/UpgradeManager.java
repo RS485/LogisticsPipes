@@ -3,6 +3,7 @@ package logisticspipes.pipes.upgrades;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
@@ -116,6 +117,27 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 			if(upgrade instanceof ConnectionUpgrade) {
 				if(((ConnectionUpgrade)upgrade).getSide() == side) {
 					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public boolean tryIserting(EntityPlayer entityplayer) {
+		if(MainProxy.isClient()) return false;
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.shiftedIndex) {
+			for(int i=0;i<inv.getSizeInventory();i++) {
+				ItemStack item = inv.getStackInSlot(i);
+				if(item == null) {
+					inv.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+					InventoryChanged(inv);
+					return true;
+				} else if(item.getItemDamage() == entityplayer.getCurrentEquippedItem().getItemDamage()) {
+					if(item.stackSize < inv.getInventoryStackLimit()) {
+						item.stackSize++;
+						entityplayer.getCurrentEquippedItem().splitStack(1);
+						return true;
+					}
 				}
 			}
 		}

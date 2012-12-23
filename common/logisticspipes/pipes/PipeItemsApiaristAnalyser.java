@@ -15,6 +15,8 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -101,14 +103,11 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 	
 	private TileEntity getPointedTileEntity() {
-		for(ForgeDirection ori:ForgeDirection.values()) {
-			Position pos = new Position(this.container);
-			pos.orientation = ori;
-			pos.moveForwards(1);
-			TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
-			if(tile != null) {
-				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
-					return tile;
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if(tile.tile != null) {
+				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile)) {
+					return tile.tile;
 				}
 			}
 		}

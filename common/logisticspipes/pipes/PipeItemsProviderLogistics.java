@@ -42,11 +42,13 @@ import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.CroppedInventory;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -93,14 +95,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		
 		
 		int count = 0;
-		for (ForgeDirection o : ForgeDirection.values()){
-			Position p = new Position(xCoord, yCoord, zCoord, o);
-			p.moveForwards(1);
-			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
-			if (!(tile instanceof IInventory)) continue;
-			if (tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile); 
-					//_inventoryUtilFactory.getInventoryUtil(Utils.getInventory((IInventory) tile));
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if (!(tile.tile instanceof IInventory)) continue;
+			if (tile.tile instanceof TileGenericPipe) continue;
+			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
 			count += inv.itemCount(item);
 		}
 		return count;
@@ -108,15 +107,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
 		int sent = 0;
-		for (ForgeDirection o : ForgeDirection.values()){
-			Position p = new Position(xCoord, yCoord, zCoord, o);
-			p.moveForwards(1);
-			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
-			if (!(tile instanceof IInventory)) continue;
-			if (tile instanceof TileGenericPipe) continue;
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if (!(tile.tile instanceof IInventory)) continue;
+			if (tile.tile instanceof TileGenericPipe) continue;
 			
-			InventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile); 
-					//new InventoryUtil(Utils.getInventory((IInventory) tile));
+			InventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile);
 			
 			if (inv.itemCount(item)> 0){
 				ItemStack removed = inv.getSingleItem(item);
@@ -124,7 +120,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				routedItem.setSource(this.getRouter().getId());
 				routedItem.setDestination(destination);
 				routedItem.setTransportMode(TransportMode.Active);
-				super.queueRoutedItem(routedItem, p.orientation);
+				super.queueRoutedItem(routedItem, tile.orientation);
 				//super.sendRoutedItem(removed, destination, p);
 				sent++;
 				maxCount--;
@@ -228,14 +224,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			return allItems;
 		}
 		
-		for (ForgeDirection o : ForgeDirection.values()){
-			Position p = new Position(xCoord, yCoord, zCoord, o);
-			p.moveForwards(1);
-			TileEntity tile = worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
-			if (!(tile instanceof IInventory)) continue;
-			if (tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile); 
-					//_inventoryUtilFactory.getInventoryUtil(Utils.getInventory((IInventory) tile));
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if (!(tile.tile instanceof IInventory)) continue;
+			if (tile.tile instanceof TileGenericPipe) continue;
+			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile); 
+			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 			for (ItemIdentifier currItem : currentInv.keySet()){
 				if (providerLogic.hasFilter() 

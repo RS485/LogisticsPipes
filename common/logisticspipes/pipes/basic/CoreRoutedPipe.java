@@ -453,7 +453,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public LinkedList<AdjacentTile> getConnectedEntities() {
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		
 		Iterator<AdjacentTile> iterator = adjacent.iterator();
 		while (iterator.hasNext()){

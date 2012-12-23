@@ -57,7 +57,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		if (MainProxy.isClient(worldObj)) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
+		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof ITankContainer) || tile.tile instanceof TileGenericPipe) continue;
 			ITankContainer container = (ITankContainer) tile.tile;
 			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;

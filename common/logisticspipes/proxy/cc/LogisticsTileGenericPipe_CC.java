@@ -334,7 +334,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		super.scheduleNeighborChange();
 		boolean connected[] = new boolean[6];
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
 		for(AdjacentTile aTile: adjacent) {
 			if(SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
 				connected[aTile.orientation.ordinal()] = true;

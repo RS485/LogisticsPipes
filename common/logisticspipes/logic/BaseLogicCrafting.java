@@ -205,7 +205,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		}
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		boolean found = false;
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
+		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.canOpenGui(tile.tile)) {
 					found = true;
@@ -229,7 +229,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void importFromCraftingTable(EntityPlayer player) {
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
+		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.importRecipe(tile.tile, _dummyInventory))
 					break;

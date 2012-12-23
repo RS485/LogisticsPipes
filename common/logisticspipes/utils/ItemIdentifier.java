@@ -256,7 +256,7 @@ public final class ItemIdentifier {
 	
 	private Map<Integer, Object> getArrayAsMap(byte[] array) {
 		HashMap<Integer, Object> map = new HashMap<Integer, Object>();
-		int i = 0;
+		int i = 1;
 		for(byte object: array) {
 			map.put(i, object);
 			i++;
@@ -266,7 +266,7 @@ public final class ItemIdentifier {
 	
 	private <T> Map<Integer, T> getListAsMap(List<T> array) {
 		HashMap<Integer, T> map = new HashMap<Integer, T>();
-		int i = 0;
+		int i = 1;
 		for(T object: array) {
 			map.put(i, object);
 			i++;

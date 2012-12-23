@@ -92,7 +92,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if (pause) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
+		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			

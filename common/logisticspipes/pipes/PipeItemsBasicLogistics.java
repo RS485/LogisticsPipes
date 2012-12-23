@@ -68,7 +68,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	
 	private boolean isPowerProvider(ForgeDirection ori) {
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && ori ==tile.orientation) {
 				return true;
@@ -111,7 +111,7 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
 				list.add((ILogisticsPowerProvider)tile.tile);

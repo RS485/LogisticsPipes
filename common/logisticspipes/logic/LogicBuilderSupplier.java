@@ -61,7 +61,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 		if (pause) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
+		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof TileBuilder)) continue;
 			TileBuilder builder = (TileBuilder) tile.tile;
 			

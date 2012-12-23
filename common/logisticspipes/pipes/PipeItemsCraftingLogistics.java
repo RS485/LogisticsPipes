@@ -92,7 +92,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	protected LinkedList<AdjacentTile> locateCrafters()	{
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities()){
+		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			crafters.add(tile);

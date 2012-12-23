@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
+import buildcraft.transport.TileGenericPipe;
 
 public class WorldUtil {
 	private int _x;
@@ -29,24 +30,26 @@ public class WorldUtil {
 		this._z = z;
 	}
 
-	public LinkedList<AdjacentTile> getAdjacentTileEntities() {
-		// TODO Auto-generated method stub
+	public LinkedList<AdjacentTile> getAdjacentTileEntities(boolean flag) {
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
-		for (ForgeDirection o : ForgeDirection.values()){
+		for (ForgeDirection o : ForgeDirection.values()) {
 			if (o == ForgeDirection.UNKNOWN) continue;
 			Position p = new Position(_x, _y, _z, o);
 			p.moveForwards(1);
 			TileEntity tile = _worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
-			
+
 			if (tile == null) continue;
+			
+			if(flag) {
+				TileEntity tilePipe = _worldObj.getBlockTileEntity(_x, _y, _z);
+				if(tilePipe instanceof TileGenericPipe) {
+					if(((TileGenericPipe)tilePipe).pipe != null) {
+						((TileGenericPipe)tilePipe).pipe.isPipeConnected(tile);
+					}
+				}
+			}
 			foundTiles.add(new AdjacentTile(tile, o));
 		}
 		return foundTiles;
-	}
-	
-	public TileEntity getAdjecentTile(ForgeDirection direction){
-		Position pos = new Position(_x, _y, _z, direction);
-		pos.moveForwards(1.0);
-		return _worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 	}
 }

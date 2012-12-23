@@ -28,10 +28,12 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
+import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair4;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -103,16 +105,14 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 
 	private void checkConnectedInvs() {
-		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(xCoord, yCoord, zCoord, ForgeDirection.values()[i]);
-			p.moveForwards(1);
-			TileEntity tile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
-			if(tile instanceof IInventory) {
-				IInventory inv = Utils.getInventory((IInventory) tile);
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if(tile.tile instanceof IInventory) {
+				IInventory inv = Utils.getInventory((IInventory) tile.tile);
 				if(inv instanceof ISidedInventory) {
-					inv = new SidedInventoryAdapter((ISidedInventory)inv, ForgeDirection.values()[i].getOpposite());
+					inv = new SidedInventoryAdapter((ISidedInventory)inv, tile.orientation.getOpposite());
 				}
-				checkOneConnectedInv(inv,ForgeDirection.values()[i]);
+				checkOneConnectedInv(inv,tile.orientation);
 				break;
 			}
 		}

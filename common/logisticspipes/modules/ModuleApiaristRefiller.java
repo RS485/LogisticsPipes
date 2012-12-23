@@ -37,25 +37,29 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	}
 	
 	private boolean apiaryCheck(ItemStack item) {
-		if (SimpleServiceLocator.forestryProxy.isBee(item)) {
-			IInventory saidInventory = _invProvider.getInventory();
-			//TODO implement better method of limiting function to only apiary
-			if ((saidInventory.getSizeInventory()) <= maxInvSize) {
-				ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
-				ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
-				if (SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) {
-					return false;
-				}
-				if (SimpleServiceLocator.forestryProxy.isDrone(item) && (apiarySlot2 != null)) {
-					return false;
-				}
-				if (SimpleServiceLocator.forestryProxy.isPrincess(item) && (apiarySlot1 !=null)) {
-					return false;
-				}
-				return true;
-			}
+		if (!SimpleServiceLocator.forestryProxy.isBee(item)) {
+			return false;
 		}
-		return false;
+		IInventory saidInventory = _invProvider.getInventory();
+		if (saidInventory == null) {
+			return false;
+		}
+		//TODO implement better method of limiting function to only apiary
+		if ((saidInventory.getSizeInventory() < 2) || (saidInventory.getSizeInventory() > maxInvSize)) {
+			return false;
+		}
+		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
+		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
+		if (SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) {
+			return false;
+		}
+		if (SimpleServiceLocator.forestryProxy.isDrone(item) && (apiarySlot2 != null)) {
+			return false;
+		}
+		if (SimpleServiceLocator.forestryProxy.isPrincess(item) && (apiarySlot1 !=null)) {
+			return false;
+		}
+		return true;
 	}
 	
 	@Override
@@ -101,8 +105,15 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	@Override
 	public void tick() {
 		/* Disables modules if inventory has been empty for too long */
-		ItemStack apiarySlot1 = _invProvider.getInventory().getStackInSlot(0);
-		ItemStack apiarySlot2 = _invProvider.getInventory().getStackInSlot(1);
+		IInventory saidInventory = _invProvider.getInventory();
+		if (saidInventory == null) {
+			return;
+		}
+		if ((saidInventory.getSizeInventory() < 2) || (saidInventory.getSizeInventory() > maxInvSize)) {
+			return;
+		}
+		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
+		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
 		if (functionalStatus == true) {
 			if (apiarySlot1 == null && apiarySlot2 == null) {
 				currentTicksEmpty++;

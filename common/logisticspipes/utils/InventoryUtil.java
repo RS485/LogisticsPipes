@@ -62,8 +62,10 @@ public class InventoryUtil {
 				if (_hideOne && stack.stackSize == 1) continue;
 				if (ItemIdentifier.get(stack) == item) {
 					ItemStack removed = stack.splitStack(1);
-					if (stack.stackSize == 0){
+					if (stack.stackSize == 0) {
 						_inventory.setInventorySlotContents(i,  null);
+					} else {
+						_inventory.setInventorySlotContents(i,  stack);
 					}
 					return removed;
 				}

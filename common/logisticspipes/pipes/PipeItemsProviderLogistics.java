@@ -295,48 +295,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
 	}
 	
-	private IInventory getRawInventory(ForgeDirection ori) {
-		Position pos = new Position(this.xCoord, this.yCoord, this.zCoord, ori);
-		pos.moveForwards(1);
-		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
-		if (tile instanceof TileGenericPipe) return null;
-		if (!(tile instanceof IInventory)) return null;
-		return Utils.getInventory((IInventory) tile);
-	}
-	
-	private IInventory getInventory(ForgeDirection ori) {
-		IInventory rawInventory = getRawInventory(ori);
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, ori.getOpposite());
-		return rawInventory;
-	}
-	
-	private void addToList(ItemIdentifierStack stack) {
-		for(ItemIdentifierStack ident:itemList) {
-			if(ident.getItem().equals(stack.getItem())) {
-				ident.stackSize += stack.stackSize;
-				return;
-			}
-		}
-		itemList.addLast(stack);
-	}
-	
 	private void updateInv(boolean force) {
 		itemList.clear();
-		for(ForgeDirection ori:ForgeDirection.values()) {
-			LogicProvider providerLogic = (LogicProvider) logic;
-			IInventory inv = getInventory(ori);
-			if(inv != null) {
-				for(int i=0;i<inv.getSizeInventory();i++) {
-					if(inv.getStackInSlot(i) != null) {
-						//Filter
-						if (providerLogic.hasFilter() 
-								&& ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(ItemIdentifier.get(inv.getStackInSlot(i)))) 
-										|| (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(ItemIdentifier.get(inv.getStackInSlot(i)))))) continue;
-
-						addToList(ItemIdentifierStack.GetFromStack(inv.getStackInSlot(i)));
-					}
-				}
-			}
+		HashMap<ItemIdentifier, Integer> list = getAllItems();
+		for(ItemIdentifier item :list.keySet()) {
+			itemList.add(new ItemIdentifierStack(item, list.get(item)));
 		}
 		if(!itemList.equals(oldList) || force) {
 			oldList.clear();

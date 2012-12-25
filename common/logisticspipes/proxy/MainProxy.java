@@ -10,7 +10,6 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
-import logisticspipes.ticks.PacketBufferHandlerThread;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
@@ -94,7 +93,7 @@ public class MainProxy {
 	
 	public static void sendPacketToPlayer(Packet packet, Player player) {
 		if(!isDirectSendPacket(packet)) {
-			PacketBufferHandlerThread.addPacketToCompressor((Packet250CustomPayload) packet, player);
+			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, player);
 		} else {
 			PacketDispatcher.sendPacketToPlayer(packet, player);
 		}
@@ -117,7 +116,7 @@ public class MainProxy {
 	public static void sendToPlayerList(Packet packet, List<EntityPlayer> players) {
 		for(EntityPlayer player:players) {
 			if(!isDirectSendPacket(packet)) {
-				PacketBufferHandlerThread.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
 			} else {
 				PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
 			}
@@ -148,9 +147,13 @@ public class MainProxy {
 		for(World world: DimensionManager.getWorlds()) {
 			for(Object playerObject:world.playerEntities) {
 				Player player = (Player) playerObject;
-				PacketBufferHandlerThread.addPacketToCompressor(packet, player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
 			}
 		}
+	}
+
+	public static void sendCompressedToServer(Packet250CustomPayload packet) {
+		SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet);
 	}
 	
 	private static boolean isDirectSendPacket(Packet packet) {

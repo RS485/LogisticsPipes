@@ -637,6 +637,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public String getItemName(Double itemId) throws Exception {
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
-		return itemd.getFriendlyName();
+		return itemd.getFriendlyNameCC();
 	}
 }

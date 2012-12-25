@@ -1,7 +1,5 @@
 package logisticspipes.interfaces;
 
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
 
 public interface ILogisticsGuiModule extends ILogisticsModule {
 

@@ -1,7 +1,7 @@
 package logisticspipes.pipes.upgrades.connection;
 
-import net.minecraftforge.common.ForgeDirection;
 import logisticspipes.pipes.upgrades.ConnectionUpgrade;
+import net.minecraftforge.common.ForgeDirection;
 
 public class ConnectionUpgradeEAST extends ConnectionUpgrade {
 

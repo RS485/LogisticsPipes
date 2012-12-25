@@ -24,11 +24,13 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketHUDSettings;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeString;
@@ -45,6 +47,7 @@ import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SneakyOrientation;
@@ -60,12 +63,15 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler {
+
+	public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
+		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
+		onPacketData(data, player);
+	}
 	
-	public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet250, Player playerFML) {
-		
+	public static void onPacketData(DataInputStream data, Player playerFML) {
 		EntityPlayerMP player = (EntityPlayerMP) playerFML;
 		
-		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet250.data));
 		try {
 			final int packetID = data.read();
 			switch (packetID) {
@@ -285,6 +291,16 @@ public class ServerPacketHandler {
 					final PacketRequestComponents packetAq = new PacketRequestComponents();
 					packetAq.readData(data);
 					onRequestComponents(player, packetAq);
+					break;
+				case NetworkConstants.BUFFERED_PACKET_TRANSFER:
+					final PacketBufferTransfer packetAr = new PacketBufferTransfer();
+					packetAr.readData(data);
+					onBufferTransfer(packetAr, playerFML);
+					break;
+				case NetworkConstants.UPDATE_NAMES:
+					final PacketNameUpdatePacket packetAs = new PacketNameUpdatePacket();
+					packetAs.readData(data);
+					onNameUpdate(packetAs);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1208,6 +1224,14 @@ public class ServerPacketHandler {
 		if(player.inventoryContainer != null) {
 			player.inventoryContainer.updateCraftingResults();
 		}
+	}
+
+	private static void onBufferTransfer(PacketBufferTransfer packet, Player player) {
+		SimpleServiceLocator.serverBufferHandler.handlePacket(packet, player);
+	}
+
+	private static void onNameUpdate(PacketNameUpdatePacket packetAs) {
+		MainProxy.proxy.updateNames(packetAs.item, packetAs.name);
 	}
 	
 	// BuildCraft method

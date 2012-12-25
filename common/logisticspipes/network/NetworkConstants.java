@@ -84,4 +84,6 @@ public class NetworkConstants {
 	public static final int PARTICLE_FX_RENDER_DATA = 78;
 	public static final int REQUEST_COMPONENTS = 79;
 	public static final int COMPONENT_LIST = 80;
+	public static final int REQUEST_UPDATE_NAMES = 81;
+	public static final int UPDATE_NAMES = 82;
 }

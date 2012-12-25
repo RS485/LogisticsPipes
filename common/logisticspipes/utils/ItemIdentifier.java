@@ -18,6 +18,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -171,7 +172,7 @@ public final class ItemIdentifier {
 	public boolean isValid() {
 		return Item.itemsList[itemID] != null;
 	}
-	
+
 	private String getName(int id,ItemStack stack) {
 		String name = "???";
 		try {
@@ -202,6 +203,13 @@ public final class ItemIdentifier {
 	public String getFriendlyName() {
 		if (Item.itemsList[itemID] != null) {
 			return getName(itemID,this.makeNormalStack(1));
+		}
+		return "<Item name not found>";
+	}
+	
+	public String getFriendlyNameCC() {
+		if (Item.itemsList[itemID] != null) {
+			return MainProxy.proxy.getName(this);
 		}
 		return "<Item name not found>";
 	}

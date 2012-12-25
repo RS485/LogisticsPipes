@@ -75,17 +75,17 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
-//import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.textures.Textures;
-import logisticspipes.ticks.PacketBufferHandlerThread;
+import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
@@ -118,6 +118,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
+//import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -212,10 +213,10 @@ public class LogisticsPipes {
 		}
 		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
 		if(event.getSide() == Side.CLIENT) {
-			new PacketBufferHandlerThread(Side.CLIENT);
-			new PacketBufferHandlerThread(Side.SERVER);	
+			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
+			SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());
 		} else {
-			new PacketBufferHandlerThread(Side.SERVER);	
+			SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
 		}
 		for(int i=0;i<Configs.multiThreadNumber && Configs.multiThreadEnabled;i++) {
 			new RoutingTableUpdateThread(i);

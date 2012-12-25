@@ -2,6 +2,9 @@ package logisticspipes.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -41,6 +44,7 @@ import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketModuleNBT;
+import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
@@ -54,11 +58,12 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.PacketRoutingStats;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.ticks.PacketBufferHandlerThread;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.SneakyOrientation;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -272,6 +277,14 @@ public class ClientPacketHandler {
 					final PacketItems packetAs = new PacketItems();
 					packetAs.readData(data);
 					onComponentList(packetAs);
+					break;
+				case NetworkConstants.REQUEST_UPDATE_NAMES:
+					sendNamesToServer();
+					break;
+				case NetworkConstants.UPDATE_NAMES:
+					final PacketNameUpdatePacket packetAt = new PacketNameUpdatePacket();
+					packetAt.readData(data);
+					onItemNameRequest(packetAt);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -614,7 +627,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onBufferTransfer(PacketBufferTransfer packet) {
-		PacketBufferHandlerThread.handlePacket(packet);
+		SimpleServiceLocator.clientBufferHandler.handlePacket(packet);
 	}
 
 	private static void onInvSysConResistance(Player player, PacketPipeInteger packet) {
@@ -762,6 +775,36 @@ public class ClientPacketHandler {
 				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Content: " + items);
 			}
 		}
+	}
+
+	private static void sendNamesToServer() {
+		Item[] itemList = Item.itemsList;
+		List<ItemIdentifier> identList = new LinkedList<ItemIdentifier>();
+		for(Item item:itemList) {
+			if(item != null) {
+				for(CreativeTabs tab:item.getCreativeTabs()) {
+					List<ItemStack> list = new ArrayList<ItemStack>();
+					item.getSubItems(item.shiftedIndex, tab, list);
+					if(list.size() > 0) {
+						for(ItemStack stack:list) {
+							identList.add(ItemIdentifier.get(stack));
+						}
+					} else {
+						identList.add(ItemIdentifier.get(item.shiftedIndex, 0, null));
+					}
+				}
+			}
+		}
+		SimpleServiceLocator.clientBufferHandler.pause = true;
+		for(ItemIdentifier item:identList) {
+			MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
+		}
+		SimpleServiceLocator.clientBufferHandler.pause = false;
+		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Names in send Queue");
+	}
+
+	private static void onItemNameRequest(PacketNameUpdatePacket packetAt) {
+		MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
 	}
 	
 	// BuildCraft method

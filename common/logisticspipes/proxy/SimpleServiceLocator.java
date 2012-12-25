@@ -21,6 +21,8 @@ import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.IRouterManager;
+import logisticspipes.ticks.ClientPacketBufferHandlerThread;
+import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
 
 public final class SimpleServiceLocator {
@@ -87,5 +89,15 @@ public final class SimpleServiceLocator {
 	public static IThaumCraftProxy thaumCraftProxy;
 	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
 		thaumCraftProxy = proxy;
+	}
+
+	public static ClientPacketBufferHandlerThread clientBufferHandler;
+	public static void setClientPacketBufferHandlerThread(ClientPacketBufferHandlerThread proxy) {
+		clientBufferHandler = proxy;
+	}
+	
+	public static ServerPacketBufferHandlerThread serverBufferHandler;
+	public static void setServerPacketBufferHandlerThread(ServerPacketBufferHandlerThread proxy) {
+		serverBufferHandler = proxy;
 	}
 }

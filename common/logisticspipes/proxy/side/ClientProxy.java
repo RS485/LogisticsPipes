@@ -15,13 +15,16 @@ import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.textures.LogisticsPipesTextureStatic;
+import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.TextureFXManager;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 
@@ -80,5 +83,48 @@ public class ClientProxy implements IProxy {
 		PipeFXRenderHandler.registerParticleHandler(Particles.GoldParticle, new EntityGoldSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.VioletParticle, new EntityVioletSparkleFXProvider());
 		PipeFXRenderHandler.registerParticleHandler(Particles.OrangeParticle, new EntityOrangeSparkleFXProvider());
+	}
+	
+	@Override
+	public String getName(ItemIdentifier item) {
+		String name = "???";
+		try {
+			name = Item.itemsList[item.itemID].getItemDisplayName(item.makeNormalStack(1));
+			if(name == null) {
+				throw new Exception();
+			}
+		} catch(Exception e) {
+			try {
+				name = Item.itemsList[item.itemID].getItemNameIS(item.makeNormalStack(1));
+				if(name == null) {
+					throw new Exception();
+				}
+			} catch(Exception e1) {
+				try {
+					name = Item.itemsList[item.itemID].getItemName();
+					if(name == null) {
+						throw new Exception();
+					}
+				} catch(Exception e2) {
+					name = "???"; 
+				}
+			}
+		}
+		return name;
+	}
+
+	@Override
+	public void updateNames(ItemIdentifier item, String name) {
+		//Not Client Side
+	}
+
+	@Override
+	public void tick() {
+		//Not Client Side
+	}
+
+	@Override
+	public void sendNameUpdateRequest(Player player) {
+		//Not Client Side
 	}
 }

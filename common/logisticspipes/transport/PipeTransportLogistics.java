@@ -8,12 +8,15 @@
 
 package logisticspipes.transport;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -46,14 +49,40 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	private RoutedPipe _pipe = null;
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
 	private Method reverseItem = null;
+	private Field toRemove = null;
+	private Set<Integer> notToRemove = new HashSet<Integer>();
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
+		try {
+			reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
+			reverseItem.setAccessible(true);
+			toRemove = PipeTransportItems.class.getDeclaredField("toRemove");
+			toRemove.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
 		travelHook = new IItemTravelingHook() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-				scheduleRemoval(data.item);
-				handleTileReached(data, tile);
+				try {
+					Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+					toRemoveList.add(data.item.getEntityId());
+					handleTileReached(data, tile);
+					if(!toRemoveList.contains(data.item.getEntityId())) {
+						notToRemove.add(data.item.getEntityId());
+						toRemoveList.add(data.item.getEntityId());
+					}
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
 			}
 
 			@Override
@@ -66,16 +95,23 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			public void centerReached(PipeTransportItems pipe, EntityData data) {
 			}
 		};
-		try {
-			reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
-			reverseItem.setAccessible(true);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public void performRemoval() {
+		try {
+			Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+			toRemoveList.removeAll(notToRemove);
+			notToRemove.clear();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		super.performRemoval();
+	}
+
 	private RoutedPipe getPipe() {
 		if (_pipe == null){
 			_pipe = (RoutedPipe) container.pipe;
@@ -129,6 +165,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			data.item = newRoute.getEntityPassiveItem();
 			newRoute.setReRoute(true);
 			newRoute.addToJamList(getPipe().getRouter());
+			newRoute.setBufferCounter(routed.getBufferCounter());
 		}
 	}
 	
@@ -150,7 +187,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			LogisticsPipes.log.severe("THIS IS NOT SUPPOSED TO HAPPEN!");
 			return ForgeDirection.UNKNOWN;
 		}
-		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer()){
+		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer() && routedItem.getBufferCounter() < 5) {
 			_itemBuffer.put(routedItem.getItemStack().copy(), new Pair<Integer,Integer>(20 * 2, routedItem.getBufferCounter()));
 			routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
 			scheduleRemoval(data.item);

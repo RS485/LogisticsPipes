@@ -125,8 +125,6 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			if(!_power.useEnergy(10)) break;
-			
 			LinkedList<IRouter> valid = getRouter().getIRoutersByCost();
 			
 			/*
@@ -158,6 +156,11 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			for (ItemIdentifier need : needed.keySet()){
 				if (needed.get(need) < 1) continue;
 				int neededCount = needed.get(need);
+				
+				if(!_power.useEnergy(10)) {
+					break;
+				}
+				
 				boolean success = false;
 				do{ 
 					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, valid, null);

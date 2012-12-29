@@ -294,14 +294,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		//Dijkstra!
 		
 		/** Map of all "approved" routers and the route to get there **/
-		HashMap<IRouter, LinkedList<IRouter>> tree =  new HashMap<IRouter, LinkedList<IRouter>>();
+		HashMap<IRouter, IRouter> tree =  new HashMap<IRouter, IRouter>();
 		/** The cost to get to an "approved" router **/
 		HashMap<IRouter, Pair<Integer,Boolean>> treeCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
 		//Init root(er - lol)
-		tree.put(this,  new LinkedList<IRouter>());
+		tree.put(this, null);
 		treeCost.put(this, new Pair<Integer, Boolean>(0, false));
 		/** The candidate router and which approved router put it in the candidate list **/
 		HashMap<IRouter, IRouter> candidates = new HashMap<IRouter, IRouter>();
@@ -328,8 +328,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			}
 			
 			IRouter lowestParent = candidates.get(lowestCostCandidateRouter);	//Get the approved parent of the lowest cost candidate
-			LinkedList<IRouter> lowestPath = (LinkedList<IRouter>) tree.get(lowestParent).clone();	//Get a copy of the route for the approved router 
-			lowestPath.addLast(lowestCostCandidateRouter); //Add to the route to get to the candidate
+			IRouter lowestPath = tree.get(lowestParent);						//Get a copy of the route for the approved router 
+			if(lowestPath == null) {
+				lowestPath = lowestCostCandidateRouter;
+			}
 			
 			//Approve the candidate
 			tree.put(lowestCostCandidateRouter, lowestPath);
@@ -370,14 +372,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		HashMap<IRouter, Pair<Integer, Boolean>> routeCosts = new HashMap<IRouter, Pair<Integer, Boolean>>();
 		for (IRouter node : tree.keySet())
 		{
-			LinkedList<IRouter> route = tree.get(node);
-			if (route.size() == 0){
+			IRouter firstHop = tree.get(node);
+			if (firstHop == null) {
 				routeTable.put(node, ForgeDirection.UNKNOWN);
 				continue;
 			}
-			
-			IRouter firstHop = route.getFirst();
-			if (firstHop == null) continue;
 			
 			if (!_adjacentRouter.containsKey(firstHop) || _adjacentRouter.get(firstHop) == null){
 				continue;

@@ -190,6 +190,7 @@
             <fileset dir="${src.dir}/common"/>
         </copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>		
     </target>
     

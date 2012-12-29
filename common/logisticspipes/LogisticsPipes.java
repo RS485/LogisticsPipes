@@ -132,6 +132,7 @@ public class LogisticsPipes {
 	public static boolean DisplayRequests;
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static String MCVersion = "%MCVERSION%";
 
 	// Items
 	public static Item LogisticsBasicPipe;

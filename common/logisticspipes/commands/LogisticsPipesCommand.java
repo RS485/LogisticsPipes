@@ -89,6 +89,6 @@ public class LogisticsPipesCommand extends CommandBase {
 	}
 
 	private void commandVersion(ICommandSender sender, String[] arguments) {
-    	sender.sendChatToPlayer(String.format("LogisticsPipes %s for Minecraft 1.3.2.", LogisticsPipes.class.getAnnotation(Mod.class).version()));
+    	sender.sendChatToPlayer(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LogisticsPipes.MCVersion));
 	}
 }

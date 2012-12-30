@@ -243,8 +243,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void onBlockRemoval() {
 		try {
 			super.onBlockRemoval();
-			if(getRouter() != null) {
-				getRouter().destroy();
+			if(router != null) {
+				router.destroy();
+				router = null;
 			}
 			if (logic instanceof BaseRoutingLogic){
 				((BaseRoutingLogic)logic).destroy();
@@ -263,8 +264,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void invalidate() {
-		if(getRouter() != null) {
-			getRouter().destroy();
+		if(router != null) {
+			router.destroy();
 			router = null;
 		}
 		super.invalidate();
@@ -274,6 +275,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(MainProxy.isClient()) return;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
+		if(router == null) return;
 		boolean flag;
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
@@ -314,7 +316,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public TextureType getTextureType(ForgeDirection connection) {
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
-		} else if (getRouter().isRoutedExit(connection)) {
+		} else if ((router != null) && router.isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
 		} else {

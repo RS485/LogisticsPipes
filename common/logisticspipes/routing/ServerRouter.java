@@ -9,9 +9,11 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -38,6 +40,12 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
 
+	//does not speed up the code - consumes about 7% of CreateRouteTable runtume
+   @Override 
+	public int hashCode(){
+		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
+	}
+	
 	private class LSA {
 		public HashMap<IRouter, Pair<Integer,Boolean>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
@@ -287,6 +295,37 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.unlock();
 	}
 	
+	private class CompareSearchNode implements Comparator{
+		@Override
+		public int compare(Object o1, Object o2) {
+			return ((SearchNode)o2).distance-((SearchNode)o1).distance;
+		}
+	}
+	private class CompareNode implements Comparator{
+		@Override
+		public int compare(Object o1, Object o2) {
+			return ((SearchNode)o2).node.getId().compareTo(((SearchNode)o1).node.getId());
+		}
+	}	
+
+	private class CompareRouter implements Comparator{
+		@Override
+		public int compare(Object o1, Object o2) {
+			return ((IRouter)o2).getId().compareTo(((IRouter)o1).getId());
+		}
+	}	
+	private class SearchNode{
+		public SearchNode(IRouter r,int d, boolean b,IRouter p){
+			distance=d;
+			blocksPower=b;
+			node=r;
+			parent=p;
+		}
+		public int distance;
+		public boolean blocksPower;
+		public IRouter node;
+		public IRouter parent;
+	}
 	/**
 	 * Create a route table from the link state database
 	 */
@@ -294,96 +333,90 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		//Dijkstra!
 		
 		/** Map of all "approved" routers and the route to get there **/
-		HashMap<IRouter, IRouter> tree =  new HashMap<IRouter, IRouter>();
-		/** The cost to get to an "approved" router **/
-		HashMap<IRouter, Pair<Integer,Boolean>> treeCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
+		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>();
+		
+//		/** The cost to get to an "approved" router **/
+//		HashMap<IRouter, Pair<Integer,Boolean>> treeCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
+		
+
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
 		//Init root(er - lol)
-		tree.put(this, null);
-		treeCost.put(this, new Pair<Integer, Boolean>(0, false));
-		/** The candidate router and which approved router put it in the candidate list **/
-		HashMap<IRouter, IRouter> candidates = new HashMap<IRouter, IRouter>();
+		// the shortest way to yourself is to go nowhere
+		tree.put(this, new SearchNode(this,0,false,null));
+
 		/** The total cost for the candidate route **/
-		HashMap<IRouter, Pair<Integer,Boolean>> candidatesCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
+		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>(11,new CompareSearchNode());
 		
 		//Init candidates
+		// the shortest way to go to an adjacent item is the adjacent item.
 		for (RoutedPipe pipe :  _adjacent.keySet()){
-			candidates.put(pipe.getRouter(), this);
-			candidatesCost.put(pipe.getRouter(), new Pair<Integer, Boolean>(_adjacent.get(pipe).metric,_adjacent.get(pipe).isPipeLess));
+			candidatesCost.add(new SearchNode(pipe.getRouter(),_adjacent.get(pipe).metric,_adjacent.get(pipe).isPipeLess,pipe.getRouter()));
 		}
 
-		
-		while (!candidates.isEmpty()){
-			IRouter lowestCostCandidateRouter = null;
-			int lowestCost = Integer.MAX_VALUE;
-			boolean isPipeLess = true;
-			for(IRouter candidate : candidatesCost.keySet()){
-				if (candidatesCost.get(candidate).getValue1() < lowestCost){
-					lowestCostCandidateRouter = candidate;
-					lowestCost = candidatesCost.get(candidate).getValue1();
-					isPipeLess = candidatesCost.get(candidate).getValue2();
-				}
-			}
+		SearchNode lowestCostNode;
+		while ((lowestCostNode=candidatesCost.poll())!=null){
 			
-			IRouter lowestParent = candidates.get(lowestCostCandidateRouter);	//Get the approved parent of the lowest cost candidate
-			IRouter lowestPath = tree.get(lowestParent);						//Get a copy of the route for the approved router 
-			if(lowestPath == null) {
-				lowestPath = lowestCostCandidateRouter;
-			}
+			while(lowestCostNode!=null && tree.containsKey(lowestCostNode.node)) // the node was inserted multiple times, skip it as we know a shorter path.
+				lowestCostNode=candidatesCost.poll();
+			if(lowestCostNode==null)
+				break; // then there was nothing but already routed elements in the list.
 			
-			//Approve the candidate
-			tree.put(lowestCostCandidateRouter, lowestPath);
-			treeCost.put(lowestCostCandidateRouter, new Pair<Integer, Boolean>(lowestCost,isPipeLess));
-			
-			//Remove from candidate list
-			candidates.remove(lowestCostCandidateRouter);
-			candidatesCost.remove(lowestCostCandidateRouter);
+			SearchNode lowestPath = tree.get(lowestCostNode.parent);						//Get a copy of the route for the approved router 
+
+			if(lowestPath == null) { // then you are on an initial seed item, you are adjacent, and you are the closest node.
+				lowestPath = lowestCostNode;
+			}		
+
 			
 			//Add new candidates from the newly approved route
 			SharedLSADatabasereadLock.lock();
-			LSA lsa = SharedLSADatabase.get(lowestCostCandidateRouter);
+			LSA lsa = SharedLSADatabase.get(lowestCostNode.node);
 			if(lsa != null) {
-				if(!isPipeLess) {
+				if(!lowestCostNode.blocksPower && lsa.power.isEmpty()==false) {
 					powerTable.addAll(lsa.power);
 				}
 				for (IRouter newCandidate: lsa.neighboursWithMetric.keySet()){
-					if (tree.containsKey(newCandidate)) {
-						if(treeCost.get(newCandidate).getValue2() && !isPipeLess) {
-							treeCost.get(newCandidate).setValue2(false);
+					SearchNode treeN=tree.get(newCandidate);
+					if (treeN!=null) {
+						if(treeN.blocksPower && !lowestCostNode.blocksPower) {
+							treeN.blocksPower=false;
 						}
 						continue;
 					}
-					int candidateCost = lowestCost + lsa.neighboursWithMetric.get(newCandidate).getValue1();
-					if (candidates.containsKey(newCandidate) && candidatesCost.get(newCandidate).getValue1() <= candidateCost){
-						continue;
-					}
-					candidates.put(newCandidate, lowestCostCandidateRouter);
-					candidatesCost.put(newCandidate, new Pair<Integer, Boolean>(candidateCost, isPipeLess || lsa.neighboursWithMetric.get(newCandidate).getValue2()));
+					int candidateCost = lowestCostNode.distance + lsa.neighboursWithMetric.get(newCandidate).getValue1();
+
+					candidatesCost.add(new SearchNode(newCandidate, candidateCost, lowestCostNode.blocksPower || lsa.neighboursWithMetric.get(newCandidate).getValue2(),lowestPath.node));
 				}
 			}
+			lowestCostNode.parent=lowestPath.parent; // however you got here, thats the side you came from
+			//Approve the candidate
+			tree.put(lowestCostNode.node,lowestCostNode);
+
+			
 			SharedLSADatabasereadLock.unlock();
 		}
 		
 		
 		//Build route table
-		HashMap<IRouter, ForgeDirection> routeTable = new HashMap<IRouter, ForgeDirection>();
-		HashMap<IRouter, Pair<Integer, Boolean>> routeCosts = new HashMap<IRouter, Pair<Integer, Boolean>>();
-		for (IRouter node : tree.keySet())
+		HashMap<IRouter, ForgeDirection> routeTable = new HashMap<IRouter, ForgeDirection>(tree.size());
+		HashMap<IRouter, Pair<Integer, Boolean>> routeCosts = new HashMap<IRouter, Pair<Integer, Boolean>>(tree.size());
+		for (SearchNode node : tree.values())
 		{
-			IRouter firstHop = tree.get(node);
+			IRouter firstHop = node.parent;
 			if (firstHop == null) {
-				routeTable.put(node, ForgeDirection.UNKNOWN);
+				routeTable.put(node.node, ForgeDirection.UNKNOWN);
+				continue;
+			}
+			ExitRoute hop=_adjacentRouter.get(firstHop);
+			
+			if (hop == null){
 				continue;
 			}
 			
-			if (!_adjacentRouter.containsKey(firstHop) || _adjacentRouter.get(firstHop) == null){
-				continue;
-			}
-			
-			routeCosts.put(node, treeCost.get(node));
-			routeTable.put(node, _adjacentRouter.get(firstHop).exitOrientation);
+			routeCosts.put(node.node, new Pair<Integer, Boolean>(node.distance,node.blocksPower));
+			routeTable.put(node.node, hop.exitOrientation);
 		}
 		
 		_powerTable = powerTable;

@@ -190,7 +190,7 @@ public class ServerPacketBufferHandlerThread extends Thread {
 				}
 				if(!toDo) {
 					for(Player player:ByteBuffer.keySet()) {
-						if(ByteBuffer.get(player).length <= 0) {
+						if(ByteBuffer.get(player).length > 0) {
 							toDo = true;
 							break;
 						}

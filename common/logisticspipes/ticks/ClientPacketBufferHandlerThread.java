@@ -155,7 +155,7 @@ public class ClientPacketBufferHandlerThread extends Thread {
 			}
 			try {
 				boolean toDo = queue.size() > 0;
-				if(ByteBuffer.length <= 0) {
+				if(ByteBuffer.length > 0) {
 					toDo = true;
 				}
 				synchronized(clientList) {

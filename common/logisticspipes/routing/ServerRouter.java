@@ -41,7 +41,7 @@ import buildcraft.transport.TileGenericPipe;
 public class ServerRouter implements IRouter, IPowerRouter {
 
 	//does not speed up the code - consumes about 7% of CreateRouteTable runtume
-   @Override 
+	@Override 
 	public int hashCode(){
 		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
 	}
@@ -49,6 +49,26 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private class LSA {
 		public HashMap<IRouter, Pair<Integer,Boolean>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
+	}
+	
+	private class CompareSearchNode implements Comparator<SearchNode> {
+		@Override
+		public int compare(SearchNode o1, SearchNode o2) {
+			return (o2).distance - (o1).distance;
+		}
+	}
+	
+	private class SearchNode{
+		public SearchNode(IRouter r,int d, boolean b,IRouter p){
+			distance=d;
+			blocksPower=b;
+			node=r;
+			parent=p;
+		}
+		public int distance;
+		public boolean blocksPower;
+		public IRouter node;
+		public IRouter parent;
 	}
 	
 	private class RoutingUpdateThread implements Runnable {
@@ -295,37 +315,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.unlock();
 	}
 	
-	private class CompareSearchNode implements Comparator{
-		@Override
-		public int compare(Object o1, Object o2) {
-			return ((SearchNode)o2).distance-((SearchNode)o1).distance;
-		}
-	}
-	private class CompareNode implements Comparator{
-		@Override
-		public int compare(Object o1, Object o2) {
-			return ((SearchNode)o2).node.getId().compareTo(((SearchNode)o1).node.getId());
-		}
-	}	
-
-	private class CompareRouter implements Comparator{
-		@Override
-		public int compare(Object o1, Object o2) {
-			return ((IRouter)o2).getId().compareTo(((IRouter)o1).getId());
-		}
-	}	
-	private class SearchNode{
-		public SearchNode(IRouter r,int d, boolean b,IRouter p){
-			distance=d;
-			blocksPower=b;
-			node=r;
-			parent=p;
-		}
-		public int distance;
-		public boolean blocksPower;
-		public IRouter node;
-		public IRouter parent;
-	}
 	/**
 	 * Create a route table from the link state database
 	 */
@@ -334,11 +323,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		/** Map of all "approved" routers and the route to get there **/
 		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>();
-		
-//		/** The cost to get to an "approved" router **/
-//		HashMap<IRouter, Pair<Integer,Boolean>> treeCost = new HashMap<IRouter, Pair<Integer,Boolean>>();
-		
-
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
@@ -352,11 +336,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
 		for (RoutedPipe pipe :  _adjacent.keySet()){
-			candidatesCost.add(new SearchNode(pipe.getRouter(),_adjacent.get(pipe).metric,_adjacent.get(pipe).isPipeLess,pipe.getRouter()));
+			candidatesCost.add(new SearchNode(pipe.getRouter(), _adjacent.get(pipe).metric, _adjacent.get(pipe).isPipeLess, pipe.getRouter()));
 		}
 
 		SearchNode lowestCostNode;
-		while ((lowestCostNode=candidatesCost.poll())!=null){
+		while ((lowestCostNode=candidatesCost.poll()) != null){
 			
 			while(lowestCostNode!=null && tree.containsKey(lowestCostNode.node)) // the node was inserted multiple times, skip it as we know a shorter path.
 				lowestCostNode=candidatesCost.poll();
@@ -367,21 +351,21 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 			if(lowestPath == null) { // then you are on an initial seed item, you are adjacent, and you are the closest node.
 				lowestPath = lowestCostNode;
-			}		
+			}
 
 			
 			//Add new candidates from the newly approved route
 			SharedLSADatabasereadLock.lock();
 			LSA lsa = SharedLSADatabase.get(lowestCostNode.node);
 			if(lsa != null) {
-				if(!lowestCostNode.blocksPower && lsa.power.isEmpty()==false) {
+				if(!lowestCostNode.blocksPower && lsa.power.isEmpty() == false) {
 					powerTable.addAll(lsa.power);
 				}
 				for (IRouter newCandidate: lsa.neighboursWithMetric.keySet()){
-					SearchNode treeN=tree.get(newCandidate);
-					if (treeN!=null) {
+					SearchNode treeN = tree.get(newCandidate);
+					if (treeN != null) {
 						if(treeN.blocksPower && !lowestCostNode.blocksPower) {
-							treeN.blocksPower=false;
+							treeN.blocksPower = false;
 						}
 						continue;
 					}
@@ -393,7 +377,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			lowestCostNode.parent=lowestPath.parent; // however you got here, thats the side you came from
 			//Approve the candidate
 			tree.put(lowestCostNode.node,lowestCostNode);
-
 			
 			SharedLSADatabasereadLock.unlock();
 		}

@@ -224,6 +224,21 @@ public final class ItemIdentifier {
 		return stack;
 	}
 	
+	public int getMaxStackSize() {
+		if(Item.itemsList[this.itemID].isDamageable() && this.itemDamage > 0) {
+			return 1;
+		}
+		return Item.itemsList[this.itemID].getItemStackLimit();
+	}
+	
+	public boolean fuzzyMatch(ItemStack stack) {
+		if(stack.itemID != this.itemID) return false;
+		if(!Item.itemsList[this.itemID].isDamageable()) {
+			if(this.itemDamage != stack.getItemDamage()) return false;
+		}
+		return true;
+	}
+	
 	public int getId() {
 		readLock.lock();
 		int id = _itemIdentifierIdCache.get(this);

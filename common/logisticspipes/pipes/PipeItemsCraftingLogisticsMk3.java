@@ -37,6 +37,24 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
+	protected int neededEnergy() {
+		return 20;
+	}
+
+	@Override
+	protected int itemsToExtract() {
+		return 128;
+	}
+	
+	@Override
+	protected int stacksToExtract() {
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return 8;
+		}
+		return 2;
+	}
+	
+	@Override
 	public void updateEntity() {
 		super.updateEntity();
 		if(MainProxy.isClient()) return;
@@ -44,7 +62,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		LinkedList<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;
 		boolean change = false;
-		for(AdjacentTile tile:locateCrafters()) {
+		for(AdjacentTile tile : crafters) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				ItemStack slot = inv.getStackInSlot(i);
 				if(slot == null) continue;

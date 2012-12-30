@@ -18,7 +18,7 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.block.Block;
@@ -45,7 +45,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public int signEntityZ = 0;
 	//public LogisticsTileEntiy signEntity;
 
-	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
+	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
 	@TileNetworkData
 	public int satelliteId = 0;
@@ -175,20 +175,21 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
+		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			if (RequestManager.request(iterator.next().makeStack(1), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			// FIXME try partial requests
+			if (RequestManager.request(iterator.next(), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
 				iterator.remove();
 			}
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 	}
 
 	@Override
-	public void itemLost(ItemIdentifier item) {
+	public void itemLost(ItemIdentifierStack item) {
 		_lostItems.add(item);
 	}
 

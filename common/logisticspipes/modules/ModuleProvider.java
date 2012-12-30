@@ -29,6 +29,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -113,6 +114,18 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return 1;
 	}
 	
+	protected ItemSendMode itemSendMode() {
+		return ItemSendMode.Normal;
+	}
+	
+	protected int itemsToExtract() {
+		return 8;
+	}
+
+	protected int stacksToExtract() {
+		return 1;
+	}
+
 	@Override	public SinkReply sinksItem(ItemStack item) {return null;}
 
 	@Override	public ILogisticsModule getSubModule(int slot) {return null;}
@@ -123,18 +136,16 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);
-		while (_orderManager.hasOrders()) {
+		int itemsleft = itemsToExtract();
+		int stacksleft = stacksToExtract();
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
 			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-			
-			if(!_power.useEnergy(neededEnergy())) break;
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
-			if (sent > 0) {
-				_orderManager.sendSuccessfull(sent);
-			} else {
-				_orderManager.sendFailed();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId());
+			if (sent == 0)
 				break;
-			}
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
+			stacksleft -= 1;
+			itemsleft -= sent;
 		}
 	}
 
@@ -203,17 +214,29 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return null;
 	}
 	
-	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
-		int sent = 0;
-		if (_invProvider.getInventory() == null) return 0;
+	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination) {
+		ItemIdentifier item = stack.getItem();
+		if (_invProvider.getInventory() == null) {
+			_orderManager.sendFailed();
+			return 0;
+		}
 		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
-		if (inv.itemCount(item)> 0){
-			ItemStack removed = inv.getSingleItem(item);
-			_itemSender.sendStack(removed, destination);
-			sent++;
-			maxCount--;
-		}			
-
+		
+		int available = inv.itemCount(item);
+		if (available == 0) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		int wanted = Math.min(available, stack.stackSize);
+		wanted = Math.min(wanted, maxCount);
+		wanted = Math.min(wanted, item.getMaxStackSize());
+		
+		if(!_power.useEnergy(wanted * neededEnergy())) return 0;
+		
+		ItemStack removed = inv.getMultipleItems(item, wanted);
+		int sent = removed.stackSize;
+		_itemSender.sendStack(removed, destination, itemSendMode());
+		_orderManager.sendSuccessfull(sent);
 		return sent;
 	}
 	

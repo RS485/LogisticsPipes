@@ -20,6 +20,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
@@ -134,19 +135,18 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	}
 
 	@Override
-	public void itemLost(ItemIdentifier item) {
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+	public void itemLost(ItemIdentifierStack item) {
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 		super.resetThrottle();
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
-		
 	}
 
 	@Override

@@ -8,10 +8,10 @@
 
 package logisticspipes.interfaces.routing;
 
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 
 public interface IRequireReliableTransport {
-	public void itemLost(ItemIdentifier item);
-	public void itemArrived(ItemIdentifier item);
+	public void itemLost(ItemIdentifierStack item);
+	public void itemArrived(ItemIdentifierStack item);
 
 }

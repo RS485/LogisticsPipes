@@ -321,8 +321,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void CreateRouteTable()	{ 
 		//Dijkstra!
 		
+		int routingTableSize = _routeTable.size();
+		if(routingTableSize == 0) {
+//			routingTableSize=SimpleServiceLocator.routerManager.getRouterCount();
+			routingTableSize=SharedLSADatabase.size(); // deliberatly ignoring concurrent access, either the old or the version of the size will work, this is just an approximate number.
+		}
 		/** Map of all "approved" routers and the route to get there **/
-		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>();
+		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>(routingTableSize);
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
@@ -331,7 +336,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		tree.put(this, new SearchNode(this,0,false,null));
 
 		/** The total cost for the candidate route **/
-		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>(11,new CompareSearchNode());
+		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize),new CompareSearchNode());
 		
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.

@@ -51,8 +51,9 @@ public interface IRoutedItem {
 
 	public int getBufferCounter();
 	public void setBufferCounter(int counter);
-	
+
 	public ItemStack getItemStack();
+	public void setItemStack(ItemStack item);
 	
 	//public void setSpeedBoost(float multiplier);
 	//public float getSpeedBoost();
@@ -74,4 +75,6 @@ public interface IRoutedItem {
 	public List<UUID> getJamList();
 	
 	public boolean isUnRouted();
+	
+	public IRoutedItem getCopy();
 }

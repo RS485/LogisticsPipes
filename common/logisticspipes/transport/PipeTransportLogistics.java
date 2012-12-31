@@ -282,9 +282,18 @@ public class PipeTransportLogistics extends PipeTransportItems {
 					}
 				}
 				ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
-				//LogisticsPipes end
-
+				
 				data.item.getItemStack().stackSize -= added.stackSize;
+				
+				//For InvSysCon
+				if(data.item instanceof IRoutedItem) {
+					IRoutedItem routed = (IRoutedItem) data.item;
+					IRoutedItem newItem = routed.getCopy();
+					newItem.setItemStack(added);
+					EntityData addedData = new EntityData(newItem.getEntityPassiveItem(), data.input);
+					insertedItemStack(addedData, tile);
+				}
+				//LogisticsPipes end
 
 				if(data.item.getItemStack().stackSize > 0) {
 					reverseItem(data);
@@ -322,4 +331,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");
 		}
 	}
+	
+	protected void insertedItemStack(EntityData data, TileEntity tile) {}
 }

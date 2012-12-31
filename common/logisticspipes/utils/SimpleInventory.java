@@ -8,6 +8,7 @@
 
 package logisticspipes.utils;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
@@ -24,8 +25,9 @@ import net.minecraft.world.World;
 public class SimpleInventory implements IInventory, ISaveState{
 
 	private ItemStack[] _contents;
-	private String _name;
-	private int _stackLimit;
+	private final String _name;
+	private final int _stackLimit;
+	private final HashMap<ItemIdentifier, Integer> _contentsMap;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	
@@ -33,6 +35,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_contents = new ItemStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
+		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
 	}
 	
 	@Override
@@ -48,16 +51,21 @@ public class SimpleInventory implements IInventory, ISaveState{
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (_contents[i] == null) return null;
-		if (_contents[i].stackSize > j) return _contents[i].splitStack(j);
+		if (_contents[i].stackSize > j) {
+			ItemStack ret = _contents[i].splitStack(j);
+			updateContentsMap();
+			return ret;
+		}
 		ItemStack ret = _contents[i];
 		_contents[i] = null;
+		updateContentsMap();
 		return ret;
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		_contents[i] = itemstack;
-		
+		updateContentsMap();
 	}
 
 	@Override
@@ -72,6 +80,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public void onInventoryChanged() {
+		updateContentsMap();
 		for (ISimpleInventoryEventHandler handler : _listener){
 			handler.InventoryChanged(this);
 		}
@@ -103,6 +112,7 @@ public class SimpleInventory implements IInventory, ISaveState{
     			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
     		}
     	}
+		updateContentsMap();
 	}
 
 	@Override
@@ -132,6 +142,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 			    	dropItems(worldObj, todrop, xCoord, yCoord, zCoord);
 				}
 			}
+			updateContentsMap();
 		}
 	}
 
@@ -165,6 +176,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		
 		ItemStack stackToTake = this._contents[i];
 		this._contents[i] = null;
+		updateContentsMap();
 		return stackToTake;
 	}
 
@@ -182,10 +194,10 @@ public class SimpleInventory implements IInventory, ISaveState{
 		onInventoryChanged();
 	}
 	
-	public int tryAddToSlot(int i, ItemStack stack) {
-		ItemStack slot = this.getStackInSlot(i);
+	private int tryAddToSlot(int i, ItemStack stack) {
+		ItemStack slot = _contents[i];
 		if(slot == null) {
-			this.setInventorySlotContents(i, stack.copy());
+			_contents[i] = stack.copy();
 			return stack.stackSize;
 		}
 		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
@@ -215,5 +227,38 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 		onInventoryChanged();
 		return stack.stackSize;
+	}
+
+	/* InventoryUtil-like functions */
+
+	private void updateContentsMap() {
+		_contentsMap.clear();
+		for (int i = 0; i < _contents.length; i++) {
+			ItemStack stack = _contents[i];
+			if (stack == null) {
+				continue;
+			}
+			ItemIdentifier itemId = ItemIdentifier.get(stack);
+			if (!_contentsMap.containsKey(itemId)) {
+				_contentsMap.put(itemId, stack.stackSize);
+			} else {
+				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
+			}
+		}
+	}
+
+	public int itemCount(final ItemIdentifier item) {
+		if(_contentsMap.containsKey(item)) {
+			return _contentsMap.get(item);
+		}
+		return 0;
+	}
+
+	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
+		return _contentsMap;
+	}
+
+	public boolean containsItem(final ItemIdentifier item) {
+		return _contentsMap.containsKey(item);
 	}
 }

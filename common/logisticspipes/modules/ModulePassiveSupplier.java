@@ -72,10 +72,9 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
-		InventoryUtil filterUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(_filterInventory);
-		if (!filterUtil.containsItem(ItemIdentifier.get(item))) return null;
+		if (!_filterInventory.containsItem(ItemIdentifier.get(item))) return null;
 		
-		int targetCount = filterUtil.itemCount(ItemIdentifier.get(item));
+		int targetCount = _filterInventory.itemCount(ItemIdentifier.get(item));
 		InventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
 		if (targetCount <= targetUtil.itemCount(ItemIdentifier.get(item))) return null;
 		

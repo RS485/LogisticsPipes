@@ -21,6 +21,7 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
@@ -42,9 +43,6 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	
 	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
 	
-	private final InventoryUtilFactory _invUtilFactory;
-	private final InventoryUtil _dummyInvUtil;
-	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
@@ -54,12 +52,6 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	public IChassiePowerProvider _power;
 	
 	public LogicSupplier() {
-		this(new InventoryUtilFactory());
-	}
-	
-	public LogicSupplier(InventoryUtilFactory inventoryUtilFactory){
-		_invUtilFactory = inventoryUtilFactory;
-		_dummyInvUtil = _invUtilFactory.getInventoryUtil(dummyInventory);
 		throttleTime = 100;
 	}
 	
@@ -101,10 +93,10 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			IInventory inv = Utils.getInventory((IInventory) tile.tile);
 			if (inv.getSizeInventory() < 1) continue;
-			InventoryUtil invUtil = _invUtilFactory.getInventoryUtil(inv);
+			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
 			//How many do I want?
-			HashMap<ItemIdentifier, Integer> needed = _dummyInvUtil.getItemsAndCount();
+			HashMap<ItemIdentifier, Integer> needed = dummyInventory.getItemsAndCount();
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();

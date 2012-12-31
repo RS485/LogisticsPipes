@@ -108,7 +108,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	
 	protected ItemStack extractFromIInventory(IInventory inv){
 		
-		InventoryUtil invUtil = new InventoryUtil(inv, false);
+		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack itemstack = craftingLogic.getCraftedItem();
 		if (itemstack == null) return null;

@@ -57,7 +57,6 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
-	private final InventoryUtil _filterUtil = new InventoryUtil(_filterInventory, false);
 	
 	protected final int ticksToAction = 6;
 	protected int currentTick = 0;
@@ -221,20 +220,20 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		
 		if (_invProvider.getInventory() == null) return 0;
 		
-		if (_filterUtil.getItemsAndCount().size() > 0
-				&& ((this.isExcludeFilter && _filterUtil.getItemsAndCount().containsKey(item)) 
-						|| ((!this.isExcludeFilter) && !_filterUtil.getItemsAndCount().containsKey(item)))) return 0;
+		if (_filterInventory.getItemsAndCount().size() > 0
+				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
+						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
 		
 		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		return inv.itemCount(item);
 	}
 	
 	private boolean hasFilter() {
-		return _filterUtil.getItemsAndCount().size() > 0;
+		return _filterInventory.getItemsAndCount().size() > 0;
 	}
 	
 	public boolean itemIsFiltered(ItemIdentifier item){
-		return _filterUtil.getItemsAndCount().containsKey(item);
+		return _filterInventory.containsItem(item);
 	}
 	
 	public InventoryUtil getAdaptedUtil(IInventory base){

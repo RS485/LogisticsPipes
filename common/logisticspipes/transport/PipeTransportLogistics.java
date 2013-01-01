@@ -101,9 +101,11 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	@Override
 	public void performRemoval() {
 		try {
-			Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
-			toRemoveList.removeAll(notToRemove);
-			notToRemove.clear();
+			if(!notToRemove.isEmpty()){
+				Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+				toRemoveList.removeAll(notToRemove);
+				notToRemove.clear();
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

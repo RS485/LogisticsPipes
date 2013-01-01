@@ -41,7 +41,7 @@ public class EntitySparkleFX extends EntityFX
         this.particleScale *= var8;
         this.particleMaxAge = 2 * var12;
         this.multiplier = var12;
-        this.noClip = false;
+        this.noClip = true;
     }
 
     public EntitySparkleFX(World var1, double var2, double var4, double var6, float var8, int var9, int var10)

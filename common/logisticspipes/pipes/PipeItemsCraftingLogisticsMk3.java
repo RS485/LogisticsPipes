@@ -98,11 +98,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 
 	@Override
 	public TextureType getCenterTexture() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
-		} else {
-			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE_DIS;
-		}
+		return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
 	}
 
 	@Override

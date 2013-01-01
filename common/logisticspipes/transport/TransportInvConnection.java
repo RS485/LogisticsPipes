@@ -2,9 +2,7 @@ package logisticspipes.transport;
 
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.api.core.Position;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.transport.EntityData;
 

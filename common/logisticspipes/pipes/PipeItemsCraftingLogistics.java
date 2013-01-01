@@ -150,6 +150,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count){
 		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		int available = invUtil.itemCount(wanteditem);
+		if(available == 0) return null;
 		if(!useEnergy(neededEnergy() * Math.min(count, available))) {
 			return null;
 		}
@@ -198,7 +199,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			int maxtosend = Math.min(itemsleft, wanteditem.getMaxStackSize() * stacksleft);
 			if(_orderManager.hasOrders()){
 				maxtosend = Math.min(maxtosend, _orderManager.getNextRequest().getValue1().stackSize);
-			}else{
+			} else {
 				maxtosend = Math.min(maxtosend, _extras);
 			}
 			
@@ -232,7 +233,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize);
-				}else{
+				} else {
 					ItemStack stackToSend = extracted.splitStack(numtosend);
 					_extras = Math.max(_extras - numtosend, 0);
 					itemsleft -= numtosend;

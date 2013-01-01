@@ -26,7 +26,6 @@ import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;

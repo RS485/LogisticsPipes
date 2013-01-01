@@ -8,28 +8,9 @@
 
 package logisticspipes.pipes;
 
-import java.util.LinkedList;
-
-import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
-import buildcraft.api.core.Position;
-import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransportItems;
 
 public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	
@@ -58,11 +39,7 @@ public class PipeItemsCraftingLogisticsMk2 extends PipeItemsCraftingLogistics{
 	
 	@Override
 	public TextureType getCenterTexture() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
-		} else {
-			return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE_DIS;
-		}
+		return Textures.LOGISTICSPIPE_CRAFTERMK2_TEXTURE;
 	}
 
 	@Override

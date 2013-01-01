@@ -129,6 +129,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
+	public void setItemStack(ItemStack item) {
+		this.item = item;
+	}
+
+	@Override
 	public void setDestination(UUID destination) {
 		this.destinationUUID = destination;
 		if(destination != null) {
@@ -307,5 +312,25 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setBufferCounter(int counter) {
 		bufferCounter = counter;
+	}
+
+	@Override
+	public IRoutedItem getCopy() {
+		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
+		Entityitem.setContainer(container);
+		Entityitem.setPosition(position.x, position.y, position.z);
+		Entityitem.setSpeed(speed);
+		Entityitem.setItemStack(item.copy());
+		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
+		routed.sourceUUID = sourceUUID;
+		routed.destinationUUID = destinationUUID;
+		routed._doNotBuffer = _doNotBuffer;
+		routed.bufferCounter = bufferCounter;
+		routed.arrived = arrived;
+		routed.reRoute = reRoute;
+		routed.isUnrouted = isUnrouted;
+		routed._transportMode = _transportMode;
+		routed.jamlist.addAll(jamlist);
+		return routed;
 	}
 }

@@ -25,6 +25,7 @@ import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -524,6 +525,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void itemCouldNotBeSend(ItemIdentifierStack item) {
+		if(logic instanceof IRequireReliableTransport) {
+			((IRequireReliableTransport)logic).itemLost(item);
+		}
 		//Override by subclasses //TODO
 	}
 

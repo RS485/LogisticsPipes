@@ -26,7 +26,6 @@ import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
@@ -96,7 +95,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
 			//How many do I want?
-			HashMap<ItemIdentifier, Integer> needed = dummyInventory.getItemsAndCount();
+			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();

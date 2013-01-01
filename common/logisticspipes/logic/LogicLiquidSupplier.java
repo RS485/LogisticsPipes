@@ -16,10 +16,8 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.SimpleInventory;
@@ -63,7 +61,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;
 			
 			//How much do I want?
-			HashMap<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
+			HashMap<ItemIdentifier, Integer> wantContainers = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
 			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
 			for (ItemIdentifier item : wantContainers.keySet()){
 				ItemStack wantItem = item.makeNormalStack(1);
@@ -107,7 +105,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			//Make request
 			
-			HashMap<ItemIdentifier, Integer> allNeededContainers = dummyInventory.getItemsAndCount();
+			HashMap<ItemIdentifier, Integer> allNeededContainers = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
 			for (ItemIdentifier need : allNeededContainers.keySet()){
 				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1));
 				if (requestedLiquidId == null) continue;

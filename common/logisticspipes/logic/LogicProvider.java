@@ -64,7 +64,7 @@ public class LogicProvider extends BaseRoutingLogic{
 	
 	/** INTERFACE TO PIPE **/
 	public boolean hasFilter(){
-		return dummyInventory.getItemsAndCount().size() > 0;
+		return !dummyInventory.isEmpty();
 	}
 	
 	public boolean itemIsFiltered(ItemIdentifier item){

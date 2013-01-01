@@ -222,7 +222,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		
 		if (_invProvider.getInventory() == null) return 0;
 		
-		if (_filterInventory.getItemsAndCount().size() > 0
+		if (!_filterInventory.isEmpty()
 				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
 						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
 		
@@ -231,7 +231,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 	
 	private boolean hasFilter() {
-		return _filterInventory.getItemsAndCount().size() > 0;
+		return !_filterInventory.isEmpty();
 	}
 	
 	public boolean itemIsFiltered(ItemIdentifier item){

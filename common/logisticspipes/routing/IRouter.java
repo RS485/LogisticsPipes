@@ -10,6 +10,7 @@ package logisticspipes.routing;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
@@ -28,7 +29,7 @@ public interface IRouter {
 	
 	@Deprecated
 	public HashMap<IRouter, ForgeDirection> getRouteTable();
-	public LinkedList<IRouter> getIRoutersByCost();
+	public List<IRouter> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	
 	public UUID getId();

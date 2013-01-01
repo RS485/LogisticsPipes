@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import logisticspipes.interfaces.ISpecialInventoryHandler;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
@@ -27,7 +28,7 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 			getPileData = crateClass.getDeclaredMethod("getPileData", new Class[]{});
 			cratePileDataClass = Class.forName("net.mcft.copy.betterstorage.blocks.CratePileData");
 			getNumItems = cratePileDataClass.getDeclaredMethod("getNumItems", new Class[]{});
-			removeItems = cratePileDataClass.getDeclaredMethod("removeItems", new Class[]{ItemStack.class});
+			removeItems = cratePileDataClass.getDeclaredMethod("removeItems", new Class[]{ItemStack.class, int.class});
 			getItemStack = cratePileDataClass.getDeclaredMethod("getItemStack", new Class[]{int.class});
 			getItemCount = cratePileDataClass.getDeclaredMethod("getItemCount", new Class[]{ItemStack.class});
 			spaceForItem = cratePileDataClass.getDeclaredMethod("spaceForItem", new Class[]{ItemStack.class});
@@ -44,14 +45,20 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount(TileEntity tile) {
-		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		try {
 			Object cratePileData = getPileData.invoke(tile, new Object[]{});
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
+			HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(numitems * 1.5));
 			for(int i = 0; i < numitems; i++) {
 				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
-				map.put(ItemIdentifier.get(itemStack), itemStack.stackSize);
+				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
+				if (!map.containsKey(itemId)){
+					map.put(itemId, itemStack.stackSize);
+				} else {
+					map.put(itemId, map.get(itemId) + itemStack.stackSize);
+				}
 			}
+			return map;
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -59,7 +66,7 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		return map;
+		return new HashMap<ItemIdentifier, Integer>();
 	}
 
 	@Override
@@ -82,8 +89,17 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 	public ItemStack getSingleItem(TileEntity tile, ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(tile, new Object[]{});
-			ItemStack itemStack = (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
-			return itemStack;
+			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
+				return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1), 1});
+			}
+			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
+			for(int i = 0; i < numitems; i++) {
+				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
+				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
+				if(itemId == itemIdent) {
+					return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemStack, 1});
+				}
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -98,8 +114,18 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 	public boolean containsItem(TileEntity tile, ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(tile, new Object[]{});
-			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
-			return (count > 0);
+			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
+				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+				return (count > 0);
+			}
+			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
+			for(int i = 0; i < numitems; i++) {
+				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
+				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
+				if(itemId == itemIdent) {
+					return true;
+				}
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {

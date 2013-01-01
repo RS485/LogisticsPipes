@@ -8,6 +8,7 @@
 
 package logisticspipes.gui.orderer;
 
+import java.awt.ItemSelectable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -42,7 +43,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 
 	//protected final IRequestItems _itemRequester;
 	public final EntityPlayer _entityPlayer;
-	protected ItemIdentifier selectedItem = null;
+	protected ItemIdentifierStack selectedItem = null;
 	public final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";
@@ -241,7 +242,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				
 				if (lastClickedx >= x && lastClickedx < x + panelxSize &&
 						lastClickedy >= y && lastClickedy < y + panelySize){
-					selectedItem = item;
+					selectedItem = itemStack;
 					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
 					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
 					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
@@ -484,7 +485,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				}
 				refreshItems();
 			} else {*/
-				MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem,requestCount).getPacket());
+				MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
 				refreshItems();
 			//}
 		} else if (guibutton.id == 1){
@@ -516,7 +517,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			Configs.displayPopup = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
-			MainProxy.sendPacketToServer(new PacketRequestComponents(xCoord,yCoord,zCoord,dimension,selectedItem).getPacket());
+			MainProxy.sendPacketToServer(new PacketRequestComponents(xCoord,yCoord,zCoord,dimension,selectedItem.getItem()).getPacket());
 		}
 		
 		super.actionPerformed(guibutton);
@@ -537,7 +538,25 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			page = maxPage;
 		}
 	}
-	
+
+	@Override
+	public void handleKeyboardInputSub() {
+		if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				if(selectedItem != null && selectedItem.stackSize != 0) {
+					requestCount = selectedItem.stackSize;
+				}
+			} else if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				requestCount = 1;
+				selectedItem = null;
+				lastClickedx = -10000000;
+				lastClickedy = -10000000;
+				lastClickedk = 0;
+			}
+		}
+		super.handleKeyboardInputSub();
+	}
+
 	@Override
 	protected void keyTyped(char c, int i) {
 		if(editsearch) {

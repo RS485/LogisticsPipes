@@ -133,6 +133,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				return 0;
 			}
 			ItemStack removed = inv.getMultipleItems(item, wanted);
+			if(removed == null) continue;
 			int sent = removed.stackSize;
 
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);

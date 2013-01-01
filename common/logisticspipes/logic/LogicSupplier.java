@@ -9,7 +9,7 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -117,7 +117,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			LinkedList<IRouter> valid = getRouter().getIRoutersByCost();
+			List<IRouter> valid = getRouter().getIRoutersByCost();
 			
 			/*
 			//TODO Double Chests, Simplyfication

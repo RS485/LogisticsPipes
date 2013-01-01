@@ -228,7 +228,8 @@ public final class ItemIdentifier {
 		if(Item.itemsList[this.itemID].isDamageable() && this.itemDamage > 0) {
 			return 1;
 		}
-		return Item.itemsList[this.itemID].getItemStackLimit();
+		int limit = Item.itemsList[this.itemID].getItemStackLimit();
+		return limit < 64 ? limit : 64;
 	}
 	
 	public boolean fuzzyMatch(ItemStack stack) {

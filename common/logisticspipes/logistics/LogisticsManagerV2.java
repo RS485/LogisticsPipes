@@ -91,7 +91,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		if (sourceRouter == null) return item;
 		
 		//Wipe current destination
-		item.setDestination(null);
+		item.changeDestination(null);
 		
 //		UUID potentialDestination = null;
 //		SinkReply bestReply = null;

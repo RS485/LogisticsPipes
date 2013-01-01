@@ -208,9 +208,11 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		if (inv.itemCount(item)> 0){
 			ItemStack removed = inv.getSingleItem(item);
-			_itemSender.sendStack(removed, destination);
-			sent++;
-			maxCount--;
+			if(removed != null) {
+				_itemSender.sendStack(removed, destination);
+				sent++;
+				maxCount--;
+			}
 		}			
 
 		return sent;

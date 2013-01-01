@@ -14,9 +14,11 @@ public class ModuleProviderMk2 extends ModuleProvider {
 		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		if (inv.itemCount(item)> 0){
 			ItemStack removed = inv.getSingleItem(item);
-			_itemSender.sendStack(removed, destination, ItemSendMode.Fast);
-			sent++;
-			maxCount--;
+			if(removed != null) {
+				_itemSender.sendStack(removed, destination, ItemSendMode.Fast);
+				sent++;
+				maxCount--;
+			}
 		}
 		return sent;
 	}

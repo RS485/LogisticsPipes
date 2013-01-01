@@ -96,7 +96,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
 			//How many do I want?
-			HashMap<ItemIdentifier, Integer> needed = dummyInventory.getItemsAndCount();
+			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();

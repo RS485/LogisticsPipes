@@ -8,8 +8,10 @@
 
 package logisticspipes.utils;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
@@ -254,11 +256,15 @@ public class SimpleInventory implements IInventory, ISaveState{
 		return 0;
 	}
 
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		return new HashMap<ItemIdentifier, Integer>(_contentsMap);
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
+		return _contentsMap;
 	}
 
 	public boolean containsItem(final ItemIdentifier item) {
 		return _contentsMap.containsKey(item);
+	}
+	
+	public boolean isEmpty() {
+		return _contentsMap.isEmpty();
 	}
 }

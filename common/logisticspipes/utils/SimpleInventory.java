@@ -255,7 +255,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	}
 
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		return _contentsMap;
+		return new HashMap<ItemIdentifier, Integer>(_contentsMap);
 	}
 
 	public boolean containsItem(final ItemIdentifier item) {

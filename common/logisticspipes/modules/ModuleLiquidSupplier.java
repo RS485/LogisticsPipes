@@ -42,8 +42,7 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(_filterInventory);
-		if (invUtil.containsItem(ItemIdentifier.get(item))){
+		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;

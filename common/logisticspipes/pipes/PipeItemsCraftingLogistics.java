@@ -148,7 +148,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 	
 	private ItemStack extractFromIInventory(IInventory inv, ItemIdentifier wanteditem, int count){
-		InventoryUtil invUtil = new InventoryUtil(inv, false);
+		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		int available = invUtil.itemCount(wanteditem);
 		if(!useEnergy(neededEnergy() * Math.min(count, available))) {
 			return null;

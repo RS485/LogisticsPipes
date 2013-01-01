@@ -28,19 +28,6 @@ public class LogicProvider extends BaseRoutingLogic{
 	private boolean _filterIsExclude;
 	private ExtractionMode _extractionMode = ExtractionMode.Normal;
 
-	private final InventoryUtilFactory _invUtilFactory;
-	private final InventoryUtil _dummyInvUtil;
-	
-	
-	public LogicProvider(){
-		this(new InventoryUtilFactory());
-	}
-	
-	public LogicProvider (InventoryUtilFactory invUtilFactory){
-		_invUtilFactory = invUtilFactory;
-		_dummyInvUtil = _invUtilFactory.getInventoryUtil(dummyInventory);
-	}
-
 	@Override
 	public void destroy() {}
 
@@ -77,11 +64,11 @@ public class LogicProvider extends BaseRoutingLogic{
 	
 	/** INTERFACE TO PIPE **/
 	public boolean hasFilter(){
-		return _dummyInvUtil.getItemsAndCount().size() > 0;
+		return dummyInventory.getItemsAndCount().size() > 0;
 	}
 	
 	public boolean itemIsFiltered(ItemIdentifier item){
-		return _dummyInvUtil.getItemsAndCount().containsKey(item);
+		return dummyInventory.containsItem(item);
 	}
 	
 	public boolean isExcludeFilter(){

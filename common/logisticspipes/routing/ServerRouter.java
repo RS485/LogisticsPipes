@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.PriorityQueue;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -51,14 +53,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public List<ILogisticsPowerProvider> power;
 	}
 	
-	private class CompareSearchNode implements Comparator<SearchNode> {
-		@Override
-		public int compare(SearchNode o1, SearchNode o2) {
-			return (o1).distance - (o2).distance;
-		}
-	}
-	
-	private class SearchNode{
+	private class SearchNode implements Comparable<SearchNode>{
 		public SearchNode(IRouter r,int d, boolean b,IRouter p){
 			distance=d;
 			blocksPower=b;
@@ -69,6 +64,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public boolean blocksPower;
 		public IRouter node;
 		public IRouter parent;
+
+		@Override
+		public int compareTo(SearchNode o) {
+			return this.distance-o.distance;
+		}
 	}
 	
 	private class RoutingUpdateThread implements Runnable {
@@ -124,7 +124,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 	/** Map of router -> orientation for all known destinations **/
 	public HashMap<IRouter, ForgeDirection> _routeTable = new HashMap<IRouter, ForgeDirection>();
-	public HashMap<IRouter, Pair<Integer,Boolean>> _routeCosts = new HashMap<IRouter, Pair<Integer,Boolean>>();
+	public List<IRouter> _routeCosts = new ArrayList<IRouter>();
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
 
@@ -136,6 +136,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
+	
+	private CoreRoutedPipe _myPipeCache = null;
 	
 	public static void resetStatics() {
 		SharedLSADatabasewriteLock.lock();
@@ -161,6 +163,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public CoreRoutedPipe getPipe(){
+		if(_myPipeCache!=null)
+			return _myPipeCache;
 		World worldObj = MainProxy.getWorld(_dimension);
 		if(worldObj == null) {
 			return null;
@@ -170,7 +174,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		if (!(tile instanceof TileGenericPipe)) return null;
 		TileGenericPipe pipe = (TileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;
-		return (CoreRoutedPipe) pipe.pipe;
+		_myPipeCache=(CoreRoutedPipe) pipe.pipe;
+
+		return _myPipeCache;
 	}
 
 	private void ensureRouteTableIsUpToDate(boolean force){
@@ -207,32 +213,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	@Override
-	public LinkedList<IRouter> getIRoutersByCost() {
+	public List<IRouter> getIRoutersByCost() {
 		ensureRouteTableIsUpToDate(true);
-		synchronized (_externalRoutersByCostLock) {
-			if (_externalRoutersByCost  == null){
-				LinkedList<IRouter> externalRoutersByCost = new LinkedList<IRouter>();
-				
-				LinkedList<RouterCost> tempList = new LinkedList<RouterCost>();
-				outer:
-				for (IRouter r : _routeCosts.keySet()){
-					for (int i = 0; i < tempList.size(); i++){
-						if (_routeCosts.get(r).getValue1() < tempList.get(i).cost){
-							tempList.add(i, new RouterCost(r, _routeCosts.get(r).getValue1()));
-							continue outer;
-						}
-					}
-					tempList.addLast(new RouterCost(r, _routeCosts.get(r).getValue1()));
-				}
-				
-				while(tempList.size() > 0){
-					externalRoutersByCost.addLast(tempList.removeFirst().router);
-				}
-				externalRoutersByCost.addFirst(this);
-				_externalRoutersByCost = externalRoutersByCost;
-			}		
-			return _externalRoutersByCost;
-		}
+		return _routeCosts;
 	}
 	
 	@Override
@@ -328,15 +311,18 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		/** Map of all "approved" routers and the route to get there **/
 		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>(routingTableSize);
+
+		/** same info as above, but sorted by distance -- sorting is implicit, because Dijkstra finds the closest routes first.**/
+		ArrayList<IRouter> routeCosts = new ArrayList<IRouter>(routingTableSize);
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
 		//Init root(er - lol)
 		// the shortest way to yourself is to go nowhere
-		tree.put(this, new SearchNode(this,0,false,null));
+		tree.put(this,new SearchNode(this,0,false,null));
 
 		/** The total cost for the candidate route **/
-		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize),new CompareSearchNode());
+		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
 		
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
@@ -382,6 +368,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			lowestCostNode.parent=lowestPath.parent; // however you got here, thats the side you came from
 			//Approve the candidate
 			tree.put(lowestCostNode.node,lowestCostNode);
+			routeCosts.add(lowestCostNode.node);
 			
 			SharedLSADatabasereadLock.unlock();
 		}
@@ -389,7 +376,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		//Build route table
 		HashMap<IRouter, ForgeDirection> routeTable = new HashMap<IRouter, ForgeDirection>(tree.size());
-		HashMap<IRouter, Pair<Integer, Boolean>> routeCosts = new HashMap<IRouter, Pair<Integer, Boolean>>(tree.size());
+
 		for (SearchNode node : tree.values())
 		{
 			IRouter firstHop = node.parent;
@@ -402,11 +389,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			if (hop == null){
 				continue;
 			}
-			
-			routeCosts.put(node.node, new Pair<Integer, Boolean>(node.distance,node.blocksPower));
 			routeTable.put(node.node, hop.exitOrientation);
 		}
-		
 		_powerTable = powerTable;
 		_routeTable = routeTable;
 		_routeCosts = routeCosts;
@@ -468,6 +452,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public void update(boolean doFullRefresh){
+		_myPipeCache=null;
 		if (doFullRefresh || forceUpdate) {
 			if(updateThread == null) {
 				forceUpdate = false;

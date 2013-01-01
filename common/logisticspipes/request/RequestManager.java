@@ -18,10 +18,10 @@ import logisticspipes.utils.Pair;
 
 public class RequestManager {
 
-	public static boolean request(LinkedList<ItemIdentifierStack> items, IRequestItems requester, LinkedList<IRouter> validDestinations, RequestLog log) {
-		LinkedList<IProvideItems> providers = getProviders(validDestinations);
-		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
-		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
+	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
+		List<IProvideItems> providers = getProviders(validDestinations);
+		List<CraftingTemplate> crafters = getCrafters(validDestinations);
+		List<ItemMessage> messages = new LinkedList<ItemMessage>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester);
 		for(ItemIdentifierStack stack:items) {
 			RequestTree node = new RequestTree(stack, requester);
@@ -48,8 +48,8 @@ public class RequestManager {
 	}
 	
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
-		LinkedList<IProvideItems> providers = getProviders(validDestinations);
-		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
+		List<IProvideItems> providers = getProviders(validDestinations);
+		List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		RequestTree tree = new RequestTree(item, requester);
 		generateRequestTree(tree, tree, crafters, providers);
 		if(tree.isAllDone()) {
@@ -67,8 +67,8 @@ public class RequestManager {
 	}
 	
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
-		LinkedList<IProvideItems> providers = new LinkedList<IProvideItems>();
-		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
+		List<IProvideItems> providers = new LinkedList<IProvideItems>();
+		List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		RequestTree tree = new RequestTree(item, requester);
 		generateRequestTree(tree, tree, crafters, providers);
 		if(log != null) {
@@ -77,11 +77,11 @@ public class RequestManager {
 	}
 	
 	private static LinkedList<CraftingTemplate> getCrafters(List<IRouter> validDestinations) {
-		LinkedList<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
+		List<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
 		for(IRouter r : validDestinations) {
 			CoreRoutedPipe pipe = r.getPipe();
 			if (pipe instanceof ICraftItems){
-				LinkedList<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
+				List<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
 				((ICraftItems)pipe).addCrafting(added);
 				for(CraftingTemplate template:added) {
 					boolean done = false;
@@ -101,8 +101,8 @@ public class RequestManager {
 		return crafters;
 	}
 	
-	private static LinkedList<IProvideItems> getProviders(List<IRouter> validDestinations) {
-		LinkedList<IProvideItems> providers = new LinkedList<IProvideItems>();
+	private static List<IProvideItems> getProviders(List<IRouter> validDestinations) {
+		List<IProvideItems> providers = new LinkedList<IProvideItems>();
 		for(IRouter r : validDestinations) {
 			CoreRoutedPipe pipe = r.getPipe();
 			if (pipe instanceof IProvideItems){
@@ -118,7 +118,7 @@ public class RequestManager {
 		tree.registerExtras();
 	}
 	
-	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, LinkedList<CraftingTemplate> crafters, LinkedList<IProvideItems> providers) {
+	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, List<CraftingTemplate> crafters, List<IProvideItems> providers) {
 		checkProvider(tree,treeNode,providers);
 		if(treeNode.isDone()) {
 			return true;
@@ -142,7 +142,7 @@ public class RequestManager {
 		}
 	}
 
-	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, LinkedList<CraftingTemplate> crafters, LinkedList<IProvideItems> providers) {
+	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, List<CraftingTemplate> crafters, List<IProvideItems> providers) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
 		boolean handled = false;
@@ -202,13 +202,13 @@ public class RequestManager {
 		}
 	}
 
-	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, LinkedList<IProvideItems> providers) {
+	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, List<IProvideItems> providers) {
 		for(IProvideItems provider : providers) {
 			provider.canProvide(treeNode, tree.getAllPromissesFor(provider));
 		}
 	}
 	
-	private static LinkedList<CraftingTemplate> getCraftersWithOutCrafter(LinkedList<CraftingTemplate> crafters, CraftingTemplate crafter) {
+	private static LinkedList<CraftingTemplate> getCraftersWithOutCrafter(List<CraftingTemplate> crafters, CraftingTemplate crafter) {
 		LinkedList<CraftingTemplate> result = new LinkedList<CraftingTemplate>();
 		for(CraftingTemplate template:crafters) {
 			if(template != crafter) {

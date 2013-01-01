@@ -271,9 +271,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public void checkTexturePowered() {
-		if(MainProxy.isClient()) return;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
+		if(MainProxy.isClient()) return;
 		boolean flag;
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;

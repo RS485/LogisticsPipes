@@ -54,7 +54,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private class CompareSearchNode implements Comparator<SearchNode> {
 		@Override
 		public int compare(SearchNode o1, SearchNode o2) {
-			return (o2).distance - (o1).distance;
+			return (o1).distance - (o2).distance;
 		}
 	}
 	

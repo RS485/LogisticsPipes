@@ -21,7 +21,7 @@ public class RequestManager {
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
 		List<IProvideItems> providers = getProviders(validDestinations);
 		List<CraftingTemplate> crafters = getCrafters(validDestinations);
-		List<ItemMessage> messages = new LinkedList<ItemMessage>();
+		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester);
 		for(ItemIdentifierStack stack:items) {
 			RequestTree node = new RequestTree(stack, requester);
@@ -77,11 +77,11 @@ public class RequestManager {
 	}
 	
 	private static LinkedList<CraftingTemplate> getCrafters(List<IRouter> validDestinations) {
-		List<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
+		LinkedList<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
 		for(IRouter r : validDestinations) {
 			CoreRoutedPipe pipe = r.getPipe();
 			if (pipe instanceof ICraftItems){
-				List<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
+				LinkedList<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
 				((ICraftItems)pipe).addCrafting(added);
 				for(CraftingTemplate template:added) {
 					boolean done = false;

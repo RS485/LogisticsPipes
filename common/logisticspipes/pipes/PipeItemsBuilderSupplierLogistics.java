@@ -18,18 +18,11 @@ import logisticspipes.utils.InventoryUtilFactory;
 
 public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRequestItems{
 
-	private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
-
 	private boolean _lastRequestFailed = false;
 		
 	public PipeItemsBuilderSupplierLogistics(int itemID) {
 		super(new LogicBuilderSupplier(), itemID);
 		((LogicBuilderSupplier)logic)._power = this;
-	}
-	
-	public PipeItemsBuilderSupplierLogistics(int itemID, InventoryUtilFactory inventoryUtilFactory) {
-		this(itemID);		
-		_inventoryUtilFactory = inventoryUtilFactory;
 	}
 	
 	@Override

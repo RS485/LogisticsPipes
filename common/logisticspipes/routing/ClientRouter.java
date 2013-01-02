@@ -136,4 +136,9 @@ public class ClientRouter implements IRouter {
 		if (pipe == null) return null;
 		return pipe.getLogisticsModule();
 	}
+
+	@Override
+	public void clearPipeCache() {
+		//Not On Client Side		
+	}
 }

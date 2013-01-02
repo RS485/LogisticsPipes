@@ -8,6 +8,7 @@
 
 package logisticspipes.routing;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -137,7 +138,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private final int _yCoord;
 	private final int _zCoord;
 	
-	private CoreRoutedPipe _myPipeCache = null;
+	private WeakReference<CoreRoutedPipe> _myPipeCache=null;
+	public void clearPipeCache(){_myPipeCache=null;}
 	
 	public static void resetStatics() {
 		SharedLSADatabasewriteLock.lock();
@@ -153,6 +155,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
+		clearPipeCache();
 		_myLsa = new LSA();
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer,Boolean>>();
 		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
@@ -163,8 +166,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public CoreRoutedPipe getPipe(){
-		if(_myPipeCache!=null)
-			return _myPipeCache;
+		if(_myPipeCache!=null && _myPipeCache.get()!=null)
+			return _myPipeCache.get();
 		World worldObj = MainProxy.getWorld(_dimension);
 		if(worldObj == null) {
 			return null;
@@ -174,9 +177,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		if (!(tile instanceof TileGenericPipe)) return null;
 		TileGenericPipe pipe = (TileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;
-		_myPipeCache=(CoreRoutedPipe) pipe.pipe;
+		_myPipeCache=new WeakReference<CoreRoutedPipe>((CoreRoutedPipe) pipe.pipe);
 
-		return _myPipeCache;
+		return (CoreRoutedPipe) pipe.pipe;
 	}
 
 	private void ensureRouteTableIsUpToDate(boolean force){
@@ -452,7 +455,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public void update(boolean doFullRefresh){
-		_myPipeCache=null;
 		if (doFullRefresh || forceUpdate) {
 			if(updateThread == null) {
 				forceUpdate = false;

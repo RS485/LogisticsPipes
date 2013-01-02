@@ -143,7 +143,7 @@ public class LogisticsHUDRenderer {
 	
 	public void renderPlayerDisplay(long renderTicks) {}
 	
-	public void renderWorldRelative(long renderTicks) {
+	public void renderWorldRelative(long renderTicks, float partialTick) {
 		if(!displayRenderer()) return;
         GL11.glEnable(GL11.GL_BLEND);
 		Minecraft mc = FMLClientHandler.instance().getClient();
@@ -173,19 +173,19 @@ public class LogisticsHUDRenderer {
 				}
 		        GL11.glPopMatrix();
 				GL11.glPushMatrix();
-				displayOneView(renderer, config);
+				displayOneView(renderer, config, partialTick);
 		        GL11.glPopMatrix();
 			}
 		}
 	}
 
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config, float partialTick) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
-		double x = renderer.getX() + 0.5 - player.posX;
-		double y = renderer.getY() + 0.5 - player.posY;
-		double z = renderer.getZ() + 0.5 - player.posZ;
+		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
+		double y = renderer.getY() + 0.5 - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
+		double z = renderer.getZ() + 0.5 - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
 		GL11.glRotatef(getAngle(z,x) + 90, 0.0F, 0.0F, 1.0F);

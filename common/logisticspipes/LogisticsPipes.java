@@ -26,6 +26,8 @@ TODO later, maybe....
 
 package logisticspipes;
 
+import java.io.File;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +47,7 @@ import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
+import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsWorldManager;
@@ -231,10 +234,15 @@ public class LogisticsPipes {
 		Configs.load();
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
-		requestLog.setParent(log);
+		try {
+			File logPath = new File("LogisticsPipes-Request.log");
+			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
+			fileHandler.setFormatter(new RequestLogFormator());
+			fileHandler.setLevel(Level.ALL);
+			requestLog.addHandler(fileHandler);
+		} catch (Exception e) {}
 		if(DEBUG) {
 			log.setLevel(Level.ALL);
-			requestLog.setLevel(Level.ALL);
 		}
 	}
 	

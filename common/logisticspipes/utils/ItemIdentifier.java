@@ -49,7 +49,7 @@ import com.google.common.collect.Table;
  * 
  *  A ItemIdentifier is immutable, singleton and most importantly UNIQUE!
  */
-public final class ItemIdentifier {
+public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	private static class ItemKey implements Comparable<ItemKey>{
 		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
@@ -389,7 +389,7 @@ public final class ItemIdentifier {
 			map.put("value", ((NBTTagShort)nbt).data);
 			return map;
 		} else if(nbt instanceof NBTTagString) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<Object, Object>(); 
 			map.put("name", nbt.getName());
 			map.put("type", "NBTTagString");
 			map.put("value", ((NBTTagString)nbt).data);
@@ -401,5 +401,14 @@ public final class ItemIdentifier {
 	
 	public String toString() {
 		return getFriendlyName();
+	}
+
+	@Override
+	public int compareTo(ItemIdentifier o) {
+		if(uniqueID<o.uniqueID)
+			return -1;
+		if(uniqueID>o.uniqueID)
+			return 1;
+		return 0;
 	}
 }

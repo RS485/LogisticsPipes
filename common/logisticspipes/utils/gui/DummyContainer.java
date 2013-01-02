@@ -144,8 +144,10 @@ public class DummyContainer extends Container{
 			if (slot.getStack() != null && mouseButton == 1){
 				if (isShift == 1){
 					slot.getStack().stackSize = Math.min(127, slot.getStack().stackSize * 2);
+					slot.inventory.onInventoryChanged();
 				} else {
 					slot.getStack().stackSize/=2;
+					slot.inventory.onInventoryChanged();
 				}
 			}else{
 				slot.putStack(null);
@@ -161,7 +163,8 @@ public class DummyContainer extends Container{
 			if (slot.getStack().stackSize > slot.getSlotStackLimit()){
 				slot.getStack().stackSize = slot.getSlotStackLimit();
 			}
-			
+
+			slot.inventory.onInventoryChanged();
 			return currentlyEquippedStack;
 		}
 		
@@ -172,11 +175,13 @@ public class DummyContainer extends Container{
 			int counter = isShift == 1?10:1;
 			if (mouseButton == 1 && slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
 				slot.getStack().stackSize += counter;
+				slot.inventory.onInventoryChanged();
 				return currentlyEquippedStack;
 			}
 			if (mouseButton == 0){
 				if (slot.getStack().stackSize - counter > 0){
 					slot.getStack().stackSize-=counter;	
+					slot.inventory.onInventoryChanged();
 				} else {
 					slot.putStack(null);
 				}

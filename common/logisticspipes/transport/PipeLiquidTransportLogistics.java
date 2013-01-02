@@ -11,8 +11,8 @@ import net.minecraftforge.liquids.LiquidStack;
 
 public class PipeLiquidTransportLogistics extends PipeTransportLogistics implements ITankContainer {
 
-	private LogisticsLiquidSection[] sideTanks = new LogisticsLiquidSection[ForgeDirection.VALID_DIRECTIONS.length];
-	private LogisticsLiquidSection internalTank = new LogisticsLiquidSection(10000);
+	public LogisticsLiquidSection[] sideTanks = new LogisticsLiquidSection[ForgeDirection.VALID_DIRECTIONS.length];
+	public LogisticsLiquidSection internalTank = new LogisticsLiquidSection(10000);
 	
 	public PipeLiquidTransportLogistics() {
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {

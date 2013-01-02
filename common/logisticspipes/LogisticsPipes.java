@@ -46,6 +46,7 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
+import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsWorldManager;
@@ -91,6 +92,7 @@ import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
@@ -206,6 +208,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
 		SimpleServiceLocator.setSpecialInventoryHandler(new SpecialInventoryHandler());
+		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
 		
 		textures.load(event);
 		
@@ -459,6 +462,11 @@ public class LogisticsPipes {
 		
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
+		
+		//init Liquids
+		LiquidIdentifier.initFromForge(false);
+		LiquidIdentifier.get(9, 0, "water");
+		LiquidIdentifier.get(11, 0, "lava"); //TODO ???
 	}
 	
 	@ServerStopping

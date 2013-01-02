@@ -535,13 +535,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
+	public boolean logisitcsIsPipeConnected(TileEntity tile) {
+		return false;
+	}
+	
 	@Override
-	public boolean isPipeConnected(TileEntity tile) {
+	public final boolean isPipeConnected(TileEntity tile) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
-		return super.isPipeConnected(tile);
+		return super.isPipeConnected(tile) || logisitcsIsPipeConnected(tile);
 	}
 	
 	public void connectionUpdate() {

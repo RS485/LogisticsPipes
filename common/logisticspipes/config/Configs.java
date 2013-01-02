@@ -13,6 +13,7 @@ public class Configs {
 	public static final String CATEGORY_MULTITHREAD = "multiThread";
 	
 	// Ids
+	public static int ItemLiquidContainerId							= 6864;
 	public static int ItemUpgradeManagerId							= 6865;
 	public static int ItemUpgradeId									= 6866;
 	public static int ItemPartsId									= 6867;
@@ -45,6 +46,10 @@ public class Configs {
 	public static int LOGISTICSPIPE_ENTRANCE_ID						= 6894;
 	public static int LOGISTICSPIPE_DESTINATION_ID					= 6895;
 	public static int LOGISTICSPIPE_CRAFTING_MK3_ID					= 6896;
+
+	public static int LOGISTICSPIPE_LIQUID_CONNECTOR				= 6901;
+	public static int LOGISTICSPIPE_LIQUID_BASIC					= 6902;
+	public static int LOGISTICSPIPE_LIQUID_INSERTION				= 6903;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -301,6 +306,9 @@ public class Configs {
 
 		Property logisticItemCardIdProperty = configuration.getItem("logisticItemCard.id", ItemCardId);
 		logisticItemCardIdProperty.comment = "The item id for the logistics item card";
+		
+		Property logisticsLiquidContainerIdProperty = configuration.getItem("LogisticsLiquidContainer.id", ItemLiquidContainerId);
+		logisticsLiquidContainerIdProperty.comment = "The item id for the logistics liquid container";
 
 		
 		Property detectionLength = configuration.get(Configuration.CATEGORY_GENERAL, "detectionLength", LOGISTICS_DETECTION_LENGTH);
@@ -360,6 +368,7 @@ public class Configs {
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
 		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);
 		ItemPartsId							= Integer.parseInt(logisticItemPartsIdProperty.value);
+		ItemLiquidContainerId				= Integer.parseInt(logisticsLiquidContainerIdProperty.value);
 		 
 		LOGISTICSPIPE_BASIC_ID 				= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID			= Integer.parseInt(logisticPipeRequesterIdProperty.value);

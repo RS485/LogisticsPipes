@@ -43,6 +43,7 @@ import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsManagerV2;
@@ -160,6 +161,11 @@ public class LogisticsPipes {
 	public static Item LogisticsDestination;
 	public static Item LogisticsCraftingPipeMK3;
 	
+	//Liquid Pipes
+	public static Item LogisticsLiquidConnector;
+	public static Item LogisticsLiquidBasic;
+	public static Item LogisticsLiquidInsertion;
+	
 	
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
@@ -169,6 +175,7 @@ public class LogisticsPipes {
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
 	public static Item LogisticsUpgradeManager;
+	public static Item LogisticsLiquidContainer;
 
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
@@ -388,6 +395,9 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
 		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
 		
+		LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ItemLiquidContainerId);
+		LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
+		LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -403,6 +413,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
 		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();

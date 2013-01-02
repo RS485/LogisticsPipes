@@ -34,10 +34,9 @@ public class WorldUtil {
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
 		for (ForgeDirection o : ForgeDirection.values()) {
 			if (o == ForgeDirection.UNKNOWN) continue;
-			Position p = new Position(_x, _y, _z, o);
-			p.moveForwards(1);
-			TileEntity tile = _worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
-
+			
+			TileEntity tile = getAdjacentTileEntitie(o);
+			
 			if (tile == null) continue;
 			
 			if(flag) {
@@ -53,5 +52,11 @@ public class WorldUtil {
 			foundTiles.add(new AdjacentTile(tile, o));
 		}
 		return foundTiles;
+	}
+	
+	public TileEntity getAdjacentTileEntitie(ForgeDirection direction) {
+		Position p = new Position(_x, _y, _z, direction);
+		p.moveForwards(1);
+		return _worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
 	}
 }

@@ -15,6 +15,7 @@ import java.util.List;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
@@ -94,8 +95,8 @@ class PathFinder {
 			return foundPipes;
 		}
 		
-		//Iron and obsidean pipes will separate networks
-		if (startPipe instanceof TileGenericPipe && (startPipe.pipe instanceof PipeItemsIron) || (startPipe.pipe instanceof PipeItemsObsidian)){
+		//Iron, obsidean and liquid pipes will separate networks
+		if (startPipe instanceof TileGenericPipe && ((startPipe.pipe instanceof PipeItemsIron) || (startPipe.pipe instanceof PipeItemsObsidian) || (startPipe.pipe instanceof LogisticsLiquidConnectorPipe))) {
 			return foundPipes;
 		}
 		

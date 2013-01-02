@@ -41,6 +41,7 @@ import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketLiquidUpdate;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketModuleNBT;
@@ -285,6 +286,10 @@ public class ClientPacketHandler {
 					final PacketNameUpdatePacket packetAt = new PacketNameUpdatePacket();
 					packetAt.readData(data);
 					onItemNameRequest(packetAt);
+					break;
+				case NetworkConstants.LIQUID_UPDATE_PACKET:
+					final PacketLiquidUpdate packetAu = new PacketLiquidUpdate();
+					packetAu.readData(data);
 					break;
 			}
 		} catch (final Exception ex) {

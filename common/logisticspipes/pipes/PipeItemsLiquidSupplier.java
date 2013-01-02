@@ -96,6 +96,6 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	
 	@Override
 	public ItemSendMode getItemSendMode() {
-		return ItemSendMode.Normal;
+		return ItemSendMode.Fast;
 	}
 }

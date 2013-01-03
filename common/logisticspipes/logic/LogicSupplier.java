@@ -91,7 +91,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			//Do not attempt to supply redstone engines
 			if (tile.tile instanceof TileEngine && ((TileEngine)tile.tile).engine instanceof EngineWood) continue;
 			
-			IInventory inv = Utils.getInventory((IInventory) tile.tile);
+			IInventory inv = (IInventory) tile.tile;
 			if (inv.getSizeInventory() < 1) continue;
 			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			

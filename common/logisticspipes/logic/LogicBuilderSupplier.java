@@ -59,8 +59,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			if (!(tile.tile instanceof TileBuilder)) continue;
 			TileBuilder builder = (TileBuilder) tile.tile;
 			
-			IInventory inv = Utils.getInventory((IInventory) tile.tile);
-			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile.tile);
 			
 			//How many do I want?
 			Collection<ItemStack> neededItems = builder.getNeededItems();

@@ -11,12 +11,11 @@ package logisticspipes.utils;
 import java.util.HashMap;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 public class InventoryUtil implements IInventoryUtil {
-	
+
 	private final IInventory _inventory;
 	private final boolean _hideOnePerStack;
 	private final boolean _hideOne;

@@ -1,0 +1,64 @@
+package logisticspipes.utils;
+
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.InventoryLargeChest;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
+import net.minecraft.tileentity.TileEntityFurnace;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.ISidedInventory;
+import buildcraft.api.core.Position;
+import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.core.inventory.ITransactor;
+import buildcraft.core.inventory.TransactorFurnace;
+import buildcraft.core.inventory.TransactorSided;
+import buildcraft.core.inventory.TransactorSimple;
+import buildcraft.core.inventory.TransactorSpecial;
+import buildcraft.core.utils.Utils;
+
+public class InventoryHelper {
+	//BC getInventory with fixed doublechest halves ordering.
+	public static IInventory getInventory(IInventory inv) {
+		if (inv instanceof TileEntityChest) {
+			TileEntityChest chest = (TileEntityChest) inv;
+			Position pos = new Position(chest.xCoord, chest.yCoord, chest.zCoord);
+			TileEntity tile;
+			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.WEST);
+			if (tile instanceof TileEntityChest) {
+				return new InventoryLargeChest("", (IInventory) tile, inv);
+			}
+			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.EAST);
+			if (tile instanceof TileEntityChest) {
+				return new InventoryLargeChest("", inv, (IInventory) tile);
+			}
+			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.NORTH);
+			if (tile instanceof TileEntityChest) {
+				return new InventoryLargeChest("", (IInventory) tile, inv);
+			}
+			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.SOUTH);
+			if (tile instanceof TileEntityChest) {
+				return new InventoryLargeChest("", inv, (IInventory) tile);
+			}
+		}
+		return inv;
+	}
+
+	//BC getTransactorFor using our getInventory
+	public static ITransactor getTransactorFor(Object object) {
+
+		if (object instanceof ISpecialInventory)
+			return new TransactorSpecial((ISpecialInventory) object);
+
+		// Furnaces need to be special cased to prevent vanilla XP exploits.
+		else if (object instanceof TileEntityFurnace)
+			return new TransactorFurnace((ISidedInventory) object);
+
+		else if (object instanceof ISidedInventory)
+			return new TransactorSided((ISidedInventory) object);
+
+		else if (object instanceof IInventory)
+			return new TransactorSimple(getInventory((IInventory) object));
+
+		return null;
+	}
+}

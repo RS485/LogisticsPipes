@@ -27,6 +27,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -34,7 +35,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -104,7 +104,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
-		return Utils.getInventory((IInventory) tile);
+		return InventoryHelper.getInventory((IInventory) tile);
 	}
 	
 	private IInventory getInventory(ForgeDirection ori) {

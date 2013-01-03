@@ -55,6 +55,20 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
 		public int itemID;
 		public int itemDamage;
+		@Override 
+		public boolean equals(Object that){
+			if (!(that instanceof ItemKey))
+				return false;
+			ItemKey i = (ItemKey)that;
+			return this.itemID== i.itemID && this.itemDamage == i.itemDamage;
+			
+		}
+		
+		@Override public int hashCode(){
+			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
+			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
+			return ((itemID)*1000001)+itemDamage;
+		}
 		@Override
 		public int compareTo(ItemKey o) {
 			if(itemID==o.itemID)
@@ -410,5 +424,17 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if(uniqueID>o.uniqueID)
 			return 1;
 		return 0;
+	}
+	
+	public boolean equals(Object that){
+		if (!(that instanceof ItemIdentifier))
+			return false;
+		ItemIdentifier i = (ItemIdentifier)that;
+		return this.uniqueID==i.uniqueID;
+		
+	}
+	
+	@Override public int hashCode(){
+		return uniqueID;
 	}
 }

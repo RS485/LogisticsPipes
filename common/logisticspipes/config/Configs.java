@@ -50,6 +50,8 @@ public class Configs {
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR				= 6901;
 	public static int LOGISTICSPIPE_LIQUID_BASIC					= 6902;
 	public static int LOGISTICSPIPE_LIQUID_INSERTION				= 6903;
+	public static int LOGISTICSPIPE_LIQUID_PROVIDER					= 6904;
+	public static int LOGISTICSPIPE_LIQUID_REQUEST					= 6905;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	

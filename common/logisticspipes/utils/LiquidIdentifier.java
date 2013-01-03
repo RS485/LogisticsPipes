@@ -35,6 +35,10 @@ public class LiquidIdentifier {
 		return name;
 	}
 	
+	public ItemIdentifier getItemIdentifier() {
+		return ItemIdentifier.get(itemId, itemMeta, null);
+	}
+	
 	public static LiquidIdentifier get(LiquidStack stack) {
 		for(LiquidIdentifier ident:_liquidIdentifierCache) {
 			if(stack.itemID == ident.itemId && stack.itemMeta == ident.itemMeta) {
@@ -51,6 +55,15 @@ public class LiquidIdentifier {
 			}
 		}
 		return new LiquidIdentifier(stack.itemID,stack.itemMeta, name);
+	}
+	
+	public static LiquidIdentifier get(int itemID, int itemMeta) {
+		for(LiquidIdentifier ident:_liquidIdentifierCache) {
+			if(itemID == ident.itemId && itemMeta == ident.itemMeta) {
+				return ident;
+			}
+		}
+		return new LiquidIdentifier(itemID, itemMeta);
 	}
 	
 	public static LiquidIdentifier get(int itemID, int itemMeta, String name) {

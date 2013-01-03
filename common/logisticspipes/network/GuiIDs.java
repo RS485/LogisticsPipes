@@ -27,6 +27,7 @@ public class GuiIDs {
 	public static final int GUI_OrdererStats_ID = 32;
 	public static final int GUI_Normal_Mk2_Orderer_ID = 34;
 	public static final int GUI_HUD_Settings = 35;
+	public static final int GUI_Liquid_Orderer_ID = 36;
 
 	public static final int GUI_Module_ElectricManager_ID = 40;
 	

@@ -12,6 +12,7 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWatchingHandler;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -301,6 +302,16 @@ public class ServerPacketHandler {
 					final PacketNameUpdatePacket packetAs = new PacketNameUpdatePacket();
 					packetAs.readData(data);
 					onNameUpdate(packetAs);
+					break;
+				case NetworkConstants.ORDERER_LIQUID_REFRESH_REQUEST:
+					final PacketPipeInteger packetAt = new PacketPipeInteger();
+					packetAt.readData(data);
+					onLiquidRefreshRequest(player, packetAt);
+					break;
+				case NetworkConstants.LIQUID_REQUEST_SUBMIT:
+					final PacketRequestSubmit packetAu = new PacketRequestSubmit();
+					packetAu.readData(data);
+					onLiquidRequestSubmit(player, packetAu);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1232,6 +1243,36 @@ public class ServerPacketHandler {
 
 	private static void onNameUpdate(PacketNameUpdatePacket packetAs) {
 		MainProxy.proxy.updateNames(packetAs.item, packetAs.name);
+	}
+
+	private static void onLiquidRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
+		int dimension = packet.integer;
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		
+		RequestHandler.refreshLiquid(player, (CoreRoutedPipe) pipe.pipe);
+	}
+
+	private static void onLiquidRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		if (!(pipe.pipe instanceof IRequestLiquid)) {
+			return;
+		}
+		
+		RequestHandler.requestLiquid(player, packet, (CoreRoutedPipe) pipe.pipe, (IRequestLiquid) pipe.pipe);
 	}
 	
 	// BuildCraft method

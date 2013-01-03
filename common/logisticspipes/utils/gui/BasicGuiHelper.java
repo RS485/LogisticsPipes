@@ -120,8 +120,10 @@ public class BasicGuiHelper {
 					s = "";
 				} else if (st.stackSize < 1000) {
 					s = st.stackSize + "";
-				} else if (st.stackSize < 1000000){
+				} else if (st.stackSize < 100000){
 					s = st.stackSize / 1000 + "K";
+				} else if (st.stackSize < 1000000){
+					s = "0M" + st.stackSize / 100000;
 				} else {
 					s = st.stackSize / 1000000 + "M";
 				}

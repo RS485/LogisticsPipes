@@ -26,6 +26,7 @@ import logisticspipes.gui.modules.GuiPassiveSupplier;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiTerminus;
 import logisticspipes.gui.modules.GuiWithPreviousGuiContainer;
+import logisticspipes.gui.orderer.LiquidGuiOrderer;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -54,6 +55,7 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
+import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -301,6 +303,10 @@ public class GuiHandler implements IGuiHandler {
 
 			case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
+				return new DummyContainer(player.inventory, null);
+				
+			case GuiIDs.GUI_Liquid_Orderer_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLiquidRequestLogistics)) return null;
 				return new DummyContainer(player.inventory, null);
 				
 			case GuiIDs.GUI_Inv_Sys_Connector_ID:
@@ -605,6 +611,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Normal_Mk2_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
 				return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2)pipe.pipe), player);
+				
+			case GuiIDs.GUI_Liquid_Orderer_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLiquidRequestLogistics)) return null;
+				return new LiquidGuiOrderer(((PipeLiquidRequestLogistics)pipe.pipe), player);
 				
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;

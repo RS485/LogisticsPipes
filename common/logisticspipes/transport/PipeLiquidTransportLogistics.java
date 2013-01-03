@@ -16,7 +16,6 @@ import buildcraft.api.core.SafeTimeTracker;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransport;
-import buildcraft.transport.PipeTransportLiquids.TransferState;
 
 public class PipeLiquidTransportLogistics extends PipeTransportLogistics implements ITankContainer {
 
@@ -141,7 +140,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 	 * BuildCraft Liquid Sync Code
 	 */
 	private final SafeTimeTracker tracker = new SafeTimeTracker();
-	private int clientSyncCounter = 0;
+	private long clientSyncCounter = BuildCraftCore.longUpdateFactor - 10;
 	public byte initClient = 0;
 	
 	private static final ForgeDirection[] orientations = ForgeDirection.values();
@@ -155,6 +154,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 				clientSyncCounter = 0;
 				init = true;
 			}
+			if(clientSyncCounter < 0) clientSyncCounter = 0;
 			PacketLiquidUpdate packet = computeLiquidUpdate(init, true);
 			if (packet != null) {
 				MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.PIPE_CONTENTS_RENDER_DIST, MainProxy.getDimensionForWorld(worldObj), packet.getPacket());

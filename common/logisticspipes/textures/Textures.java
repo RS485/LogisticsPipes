@@ -51,6 +51,8 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_CRAFTERMK3_TEXTURE_DIS			= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_BASIC					= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_INSERTION				= empty;
+	public static TextureType LOGISTICSPIPE_LIQUID_PROVIDER					= empty;
+	public static TextureType LOGISTICSPIPE_LIQUID_REQUEST					= empty;
 	
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR						= 0;
 	
@@ -83,6 +85,8 @@ public class Textures {
 	public static final String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE	= "/logisticspipes/pipes/liquid_connector.png";
 	public static final String LOGISTICSPIPE_LIQUID_BASIC_FILE				= "/logisticspipes/pipes/liquid_basic.png";
 	public static final String LOGISTICSPIPE_LIQUID_INSERTION_FILE			= "/logisticspipes/pipes/liquid_insertion.png";
+	public static final String LOGISTICSPIPE_LIQUID_PROVIDER_FILE			= "/logisticspipes/pipes/liquid_provider.png";
+	public static final String LOGISTICSPIPE_LIQUID_REQUEST_FILE			= "/logisticspipes/pipes/liquid_request.png";
 	
 	// Status overlay
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
@@ -187,7 +191,9 @@ public class Textures {
 		
 		LOGISTICSPIPE_LIQUID_CONNECTOR				= registerSingleTexture(LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE);
 		LOGISTICSPIPE_LIQUID_BASIC					= registerTexture(LOGISTICSPIPE_LIQUID_BASIC_FILE);
-		LOGISTICSPIPE_LIQUID_INSERTION					= registerTexture(LOGISTICSPIPE_LIQUID_INSERTION_FILE);
+		LOGISTICSPIPE_LIQUID_INSERTION				= registerTexture(LOGISTICSPIPE_LIQUID_INSERTION_FILE);
+		LOGISTICSPIPE_LIQUID_PROVIDER				= registerTexture(LOGISTICSPIPE_LIQUID_PROVIDER_FILE);
+		LOGISTICSPIPE_LIQUID_REQUEST				= registerTexture(LOGISTICSPIPE_LIQUID_REQUEST_FILE);
 		if (index > 256) {
 			throw new UnsupportedOperationException("Too many Textures.");
 		}

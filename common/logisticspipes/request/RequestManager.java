@@ -6,14 +6,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 
 public class RequestManager {
@@ -216,5 +219,36 @@ public class RequestManager {
 			}
 		}
 		return result;
+	}
+
+	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<IRouter> validDestinations, RequestLog log) {
+		List<ILiquidProvider> providers = getLiquidProviders(validDestinations);
+		LiquidRequest request = new LiquidRequest(liquid, amount);
+		for(ILiquidProvider provider:providers) { //TODO
+			provider.canProvide(request);
+		}
+		if(request.isAllDone()) {
+			request.fullFill(pipe);
+			if(log != null) {
+				log.handleSucessfullRequestOf(new ItemMessage(request.getStack()));
+			}
+			return true;
+		} else {
+			if(log != null) {
+				request.sendMissingMessage(log);
+			}
+			return false;
+		}
+	}
+
+	private static List<ILiquidProvider> getLiquidProviders(List<IRouter> validDestinations) {
+		List<ILiquidProvider> providers = new LinkedList<ILiquidProvider>();
+		for(IRouter r : validDestinations) {
+			CoreRoutedPipe pipe = r.getPipe();
+			if (pipe instanceof ILiquidProvider){
+				providers.add((ILiquidProvider)pipe);
+			}
+		}
+		return providers;
 	}
 }

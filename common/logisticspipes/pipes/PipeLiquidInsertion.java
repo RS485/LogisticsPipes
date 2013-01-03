@@ -61,8 +61,6 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 				continue;
 			}
 			
-			//stack.amount = 2500;
-			
 			Pair<UUID, Integer> result = SimpleServiceLocator.logisticsLiquidManager.getBestReply(stack, getRouter(), tempJamList);
 			if(result == null || result.getValue1() == null || result.getValue2() == 0) {
 				nextSendMax[dir.ordinal()] = 100;
@@ -81,7 +79,7 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(liquidContainer, worldObj);
 			routed.setDestination(result.getValue1());
 			routed.setTransportMode(TransportMode.Passive);
-			this.queueRoutedItem(routed, dir.getOpposite());
+			this.queueRoutedItem(routed, dir);
 			nextSendMax[dir.ordinal()] = 100;
 			nextSendMin[dir.ordinal()] = 10;
 		}

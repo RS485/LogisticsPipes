@@ -34,8 +34,8 @@ public class ItemModuleInformationManager {
 			 NBTTagList list = new NBTTagList();
 			String info1 = "Please reopen the window";
 			String info2 = "to see the information.";
-    		list.appendTag(new NBTTagString(info1,info1));
-    		list.appendTag(new NBTTagString(info2,info2));
+    		list.appendTag(new NBTTagString(null ,info1));
+    		list.appendTag(new NBTTagString(null ,info2));
     		if(!itemStack.hasTagCompound()) {
             	itemStack.setTagCompound(new NBTTagCompound());
             }
@@ -54,7 +54,7 @@ public class ItemModuleInformationManager {
         	if(information.size() > 0) {
         		NBTTagList list = new NBTTagList();
         		for(String info:information) {
-        			list.appendTag(new NBTTagString(info,info));
+        			list.appendTag(new NBTTagString(null ,info));
         		}
         		stacktag.setTag("informationList", list);
         	}

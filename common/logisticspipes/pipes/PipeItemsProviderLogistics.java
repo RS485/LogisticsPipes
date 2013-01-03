@@ -21,6 +21,7 @@ import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -42,8 +43,6 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.CroppedInventory;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -64,7 +63,6 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	private final HUDProvider HUD = new HUDProvider(this);
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
-	//private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
 	private boolean doContentUpdate = true;
 		
 	public PipeItemsProviderLogistics(int itemID) {
@@ -95,7 +93,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
+			IInventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
 			count += inv.itemCount(item);
 		}
 		return count;
@@ -121,7 +119,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			
-			InventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile); 
+			IInventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile);
 			int available = inv.itemCount(item);
 			if (available == 0) continue;
 			
@@ -149,23 +147,19 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return 0;
 	}
 	
-	private InventoryUtil getAdaptedInventoryUtil(IInventory base){
+	private IInventoryUtil getAdaptedInventoryUtil(IInventory base){
 		ExtractionMode mode = ((LogicProvider)logic).getExtractionMode();
 		switch(mode){
 			case LeaveFirst:
-				base = new CroppedInventory(base, 1, 0);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
 			case LeaveLast:
-				base = new CroppedInventory(base, 0, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
 			case LeaveFirstAndLast:
-				base = new CroppedInventory(base, 1, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
 		}
-		
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
 	}
 
 	@Override
@@ -248,7 +242,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile); 
+			IInventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 			for (ItemIdentifier currItem : currentInv.keySet()){

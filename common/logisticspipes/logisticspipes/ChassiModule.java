@@ -1,6 +1,7 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -8,7 +9,6 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.inventory.IInventory;
@@ -57,7 +57,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 		//Always deny items when we can't put the item anywhere
 		IInventory inv = _parentPipe.getInventory();
 		if (inv == null) return null;
-		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 		int roomForItem = invUtil.roomForItem(ItemIdentifier.get(item)); 
 		
 		if (roomForItem < 1) return null;

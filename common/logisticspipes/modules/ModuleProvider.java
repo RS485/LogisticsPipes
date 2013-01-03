@@ -13,6 +13,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -36,8 +37,6 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.CroppedInventory;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -178,7 +177,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
 		if (_invProvider.getInventory() == null) return allItems;
 	
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 		for (ItemIdentifier currItem : currentInv.keySet()){
 			if ( hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) 
@@ -219,7 +218,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 			_orderManager.sendFailed();
 			return 0;
 		}
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
@@ -247,7 +246,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
 						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
 		
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		return inv.itemCount(item);
 	}
 	
@@ -259,21 +258,18 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return _filterInventory.containsItem(item);
 	}
 	
-	public InventoryUtil getAdaptedUtil(IInventory base){
+	public IInventoryUtil getAdaptedUtil(IInventory base){
 		switch(_extractionMode){
 			case LeaveFirst:
-				base = new CroppedInventory(base, 1, 0);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
 			case LeaveLast:
-				base = new CroppedInventory(base, 0, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
 			case LeaveFirstAndLast:
-				base = new CroppedInventory(base, 1, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
 	}
 
 

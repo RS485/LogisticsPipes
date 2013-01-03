@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISpecialInventoryHandler;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.utils.ItemIdentifier;
@@ -32,58 +33,14 @@ public class SpecialInventoryHandler {
 		return null;
 	}
 	
-	public boolean isSpecialType(IInventory inv) {
+	public IInventoryUtil getUtilForInv(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		TileEntity tile = getTileEntityFromInventory(inv);
-		if(tile == null) return false;
-		for(ISpecialInventoryHandler invHandler:handler) {
-			if(invHandler.isType(tile)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	public int roomForItem(IInventory _inventory, ItemIdentifier item) {
-		TileEntity tile = getTileEntityFromInventory(_inventory);
-		if(tile == null) return 0;
-		for(ISpecialInventoryHandler invHandler:handler) {
-			if(invHandler.isType(tile)) {
-				return invHandler.roomForItem(tile, item);
-			}
-		}
-		return 0;
-	}
-
-	public ItemStack getSingleItem(IInventory _inventory, ItemIdentifier item) {
-		TileEntity tile = getTileEntityFromInventory(_inventory);
 		if(tile == null) return null;
 		for(ISpecialInventoryHandler invHandler:handler) {
 			if(invHandler.isType(tile)) {
-				return invHandler.getSingleItem(tile, item);
+				return invHandler.getUtilForTile(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 			}
 		}
 		return null;
-	}
-
-	public boolean containsItem(IInventory _inventory, ItemIdentifier item) {
-		TileEntity tile = getTileEntityFromInventory(_inventory);
-		if(tile == null) return false;
-		for(ISpecialInventoryHandler invHandler:handler) {
-			if(invHandler.isType(tile)) {
-				return invHandler.containsItem(tile, item);
-			}
-		}
-		return false;
-	}
-
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount(IInventory _inventory) {
-		TileEntity tile = getTileEntityFromInventory(_inventory);
-		if(tile == null) return new HashMap<ItemIdentifier, Integer>();
-		for(ISpecialInventoryHandler invHandler:handler) {
-			if(invHandler.isType(tile)) {
-				return invHandler.getItemsAndCount(tile);
-			}
-		}
-		return new HashMap<ItemIdentifier, Integer>();
 	}
 }

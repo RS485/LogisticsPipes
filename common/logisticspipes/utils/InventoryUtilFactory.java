@@ -8,15 +8,20 @@
 
 package logisticspipes.utils;
 
+import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
 import buildcraft.core.utils.Utils;
 
 public class InventoryUtilFactory {
-	public InventoryUtil getInventoryUtil(IInventory inv) {
-		return new InventoryUtil(Utils.getInventory(inv), false);
+	public IInventoryUtil getInventoryUtil(IInventory inv) {
+		return getHidingInventoryUtil(inv, false, false, 0, 0);
 	}
-	public InventoryUtil getOneHiddenInventoryUtil(IInventory inv) {
-		return new InventoryUtil(Utils.getInventory(inv), true);
+	public IInventoryUtil getHidingInventoryUtil(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		IInventoryUtil util = SimpleServiceLocator.specialinventory.getUtilForInv(inv, hideOnePerStack, hideOne, cropStart, cropEnd);
+		if (util != null) {
+			return util;
+		}
+		return new InventoryUtil(Utils.getInventory(inv), hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
-
 }

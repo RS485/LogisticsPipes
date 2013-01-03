@@ -12,14 +12,13 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -61,7 +60,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			TileBuilder builder = (TileBuilder) tile.tile;
 			
 			IInventory inv = Utils.getInventory((IInventory) tile.tile);
-			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
 			//How many do I want?
 			Collection<ItemStack> neededItems = builder.getNeededItems();

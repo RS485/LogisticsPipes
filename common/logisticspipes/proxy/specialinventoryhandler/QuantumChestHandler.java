@@ -5,18 +5,28 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISpecialInventoryHandler;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class QuantumChestHandler implements ISpecialInventoryHandler {
-	
-	Class<?> GT_TileEntity_Quantumchest;
-	Field mItemCount;
-	Method getStoredItemData;
-	
+public class QuantumChestHandler implements IInventoryUtil, ISpecialInventoryHandler {
+
+	private static Class<?> GT_TileEntity_Quantumchest;
+	private static Field mItemCount;
+	private static Method getStoredItemData;
+
+	private final TileEntity _tile;
+
+	private QuantumChestHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		_tile = tile;
+	}
+
+	public QuantumChestHandler() {
+		_tile = null;
+	}
 	@Override
 	public boolean init() {
 		try {
@@ -36,11 +46,26 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount(TileEntity tile) {
+	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		return new QuantumChestHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
+	}
+
+
+	@Override
+	public int itemCount(ItemIdentifier itemIdent) {
+		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
+		if(map.containsKey(itemIdent)) {
+			return map.get(itemIdent);
+		}
+		return 0;
+	}
+
+	@Override
+	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		ItemStack[] data = new ItemStack[]{};
 		try {
-			data = (ItemStack[]) getStoredItemData.invoke(tile, new Object[]{});
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -48,7 +73,7 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		ItemStack stack = ((IInventory)tile).getStackInSlot(1);
+		ItemStack stack = ((IInventory)_tile).getStackInSlot(1);
 		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return map;
 		if(stack == null || stack.itemID < 1) return map;
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
@@ -63,35 +88,10 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(TileEntity tile, ItemIdentifier item) {
-		int result = Integer.MAX_VALUE - 128;
+	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		ItemStack[] data = new ItemStack[]{};
 		try {
-			data = (ItemStack[]) getStoredItemData.invoke(tile, new Object[]{});
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return result;
-		ItemStack stack = ((IInventory)tile).getStackInSlot(1);
-		if(stack == null || stack.itemID < 1) return result;
-		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
-		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
-		if(item == dataIdent || item == stackIdent) {
-			return result - (data[0].stackSize + stack.stackSize);
-		} else {
-			return 0;
-		}
-	}
-
-	@Override
-	public ItemStack getSingleItem(TileEntity tile, ItemIdentifier item) {
-		ItemStack[] data = new ItemStack[]{};
-		try {
-			data = (ItemStack[]) getStoredItemData.invoke(tile, new Object[]{});
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -100,17 +100,17 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 			e.printStackTrace();
 		}
 		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return null;
-		ItemStack stack = ((IInventory)tile).getStackInSlot(1);
+		ItemStack stack = ((IInventory)_tile).getStackInSlot(1);
 		if(stack == null || stack.itemID < 1) return null;
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
-		if(stackIdent == item && stack.stackSize > 1) {
+		if(stackIdent == itemIdent && stack.stackSize > 1) {
 			stack.stackSize--;
 			return stackIdent.makeNormalStack(1);
 		}
-		if(dataIdent == item && data[0].stackSize > 0) {
+		if(dataIdent == itemIdent && data[0].stackSize > 0) {
 			try {
-				mItemCount.set(tile, data[0].stackSize - 1);
+				mItemCount.set(_tile, data[0].stackSize - 1);
 				return dataIdent.makeNormalStack(1);
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
@@ -118,7 +118,7 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 				e.printStackTrace();
 			}
 		}
-		if(stackIdent == item && stack.stackSize > 0) {
+		if(stackIdent == itemIdent && stack.stackSize > 0) {
 			stack.stackSize--;
 			return stackIdent.makeNormalStack(1);
 		}
@@ -126,10 +126,25 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(TileEntity tile, ItemIdentifier item) {
+	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count){
+		if (itemCount(itemIdent) < count) return null;
+		ItemStack stack = null;
+		for (int i = 0; i < count; i++){
+			if(stack == null){
+				stack = getSingleItem(itemIdent);
+			}
+			else{
+				stack.stackSize += getSingleItem(itemIdent).stackSize;
+			}
+		}
+		return stack;
+	}
+
+	@Override
+	public boolean containsItem(ItemIdentifier itemIdent) {
 		ItemStack[] data = new ItemStack[]{};
 		try {
-			data = (ItemStack[]) getStoredItemData.invoke(tile, new Object[]{});
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -139,7 +154,36 @@ public class QuantumChestHandler implements ISpecialInventoryHandler {
 		}
 		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return false;
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
-		return item == dataIdent;
+		return itemIdent == dataIdent;
 	}
 
+	@Override
+	public int roomForItem(ItemIdentifier itemIdent) {
+		int result = Integer.MAX_VALUE - 128;
+		ItemStack[] data = new ItemStack[]{};
+		try {
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return result;
+		ItemStack stack = ((IInventory)_tile).getStackInSlot(1);
+		if(stack == null || stack.itemID < 1) return result;
+		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
+		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
+		if(itemIdent == dataIdent || itemIdent == stackIdent) {
+			return result - (data[0].stackSize + stack.stackSize);
+		} else {
+			return 0;
+		}
+	}
+
+	@Override
+	public boolean hasRoomForItem(ItemIdentifier itemIdent) {
+		return roomForItem(itemIdent) > 0;
+	}
 }

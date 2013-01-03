@@ -6,13 +6,12 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISpecialInventoryHandler;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class QuantumChestHandler implements IInventoryUtil, ISpecialInventoryHandler {
+public class QuantumChestHandler extends SpecialInventoryHandler {
 
 	private static Class<?> GT_TileEntity_Quantumchest;
 	private static Field mItemCount;
@@ -50,15 +49,6 @@ public class QuantumChestHandler implements IInventoryUtil, ISpecialInventoryHan
 		return new QuantumChestHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
-
-	@Override
-	public int itemCount(ItemIdentifier itemIdent) {
-		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
-		if(map.containsKey(itemIdent)) {
-			return map.get(itemIdent);
-		}
-		return 0;
-	}
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
@@ -126,21 +116,6 @@ public class QuantumChestHandler implements IInventoryUtil, ISpecialInventoryHan
 	}
 
 	@Override
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count){
-		if (itemCount(itemIdent) < count) return null;
-		ItemStack stack = null;
-		for (int i = 0; i < count; i++){
-			if(stack == null){
-				stack = getSingleItem(itemIdent);
-			}
-			else{
-				stack.stackSize += getSingleItem(itemIdent).stackSize;
-			}
-		}
-		return stack;
-	}
-
-	@Override
 	public boolean containsItem(ItemIdentifier itemIdent) {
 		ItemStack[] data = new ItemStack[]{};
 		try {
@@ -180,10 +155,5 @@ public class QuantumChestHandler implements IInventoryUtil, ISpecialInventoryHan
 		} else {
 			return 0;
 		}
-	}
-
-	@Override
-	public boolean hasRoomForItem(ItemIdentifier itemIdent) {
-		return roomForItem(itemIdent) > 0;
 	}
 }

@@ -6,12 +6,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ISpecialInventoryHandler;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class BarrelInventoryHandler implements IInventoryUtil, ISpecialInventoryHandler {
+public class BarrelInventoryHandler extends SpecialInventoryHandler {
 
 	private static Class <? extends Object> barrelClass;
 	private static Method getItemCount;
@@ -58,15 +57,6 @@ public class BarrelInventoryHandler implements IInventoryUtil, ISpecialInventory
 
 
 	@Override
-	public int itemCount(ItemIdentifier itemIdent) {
-		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
-		if(map.containsKey(itemIdent)) {
-			return map.get(itemIdent);
-		}
-		return 0;
-	}
-
-	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		try {
@@ -111,21 +101,6 @@ public class BarrelInventoryHandler implements IInventoryUtil, ISpecialInventory
 	}
 
 	@Override
-	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count){
-		if (itemCount(itemIdent) < count) return null;
-		ItemStack stack = null;
-		for (int i = 0; i < count; i++){
-			if(stack == null){
-				stack = getSingleItem(itemIdent);
-			}
-			else{
-				stack.stackSize += getSingleItem(itemIdent).stackSize;
-			}
-		}
-		return stack;
-	}
-
-	@Override
 	public boolean containsItem(ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
@@ -160,10 +135,5 @@ public class BarrelInventoryHandler implements IInventoryUtil, ISpecialInventory
 			e.printStackTrace();
 		}
 		return 0;
-	}
-
-	@Override
-	public boolean hasRoomForItem(ItemIdentifier itemIdent) {
-		return roomForItem(itemIdent) > 0;
 	}
 }

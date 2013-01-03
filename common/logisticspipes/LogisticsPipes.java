@@ -78,7 +78,6 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -201,7 +200,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
-		SimpleServiceLocator.setSpecialInventoryHandler(new SpecialInventoryHandler());
 		
 		textures.load(event);
 		
@@ -334,15 +332,15 @@ public class LogisticsPipes {
 //		}
 		
 		if(Loader.isModLoaded("factorization")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());
 		}
 		
 		if(Loader.isModLoaded("GregTech_Addon")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new QuantumChestHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new QuantumChestHandler());
 		}
 
 		if(Loader.isModLoaded("BetterStorage")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new CrateInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());

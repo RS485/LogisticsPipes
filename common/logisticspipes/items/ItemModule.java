@@ -48,7 +48,7 @@ import net.minecraft.world.World;
 import org.lwjgl.input.Keyboard;
 
 public class ItemModule extends LogisticsItem {
-	
+
 	//Texture Map
 	/*public static final String textureMap =	"0000111111111111" +
 											"0000011111111111" +
@@ -67,7 +67,7 @@ public class ItemModule extends LogisticsItem {
 											"1111111111111111" +
 											"1111111111111111";
 	 */
-	
+
 	//PASSIVE MODULES
 	public static final int BLANK = 0;
 	public static final int ITEMSINK = 1;
@@ -85,20 +85,20 @@ public class ItemModule extends LogisticsItem {
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
 	public static final int ADVANCED_EXTRACTOR_MK2 = 100 + ADVANCED_EXTRACTOR;
-	
+
 	//PASSIVE MK 3
 	public static final int EXTRACTOR_MK3 = 200 + EXTRACTOR;
 	public static final int ADVANCED_EXTRACTOR_MK3 = 200 + ADVANCED_EXTRACTOR;
 
 	public static final int ELECTRICMANAGER = 300;
-	
+
 
 	//ACTIVE MODULES
 	public static final int PROVIDER = 500;
 	public static final int PROVIDER_MK2 = 501;
-	
+
 	private List<Module> modules = new ArrayList<Module>();
-	
+
 	private class Module {
 		private String name;
 		private int id;
@@ -117,7 +117,7 @@ public class ItemModule extends LogisticsItem {
 			this.moduleClass = moduleClass;
 			this.textureIndex = textureIndex;
 		}
-		
+
 		private ILogisticsModule getILogisticsModule() {
 			if(moduleClass == null) return null;
 			try {
@@ -137,29 +137,29 @@ public class ItemModule extends LogisticsItem {
 			}
 			return null;
 		}
-		
+
 		private Class<? extends ILogisticsModule> getILogisticsModuleClass() {
 			return moduleClass;
 		}
-		
+
 		private int getId() {
 			return id;
 		}
-		
+
 		private String getName() {
 			return name;
 		}
-		
+
 		private int getTextureIndex() {
 			return textureIndex;
 		}
 	}
-	
+
 	public ItemModule(int i) {
 		super(i);
 		this.hasSubtypes = true;
 	}
-	
+
 	public void loadModules() {
 		registerModule(BLANK					, "Blank module"				, null);
 		registerModule(ITEMSINK					, "ItemSink module"				, ModuleItemSink.class);
@@ -181,7 +181,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);
 		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
 	}
-	
+
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
 		boolean flag = true;
 		for(Module module:modules) {
@@ -197,7 +197,7 @@ public class ItemModule extends LogisticsItem {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Module. (No name given)");
 		}
 	}
-	
+
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass, int textureId) {
 		boolean flag = true;
 		for(Module module:modules) {
@@ -213,7 +213,7 @@ public class ItemModule extends LogisticsItem {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Module. (No name given)");
 		}
 	}
-	
+
 	public int[] getRegisteredModulesIDs() {
 		int[] array = new int[modules.size()];
 		int i = 0;
@@ -222,46 +222,52 @@ public class ItemModule extends LogisticsItem {
 		}
 		return array;
 	}
-	
+
 	@Override
 	public CreativeTabs getCreativeTab()
-    {
-        return CreativeTabs.tabRedstone;
-    }
+	{
+		return CreativeTabs.tabRedstone;
+	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
-    {
+	{
 		for(Module module:modules) {
 			par3List.add(new ItemStack(this, 1, module.getId()));
 		}
-    }
-	
+	}
+
+	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
+		ILogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
+		if(module != null && module instanceof ILogisticsGuiModule) {
+			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
+				par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((ILogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
+			}
+		}
+	}
+
+	@Override
+	public ItemStack onItemRightClick(final ItemStack par1ItemStack, final World par2World, final EntityPlayer par3EntityPlayer)
+	{
+		if(MainProxy.isServer()) {
+			openConfigGui(par1ItemStack, par3EntityPlayer, par2World);
+		}
+		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+	}
+
 	@Override
 	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
 		if(MainProxy.isServer()) {
 			TileEntity tile = par3World.getBlockTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
-				return false;
-			}
-			final ILogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
-			if(module != null && module instanceof ILogisticsGuiModule) {
-				QueuedTasks.queueTask(new Callable() {
-					@Override
-					public Object call() throws Exception {
-						if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
-							par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((ILogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
-						}
-						return null;
-					}
-				});
 				return true;
 			}
+			openConfigGui(par1ItemStack, par2EntityPlayer, par3World);
 		}
-		return super.onItemUse(par1ItemStack, par2EntityPlayer, par3World, par4, par5, par6, par7, par8, par9, par10);
+		return true;
 	}
-	
+
 	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider power){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.shiftedIndex) return null;
@@ -289,7 +295,7 @@ public class ItemModule extends LogisticsItem {
 		}
 		return null;
 	}
-	
+
 	@Override
 	public int getIconFromDamage(int i) {
 		for(Module module:modules) {
@@ -299,19 +305,19 @@ public class ItemModule extends LogisticsItem {
 				}
 			}
 		}
-		
+
 		if (i >= 500){
 			return 5 * 16 + (i - 500);
 		}
-		
+
 		if (i >= 200){
 			return 4 * 16 + (i - 200);
 		}
-		
+
 		if (i >= 100){
 			return 3 * 16 + (i - 100);
 		}
-			
+
 		return 2 * 16 + i;
 	}
 
@@ -342,7 +348,7 @@ public class ItemModule extends LogisticsItem {
 									ItemStack stack = inv.getStackInSlot(pos);
 									if(stack != null) {
 										if(stack.stackSize > 1) {
-											list.add("  " + stack.stackSize+"x " + ItemIdentifier.get(stack).getFriendlyName());	
+											list.add("  " + stack.stackSize+"x " + ItemIdentifier.get(stack).getFriendlyName());
 										} else {
 											list.add("  " + ItemIdentifier.get(stack).getFriendlyName());
 										}

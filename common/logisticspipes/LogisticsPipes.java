@@ -324,12 +324,12 @@ public class LogisticsPipes {
 		
 		if(Loader.isModLoaded("Thaumcraft")) {
 			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
-			log.info("Loaced Thaumcraft Proxy");
+			log.info("Loaded Thaumcraft Proxy");
 		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			});
-			log.info("Loaced Thaumcraft DummyProxy");
+			log.info("Loaded Thaumcraft DummyProxy");
 		}
 		
 		if(Loader.isModLoaded("factorization")) {

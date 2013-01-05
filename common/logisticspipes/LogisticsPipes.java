@@ -121,7 +121,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
-//import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
+import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -320,16 +320,15 @@ public class LogisticsPipes {
 			log.info("Loaded CC DummyProxy");
 		}
 		
-		//TODO
-//		if(Loader.isModLoaded("Thaumcraft")) {
-//			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
-//			log.info("Loaced Thaumcraft Proxy");
-//		} else {
+		if(Loader.isModLoaded("Thaumcraft")) {
+			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
+			log.info("Loaded Thaumcraft Proxy");
+		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			});
-			log.info("Loaced Thaumcraft DummyProxy");
-//		}
+			log.info("Loaded Thaumcraft DummyProxy");
+		}
 		
 		if(Loader.isModLoaded("factorization")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());

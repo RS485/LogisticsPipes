@@ -25,6 +25,7 @@ import logisticspipes.pipes.basic.liquid.LogisitcsLiquidConnectionTransport;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -36,7 +37,6 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipeEntry;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.inventory.Transactor;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
@@ -285,7 +285,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 						insertion = data.output.getOpposite();
 					}
 				}
-				ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
+				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 				
 				data.item.getItemStack().stackSize -= added.stackSize;
 				

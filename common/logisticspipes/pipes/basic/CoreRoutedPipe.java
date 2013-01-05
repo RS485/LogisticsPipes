@@ -356,7 +356,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				routerId = UUID.randomUUID().toString();
 			}
 		}
-		
+		if(router != null)
+			router.clearPipeCache();
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);

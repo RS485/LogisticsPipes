@@ -26,6 +26,8 @@ TODO later, maybe....
 
 package logisticspipes;
 
+import java.io.File;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,6 +49,7 @@ import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logistics.LogisticsLiquidManager;
+import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsWorldManager;
@@ -77,7 +80,6 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -122,7 +124,7 @@ import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
-//import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
+import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -207,7 +209,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
-		SimpleServiceLocator.setSpecialInventoryHandler(new SpecialInventoryHandler());
 		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
 		
 		textures.load(event);
@@ -241,10 +242,15 @@ public class LogisticsPipes {
 		Configs.load();
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
-		requestLog.setParent(log);
+		try {
+			File logPath = new File("LogisticsPipes-Request.log");
+			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
+			fileHandler.setFormatter(new RequestLogFormator());
+			fileHandler.setLevel(Level.ALL);
+			requestLog.addHandler(fileHandler);
+		} catch (Exception e) {}
 		if(DEBUG) {
 			log.setLevel(Level.ALL);
-			requestLog.setLevel(Level.ALL);
 		}
 	}
 	
@@ -324,27 +330,26 @@ public class LogisticsPipes {
 			log.info("Loaded CC DummyProxy");
 		}
 		
-		//TODO
-//		if(Loader.isModLoaded("Thaumcraft")) {
-//			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
-//			log.info("Loaced Thaumcraft Proxy");
-//		} else {
+		if(Loader.isModLoaded("Thaumcraft")) {
+			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
+			log.info("Loaded Thaumcraft Proxy");
+		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
 			});
-			log.info("Loaced Thaumcraft DummyProxy");
-//		}
+			log.info("Loaded Thaumcraft DummyProxy");
+		}
 		
 		if(Loader.isModLoaded("factorization")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());
 		}
 		
 		if(Loader.isModLoaded("GregTech_Addon")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new QuantumChestHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new QuantumChestHandler());
 		}
 
 		if(Loader.isModLoaded("BetterStorage")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new CrateInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());

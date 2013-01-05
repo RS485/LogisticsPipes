@@ -12,13 +12,13 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -33,8 +33,6 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	
 	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
 	
-	private final InventoryUtilFactory _invUtilFactory;
-	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
@@ -45,11 +43,6 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	
 	
 	public LogicBuilderSupplier() {
-		this(new InventoryUtilFactory());
-	}
-	
-	public LogicBuilderSupplier(InventoryUtilFactory inventoryUtilFactory){
-		_invUtilFactory = inventoryUtilFactory;
 		throttleTime = 100;
 	}
 	
@@ -66,8 +59,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			if (!(tile.tile instanceof TileBuilder)) continue;
 			TileBuilder builder = (TileBuilder) tile.tile;
 			
-			IInventory inv = Utils.getInventory((IInventory) tile.tile);
-			InventoryUtil invUtil = _invUtilFactory.getInventoryUtil(inv);
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile.tile);
 			
 			//How many do I want?
 			Collection<ItemStack> neededItems = builder.getNeededItems();

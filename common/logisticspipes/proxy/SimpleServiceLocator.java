@@ -87,11 +87,6 @@ public final class SimpleServiceLocator {
 		specialconnection = special;
 	}
 	
-	public static SpecialInventoryHandler specialinventory;
-	public static void setSpecialInventoryHandler(final SpecialInventoryHandler special){
-		specialinventory = special;
-	}
-
 	public static IThaumCraftProxy thaumCraftProxy;
 	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
 		thaumCraftProxy = proxy;

@@ -14,13 +14,13 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.core.inventory.Transactor;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
@@ -71,7 +71,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 						insertion = tile.orientation.getOpposite();
 					}
 				}
-				ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, insertion, true);
+				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(slot, insertion, true);
 				slot.stackSize -= added.stackSize;
 				if(added.stackSize != 0) {
 					change = true;

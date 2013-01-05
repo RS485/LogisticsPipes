@@ -52,6 +52,7 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -65,7 +66,6 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.core.DefaultProps;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -178,7 +178,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		TileEntity tile = getPointedTileEntity();
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
-		return Utils.getInventory((IInventory) tile);
+		return InventoryHelper.getInventory((IInventory) tile);
 	}
 	
 	@Override

@@ -29,6 +29,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair4;
@@ -44,7 +45,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 import cpw.mods.fml.common.network.Player;
 
@@ -106,7 +106,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile instanceof IInventory) {
-				IInventory inv = Utils.getInventory((IInventory) tile.tile);
+				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 				if(inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory)inv, tile.orientation.getOpposite());
 				}

@@ -27,6 +27,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
@@ -38,7 +39,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.core.utils.Utils;
 import cpw.mods.fml.common.network.Player;
 
 public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, ISimpleInventoryEventHandler {
@@ -166,7 +166,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	}
 
 	public ItemStack checkExtract(IInventory inventory, boolean doRemove, ForgeDirection from) {
-		IInventory inv = Utils.getInventory(inventory);
+		IInventory inv = InventoryHelper.getInventory(inventory);
 		ItemStack result = checkExtractGeneric(inv, doRemove, from);
 		return result;
 	}

@@ -204,16 +204,14 @@ public class RequestHandler {
 	}
 
 	public static void requestLiquid(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe, IRequestLiquid requester) {
-		//LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
-		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		if(!pipe.useEnergy(10)) {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		boolean result = RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
-				LinkedList list = new LinkedList<ItemMessage>();
+				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
 				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
 				MessageManager.requested(player, list);
 			}

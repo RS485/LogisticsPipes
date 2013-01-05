@@ -2,9 +2,7 @@ package logisticspipes.pipes.basic.liquid;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
@@ -13,12 +11,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
 import buildcraft.core.IMachine;
+import buildcraft.transport.EntityData;
+import buildcraft.transport.IItemTravelingHook;
+import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public abstract class LiquidRoutedPipe extends RoutedPipe {
+public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravelingHook {
 	
 	public LiquidRoutedPipe(int itemID) {
 		super(new PipeLiquidTransportLogistics(), new TemporaryLogic(), itemID);
+		((PipeTransportItems) transport).travelHook = this;
 	}
 	
 	@Override
@@ -65,4 +67,13 @@ public abstract class LiquidRoutedPipe extends RoutedPipe {
 	public ILogisticsModule getLogisticsModule() {
 		return null;
 	}
+
+	@Override
+	public void drop(PipeTransportItems pipe, EntityData data) {}
+
+	@Override
+	public void centerReached(PipeTransportItems pipe, EntityData data) {}
+
+	@Override
+	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {}
 }

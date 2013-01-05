@@ -23,11 +23,10 @@ import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink, IItemTravelingHook {
+public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	
 	public PipeLiquidBasic(int itemID) {
 		super(itemID);
-		((PipeTransportItems) transport).travelHook = this;
 	}
 
 	@Override
@@ -36,9 +35,7 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink, II
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		int validDirections = 0;
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {

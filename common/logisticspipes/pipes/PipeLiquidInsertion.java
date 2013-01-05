@@ -28,9 +28,7 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		List<UUID> tempJamList = new ArrayList<UUID>();
 		if(!localJamList.isEmpty()) {
 			List<Pair<UUID, Integer>> toRemove = new ArrayList<Pair<UUID, Integer>>();

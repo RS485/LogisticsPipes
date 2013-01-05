@@ -190,8 +190,20 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
+	/*** 
+	 * Only Called Server Side
+	 * Only Called when the pipe is enabled
+	 */
+	public void enabledUpdateEntity() {}
+	
+	/***
+	 * Called Server and Client Side
+	 * Called every tick
+	 */
+	public void ignoreDisableUpdateEntity() {}
+	
 	@Override
-	public void updateEntity() {
+	public final void updateEntity() {
 		super.updateEntity();
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
@@ -203,6 +215,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			stillNeedReplace = false;
 		}
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		ignoreDisableUpdateEntity();
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
@@ -234,9 +247,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				throw new UnsupportedOperationException("getItemSendMode() returned unhandled value. " + getItemSendMode().name() + " in "+this.getClass().getName());
 			}
 		}
+		if(MainProxy.isClient()) return;
 		checkTexturePowered();
-		if (getLogisticsModule() == null) return;
 		if (!isEnabled()) return;
+		enabledUpdateEntity();
+		if (getLogisticsModule() == null) return;
 		getLogisticsModule().tick();
 	}	
 	
@@ -276,7 +291,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
 		if(router == null) return;
-		if(MainProxy.isClient()) return;
 		boolean flag;
 		if((flag = canUsePower()) != _textureBufferPowered) {
 			_textureBufferPowered = flag;

@@ -65,9 +65,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		if(!init) {
 			if(hasConnectionUUID()) {
 				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionUUID(), getRouter())) {

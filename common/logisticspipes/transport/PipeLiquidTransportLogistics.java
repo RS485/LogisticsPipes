@@ -120,10 +120,12 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if (!Utils.checkPipesConnections(container.getTile(orientations[direction.ordinal()]), container)) {
-				LiquidStack stack = sideTanks[direction.ordinal()].getLiquid();
-				if(stack != null) {
-					sideTanks[direction.ordinal()].setLiquid(null);
-					internalTank.fill(stack, true);
+				if(MainProxy.isServer()) {
+					LiquidStack stack = sideTanks[direction.ordinal()].getLiquid();
+					if(stack != null) {
+						sideTanks[direction.ordinal()].setLiquid(null);
+						internalTank.fill(stack, true);
+					}
 				}
 				renderCache[direction.ordinal()] = null;
 			}

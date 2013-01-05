@@ -56,4 +56,8 @@ public class LiquidRequest {
 		mes.add(new ItemMessage(liquid.getItemIdentifier(), amountLeft()));
 		log.handleMissingItems(mes);
 	}
+
+	public void addPromise(LiquidLogisticsPromise promise) {
+		promises.add(promise);
+	}
 }

@@ -162,8 +162,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
+	public void ignoreDisableUpdateEntity() {
 		if(!init) {
 			if(MainProxy.isClient()) {
 				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
@@ -173,7 +172,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			init = true;
 		}
 		if(MainProxy.isClient()) return;
-		
+	}
+
+	@Override
+	public void enabledUpdateEntity() {
 		if (doContentUpdate) {
 			checkContentUpdate();
 		}

@@ -20,4 +20,5 @@ public interface IRouterManager {
 	public Map<UUID, IRouter> getRouters();
 	public void serverStopClean();
 	public boolean routerAddingDone();
+	public void clearClientRouters();
 }

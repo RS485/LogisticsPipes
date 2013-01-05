@@ -4,22 +4,35 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import logisticspipes.interfaces.ISpecialInventoryHandler;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class CrateInventoryHandler implements ISpecialInventoryHandler {
+public class CrateInventoryHandler extends SpecialInventoryHandler {
 
-	private Class <? extends Object> crateClass;
-	private Method getPileData;
-	private Class <? extends Object> cratePileDataClass;
-	private Method getNumItems;
-	private Method removeItems;
-	private Method getItemStack;
-	private Method getItemCount;
-	private Method spaceForItem;
+	private static Class <? extends Object> crateClass;
+	private static Method getPileData;
+	private static Class <? extends Object> cratePileDataClass;
+	private static Method getNumItems;
+	private static Method removeItems;
+	private static Method getItemStack;
+	private static Method getItemCount;
+	private static Method spaceForItem;
+
+	private final TileEntity _tile;
+	private final boolean _hideOnePerStack;
+
+	private CrateInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		_tile = tile;
+		_hideOnePerStack = hideOnePerStack || hideOne;
+	}
+
+	public CrateInventoryHandler() {
+		_tile = null;
+		_hideOnePerStack = false;
+	}
 
 	@Override
 	public boolean init() {
@@ -44,18 +57,25 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount(TileEntity tile) {
+	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		return new CrateInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
+	}
+
+
+	@Override
+	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		try {
-			Object cratePileData = getPileData.invoke(tile, new Object[]{});
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
 			HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(numitems * 1.5));
 			for(int i = 0; i < numitems; i++) {
 				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
 				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
+				int stackSize = itemStack.stackSize - (_hideOnePerStack?1:0);
 				if (!map.containsKey(itemId)){
-					map.put(itemId, itemStack.stackSize);
+					map.put(itemId, stackSize);
 				} else {
-					map.put(itemId, map.get(itemId) + itemStack.stackSize);
+					map.put(itemId, map.get(itemId) + stackSize);
 				}
 			}
 			return map;
@@ -70,31 +90,18 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(TileEntity tile, ItemIdentifier itemIdent) {
+	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
-			Object cratePileData = getPileData.invoke(tile, new Object[]{});
-			int space = (Integer) spaceForItem.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
-			return space;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
-	@Override
-	public ItemStack getSingleItem(TileEntity tile, ItemIdentifier itemIdent) {
-		try {
-			Object cratePileData = getPileData.invoke(tile, new Object[]{});
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
+				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+				if (count <= (_hideOnePerStack?1:0)) return null;
 				return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1), 1});
 			}
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
 			for(int i = 0; i < numitems; i++) {
 				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
+				if (itemStack.stackSize <= (_hideOnePerStack?1:0)) continue;
 				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
 				if(itemId == itemIdent) {
 					return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemStack, 1});
@@ -111,9 +118,9 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(TileEntity tile, ItemIdentifier itemIdent) {
+	public boolean containsItem(ItemIdentifier itemIdent) {
 		try {
-			Object cratePileData = getPileData.invoke(tile, new Object[]{});
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
 				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
 				return (count > 0);
@@ -134,5 +141,21 @@ public class CrateInventoryHandler implements ISpecialInventoryHandler {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier itemIdent) {
+		try {
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
+			int space = (Integer) spaceForItem.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+			return space;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 }

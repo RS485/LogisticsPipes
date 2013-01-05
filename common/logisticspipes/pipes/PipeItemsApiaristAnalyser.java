@@ -16,6 +16,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -23,7 +24,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryProvider, ISendRoutedItem {
@@ -119,7 +119,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		TileEntity tile = getPointedTileEntity();
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
-		return Utils.getInventory((IInventory) tile);
+		return InventoryHelper.getInventory((IInventory) tile);
 	}
 	
 	@Override

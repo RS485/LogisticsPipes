@@ -26,6 +26,8 @@ TODO later, maybe....
 
 package logisticspipes;
 
+import java.io.File;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -45,6 +47,7 @@ import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
+import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsWorldManager;
@@ -75,7 +78,6 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -198,7 +200,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
-		SimpleServiceLocator.setSpecialInventoryHandler(new SpecialInventoryHandler());
 		
 		textures.load(event);
 		
@@ -231,10 +232,15 @@ public class LogisticsPipes {
 		Configs.load();
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
-		requestLog.setParent(log);
+		try {
+			File logPath = new File("LogisticsPipes-Request.log");
+			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
+			fileHandler.setFormatter(new RequestLogFormator());
+			fileHandler.setLevel(Level.ALL);
+			requestLog.addHandler(fileHandler);
+		} catch (Exception e) {}
 		if(DEBUG) {
 			log.setLevel(Level.ALL);
-			requestLog.setLevel(Level.ALL);
 		}
 	}
 	
@@ -326,15 +332,15 @@ public class LogisticsPipes {
 //		}
 		
 		if(Loader.isModLoaded("factorization")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());
 		}
 		
 		if(Loader.isModLoaded("GregTech_Addon")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new QuantumChestHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new QuantumChestHandler());
 		}
 
 		if(Loader.isModLoaded("BetterStorage")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new CrateInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());

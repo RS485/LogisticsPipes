@@ -9,11 +9,14 @@
 package logisticspipes.utils;
 
 import java.lang.reflect.Field;
+import java.lang.Comparable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -46,62 +49,81 @@ import com.google.common.collect.Table;
  * 
  *  A ItemIdentifier is immutable, singleton and most importantly UNIQUE!
  */
-public final class ItemIdentifier {
-
-	private final static HashMap<ItemIdentifier, Integer> _itemIdentifierIdCache = new HashMap<ItemIdentifier, Integer>();
-
-	private final static ArrayList<ItemIdentifier> _itemIdentifierTagCache = new ArrayList<ItemIdentifier>();
+public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
-	private final static Table<Integer, Integer, ItemIdentifier> _itemIdentifierCache = HashBasedTable.create();
+	private static class ItemKey implements Comparable<ItemKey>{
+		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
+		public int itemID;
+		public int itemDamage;
+		@Override 
+		public boolean equals(Object that){
+			if (!(that instanceof ItemKey))
+				return false;
+			ItemKey i = (ItemKey)that;
+			return this.itemID== i.itemID && this.itemDamage == i.itemDamage;
+			
+		}
+		
+		@Override public int hashCode(){
+			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
+			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
+			return ((itemID)*1000001)+itemDamage;
+		}
+		@Override
+		public int compareTo(ItemKey o) {
+			if(itemID==o.itemID)
+				return itemDamage-o.itemDamage;
+			return itemID-o.itemID;
+		}
+	}
+
+	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>();
+
+	private final static ConcurrentSkipListSet<ItemIdentifier> _itemIdentifierTagCache = new ConcurrentSkipListSet<ItemIdentifier>();
+	
+	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>();
 	
 	private static ReadWriteLock lock = new ReentrantReadWriteLock();
 	private static Lock readLock = lock.readLock();
 	private static Lock writeLock = lock.writeLock();
 	
 	//Hide default constructor
-	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag) {
+	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag, int uniqueID) {
 		this.itemID =  itemID;
 		this.itemDamage = itemDamage;
 		this.tag = tag;
+		this.uniqueID = uniqueID;
 	}
 	
 	public final int itemID;
 	public final int itemDamage;
 	public final NBTTagCompound tag;
+	public final int uniqueID;
 	
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
 		if(tag == null) {
-			readLock.lock();
-			if(_itemIdentifierCache.contains(itemID, itemUndamagableDamage)) {
-				ItemIdentifier ident = _itemIdentifierCache.get(itemID, itemUndamagableDamage);
-				readLock.unlock();
-				return ident;
+			ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
+			ItemIdentifier unknownItem = _itemIdentifierCache.get(itemKey);
+			if(unknownItem != null) {
+				return unknownItem;
 			}
-			readLock.unlock();
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag);
 			int id = getUnusedId();
-			writeLock.lock();
-			_itemIdentifierCache.put(itemID, itemUndamagableDamage, unknownItem);
-			_itemIdentifierIdCache.put(unknownItem, id);
-			writeLock.unlock();
+			unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, id);
+			_itemIdentifierCache.put(itemKey, unknownItem);
+			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		} else {
-			readLock.lock();
 			for(ItemIdentifier item : _itemIdentifierTagCache) {
 				if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
-					readLock.unlock();
 					return item;
 				}
 			}
-			readLock.unlock();
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag);
 			int id = getUnusedId();
-			writeLock.lock();
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, id);
 			_itemIdentifierTagCache.add(unknownItem);
-			_itemIdentifierIdCache.put(unknownItem, id);
-			writeLock.unlock();
+			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		}
 	}
@@ -118,15 +140,7 @@ public final class ItemIdentifier {
 	}
 	
 	public static ItemIdentifier getForId(int id) {
-		readLock.lock();
-		for(ItemIdentifier item :_itemIdentifierIdCache.keySet()) {
-			if(id == _itemIdentifierIdCache.get(item).intValue()) {
-				readLock.unlock();
-				return item;
-			}
-		}
-		readLock.unlock();
-		return null;
+		return _itemIdentifierIdCache.get(id);
 	}
 	
 	private static int getUnusedId() {
@@ -138,15 +152,7 @@ public final class ItemIdentifier {
 	}
 	
 	private static boolean isIdUsed(int id) {
-		readLock.lock();
-		for(Integer value : _itemIdentifierIdCache.values()) {
-			if(id == value.intValue()) {
-				readLock.unlock();
-				return true;
-			}
-		}
-		readLock.unlock();
-		return false;
+		return _itemIdentifierIdCache.containsKey(id);
 	}
 	
 	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
@@ -241,10 +247,7 @@ public final class ItemIdentifier {
 	}
 	
 	public int getId() {
-		readLock.lock();
-		int id = _itemIdentifierIdCache.get(this);
-		readLock.unlock();
-		return id;
+		return uniqueID;
 	}
 	
 	public String getNBTTagCompoundName() {
@@ -401,7 +404,7 @@ public final class ItemIdentifier {
 			map.put("value", ((NBTTagShort)nbt).data);
 			return map;
 		} else if(nbt instanceof NBTTagString) {
-			HashMap<Object, Object> map = new HashMap<Object, Object>();
+			HashMap<Object, Object> map = new HashMap<Object, Object>(); 
 			map.put("name", nbt.getName());
 			map.put("type", "NBTTagString");
 			map.put("value", ((NBTTagString)nbt).data);
@@ -413,5 +416,26 @@ public final class ItemIdentifier {
 	
 	public String toString() {
 		return getFriendlyName();
+	}
+
+	@Override
+	public int compareTo(ItemIdentifier o) {
+		if(uniqueID<o.uniqueID)
+			return -1;
+		if(uniqueID>o.uniqueID)
+			return 1;
+		return 0;
+	}
+	
+	public boolean equals(Object that){
+		if (!(that instanceof ItemIdentifier))
+			return false;
+		ItemIdentifier i = (ItemIdentifier)that;
+		return this.uniqueID==i.uniqueID;
+		
+	}
+	
+	@Override public int hashCode(){
+		return uniqueID;
 	}
 }

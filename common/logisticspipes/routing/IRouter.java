@@ -42,4 +42,5 @@ public interface IRouter {
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public ILogisticsModule getLogisticsModule();
+	public void clearPipeCache();
 }

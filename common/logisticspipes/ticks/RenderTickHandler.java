@@ -76,7 +76,7 @@ public class RenderTickHandler implements ITickHandler {
 				} catch (InvocationTargetException e) {
 					e.printStackTrace();
 				}
-				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks);
+				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks, (Float) tickData[0]);
 				mc.entityRenderer.setupOverlayRendering();
 				//Stop saveguard
 				for(UnlockThreadSecure thread:suspendedThread) {

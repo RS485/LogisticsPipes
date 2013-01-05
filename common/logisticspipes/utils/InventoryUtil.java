@@ -10,21 +10,28 @@ package logisticspipes.utils;
 
 import java.util.HashMap;
 
-import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.interfaces.IInventoryUtil;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-public class InventoryUtil {
-	
+public class InventoryUtil implements IInventoryUtil {
+
 	private final IInventory _inventory;
+	private final boolean _hideOnePerStack;
 	private final boolean _hideOne;
+	private final int _cropStart;
+	private final int _cropEnd;
 	
-	public InventoryUtil(IInventory inventory, boolean hideOne) {
+	public InventoryUtil(IInventory inventory, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		_inventory = inventory;
+		_hideOnePerStack = hideOnePerStack;
 		_hideOne = hideOne;
+		_cropStart = cropStart;
+		_cropEnd = cropEnd;
 	}
 	
-	public int itemCount(final ItemIdentifier item) {
+	@Override
+	public int itemCount(ItemIdentifier item) {
 		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
 		if(map.containsKey(item)) {
 			return map.get(item);
@@ -32,48 +39,44 @@ public class InventoryUtil {
 		return 0;
 	}
 	
+	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
-			return SimpleServiceLocator.specialinventory.getItemsAndCount(_inventory);
-		} else {
-			HashMap<ItemIdentifier, Integer> items = new HashMap<ItemIdentifier, Integer>();
-			for (int i = 0; i < _inventory.getSizeInventory(); i++){
-				ItemStack stack = _inventory.getStackInSlot(i);
-				if (stack == null) continue;
-				ItemIdentifier itemId = ItemIdentifier.get(stack);
-				int stackSize = stack.stackSize - (_hideOne?1:0);
-				if (!items.containsKey(itemId)){
-					items.put(itemId, stackSize);
-				} else {
-					items.put(itemId, items.get(itemId) + stackSize);
-				}
-			}	
-			return items;
-		}
-	}
-	
-	public ItemStack getSingleItem(ItemIdentifier item) {
-		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
-			return SimpleServiceLocator.specialinventory.getSingleItem(_inventory, item);
-		} else {
-			for (int i = 0; i < _inventory.getSizeInventory(); i++){
-				ItemStack stack = _inventory.getStackInSlot(i);
-				if (stack == null) continue;
-				if (_hideOne && stack.stackSize == 1) continue;
-				if (ItemIdentifier.get(stack) == item) {
-					ItemStack removed = stack.splitStack(1);
-					if (stack.stackSize == 0) {
-						_inventory.setInventorySlotContents(i,  null);
-					} else {
-						_inventory.setInventorySlotContents(i,  stack);
-					}
-					return removed;
-				}
+		HashMap<ItemIdentifier, Integer> items = new HashMap<ItemIdentifier, Integer>();
+		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			ItemIdentifier itemId = ItemIdentifier.get(stack);
+			int stackSize = stack.stackSize - (_hideOnePerStack?1:0);
+			if (!items.containsKey(itemId)){
+				items.put(itemId, stackSize - (_hideOne?1:0));
+			} else {
+				items.put(itemId, items.get(itemId) + stackSize);
 			}
-			return null;
 		}
+		return items;
 	}
 	
+	@Override
+	public ItemStack getSingleItem(ItemIdentifier item) {
+		//XXX this doesn't handle _hideOne ... does it have to?
+		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			if (stack.stackSize <= (_hideOnePerStack?1:0)) continue;
+			if (ItemIdentifier.get(stack) == item) {
+				ItemStack removed = stack.splitStack(1);
+				if (stack.stackSize == 0) {
+					_inventory.setInventorySlotContents(i,  null);
+				} else {
+					_inventory.setInventorySlotContents(i,  stack);
+				}
+				return removed;
+			}
+		}
+		return null;
+	}
+	
+	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count){
 		if (itemCount(item) < count) return null;
 		ItemStack stack = null;
@@ -88,40 +91,36 @@ public class InventoryUtil {
 		return stack;
 	}
 	
-	//Will not hide 1 item;
+	//Ignores slot/item hiding
+	@Override
 	public boolean containsItem(ItemIdentifier item){
-		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
-			return SimpleServiceLocator.specialinventory.containsItem(_inventory, item);
-		} else {
-			for (int i = 0; i < _inventory.getSizeInventory(); i++){
-				ItemStack stack = _inventory.getStackInSlot(i);
-				if (stack == null) continue;
-				if (ItemIdentifier.get(stack) == item) return true;
-			}
-			return false;
+		for (int i = 0; i < _inventory.getSizeInventory(); i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			if (ItemIdentifier.get(stack) == item) return true;
 		}
+		return false;
 	}
 	
-	//Will not hide 1 item;
+	//Ignores slot/item hiding
+	@Override
 	public int roomForItem(ItemIdentifier item){
-		if(SimpleServiceLocator.specialinventory.isSpecialType(_inventory)) {
-			return SimpleServiceLocator.specialinventory.roomForItem(_inventory, item);
-		} else {
-			int totalRoom = 0;
-			for (int i = 0; i < _inventory.getSizeInventory(); i++){
-				ItemStack stack = _inventory.getStackInSlot(i);
-				if (stack == null){
-					totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()); 
-					continue;
-				}
-				if (ItemIdentifier.get(stack) != item) continue;
-				
-				totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()) - stack.stackSize);
+		int totalRoom = 0;
+		for (int i = 0; i < _inventory.getSizeInventory(); i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null){
+				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize());
+				continue;
 			}
-			return totalRoom;
+			if (ItemIdentifier.get(stack) != item) continue;
+			
+			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()) - stack.stackSize);
 		}
+		return totalRoom;
 	}
 
+	//Ignores slot/item hiding
+	@Override
 	public boolean hasRoomForItem(ItemIdentifier item) {
 		return roomForItem(item) > 0;
 	}

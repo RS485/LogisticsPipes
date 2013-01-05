@@ -5,19 +5,32 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 
-import logisticspipes.interfaces.ISpecialInventoryHandler;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 
-public class BarrelInventoryHandler implements ISpecialInventoryHandler {
+public class BarrelInventoryHandler extends SpecialInventoryHandler {
 
-	private Class <? extends Object> barrelClass;
-	private Method getItemCount;
-	private Method setItemCount;
-	private Method getMaxSize;
-	private Field item;
-	
+	private static Class <? extends Object> barrelClass;
+	private static Method getItemCount;
+	private static Method setItemCount;
+	private static Method getMaxSize;
+	private static Field item;
+
+	private final TileEntity _tile;
+	private final boolean _hideOnePerStack;
+
+	private BarrelInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		_tile = tile;
+		_hideOnePerStack = hideOnePerStack || hideOne;
+	}
+
+	public BarrelInventoryHandler() {
+		_tile = null;
+		_hideOnePerStack = false;
+	}
+
 	@Override
 	public boolean init() {
 		try {
@@ -38,13 +51,19 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount(TileEntity tile) {
+	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+		return new BarrelInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
+	}
+
+
+	@Override
+	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		try {
-			ItemStack itemStack = (ItemStack) item.get(tile);
+			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
-				int value = (Integer) getItemCount.invoke(tile, new Object[]{});
-				map.put(ItemIdentifier.get(itemStack), value);
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				map.put(ItemIdentifier.get(itemStack), value - (_hideOnePerStack?1:0));
 			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -57,35 +76,14 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(TileEntity tile, ItemIdentifier itemIdent) {
+	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
-			ItemStack itemStack = (ItemStack) item.get(tile);
-			int max = (Integer) getMaxSize.invoke(tile, new Object[]{});
-			if(itemStack != null) {
-				if(ItemIdentifier.get(itemStack) != itemIdent) return 0;
-				int value = (Integer) getItemCount.invoke(tile, new Object[]{});
-				return max - value;
-			}
-			return max;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		}
-		return 0;
-	}
-
-	@Override
-	public ItemStack getSingleItem(TileEntity tile, ItemIdentifier itemIdent) {
-		try {
-			ItemStack itemStack = (ItemStack) item.get(tile);
+			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
 				if(ItemIdentifier.get(itemStack) != itemIdent) return null;
-				int value = (Integer) getItemCount.invoke(tile, new Object[]{});
-				if(value > 0) {
-					setItemCount.invoke(tile, new Object[]{value - 1});
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				if(value > (_hideOnePerStack?1:0)) {
+					setItemCount.invoke(_tile, new Object[]{value - 1});
 					ItemStack ret = itemStack.copy();
 					ret.stackSize = 1;
 					return ret;
@@ -103,9 +101,9 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsItem(TileEntity tile, ItemIdentifier itemIdent) {
+	public boolean containsItem(ItemIdentifier itemIdent) {
 		try {
-			ItemStack itemStack = (ItemStack) item.get(tile);
+			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
 				return ItemIdentifier.get(itemStack) == itemIdent;
 			}
@@ -116,5 +114,26 @@ public class BarrelInventoryHandler implements ISpecialInventoryHandler {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier itemIdent) {
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			int max = (Integer) getMaxSize.invoke(_tile, new Object[]{});
+			if(itemStack != null) {
+				if(ItemIdentifier.get(itemStack) != itemIdent) return 0;
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				return max - value;
+			}
+			return max;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 }

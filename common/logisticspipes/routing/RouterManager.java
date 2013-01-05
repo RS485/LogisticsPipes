@@ -47,6 +47,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		}
 	}
 	
+	@Override
 	public void removeRouter(UUID id) {
 		if(MainProxy.isClient()) {
 			IRouter remove = null;
@@ -101,6 +102,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		}
 	}
 	
+	@Override
 	public Map<UUID, IRouter> getRouters() {
 		if(MainProxy.isClient()) {
 			Map<UUID, IRouter> map = new HashMap<UUID, IRouter>();
@@ -207,5 +209,12 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	@Override
 	public boolean routerAddingDone() {
 		return lastRouterAdded != -1 && lastRouterAdded + DELAY_TIME < System.currentTimeMillis();
+	}
+
+	@Override
+	public void clearClientRouters() {
+		synchronized (_routersClient) {
+			_routersClient.clear();
+		}
 	}
 }

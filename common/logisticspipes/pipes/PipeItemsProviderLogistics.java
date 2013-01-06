@@ -99,7 +99,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
+			InventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			count += inv.itemCount(item);
 		}
 		return count;
@@ -112,7 +112,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			
-			InventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile);
+			InventoryUtil inv = getAdaptedInventoryUtil(tile);
 			
 			if (inv.itemCount(item)> 0){
 				ItemStack removed = inv.getSingleItem(item);
@@ -131,7 +131,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return sent;
 	}
 	
-	private InventoryUtil getAdaptedInventoryUtil(IInventory base){
+	private InventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
+		IInventory base = (IInventory) tile.tile;
+		if (base instanceof ISidedInventory) {
+			base = new SidedInventoryAdapter((ISidedInventory) base, tile.orientation.getOpposite());
+		}
 		ExtractionMode mode = ((LogicProvider)logic).getExtractionMode();
 		switch(mode){
 			case LeaveFirst:
@@ -228,7 +232,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile); 
+			InventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 			for (ItemIdentifier currItem : currentInv.keySet()){

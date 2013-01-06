@@ -103,7 +103,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return 1;
 	}
 	
-	protected LinkedList<AdjacentTile> locateCrafters()	{
+	private List<AdjacentTile> _cachedCrafters = null;
+	protected List<AdjacentTile> locateCrafters()	{
+		if(_cachedCrafters !=null)
+			return _cachedCrafters;
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
@@ -111,9 +114,21 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			if (!(tile.tile instanceof IInventory)) continue;
 			crafters.add(tile);
 		}
-		return crafters;
+		_cachedCrafters=crafters;
+		return _cachedCrafters;
+	}
+	public void clearCraftersCache() {
+		_cachedCrafters = null;
 	}
 	
+	
+	@Override
+	public void onNeighborBlockChange(int blockId) {
+		clearCraftersCache();
+		super.onNeighborBlockChange(blockId);
+	}
+	
+
 	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
 		ItemStack retstack = null;
 		while(count > 0) {
@@ -180,7 +195,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		
 		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
 		
-		LinkedList<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ) {
 			if (_orderManager.hasOrders()) {
 				_orderManager.sendFailed();

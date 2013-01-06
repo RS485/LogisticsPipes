@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -27,7 +28,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	public SimpleInventory inv = new SimpleInventory(16, "Buffer", 127);
 	
-	public LinkedList<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
+	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
@@ -59,7 +60,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		super.updateEntity();
 		if(MainProxy.isClient()) return;
 		//Add from interal buffer
-		LinkedList<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {

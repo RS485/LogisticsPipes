@@ -6,6 +6,7 @@ import java.lang.reflect.Method;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.items.ItemModule;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.Item;
@@ -25,6 +26,7 @@ import forestry.api.core.ItemInterface;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
+import forestry.api.genetics.IApiaristTracker;
 import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {
@@ -110,7 +112,31 @@ public class ForestryProxy implements IForestryProxy {
 		if(!has_all) return false;
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
 		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
-		return BeeManager.breedingManager.getApiaristTracker(world).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
+
+		// ugly clientside hack for forestry 1.6/1.7 api breakage
+		IApiaristTracker apiaristTracker = null;
+		try {
+			Class c = Class.forName("forestry.api.apiculture.IBreedingManager");
+			Method getApiaristTracker = c.getMethod("getApiaristTracker", World.class);
+			apiaristTracker = (IApiaristTracker) getApiaristTracker.invoke(BeeManager.breedingManager, world);
+		} catch (Exception e) {
+			if(LogisticsPipes.DEBUG) {
+				e.printStackTrace();
+			}
+			try {
+				Class c = Class.forName("forestry.api.apiculture.IBreedingManager");
+				Method getApiaristTracker = c.getMethod("getApiaristTracker", World.class, String.class);
+				apiaristTracker = (IApiaristTracker) getApiaristTracker.invoke(BeeManager.breedingManager, world, MainProxy.proxy.getClientPlayer().username);
+			} catch (Exception e1) {
+				if(LogisticsPipes.DEBUG) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		if(apiaristTracker == null) {
+			return false;
+		}
+		return apiaristTracker.isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	@Override

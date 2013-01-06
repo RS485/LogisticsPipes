@@ -7,6 +7,7 @@ import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
+import logisticspipes.gui.GuiLiquidBasic;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
 import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
@@ -55,6 +56,7 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
+import logisticspipes.pipes.PipeLiquidBasic;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -354,6 +356,13 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
 				return ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getDummyContainer(player);
 				
+			case GuiIDs.GUI_Liquid_Basic_ID:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLiquidBasic))) return null;
+				dummy = new DummyContainer(player.inventory, ((PipeLiquidBasic)pipe.pipe).filterInv);
+				dummy.addLiquidSlot(0, ((PipeLiquidBasic)pipe.pipe).filterInv, 28, 15);
+				dummy.addNormalSlotsForPlayerInventory(10, 45);
+				return dummy;
+				
 			default:break;
 			}
 		} else {
@@ -649,6 +658,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Upgrade_Manager:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
 				return new GuiUpgradeManager(player, (CoreRoutedPipe) pipe.pipe);
+			
+			case GuiIDs.GUI_Liquid_Basic_ID:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLiquidBasic))) return null;
+				return new GuiLiquidBasic(player, ((PipeLiquidBasic)pipe.pipe).filterInv);
 				
 			default:break;
 			}

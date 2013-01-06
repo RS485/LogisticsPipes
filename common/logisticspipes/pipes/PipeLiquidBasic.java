@@ -5,25 +5,30 @@ import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
+import buildcraft.core.utils.SimpleInventory;
 import buildcraft.transport.EntityData;
-import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
 public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
+	
+	public SimpleInventory filterInv = new SimpleInventory(1, "Dummy", 1);
 	
 	public PipeLiquidBasic(int itemID) {
 		super(itemID);
@@ -84,9 +89,19 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	}
 
 	@Override
+	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
+		if(SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Basic_ID, world, xCoord, yCoord, zCoord);
+			return true;
+		}
+		return super.blockActivated(world, i, j, k, entityplayer);
+	}
+
+	@Override
 	public int sinkAmount(LiquidStack stack) {
 		LiquidIdentifier ident = LiquidIdentifier.get(stack);
-		//TODO check filter
+		if(filterInv.getStackInSlot(0) == null) return 0;
+		if(ident != ItemIdentifier.get(filterInv.getStackInSlot(0)).getLiquidIdentifier()) return 0;
 		
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		int amount = 0;
@@ -103,17 +118,18 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 				return amount;
 			}
 		}
-		if(ident.getName().equals("water")) {
-			return amount;
-		}
-		return 0;
+		return amount;
 	}
 	
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 		if(!(tile instanceof ITankContainer)) return;
+		if(tile instanceof TileGenericPipe) {
+			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return;
+		}
 		if(data.output.ordinal() >= ForgeDirection.VALID_DIRECTIONS.length) return;
-		if(data.item == null || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
+		if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
+		if(!this.getRouter().getId().equals(((IRoutedItem)data.item).getDestination())) return;
 		((PipeTransportItems)this.transport).scheduleRemoval(data.item);
 		LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.item.getItemStack());
 		if(liquid != null) {
@@ -133,10 +149,4 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 			}
 		}
 	}
-
-	@Override
-	public void drop(PipeTransportItems pipe, EntityData data) {}
-
-	@Override
-	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 }

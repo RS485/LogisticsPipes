@@ -127,7 +127,9 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 						internalTank.fill(stack, true);
 					}
 				}
-				renderCache[direction.ordinal()] = null;
+				if(renderCache[direction.ordinal()] != null) {
+					renderCache[direction.ordinal()].amount = 1;
+				}
 			}
 		}
 	}

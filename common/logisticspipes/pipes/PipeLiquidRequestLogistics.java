@@ -83,7 +83,9 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 		if(!(tile instanceof ITankContainer)) return;
-		if(tile instanceof TileGenericPipe) return;
+		if(tile instanceof TileGenericPipe) {
+			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return;
+		}
 		if(data.output.ordinal() >= ForgeDirection.VALID_DIRECTIONS.length) return;
 		if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
 		if(!this.getRouter().getId().equals(((IRoutedItem)data.item).getDestination())) return;

@@ -8,6 +8,8 @@
 
 package logisticspipes.logisticspipes;
 
+import java.util.TreeSet;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -22,34 +24,54 @@ import net.minecraftforge.common.ISidedInventory;
 public class SidedInventoryAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
-	private final ForgeDirection _side;
-	private final int _slotOffset;
+	private final int _slotMap[];
 	
 	public SidedInventoryAdapter(ISidedInventory sidedInventory, ForgeDirection side){
 		_sidedInventory = sidedInventory;
-		_side = side;
-		_slotOffset = _sidedInventory.getStartInventorySide(side);
+		if(side == ForgeDirection.UNKNOWN) {
+			TreeSet<Integer> slotset = new TreeSet<Integer>();
+			for(ForgeDirection tside : ForgeDirection.VALID_DIRECTIONS) {
+				int nslots = _sidedInventory.getSizeInventorySide(tside);
+				int offset = _sidedInventory.getStartInventorySide(tside);
+				for(int i = 0; i < nslots; i++) {
+					slotset.add(i + offset);
+				}
+			}
+			_slotMap = new int[slotset.size()];
+			int j = 0;
+			for(int i : slotset) {
+				_slotMap[j] = i;
+				j++;
+			}
+		} else {
+			int nslots = _sidedInventory.getSizeInventorySide(side);
+			int offset = _sidedInventory.getStartInventorySide(side);
+			_slotMap = new int[nslots];
+			for(int i = 0; i < nslots; i++) {
+				_slotMap[i] = i + offset;
+			}
+		}
 	}
 
 
 	@Override
 	public int getSizeInventory() {
-		return _sidedInventory.getSizeInventorySide(_side);
+		return _slotMap.length;
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
-		return _sidedInventory.getStackInSlot(i + _slotOffset);
+		return _sidedInventory.getStackInSlot(_slotMap[i]);
 	}
 
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
-		return _sidedInventory.decrStackSize(i + _slotOffset, j);
+		return _sidedInventory.decrStackSize(_slotMap[i], j);
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		_sidedInventory.setInventorySlotContents(i + _slotOffset, itemstack);
+		_sidedInventory.setInventorySlotContents(_slotMap[i], itemstack);
 	}
 
 	@Override
@@ -85,6 +107,6 @@ public class SidedInventoryAdapter implements IInventory {
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int slot) {
-		return _sidedInventory.getStackInSlotOnClosing(slot + _slotOffset);
+		return _sidedInventory.getStackInSlotOnClosing(_slotMap[slot]);
 	}
 }

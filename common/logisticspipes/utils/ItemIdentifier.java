@@ -139,11 +139,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if (itemStack == null && allowNullsForTesting){
 			return null;
 		}
-		int itemDamage = 0;
-		if (!Item.itemsList[itemStack.itemID].isDamageable()) {
-			itemDamage = itemStack.getItemDamage();
-		}
-		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
+		return get(itemStack.itemID, itemStack.getItemDamage(), itemStack.stackTagCompound);
 	}
 	
 	public static ItemIdentifier getForId(int id) {
@@ -292,9 +288,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public boolean fuzzyMatch(ItemStack stack) {
 		if(stack.itemID != this.itemID) return false;
-		if(!Item.itemsList[this.itemID].isDamageable()) {
-			if(this.itemDamage != stack.getItemDamage()) return false;
-		}
+		if(stack.getItemDamage() != this.itemDamage) return false;
 		return true;
 	}
 	

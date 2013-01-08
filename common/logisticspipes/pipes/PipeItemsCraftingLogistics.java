@@ -30,6 +30,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
@@ -60,6 +61,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
@@ -224,6 +226,9 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 				tile = it.next();
 				if (tile.tile instanceof ISpecialInventory) {
 					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, wanteditem, maxtosend);
+				} else if (tile.tile instanceof ISidedInventory) {
+					IInventory sidedadapter = new SidedInventoryAdapter((ISidedInventory) tile.tile, ForgeDirection.UNKNOWN);
+					extracted = extractFromIInventory(sidedadapter, wanteditem, maxtosend);
 				} else if (tile.tile instanceof IInventory) {
 					extracted = extractFromIInventory((IInventory)tile.tile, wanteditem, maxtosend);
 				}

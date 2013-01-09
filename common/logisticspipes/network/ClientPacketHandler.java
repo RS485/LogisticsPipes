@@ -784,13 +784,13 @@ public class ClientPacketHandler {
 			if(item != null) {
 				for(CreativeTabs tab:item.getCreativeTabs()) {
 					List<ItemStack> list = new ArrayList<ItemStack>();
-					item.getSubItems(item.shiftedIndex, tab, list);
+					item.getSubItems(item.itemID, tab, list);
 					if(list.size() > 0) {
 						for(ItemStack stack:list) {
 							identList.add(ItemIdentifier.get(stack));
 						}
 					} else {
-						identList.add(ItemIdentifier.get(item.shiftedIndex, 0, null));
+						identList.add(ItemIdentifier.get(item.itemID, 0, null));
 					}
 				}
 			}

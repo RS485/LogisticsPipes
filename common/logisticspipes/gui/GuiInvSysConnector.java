@@ -36,7 +36,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		super(180,200,0,0);
 		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
 		
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.itemID);
 		
 		dummy.addNormalSlotsForPlayerInventory(10, 115);
 		

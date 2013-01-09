@@ -138,7 +138,7 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].itemID == LogisticsPipes.LogisticsHUDArmor.shiftedIndex;
+		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].itemID == LogisticsPipes.LogisticsHUDArmor.itemID;
 	}
 	
 	public void renderPlayerDisplay(long renderTicks) {}

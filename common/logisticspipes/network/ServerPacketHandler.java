@@ -1222,7 +1222,7 @@ public class ServerPacketHandler {
 			break;
 		}
 		if(player.inventoryContainer != null) {
-			player.inventoryContainer.updateCraftingResults();
+			player.inventoryContainer.detectAndSendChanges();
 		}
 	}
 

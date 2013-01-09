@@ -58,7 +58,7 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.shiftedIndex) {
+		if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.itemID) {
 			this.mc.thePlayer.closeScreen();
 		}
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);

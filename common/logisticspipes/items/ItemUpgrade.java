@@ -177,7 +177,7 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	public IPipeUpgrade getUpgradeForItem(ItemStack itemStack, IPipeUpgrade currentUpgrade){
 		if (itemStack == null) return null;
-		if (itemStack.itemID != this.shiftedIndex) return null;
+		if (itemStack.itemID != this.itemID) return null;
 		for(Upgrade upgrade:upgrades) {
 			if(itemStack.getItemDamage() == upgrade.getId()) {
 				if(upgrade.getIPipeUpgradeClass() == null) return null;

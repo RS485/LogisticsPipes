@@ -341,7 +341,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
 		if(MainProxy.isClient()) return false;
-		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.shiftedIndex) {
+		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID) {
 			if(entityplayer.getCurrentEquippedItem().getItemDamage() != LogisticsPipes.ModuleItem.BLANK) {
 				for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
 					ItemStack item = _moduleInventory.getStackInSlot(i);

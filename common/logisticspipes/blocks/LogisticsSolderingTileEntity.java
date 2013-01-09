@@ -63,7 +63,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 						});
 			}
 		}
-		dummy.addRestrictedSlot(9, this, 93, 17, Item.ingotIron.shiftedIndex);
+		dummy.addRestrictedSlot(9, this, 93, 17, Item.ingotIron.itemID);
 		dummy.addRestrictedSlot(10, this, 127, 47, -1);
 		dummy.addRestrictedSlot(11, this, 149, 11, new ISlotCheck() {
 			@Override

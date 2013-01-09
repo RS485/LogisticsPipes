@@ -96,12 +96,6 @@ public class DummyContainer extends Container{
 	}
 	
 	/**
-	 * Disable whatever this is 
-	 **/
-	//@Override
-	//public void updateCraftingResults() {}
-	
-	/**
 	 * Disable shift-clicking to transfer items
 	 */
 	@Override
@@ -124,7 +118,7 @@ public class DummyContainer extends Container{
 		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if(stack2 != null && stack2.getItem().shiftedIndex == LogisticsPipes.ModuleItem.shiftedIndex) {
+			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 					((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, stack2);
 				}

@@ -40,6 +40,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void updateEntity() {
 		super.updateEntity();
 		if(MainProxy.isClient()) return;
+		if(inv.isEmpty()) return;
 		//Add from interal buffer
 		LinkedList<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;
@@ -55,7 +56,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 						insertion = tile.orientation.getOpposite();
 					}
 				}
-				ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, insertion, true);
+				ItemStack toadd = slot.copy();
+				toadd.stackSize = toadd.stackSize > 64 ? 64 : toadd.stackSize;
+				ItemStack added = Transactor.getTransactorFor(tile.tile).add(toadd, insertion, true);
 				slot.stackSize -= added.stackSize;
 				if(added.stackSize != 0) {
 					change = true;

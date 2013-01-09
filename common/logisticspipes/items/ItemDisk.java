@@ -18,13 +18,13 @@ public class ItemDisk extends LogisticsItem {
         return 1;
     }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public CreativeTabs getCreativeTab()
     {
         return CreativeTabs.tabRedstone;
     }
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		if(itemStack.hasTagCompound()) {

@@ -38,6 +38,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		this.slot = slot;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -101,9 +102,6 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		refreshButtons();
 		
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		
-		int left = width / 2 - xSize / 2;
-		int top = height / 2 - ySize / 2;
 		
 		fontRenderer.drawString("Extract orientation", xSize / 2 - fontRenderer.getStringWidth("Extract orientation") / 2 , 10, 0x404040);
 		fontRenderer.drawString("Default", 35, 50, 0x404040);

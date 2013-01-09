@@ -20,13 +20,11 @@ import buildcraft.transport.Pipe;
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
 	private final ModuleApiaristSink module;
-	private final EntityPlayer player;
 	private int slot;
 	
 	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, Pipe pipe, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(player.inventory,null), pipe, previousGui);
 		this.module = module;
-		this.player = player;
 		this.slot = slot;
 		for(int i=0; i < 6; i++) {
 			SinkSetting filter = module.filter[i];

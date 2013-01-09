@@ -13,7 +13,7 @@ public class GuiFreqCardContent extends KraphtBaseGuiScreen {
 	public GuiFreqCardContent(EntityPlayer player, IInventory card) {
 		super(180, 130, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, card);
-		dummy.addRestrictedSlot(0, card, 82, 15, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+		dummy.addRestrictedSlot(0, card, 82, 15, LogisticsPipes.LogisticsItemCard.itemID);
 		dummy.addNormalSlotsForPlayerInventory(10, 45);
 		this.inventorySlots = dummy;
 	}

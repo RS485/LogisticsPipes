@@ -37,6 +37,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

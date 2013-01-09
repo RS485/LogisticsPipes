@@ -30,6 +30,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
@@ -60,6 +61,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
@@ -103,7 +105,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		return 1;
 	}
 	
-	protected LinkedList<AdjacentTile> locateCrafters()	{
+	private List<AdjacentTile> _cachedCrafters = null;
+	protected List<AdjacentTile> locateCrafters()	{
+		if(_cachedCrafters !=null)
+			return _cachedCrafters;
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> crafters = new LinkedList<AdjacentTile>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
@@ -111,9 +116,21 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			if (!(tile.tile instanceof IInventory)) continue;
 			crafters.add(tile);
 		}
-		return crafters;
+		_cachedCrafters=crafters;
+		return _cachedCrafters;
+	}
+	public void clearCraftersCache() {
+		_cachedCrafters = null;
 	}
 	
+	
+	@Override
+	public void onNeighborBlockChange(int blockId) {
+		clearCraftersCache();
+		super.onNeighborBlockChange(blockId);
+	}
+	
+
 	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
 		ItemStack retstack = null;
 		while(count > 0) {
@@ -182,7 +199,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		
 		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
 		
-		LinkedList<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ) {
 			if (_orderManager.hasOrders()) {
 				_orderManager.sendFailed();
@@ -211,6 +228,9 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 				tile = it.next();
 				if (tile.tile instanceof ISpecialInventory) {
 					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, wanteditem, maxtosend);
+				} else if (tile.tile instanceof ISidedInventory) {
+					IInventory sidedadapter = new SidedInventoryAdapter((ISidedInventory) tile.tile, ForgeDirection.UNKNOWN);
+					extracted = extractFromIInventory(sidedadapter, wanteditem, maxtosend);
 				} else if (tile.tile instanceof IInventory) {
 					extracted = extractFromIInventory((IInventory)tile.tile, wanteditem, maxtosend);
 				}

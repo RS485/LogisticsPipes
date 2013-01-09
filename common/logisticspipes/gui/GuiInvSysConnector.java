@@ -11,7 +11,6 @@ import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -36,7 +35,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		super(180,200,0,0);
 		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
 		
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.itemID);
 		
 		dummy.addNormalSlotsForPlayerInventory(10, 115);
 		
@@ -45,6 +44,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		localresistance = pipe.resistance;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -81,7 +81,6 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		int column = 0;
 		int row = 0;
 		for(ItemIdentifierStack itemStack : _allItems) {
-			ItemIdentifier item = itemStack.getItem();
 			ppi++;
 			
 			if (ppi <= 27 * page) continue;

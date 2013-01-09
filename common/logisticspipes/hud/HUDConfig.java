@@ -15,6 +15,7 @@ public class HUDConfig {
 		stack.setTagCompound(getTag());
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public HUDConfig(NBTTagCompound tag) {
 		configTag = tag;
 		if(configTag == null) {

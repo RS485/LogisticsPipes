@@ -70,6 +70,7 @@ public class CCProxy implements ICCProxy {
 		return null;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
 	public ForgeDirection getOrientation(Object cObject, int side, TileEntity pipe) {
 		if(!valid) return ForgeDirection.UNKNOWN;

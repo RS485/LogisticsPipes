@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -27,7 +28,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	public SimpleInventory inv = new SimpleInventory(16, "Buffer", 127);
 	
-	public LinkedList<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
+	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
@@ -56,8 +57,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	@Override
 	public void enabledUpdateEntity() {
+		if(inv.isEmpty()) return;
 		//Add from interal buffer
-		LinkedList<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {
@@ -71,7 +73,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 						insertion = tile.orientation.getOpposite();
 					}
 				}
-				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(slot, insertion, true);
+				ItemStack toadd = slot.copy();
+				toadd.stackSize = toadd.stackSize > 64 ? 64 : toadd.stackSize;
+				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd, insertion, true);
 				slot.stackSize -= added.stackSize;
 				if(added.stackSize != 0) {
 					change = true;

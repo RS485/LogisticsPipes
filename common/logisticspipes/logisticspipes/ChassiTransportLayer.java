@@ -31,7 +31,7 @@ public class ChassiTransportLayer extends TransportLayer{
 			ForgeDirection o = _chassiPipe.getPointedOrientation();
 			if (o==null || o == ForgeDirection.UNKNOWN) o = ForgeDirection.UP;
 			
-			IRoutedItem newItem = item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o.getOpposite());
+			item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o.getOpposite());
 			//return false;
 		}
 		

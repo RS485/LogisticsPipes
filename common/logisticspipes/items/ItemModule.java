@@ -270,7 +270,7 @@ public class ItemModule extends LogisticsItem {
 
 	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider power){
 		if (itemStack == null) return null;
-		if (itemStack.itemID != this.shiftedIndex) return null;
+		if (itemStack.itemID != this.itemID) return null;
 		for(Module module:modules) {
 			if(itemStack.getItemDamage() == module.getId()) {
 				if(module.getILogisticsModuleClass() == null) return null;

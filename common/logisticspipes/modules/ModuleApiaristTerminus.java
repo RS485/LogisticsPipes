@@ -15,7 +15,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleApiaristTerminus implements ILogisticsModule {
 
-	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
 	private int xCoord;
 	private int yCoord;
@@ -30,7 +29,6 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider) {
-		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
 	}

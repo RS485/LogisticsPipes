@@ -1,8 +1,5 @@
 package logisticspipes.gui.orderer;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
@@ -19,9 +16,6 @@ public class NormalGuiOrderer extends GuiOrderer {
 		CraftOnly,
 	}
 
-	private HashMap<ItemIdentifier, Integer> _availableItems;
-	private LinkedList<ItemIdentifier> _craftableItems;
-	
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	
 	public NormalGuiOrderer(int x, int y, int z, int dim, EntityPlayer entityPlayer) {
@@ -29,6 +23,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 		refreshItems();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
 		controlList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh

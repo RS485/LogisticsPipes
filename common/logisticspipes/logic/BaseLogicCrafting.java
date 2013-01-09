@@ -1,8 +1,8 @@
 package logisticspipes.logic;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -28,7 +28,6 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
@@ -60,10 +59,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	/* ** SATELLITE CODE ** */
 
 	protected int getNextConnectSatelliteId(boolean prev) {
-		final HashMap<IRouter, ForgeDirection> routes = getRouter().getRouteTable();
+		final List<IRouter> routes = getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			if (routes.containsKey(satellite.getRouter())) {
+			if (routes.contains(satellite.getRouter())) {
 				if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
 					closestIdFound = satellite.satelliteId;
 				} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
@@ -110,7 +109,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public boolean isSatelliteConnected() {
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				if (getRouter().getRouteTable().containsKey(satellite.getRouter())) {
+				if (getRouter().getIRoutersByCost().contains(satellite.getRouter())) {
 					return true;
 				}
 			}
@@ -312,6 +311,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	/* ** NON NETWORKING ** */
+	@SuppressWarnings("deprecation")
 	public void paintPathToSatellite() {
 		final IRouter satelliteRouter = getSatelliteRouter();
 		if (satelliteRouter == null) {

@@ -98,6 +98,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		_allItems.addAll(packet._allItems);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

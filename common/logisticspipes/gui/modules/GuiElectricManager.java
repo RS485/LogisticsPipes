@@ -25,11 +25,11 @@ import buildcraft.transport.Pipe;
 
 public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleElectricManager _module;
 	private final int slot;
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -70,7 +70,6 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}
 		this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}

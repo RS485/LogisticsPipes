@@ -10,13 +10,11 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiSolderingStation extends KraphtBaseGuiScreen {
 
-	private final EntityPlayer player;
 	private final LogisticsSolderingTileEntity tile;
 	
 	public GuiSolderingStation(EntityPlayer player, LogisticsSolderingTileEntity tile) {
 		super(176, 166, 0, 0);
 		this.inventorySlots = tile.createContainer(player);
-		this.player = player;
 		this.tile = tile;
 	}
 

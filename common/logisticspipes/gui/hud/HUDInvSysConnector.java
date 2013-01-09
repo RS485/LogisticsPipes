@@ -10,8 +10,6 @@ import org.lwjgl.opengl.GL11;
 public class HUDInvSysConnector extends BasicHUDGui {
 	
 	private PipeItemsInvSysConnector pipe;
-	private int cursorX = 0;
-	private int cursorY = 0;
 	private long display = System.currentTimeMillis();
 	
 	public HUDInvSysConnector(PipeItemsInvSysConnector pipe) {
@@ -61,8 +59,6 @@ public class HUDInvSysConnector extends BasicHUDGui {
 	@Override
 	public void handleCursor(int x, int y) {
 		super.handleCursor(x, y);
-		cursorX = x;
-		cursorY = y;
 	}
 
 }

@@ -969,6 +969,7 @@ public class ServerPacketHandler {
 			
 			NBTTagList list = nbt.getTagList("macroList");
 			
+			
 			for(int i = 0;i < list.tagCount();i++) {
 				if(i == packet.integer) {
 					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
@@ -1230,7 +1231,7 @@ public class ServerPacketHandler {
 			break;
 		}
 		if(player.inventoryContainer != null) {
-			player.inventoryContainer.updateCraftingResults();
+			player.inventoryContainer.detectAndSendChanges();
 		}
 	}
 

@@ -291,6 +291,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
+	@SuppressWarnings("unused")
 	private <T> Map<Integer, T> getListAsMap(List<T> array) {
 		HashMap<Integer, T> map = new HashMap<Integer, T>();
 		int i = 1;
@@ -301,6 +302,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
 			return null;

@@ -48,6 +48,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		buttonarray = new GuiButton[6];
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

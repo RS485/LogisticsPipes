@@ -191,6 +191,7 @@ public class BasicGuiHelper {
 		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false, false);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
@@ -218,7 +219,7 @@ public class BasicGuiHelper {
 					//Use minecraft vanilla code
 					Minecraft mc = FMLClientHandler.instance().getClient();
 					ItemStack var22 = (ItemStack) tooltip[2];
-					List var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
+					List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
 
 	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
 	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
@@ -251,7 +252,7 @@ public class BasicGuiHelper {
 		} catch(Exception e) {
 			try {
 				//Use minecraft vanilla code
-				List var24 = msg;
+				List<String> var24 = msg;
 				
 	            if (var24.size() > 0)
 	            {

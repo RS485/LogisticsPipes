@@ -19,6 +19,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 	
 	public static boolean added = false;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void loadConfig() {
 		
@@ -36,9 +37,9 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		Arrays.sort(pipeArray, new Comparator() {
 			@Override
 			public int compare(Object arg0, Object arg1) {
-				if(((Item)arg0).shiftedIndex < ((Item)arg1).shiftedIndex) {
+				if(((Item)arg0).itemID < ((Item)arg1).itemID) {
 					return -1;
-				} else if(((Item)arg0).shiftedIndex > ((Item)arg1).shiftedIndex) {
+				} else if(((Item)arg0).itemID > ((Item)arg1).itemID) {
 					return 1;
 				} else {
 					return 0;

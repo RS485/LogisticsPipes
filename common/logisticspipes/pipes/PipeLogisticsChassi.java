@@ -76,7 +76,6 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	private final SimpleInventory _moduleInventory;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
-	private long tick = 0;
 	BaseChassiLogic ChassiLogic;
 	private boolean convertFromMeta = false;
 	
@@ -339,8 +338,8 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
 		if(MainProxy.isClient()) return false;
-		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.shiftedIndex) {
-			if(entityplayer.getCurrentEquippedItem().getItemDamage() != LogisticsPipes.ModuleItem.BLANK) {
+		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID) {
+			if(entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
 				for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
 					ItemStack item = _moduleInventory.getStackInSlot(i);
 					if(item == null) {

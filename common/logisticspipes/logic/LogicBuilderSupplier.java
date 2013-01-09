@@ -31,8 +31,6 @@ import buildcraft.core.utils.Utils;
 
 public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport {
 	
-	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
-	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;

@@ -168,14 +168,14 @@ public class BuildCraftProxy {
 		res.setItemName(clas.getSimpleName());
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		
-		Pipe pipe = BlockGenericPipe.createPipe(res.shiftedIndex);
+		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);
 		if(pipe instanceof CoreRoutedPipe) {
 			res.setTextureIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
 		}
 		
 		if(side.isClient()) {
 			LanguageRegistry.addName(res, descr);
-			MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, TransportProxyClient.pipeItemRenderer);
+			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
 		}
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
@@ -203,6 +203,6 @@ public class BuildCraftProxy {
 	}
 	
 	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
-		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.shiftedIndex;
+		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.itemID;
 	}
 }

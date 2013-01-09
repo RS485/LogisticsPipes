@@ -13,6 +13,6 @@ public class CreativeTabLP extends CreativeTabs {
 
     @SideOnly(Side.CLIENT)
     public int getTabIconItemIndex() {
-        return LogisticsPipes.LogisticsBasicPipe.shiftedIndex;
+        return LogisticsPipes.LogisticsBasicPipe.itemID;
     }
 }

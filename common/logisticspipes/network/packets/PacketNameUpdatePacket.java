@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 
 public class PacketNameUpdatePacket extends LogisticsPipesPacket {

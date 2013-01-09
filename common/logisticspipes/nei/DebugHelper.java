@@ -34,7 +34,6 @@ import codechicken.nei.forge.IContainerTooltipHandler;
 
 public class DebugHelper implements IContainerTooltipHandler {
 	
-	private static boolean display = false;
 	private static long lastTime = 0;
 	
 	@Override
@@ -48,7 +47,6 @@ public class DebugHelper implements IContainerTooltipHandler {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if(lastTime + 1000 < System.currentTimeMillis()) {
 					lastTime = System.currentTimeMillis();
-					display = true;
 					new Thread(new Runnable() {
 						@Override
 						public void run() {
@@ -59,7 +57,6 @@ public class DebugHelper implements IContainerTooltipHandler {
 									e.printStackTrace();
 								}
 							}
-							display = false;
 							DefaultMutableTreeNode node = new DefaultMutableTreeNode(ItemIdentifier.get(itemstack).getFriendlyName());
 							node.add(new DefaultMutableTreeNode("ItemId: " + itemstack.itemID));
 							node.add(new DefaultMutableTreeNode("ItemId: " + itemstack.getItemDamage()));
@@ -87,6 +84,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 		return currenttip;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void addNBTToTree(NBTBase nbt, DefaultMutableTreeNode node) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
 			return;
@@ -173,14 +171,11 @@ public class DebugHelper implements IContainerTooltipHandler {
 			type.add(new DefaultMutableTreeNode("Name: " + nbt.getName()));
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			
-			int i = 0;
-			
 			for(Object objectKey:internal.keySet()) {
 				if(internal.get(objectKey) instanceof NBTBase) {
 					DefaultMutableTreeNode nbtNode = new DefaultMutableTreeNode(objectKey);
 					addNBTToTree((NBTBase)internal.get(objectKey), nbtNode);
 					content.add(nbtNode);
-					i++;
 				}
 			}
 			type.add(content);

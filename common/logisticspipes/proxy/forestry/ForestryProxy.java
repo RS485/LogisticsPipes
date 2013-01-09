@@ -116,7 +116,7 @@ public class ForestryProxy implements IForestryProxy {
 		// ugly clientside hack for forestry 1.6/1.7 api breakage
 		IApiaristTracker apiaristTracker = null;
 		try {
-			Class c = Class.forName("forestry.api.apiculture.IBreedingManager");
+			Class<?> c = Class.forName("forestry.api.apiculture.IBreedingManager");
 			Method getApiaristTracker = c.getMethod("getApiaristTracker", World.class);
 			apiaristTracker = (IApiaristTracker) getApiaristTracker.invoke(BeeManager.breedingManager, world);
 		} catch (Exception e) {
@@ -124,7 +124,7 @@ public class ForestryProxy implements IForestryProxy {
 				e.printStackTrace();
 			}
 			try {
-				Class c = Class.forName("forestry.api.apiculture.IBreedingManager");
+				Class<?> c = Class.forName("forestry.api.apiculture.IBreedingManager");
 				Method getApiaristTracker = c.getMethod("getApiaristTracker", World.class, String.class);
 				apiaristTracker = (IApiaristTracker) getApiaristTracker.invoke(BeeManager.breedingManager, world, MainProxy.proxy.getClientPlayer().username);
 			} catch (Exception e1) {

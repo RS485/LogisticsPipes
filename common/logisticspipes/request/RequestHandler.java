@@ -37,16 +37,14 @@ public class RequestHandler {
 	}
 	
 	public static void request(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
-		//LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
-		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		if(!pipe.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		boolean result = RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
-				LinkedList list = new LinkedList<ItemMessage>();
+				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
 				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
 				MessageManager.requested(player, list);
 			}
@@ -64,9 +62,6 @@ public class RequestHandler {
 	}
 	
 	public static void simulate(final EntityPlayerMP player, final PacketRequestComponents packet, CoreRoutedPipe pipe) {
-		//LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
-		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
-		
 		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(1), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
@@ -166,12 +161,11 @@ public class RequestHandler {
 	}
 
 	public static int computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe) {
-		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		if(!pipe.useEnergy(15)) {
 			return -1;
 		}
 		request_id++;
-		QueuedTasks.queueTask(new Callable() {
+		QueuedTasks.queueTask(new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
 				RequestManager.request(makeStack, pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {

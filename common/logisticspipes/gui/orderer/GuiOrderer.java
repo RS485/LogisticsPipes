@@ -8,7 +8,6 @@
 
 package logisticspipes.gui.orderer;
 
-import java.awt.ItemSelectable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -99,6 +98,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		_allItems.addAll(packet._allItems);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -216,7 +216,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
             var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
             var9.draw();
 		} else {
-			long starttime = System.currentTimeMillis();
 			for(ItemIdentifierStack itemStack : _allItems) {
 				ItemIdentifier item = itemStack.getItem();
 				if(!itemSearched(item)) continue;

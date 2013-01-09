@@ -176,6 +176,8 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isCave(bee);
 			case PureCave: 
 				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isPureCave(bee);
+			default:
+				break;
 			}
 			
 			return false;
@@ -185,7 +187,6 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
 	private IChassiePowerProvider _power;
-	private int slotNumber;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);

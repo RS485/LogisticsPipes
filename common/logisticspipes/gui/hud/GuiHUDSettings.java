@@ -26,6 +26,7 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 		this.inventorySlots = dummy;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

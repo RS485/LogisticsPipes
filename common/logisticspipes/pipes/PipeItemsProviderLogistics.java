@@ -52,11 +52,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.Position;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
@@ -149,6 +145,8 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				break;
 			case Leave1PerStack:
 				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+			default:
+				break;
 		}
 		
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);

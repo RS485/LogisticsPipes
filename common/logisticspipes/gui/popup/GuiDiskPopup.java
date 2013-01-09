@@ -73,6 +73,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		mainGui.getDisk().setTagCompound(nbt);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

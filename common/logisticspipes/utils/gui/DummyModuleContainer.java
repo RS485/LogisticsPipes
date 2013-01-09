@@ -13,12 +13,10 @@ public class DummyModuleContainer extends DummyContainer {
 	private ItemStack moduleStack;
 	private ILogisticsModule module;
 	private int slot;
-	private EntityPlayer player;
 	
 	public DummyModuleContainer(EntityPlayer player, int slot) {
 		super(player.inventory, null);
 		this.slot = slot;
-		this.player = player;
 		moduleStack = player.inventory.mainInventory[slot];
 		module = LogisticsPipes.ModuleItem.getModuleForItem(moduleStack, null, null, null, null, null);
 		module.registerPosition(0, -1, slot, 20);

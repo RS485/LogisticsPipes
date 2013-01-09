@@ -251,6 +251,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				break;
 			case Leave1PerStack:
 				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+			default:
+				break;
 		}
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
 	}

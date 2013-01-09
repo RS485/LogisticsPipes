@@ -16,6 +16,7 @@ public class LogisticsItemCard extends LogisticsItem {
 		super(i);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {

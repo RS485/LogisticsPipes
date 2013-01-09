@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.network.ServerPacketHandler;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;

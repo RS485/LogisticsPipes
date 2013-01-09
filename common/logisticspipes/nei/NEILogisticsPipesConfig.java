@@ -19,6 +19,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 	
 	public static boolean added = false;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void loadConfig() {
 		

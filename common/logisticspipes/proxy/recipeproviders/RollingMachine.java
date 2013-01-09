@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 
 public class RollingMachine implements ICraftingRecipeProvider {
 
-	private static Class tileRollingMachineClass;
+	private static Class<?> tileRollingMachineClass;
 	private static Method getCraftMatrixMethod;
 
 	public static boolean load() {
@@ -35,7 +35,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		if (inventorycrafting == null)
 			return null;
 		try {
-			Class c = Class.forName("railcraft.common.util.crafting.RollingMachineCraftingManager");
+			Class<?> c = Class.forName("railcraft.common.util.crafting.RollingMachineCraftingManager");
 			Method inst = c.getMethod("getInstance");
 			Object instance = inst.invoke(null);
 			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class, World.class);

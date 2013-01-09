@@ -20,7 +20,6 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -29,8 +28,6 @@ import buildcraft.builders.TileBuilder;
 import buildcraft.core.utils.Utils;
 
 public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport {
-	
-	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
 	
 	private final InventoryUtilFactory _invUtilFactory;
 	

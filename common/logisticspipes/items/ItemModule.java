@@ -247,7 +247,7 @@ public class ItemModule extends LogisticsItem {
 			}
 			final ILogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
 			if(module != null && module instanceof ILogisticsGuiModule) {
-				QueuedTasks.queueTask(new Callable() {
+				QueuedTasks.queueTask(new Callable<Object>() {
 					@Override
 					public Object call() throws Exception {
 						if(par1ItemStack != null && par1ItemStack.stackSize > 0) {

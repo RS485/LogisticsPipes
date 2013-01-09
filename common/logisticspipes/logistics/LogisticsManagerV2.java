@@ -154,7 +154,6 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		
 		if (r.getPipe() instanceof PipeItemsProviderLogistics){
-			PipeItemsProviderLogistics pipe = (PipeItemsProviderLogistics) r.getPipe();
 			return ("Provider");
 		}
 		

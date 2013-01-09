@@ -67,6 +67,7 @@ public class LogisticsHUDRenderer {
 		list.clear();
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void refreshList(double x,double y,double z) {
 		ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>> newList = new ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>>();
 		for(IRouter router:SimpleServiceLocator.routerManager.getRouters().values()) {
@@ -105,7 +106,6 @@ public class LogisticsHUDRenderer {
 			clearList(false);
 			return;
 		}
-		@SuppressWarnings("unchecked")
 		Object[] sorter = newList.toArray();
 		Arrays.sort(sorter, new Comparator() {
 			@Override

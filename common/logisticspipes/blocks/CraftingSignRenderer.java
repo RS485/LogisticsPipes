@@ -31,10 +31,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	RenderManager rendermanager = RenderManager.instance;
 	
-	private static long timesub = System.currentTimeMillis();
-	//private static int ID = 1;
-	
-    public CraftingSignRenderer() {
+	public CraftingSignRenderer() {
     	setTileEntityRenderer(TileEntityRenderer.instance);
     	renderItem.setRenderManager(rendermanager);
     }
@@ -49,7 +46,6 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			int disX = pipe.xCoord - par1TileEntitySign.xCoord;
 			int disZ = pipe.zCoord - par1TileEntitySign.zCoord;
 	        
-	        int var16 = par1TileEntitySign.getBlockMetadata();
 	        if (disZ > 0)
 	        {
 	            var12 = 180.0F;

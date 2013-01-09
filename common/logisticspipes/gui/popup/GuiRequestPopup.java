@@ -31,6 +31,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 		this.player = player;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

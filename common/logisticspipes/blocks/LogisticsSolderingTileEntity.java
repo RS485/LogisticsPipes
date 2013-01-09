@@ -181,7 +181,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public ICraftingResultHandler getHandlerForRecipe() {
 		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
 			boolean match = true;
-			boolean removeThis = false;
 			for(int i=0;i<9;i++) {
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);

@@ -17,6 +17,7 @@ public class TeleportPipes implements ISpecialPipedConnection {
 	private static Method teleportPipeMethod;
 	private static Object teleportManager;
 
+	@SuppressWarnings("unchecked")
 	public boolean init() {
 		try {
 			try {
@@ -49,6 +50,7 @@ public class TeleportPipes implements ISpecialPipedConnection {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	private LinkedList<? extends Pipe> getConnectedTeleportPipes(Pipe pipe) throws Exception {
 		if (teleportManager != null) {
 			return (LinkedList<? extends Pipe>) teleportPipeMethod.invoke(teleportManager, pipe, false);

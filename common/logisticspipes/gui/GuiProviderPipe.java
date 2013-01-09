@@ -22,7 +22,6 @@ import net.minecraft.inventory.IInventory;
 import org.lwjgl.opengl.GL11;
 
 public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvider{
-	private IInventory playerInventory;
 	private IInventory dummyInventory;
 	private LogicProvider logic; 
 	
@@ -42,7 +41,6 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		this.inventorySlots = dummy;
 		
-		this.playerInventory = playerInventory;
 		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
@@ -50,6 +48,7 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

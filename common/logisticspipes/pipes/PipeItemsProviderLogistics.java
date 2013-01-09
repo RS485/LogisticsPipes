@@ -30,6 +30,7 @@ import logisticspipes.logic.LogicProvider;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
@@ -50,6 +51,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.common.ISidedInventory;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -93,7 +95,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			IInventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
+			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			count += inv.itemCount(item);
 		}
 		return count;
@@ -119,7 +121,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			
-			IInventoryUtil inv = getAdaptedInventoryUtil((IInventory) tile.tile);
+			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
 			int available = inv.itemCount(item);
 			if (available == 0) continue;
 			
@@ -147,7 +149,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return 0;
 	}
 	
-	private IInventoryUtil getAdaptedInventoryUtil(IInventory base){
+	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
+		IInventory base = (IInventory) tile.tile;
+		if (base instanceof ISidedInventory) {
+			base = new SidedInventoryAdapter((ISidedInventory) base, tile.orientation.getOpposite());
+		}
 		ExtractionMode mode = ((LogicProvider)logic).getExtractionMode();
 		switch(mode){
 			case LeaveFirst:
@@ -244,7 +250,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			IInventoryUtil inv = this.getAdaptedInventoryUtil((IInventory) tile.tile);
+			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 			for (ItemIdentifier currItem : currentInv.keySet()){

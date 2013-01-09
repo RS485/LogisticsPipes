@@ -9,17 +9,14 @@
 package logisticspipes.utils;
 
 import java.lang.reflect.Field;
-import java.lang.Comparable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.Item;
@@ -36,9 +33,8 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagLong;
 import net.minecraft.nbt.NBTTagShort;
 import net.minecraft.nbt.NBTTagString;
-
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Table;
+import cpw.mods.fml.common.registry.GameData;
+import cpw.mods.fml.common.registry.ItemData;
 
 /**
  * @author Krapht
@@ -83,9 +79,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>();
 	
-	private static ReadWriteLock lock = new ReentrantReadWriteLock();
-	private static Lock readLock = lock.readLock();
-	private static Lock writeLock = lock.writeLock();
+	private final static ConcurrentHashMap<Integer, String> _modItemIdMap = new ConcurrentHashMap<Integer, String>();
+	private final static ConcurrentSkipListSet<String> _modList = new ConcurrentSkipListSet<String>();
+	
+	private static boolean init = false;
 	
 	//Hide default constructor
 	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag, int uniqueID) {
@@ -167,6 +164,22 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		return tag1.equals(tag2);
 	}
+
+	public static void tick() {
+		if(init) return;
+		init = true;
+		NBTTagList list = new NBTTagList();
+		GameData.writeItemData(list);
+		Set<ItemData> set = GameData.buildWorldItemData(list);
+		for(ItemData data:set) {
+			_modItemIdMap.put(data.getItemId(), data.getModId());
+			if(!_modList.contains(data.getModId())) {
+				_modList.add(data.getModId());
+			}
+		}
+	}
+	
+	/* Instance Methods */
 	
 	public String getDebugName() {
 		if (Item.itemsList[itemID] != null)	{
@@ -218,6 +231,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			return MainProxy.proxy.getName(this);
 		}
 		return "<Item name not found>";
+	}
+	
+	public String getModId() {
+		String name = "UNKNOWN";
+		if(_modItemIdMap.containsKey(this.itemID)) {
+			name = _modItemIdMap.get(this.itemID);
+		}
+		return name;
 	}
 	
 	public ItemIdentifierStack makeStack(int stackSize){
@@ -417,7 +438,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public String toString() {
-		return getFriendlyName();
+		return getModId() + ":" + getFriendlyName();
 	}
 
 	@Override

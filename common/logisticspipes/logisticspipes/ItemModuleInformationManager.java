@@ -78,7 +78,7 @@ public class ItemModuleInformationManager {
 		if(itemStack == null) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
-			Collection collection = nbt.getTags();
+			Collection<?> collection = nbt.getTags();
 			nbt = new NBTTagCompound();
 			for(Object obj:collection) {
 				if(obj instanceof NBTBase) {

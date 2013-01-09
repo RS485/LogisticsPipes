@@ -307,7 +307,7 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector)pipe.pipe).inv);
 				
-				dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector)pipe.pipe).inv, 50, 10, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+				dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector)pipe.pipe).inv, 50, 10, LogisticsPipes.LogisticsItemCard.itemID);
 				
 				dummy.addNormalSlotsForPlayerInventory(0, 50);
 				
@@ -330,7 +330,7 @@ public class GuiHandler implements IGuiHandler {
 				
 				dummy = new DummyContainer(player.inventory, inv);
 				
-				dummy.addRestrictedSlot(0, inv, 40, 40, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+				dummy.addRestrictedSlot(0, inv, 40, 40, LogisticsPipes.LogisticsItemCard.itemID);
 				dummy.addNormalSlotsForPlayerInventory(0, 0);
 				
 				return dummy;

@@ -53,7 +53,7 @@ public class RemoteOrderer extends Item {
 	@Override
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		//Add special tooltip in tribute to DireWolf
-		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.shiftedIndex){
+		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.itemID){
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 				list.add("a.k.a \"Requesting Tool\" - DW20");
 			}

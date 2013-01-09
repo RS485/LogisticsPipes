@@ -3,6 +3,8 @@ package logisticspipes.main;
 import java.util.HashMap;
 
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.LogisticsHUDRenderer;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.world.WorldEvent;
 
@@ -17,6 +19,10 @@ public class LogisticsWorldManager {
 			if(!WorldLoadTime.containsKey(dim)) {
 				WorldLoadTime.put(dim, System.currentTimeMillis());
 			}
+		}
+		if(MainProxy.isClient()) {
+			SimpleServiceLocator.routerManager.clearClientRouters();
+			LogisticsHUDRenderer.instance().clear();
 		}
 	}
 }

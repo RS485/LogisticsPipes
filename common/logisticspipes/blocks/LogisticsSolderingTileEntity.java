@@ -63,7 +63,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 						});
 			}
 		}
-		dummy.addRestrictedSlot(9, this, 93, 17, Item.ingotIron.shiftedIndex);
+		dummy.addRestrictedSlot(9, this, 93, 17, Item.ingotIron.itemID);
 		dummy.addRestrictedSlot(10, this, 127, 47, -1);
 		dummy.addRestrictedSlot(11, this, 149, 11, new ISlotCheck() {
 			@Override
@@ -181,7 +181,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public ICraftingResultHandler getHandlerForRecipe() {
 		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
 			boolean match = true;
-			boolean removeThis = false;
 			for(int i=0;i<9;i++) {
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);

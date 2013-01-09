@@ -102,7 +102,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 		//Pipe slots
 	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, LogisticsPipes.UpgradeItem.shiftedIndex);
+	    	dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, LogisticsPipes.UpgradeItem.itemID);
 	    }
 	    return dummy;
 	}
@@ -125,7 +125,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public boolean tryIserting(EntityPlayer entityplayer) {
 		if(MainProxy.isClient()) return false;
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.shiftedIndex) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				ItemStack item = inv.getStackInSlot(i);
 				if(item == null) {

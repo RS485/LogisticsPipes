@@ -25,10 +25,10 @@ import buildcraft.transport.Pipe;
 
 public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleAdvancedExtractor _advancedExtractor;
 	private final int slot;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -84,7 +84,6 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 	    }
 	    
 	    this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}

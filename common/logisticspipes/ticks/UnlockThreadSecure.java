@@ -14,6 +14,7 @@ public class UnlockThreadSecure extends Thread {
 		this.start();
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void run() {
 		while(running) {
 			try {

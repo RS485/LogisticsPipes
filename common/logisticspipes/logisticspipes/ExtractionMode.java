@@ -10,7 +10,7 @@ public enum ExtractionMode {
 	public ExtractionMode next() {
 		int next = this.ordinal() + 1;
 		
-		if (next >= this.values().length){
+		if (next >= ExtractionMode.values().length){
 			next = 0;
 		}
 		return ExtractionMode.values()[next];

@@ -23,7 +23,6 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
-	private IInventory playerInventory;
 	private IInventory dummyInventory;
 	private LogicLiquidSupplier logic; 
 	
@@ -44,7 +43,6 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 		}
 		this.inventorySlots = dummy; 
 
-		this.playerInventory = playerInventory;
 		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
@@ -69,6 +67,7 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

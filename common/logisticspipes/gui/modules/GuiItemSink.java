@@ -25,11 +25,11 @@ import buildcraft.transport.Pipe;
 
 public class GuiItemSink extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleItemSink _itemSink;
 	private final int slot;
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -72,7 +72,6 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	    }
 	    
 	    this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}

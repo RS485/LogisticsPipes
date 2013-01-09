@@ -38,7 +38,6 @@ public interface IRouter {
 	public void displayRoutes();
 	@Deprecated
 	public void displayRouteTo(IRouter r);
-	@Deprecated
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public ILogisticsModule getLogisticsModule();

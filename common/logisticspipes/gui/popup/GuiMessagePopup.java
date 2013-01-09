@@ -24,6 +24,7 @@ public class GuiMessagePopup extends SubGuiScreen {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

@@ -20,7 +20,6 @@ import buildcraft.transport.Pipe;
 
 public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModulePassiveSupplier _supplier;
 	
 	
@@ -36,7 +35,6 @@ public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 	    }
 	    
 	    this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}

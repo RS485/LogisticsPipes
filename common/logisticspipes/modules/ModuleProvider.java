@@ -268,6 +268,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
+			default:
+				break;
 		}
 		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
 	}

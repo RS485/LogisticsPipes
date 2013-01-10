@@ -121,6 +121,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
@@ -235,7 +236,7 @@ public class LogisticsPipes {
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
 		try {
-			File logPath = new File("LogisticsPipes-Request.log");
+			File logPath = new File((File) FMLInjectionData.data()[6], "LogisticsPipes-Request.log");
 			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
 			fileHandler.setFormatter(new RequestLogFormator());
 			fileHandler.setLevel(Level.ALL);

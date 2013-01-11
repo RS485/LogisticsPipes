@@ -3,6 +3,7 @@ package logisticspipes.blocks.powertile;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerJunction;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -49,7 +50,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public boolean useEnergy(int amount) {
 		if(canUseEnergy(amount)) {
-			internalStorage -= amount;
+			internalStorage -= (amount * Configs.powerUsageMultiplyer);
 			return true;
 		}
 		return false;
@@ -67,7 +68,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return internalStorage >= amount;
+		return internalStorage >= (amount * Configs.powerUsageMultiplyer);
 	}
 	
 	public void addEnergy(float amount) {

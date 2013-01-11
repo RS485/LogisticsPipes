@@ -28,8 +28,8 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		super(new PipeTransportLogistics() {
 
 			@Override
-			public boolean isPipeConnected(TileEntity tile) {
-				if(super.isPipeConnected(tile)) return true;
+			public boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
+				if(super.isPipeConnected(tile, dir)) return true;
 				if(tile instanceof TileGenericPipe) return false;
 				if (tile instanceof ITankContainer) {
 					ITankContainer liq = (ITankContainer) tile;
@@ -63,11 +63,11 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		if (data.item.getItemStack() == null) return;
 		LiquidStack liquidId = LiquidContainerRegistry.getLiquidForFilledItem(data.item.getItemStack());
 		if (liquidId == null) return;
-		ForgeDirection orientation = data.output;
+		ForgeDirection orientation = data.output.getOpposite();
 		if(getUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getUpgradeManager().getSneakyUpgrade().getSneakyOrientation();
 			if(orientation == null) {
-				orientation = data.output;
+				orientation = data.output.getOpposite();
 			}
 		}
 		while (data.item.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {

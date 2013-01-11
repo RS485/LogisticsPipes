@@ -79,6 +79,8 @@ public class Configs {
 	public static boolean multiThreadEnabled = false;
 	public static int multiThreadNumber = 4;
 	public static int multiThreadPriority = Thread.NORM_PRIORITY;
+	
+	public static int powerUsageMultiplyer = 1;
 
 
 	private static void readoldconfig() {
@@ -342,6 +344,9 @@ public class Configs {
 		Property enableParticleFX = configuration.get(Configuration.CATEGORY_GENERAL, "enableParticleFX", ENABLE_PARTICLE_FX);
 		enableParticleFX.comment = "Whether or not special particles will spawn.";
 		
+		Property powerUsageMultiplyerPref = configuration.get(Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer", powerUsageMultiplyer);
+		powerUsageMultiplyerPref.comment = "A Multiplyer for the power usage.";
+		
 		Property multiThread = configuration.get(CATEGORY_MULTITHREAD, "enabled", multiThreadEnabled);
 		multiThread.comment = "Enabled the Logistics Pipes multiThread function to allow the network.";
 		
@@ -415,6 +420,13 @@ public class Configs {
 		if(multiThreadPriority < 1 || multiThreadPriority > 10) {
 			multiThreadPriority = Thread.NORM_PRIORITY;
 			multiThreadPrio.value = Integer.toString(Thread.NORM_PRIORITY);
+		}
+		
+		powerUsageMultiplyer = powerUsageMultiplyerPref.getInt();
+		
+		if(powerUsageMultiplyer < 1) {
+			powerUsageMultiplyer = 1;
+			powerUsageMultiplyerPref.value = "1";
 		}
 		
 		configuration.save();

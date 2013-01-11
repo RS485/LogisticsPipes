@@ -105,7 +105,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	public SinkReply sinksItem(ItemStack item) {
 		if (findElectricItem(item, !isDischargeMode(), true)) {
 			SinkReply reply = new SinkReply();
-			reply.fixedPriority = FixedPriority.ItemSink;
+			reply.fixedPriority = FixedPriority.PassiveSupplier;
 			reply.isPassive = true;
 			if(_power.useEnergy(2)) {
 				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);

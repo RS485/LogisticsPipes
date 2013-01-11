@@ -54,7 +54,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
-		/*
 		if(entityItem.getContribution("routingInformation") == null) {
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
@@ -66,7 +65,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			_transportMode = settings.transportMode;
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		}
-		*/
 	}
 	
 	@Override
@@ -301,38 +299,5 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
 		return routed;
-	}
-	
-	@Override
-	public boolean hasContributions() {
-		return true;
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		if(nbttagcompound.hasKey("sourceUUID")) {
-			sourceUUID = UUID.fromString(nbttagcompound.getString("sourceUUID"));
-		}
-		if(nbttagcompound.hasKey("destinationUUID")) {
-			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
-		}
-		arrived = nbttagcompound.getBoolean("arrived");
-		bufferCounter = nbttagcompound.getInteger("bufferCounter");
-		_transportMode = TransportMode.values()[nbttagcompound.getInteger("transportMode")];
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		if(sourceUUID != null) {
-			nbttagcompound.setString("sourceUUID", sourceUUID.toString());
-		}
-		if(destinationUUID != null) {
-			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
-		}
-		nbttagcompound.setBoolean("arrived", arrived);
-		nbttagcompound.setInteger("bufferCounter", bufferCounter);
-		nbttagcompound.setInteger("transportMode", _transportMode.ordinal());
 	}
 }

@@ -556,7 +556,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
 		if(MainProxy.isServer()) {
-			return ((ServerRouter)this.getRouter()).getPowerProvider();
+			return this.getRouter().getPowerProvider();
 		} else {
 			return null;
 		}
@@ -566,6 +566,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(MainProxy.isClient()) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);

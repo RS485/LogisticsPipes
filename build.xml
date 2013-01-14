@@ -63,37 +63,37 @@
         
 		<echo message="Download finished"/>
 		
-        <unzip dest="${mcp.dir}">
+        <unzip dest="${mcp.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="mcp${mcp.version}.zip"/>
             </fileset>
         </unzip>
         
-        <unzip dest="${mcp.dir}">
+        <unzip dest="${mcp.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
             </fileset>
         </unzip>
         
-        <unzip dest="${buildcraft.dir}">
+        <unzip dest="${buildcraft.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="buildcraft-src-${bc.version}.zip"/>
             </fileset>
         </unzip>
         
-        <unzip dest="${forestry.dir}">
+        <unzip dest="${forestry.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="forestry-api-${forestry.version}.zip"/>
             </fileset>
         </unzip>
         
-        <unzip dest="${ic2.dir}">
+        <unzip dest="${ic2.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="industrialcraft-2-api_${ic2.version}.zip"/>
             </fileset>
         </unzip>
         
-        <unzip dest="${cc.dir}">
+        <unzip dest="${cc.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="ComputerCraftAPI${cc.version}.zip"/>
             </fileset>
@@ -157,7 +157,7 @@
 		
         <!-- Copy CC API source -->
         <copy todir="${commonsrc.dir}">
-            <fileset dir="${cc.dir}"/>
+            <fileset dir="${cc.dir}/src"/>
         </copy>
 		
 		<echo message="Copied CC API"/>

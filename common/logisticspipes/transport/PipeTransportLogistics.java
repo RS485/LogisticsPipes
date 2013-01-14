@@ -21,7 +21,6 @@ import java.util.Set;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.pipes.basic.liquid.LogisitcsLiquidConnectionTransport;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -41,7 +40,6 @@ import buildcraft.core.proxy.CoreProxy;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
-import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 

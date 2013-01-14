@@ -8,7 +8,6 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
-import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;

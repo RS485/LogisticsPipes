@@ -9,12 +9,10 @@
 package logisticspipes.routing;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraft.item.ItemStack;

@@ -21,7 +21,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftCore;

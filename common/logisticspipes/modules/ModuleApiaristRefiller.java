@@ -45,7 +45,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 			return false;
 		}
 
-		if (!(saidInventory.getSizeInventory() < 2)) {
+		if ((saidInventory.getSizeInventory() < 2)) {
 			return false;
 		}
 		
@@ -106,7 +106,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 			return;
 		}
 		
-		if (!(saidInventory.getSizeInventory() < 2)) {
+		if ((saidInventory.getSizeInventory() < 2)) {
 			return;
 		}
 		

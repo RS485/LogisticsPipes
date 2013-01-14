@@ -86,6 +86,8 @@ public class Configs {
 	public static boolean multiThreadEnabled = false;
 	public static int multiThreadNumber = 4;
 	public static int multiThreadPriority = Thread.NORM_PRIORITY;
+	
+	public static int powerUsageMultiplyer = 1;
 
 
 	private static void readoldconfig() {
@@ -255,6 +257,30 @@ public class Configs {
 		Property logisticPipeCraftingMK3IdProperty = configuration.getItem("logisticsPipeCraftingMK3.id", LOGISTICSPIPE_CRAFTING_MK3_ID);
 		logisticPipeCraftingMK3IdProperty.comment = "The item id for the crafting logistics pipe MK3";
 		
+		//DEBUG (TEST) ONLY
+		Property logisticPipeLiquidConnectorIdProperty = null;
+		Property logisticPipeLiquidBasicIdProperty = null;
+		Property logisticPipeLiquidInsertionIdProperty = null;
+		Property logisticPipeLiquidProviderIdProperty = null;
+		Property logisticPipeLiquidRequestIdProperty = null;
+		if(LogisticsPipes.DEBUG) {
+			
+			logisticPipeLiquidConnectorIdProperty = configuration.getItem("logisticPipeLiquidConnector.id", LOGISTICSPIPE_LIQUID_CONNECTOR);
+			logisticPipeLiquidConnectorIdProperty.comment = "The item id for the liquid connector pipe.";
+			
+			logisticPipeLiquidBasicIdProperty = configuration.getItem("logisticPipeLiquidBasic.id", LOGISTICSPIPE_LIQUID_BASIC);
+			logisticPipeLiquidBasicIdProperty.comment = "The item id for the liquid basic pipe.";
+			
+			logisticPipeLiquidInsertionIdProperty = configuration.getItem("logisticPipeLiquidInsertion.id", LOGISTICSPIPE_LIQUID_INSERTION);
+			logisticPipeLiquidInsertionIdProperty.comment = "The item id for the liquid insertion pipe.";
+			
+			logisticPipeLiquidProviderIdProperty = configuration.getItem("logisticPipeLiquidProvider.id", LOGISTICSPIPE_LIQUID_PROVIDER);
+			logisticPipeLiquidProviderIdProperty.comment = "The item id for the liquid provider pipe.";
+			
+			logisticPipeLiquidRequestIdProperty = configuration.getItem("logisticPipeLiquidRequest.id", LOGISTICSPIPE_LIQUID_REQUEST);
+			logisticPipeLiquidRequestIdProperty.comment = "The item id for the liquid requestor pipe.";
+		}
+		
 		Property logisticPipeRequesterMK2IdProperty = configuration.getItem("logisticsPipeRequesterMK2.id", LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
 
@@ -309,9 +335,12 @@ public class Configs {
 		Property logisticItemCardIdProperty = configuration.getItem("logisticItemCard.id", ItemCardId);
 		logisticItemCardIdProperty.comment = "The item id for the logistics item card";
 		
-		Property logisticsLiquidContainerIdProperty = configuration.getItem("LogisticsLiquidContainer.id", ItemLiquidContainerId);
-		logisticsLiquidContainerIdProperty.comment = "The item id for the logistics liquid container";
-
+		//DEBUG (TEST) ONLY
+		Property logisticsLiquidContainerIdProperty = null;
+		if(LogisticsPipes.DEBUG) {
+			logisticsLiquidContainerIdProperty = configuration.getItem("LogisticsLiquidContainer.id", ItemLiquidContainerId);
+			logisticsLiquidContainerIdProperty.comment = "The item id for the logistics liquid container";
+		}
 		
 		Property detectionLength = configuration.get(Configuration.CATEGORY_GENERAL, "detectionLength", LOGISTICS_DETECTION_LENGTH);
 		detectionLength.comment = "The maximum shortest length between logistics pipes. This is an indicator on the maxim depth of the recursion algorithm to discover logistics neighbours. A low value might use less CPU, a high value will allow longer pipe sections";
@@ -352,6 +381,9 @@ public class Configs {
 		Property enableParticleFX = configuration.get(Configuration.CATEGORY_GENERAL, "enableParticleFX", ENABLE_PARTICLE_FX);
 		enableParticleFX.comment = "Whether or not special particles will spawn.";
 		
+		Property powerUsageMultiplyerPref = configuration.get(Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer", powerUsageMultiplyer);
+		powerUsageMultiplyerPref.comment = "A Multiplyer for the power usage.";
+		
 		Property multiThread = configuration.get(CATEGORY_MULTITHREAD, "enabled", multiThreadEnabled);
 		multiThread.comment = "Enabled the Logistics Pipes multiThread function to allow the network.";
 		
@@ -370,7 +402,11 @@ public class Configs {
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
 		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);
 		ItemPartsId							= Integer.parseInt(logisticItemPartsIdProperty.value);
-		ItemLiquidContainerId				= Integer.parseInt(logisticsLiquidContainerIdProperty.value);
+
+		//DEBUG (TEST) ONLY
+		if(LogisticsPipes.DEBUG) {
+			ItemLiquidContainerId				= Integer.parseInt(logisticsLiquidContainerIdProperty.value);
+		}
 		 
 		LOGISTICSPIPE_BASIC_ID 				= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID			= Integer.parseInt(logisticPipeRequesterIdProperty.value);
@@ -395,6 +431,15 @@ public class Configs {
 		LOGISTICSPIPE_INVSYSCON_ID			= Integer.parseInt(logisticInvSysConIdProperty.value);
 		LOGISTICS_SIGN_ID 					= Integer.parseInt(logisticsSignId.value);
 		LOGISTICS_SOLID_BLOCK_ID 			= Integer.parseInt(logisticsSolidBlockId.value);
+
+		//DEBUG (TEST) ONLY
+		if(LogisticsPipes.DEBUG) {
+			LOGISTICSPIPE_LIQUID_CONNECTOR	= logisticPipeLiquidConnectorIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_BASIC		= logisticPipeLiquidBasicIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_INSERTION	= logisticPipeLiquidInsertionIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_PROVIDER	= logisticPipeLiquidProviderIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_REQUEST	= logisticPipeLiquidRequestIdProperty.getInt();
+		}
 		
 		LOGISTICS_DETECTION_LENGTH			= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT			= Integer.parseInt(detectionCount.value);
@@ -426,6 +471,13 @@ public class Configs {
 		if(multiThreadPriority < 1 || multiThreadPriority > 10) {
 			multiThreadPriority = Thread.NORM_PRIORITY;
 			multiThreadPrio.value = Integer.toString(Thread.NORM_PRIORITY);
+		}
+		
+		powerUsageMultiplyer = powerUsageMultiplyerPref.getInt();
+		
+		if(powerUsageMultiplyer < 1) {
+			powerUsageMultiplyer = 1;
+			powerUsageMultiplyerPref.value = "1";
 		}
 		
 		configuration.save();

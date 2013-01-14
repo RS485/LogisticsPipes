@@ -41,7 +41,7 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
-public class ServerRouter implements IRouter, IPowerRouter {
+public class ServerRouter implements IRouter {
 
 	//does not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 

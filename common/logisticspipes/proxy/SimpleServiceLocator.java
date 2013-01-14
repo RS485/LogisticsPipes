@@ -20,7 +20,6 @@ import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;

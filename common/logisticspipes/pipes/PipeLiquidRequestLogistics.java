@@ -1,8 +1,7 @@
 package logisticspipes.pipes;
 
-import buildcraft.transport.EntityData;
-import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
+import java.util.List;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.items.LogisticsLiquidContainer;
@@ -17,13 +16,15 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.utils.LiquidIdentifier;
-import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
+import buildcraft.transport.EntityData;
+import buildcraft.transport.PipeTransportItems;
 
 public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IRequestLiquid {
 
@@ -33,19 +34,13 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 
 	@Override
 	public void enabledUpdateEntity() {
-		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		List<Pair<TileEntity, ForgeDirection>> list = getAdjacentTanks(true);
 		int validDirections = 0;
-		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-			LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[dir.ordinal()];
-			TileEntity tile = worldUtil.getAdjacentTileEntitie(dir);
-			if(!(tile instanceof ITankContainer)) continue;
-			if(!this.isPipeConnected(tile)) continue;
-			if(tile instanceof TileGenericPipe) {
-				if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) continue;
-			}
+		for(Pair<TileEntity, ForgeDirection> pair:list) {
+			LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 			validDirections++;
 			if(tank.getLiquid() == null) continue;
-			int filled = ((ITankContainer)tile).fill(dir.getOpposite(), tank.getLiquid(), true);
+			int filled = ((ITankContainer)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getLiquid(), true);
 			if(filled == 0) continue;
 			LiquidStack drain = tank.drain(filled, true);
 			if(drain == null || filled != drain.amount) {
@@ -58,14 +53,8 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 		LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).internalTank;
 		LiquidStack stack = tank.getLiquid();
 		if(stack == null) return;
-		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-			TileEntity tile = worldUtil.getAdjacentTileEntitie(dir);
-			if(!(tile instanceof ITankContainer)) continue;
-			if(!this.isPipeConnected(tile)) continue;
-			if(tile instanceof TileGenericPipe) {
-				if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) continue;
-			}
-			LogisticsLiquidSection tankSide = ((PipeLiquidTransportLogistics)this.transport).sideTanks[dir.ordinal()];
+		for(Pair<TileEntity, ForgeDirection> pair:list) {
+			LogisticsLiquidSection tankSide = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 			stack = tank.getLiquid();
 			if(stack == null) continue;
 			stack = stack.copy();
@@ -82,10 +71,7 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 	
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-		if(!(tile instanceof ITankContainer)) return;
-		if(tile instanceof TileGenericPipe) {
-			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return;
-		}
+		if(!this.isConnectableTank(tile, data.output, true));
 		if(data.output.ordinal() >= ForgeDirection.VALID_DIRECTIONS.length) return;
 		if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
 		if(!this.getRouter().getId().equals(((IRoutedItem)data.item).getDestination())) return;

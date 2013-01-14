@@ -34,8 +34,8 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		super(new PipeTransportLogistics() {
 
 			@Override
-			public boolean isPipeConnected(TileEntity tile) {
-				if(super.isPipeConnected(tile)) return true;
+			public boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
+				if(super.isPipeConnected(tile, dir)) return true;
 				if(tile instanceof ILogisticsPowerProvider) {
 					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
 					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {

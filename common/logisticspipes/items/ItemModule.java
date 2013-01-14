@@ -3,7 +3,6 @@ package logisticspipes.items;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -32,7 +31,6 @@ import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.creativetab.CreativeTabs;

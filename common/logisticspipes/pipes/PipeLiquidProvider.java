@@ -14,12 +14,12 @@ import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.LogisticsLiquidOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
-import logisticspipes.utils.WorldUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ILiquidTank;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
@@ -40,28 +40,24 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 		
 		Pair3<LiquidIdentifier, Integer, IRequestLiquid> order = manager.getFirst();
 		int amountToSend = Math.min(order.getValue2(), 5000);
-		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for(AdjacentTile aTile:wUtil.getAdjacentTileEntities(true)) {
-			if(aTile.tile instanceof TileGenericPipe) continue;
-			if(!(aTile.tile instanceof ITankContainer)) continue;
-			if(!this.isPipeConnected(aTile.tile)) continue;
+		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			if(amountToSend <= 0) break;
-			ILiquidTank[] tanks = ((ITankContainer)aTile.tile).getTanks(aTile.orientation.getOpposite());
+			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
 			for(ILiquidTank tank:tanks) {
 				LiquidStack liquid;
 				if((liquid = tank.getLiquid()) != null) {
 					if(order.getValue1() == LiquidIdentifier.get(liquid)) {
 						int amount = Math.min(liquid.amount, amountToSend);
 						amountToSend -= amount;
-						LiquidStack drained = ((ITankContainer)aTile.tile).drain(aTile.orientation, amount, false);
+						LiquidStack drained = ((ITankContainer)pair.getValue1()).drain(pair.getValue2(), amount, false);
 						if(order.getValue1() == LiquidIdentifier.get(drained)) {
-							drained = ((ITankContainer)aTile.tile).drain(aTile.orientation, amount, true);
+							drained = ((ITankContainer)pair.getValue1()).drain(pair.getValue2(), amount, true);
 							ItemStack stack = SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(drained);
 							IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, worldObj);
 							item.setDestination(order.getValue3().getRouter().getId());
 							item.setTransportMode(TransportMode.Active);
 							item.setSource(this.getRouter().getId());
-							this.queueRoutedItem(item, aTile.orientation);
+							this.queueRoutedItem(item, pair.getValue2());
 							manager.sendAmount(amount);
 							if(amountToSend <= 0) break;
 						}
@@ -77,12 +73,8 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	@Override
 	public Map<LiquidIdentifier, Integer> getAvailableLiquids() {
 		Map<LiquidIdentifier, Integer> map = new HashMap<LiquidIdentifier, Integer>();
-		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for(AdjacentTile aTile:wUtil.getAdjacentTileEntities(true)) {
-			if(aTile.tile instanceof TileGenericPipe) continue;
-			if(!(aTile.tile instanceof ITankContainer)) continue;
-			if(!this.isPipeConnected(aTile.tile)) continue;
-			ILiquidTank[] tanks = ((ITankContainer)aTile.tile).getTanks(aTile.orientation.getOpposite());
+		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
+			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
 			for(ILiquidTank tank:tanks) {
 				LiquidStack liquid;
 				if((liquid = tank.getLiquid()) != null && liquid.itemID != 0) {
@@ -122,12 +114,8 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	@Override
 	public void canProvide(LiquidRequest request) {
 		if(request.isAllDone()) return;
-		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for(AdjacentTile aTile:wUtil.getAdjacentTileEntities(true)) {
-			if(aTile.tile instanceof TileGenericPipe) continue;
-			if(!(aTile.tile instanceof ITankContainer)) continue;
-			if(!this.isPipeConnected(aTile.tile)) continue;
-			ILiquidTank[] tanks = ((ITankContainer)aTile.tile).getTanks(aTile.orientation.getOpposite());
+		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
+			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
 			for(ILiquidTank tank:tanks) {
 				LiquidStack liquid;
 				if((liquid = tank.getLiquid()) != null) {

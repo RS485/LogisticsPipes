@@ -42,7 +42,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.ServerRouter;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
@@ -559,12 +558,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	@Override
-	public final boolean isPipeConnected(TileEntity tile) {
+	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
-		return (super.isPipeConnected(tile) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile);
+		return (super.isPipeConnected(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile);
 	}
 	
 	public void connectionUpdate() {
@@ -578,7 +577,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
 		if(MainProxy.isServer()) {
-			return ((ServerRouter)this.getRouter()).getPowerProvider();
+			return this.getRouter().getPowerProvider();
 		} else {
 			return null;
 		}
@@ -588,6 +587,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(MainProxy.isClient()) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);

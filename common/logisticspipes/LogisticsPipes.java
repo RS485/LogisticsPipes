@@ -123,6 +123,7 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
@@ -137,7 +138,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG = "%DEBUG%".equals("%" + " DEBUG" + "%") || "%DEBUG%".equals("true");
 	public static String MCVersion = "%MCVERSION%";
 
 	// Items
@@ -243,7 +244,7 @@ public class LogisticsPipes {
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
 		try {
-			File logPath = new File("LogisticsPipes-Request.log");
+			File logPath = new File((File) FMLInjectionData.data()[6], "LogisticsPipes-Request.log");
 			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
 			fileHandler.setFormatter(new RequestLogFormator());
 			fileHandler.setLevel(Level.ALL);
@@ -403,9 +404,11 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
 		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
 		
-		LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ItemLiquidContainerId);
-		LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
-		LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+		if(DEBUG) {
+			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ItemLiquidContainerId);
+			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
+			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -421,7 +424,12 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
-		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
+		
+		if(DEBUG) {
+			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
+		}
+		
+		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
 		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
@@ -470,8 +478,8 @@ public class LogisticsPipes {
 		
 		//init Liquids
 		LiquidIdentifier.initFromForge(false);
-		LiquidIdentifier.get(9, 0, "water");
-		LiquidIdentifier.get(11, 0, "lava"); //TODO ???
+		//LiquidIdentifier.get(9, 0, "water");
+		//LiquidIdentifier.get(11, 0, "lava");
 	}
 	
 	@ServerStopping

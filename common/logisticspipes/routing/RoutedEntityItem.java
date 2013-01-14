@@ -34,20 +34,20 @@ import buildcraft.transport.TileGenericPipe;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
-	public UUID sourceUUID;
-	public UUID destinationUUID;
+	UUID sourceUUID;
+	UUID destinationUUID;
 	
-	private boolean _doNotBuffer;
+	boolean _doNotBuffer;
 	
-	private int bufferCounter = 0;
+	int bufferCounter = 0;
 	
-	public boolean arrived;
-	public boolean reRoute;
-	public boolean isUnrouted;
+	boolean arrived;
+	boolean reRoute;
+	boolean isUnrouted;
 	
-	private TransportMode _transportMode = TransportMode.Unknown;
+	TransportMode _transportMode = TransportMode.Unknown;
 	
-	public List<UUID> jamlist = new ArrayList<UUID>();
+	List<UUID> jamlist = new ArrayList<UUID>();
 	
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
 		super(world, entityItem.getEntityId());
@@ -55,6 +55,17 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
+		if(entityItem.getContribution("routingInformation") == null) {
+			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
+		} else {
+			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
+			sourceUUID = settings.sourceUUID;
+			destinationUUID = settings.destinationUUID;
+			bufferCounter = settings.bufferCounter;
+			arrived = settings.arrived;
+			_transportMode = settings.transportMode;
+			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
+		}
 	}
 	
 	@Override
@@ -219,50 +230,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public TransportMode getTransportMode() {
 		return this._transportMode;
-	}
-	
-	public boolean hasContributions() {
-		return true;
-		/*
-		//prevent groupEntities()
-		try {
-			@SuppressWarnings("restriction")
-			final Class<?> caller = sun.reflect.Reflection.getCallerClass(3);
-			if(caller.equals(PipeTransportItems.class)) {
-				return true;
-			}
-			return super.hasContributions();
-		} catch(Exception e) {
-			return true;
-		}
-		*/
-	}
-	
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		if(nbttagcompound.hasKey("sourceUUID")) {
-			sourceUUID = UUID.fromString(nbttagcompound.getString("sourceUUID"));
-		}
-		if(nbttagcompound.hasKey("destinationUUID")) {
-			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
-		}
-		arrived = nbttagcompound.getBoolean("arrived");
-		bufferCounter = nbttagcompound.getInteger("bufferCounter");
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		if(sourceUUID != null) {
-			nbttagcompound.setString("sourceUUID", sourceUUID.toString());
-		}
-		if(destinationUUID != null) {
-			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
-		}
-		nbttagcompound.setBoolean("arrived", arrived);
-		nbttagcompound.setInteger("bufferCounter", bufferCounter);
-		
 	}
 
 	@Override

@@ -155,12 +155,14 @@ public class BuildCraftProxy {
 		
 		LogisticsPipes.LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
-	
-		LogisticsPipes.LogisticsLiquidConnector = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
-		LogisticsPipes.LogisticsLiquidBasic = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
-		LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
-		LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
-		LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
+		
+		if(LogisticsPipes.DEBUG) {
+			LogisticsPipes.LogisticsLiquidConnector = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
+			LogisticsPipes.LogisticsLiquidBasic = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
+			LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
+			LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
+			LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
+		}
 	}
 	
 	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {

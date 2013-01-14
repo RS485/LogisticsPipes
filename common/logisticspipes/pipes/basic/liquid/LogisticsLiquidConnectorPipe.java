@@ -1,7 +1,6 @@
 package logisticspipes.pipes.basic.liquid;
 
 import logisticspipes.textures.Textures;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportLiquids;

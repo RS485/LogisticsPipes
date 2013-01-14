@@ -43,7 +43,7 @@ public class WorldUtil {
 				TileEntity tilePipe = _worldObj.getBlockTileEntity(_x, _y, _z);
 				if(tilePipe instanceof TileGenericPipe) {
 					if(((TileGenericPipe)tilePipe).pipe != null) {
-						if(!((TileGenericPipe)tilePipe).pipe.isPipeConnected(tile)) {
+						if(!((TileGenericPipe)tilePipe).pipe.isPipeConnected(tile, o)) {
 							continue;
 						}
 					}

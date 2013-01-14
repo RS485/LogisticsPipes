@@ -45,7 +45,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 			return false;
 		}
 
-		if (!saidInventory.getInvName().equals("Apiary")) {
+		if (!saidInventory.getInvName().equals("Apiary") || !saidInventory.getInvName().equals("Alveary")) {
 			return false;
 		}
 		
@@ -105,7 +105,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if (saidInventory == null) {
 			return;
 		}
-		if (!saidInventory.getInvName().equals("Apiary")) {
+		if (!saidInventory.getInvName().equals("Apiary") || !saidInventory.getInvName().equals("Alveary")) {
 			return;
 		}
 		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);

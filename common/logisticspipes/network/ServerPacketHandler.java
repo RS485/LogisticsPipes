@@ -24,6 +24,7 @@ import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinates;
@@ -31,6 +32,7 @@ import logisticspipes.network.packets.PacketHUDSettings;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -312,6 +314,11 @@ public class ServerPacketHandler {
 					final PacketRequestSubmit packetAu = new PacketRequestSubmit();
 					packetAu.readData(data);
 					onLiquidRequestSubmit(player, packetAu);
+					break;
+				case NetworkConstants.MODBASEDITEMSINKLIST:
+					final PacketModuleNBT packetAv = new PacketModuleNBT();
+					packetAv.readData(data);
+					onModBasedItemSinkList(player, packetAv);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1271,6 +1278,17 @@ public class ServerPacketHandler {
 		}
 		
 		RequestHandler.requestLiquid(player, packet, (CoreRoutedPipe) pipe.pipe, (IRequestLiquid) pipe.pipe);
+	}
+
+	private static void onModBasedItemSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
+			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}
 	}
 	
 	// BuildCraft method

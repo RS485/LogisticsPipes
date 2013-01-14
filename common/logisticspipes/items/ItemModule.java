@@ -23,6 +23,7 @@ import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
@@ -79,6 +80,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int BEESINK = 9;
 	public static final int APIARISTREFILLER = 10;
 	public static final int APIARISTTERMINUS = 11;
+	public static final int MODBASEDITEMSINK = 12;
 
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
@@ -178,6 +180,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);
 		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);
 		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
+		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
 	}
 
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {

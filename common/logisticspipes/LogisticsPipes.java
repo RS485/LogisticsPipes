@@ -478,8 +478,8 @@ public class LogisticsPipes {
 		
 		//init Liquids
 		LiquidIdentifier.initFromForge(false);
-		//LiquidIdentifier.get(9, 0, "water");
-		//LiquidIdentifier.get(11, 0, "lava");
+		LiquidIdentifier.get(9, 0, "water");
+		LiquidIdentifier.get(11, 0, "lava");
 	}
 	
 	@ServerStopping

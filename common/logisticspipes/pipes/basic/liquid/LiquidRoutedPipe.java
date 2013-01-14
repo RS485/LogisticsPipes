@@ -22,13 +22,20 @@ import buildcraft.transport.TileGenericPipe;
 
 public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravelingHook {
 
-	private WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+	private WorldUtil worldUtil;
 	
 	public LiquidRoutedPipe(int itemID) {
 		super(new PipeLiquidTransportLogistics(), new TemporaryLogic(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
+		worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 	}
 	
+	@Override
+	public void setTile(TileEntity tile) {
+		super.setTile(tile);
+		worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+	}
+
 	@Override
 	public boolean logisitcsIsPipeConnected(TileEntity tile) {
 		if (tile instanceof ITankContainer) {

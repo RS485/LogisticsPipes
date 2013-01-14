@@ -35,6 +35,7 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCraftingLoop;
@@ -290,6 +291,11 @@ public class ClientPacketHandler {
 				case NetworkConstants.LIQUID_UPDATE_PACKET:
 					final PacketLiquidUpdate packetAu = new PacketLiquidUpdate();
 					packetAu.readData(data);
+					break;
+				case NetworkConstants.MODBASEDITEMSINKLIST:
+					final PacketModuleNBT packetAv = new PacketModuleNBT();
+					packetAv.readData(data);
+					onModBasedItemSinkList(packetAv);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -810,6 +816,18 @@ public class ClientPacketHandler {
 
 	private static void onItemNameRequest(PacketNameUpdatePacket packetAt) {
 		MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
+	}
+
+	private static void onModBasedItemSinkList(PacketModuleNBT packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getClientMainWorld(), packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
+			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).ModListChanged();
+		}
 	}
 	
 	// BuildCraft method

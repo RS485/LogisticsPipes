@@ -10,7 +10,7 @@
     <!-- Properties -->
     
     <property name="build.dir"           value="build" />
-    <property name="src.dir"             value="src" />
+    <property name="src.dir"             value="logisticsPipes" />
     
     <property name="download.dir"        value="download" />
     <property name="files.minecraft.dir" value="jars" />

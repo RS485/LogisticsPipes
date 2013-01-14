@@ -40,14 +40,15 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if (!SimpleServiceLocator.forestryProxy.isBee(item)) {
 			return false;
 		}
-		IInventory saidInventory = _invProvider.getInventory();
+		IInventory saidInventory = _invProvider.getRawInventory();
 		if (saidInventory == null) {
 			return false;
 		}
-		//TODO implement better method of limiting function to only apiary
-		if ((saidInventory.getSizeInventory() < 2) || (saidInventory.getSizeInventory() > maxInvSize)) {
+
+		if (!saidInventory.getInvName().equals("Apiary")) {
 			return false;
 		}
+		
 		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
 		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
 		if (SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) {
@@ -100,11 +101,11 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	@Override
 	public void tick() {
 		/* Disables modules if inventory has been empty for too long */
-		IInventory saidInventory = _invProvider.getInventory();
+		IInventory saidInventory = _invProvider.getRawInventory();
 		if (saidInventory == null) {
 			return;
 		}
-		if ((saidInventory.getSizeInventory() < 2) || (saidInventory.getSizeInventory() > maxInvSize)) {
+		if (!saidInventory.getInvName().equals("Apiary")) {
 			return;
 		}
 		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);

@@ -162,19 +162,19 @@ public class BasicGuiHelper {
      * @throws NoSuchFieldException 
      */
     private static int drawStringWithShadow(FontRenderer fontRenderer,String par1Str, int par2, int par3, int par4) throws Exception {
-    	Method a = fontRenderer.getClass().getDeclaredMethod("resetStyles");
+    	Method a = getObfuMethod(fontRenderer.getClass(), "c", "resetStyles");
     	a.setAccessible(true);
     	a.invoke(fontRenderer);
-    	
-    	Field b = fontRenderer.getClass().getDeclaredField("bidiFlag");
+
+    	Field b = getObfuField(fontRenderer.getClass(), "m", "bidiFlag");
     	b.setAccessible(true);
         if (((Boolean)b.get(fontRenderer)).booleanValue())
         {	
-        	Method c = fontRenderer.getClass().getDeclaredMethod("bidiReorder", String.class);
+        	Method c = getObfuMethod(fontRenderer.getClass(), "c", "bidiReorder", String.class);
         	c.setAccessible(true);
         	par1Str = (String)c.invoke(fontRenderer, par1Str);
         }
-        Method d = fontRenderer.getClass().getDeclaredMethod("renderString", String.class, int.class, int.class, int.class, boolean.class);
+        Method d = getObfuMethod(fontRenderer.getClass(), "b", "renderString", String.class, int.class, int.class, int.class, boolean.class);
         d.setAccessible(true);
         int var5 = ((Integer)d.invoke(fontRenderer, par1Str, par2 + 1, par3 + 1, par4, true)).intValue();
 
@@ -183,6 +183,22 @@ public class BasicGuiHelper {
 		GL11.glTranslated(0.0D, 0.0D, -1.0D);
 		
         return var5;
+    }
+    
+    private static Field getObfuField(Class<?> clazz, String name1, String name2) throws SecurityException, NoSuchFieldException {
+    	try {
+    		return clazz.getDeclaredField(name1);
+    	} catch(Exception e) {
+    		return clazz.getDeclaredField(name2);
+    	}
+    }
+    
+    private static Method getObfuMethod(Class<?> clazz, String name1, String name2, Class<?>... objects) throws NoSuchMethodException, SecurityException {
+    	try {
+        	return clazz.getDeclaredMethod(name1, objects);
+    	} catch(Exception e) {
+    		return clazz.getDeclaredMethod(name2, objects);
+    	}
     }
     
 	private static float zLevel;

@@ -12,21 +12,28 @@ import logisticspipes.utils.ItemIdentifierStack;
 
 public class RequestTreeNode {
 
-	public RequestTreeNode(ItemIdentifierStack item, IRequestItems requester) {
+	public RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
 		this.request = item;
 		this.target = requester;
+		this.parentNode=parentNode;
+		parentNode.subRequests.add(this);
 	}
 
 	
 	protected final IRequestItems target;
 	protected final ItemIdentifierStack request;
+	protected final RequestTreeNode parentNode;
 	protected List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
 	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
 	protected SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
 	
 	public boolean isCrafterUsed(CraftingTemplate test) {
-		return usedCrafters.contains(test);
+		if(!usedCrafters.isEmpty() && usedCrafters.contains(test))
+			return true;
+		if(parentNode==null)
+			return false;
+		return parentNode.isCrafterUsed(test);
 	}
 	
 	// returns false if the crafter was already on the list.
@@ -115,6 +122,7 @@ public class RequestTreeNode {
 	}
 	
 	public RequestTreeNode(RequestTreeNode other) {
+		this.parentNode = other.parentNode;
 		this.subRequests = new ArrayList<RequestTreeNode>(other.subRequests.size());
 		for(RequestTreeNode subNode:other.subRequests) {
 			this.subRequests.add(new RequestTreeNode(subNode));
@@ -135,5 +143,9 @@ public class RequestTreeNode {
 		this.request = other.request;
 		this.target = other.target;
 
+	}
+
+	public boolean remove(RequestTreeNode subNode) {
+		return subRequests.remove(subNode);		
 	}
 }

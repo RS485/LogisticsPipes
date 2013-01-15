@@ -16,8 +16,8 @@ import logisticspipes.utils.ItemMessage;
 
 public class RequestTree extends RequestTreeNode {
 	
-	public RequestTree(ItemIdentifierStack item, IRequestItems requester) {
-		super(item, requester);
+	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent) {
+		super(item, requester, parent);
 	}
 	public RequestTree(RequestTreeNode other) {
 		super(other);

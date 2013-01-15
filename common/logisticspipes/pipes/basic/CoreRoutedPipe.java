@@ -593,6 +593,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return stillNeedReplace;
 	}
 	
+	@Override
+	public int compareTo(IRequestItems other){
+		return this.getID()-other.getID();
+	}
+	
+	@Override
+	public int getID(){
+		return this.itemID;
+	}
+	
+	
 	/* --- CCCommands --- */
 	@CCCommand(description="Returns the Router UUID as String")
 	public String getRouterId() {

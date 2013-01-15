@@ -27,10 +27,9 @@ public class RequestManager {
 		List<IProvideItems> providers = getProviders(validDestinations);
 		List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
 		for(ItemIdentifierStack stack:items) {
-			RequestTree node = new RequestTree(stack, requester);
-			tree.subRequests.add(node);
+			RequestTree node = new RequestTree(stack, requester, tree);
 			messages.add(new ItemMessage(stack));
 			generateRequestTree(tree, node, requester);
 		}
@@ -53,7 +52,7 @@ public class RequestManager {
 	}
 	
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		RequestTree tree = new RequestTree(item, requester);
+		RequestTree tree = new RequestTree(item, requester, null);
 		generateRequestTree(tree, tree, requester);
 		if(tree.isAllDone()) {
 			handleRequestTree(tree);
@@ -70,7 +69,7 @@ public class RequestManager {
 	}
 	
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		RequestTree tree = new RequestTree(item, requester);
+		RequestTree tree = new RequestTree(item, requester, null);
 		generateRequestTree(tree, tree, requester,true);
 		if(log != null) {
 				tree.sendMissingMessage(log);
@@ -154,7 +153,7 @@ public class RequestManager {
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
 		for(CraftingTemplate template:crafters) {
-			if(treeNode.declareCrafterUsed(template)==false) // then somewhere in the tree we have already used this
+			if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
 				continue;
 			
 			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;			
@@ -192,16 +191,16 @@ public class RequestManager {
 			lastNode = new ArrayList<RequestTreeNode>();
 			lastNodeTemplate = template;
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2());
+				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
-				treeNode.subRequests.add(node);
+				node.declareCrafterUsed(template);
 				if(!generateRequestTree(tree,node,requester,ignoreProviders)) {
 					failed = true;
 				}			
 			}
 			if(failed) {
 				for(RequestTreeNode subNode:lastNode) {
-					treeNode.subRequests.remove(subNode);
+					treeNode.remove(subNode);
 				}
 				continue;
 			}
@@ -216,6 +215,20 @@ public class RequestManager {
 				treeNode.subRequests.addAll(lastNode);
 			}
 		}
+	}
+	
+	//if the item is the same, and the router is the same ... different stack sizes are allowed
+	private class RequestPairCompare implements Comparator<Pair<ItemIdentifierStack,IRequestItems> >{
+
+		@Override
+		public int compare(Pair<ItemIdentifierStack, IRequestItems> o1,
+				Pair<ItemIdentifierStack, IRequestItems> o2) {
+			int c=o1.getValue1().getItem().compareTo(o2.getValue1().getItem());
+			if (c==0)
+				return o1.getValue2().compareTo(o2.getValue2());
+			return c;
+		}
+		
 	}
 
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {

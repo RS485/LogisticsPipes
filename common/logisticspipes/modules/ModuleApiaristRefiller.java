@@ -1,23 +1,19 @@
 package logisticspipes.modules;
 
-import java.util.UUID;
-
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.inventory.ISpecialInventory;
 
 public class ModuleApiaristRefiller implements ILogisticsModule {
 	
@@ -29,11 +25,8 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	private int zCoord;
 	private IWorldProvider _world;
 	
-	private int currentTickToRefill = 0;
-	private int ticksToRefill = 100;
-	
-	private int currentTickToExtract = 0;
-	private int ticksToExtract = 200;
+	private int currentTickCount = 0;
+	private int ticksToOperation = 200;
 	
 	public ModuleApiaristRefiller() {}
 	
@@ -70,75 +63,38 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		cleanupInventory();
-		if (++currentTickToRefill < ticksToRefill) return;
-		currentTickToRefill = 0;
-		if (!_power.useEnergy(1)) return;
+		doOperation();
+	}
+
+	private void doOperation() {
+		if (++currentTickCount < ticksToOperation) return;
+		currentTickCount = 0;
 		IInventory inv = _invProvider.getRawInventory();
-		if (inv == null) return;
-		refillQueenSlot(inv);
-		refillDroneSlot(inv);
-	}
-
-	private void cleanupInventory() {
-		if (++currentTickToExtract < ticksToExtract) return;
-		currentTickToExtract = 0;
-		if (!_power.useEnergy(1)) return;
-		IInventory inv = _invProvider.getRawInventory();
-		if (inv == null) return;
-		if (inv.getStackInSlot(0) == null) return;
-		int size = inv.getSizeInventory();
-		for (int i = 2; i < size; i++) {
-			ItemStack stackInSlot = inv.getStackInSlot(i);
-			if (stackInSlot != null) {
-				if (!_power.useEnergy(10)) return;
-				_itemSender.sendStack(stackInSlot.splitStack(1));
-				if (stackInSlot.stackSize < 1) {
-					inv.setInventorySlotContents(i, null);
-				} else {
-					inv.setInventorySlotContents(i, stackInSlot);
-				}
-				break;
-			}
-		}
-
-	}
-
-	private void refillQueenSlot(IInventory inv) {
-		if (inv.getStackInSlot(0) != null) return;
-		int size = inv.getSizeInventory();
-		//Start checking slots, starting at 2, because 0 and 1 are breeding slots.
-		for (int i = 2; i < size; i++) {
-			ItemStack stackInSlot = inv.getStackInSlot(i);
-			if (SimpleServiceLocator.forestryProxy.isBee(stackInSlot)) {
-				if (SimpleServiceLocator.forestryProxy.isPrincess(stackInSlot)) {
-					//move the stackInSlot to princess slot
-					if (!_power.useEnergy(50)) return;
-					inv.setInventorySlotContents(0, stackInSlot);
-					inv.setInventorySlotContents(i, null);
-					break;
+		if (inv instanceof ISpecialInventory) {
+			ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
+			ItemStack[] stack = ((ISpecialInventory) inv).extractItem(true, direction, 1);
+			if (stack[0] == null) return;
+			//if no queen/princess
+			if ((inv.getStackInSlot(0) == null)) {
+				if (SimpleServiceLocator.forestryProxy.isPrincess(stack[0])) {
+					if (!(_power.useEnergy(100))) return;
+					((ISpecialInventory) inv).addItem(stack[0], true, direction);
+					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+					return;
 				}
 			}
-		}
-	}
-
-	private void refillDroneSlot(IInventory inv) {
-		if (SimpleServiceLocator.forestryProxy.isQueen(inv.getStackInSlot(0))) return;
-		if (inv.getStackInSlot(1) != null) return;
-		int size = inv.getSizeInventory();
-		//Start checking slots, starting at 2 because 0 and 1 are breeding slots.
-		for (int i = 2; i<size; i++) {
-			ItemStack stackInSlot = inv.getStackInSlot(i);
-			if (SimpleServiceLocator.forestryProxy.isBee(stackInSlot)) {
-				if (SimpleServiceLocator.forestryProxy.isDrone(stackInSlot)) {
-					//move the stackInSlot to princess slot
-					if (!_power.useEnergy(50)) return;
-					inv.setInventorySlotContents(0, stackInSlot);
-					inv.setInventorySlotContents(i, null);
-					break;
+			//if princess w/out drone
+			if ((inv.getStackInSlot(1) == null) && !(SimpleServiceLocator.forestryProxy.isQueen(inv.getStackInSlot(0)))) {
+				if (SimpleServiceLocator.forestryProxy.isDrone(stack[0])) {
+					if (!(_power.useEnergy(100))) return;
+					((ISpecialInventory) inv).addItem(stack[0], true, direction);
+					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+					return;
 				}
 			}
-
+			//Extract unneeded items
+			if (!(_power.useEnergy(20))) return;
+			_itemSender.sendStack(stack[0]);
 		}
 	}
 }

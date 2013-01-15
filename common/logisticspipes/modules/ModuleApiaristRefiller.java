@@ -1,10 +1,14 @@
 package logisticspipes.modules;
 
+import java.util.UUID;
+
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -13,19 +17,23 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
 
 public class ModuleApiaristRefiller implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
-	private int maxInvSize = 12;
-	private int currentTicksEmpty = 0;
-	private int maxTicksEmpty = 50;
-	private boolean functionalStatus = true;
+	private ISendRoutedItem _itemSender;
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
 	private IWorldProvider _world;
+	
+	private int currentTickToRefill = 0;
+	private int ticksToRefill = 100;
+	
+	private int currentTickToExtract = 0;
+	private int ticksToExtract = 200;
 	
 	public ModuleApiaristRefiller() {}
 	
@@ -34,49 +42,11 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
+		_itemSender = itemSender;
 	}
-	
-	private boolean apiaryCheck(ItemStack item) {
-		if (!SimpleServiceLocator.forestryProxy.isBee(item)) {
-			return false;
-		}
-		IInventory saidInventory = _invProvider.getRawInventory();
-		if (saidInventory == null) {
-			return false;
-		}
-
-		if ((saidInventory.getSizeInventory() < 2)) {
-			return false;
-		}
 		
-		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
-		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
-		if (SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) {
-			return false;
-		}
-		if (SimpleServiceLocator.forestryProxy.isDrone(item) && (apiarySlot2 != null)) {
-			return false;
-		}
-		if (SimpleServiceLocator.forestryProxy.isPrincess(item) && (apiarySlot1 !=null)) {
-			return false;
-		}
-		return true;
-	}
-	
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		if (functionalStatus) {
-			if (apiaryCheck(item)) {
-				if (_power.useEnergy(50)) {
-					SinkReply reply = new SinkReply();
-					reply.fixedPriority = FixedPriority.APIARIST_Refiller;
-					reply.isDefault = false;
-					reply.isPassive = true;
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
-					return reply;
-				}
-			}
-		}
 		return null;
 	}
 	
@@ -100,33 +70,75 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		/* Disables modules if inventory has been empty for too long */
-		IInventory saidInventory = _invProvider.getRawInventory();
-		if (saidInventory == null) {
-			return;
-		}
-		
-		if ((saidInventory.getSizeInventory() < 2)) {
-			return;
-		}
-		
-		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
-		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
-		if (functionalStatus == true) {
-			if (apiarySlot1 == null && apiarySlot2 == null) {
-				currentTicksEmpty++;
+		cleanupInventory();
+		if (++currentTickToRefill < ticksToRefill) return;
+		currentTickToRefill = 0;
+		if (!_power.useEnergy(1)) return;
+		IInventory inv = _invProvider.getRawInventory();
+		if (inv == null) return;
+		refillQueenSlot(inv);
+		refillDroneSlot(inv);
+	}
+
+	private void cleanupInventory() {
+		if (++currentTickToExtract < ticksToExtract) return;
+		currentTickToExtract = 0;
+		if (!_power.useEnergy(1)) return;
+		IInventory inv = _invProvider.getRawInventory();
+		if (inv == null) return;
+		if (inv.getStackInSlot(0) == null) return;
+		int size = inv.getSizeInventory();
+		for (int i = 2; i < size; i++) {
+			ItemStack stackInSlot = inv.getStackInSlot(i);
+			if (stackInSlot != null) {
+				if (!_power.useEnergy(10)) return;
+				_itemSender.sendStack(stackInSlot.splitStack(1));
+				if (stackInSlot.stackSize < 1) {
+					inv.setInventorySlotContents(i, null);
+				} else {
+					inv.setInventorySlotContents(i, stackInSlot);
+				}
+				break;
 			}
 		}
-		if (currentTicksEmpty > maxTicksEmpty) {
-			currentTicksEmpty = 0;
-			functionalStatus = false;
-		}
-		if (apiarySlot1 != null || apiarySlot2 != null) {
-			functionalStatus = true;
-			currentTicksEmpty = 0;
+
+	}
+
+	private void refillQueenSlot(IInventory inv) {
+		if (inv.getStackInSlot(0) != null) return;
+		int size = inv.getSizeInventory();
+		//Start checking slots, starting at 2, because 0 and 1 are breeding slots.
+		for (int i = 2; i < size; i++) {
+			ItemStack stackInSlot = inv.getStackInSlot(i);
+			if (SimpleServiceLocator.forestryProxy.isBee(stackInSlot)) {
+				if (SimpleServiceLocator.forestryProxy.isPrincess(stackInSlot)) {
+					//move the stackInSlot to princess slot
+					if (!_power.useEnergy(50)) return;
+					inv.setInventorySlotContents(0, stackInSlot);
+					inv.setInventorySlotContents(i, null);
+					break;
+				}
+			}
 		}
 	}
-	
-	
 
+	private void refillDroneSlot(IInventory inv) {
+		if (SimpleServiceLocator.forestryProxy.isQueen(inv.getStackInSlot(0))) return;
+		if (inv.getStackInSlot(1) != null) return;
+		int size = inv.getSizeInventory();
+		//Start checking slots, starting at 2 because 0 and 1 are breeding slots.
+		for (int i = 2; i<size; i++) {
+			ItemStack stackInSlot = inv.getStackInSlot(i);
+			if (SimpleServiceLocator.forestryProxy.isBee(stackInSlot)) {
+				if (SimpleServiceLocator.forestryProxy.isDrone(stackInSlot)) {
+					//move the stackInSlot to princess slot
+					if (!_power.useEnergy(50)) return;
+					inv.setInventorySlotContents(0, stackInSlot);
+					inv.setInventorySlotContents(i, null);
+					break;
+				}
+			}
+
+		}
+	}
 }

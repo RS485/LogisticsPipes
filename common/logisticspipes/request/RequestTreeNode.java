@@ -16,7 +16,8 @@ public class RequestTreeNode {
 		this.request = item;
 		this.target = requester;
 		this.parentNode=parentNode;
-		parentNode.subRequests.add(this);
+		if(parentNode!=null)
+			parentNode.subRequests.add(this);
 	}
 
 	

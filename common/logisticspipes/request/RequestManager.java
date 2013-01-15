@@ -175,7 +175,8 @@ public class RequestManager {
 				}
 				if(!done) {
 					//if its a new request, add it to the end.
-					Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+					Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2() );
+					pair.getValue1().stackSize *= nCraftingSetsNeeded;
 					stacks.add(pair);
 				}
 			}

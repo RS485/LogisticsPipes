@@ -172,7 +172,7 @@ class PathFinder {
 				if(startPipe.pipe instanceof PipeItemsIron){
 					if(currentPipe.pipe.outputOpen(direction))
 						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronForwards);
-					if(currentPipe.pipe.outputOpen(direction))
+					else
 						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronBackwards);
 				}
 				int beforeRecurseCount = foundPipes.size();

@@ -19,7 +19,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
 
-public class CraftingTemplate {
+public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	private ItemIdentifierStack _result;
 	private ICraftItems _crafter;
@@ -62,5 +62,10 @@ public class CraftingTemplate {
 	
 	public int getPriority() {
 		return priority;
+	}
+
+	@Override
+	public int compareTo(CraftingTemplate o) {
+		return this.priority-o.priority;
 	}
 }

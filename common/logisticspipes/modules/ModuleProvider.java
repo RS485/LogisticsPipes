@@ -206,11 +206,11 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return allItems;	
 	}
 
-	@Override
+/*	@Override
 	public IRouter getRouter() {
 		//THIS IS NEVER SUPPOSED TO HAPPEN
 		return null;
-	}
+	}*/
 	
 	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination) {
 		ItemIdentifier item = stack.getItem();

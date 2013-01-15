@@ -23,5 +23,4 @@ public interface IProvideItems {
 	public void fullFill(LogisticsPromise promise, IRequestItems destination);
 	public int getAvailableItemCount(ItemIdentifier item);
 	public HashMap<ItemIdentifier, Integer> getAllItems();
-	public IRouter getRouter();
 }

@@ -24,10 +24,6 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		return (RoutedPipe) this.container.pipe;
 	}
 	
-	public IRouter getRouter(){
-		return getRoutedPipe().getRouter();
-	}
-	
 	public abstract void onWrenchClicked(EntityPlayer entityplayer);
 	
 	public abstract void destroy();
@@ -54,7 +50,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	public boolean blockActivated(EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
-			getRouter().displayRoutes();
+			getRoutedPipe().getRouter().displayRoutes();
 			if (LogisticsPipes.DEBUG) {
 				doDebugStuff(entityplayer);
 			}
@@ -79,7 +75,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	private void doDebugStuff(EntityPlayer entityplayer){
 		//entityplayer.worldObj.setWorldTime(4951);
 		System.out.println("***");
-		IRouter r = getRouter();
+		IRouter r = getRoutedPipe().getRouter();
 		if(!(r instanceof ServerRouter)) return;
 		ServerRouter sr = (ServerRouter) r;
 		

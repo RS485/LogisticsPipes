@@ -435,11 +435,6 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public IRouter getRouter() {
-		return super.getRouter();
-	}
-	
-	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}

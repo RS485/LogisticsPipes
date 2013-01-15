@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -173,10 +174,14 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
-		HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-		if (_invProvider.getInventory() == null) return allItems;
-	
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items) {
+		if (_invProvider.getInventory() == null) return;
+		
+		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceUUID());
+		if(allItems == null) {
+			allItems = new HashMap<ItemIdentifier, Integer>();
+		}
+		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 		for (ItemIdentifier currItem : currentInv.keySet()){
@@ -202,12 +207,14 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				allItems.put(item, remaining);	
 			}
 		}
-		
-		return allItems;	
+		items.put(_itemSender.getSourceUUID(), allItems);
 	}
 
 /*	@Override
 	public IRouter getRouter() {
+		if(LogisticsPipes.DEBUG) {
+			throw new UnsupportedOperationException();
+		}
 		//THIS IS NEVER SUPPOSED TO HAPPEN
 		return null;
 	}*/
@@ -319,7 +326,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		HashMap<ItemIdentifier, Integer> list = getAllItems();
+		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		getAllItems(map);
+		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceUUID());
+		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			displayList.add(new ItemIdentifierStack(item, list.get(item)));
 		}

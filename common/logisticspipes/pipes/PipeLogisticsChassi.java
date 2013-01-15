@@ -9,7 +9,6 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -419,17 +418,17 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list) {
 		if (!isEnabled()){
-			return new HashMap<ItemIdentifier, Integer>();
+			return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
-			if (x instanceof ILegacyActiveModule){
-				return ((ILegacyActiveModule)x).getAllItems();
+			if (x instanceof ILegacyActiveModule) {
+				((ILegacyActiveModule)x).getAllItems(list);
+				return;
 			}
 		}
-		return new HashMap<ItemIdentifier, Integer>();
 	}
 	
 	@Override

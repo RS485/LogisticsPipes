@@ -13,6 +13,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
@@ -26,9 +27,11 @@ import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.item.ItemStack;
@@ -177,7 +180,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
-		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
+		Map<UUID, Map<ItemIdentifier, Integer>> items = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
 			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
@@ -185,8 +188,20 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				continue;
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
-			HashMap<ItemIdentifier, Integer> allItems = provider.getAllItems();
+			provider.getAllItems(items);
 			
+			/*
+			for (ItemIdentifier item : allItems.keySet()){
+				if (!allAvailableItems.containsKey(item)){
+					allAvailableItems.put(item, allItems.get(item));
+				} else {
+					allAvailableItems.put(item, allAvailableItems.get(item) + allItems.get(item));
+				}
+			}
+			*/
+		}
+		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
+		for(Map<ItemIdentifier, Integer> allItems:items.values()) {
 			for (ItemIdentifier item : allItems.keySet()){
 				if (!allAvailableItems.containsKey(item)){
 					allAvailableItems.put(item, allItems.get(item));

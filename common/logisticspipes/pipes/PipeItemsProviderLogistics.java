@@ -235,12 +235,17 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items) {
 		LogicProvider providerLogic = (LogicProvider) logic;
-		HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-	
+		//HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
+		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getId());
+		if(allItems == null) {
+			allItems = new HashMap<ItemIdentifier, Integer>();
+		}
+		
+		
 		if (!isEnabled()){
-			return allItems;
+			return;
 		}
 		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
@@ -275,8 +280,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				allItems.put(item, remaining);	
 			}
 		}
-		
-		return allItems;
+		items.put(this.getRouter().getId(), allItems);
 	}
 
 	@Override
@@ -316,7 +320,10 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	
 	private void updateInv() {
 		itemList.clear();
-		HashMap<ItemIdentifier, Integer> list = getAllItems();
+		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		getAllItems(map);
+		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getId());
+		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			itemList.add(new ItemIdentifierStack(item, list.get(item)));
 		}

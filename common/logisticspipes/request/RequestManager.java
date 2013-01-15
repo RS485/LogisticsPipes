@@ -240,7 +240,7 @@ public class RequestManager {
 	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<SearchNode> list, RequestLog log) {
 		List<ILiquidProvider> providers = getLiquidProviders(list);
 		LiquidRequest request = new LiquidRequest(liquid, amount);
-		for(ILiquidProvider provider:providers) { //TODO
+		for(ILiquidProvider provider:providers) {
 			provider.canProvide(request);
 		}
 		if(request.isAllDone()) {

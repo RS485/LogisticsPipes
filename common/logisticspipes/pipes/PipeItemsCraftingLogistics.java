@@ -9,11 +9,11 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -357,9 +357,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
-		return new HashMap<ItemIdentifier, Integer>();
-	}
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list) {}
 
 	@Override
 	public ItemIdentifier getCraftedItem() {

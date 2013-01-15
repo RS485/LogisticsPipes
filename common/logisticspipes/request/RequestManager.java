@@ -159,27 +159,24 @@ public class RequestManager {
 			
 			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;			
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
-			//branch the tree, and add the found 
-			RequestTreeNode treeNodeCopy = new RequestTreeNode(treeNode);
+
+			int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 			
-			//while there is still more of this item to be had, (and this template can provide it ??)
-			while(treeNodeCopy.addPromise(template.generatePromise())) {
-				// for each thing needed to satisfy this promise
-				for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
-					boolean done = false;
-					//search for an existing requets from here and it to stacks <requester,item>
-					for(Pair<ItemIdentifierStack,IRequestItems> part:stacks) {
-						if(part.getValue1().getItem() == stack.getValue1().getItem() && part.getValue2() == stack.getValue2()) {
-							part.getValue1().stackSize += stack.getValue1().stackSize;
-							done = true;
-							break;
-						}
+			// for each thing needed to satisfy this promise
+			for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
+				boolean done = false;
+				//search for an existing requests from here and it to stacks <requester,item>
+				for(Pair<ItemIdentifierStack,IRequestItems> part:stacks) {
+					if(part.getValue1().getItem() == stack.getValue1().getItem() && part.getValue2() == stack.getValue2()) {
+						part.getValue1().stackSize += stack.getValue1().stackSize * nCraftingSetsNeeded;
+						done = true;
+						break;
 					}
-					if(!done) {
-						//if its a new request, add it to the end.
-						Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-						stacks.add(pair);
-					}
+				}
+				if(!done) {
+					//if its a new request, add it to the end.
+					Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+					stacks.add(pair);
 				}
 			}
 			

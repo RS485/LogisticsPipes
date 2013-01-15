@@ -19,14 +19,17 @@ public class RequestTree extends RequestTreeNode {
 	public RequestTree(ItemIdentifierStack item, IRequestItems requester) {
 		super(item, requester);
 	}
+	public RequestTree(RequestTreeNode other) {
+		super(other);
+	}
 
 	public Map<ItemIdentifier, Integer> getAllPromissesFor(IProvideItems provider) {
 		Map<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
-		chechSubPromisses(provider,this,result);
+		checkSubPromisses(provider,this,result);
 		return result;
 	}
 	
-	private void chechSubPromisses(IProvideItems provider, RequestTreeNode node, Map<ItemIdentifier, Integer> result) {
+	private void checkSubPromisses(IProvideItems provider, RequestTreeNode node, Map<ItemIdentifier, Integer> result) {
 		for(LogisticsPromise promise: node.promises) {
 			if(promise.sender == provider) {
 				if(result.containsKey(promise.item)) {
@@ -37,7 +40,7 @@ public class RequestTree extends RequestTreeNode {
 			}
 		}
 		for(RequestTreeNode subNode:node.subRequests) {
-			chechSubPromisses(provider,subNode,result);
+			checkSubPromisses(provider,subNode,result);
 		}
 	}
 	
@@ -69,20 +72,6 @@ public class RequestTree extends RequestTreeNode {
 		for(RequestTreeNode subNode:node.subRequests) {
 			checkForExtras(item,subNode,extras);
 		}
-	}
-	
-	public RequestTree copy() {
-		RequestTree result = new RequestTree(request, target);
-		for(RequestTreeNode subNode:subRequests) {
-			result.subRequests.add(subNode.copy());
-		}
-		for(LogisticsPromise subpromises:promises) {
-			result.promises.add(subpromises.copy());
-		}
-		for(LogisticsExtraPromise subpromises:extrapromises) {
-			result.extrapromises.add(subpromises.copy());
-		}
-		return result;
 	}
 	
 	public void fullFillAll() {

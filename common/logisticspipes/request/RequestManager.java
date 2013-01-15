@@ -154,10 +154,13 @@ public class RequestManager {
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
 		for(CraftingTemplate template:crafters) {
+			if(treeNode.declareCrafterUsed(template)==false) // then somewhere in the tree we have already used this
+				continue;
+			
 			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;			
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
 			//branch the tree, and add the found 
-			RequestTreeNode treeNodeCopy = treeNode.copy();
+			RequestTreeNode treeNodeCopy = new RequestTreeNode(treeNode);
 			
 			//while there is still more of this item to be had, (and this template can provide it ??)
 			while(treeNodeCopy.addPromise(template.generatePromise())) {
@@ -179,6 +182,8 @@ public class RequestManager {
 					}
 				}
 			}
+			
+			// clear the any outstanding extras from the previous iteration
 			boolean failed = false;
 			if(lastNode != null && lastNode.size() > 0) {
 				for(RequestTreeNode subNode:lastNode) {

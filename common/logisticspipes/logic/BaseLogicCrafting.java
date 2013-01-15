@@ -17,6 +17,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -59,14 +60,17 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	/* ** SATELLITE CODE ** */
 
 	protected int getNextConnectSatelliteId(boolean prev) {
-		final List<IRouter> routes = getRouter().getIRoutersByCost();
+		final List<SearchNode> routes = getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			if (routes.contains(satellite.getRouter())) {
-				if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
-					closestIdFound = satellite.satelliteId;
-				} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
-					closestIdFound = satellite.satelliteId;
+			IRouter satRouter = satellite.getRouter();
+			for (SearchNode route:routes){
+				if (route.node == satRouter) {
+					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
+						closestIdFound = satellite.satelliteId;
+					} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
+						closestIdFound = satellite.satelliteId;
+					}
 				}
 			}
 		}

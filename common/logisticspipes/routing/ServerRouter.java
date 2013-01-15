@@ -37,6 +37,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -46,8 +47,9 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
 
-	private static final EnumSet<PipeRoutingConnectionType> blocksPower = EnumSet.of(PipeRoutingConnectionType.blocksPowerFlow, PipeRoutingConnectionType.passedThroughIronBackwards, PipeRoutingConnectionType.passedThroughObsidian);
-	private static final EnumSet<PipeRoutingConnectionType> blocksitems = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.passedThroughIronBackwards, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
+	public static final EnumSet<PipeRoutingConnectionType> blocksPower = EnumSet.of(PipeRoutingConnectionType.blocksPowerFlow, PipeRoutingConnectionType.passedThroughIronClosed, PipeRoutingConnectionType.passedThroughObsidian);
+	public static final EnumSet<PipeRoutingConnectionType> blocksRouting = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.reversedPassedThroughIronClosed, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
+	public static final EnumSet<PipeRoutingConnectionType> blocksItems = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.passedThroughIronClosed, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
 	//may not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 
 	public int hashCode(){
@@ -57,26 +59,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private class LSA {
 		public HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
-	}
-	
-	private class SearchNode implements Comparable<SearchNode>{
-		public SearchNode(IRouter r,int d, boolean pc, boolean rc,IRouter p){
-			distance=d;
-			isPowerConnected=pc;
-			isRoutConneced=rc;
-			node=r;
-			parent=p;
-		}
-		public int distance;
-		public boolean isPowerConnected;
-		public boolean isRoutConneced;
-		public IRouter node;
-		public IRouter parent;
-
-		@Override
-		public int compareTo(SearchNode o) {
-			return this.distance-o.distance;
-		}
 	}
 	
 	private class RoutingUpdateThread implements Runnable {
@@ -132,7 +114,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 	/** Map of router -> orientation for all known destinations **/
 	public HashMap<IRouter, ForgeDirection> _routeTable = new HashMap<IRouter, ForgeDirection>();
-	public List<IRouter> _routeCosts = new ArrayList<IRouter>();
+	public List<SearchNode> _routeCosts = new ArrayList<SearchNode>();
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
 
@@ -223,7 +205,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	@Override
-	public List<IRouter> getIRoutersByCost() {
+	public List<SearchNode> getIRoutersByCost() {
 		ensureRouteTableIsUpToDate(true);
 		return _routeCosts;
 	}
@@ -268,7 +250,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			ExitRoute newExit = adjacent.get(pipe);
 			ExitRoute oldExit = _adjacent.get(pipe);
 			
-			if (newExit!=oldExit)	{
+			if (!newExit.equals(oldExit))	{
 				adjacentChanged = true;
 				break;
 			}
@@ -323,13 +305,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>(routingTableSize);
 
 		/** same info as above, but sorted by distance -- sorting is implicit, because Dijkstra finds the closest routes first.**/
-		ArrayList<IRouter> routeCosts = new ArrayList<IRouter>(routingTableSize);
+		ArrayList<SearchNode> routeCosts = new ArrayList<SearchNode>(routingTableSize);
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		
 		//Init root(er - lol)
 		// the shortest way to yourself is to go nowhere
-		tree.put(this,new SearchNode(this,0,false,false,null));
+		tree.put(this,new SearchNode(this,0,EnumSet.noneOf(PipeRoutingConnectionType.class),null));
 
 		/** The total cost for the candidate route **/
 		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
@@ -339,7 +321,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		for (Entry<RoutedPipe, ExitRoute> pipe :  _adjacent.entrySet()){
 			ExitRoute currentE = pipe.getValue();
 			//currentE.connectionDetails.retainAll(blocksPower);
-			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(), currentE.metric, !EnumSet.copyOf(currentE.connectionDetails).retainAll(blocksPower),!EnumSet.copyOf(currentE.connectionDetails).retainAll(blocksPower), pipe.getKey().getRouter()));
+			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey().getRouter()));
 		}
 
 		SearchNode lowestCostNode;
@@ -361,7 +343,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabasereadLock.lock();
 			LSA lsa = SharedLSADatabase.get(lowestCostNode.node);
 			if(lsa != null) {
-				if(lowestCostNode.isPowerConnected && lsa.power.isEmpty() == false) {
+				if(!lowestCostNode.connectionFlags.contains(PipeRoutingConnectionType.blocksPowerFlow) && lsa.power.isEmpty() == false) {
 					powerTable.addAll(lsa.power);
 				}
 			    Iterator it = lsa.neighboursWithMetric.entrySet().iterator();
@@ -369,22 +351,22 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			    	Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> newCandidate = (Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>)it.next();
 					SearchNode treeN = tree.get(newCandidate.getKey());
 					if (treeN != null) {
-						if(!treeN.isPowerConnected && lowestCostNode.isPowerConnected) {
-							treeN.isPowerConnected = true;
+						if(!EnumSet.copyOf(lowestCostNode.connectionFlags).removeAll(this.blocksPower)) {
+							treeN.connectionFlags.removeAll(blocksPower);
 						}
 						continue;
 					}
 					int candidateCost = lowestCostNode.distance + newCandidate.getValue().getValue1();
-					boolean newIsPowerConected=lowestCostNode.isPowerConnected && !EnumSet.copyOf(newCandidate.getValue().getValue2()).removeAll(blocksPower);
-					boolean newIsRoutConneced=lowestCostNode.isRoutConneced && !EnumSet.copyOf(newCandidate.getValue().getValue2()).removeAll(this.blocksitems);
-					if(newIsPowerConected || newIsRoutConneced) // if neither connected, don't continue
-						candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost,newIsPowerConected,newIsRoutConneced ,lowestPath.node));
+					EnumSet<PipeRoutingConnectionType> newCT = EnumSet.copyOf(lowestCostNode.connectionFlags);
+					newCT.addAll(lowestPath.connectionFlags);
+					candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestPath.node));
 				}
 			}
 			lowestCostNode.parent=lowestPath.parent; // however you got here, thats the side you came from
 			//Approve the candidate
 			tree.put(lowestCostNode.node,lowestCostNode);
-			routeCosts.add(lowestCostNode.node);
+
+			routeCosts.add(lowestCostNode);
 			
 			SharedLSADatabasereadLock.unlock();
 		}
@@ -400,8 +382,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				routeTable.put(node.node, ForgeDirection.UNKNOWN);
 				continue;
 			}
-			if(node.isRoutConneced==false)
-				continue;
 			ExitRoute hop=_adjacentRouter.get(firstHop);
 			
 			if (hop == null){

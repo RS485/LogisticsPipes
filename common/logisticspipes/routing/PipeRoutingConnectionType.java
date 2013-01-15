@@ -5,8 +5,10 @@ import java.util.EnumSet;
 
 public enum PipeRoutingConnectionType{
 	passedThroughDiamond,
-	passedThroughIronForwards,
-	passedThroughIronBackwards,
+	passedThroughIronOpen,
+	passedThroughIronClosed,
+	reversedPassedThroughIronOpen,
+	reversedPassedThroughIronClosed,
 	passedThroughObsidian,
 	blocksPowerFlow,
 	blocksItemFlow;

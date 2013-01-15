@@ -29,7 +29,7 @@ public interface IRouter {
 	
 	@Deprecated
 	public HashMap<IRouter, ForgeDirection> getRouteTable();
-	public List<IRouter> getIRoutersByCost();
+	public List<SearchNode> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	
 	public UUID getId();

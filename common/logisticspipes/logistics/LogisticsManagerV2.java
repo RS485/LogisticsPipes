@@ -9,6 +9,7 @@
 package logisticspipes.logistics;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,6 +26,8 @@ import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
@@ -46,32 +49,36 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		UUID potentialDestination = null;
 		SinkReply bestReply = null;
 		
-		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
+		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
 			if (excludeSource) {
-				if(candidateRouter.getId().equals(sourceRouter.getId())) continue;
+				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			}
-			if(jamList.contains(candidateRouter.getId())) continue;
+			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			ILogisticsModule module = candidateRouter.getLogisticsModule();
-			if (candidateRouter.getPipe() == null || !candidateRouter.getPipe().isEnabled()) continue;
+			EnumSet flags = EnumSet.copyOf(candidateRouter.connectionFlags);
+			if(flags.removeAll(ServerRouter.blocksItems))
+				continue;
+			
+			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
+			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
 			if (module == null) continue;
 			SinkReply reply = module.sinksItem(item);
 			if (reply == null) continue;
 			if (bestReply == null){
-				potentialDestination = candidateRouter.getId();
+				potentialDestination = candidateRouter.node.getId();
 				bestReply = reply;
 				continue;
 			}
 			
 			if (reply.fixedPriority.ordinal() > bestReply.fixedPriority.ordinal()){
 				bestReply = reply;
-				potentialDestination = candidateRouter.getId();
+				potentialDestination = candidateRouter.node.getId();
 				continue;
 			}
 			
 			if (reply.fixedPriority == bestReply.fixedPriority && reply.customPriority >  bestReply.customPriority){
 				bestReply = reply;
-				potentialDestination = candidateRouter.getId();
+				potentialDestination = candidateRouter.node.getId();
 				continue;
 			}
 		}
@@ -169,13 +176,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<IRouter> validDestinations) {
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(IRouter r: validDestinations){
+		for(SearchNode r: validDestinations){
 			if(r == null) continue;
-			if (!(r.getPipe() instanceof IProvideItems)) continue;
+			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
 
-			IProvideItems provider = (IProvideItems) r.getPipe();
+			IProvideItems provider = (IProvideItems) r.node.getPipe();
 			HashMap<ItemIdentifier, Integer> allItems = provider.getAllItems();
 			
 			for (ItemIdentifier item : allItems.keySet()){
@@ -190,13 +197,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	@Override
-	public LinkedList<ItemIdentifier> getCraftableItems(List<IRouter> validDestinations) {
+	public LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
-		for (IRouter r : validDestinations){
+		for (SearchNode r : validDestinations){
 			if(r == null) continue;
-			if (!(r.getPipe() instanceof ICraftItems)) continue;
+			if (!(r.node.getPipe() instanceof ICraftItems)) continue;
 			
-			ICraftItems crafter = (ICraftItems) r.getPipe();
+			ICraftItems crafter = (ICraftItems) r.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);

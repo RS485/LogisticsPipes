@@ -126,7 +126,7 @@ class PathFinder {
 		
 		//Recurse in all directions
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
-			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = connectionFlags;
+			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
 			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
 			p.moveForwards(1);
 			TileEntity tile = startPipe.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
@@ -170,10 +170,16 @@ class PathFinder {
 					nextConnectionFlags.add(PipeRoutingConnectionType.blocksPowerFlow);
 				}
 				if(startPipe.pipe instanceof PipeItemsIron){
-					if(currentPipe.pipe.outputOpen(direction))
-						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronForwards);
+					if(startPipe.pipe.outputOpen(direction))
+						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronOpen);
 					else
-						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronBackwards);
+						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronClosed);
+				}
+				if(currentPipe.pipe instanceof PipeItemsIron){
+					if(currentPipe.pipe.outputOpen(direction.getOpposite()))
+						nextConnectionFlags.add(PipeRoutingConnectionType.reversedPassedThroughIronOpen);
+					else
+						nextConnectionFlags.add(PipeRoutingConnectionType.reversedPassedThroughIronClosed);
 				}
 				int beforeRecurseCount = foundPipes.size();
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile),nextConnectionFlags);

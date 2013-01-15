@@ -1,6 +1,7 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -11,14 +12,16 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.Pair;
+import logisticspipes.routing.SearchNode;
 
 public class RequestManager {
 
-	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
+	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<SearchNode> validDestinations, RequestLog log) {
 		List<IProvideItems> providers = getProviders(validDestinations);
 		List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
@@ -47,7 +50,7 @@ public class RequestManager {
 		}
 	}
 	
-	public static boolean request(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
+	public static boolean request(ItemIdentifierStack item, IRequestItems requester, List<SearchNode> validDestinations, RequestLog log) {
 		List<IProvideItems> providers = getProviders(validDestinations);
 		List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		RequestTree tree = new RequestTree(item, requester);
@@ -66,7 +69,7 @@ public class RequestManager {
 		}
 	}
 	
-	public static void simulate(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
+	public static void simulate(ItemIdentifierStack item, IRequestItems requester, List<SearchNode> validDestinations, RequestLog log) {
 		List<IProvideItems> providers = new LinkedList<IProvideItems>();
 		List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		RequestTree tree = new RequestTree(item, requester);
@@ -76,10 +79,10 @@ public class RequestManager {
 		}
 	}
 	
-	private static LinkedList<CraftingTemplate> getCrafters(List<IRouter> validDestinations) {
+	private static LinkedList<CraftingTemplate> getCrafters(List<SearchNode> validDestinations) {
 		LinkedList<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
-		for(IRouter r : validDestinations) {
-			CoreRoutedPipe pipe = r.getPipe();
+		for(SearchNode r : validDestinations) {
+			CoreRoutedPipe pipe = r.node.getPipe();
 			if (pipe instanceof ICraftItems){
 				LinkedList<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
 				((ICraftItems)pipe).addCrafting(added);
@@ -101,12 +104,15 @@ public class RequestManager {
 		return crafters;
 	}
 	
-	private static List<IProvideItems> getProviders(List<IRouter> validDestinations) {
+	private static List<IProvideItems> getProviders(List<SearchNode> validDestinations) {
 		List<IProvideItems> providers = new LinkedList<IProvideItems>();
-		for(IRouter r : validDestinations) {
-			CoreRoutedPipe pipe = r.getPipe();
-			if (pipe instanceof IProvideItems){
-				providers.add((IProvideItems)pipe);
+		for(SearchNode r : validDestinations) {
+			EnumSet flags = EnumSet.copyOf(r.connectionFlags);
+			if(!flags.removeAll(ServerRouter.blocksRouting)){
+				CoreRoutedPipe pipe = r.node.getPipe();
+				if (pipe instanceof IProvideItems){
+					providers.add((IProvideItems)pipe);
+				}
 			}
 		}
 		

@@ -35,7 +35,7 @@ public class ExitRoute{
 	    if ( !(aThat instanceof ExitRoute) ) return false;
 	    ExitRoute that = (ExitRoute)aThat;
 		return this.exitOrientation.equals(that.exitOrientation) && 
-				this.connectionDetails==that.connectionDetails && 
+				this.connectionDetails.equals(that.connectionDetails) && 
 				this.metric==that.metric;
 	}
 	

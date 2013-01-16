@@ -181,6 +181,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
 			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
+			if(r.getFlags().removeAll(ServerRouter.blocksRouting))
+				continue;
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
 			HashMap<ItemIdentifier, Integer> allItems = provider.getAllItems();
@@ -202,6 +204,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for (SearchNode r : validDestinations){
 			if(r == null) continue;
 			if (!(r.node.getPipe() instanceof ICraftItems)) continue;
+			if(r.getFlags().removeAll(ServerRouter.blocksRouting))
+				continue;
 			
 			ICraftItems crafter = (ICraftItems) r.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();

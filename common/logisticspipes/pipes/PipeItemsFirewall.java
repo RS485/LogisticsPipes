@@ -99,10 +99,10 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 	}
 
 	@Override
-	public List<SearchNode> getRouters(ForgeDirection from) {
+	public List<SearchNode> getRouters(IRouter from) {
 		List<SearchNode> list = new ArrayList<SearchNode>();
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			if(dir.equals(from)) continue;
+			if(getRouter(dir).equals(from)) continue;
 			List<SearchNode> nodes = getRouter(dir).getIRoutersByCost();
 			list.addAll(nodes);
 		}

@@ -36,7 +36,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
-import logisticspipes.utils.Pair3;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -53,7 +52,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	private class LSA {
-		public HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>> neighboursWithMetric;
+		public HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
 	}
 	
@@ -142,7 +141,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		this._zCoord = zCoord;
 		clearPipeCache();
 		_myLsa = new LSA();
-		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>>();
+		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
 		SharedLSADatabasewriteLock.lock();
 		SharedLSADatabase.put(this, _myLsa);
@@ -278,10 +277,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	private void SendNewLSA() {
-		HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>> neighboursWithMetric = new HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>>();
+		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		ArrayList<ILogisticsPowerProvider> power = new ArrayList<ILogisticsPowerProvider>();
 		for (RoutedPipe adjacent : _adjacent.keySet()){
-			neighboursWithMetric.put(adjacent.getRouter(_adjacent.get(adjacent).insertOrientation), new Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>(_adjacent.get(adjacent).metric, _adjacent.get(adjacent).connectionDetails, _adjacent.get(adjacent).insertOrientation));
+			neighboursWithMetric.put(adjacent.getRouter(_adjacent.get(adjacent).insertOrientation), new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacent.get(adjacent).metric, _adjacent.get(adjacent).connectionDetails));
 		}
 		for (ILogisticsPowerProvider provider : _powerAdjacent){
 			power.add(provider);
@@ -328,7 +327,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		for (Entry<RoutedPipe, ExitRoute> pipe :  _adjacent.entrySet()){
 			ExitRoute currentE = pipe.getValue();
 			//currentE.connectionDetails.retainAll(blocksPower);
-			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(currentE.insertOrientation), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey().getRouter(currentE.insertOrientation), currentE.insertOrientation));
+			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(currentE.insertOrientation), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey().getRouter(currentE.insertOrientation)));
 			//objectMapped.set(pipe.getKey().getSimpleID(),true);
 		}
 
@@ -345,9 +344,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				if(lowestCostNode.containsFlag(PipeRoutingConnectionType.canPowerFrom) && lsa.power.isEmpty() == false) {
 					powerTable.addAll(lsa.power);
 				}
-			    Iterator<Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>>> it = lsa.neighboursWithMetric.entrySet().iterator();
+			    Iterator<Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>> it = lsa.neighboursWithMetric.entrySet().iterator();
 			    while (it.hasNext()) {
-			    	Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>> newCandidate = (Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>>)it.next();
+			    	Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> newCandidate = (Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>)it.next();
 					if(objectMapped.get(newCandidate.getKey().getPipe().getSimpleID()))
 						continue;
 
@@ -355,7 +354,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 					EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
 					newCT.retainAll(newCandidate.getValue().getValue2());
 					if(!newCT.isEmpty())
-						candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestCostNode.root, newCandidate.getValue().getValue3()));
+						candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestCostNode.root));
 				}
 			}
 

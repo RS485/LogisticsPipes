@@ -10,7 +10,6 @@ package logisticspipes.logistics;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +32,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
-import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
@@ -241,17 +239,17 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for(SearchNode n:filterpipes) {
 			List<IFilter> list = new LinkedList<IFilter>();
 			list.add(((IFilteringPipe)n.node.getPipe()).getFilter());
-			handleSubFiltering(n, craftableItems, list, used);
+			handleCraftableItemsSubFiltering(n, craftableItems, list, used);
 		}
 		return craftableItems;
 	}
 	
-	private void handleSubFiltering(SearchNode r, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
+	private void handleCraftableItemsSubFiltering(SearchNode r, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
 		if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) return;
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
 outer:
-		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.insertOrientation)) {
+		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.node)) {
 			if(n == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getPipe().getSimpleID())) continue;
@@ -277,7 +275,7 @@ outer:
 		for(SearchNode n:filterpipes) {
 			IFilter filter = ((IFilteringPipe)n.node.getPipe()).getFilter();
 			filters.add(filter);
-			handleSubFiltering(n, craftableItems, filters, used);
+			handleCraftableItemsSubFiltering(n, craftableItems, filters, used);
 			filters.remove(filter);
 		}
 	}

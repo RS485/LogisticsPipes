@@ -2,8 +2,6 @@ package logisticspipes.routing;
 
 import java.util.EnumSet;
 
-import net.minecraftforge.common.ForgeDirection;
-
 public class SearchNode implements Comparable<SearchNode> {
 
 	private final int ROUTING_PENALITY = 10000;
@@ -12,14 +10,12 @@ public class SearchNode implements Comparable<SearchNode> {
 	private final EnumSet<PipeRoutingConnectionType> connectionFlags;
 	public final IRouter node;
 	public IRouter root;
-	public ForgeDirection insertOrientation;
 	
-	public SearchNode(IRouter r, int d, EnumSet<PipeRoutingConnectionType> enumSet, IRouter p, ForgeDirection i) {
+	public SearchNode(IRouter r, int d, EnumSet<PipeRoutingConnectionType> enumSet, IRouter p) {
 		distance = d;
 		connectionFlags = enumSet;
 		node = r;
 		root = p;
-		insertOrientation = i;
 	}
 	
 	public boolean hasActivePipe(){

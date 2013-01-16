@@ -180,13 +180,7 @@ public class RequestManager {
 				}
 			}
 			
-			// clear the any outstanding extras from the previous iteration
 			boolean failed = false;
-			if(lastNode != null && lastNode.size() > 0) {
-				for(RequestTreeNode subNode:lastNode) {
-					subNode.revertExtraUsage();
-				}
-			}
 			
 			lastNode = new ArrayList<RequestTreeNode>();
 			lastNodeTemplate = template;
@@ -200,6 +194,7 @@ public class RequestManager {
 			}
 			if(failed) {
 				for(RequestTreeNode subNode:lastNode) {
+					subNode.revertExtraUsage();
 					treeNode.remove(subNode);
 				}
 				continue;

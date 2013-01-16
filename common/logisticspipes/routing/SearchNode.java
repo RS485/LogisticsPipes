@@ -9,6 +9,9 @@ public class SearchNode implements Comparable<SearchNode>{
 		node=r;
 		root=p;
 	}
+	public boolean hasActivePipe(){
+		return node!=null && node.getPipe()!=null;
+	}
 	public int distance;
 	private final EnumSet<PipeRoutingConnectionType> connectionFlags;
 	public final IRouter node;

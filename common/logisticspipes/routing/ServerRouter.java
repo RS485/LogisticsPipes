@@ -330,11 +330,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 		SearchNode lowestCostNode;
 		while ((lowestCostNode=candidatesCost.poll()) != null){
-			CoreRoutedPipe crp = lowestCostNode.node.getPipe();
-			
-			while(crp==null && lowestCostNode!=null && objectMapped.get(crp.getSimpleID())){ // the node was inserted multiple times, skip it as we know a shorter path.				
+			while(lowestCostNode!=null && (!lowestCostNode.hasActivePipe() || objectMapped.get(lowestCostNode.node.getPipe().getSimpleID()))){ // the node was inserted multiple times, skip it as we know a shorter path.				
 				lowestCostNode=candidatesCost.poll();
-				crp = lowestCostNode.node.getPipe();
 			}
 			if(lowestCostNode==null)
 				break; // then there was nothing but already routed elements in the list.

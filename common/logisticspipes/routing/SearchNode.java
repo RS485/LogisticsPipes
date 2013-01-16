@@ -13,7 +13,7 @@ public class SearchNode implements Comparable<SearchNode>{
 	private final EnumSet<PipeRoutingConnectionType> connectionFlags;
 	public final IRouter node;
 	public IRouter root;
-	
+	private final int ROUTING_PENALITY=10000;
 	//copies
 	public EnumSet<PipeRoutingConnectionType> getFlags() {
 		return EnumSet.copyOf(connectionFlags);
@@ -21,7 +21,13 @@ public class SearchNode implements Comparable<SearchNode>{
 
 	@Override
 	public int compareTo(SearchNode o) {
-		return this.distance-o.distance;
+		int delta=0;
+		if(EnumSet.copyOf(connectionFlags).removeAll(ServerRouter.blocksItems))
+			delta+=ROUTING_PENALITY;
+		if(EnumSet.copyOf(o.connectionFlags).removeAll(ServerRouter.blocksItems))
+			delta-=ROUTING_PENALITY;
+		
+		return this.distance-o.distance+delta;
 	}
 
 	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {

@@ -14,6 +14,7 @@ import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -95,6 +96,10 @@ public class DummyContainer extends Container{
 		addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
 	}
 	
+	public void addLiquidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		addSlotToContainer(new LiquidSlot(inventory, slotId, xCoord, yCoord));
+	}
+	
 	/**
 	 * Disable shift-clicking to transfer items
 	 */
@@ -115,7 +120,7 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot))) {
+		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
 			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
@@ -131,6 +136,37 @@ public class DummyContainer extends Container{
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
 		
 		if(slot instanceof UnmodifiableSlot) {
+			return currentlyEquippedStack;
+		}
+		
+		if(slot instanceof LiquidSlot) {
+			LiquidIdentifier ident = null;
+			if(slot.getStack() != null) {
+				ident = ItemIdentifier.get(slot.getStack()).getLiquidIdentifier();
+			}
+			if(mouseButton == 0) {
+				if(ident != null) {
+					ident = ident.next();
+				} else {
+					ident = LiquidIdentifier.first();
+				}
+			} else if(mouseButton == 1) {
+				if(ident != null) {
+					ident = ident.prev();
+				} else {
+					ident = LiquidIdentifier.last();
+				}
+			} else {
+				ident = null;
+			}
+			if(ident == null) {
+				slot.putStack(null);
+			} else {
+				slot.putStack(ident.getItemIdentifier().makeNormalStack(1));
+			}
+			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
+				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
+			}
 			return currentlyEquippedStack;
 		}
 		

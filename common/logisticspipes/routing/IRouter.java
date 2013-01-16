@@ -9,17 +9,17 @@
 package logisticspipes.routing;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
-public interface IRouter {
+public interface IRouter extends IPowerRouter {
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);

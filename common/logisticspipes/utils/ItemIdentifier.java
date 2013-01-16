@@ -461,4 +461,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	@Override public int hashCode(){
 		return uniqueID;
 	}
+
+	public LiquidIdentifier getLiquidIdentifier() {
+		return LiquidIdentifier.get(itemID, itemDamage);
+	}
 }

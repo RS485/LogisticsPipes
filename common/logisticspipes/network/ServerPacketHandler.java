@@ -12,6 +12,7 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWatchingHandler;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -23,6 +24,7 @@ import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinates;
@@ -30,6 +32,7 @@ import logisticspipes.network.packets.PacketHUDSettings;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -301,6 +304,21 @@ public class ServerPacketHandler {
 					final PacketNameUpdatePacket packetAs = new PacketNameUpdatePacket();
 					packetAs.readData(data);
 					onNameUpdate(packetAs);
+					break;
+				case NetworkConstants.ORDERER_LIQUID_REFRESH_REQUEST:
+					final PacketPipeInteger packetAt = new PacketPipeInteger();
+					packetAt.readData(data);
+					onLiquidRefreshRequest(player, packetAt);
+					break;
+				case NetworkConstants.LIQUID_REQUEST_SUBMIT:
+					final PacketRequestSubmit packetAu = new PacketRequestSubmit();
+					packetAu.readData(data);
+					onLiquidRequestSubmit(player, packetAu);
+					break;
+				case NetworkConstants.MODBASEDITEMSINKLIST:
+					final PacketModuleNBT packetAv = new PacketModuleNBT();
+					packetAv.readData(data);
+					onModBasedItemSinkList(player, packetAv);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1230,6 +1248,47 @@ public class ServerPacketHandler {
 
 	private static void onNameUpdate(PacketNameUpdatePacket packetAs) {
 		MainProxy.proxy.updateNames(packetAs.item, packetAs.name);
+	}
+
+	private static void onLiquidRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
+		int dimension = packet.integer;
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		
+		RequestHandler.refreshLiquid(player, (CoreRoutedPipe) pipe.pipe);
+	}
+
+	private static void onLiquidRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+		if (!(pipe.pipe instanceof IRequestLiquid)) {
+			return;
+		}
+		
+		RequestHandler.requestLiquid(player, packet, (CoreRoutedPipe) pipe.pipe, (IRequestLiquid) pipe.pipe);
+	}
+
+	private static void onModBasedItemSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
+			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}
 	}
 	
 	// BuildCraft method

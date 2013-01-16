@@ -3,7 +3,6 @@ package logisticspipes.items;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -24,6 +23,7 @@ import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
 import logisticspipes.modules.ModuleItemSink;
+import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
@@ -32,7 +32,6 @@ import logisticspipes.modules.ModuleQuickSort;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.creativetab.CreativeTabs;
@@ -81,6 +80,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int BEESINK = 9;
 	public static final int APIARISTREFILLER = 10;
 	public static final int APIARISTTERMINUS = 11;
+	public static final int MODBASEDITEMSINK = 12;
 
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
@@ -180,6 +180,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);
 		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);
 		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
+		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
 	}
 
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {

@@ -26,6 +26,8 @@ public class NormalGuiOrderer extends GuiOrderer {
 	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
+		controlList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh
+		controlList.add(new SmallGuiButton(13,  guiLeft + 10, bottom - 28, 46, 10, "Content")); // Component
 		controlList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
 	}
 	

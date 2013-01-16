@@ -17,6 +17,7 @@ import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
@@ -93,8 +94,13 @@ class PathFinder {
 		
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call
 		if (startPipe.pipe instanceof RoutedPipe && setVisited.size() != 0) {
-			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, setVisited.size(), connectionFlags));
+			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, setVisited.size(), false));
 			
+			return foundPipes;
+		}
+		
+		//Iron, obsidean and liquid pipes will separate networks
+		if (startPipe.pipe instanceof LogisticsLiquidConnectorPipe) {
 			return foundPipes;
 		}		
 		

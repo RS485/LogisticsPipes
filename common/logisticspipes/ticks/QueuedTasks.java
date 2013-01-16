@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.ItemIdentifier;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -38,6 +39,7 @@ public class QueuedTasks implements ITickHandler {
 			queue.clear();
 		}
 		MainProxy.proxy.tick();
+		LiquidIdentifier.initFromForge(true);
 		ItemIdentifier.tick();
 	}
 

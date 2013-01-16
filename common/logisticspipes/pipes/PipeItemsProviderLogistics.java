@@ -184,10 +184,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		
 		if(worldObj.getWorldTime() % 6 == 0) {
 			updateInv();

@@ -45,8 +45,10 @@ import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
+import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
@@ -92,6 +94,7 @@ import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
@@ -163,6 +166,11 @@ public class LogisticsPipes {
 	public static Item LogisticsDestination;
 	public static Item LogisticsCraftingPipeMK3;
 	
+	//Liquid Pipes
+	public static Item LogisticsLiquidConnector;
+	public static Item LogisticsLiquidBasic;
+	public static Item LogisticsLiquidInsertion;
+	
 	
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
@@ -172,6 +180,7 @@ public class LogisticsPipes {
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
 	public static Item LogisticsUpgradeManager;
+	public static Item LogisticsLiquidContainer;
 
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
@@ -201,6 +210,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
+		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
 		
 		textures.load(event);
 		
@@ -394,6 +404,11 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
 		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
 		
+		if(DEBUG) {
+			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ItemLiquidContainerId);
+			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
+			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -409,6 +424,12 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
+		
+		if(DEBUG) {
+			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
+		}
+		
+		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
 		
 		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
@@ -454,6 +475,11 @@ public class LogisticsPipes {
 		
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
+		
+		//init Liquids
+		LiquidIdentifier.initFromForge(false);
+		LiquidIdentifier.get(9, 0, "water");
+		LiquidIdentifier.get(11, 0, "lava");
 	}
 	
 	@ServerStopping

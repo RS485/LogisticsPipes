@@ -11,6 +11,7 @@ package logisticspipes.proxy;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
+import logisticspipes.logistics.ILogisticsLiquidManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
@@ -19,7 +20,6 @@ import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
@@ -62,6 +62,11 @@ public final class SimpleServiceLocator {
 	public static ILogisticsManagerV2 logisticsManager;
 	public static void setLogisticsManager(final ILogisticsManagerV2 logisticsMngr){
 		logisticsManager = logisticsMngr;
+	}
+	
+	public static ILogisticsLiquidManager logisticsLiquidManager;
+	public static void setLogisticsLiquidManager(final ILogisticsLiquidManager logisticsMngr){
+		logisticsLiquidManager = logisticsMngr;
 	}
 	
 	public static InventoryUtilFactory inventoryUtilFactory;

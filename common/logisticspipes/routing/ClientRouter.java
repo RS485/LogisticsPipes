@@ -7,6 +7,7 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -141,5 +142,15 @@ public class ClientRouter implements IRouter {
 	@Override
 	public void clearPipeCache() {
 		//Not On Client Side		
+	}
+
+	@Override
+	public List<ILogisticsPowerProvider> getPowerProvider() {
+		return null;
+	}
+
+	@Override
+	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
+		return null;
 	}
 }

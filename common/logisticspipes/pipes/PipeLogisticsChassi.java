@@ -302,9 +302,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(stillNeedReplace) return;
+	public void ignoreDisableUpdateEntity() {
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
 			if(MainProxy.isServer(this.worldObj)) {

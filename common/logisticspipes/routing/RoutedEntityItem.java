@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
@@ -20,7 +21,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftCore;
@@ -71,6 +71,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	public EntityItem toEntityItem(ForgeDirection dir) {
 		if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 			if (getItemStack().stackSize <= 0) {
+				return null;
+			}
+			
+			if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
+				remove();
 				return null;
 			}
 
@@ -190,6 +195,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public IRoutedItem split(World worldObj, int itemsToTake, ForgeDirection orientation) {
+		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
+			throw new UnsupportedOperationException("Can't split up a LiquidContainer");
+		}
 		EntityPassiveItem newItem = new EntityPassiveItem(worldObj);
 		newItem.setPosition(position.x, position.y, position.z);
 		newItem.setSpeed(this.speed);
@@ -225,6 +233,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public IRoutedItem getNewUnRoutedItem() {
+		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
+			throw new UnsupportedOperationException("Can't change LiquidContainer to UnRoutedItem");
+		}
 		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
 		Entityitem.setContainer(container);
 		Entityitem.setPosition(position.x, position.y, position.z);
@@ -238,6 +249,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public EntityPassiveItem getNewEntityPassiveItem() {
+		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
+			throw new UnsupportedOperationException("Can't change LiquidContainer to EntityPassiveItem");
+		}
 		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
 		Entityitem.setContainer(container);
 		Entityitem.setPosition(position.x, position.y, position.z);

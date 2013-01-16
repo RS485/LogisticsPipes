@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketRequestComponents;
@@ -20,6 +21,7 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -189,5 +191,35 @@ public class RequestHandler {
 			}
 		});
 		return request_id;
+	}
+
+	public static void refreshLiquid(EntityPlayerMP player, CoreRoutedPipe pipe) {
+		LinkedList<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
+		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+	}
+
+	public static void requestLiquid(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe, IRequestLiquid requester) {
+		if(!pipe.useEnergy(10)) {
+			player.sendChatToPlayer("No Energy");
+			return;
+		}
+		RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+			@Override
+			public void handleSucessfullRequestOf(ItemMessage item) {
+				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
+				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
+				MessageManager.requested(player, list);
+			}
+			
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+				MessageManager.errors(player, list);
+			}
+
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+				//Not needed here
+			}
+		});
 	}
 }

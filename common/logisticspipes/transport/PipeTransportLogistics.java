@@ -333,6 +333,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");
 		}
 	}
-	
+
 	protected void insertedItemStack(EntityData data, TileEntity tile) {}
 }

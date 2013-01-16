@@ -7,6 +7,7 @@ import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
+import logisticspipes.gui.GuiLiquidBasic;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
 import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
@@ -22,10 +23,12 @@ import logisticspipes.gui.modules.GuiElectricManager;
 import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiLiquidSupplier;
+import logisticspipes.gui.modules.GuiModBasedItemSink;
 import logisticspipes.gui.modules.GuiPassiveSupplier;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiTerminus;
 import logisticspipes.gui.modules.GuiWithPreviousGuiContainer;
+import logisticspipes.gui.orderer.LiquidGuiOrderer;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
@@ -44,6 +47,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleLiquidSupplier;
+import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
@@ -54,6 +58,8 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
+import logisticspipes.pipes.PipeLiquidBasic;
+import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -63,9 +69,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.src.ModLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import buildcraft.core.utils.SimpleInventory;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.Player;
@@ -303,6 +311,10 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
 				return new DummyContainer(player.inventory, null);
 				
+			case GuiIDs.GUI_Liquid_Orderer_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLiquidRequestLogistics)) return null;
+				return new DummyContainer(player.inventory, null);
+				
 			case GuiIDs.GUI_Inv_Sys_Connector_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector)pipe.pipe).inv);
@@ -347,6 +359,13 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Upgrade_Manager:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
 				return ((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getDummyContainer(player);
+				
+			case GuiIDs.GUI_Liquid_Basic_ID:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLiquidBasic))) return null;
+				dummy = new DummyContainer(player.inventory, ((PipeLiquidBasic)pipe.pipe).filterInv);
+				dummy.addLiquidSlot(0, ((PipeLiquidBasic)pipe.pipe).filterInv, 28, 15);
+				dummy.addNormalSlotsForPlayerInventory(10, 45);
+				return dummy;
 				
 			default:break;
 			}
@@ -504,6 +523,25 @@ public class GuiHandler implements IGuiHandler {
 					return dummy;
 				}
 				
+			case GuiIDs.GUI_Module_ModBased_ItemSink_ID:
+				if(slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
+					NBTTagCompound nbt = new NBTTagCompound();
+					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+					MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleModBasedItemSink)) return null;
+					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				}
+				
 			default:break;
 			}
 		}
@@ -606,6 +644,10 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsRequestLogisticsMk2)) return null;
 				return new NormalMk2GuiOrderer(((PipeItemsRequestLogisticsMk2)pipe.pipe), player);
 				
+			case GuiIDs.GUI_Liquid_Orderer_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLiquidRequestLogistics)) return null;
+				return new LiquidGuiOrderer(((PipeLiquidRequestLogistics)pipe.pipe), player);
+				
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
 				return new GuiApiaristSink((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, 0);
@@ -639,6 +681,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Upgrade_Manager:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof CoreRoutedPipe))) return null;
 				return new GuiUpgradeManager(player, (CoreRoutedPipe) pipe.pipe);
+			
+			case GuiIDs.GUI_Liquid_Basic_ID:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLiquidBasic))) return null;
+				return new GuiLiquidBasic(player, ((PipeLiquidBasic)pipe.pipe).filterInv);
 				
 			default:break;
 			}
@@ -768,6 +814,26 @@ public class GuiHandler implements IGuiHandler {
 					if(!(module instanceof ModuleApiaristSink)) return null;
 					return new GuiApiaristSink((ModuleApiaristSink) module, player, null, null, slot);
 				}
+				
+			case GuiIDs.GUI_Module_ModBased_ItemSink_ID:
+				if(slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
+					return new GuiModBasedItemSink(player.inventory, pipe.pipe, (ModuleModBasedItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot),  ModLoader.getMinecraftInstance().currentScreen, slot + 1);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerPosition(0, -1, z, 20);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleModBasedItemSink)) return null;
+					return new GuiModBasedItemSink(player.inventory, null, (ModuleModBasedItemSink) module, null, slot);
+				}
+				
+				
 				
 			default:break;
 			}

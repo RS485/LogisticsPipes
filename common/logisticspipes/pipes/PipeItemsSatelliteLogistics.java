@@ -55,9 +55,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		if(worldObj.getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}

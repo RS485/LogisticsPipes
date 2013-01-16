@@ -61,8 +61,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			EnumSet<PipeRoutingConnectionType> flags = candidateRouter.getFlags();
-			if(flags.removeAll(ServerRouter.blocksItems))
+			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				continue;
 			
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
@@ -187,7 +186,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
 			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
-			if(r.getFlags().removeAll(ServerRouter.blocksRouting))
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom))
 				continue;
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
@@ -223,7 +222,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		BitSet used = new BitSet(CoreRoutedPipe.getSBiggestID());
 		for (SearchNode r : validDestinations){
 			if(r == null) continue;
-			if(r.getFlags().removeAll(ServerRouter.blocksRouting)) continue;
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if (!(r.node.getPipe() instanceof ICraftItems)) {
 				if(r.node.getPipe() instanceof IFilteringPipe) {
 					used.set(r.node.getPipe().getSimpleID(), true);

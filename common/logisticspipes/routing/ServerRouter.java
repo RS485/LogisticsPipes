@@ -46,9 +46,6 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
 	
-	public static final EnumSet<PipeRoutingConnectionType> blocksPower = EnumSet.of(PipeRoutingConnectionType.blocksPowerFlow, PipeRoutingConnectionType.passedThroughIronClosed, PipeRoutingConnectionType.passedThroughObsidian);
-	public static final EnumSet<PipeRoutingConnectionType> blocksRouting = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.reversedPassedThroughIronClosed, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
-	public static final EnumSet<PipeRoutingConnectionType> blocksItems = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.passedThroughIronClosed, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
 	//may not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 
 	public int hashCode(){
@@ -337,24 +334,15 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 		SearchNode lowestCostNode;
 		while ((lowestCostNode=candidatesCost.poll()) != null){
-			while(lowestCostNode!=null && (!lowestCostNode.hasActivePipe() || objectMapped.get(lowestCostNode.node.getPipe().getSimpleID()))){ // the node was inserted multiple times, skip it as we know a shorter path.				
-				lowestCostNode=candidatesCost.poll();
-			}
-			if(lowestCostNode==null)
-				break; // then there was nothing but already routed elements in the list.
 			
-//			SearchNode lowestPath = tree.get(lowestCostNode.root);						//Get a copy of the route for the approved router 
-
-			//if(lowestPath == null) { // then you are on an initial seed item, you are adjacent, and you are the closest node.
-			//	lowestPath = lowestCostNode;
-			//}
-
+			if(!lowestCostNode.hasActivePipe() || objectMapped.get(lowestCostNode.node.getPipe().getSimpleID())) // the node was inserted multiple times, skip it as we know a shorter path.
+				continue;
 			
 			//Add new candidates from the newly approved route
 			SharedLSADatabasereadLock.lock();
 			LSA lsa = SharedLSADatabase.get(lowestCostNode.node);
 			if(lsa != null) {
-				if(!lowestCostNode.containsFlag(PipeRoutingConnectionType.blocksPowerFlow) && lsa.power.isEmpty() == false) {
+				if(lowestCostNode.containsFlag(PipeRoutingConnectionType.canPowerFrom) && lsa.power.isEmpty() == false) {
 					powerTable.addAll(lsa.power);
 				}
 			    Iterator<Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>>> it = lsa.neighboursWithMetric.entrySet().iterator();
@@ -362,18 +350,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			    	Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>> newCandidate = (Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, ForgeDirection>>)it.next();
 					if(objectMapped.get(newCandidate.getKey().getPipe().getSimpleID()))
 						continue;
-						//if(!lowestCostNode.getFlags().removeAll(this.blocksPower)) {
-						//	treeN.removeFlags(blocksPower);
 
 					int candidateCost = lowestCostNode.distance + newCandidate.getValue().getValue1();
 					EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
-					newCT.addAll(newCandidate.getValue().getValue2());
-					candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestCostNode.root, newCandidate.getValue().getValue3()));
+					newCT.retainAll(newCandidate.getValue().getValue2());
+					if(!newCT.isEmpty())
+						candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestCostNode.root, newCandidate.getValue().getValue3()));
 				}
 			}
-			//lowestCostNode.root=lowestPath.root; // however you got here, thats the side you came from
-			//Approve the candidate
-			//tree.put(lowestCostNode.node,lowestCostNode);
 
 			routeCosts.add(lowestCostNode);
 			objectMapped.set(lowestCostNode.node.getPipe().getSimpleID(),true);

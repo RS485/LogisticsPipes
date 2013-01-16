@@ -34,9 +34,9 @@ public class SearchNode implements Comparable<SearchNode> {
 	@Override
 	public int compareTo(SearchNode o) {
 		int delta=0;
-		if(EnumSet.copyOf(connectionFlags).removeAll(ServerRouter.blocksItems))
+		if(!connectionFlags.contains(PipeRoutingConnectionType.canRouteTo))
 			delta+=ROUTING_PENALITY;
-		if(EnumSet.copyOf(o.connectionFlags).removeAll(ServerRouter.blocksItems))
+		if(!o.connectionFlags.contains(PipeRoutingConnectionType.canRouteTo))
 			delta-=ROUTING_PENALITY;
 		
 		return this.distance-o.distance+delta;

@@ -16,11 +16,13 @@ public class LiquidGuiOrderer extends GuiOrderer {
 		refreshItems();
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
 		controlList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 	}
+	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0 && selectedItem != null){

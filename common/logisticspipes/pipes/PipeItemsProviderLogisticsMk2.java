@@ -12,11 +12,7 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 
 	@Override
 	public TextureType getCenterTexture() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
-		} else {
-			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE_DIS;
-		}
+		return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
 	}
 
 	@Override

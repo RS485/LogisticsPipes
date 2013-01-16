@@ -45,7 +45,12 @@ class PathFinder {
 	
 	public static HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
-		return newSearch.getConnectedRoutingPipes(startPipe,EnumSet.noneOf(PipeRoutingConnectionType.class));
+		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.noneOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
+	}
+	
+	public static HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength, ForgeDirection side) {
+		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
+		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.noneOf(PipeRoutingConnectionType.class), side);
 	}
 	
 	public static HashMap<RoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
@@ -58,7 +63,7 @@ class PathFinder {
 			return new HashMap<RoutedPipe, ExitRoute>();
 		}
 		
-		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity,EnumSet.noneOf(PipeRoutingConnectionType.class));
+		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, EnumSet.noneOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
 	}
 	
 	private PathFinder(int maxVisited, int maxLength, IPaintPath pathPainter) {
@@ -74,8 +79,10 @@ class PathFinder {
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
 	
-	private HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags) {
+	private HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
 		HashMap<RoutedPipe, ExitRoute> foundPipes = new HashMap<RoutedPipe, ExitRoute>();
+		
+		boolean root = setVisited.size() == 0;
 		
 		//Reset visited count at top level
 		if (setVisited.size() == 1) {
@@ -94,7 +101,7 @@ class PathFinder {
 		
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call
 		if (startPipe.pipe instanceof RoutedPipe && setVisited.size() != 0) {
-			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, setVisited.size(), connectionFlags));
+			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
 			
 			return foundPipes;
 		}
@@ -114,7 +121,7 @@ class PathFinder {
 					//Don't go where we have been before
 					continue;
 				}
-				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags);
+				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags, side);
 				for(RoutedPipe pipe : result.keySet()) {
 					result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
 					if (!foundPipes.containsKey(pipe)) {
@@ -132,6 +139,7 @@ class PathFinder {
 		
 		//Recurse in all directions
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
+			if(root && !ForgeDirection.UNKNOWN.equals(side) && !direction.equals(side)) continue;
 			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
 			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
 			p.moveForwards(1);
@@ -188,7 +196,7 @@ class PathFinder {
 						nextConnectionFlags.add(PipeRoutingConnectionType.reversedPassedThroughIronClosed);
 				}
 				int beforeRecurseCount = foundPipes.size();
-				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile),nextConnectionFlags);
+				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), nextConnectionFlags, direction);
 				for(RoutedPipe pipe : result.keySet()) {
 					//Update Result with the direction we took
 					result.get(pipe).exitOrientation = direction;

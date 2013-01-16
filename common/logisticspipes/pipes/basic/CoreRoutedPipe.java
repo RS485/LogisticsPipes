@@ -35,6 +35,7 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
+import logisticspipes.network.packets.PacketRoutingStats;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -77,13 +78,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private IRouter router;
 	private String routerId;
-	private Object routerIdLock = new Object();
+	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
-	private int _delayOffset = 0;
+	protected int _delayOffset = 0;
 	
 	private boolean _textureBufferPowered;
 	
-	private boolean _initialInit = true;
+	protected boolean _initialInit = true;
 	
 	private boolean enabled = true;
 	
@@ -117,7 +118,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public CoreRoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
 		super(transport, logic, itemID);
 		((PipeTransportItems) transport).allowBouncing = true;
-		simpleID=pipecount;
+		
+		simpleID = pipecount;
 		pipecount++;
 		
 		//Roughly spread pipe updates throughout the frequency, no need to maintain balance
@@ -335,7 +337,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public TextureType getTextureType(ForgeDirection connection) {
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
-		} else if ((router != null) && router.isRoutedExit(connection)) {
+		} else if ((router != null) && getRouter(connection).isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
 		} else {
@@ -404,12 +406,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return router;
 	}
 	
-	public void refreshRouterIdFromRouter() {
-		if(router != null) {
-			synchronized (routerIdLock) {
-				routerId = router.getId().toString();
-			}
-		}
+	public IRouter getRouter(ForgeDirection dir) {
+		return getRouter();
 	}
 	
 	public boolean isEnabled(){

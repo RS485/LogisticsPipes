@@ -8,8 +8,6 @@
 
 package logisticspipes.interfaces.routing;
 
-import java.util.LinkedList;
-
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.utils.ItemIdentifier;
 

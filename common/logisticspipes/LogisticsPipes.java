@@ -48,8 +48,8 @@ import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.log.RequestLogFormator;
+import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsWorldManager;
@@ -80,6 +80,7 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
+import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -125,7 +126,6 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
-import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
 @Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
@@ -165,11 +165,14 @@ public class LogisticsPipes {
 	public static Item LogisticsEntrance;
 	public static Item LogisticsDestination;
 	public static Item LogisticsCraftingPipeMK3;
+	public static Item LogisticsFirewall;
 	
 	//Liquid Pipes
 	public static Item LogisticsLiquidConnector;
 	public static Item LogisticsLiquidBasic;
 	public static Item LogisticsLiquidInsertion;
+	public static Item LogisticsLiquidProvider;
+	public static Item LogisticsLiquidRequest;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -188,7 +191,7 @@ public class LogisticsPipes {
 	private Textures textures = new Textures();
 	
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;	
-	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe;
+	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
@@ -465,7 +468,7 @@ public class LogisticsPipes {
 		//LogisticsTileGenerticPipe
 		if(SimpleServiceLocator.ccProxy.isCC()) {
 			logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
-		} else {
+		} else if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
 			logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
 		}
 		

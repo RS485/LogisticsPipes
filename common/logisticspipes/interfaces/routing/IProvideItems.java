@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 

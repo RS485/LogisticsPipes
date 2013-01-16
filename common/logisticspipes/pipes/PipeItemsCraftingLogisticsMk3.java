@@ -57,6 +57,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		if(inv.isEmpty()) return;
 		//Add from interal buffer
 		List<AdjacentTile> crafters = locateCrafters();

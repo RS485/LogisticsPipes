@@ -9,7 +9,6 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
-import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -24,8 +23,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -34,7 +31,6 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import buildcraft.core.utils.Utils;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
 import buildcraft.transport.TileGenericPipe;

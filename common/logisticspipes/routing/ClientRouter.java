@@ -11,6 +11,7 @@ import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -68,15 +69,15 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ForgeDirection getExitFor(UUID id) {
-		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id));
+		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id)).getValue1();
 	}
 
 	@Override
-	public HashMap<IRouter, ForgeDirection> getRouteTable() {
+	public HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new HashMap<IRouter, ForgeDirection>();
+		return new HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>>();
 	}
 
 	@Override

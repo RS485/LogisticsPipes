@@ -2,7 +2,6 @@ package logisticspipes.request;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -14,21 +13,21 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.SearchNode;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
-import logisticspipes.routing.SearchNode;
 
 public class RequestManager {
 
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<SearchNode> validDestinations, RequestLog log) {
-		List<IProvideItems> providers = getProviders(validDestinations);
-		List<CraftingTemplate> crafters = getCrafters(validDestinations);
+		//List<IProvideItems> providers = getProviders(validDestinations);
+		//List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
 		for(ItemIdentifierStack stack:items) {
@@ -84,7 +83,7 @@ public class RequestManager {
 		for(SearchNode r : validDestinations) {
 			CoreRoutedPipe pipe = r.node.getPipe();
 			if (pipe instanceof ICraftItems){
-				EnumSet flags = r.getFlags();
+				EnumSet<PipeRoutingConnectionType> flags = r.getFlags();
 				if(!flags.removeAll(ServerRouter.blocksRouting)){
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null)
@@ -100,7 +99,7 @@ public class RequestManager {
 	private static List<IProvideItems> getProviders(List<SearchNode> validDestinations) {
 		List<IProvideItems> providers = new LinkedList<IProvideItems>();
 		for(SearchNode r : validDestinations) {
-			EnumSet flags = r.getFlags();
+			EnumSet<PipeRoutingConnectionType> flags = r.getFlags();
 			if(!flags.removeAll(ServerRouter.blocksRouting)){
 				CoreRoutedPipe pipe = r.node.getPipe();
 				if (pipe instanceof IProvideItems){
@@ -217,6 +216,8 @@ public class RequestManager {
 		}
 	}
 	
+	/*
+	
 	//if the item is the same, and the router is the same ... different stack sizes are allowed
 	private class RequestPairCompare implements Comparator<Pair<ItemIdentifierStack,IRequestItems> >{
 
@@ -230,7 +231,9 @@ public class RequestManager {
 		}
 		
 	}
-
+	
+	*/
+	
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		for(IProvideItems provider : getProviders(requester.getRouter().getIRoutersByCost())) {
 			provider.canProvide(treeNode, tree.getAllPromissesFor(provider));

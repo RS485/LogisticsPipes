@@ -21,13 +21,11 @@ import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import buildcraft.builders.TileBuilder;
-import buildcraft.core.utils.Utils;
 
 public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport {
 	

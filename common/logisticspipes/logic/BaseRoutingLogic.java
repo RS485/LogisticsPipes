@@ -50,7 +50,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	public boolean blockActivated(EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
-			getRoutedPipe().getRouter().displayRoutes();
+			//getRoutedPipe().getRouter().displayRoutes();
 			if (LogisticsPipes.DEBUG) {
 				doDebugStuff(entityplayer);
 			}

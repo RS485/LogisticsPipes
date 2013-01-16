@@ -46,7 +46,6 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;

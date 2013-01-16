@@ -1,7 +1,5 @@
 package logisticspipes.routing;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.EnumSet;
 
 public enum PipeRoutingConnectionType{
 	passedThroughDiamond,
@@ -12,6 +10,7 @@ public enum PipeRoutingConnectionType{
 	passedThroughObsidian,
 	blocksPowerFlow,
 	blocksItemFlow;
+	/*
 	public static int encode(EnumSet<PipeRoutingConnectionType> set) {
 	    int ret = 0;
 
@@ -32,5 +31,5 @@ public enum PipeRoutingConnectionType{
 		}
 		return result;
 	}
-
+	*/
 }

@@ -27,11 +27,10 @@ import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.item.ItemStack;
@@ -58,7 +57,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			EnumSet flags = candidateRouter.getFlags();
+			EnumSet<PipeRoutingConnectionType> flags = candidateRouter.getFlags();
 			if(flags.removeAll(ServerRouter.blocksItems))
 				continue;
 			

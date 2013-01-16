@@ -15,6 +15,7 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
@@ -27,8 +28,7 @@ public interface IRouter extends IPowerRouter {
 	public boolean hasRoute(UUID id);
 	public ForgeDirection getExitFor(UUID id);
 	
-	@Deprecated
-	public HashMap<IRouter, ForgeDirection> getRouteTable();
+	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable();
 	public List<SearchNode> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	

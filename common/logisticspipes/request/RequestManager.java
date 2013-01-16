@@ -237,8 +237,8 @@ public class RequestManager {
 		}
 	}
 
-	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<IRouter> validDestinations, RequestLog log) {
-		List<ILiquidProvider> providers = getLiquidProviders(validDestinations);
+	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<SearchNode> list, RequestLog log) {
+		List<ILiquidProvider> providers = getLiquidProviders(list);
 		LiquidRequest request = new LiquidRequest(liquid, amount);
 		for(ILiquidProvider provider:providers) { //TODO
 			provider.canProvide(request);
@@ -257,10 +257,10 @@ public class RequestManager {
 		}
 	}
 
-	private static List<ILiquidProvider> getLiquidProviders(List<IRouter> validDestinations) {
+	private static List<ILiquidProvider> getLiquidProviders(List<SearchNode> list) {
 		List<ILiquidProvider> providers = new LinkedList<ILiquidProvider>();
-		for(IRouter r : validDestinations) {
-			CoreRoutedPipe pipe = r.getPipe();
+		for(SearchNode r : list) {
+			CoreRoutedPipe pipe = r.node.getPipe();
 			if (pipe instanceof ILiquidProvider){
 				providers.add((ILiquidProvider)pipe);
 			}

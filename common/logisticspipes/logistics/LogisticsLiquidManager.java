@@ -12,6 +12,7 @@ import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
@@ -23,18 +24,18 @@ import net.minecraftforge.liquids.LiquidStack;
 public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	
 	public Pair<UUID, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<UUID> jamList) {
-		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
-			if(candidateRouter.getId().equals(sourceRouter.getId())) continue;
-			if(jamList.contains(candidateRouter.getId())) continue;
+		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
+			if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
+			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			if (candidateRouter.getPipe() == null || !candidateRouter.getPipe().isEnabled()) continue;
-			CoreRoutedPipe pipe = candidateRouter.getPipe();
+			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
+			CoreRoutedPipe pipe = candidateRouter.node.getPipe();
 			
 			if(!(pipe instanceof ILiquidSink)) continue;
 			
 			int amount = ((ILiquidSink)pipe).sinkAmount(stack);
 			if(amount > 0) {
-				Pair<UUID, Integer> result = new Pair<UUID, Integer>(candidateRouter.getId(), amount);
+				Pair<UUID, Integer> result = new Pair<UUID, Integer>(candidateRouter.node.getId(), amount);
 				return result;
 			}
 		}
@@ -60,13 +61,13 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	}
 	
 	@Override
-	public LinkedList<ItemIdentifierStack> getAvailableLiquid(List<IRouter> validDestinations) {
+	public LinkedList<ItemIdentifierStack> getAvailableLiquid(List<SearchNode> validDestinations) {
 		Map<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(IRouter r: validDestinations){
+		for(SearchNode r: validDestinations){
 			if(r == null) continue;
-			if (!(r.getPipe() instanceof ILiquidProvider)) continue;
+			if (!(r.node.getPipe() instanceof ILiquidProvider)) continue;
 
-			ILiquidProvider provider = (ILiquidProvider) r.getPipe();
+			ILiquidProvider provider = (ILiquidProvider) r.node.getPipe();
 			Map<LiquidIdentifier, Integer> allItems = provider.getAvailableLiquids();
 			
 			for (LiquidIdentifier liquid : allItems.keySet()){

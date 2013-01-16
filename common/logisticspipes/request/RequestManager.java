@@ -77,17 +77,17 @@ public class RequestManager {
 	}
 	
 	private static List<CraftingTemplate> getCrafters(List<SearchNode> validDestinations) {
-		List<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
+		List<CraftingTemplate> crafters = new ArrayList<CraftingTemplate>(validDestinations.size());
 		for(SearchNode r : validDestinations) {
-			EnumSet flags = EnumSet.copyOf(r.connectionFlags);
-			if(!flags.removeAll(ServerRouter.blocksRouting)){
-				CoreRoutedPipe pipe = r.node.getPipe();
-				if (pipe instanceof ICraftItems){
+			CoreRoutedPipe pipe = r.node.getPipe();
+			if (pipe instanceof ICraftItems){
+				EnumSet flags = EnumSet.copyOf(r.connectionFlags);
+				if(!flags.removeAll(ServerRouter.blocksRouting)){
 					crafters.add(((ICraftItems)pipe).addCrafting());
 				}
-			}
+			}			
 		}
-		Collections.sort(crafters);
+		Collections.sort(crafters,new CraftingTemplate.Prioritizer());
 		return crafters;
 	}
 

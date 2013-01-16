@@ -45,12 +45,12 @@ class PathFinder {
 	
 	public static HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
-		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.noneOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
+		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
 	}
 	
 	public static HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength, ForgeDirection side) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
-		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.noneOf(PipeRoutingConnectionType.class), side);
+		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), side);
 	}
 	
 	public static HashMap<RoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
@@ -63,7 +63,7 @@ class PathFinder {
 			return new HashMap<RoutedPipe, ExitRoute>();
 		}
 		
-		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, EnumSet.noneOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
+		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
 	}
 	
 	private PathFinder(int maxVisited, int maxLength, IPaintPath pathPainter) {
@@ -173,27 +173,26 @@ class PathFinder {
 					continue;
 				}
 
-				//Iron, obsidean, and diamond pipes will separate networks
-				if(currentPipe.pipe instanceof PipeItemsObsidian){
-					nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughObsidian);
+				if(currentPipe.pipe instanceof PipeItemsObsidian){	//Obsidian seperates networks
+					continue;
 				}
-				if(currentPipe.pipe instanceof PipeItemsDiamond){
-					nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughDiamond);
+				if(currentPipe.pipe instanceof PipeItemsDiamond){	//Diamond only allows power through
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canRouteTo);
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canRequestFrom);
 				}
-				if(startPipe.pipe instanceof PipeItemsInvSysConnector){
-					nextConnectionFlags.add(PipeRoutingConnectionType.blocksPowerFlow);
+				if(startPipe.pipe instanceof PipeItemsInvSysConnector){	//ISC doesn't pass power
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
 				}
-				if(startPipe.pipe instanceof PipeItemsIron){
-					if(startPipe.pipe.outputOpen(direction))
-						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronOpen);
-					else
-						nextConnectionFlags.add(PipeRoutingConnectionType.passedThroughIronClosed);
+				if(startPipe.pipe instanceof PipeItemsIron){	//Iron requests and power can come from closed sides
+					if(!startPipe.pipe.outputOpen(direction)){
+						nextConnectionFlags.remove(PipeRoutingConnectionType.canRouteTo);
+					}
 				}
-				if(currentPipe.pipe instanceof PipeItemsIron){
-					if(currentPipe.pipe.outputOpen(direction.getOpposite()))
-						nextConnectionFlags.add(PipeRoutingConnectionType.reversedPassedThroughIronOpen);
-					else
-						nextConnectionFlags.add(PipeRoutingConnectionType.reversedPassedThroughIronClosed);
+				if(currentPipe.pipe instanceof PipeItemsIron){	//and can only go to the open side
+					if(!currentPipe.pipe.outputOpen(direction.getOpposite())){
+						nextConnectionFlags.remove(PipeRoutingConnectionType.canRequestFrom);
+						nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
+					}
 				}
 				int beforeRecurseCount = foundPipes.size();
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), nextConnectionFlags, direction);

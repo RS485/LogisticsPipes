@@ -83,8 +83,7 @@ public class RequestManager {
 		for(SearchNode r : validDestinations) {
 			CoreRoutedPipe pipe = r.node.getPipe();
 			if (pipe instanceof ICraftItems){
-				EnumSet<PipeRoutingConnectionType> flags = r.getFlags();
-				if(!flags.removeAll(ServerRouter.blocksRouting)){
+				if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)){
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null)
 					crafters.add(craftable);
@@ -99,8 +98,7 @@ public class RequestManager {
 	private static List<IProvideItems> getProviders(List<SearchNode> validDestinations) {
 		List<IProvideItems> providers = new LinkedList<IProvideItems>();
 		for(SearchNode r : validDestinations) {
-			EnumSet<PipeRoutingConnectionType> flags = r.getFlags();
-			if(!flags.removeAll(ServerRouter.blocksRouting)){
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)){
 				CoreRoutedPipe pipe = r.node.getPipe();
 				if (pipe instanceof IProvideItems){
 					providers.add((IProvideItems)pipe);

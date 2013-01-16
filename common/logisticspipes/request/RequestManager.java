@@ -83,7 +83,9 @@ public class RequestManager {
 			if (pipe instanceof ICraftItems){
 				EnumSet flags = r.getFlags();
 				if(!flags.removeAll(ServerRouter.blocksRouting)){
-					crafters.add(((ICraftItems)pipe).addCrafting());
+					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
+					if(craftable!=null)
+					crafters.add(craftable);
 				}
 			}			
 		}

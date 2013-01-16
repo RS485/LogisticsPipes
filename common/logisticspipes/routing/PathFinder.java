@@ -194,6 +194,11 @@ class PathFinder {
 						nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
 					}
 				}
+
+				if(nextConnectionFlags.isEmpty()) {	//don't bother going somewhere we can't do anything with
+					continue;
+				}
+
 				int beforeRecurseCount = foundPipes.size();
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), nextConnectionFlags, direction);
 				for(RoutedPipe pipe : result.keySet()) {

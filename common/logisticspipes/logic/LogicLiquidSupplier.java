@@ -121,7 +121,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, null);
 					if (success || countToRequest == 1){
 						break;
 					}

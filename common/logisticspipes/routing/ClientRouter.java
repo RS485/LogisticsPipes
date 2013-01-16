@@ -80,11 +80,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public LinkedList<IRouter> getIRoutersByCost() {
+	public List<SearchNode> getIRoutersByCost() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new LinkedList<IRouter>();
+		return new LinkedList<SearchNode>();
 	}
 
 	@Override

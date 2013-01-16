@@ -25,6 +25,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -117,7 +118,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			List<IRouter> valid = getRouter().getIRoutersByCost();
+			//List<SearchNode> valid = getRouter().getIRoutersByCost();
 			
 			/*
 			//TODO Double Chests, Simplyfication
@@ -155,7 +156,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, valid, null);
+					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}

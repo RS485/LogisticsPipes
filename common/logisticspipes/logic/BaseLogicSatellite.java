@@ -144,7 +144,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			// FIXME try partial requests
-			if (RequestManager.request(iterator.next(), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			if (RequestManager.request(iterator.next(), ((RoutedPipe) container.pipe), null)) {
 				iterator.remove();
 			}
 		}

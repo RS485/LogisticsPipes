@@ -309,15 +309,15 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void addCrafting(LinkedList<CraftingTemplate> crafters) {
+	public CraftingTemplate addCrafting() {
 		
 		if (!isEnabled()){
-			return;
+			return null;
 		}
 		
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
-		if ( stack == null) return;
+		if ( stack == null) return null;
 		
 		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
@@ -334,7 +334,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			}
 				
 		}
-		crafters.add(template);
+		return template;
 	}
 
 	@Override

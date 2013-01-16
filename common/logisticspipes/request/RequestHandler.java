@@ -43,7 +43,8 @@ public class RequestHandler {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe
+				, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
@@ -64,7 +65,7 @@ public class RequestHandler {
 	}
 	
 	public static void simulate(final EntityPlayerMP player, final PacketRequestComponents packet, CoreRoutedPipe pipe) {
-		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(1), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(1), pipe, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				//Not needed
@@ -170,7 +171,7 @@ public class RequestHandler {
 		QueuedTasks.queueTask(new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				RequestManager.request(makeStack, pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+				RequestManager.request(makeStack, pipe, new RequestLog() {
 					@Override
 					public void handleSucessfullRequestOf(ItemMessage item) {
 						pipe.queueEvent("request_successfull", new Object[]{request_id});

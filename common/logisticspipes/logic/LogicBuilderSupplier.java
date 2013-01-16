@@ -102,7 +102,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}

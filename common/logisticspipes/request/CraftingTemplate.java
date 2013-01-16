@@ -9,6 +9,7 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,7 +20,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
 
-public class CraftingTemplate {
+public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	private ItemIdentifierStack _result;
 	private ICraftItems _crafter;
@@ -62,5 +63,24 @@ public class CraftingTemplate {
 	
 	public int getPriority() {
 		return priority;
+	}
+
+	@Override
+	public int compareTo(CraftingTemplate o) {
+		int c = this.priority-o.priority;
+		if(c==0)
+			c= _result.compareTo(o._result);
+		if(c==0)
+			c=_crafter.compareTo(o._crafter);
+		return c;
+	}
+	
+	public static class Prioritizer implements Comparator<CraftingTemplate>{
+
+		@Override
+		public int compare(CraftingTemplate o1, CraftingTemplate o2) {
+			return o1.priority-o2.priority;
+		}
+		
 	}
 }

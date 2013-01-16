@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -45,7 +46,7 @@ public class PacketRouterInformation extends PacketCoordinates {
 			data.writeLong(id.getLeastSignificantBits());
 			data.writeByte(_adjacent.get(id).exitOrientation.ordinal());
 			data.writeInt(_adjacent.get(id).metric);
-			data.writeBoolean(_adjacent.get(id).isPipeLess);
+			data.writeInt(PipeRoutingConnectionType.encode(_adjacent.get(id).connectionDetails));
 		}
 		data.writeBoolean(false);
 		for(int i=0;i<6;i++) {
@@ -60,7 +61,7 @@ public class PacketRouterInformation extends PacketCoordinates {
 		uuid = UUID.fromString(data.readUTF());
 		while(data.readBoolean()) {
 			UUID id = new UUID(data.readLong(), data.readLong());
-			_adjacent.put(id, new ExitRoute(ForgeDirection.values()[data.readByte()],data.readInt(), data.readBoolean()));
+			_adjacent.put(id, new ExitRoute(ForgeDirection.values()[data.readByte()],data.readInt(), PipeRoutingConnectionType.decode( data.readInt())));
 		}
 		for(int i=0;i<6;i++) {
 			routedExit[i] = data.readBoolean();

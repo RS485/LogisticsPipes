@@ -109,12 +109,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);
 	}
+
+	private final int simpleID;
+	public int getSimpleID(){return simpleID;}
+	public int getBiggestID(){return pipecount;}
 	
 	public CoreRoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
 		super(transport, logic, itemID);
 		((PipeTransportItems) transport).allowBouncing = true;
-		
+		simpleID=pipecount;
 		pipecount++;
+		
 		//Roughly spread pipe updates throughout the frequency, no need to maintain balance
 		_delayOffset = pipecount % Configs.LOGISTICS_DETECTION_FREQUENCY; 
 	}
@@ -614,6 +619,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public boolean stillNeedReplace() {
 		return stillNeedReplace;
 	}
+	
+	@Override
+	public int compareTo(IRequestItems other){
+		return this.getID()-other.getID();
+	}
+	
+	@Override
+	public int getID(){
+		return this.itemID;
+	}
+	
 	
 	/* --- CCCommands --- */
 	@CCCommand(description="Returns the Router UUID as String")

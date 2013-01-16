@@ -9,6 +9,7 @@
 package logisticspipes.logistics;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -18,6 +19,8 @@ import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IFilteringPipe;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -25,6 +28,7 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -215,18 +219,67 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = new BitSet(CoreRoutedPipe.getSBiggestID());
 		for (SearchNode r : validDestinations){
 			if(r == null) continue;
-			if (!(r.node.getPipe() instanceof ICraftItems)) continue;
-			if(r.getFlags().removeAll(ServerRouter.blocksRouting))
+			if(r.getFlags().removeAll(ServerRouter.blocksRouting)) continue;
+			if (!(r.node.getPipe() instanceof ICraftItems)) {
+				if(r.node.getPipe() instanceof IFilteringPipe) {
+					used.set(r.node.getPipe().getSimpleID(), true);
+					filterpipes.add(r);
+				}
 				continue;
+			}
 			
 			ICraftItems crafter = (ICraftItems) r.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);
 			}
+			used.set(r.node.getPipe().getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			List<IFilter> list = new LinkedList<IFilter>();
+			list.add(((IFilteringPipe)n.node.getPipe()).getFilter());
+			handleSubFiltering(n, craftableItems, list, used);
 		}
 		return craftableItems;
+	}
+	
+	private void handleSubFiltering(SearchNode r, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
+		if(r.getFlags().removeAll(ServerRouter.blocksRouting)) return;
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
+outer:
+		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.insertOrientation)) {
+			if(n == null) continue;
+			if(n.getFlags().removeAll(ServerRouter.blocksRouting)) continue;
+			if(used.get(n.node.getPipe().getSimpleID())) continue;
+			
+			if (!(n.node.getPipe() instanceof ICraftItems)) {
+				if(n.node.getPipe() instanceof IFilteringPipe) {
+					used.set(n.node.getPipe().getSimpleID(), true);
+					filterpipes.add(n);
+				}
+				continue;
+			}
+			
+			ICraftItems crafter = (ICraftItems) n.node.getPipe();
+			ItemIdentifier craftedItem = crafter.getCraftedItem();
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(craftedItem)) continue outer;
+			}
+			if (craftedItem != null && !craftableItems.contains(craftedItem)){
+				craftableItems.add(craftedItem);
+			}
+			used.set(n.node.getPipe().getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			IFilter filter = ((IFilteringPipe)n.node.getPipe()).getFilter();
+			filters.add(filter);
+			handleSubFiltering(n, craftableItems, filters, used);
+			filters.remove(filter);
+		}
 	}
 }

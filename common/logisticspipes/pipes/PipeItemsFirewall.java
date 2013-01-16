@@ -17,6 +17,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -102,7 +103,8 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 		List<SearchNode> list = new ArrayList<SearchNode>();
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(dir.equals(from)) continue;
-			list.addAll(getRouter(dir).getIRoutersByCost());
+			List<SearchNode> nodes = getRouter(dir).getIRoutersByCost();
+			list.addAll(nodes);
 		}
 		Collections.sort(list);
 		return list;
@@ -110,7 +112,19 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 
 	@Override
 	public IFilter getFilter() {
+		//TODO
 		return new IFilter() {
+			@Override
+			public boolean isBlocked() {
+				return true;
+			}
+
+			@Override
+			public List<ItemIdentifier> getFilteredItems() {
+				List<ItemIdentifier> list = new ArrayList<ItemIdentifier>();
+				list.add(ItemIdentifier.get(1, 0, null));
+				return list;
+			}
 		};
 	}
 }

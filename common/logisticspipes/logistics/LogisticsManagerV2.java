@@ -247,13 +247,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 	
 	private void handleSubFiltering(SearchNode r, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
-		if(r.getFlags().removeAll(ServerRouter.blocksRouting)) return;
+		if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) return;
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
 outer:
 		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.insertOrientation)) {
 			if(n == null) continue;
-			if(n.getFlags().removeAll(ServerRouter.blocksRouting)) continue;
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getPipe().getSimpleID())) continue;
 			
 			if (!(n.node.getPipe() instanceof ICraftItems)) {

@@ -68,7 +68,9 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	public int compareTo(CraftingTemplate o) {
 		int c = this.priority-o.priority;
 		if(c==0)
-			return _result.compareTo(o._result);
+			c= _result.compareTo(o._result);
+		if(c==0)
+			c=_crafter.compareTo(o._crafter);
 		return c;
 	}
 }

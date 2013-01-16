@@ -378,6 +378,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		//Build route table
 		HashMap<IRouter, ForgeDirection> routeTable = new HashMap<IRouter, ForgeDirection>(routeCosts.size());
 
+		routeTable.put(this, ForgeDirection.UNKNOWN);
 		for (SearchNode node : routeCosts)
 		{
 			IRouter firstHop = node.root;

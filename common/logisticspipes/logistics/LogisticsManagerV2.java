@@ -55,7 +55,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			EnumSet flags = EnumSet.copyOf(candidateRouter.connectionFlags);
+			EnumSet flags = candidateRouter.getFlags();
 			if(flags.removeAll(ServerRouter.blocksItems))
 				continue;
 			

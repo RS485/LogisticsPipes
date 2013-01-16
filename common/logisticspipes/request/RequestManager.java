@@ -81,7 +81,7 @@ public class RequestManager {
 		for(SearchNode r : validDestinations) {
 			CoreRoutedPipe pipe = r.node.getPipe();
 			if (pipe instanceof ICraftItems){
-				EnumSet flags = EnumSet.copyOf(r.connectionFlags);
+				EnumSet flags = r.getFlags();
 				if(!flags.removeAll(ServerRouter.blocksRouting)){
 					crafters.add(((ICraftItems)pipe).addCrafting());
 				}
@@ -95,7 +95,7 @@ public class RequestManager {
 	private static List<IProvideItems> getProviders(List<SearchNode> validDestinations) {
 		List<IProvideItems> providers = new LinkedList<IProvideItems>();
 		for(SearchNode r : validDestinations) {
-			EnumSet flags = EnumSet.copyOf(r.connectionFlags);
+			EnumSet flags = r.getFlags();
 			if(!flags.removeAll(ServerRouter.blocksRouting)){
 				CoreRoutedPipe pipe = r.node.getPipe();
 				if (pipe instanceof IProvideItems){

@@ -17,6 +17,10 @@ public interface IRequestItems extends Comparable<IRequestItems>{
 	public boolean useEnergy(int amount);
 	public int getID();
 	
+	// only probably unique, but roughly in the range of 1-NumberOfLPPipes
+	public int getSimpleID();
+	public int getBiggestID();
+	
 	@Override
 	public int compareTo(IRequestItems value2);
 }

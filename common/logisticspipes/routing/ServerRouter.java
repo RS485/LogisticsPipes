@@ -10,6 +10,7 @@ package logisticspipes.routing;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Comparator;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -46,7 +47,7 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
-
+	
 	public static final EnumSet<PipeRoutingConnectionType> blocksPower = EnumSet.of(PipeRoutingConnectionType.blocksPowerFlow, PipeRoutingConnectionType.passedThroughIronClosed, PipeRoutingConnectionType.passedThroughObsidian);
 	public static final EnumSet<PipeRoutingConnectionType> blocksRouting = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.reversedPassedThroughIronClosed, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
 	public static final EnumSet<PipeRoutingConnectionType> blocksItems = EnumSet.of(PipeRoutingConnectionType.blocksItemFlow, PipeRoutingConnectionType.passedThroughIronClosed, PipeRoutingConnectionType.passedThroughDiamond, PipeRoutingConnectionType.passedThroughObsidian);
@@ -296,13 +297,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void CreateRouteTable()	{ 
 		//Dijkstra!
 		
-		int routingTableSize = _routeTable.size()+1;
+		
+		int routingTableSize = _routeTable.size();
 		if(routingTableSize == 0) {
 //			routingTableSize=SimpleServiceLocator.routerManager.getRouterCount();
-			routingTableSize=SharedLSADatabase.size()+1; // deliberatly ignoring concurrent access, either the old or the version of the size will work, this is just an approximate number.
+			routingTableSize=SharedLSADatabase.size(); // deliberatly ignoring concurrent access, either the old or the version of the size will work, this is just an approximate number.
 		}
 		/** Map of all "approved" routers and the route to get there **/
-		HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>(routingTableSize);
+		//HashMap<IRouter,SearchNode> tree =  new HashMap<IRouter,SearchNode>(routingTableSize);
 
 		/** same info as above, but sorted by distance -- sorting is implicit, because Dijkstra finds the closest routes first.**/
 		ArrayList<SearchNode> routeCosts = new ArrayList<SearchNode>(routingTableSize);
@@ -311,7 +313,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		//Init root(er - lol)
 		// the shortest way to yourself is to go nowhere
-		tree.put(this,new SearchNode(this,0,EnumSet.noneOf(PipeRoutingConnectionType.class),null));
+		//tree.put(this,new SearchNode(this,0,EnumSet.noneOf(PipeRoutingConnectionType.class),null));
+
+		BitSet objectMapped = new BitSet(this.getPipe().getBiggestID());
+		objectMapped.set(this.getPipe().getSimpleID(),true);
 
 		/** The total cost for the candidate route **/
 		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
@@ -322,62 +327,62 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			ExitRoute currentE = pipe.getValue();
 			//currentE.connectionDetails.retainAll(blocksPower);
 			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey().getRouter()));
+			//objectMapped.set(pipe.getKey().getSimpleID(),true);
 		}
 
 		SearchNode lowestCostNode;
 		while ((lowestCostNode=candidatesCost.poll()) != null){
 			
-			while(lowestCostNode!=null && tree.containsKey(lowestCostNode.node)) // the node was inserted multiple times, skip it as we know a shorter path.
+			while(lowestCostNode!=null && objectMapped.get(lowestCostNode.node.getPipe().getSimpleID())) // the node was inserted multiple times, skip it as we know a shorter path.
 				lowestCostNode=candidatesCost.poll();
 			if(lowestCostNode==null)
 				break; // then there was nothing but already routed elements in the list.
 			
-			SearchNode lowestPath = tree.get(lowestCostNode.parent);						//Get a copy of the route for the approved router 
+//			SearchNode lowestPath = tree.get(lowestCostNode.root);						//Get a copy of the route for the approved router 
 
-			if(lowestPath == null) { // then you are on an initial seed item, you are adjacent, and you are the closest node.
-				lowestPath = lowestCostNode;
-			}
+			//if(lowestPath == null) { // then you are on an initial seed item, you are adjacent, and you are the closest node.
+			//	lowestPath = lowestCostNode;
+			//}
 
 			
 			//Add new candidates from the newly approved route
 			SharedLSADatabasereadLock.lock();
 			LSA lsa = SharedLSADatabase.get(lowestCostNode.node);
 			if(lsa != null) {
-				if(!lowestCostNode.connectionFlags.contains(PipeRoutingConnectionType.blocksPowerFlow) && lsa.power.isEmpty() == false) {
+				if(!lowestCostNode.containsFlag(PipeRoutingConnectionType.blocksPowerFlow) && lsa.power.isEmpty() == false) {
 					powerTable.addAll(lsa.power);
 				}
 			    Iterator it = lsa.neighboursWithMetric.entrySet().iterator();
 			    while (it.hasNext()) {
 			    	Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> newCandidate = (Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>)it.next();
-					SearchNode treeN = tree.get(newCandidate.getKey());
-					if (treeN != null) {
-						if(!EnumSet.copyOf(lowestCostNode.connectionFlags).removeAll(this.blocksPower)) {
-							treeN.connectionFlags.removeAll(blocksPower);
-						}
+					if(objectMapped.get(newCandidate.getKey().getPipe().getSimpleID()))
 						continue;
-					}
+						//if(!lowestCostNode.getFlags().removeAll(this.blocksPower)) {
+						//	treeN.removeFlags(blocksPower);
+
 					int candidateCost = lowestCostNode.distance + newCandidate.getValue().getValue1();
-					EnumSet<PipeRoutingConnectionType> newCT = EnumSet.copyOf(lowestCostNode.connectionFlags);
-					newCT.addAll(lowestPath.connectionFlags);
-					candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestPath.node));
+					EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
+					newCT.addAll(newCandidate.getValue().getValue2());
+					candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestCostNode.root));
 				}
 			}
-			lowestCostNode.parent=lowestPath.parent; // however you got here, thats the side you came from
+			//lowestCostNode.root=lowestPath.root; // however you got here, thats the side you came from
 			//Approve the candidate
-			tree.put(lowestCostNode.node,lowestCostNode);
+			//tree.put(lowestCostNode.node,lowestCostNode);
 
 			routeCosts.add(lowestCostNode);
+			objectMapped.set(lowestCostNode.node.getPipe().getSimpleID(),true);
 			
 			SharedLSADatabasereadLock.unlock();
 		}
 		
 		
 		//Build route table
-		HashMap<IRouter, ForgeDirection> routeTable = new HashMap<IRouter, ForgeDirection>(tree.size());
+		HashMap<IRouter, ForgeDirection> routeTable = new HashMap<IRouter, ForgeDirection>(routeCosts.size());
 
-		for (SearchNode node : tree.values())
+		for (SearchNode node : routeCosts)
 		{
-			IRouter firstHop = node.parent;
+			IRouter firstHop = node.root;
 			if (firstHop == null) {
 				routeTable.put(node.node, ForgeDirection.UNKNOWN);
 				continue;

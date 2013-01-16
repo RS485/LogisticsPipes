@@ -7,15 +7,28 @@ public class SearchNode implements Comparable<SearchNode>{
 		distance=d;
 		connectionFlags=enumSet;
 		node=r;
-		parent=p;
+		root=p;
 	}
 	public int distance;
-	public EnumSet<PipeRoutingConnectionType> connectionFlags;
-	public IRouter node;
-	public IRouter parent;
+	private final EnumSet<PipeRoutingConnectionType> connectionFlags;
+	public final IRouter node;
+	public IRouter root;
+	
+	//copies
+	public EnumSet<PipeRoutingConnectionType> getFlags() {
+		return EnumSet.copyOf(connectionFlags);
+	}
 
 	@Override
 	public int compareTo(SearchNode o) {
 		return this.distance-o.distance;
+	}
+
+	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {
+		connectionFlags.removeAll(flags);		
+	}
+
+	public boolean containsFlag(PipeRoutingConnectionType flag) {
+		return connectionFlags.contains(flag);
 	}
 }

@@ -27,11 +27,11 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
@@ -217,13 +217,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	public LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
-		BitSet used = new BitSet(CoreRoutedPipe.getSBiggestID());
+		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
 		for (SearchNode r : validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if (!(r.node.getPipe() instanceof ICraftItems)) {
 				if(r.node.getPipe() instanceof IFilteringPipe) {
-					used.set(r.node.getPipe().getSimpleID(), true);
+					used.set(r.node.getSimpleID(), true);
 					filterpipes.add(r);
 				}
 				continue;
@@ -234,7 +234,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);
 			}
-			used.set(r.node.getPipe().getSimpleID(), true);
+			used.set(r.node.getSimpleID(), true);
 		}
 		for(SearchNode n:filterpipes) {
 			List<IFilter> list = new LinkedList<IFilter>();
@@ -252,11 +252,11 @@ outer:
 		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.node)) {
 			if(n == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
-			if(used.get(n.node.getPipe().getSimpleID())) continue;
+			if(used.get(n.node.getSimpleID())) continue;
 			
 			if (!(n.node.getPipe() instanceof ICraftItems)) {
 				if(n.node.getPipe() instanceof IFilteringPipe) {
-					used.set(n.node.getPipe().getSimpleID(), true);
+					used.set(n.node.getSimpleID(), true);
 					filterpipes.add(n);
 				}
 				continue;
@@ -270,7 +270,7 @@ outer:
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);
 			}
-			used.set(n.node.getPipe().getSimpleID(), true);
+			used.set(n.node.getSimpleID(), true);
 		}
 		for(SearchNode n:filterpipes) {
 			IFilter filter = ((IFilteringPipe)n.node.getPipe()).getFilter();

@@ -57,10 +57,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if (excludeSource) {
 				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			}
+			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 			if(jamList.contains(candidateRouter.node.getId())) continue;
-			
-			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo))
-				continue;
 			
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;

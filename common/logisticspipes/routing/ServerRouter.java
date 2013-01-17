@@ -409,7 +409,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			if (hop == null){
 				continue;
 			}
-			routeTable.put(node.node, new Pair<ForgeDirection,ForgeDirection>(hop.exitOrientation, hop.insertOrientation));
+			if(node.containsFlag(PipeRoutingConnectionType.canRouteTo))
+				routeTable.put(node.node, new Pair<ForgeDirection,ForgeDirection>(hop.exitOrientation, hop.insertOrientation));
 		}
 		_powerTable = powerTable;
 		_routeTable = routeTable;

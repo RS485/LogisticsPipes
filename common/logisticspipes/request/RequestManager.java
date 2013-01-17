@@ -79,9 +79,9 @@ public class RequestManager {
 	private static List<CraftingTemplate> getCrafters(List<SearchNode> validDestinations) {
 		List<CraftingTemplate> crafters = new ArrayList<CraftingTemplate>(validDestinations.size());
 		for(SearchNode r : validDestinations) {
-			CoreRoutedPipe pipe = r.node.getPipe();
-			if (pipe instanceof ICraftItems){
-				if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)){
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)){
+				CoreRoutedPipe pipe = r.node.getPipe();
+				if (pipe instanceof ICraftItems){
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null)
 					crafters.add(craftable);
@@ -146,9 +146,8 @@ public class RequestManager {
 	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
-		List<SearchNode> validDestinations = requester.getRouter().getIRoutersByCost();
 //		List<IProvideItems> providers = getProviders(validDestinations);
-		List<CraftingTemplate> crafters = getCrafters(validDestinations);
+		List<CraftingTemplate> crafters = getCrafters(requester.getRouter().getIRoutersByCost());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;

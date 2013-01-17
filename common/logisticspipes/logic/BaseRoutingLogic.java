@@ -14,6 +14,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.SearchNode;
 import logisticspipes.routing.ServerRouter;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.pipes.PipeLogic;
@@ -84,12 +85,16 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		for (RoutedPipe adj : sr._adjacent.keySet()) {
 			System.out.println(adj.getRouter().getId());
 		}
-		System.out.println("*******ROUTE TABLE**************");
+		System.out.println();
+		System.out.println("========DISTANCE TABLE==============");
+		for(SearchNode n : r.getIRoutersByCost()) {
+			System.out.println(n.node.getId() + " @ " + n.distance + " -> "+ n.getFlags());
+		}
+		System.out.println();
+		System.out.println("*******EXIT ROUTE TABLE*************");
 		for (IRouter p : r.getRouteTable().keySet()) {
 			System.out.println(p.getId() + " -> " + r.getRouteTable().get(p).toString());
 		}
-		
-		System.out.println();
 		System.out.println();
 	}
 

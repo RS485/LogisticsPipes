@@ -5,6 +5,7 @@ import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.EntityData;
@@ -20,6 +21,8 @@ public class EntrencsTransport extends PipeTransportLogistics {
 			if(pipe.getLocalFreqUUID() != null) {
 				if(pipe.useEnergy(5)) {
 					for(SearchNode router:pipe.getRouter().getIRoutersByCost()) {
+						if(!router.containsFlag(PipeRoutingConnectionType.canRouteTo))
+							continue;
 						CoreRoutedPipe lPipe = router.node.getPipe();
 						if(lPipe instanceof PipeItemsSystemDestinationLogistics) {
 							PipeItemsSystemDestinationLogistics dPipe = (PipeItemsSystemDestinationLogistics) lPipe;

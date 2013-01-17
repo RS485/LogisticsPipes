@@ -74,7 +74,10 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ForgeDirection getExitFor(UUID id) {
-		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id)).getValue1();
+		if(LogisticsPipes.DEBUG) {
+			throw new UnsupportedOperationException("noClientRouting");
+		}
+		return ForgeDirection.UNKNOWN;
 	}
 
 	@Override

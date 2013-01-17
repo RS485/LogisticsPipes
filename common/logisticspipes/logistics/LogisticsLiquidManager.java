@@ -12,6 +12,7 @@ import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -25,6 +26,7 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	
 	public Pair<UUID, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<UUID> jamList) {
 		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
+			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 			if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
@@ -65,6 +67,7 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 		Map<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if (!(r.node.getPipe() instanceof ILiquidProvider)) continue;
 
 			ILiquidProvider provider = (ILiquidProvider) r.node.getPipe();

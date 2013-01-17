@@ -278,22 +278,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(router == null) return;
 		if(MainProxy.isClient()) return;
 		boolean flag;
-		if((flag = canUsePower()) != _textureBufferPowered) {
+		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender(false);
 			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 		}
 	}
 	
-	private boolean canUsePower() {
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(1)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	public abstract TextureType getCenterTexture();
 	
@@ -562,6 +553,19 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	public boolean canUseEnergy(int amount) {
+		if(MainProxy.isClient()) return false;
+		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		if(list == null) return false;
+		for(ILogisticsPowerProvider provider: list) {
+			if(provider.canUseEnergy(amount)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public boolean useEnergy(int amount) {
 		if(MainProxy.isClient()) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
@@ -571,8 +575,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);
 				int particlecount = amount;
-				if (particlecount > 5) {
-					particlecount = 5;
+				if (particlecount > 10) {
+					particlecount = 10;
 				}
 				if (particlecount == 0) {
 					particlecount = 1;

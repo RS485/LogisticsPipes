@@ -27,7 +27,6 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	
 	private int currentTickCount = 0;
 	private int ticksToOperation = 200;
-	
 	public ModuleApiaristRefiller() {}
 	
 	@Override
@@ -69,7 +68,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	private void doOperation() {
 		if (++currentTickCount < ticksToOperation) return;
 		currentTickCount = 0;
-                if (!(_power.canUseEnergy(100))) return;
+        if (!(_power.canUseEnergy(100))) return;
 		IInventory inv = _invProvider.getRawInventory();
 		if (inv instanceof ISpecialInventory) {
 			ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
@@ -78,19 +77,23 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 			//if no queen/princess
 			if ((inv.getStackInSlot(0) == null)) {
 				if (SimpleServiceLocator.forestryProxy.isPrincess(stack[0])) {
-					if (!(_power.useEnergy(100))) return;
-					((ISpecialInventory) inv).addItem(stack[0], true, direction);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
-					return;
+					if (SimpleServiceLocator.forestryProxy.isPurebred(stack[0])) {
+						if (!(_power.useEnergy(100))) return;
+						((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+						return;
+					}
 				}
 			}
 			//if princess w/out drone
 			if ((inv.getStackInSlot(1) == null) && !(SimpleServiceLocator.forestryProxy.isQueen(inv.getStackInSlot(0)))) {
 				if (SimpleServiceLocator.forestryProxy.isDrone(stack[0])) {
-					if (!(_power.useEnergy(100))) return;
-					((ISpecialInventory) inv).addItem(stack[0], true, direction);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
-					return;
+					if (SimpleServiceLocator.forestryProxy.isPurebred(stack[0])) {
+						if (!(_power.useEnergy(100))) return;
+						((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+						return;
+					}
 				}
 			}
 			//Extract unneeded items

@@ -29,13 +29,7 @@ public class SearchNode implements Comparable<SearchNode> {
 
 	@Override
 	public int compareTo(SearchNode o) {
-		int delta=0;
-		if(!connectionFlags.contains(PipeRoutingConnectionType.canRouteTo))
-			delta+=ROUTING_PENALITY;
-		if(!o.connectionFlags.contains(PipeRoutingConnectionType.canRouteTo))
-			delta-=ROUTING_PENALITY;
-		
-		return this.distance-o.distance+delta;
+		return this.distance-o.distance;
 	}
 
 	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {

@@ -109,12 +109,14 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.Mod.ServerStarting;
 import cpw.mods.fml.common.Mod.ServerStopping;
+import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -127,10 +129,9 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
+@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", certificateFingerprint="%------------CERTIFICATE-SUM-----------%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
-	
 
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
@@ -140,6 +141,8 @@ public class LogisticsPipes {
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");  	
 	public static String MCVersion = "%MCVERSION%";
+	
+	private boolean certificateError = false;
 
 	// Items
 	public static Item LogisticsBasicPipe;
@@ -255,6 +258,10 @@ public class LogisticsPipes {
 		} catch (Exception e) {}
 		if(DEBUG) {
 			log.setLevel(Level.ALL);
+		}
+		if(certificateError) {
+			log.severe("Certificate not correct");
+			log.severe("This in not a LogisticsPipes version form RS485.");
 		}
 	}
 	
@@ -497,5 +504,16 @@ public class LogisticsPipes {
 	@ServerStarting
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
+	}
+	
+	@FingerprintWarning
+	public void certificateWarning(FMLFingerprintViolationEvent warning) {
+		if(!DEBUG) {
+			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
+			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
+			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
+			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version form RS485.");
+			certificateError = true;
+		}
 	}
 }

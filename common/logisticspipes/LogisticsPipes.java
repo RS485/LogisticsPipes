@@ -139,7 +139,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");  	
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true") ;  	
 	public static String MCVersion = "%MCVERSION%";
 	
 	private boolean certificateError = false;
@@ -512,7 +512,7 @@ public class LogisticsPipes {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
 			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
 			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
-			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version form RS485.");
+			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
 			certificateError = true;
 		}
 	}

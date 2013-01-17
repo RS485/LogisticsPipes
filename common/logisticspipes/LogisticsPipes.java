@@ -139,7 +139,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true") ;  	
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
 	public static String MCVersion = "%MCVERSION%";
 	
 	private boolean certificateError = false;
@@ -261,7 +261,7 @@ public class LogisticsPipes {
 		}
 		if(certificateError) {
 			log.severe("Certificate not correct");
-			log.severe("This in not a LogisticsPipes version form RS485.");
+			log.severe("This in not a LogisticsPipes version from RS485.");
 		}
 	}
 	

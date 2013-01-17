@@ -111,10 +111,14 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public boolean isSatelliteConnected() {
+		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				if (getRoutedPipe().getRouter().getIRoutersByCost().contains(satellite.getRoutedPipe().getRouter())) {
-					return true;
+				IRouter satRouter = satellite.getRoutedPipe().getRouter();
+				for (SearchNode route:routes) {
+					if (route.node == satRouter) {
+						return true;
+					}
 				}
 			}
 		}

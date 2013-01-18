@@ -31,8 +31,8 @@ public interface IRouter extends IPowerRouter {
 	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable();
 	public List<SearchNode> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
-	
-	//public UUID getId();
+	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
+	public UUID getId();
 	public void itemDropped(RoutedEntityItem routedEntityItem);
 	@Deprecated
 	public void displayRoutes();

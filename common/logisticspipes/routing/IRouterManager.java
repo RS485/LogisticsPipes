@@ -10,10 +10,12 @@ package logisticspipes.routing;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 
 public interface IRouterManager {
-	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord);
+	int getIDforUUID(UUID id);
+	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
 	public IRouter getRouter(int id);
 	public boolean isRouter(int id);
 	public void removeRouter(int id);

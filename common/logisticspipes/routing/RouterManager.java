@@ -22,8 +22,9 @@ import logisticspipes.proxy.MainProxy;
 
 public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	
-	private final List<IRouter> _routersClient = new ArrayList<IRouter>();
+	private final ArrayList<IRouter> _routersClient = new ArrayList<IRouter>();
 	private final ArrayList<IRouter> _routersServer = new ArrayList<IRouter>();
+	private final Map<UUID,Integer> _uuidMap= new HashMap<UUID,Integer>();
 	
 	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
 
@@ -46,40 +47,66 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 			return _routersServer.get(id);
 		}
 	}
-	
+	@Override
+	public int getIDforUUID(UUID id){
+		if(id==null)
+			return -1;
+		Integer iId=_uuidMap.get(id);
+		if(iId == null)
+			return -1;
+		return iId;
+	}
 	@Override
 	public void removeRouter(int id) {
 		if(MainProxy.isClient()) {
-			IRouter remove = null;
-			synchronized (_routersClient) {
-				for(IRouter router:_routersClient) {
-					if(router.getSimpleID() == id) {
-						remove = router;
-					}
-				}
-				if (remove != null){
-					_routersClient.remove(remove);
-				}
-			}
+			_routersClient.set(id, null);
 		} else {
-			if (_routersServer.get(id) != null){
-				_routersServer.remove(id);
-			}
+			_routersServer.set(id,null);
 		}
 	}
 
 	@Override
-	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord) {
-		IRouter r = this.getRouter(id);
+	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicate) {
+		IRouter r = null;
+		if(id>0)
+			this.getRouter(id);
 		if (r == null){
 			if(MainProxy.isClient()) {
-				r = new ClientRouter(id, dimension, xCoord, yCoord, zCoord);
 				synchronized (_routersClient) {
-					_routersClient.add(r);
+					if(!forceCreateDuplicate)
+						for (IRouter r2:_routersClient)
+							if (r2.isAt(dimension, xCoord, yCoord, zCoord))
+								return r2;
+					r = new ClientRouter(null, id, dimension, xCoord, yCoord, zCoord);
+					int rId= r.getSimpleID();
+					if(_routersClient.size()>rId)
+						_routersClient.set(rId, r);
+					else {
+						_routersClient.ensureCapacity(rId+1);
+						while(_routersClient.size()<=rId)
+							_routersClient.add(null);
+						_routersClient.set(rId, r);
+
+					}
+					this._uuidMap.put(r.getId(), r.getSimpleID());
 				}
 			} else {
-				r = new ServerRouter(id, dimension, xCoord, yCoord, zCoord);
-				_routersServer.set(id, r);
+				if(!forceCreateDuplicate)
+					for (IRouter r2:_routersServer)
+						if (r2.isAt(dimension, xCoord, yCoord, zCoord))
+							return r2;
+				r = new ServerRouter(null, id, dimension, xCoord, yCoord, zCoord);
+				
+				int rId= r.getSimpleID();
+				if(_routersServer.size()>rId)
+					_routersServer.set(rId, r);
+				else {
+					_routersServer.ensureCapacity(rId+1);
+					while(_routersServer.size()<=rId)
+						_routersServer.add(null);
+					_routersServer.set(rId, r);
+				}
+				this._uuidMap.put(r.getId(), r.getSimpleID());
 			}
 			lastRouterAdded = System.currentTimeMillis();
 		}

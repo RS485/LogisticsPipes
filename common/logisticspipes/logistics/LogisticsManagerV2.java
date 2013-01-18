@@ -130,7 +130,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 //			}
 //		}
 		item.setSource(sourceRouterint);
-		if (bestReply.getValue1() != null){
+		if (bestReply.getValue1() >= 0){
 			item.setDestination(bestReply.getValue1());
 			if (bestReply.getValue2().isPassive){
 				if (bestReply.getValue2().isDefault){
@@ -199,6 +199,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(Map<ItemIdentifier, Integer> allItems:items) {
+			if(allItems == null)
+				continue;
 			for (ItemIdentifier item : allItems.keySet()){
 				if (!allAvailableItems.containsKey(item)){
 					allAvailableItems.put(item, allItems.get(item));

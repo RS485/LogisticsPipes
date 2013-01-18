@@ -1,9 +1,11 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -20,16 +22,46 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class ClientRouter implements IRouter {
+
+	private static int firstFreeId = 0;
+	private static BitSet simpleIdUsedSet = new BitSet();
+
+	private static int claimSimpleID(int id2) {
+		if(id2>=0 && !simpleIdUsedSet.get(id2)){
+			simpleIdUsedSet.set(id2);
+			return id2;
+		}
+		int idx = simpleIdUsedSet.nextClearBit(firstFreeId);
+		firstFreeId = idx + 1;
+		simpleIdUsedSet.set(idx);
+		return idx;
+	}
 	
-	public int id;
+	private static void releaseSimpleID(int idx) {
+		simpleIdUsedSet.clear(idx);
+		if(idx < firstFreeId)
+			firstFreeId = idx;
+	}
+	
+	public static int getBiggestSimpleID() {
+		return simpleIdUsedSet.size();
+	}
+	
+	public final UUID globalId;
+	public final int id;
 	private final int _dimension;
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
 	public boolean[] routedExit = new boolean[6];
 	
-	public ClientRouter(int id, int dimension, int xCoord, int yCoord, int zCoord) {
-		this.id = id;
+	public ClientRouter(UUID id, int simpleId, int dimension, int xCoord, int yCoord, int zCoord) {
+		if(id != null) {
+			globalId=id;
+		} else {
+			globalId =UUID.randomUUID();
+		}
+		this.id = claimSimpleID(simpleId);
 		this._dimension = dimension;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
@@ -43,7 +75,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public int getSimpleID() {
-		return -1;
+		return id;
 	}
 
 	@Override
@@ -109,15 +141,16 @@ public class ClientRouter implements IRouter {
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;
 		return (CoreRoutedPipe) pipe.pipe;
 	}
+	
+	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
+		return _dimension == dimension && _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
+	}
 
-/*	@Override
-	public int getId() {
-		if(id != null) {
-			return id;
-		} else {
-			return id = <allocate a new ID>
-		}
-	}*/
+
+	@Override
+	public UUID getId() {
+		return globalId;
+	}
 
 	@Override
 	public void itemDropped(RoutedEntityItem routedEntityItem) {

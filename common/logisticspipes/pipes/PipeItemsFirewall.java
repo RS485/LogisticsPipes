@@ -49,7 +49,8 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
+					int routerIntId=SimpleServiceLocator.routerManager.getIDforUUID(UUID.fromString(routerIds[dir.ordinal()]));
+					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord,true);
 				}
 			}
 			return routers[dir.ordinal()];

@@ -238,7 +238,10 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> items) {
 		LogicProvider providerLogic = (LogicProvider) logic;
 		//HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getSimpleID());
+		Map<ItemIdentifier, Integer> allItems = null;
+		int rId = this.getRouter().getSimpleID();
+		if(rId<items.size())
+			allItems = items.get(rId);
 		if(allItems == null) {
 			allItems = new HashMap<ItemIdentifier, Integer>();
 		}
@@ -280,7 +283,16 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				allItems.put(item, remaining);	
 			}
 		}
-		items.set(this.getRouter().getSimpleID(), allItems);
+		rId= this.getRouter().getSimpleID();
+		if(items.size()>rId)
+			items.set(rId, allItems);
+		else
+		{
+			items.ensureCapacity(rId+1);
+			while(items.size()<=rId)
+				items.add(null);
+			items.set(rId, allItems);
+		}
 	}
 
 	@Override

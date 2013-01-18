@@ -124,7 +124,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private static BitSet simpleIdUsedSet = new BitSet();
 
 	private final int simpleID;
-	//public final UUID id;
+	public final UUID id;
 	private int _dimension;
 	private final int _xCoord;
 	private final int _yCoord;
@@ -164,9 +164,12 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return simpleIdUsedSet.size();
 	}
 	
-	public ServerRouter(int id2, int dimension, int xCoord, int yCoord, int zCoord){
-		this.simpleID = claimSimpleID(id2);
-//		this.id = id2;
+	public ServerRouter(UUID globalID, int localID, int dimension, int xCoord, int yCoord, int zCoord){
+		this.simpleID = claimSimpleID(localID);
+		if(globalID!=null)
+			this.id = globalID;
+		else
+			this.id = UUID.randomUUID();
 		this._dimension = dimension;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
@@ -182,6 +185,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	
 	public int getSimpleID() {
 		return this.simpleID;
+	}
+
+	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
+		return _dimension == dimension && _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}
 
 	@Override
@@ -241,10 +248,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return _routeCosts;
 	}
 	
-	/*@Override
+	@Override
 	public UUID getId() {
 		return this.id;
-	}*/
+	}
 	
 
 	/**

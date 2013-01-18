@@ -77,7 +77,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected boolean stillNeedReplace = true;
 	
 	private IRouter router;
-	private int routerId = -1;
+	private String routerId = null;
 	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
 	protected int _delayOffset = 0;
@@ -352,16 +352,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		
-		/*synchronized (routerIdLock) {
+		synchronized (routerIdLock) {
 			if (routerId == null || routerId == ""){
-				routerId = UUID.randomUUID().toString();
+				if(router != null)
+					routerId = router.getId().toString();
+				else
+					routerId = UUID.randomUUID().toString();
 			}
-		}*/
+		}
 		if(router != null){
-			routerId = router.getSimpleID();
 			router.clearPipeCache();
 		}
-		nbttagcompound.setInteger("routerId", routerId);
+		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);
 		nbttagcompound.setLong("stat_lifetime_relayed", stat_lifetime_relayed);
@@ -378,7 +380,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		super.readFromNBT(nbttagcompound);
 		
 		synchronized (routerIdLock) {
-			routerId = nbttagcompound.getInteger("routerId");
+			routerId = nbttagcompound.getString("routerId");
 		}
 		
 		stat_lifetime_sent = nbttagcompound.getLong("stat_lifetime_sent");
@@ -398,10 +400,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		if (router == null){
 			synchronized (routerIdLock) {
-				/*if (routerId == null || routerId == ""){
-					routerId = UUID.randomUUID().toString();
-				}*/
-				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
+				
+				int routerIntId = -1;
+				if(routerId!=null && !routerId.isEmpty())
+					routerIntId = SimpleServiceLocator.routerManager.getIDforUUID(UUID.fromString(routerId));
+				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, false);
 			}
 		}
 		return router;

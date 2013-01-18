@@ -390,6 +390,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public IRouter getRouter() {
+		if(stillNeedReplace) {
+			System.out.println("Hey, don't get routers for pipes that aren't ready");
+			new Throwable().printStackTrace();
+		}
 		if (router == null){
 			synchronized (routerIdLock) {
 				if (routerId == null || routerId == ""){

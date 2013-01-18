@@ -113,6 +113,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public List<SearchNode> _routeCosts = new ArrayList<SearchNode>();
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
+	
+	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
 
 	private boolean _blockNeedsUpdate;
 	private boolean forceUpdate = true;
@@ -294,8 +296,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		if (adjacentChanged) {
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
+			_routedExits.clear();
 			for(Entry<RoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
 				adjacentRouter.put(((CoreRoutedPipe) pipe.getKey()).getRouter(pipe.getValue().insertOrientation), pipe.getValue());
+				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
+					_routedExits.add(pipe.getValue().exitOrientation);
 			}
 			_adjacentRouter = adjacentRouter;
 			_adjacent = adjacent;
@@ -438,22 +443,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		_routeCosts = routeCosts;
 	}
 	
-	private LinkedList<ForgeDirection> GetNonRoutedExits()	{
-		LinkedList<ForgeDirection> ret = new LinkedList<ForgeDirection>();
-		
-		outer:
-		for (int i = 0 ; i < 6; i++){
-			ForgeDirection o = ForgeDirection.values()[i];
-			for(ExitRoute route : _adjacent.values()) {
-				if (route.exitOrientation == o){
-					continue outer; //Its routed
-				}
-			}
-			ret.add(o);	//Its not (might not be a pipe, but its not routed)
-		}
-		return ret;
-	}
-	
 	@Override
 	public void displayRoutes(){
 		_laser.displayRoute(this);
@@ -524,7 +513,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public boolean isRoutedExit(ForgeDirection o){
-		return !GetNonRoutedExits().contains(o);
+		return _routedExits.contains(o);
 	}
 
 	@Override

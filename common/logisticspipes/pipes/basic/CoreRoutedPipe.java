@@ -205,7 +205,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public final void updateEntity() {
-		super.updateEntity();
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
 			return;
@@ -215,6 +214,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 			stillNeedReplace = false;
 		}
+		super.updateEntity();
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		ignoreDisableUpdateEntity();
 		_initialInit = false;

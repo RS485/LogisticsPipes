@@ -209,22 +209,26 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	@Override
 	public void onBlockRemoval() {
-		super.onBlockRemoval();
-		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-		if(CRP != null) {
-			CRP.refreshRender(true);
+		if(!stillNeedReplace) {
+			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
+			if(CRP != null) {
+				CRP.refreshRender(true);
+			}
 		}
 		dropFreqCard();
+		super.onBlockRemoval();
 	}
 	
 
 	@Override
 	public void invalidate() {
-		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-		if(CRP != null) {
-			CRP.refreshRender(true);
+		if(!stillNeedReplace) {
+			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
+			if(CRP != null) {
+				CRP.refreshRender(true);
+			}
 		}
 		init = false;
 		super.invalidate();
@@ -233,10 +237,12 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	
 	@Override
 	public void onChunkUnload() {
-		CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
-		SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
-		if(CRP != null) {
-			CRP.refreshRender(true);
+		if(!stillNeedReplace) {
+			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
+			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
+			if(CRP != null) {
+				CRP.refreshRender(true);
+			}
 		}
 		init = false;
 		super.onChunkUnload();
@@ -274,7 +280,14 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	@Override
 	public TextureType getCenterTexture() {
-		return hasRemoteConnection() ? inventoryConnected() ? Textures.LOGISTICSPIPE_INVSYSCON_CON_TEXTURE : Textures.LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE : Textures.LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE;
+		if(!stillNeedReplace && hasRemoteConnection()) {
+			if(inventoryConnected()) {
+				return Textures.LOGISTICSPIPE_INVSYSCON_CON_TEXTURE;
+			} else {
+				return Textures.LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE;
+			}
+		}
+		return Textures.LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE;
 	}
 
 	@Override

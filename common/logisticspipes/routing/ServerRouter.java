@@ -480,8 +480,15 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.unlock();
 		SimpleServiceLocator.routerManager.removeRouter(this.id);
 		releaseSimpleID(simpleID);
+		updateNeighbors();
 	}
 
+	private void updateNeighbors() {
+		for(RoutedPipe p : _adjacent.keySet()) {
+			p.getRouter().update(true);
+		}
+	}
+	
 	@Override
 	public void update(boolean doFullRefresh){
 		if (doFullRefresh || forceUpdate) {
@@ -494,6 +501,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 					pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
 					pipe.refreshRender(true);
 					_blockNeedsUpdate = false;
+					updateNeighbors();
 				}
 			} else {
 				forceUpdate = true;

@@ -30,24 +30,24 @@ public class RouteLayer {
 	public ForgeDirection getOrientationForItem(IRoutedItem item){
 		
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
-		if (item.getDestination() == null){
-			if (item.getSource() != null) return ForgeDirection.UNKNOWN;
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true);
+		if (item.getDestination() < 0){
+			if (item.getSource() >= 0) return ForgeDirection.UNKNOWN;
+			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true);
 		}
 		
 		//If the destination is unknown / unroutable		
-		if (item.getDestination() != null && !_router.hasRoute(item.getDestination())){
-				item = SimpleServiceLocator.logisticsManager.destinationUnreachable(item, _router.getId());
+		if (item.getDestination() >= 0 && !_router.hasRoute(item.getDestination())){
+				item = SimpleServiceLocator.logisticsManager.destinationUnreachable(item, _router.getSimpleID());
 		}
 		
 		//If we still have no destination or client side unroutable, drop it
-		if (item.getDestination() == null) { 
+		if (item.getDestination() < 0) { 
 			return ForgeDirection.UNKNOWN;
 		}
 
 		
 		//Is the destination ourself? Deliver it
-		if (item.getDestination().equals(_router.getId())){
+		if (item.getDestination() == _router.getSimpleID()){
 			
 			//if (!_transport.stillWantItem(item)){
 			//	return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true));

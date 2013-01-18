@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
@@ -192,31 +191,31 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	/*** ISendRoutedItem ***/
 	
-	public java.util.UUID getSourceUUID() {
-		return this.getRouter().getId();
+	public int getSourceint() {
+		return this.getRouter().getSimpleID();
 	};
 	
 	@Override
 	public void sendStack(ItemStack stack) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		//itemToSend.setSource(this.getRouter().getId());
+		//itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setTransportMode(TransportMode.Passive);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 	
 	@Override
-	public void sendStack(ItemStack stack, UUID destination) {
+	public void sendStack(ItemStack stack, int destination) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		itemToSend.setSource(this.getRouter().getId());
+		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode) {
+	public void sendStack(ItemStack stack, int destination, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		itemToSend.setSource(this.getRouter().getId());
+		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
@@ -417,7 +416,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list) {
+	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> list) {
 		if (!isEnabled()){
 			return;
 		}

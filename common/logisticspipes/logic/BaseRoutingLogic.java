@@ -80,10 +80,10 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		if(!(r instanceof ServerRouter)) return;
 		ServerRouter sr = (ServerRouter) r;
 		
-		System.out.println("ID: " + r.getId().toString());
+		System.out.println("ID: " + r.getSimpleID());
 		System.out.println("---------CONNECTED TO---------------");
 		for (RoutedPipe adj : sr._adjacent.keySet()) {
-			System.out.println(adj.getRouter().getId());
+			System.out.println(adj.getRouter().getSimpleID());
 		}
 		System.out.println();
 		System.out.println("========DISTANCE TABLE==============");
@@ -93,7 +93,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
 		for (IRouter p : r.getRouteTable().keySet()) {
-			System.out.println(p.getId() + " -> " + r.getRouteTable().get(p).toString());
+			System.out.println(p.getSimpleID() + " -> " + r.getRouteTable().get(p).toString());
 		}
 		System.out.println();
 	}

@@ -11,7 +11,6 @@ package logisticspipes.logistics;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.IRouter;
@@ -21,9 +20,9 @@ import net.minecraft.item.ItemStack;
 
 public interface ILogisticsManagerV2 {
 	
-	public IRoutedItem assignDestinationFor(IRoutedItem item, UUID sourceRouterUUID, boolean excludeSource);
-	public IRoutedItem destinationUnreachable(IRoutedItem item, UUID currentRouter);
-	boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource);
+	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
+	public IRoutedItem destinationUnreachable(IRoutedItem item, int currentRouter);
+	boolean hasDestination(ItemStack stack, boolean allowDefault, int sourceRouter, boolean excludeSource);
 	LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> list);
 	HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> list);
 	String getBetterRouterName(IRouter r);

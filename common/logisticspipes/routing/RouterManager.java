@@ -23,7 +23,7 @@ import logisticspipes.proxy.MainProxy;
 public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	
 	private final List<IRouter> _routersClient = new ArrayList<IRouter>();
-	private final HashMap<UUID, IRouter> _routersServer = new HashMap<UUID, IRouter>();
+	private final ArrayList<IRouter> _routersServer = new ArrayList<IRouter>();
 	
 	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
 
@@ -31,11 +31,11 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	private static int DELAY_TIME = 2 * 1000;
 
 	@Override
-	public IRouter getRouter(UUID id){
+	public IRouter getRouter(int id){
 		if(MainProxy.isClient()) {
 			synchronized (_routersClient) {
 				for(IRouter router:_routersClient) {
-					if(router.getId().equals(id)) {
+					if(router.getSimpleID() == id) {
 						return router;
 					}
 				}
@@ -48,12 +48,12 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	}
 	
 	@Override
-	public void removeRouter(UUID id) {
+	public void removeRouter(int id) {
 		if(MainProxy.isClient()) {
 			IRouter remove = null;
 			synchronized (_routersClient) {
 				for(IRouter router:_routersClient) {
-					if(router.getId().equals(id)) {
+					if(router.getSimpleID() == id) {
 						remove = router;
 					}
 				}
@@ -62,14 +62,14 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 				}
 			}
 		} else {
-			if (_routersServer.containsKey(id)){
+			if (_routersServer.get(id) != null){
 				_routersServer.remove(id);
 			}
 		}
 	}
 
 	@Override
-	public IRouter getOrCreateRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
+	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord) {
 		IRouter r = this.getRouter(id);
 		if (r == null){
 			if(MainProxy.isClient()) {
@@ -79,7 +79,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 				}
 			} else {
 				r = new ServerRouter(id, dimension, xCoord, yCoord, zCoord);
-				_routersServer.put(id, r);
+				_routersServer.set(id, r);
 			}
 			lastRouterAdded = System.currentTimeMillis();
 		}
@@ -87,43 +87,37 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	}
 	
 	@Override
-	public boolean isRouter(UUID id) {
+	public boolean isRouter(int id) {
 		if(MainProxy.isClient()) {
 			synchronized (_routersClient) {
 				for(IRouter router:_routersClient) {
-					if(router.getId().equals(id)) {
+					if(router.getSimpleID() == id) {
 						return true;
 					}
 				}
 			}
 			return false;
 		} else {
-			return _routersServer.containsKey(id);
+			return _routersServer.get(id)!=null;
 		}
 	}
 	
 	@Override
-	public Map<UUID, IRouter> getRouters() {
+	public List<IRouter> getRouters() {
 		if(MainProxy.isClient()) {
-			Map<UUID, IRouter> map = new HashMap<UUID, IRouter>();
-			synchronized (_routersClient) {
-				for(IRouter router:_routersClient) {
-					map.put(router.getId(), router);
-				}
-			}
-			return Collections.unmodifiableMap(map);
+			return Collections.unmodifiableList(_routersClient);
 		} else {
-			return Collections.unmodifiableMap(_routersServer);
+			return Collections.unmodifiableList(_routersServer);
 		}
 	}
 
 	@Override
 	public boolean hasDirectConnection(IRouter router) {
 		for(DirectConnection con:connectedPipes) {
-			if(con.Router1 != null && con.Router2 != null) {
-				if(con.Router1.equals(router.getId())) {
+			if(con.Router1 >= 0 && con.Router2 >= 0) {
+				if(con.Router1 == router.getSimpleID()) {
 					return true;
-				} else if(con.Router2.equals(router.getId())) {
+				} else if(con.Router2 == router.getSimpleID()) {
 					return true;
 				}
 			}
@@ -136,19 +130,19 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		if(MainProxy.isClient()) return false;
 		boolean added = false;
 		for(DirectConnection con:connectedPipes) {
-			if(!ident.equals(con.identifier)) {
-				if(con.Router1 != null && con.Router1.equals(router.getId())) {
-					con.Router1 = null;
-				} else if(con.Router2 != null && con.Router2.equals(router.getId())) {
-					con.Router2 = null;
+			if(ident != con.identifier) {
+				if(con.Router1 >= 0 && con.Router1 == router.getSimpleID()) {
+					con.Router1 = -1;
+				} else if(con.Router2 >= 0 && con.Router2 == router.getSimpleID()) {
+					con.Router2 = -1;
 				}
 			} else {
-				if(con.Router1 == null || con.Router1.equals(router.getId())) {
-					con.Router1 = router.getId();
+				if(con.Router1 <0  || con.Router1 == router.getSimpleID()) {
+					con.Router1 = router.getSimpleID();
 					added = true;
 					break;
-				} else if(con.Router2 == null || con.Router2.equals(router.getId())) {
-					con.Router2 = router.getId();
+				} else if(con.Router2 < 0 || con.Router2 == router.getSimpleID()) {
+					con.Router2 = router.getSimpleID();
 					added = true;
 					break;
 				} else {
@@ -160,26 +154,26 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 			DirectConnection Dc = new DirectConnection();
 			connectedPipes.add(Dc);
 			Dc.identifier = ident;
-			Dc.Router1 = router.getId();
+			Dc.Router1 = router.getSimpleID();
 		}
 		return true;
 	}
-
+	
 	@Override
 	public CoreRoutedPipe getConnectedPipe(IRouter router) {
-		UUID id=null;
+		int id=-1;
 		for(DirectConnection con:connectedPipes) {
-			if(con.Router1 != null && con.Router2 != null) {
-				if(con.Router1.equals(router.getId())) {
+			if(con.Router1 >= 0 && con.Router2 >= 0) {
+				if(con.Router1 == router.getSimpleID()) {
 					id = con.Router2;
 					break;
-				} else if(con.Router2.equals(router.getId())) {
+				} else if(con.Router2 == router.getSimpleID()) {
 					id = con.Router1;
 					break;
 				}
 			}
 		}
-		if(id == null) {
+		if(id < 0) {
 			return null;
 		}
 		IRouter r = getRouter(id);
@@ -191,10 +185,10 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	public void removeDirectConnection(IRouter router) {
 		if(MainProxy.isClient()) return;
 		for(DirectConnection con:connectedPipes) {
-			if(con.Router1 != null && con.Router1.equals(router.getId())) {
-				con.Router1 = null;
-			} else if(con.Router2 != null && con.Router2.equals(router.getId())) {
-				con.Router2 = null;
+			if(con.Router1 >= 0 && con.Router1 == router.getSimpleID()) {
+				con.Router1 = -1;
+			} else if(con.Router2 >= 0 && con.Router2 == router.getSimpleID()) {
+				con.Router2 = -1;
 			}
 		}
 	}

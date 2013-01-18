@@ -25,14 +25,14 @@ public interface IRouter extends IPowerRouter {
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
 	public boolean isRoutedExit(ForgeDirection connection);
-	public boolean hasRoute(UUID id);
-	public ForgeDirection getExitFor(UUID id);
+	public boolean hasRoute(int id);
+	public ForgeDirection getExitFor(int id);
 	
 	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable();
 	public List<SearchNode> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	
-	public UUID getId();
+	//public UUID getId();
 	public void itemDropped(RoutedEntityItem routedEntityItem);
 	@Deprecated
 	public void displayRoutes();

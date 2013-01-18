@@ -8,16 +8,16 @@
 
 package logisticspipes.routing;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public interface IRouterManager {
-	public IRouter getOrCreateRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord);
-	public IRouter getRouter(UUID id);
-	public boolean isRouter(UUID id);
-	public void removeRouter(UUID id);
-	public Map<UUID, IRouter> getRouters();
+	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord);
+	public IRouter getRouter(int id);
+	public boolean isRouter(int id);
+	public void removeRouter(int id);
+	public List<IRouter> getRouters();
 	public void serverStopClean();
 	public boolean routerAddingDone();
 	public void clearClientRouters();

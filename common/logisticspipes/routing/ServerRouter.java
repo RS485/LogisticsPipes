@@ -49,7 +49,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	//may not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 
 	public int hashCode(){
-		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
+		return simpleID; // guaranteed to be unique, and uniform distribution over a range.
+//		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
 	}
 	
 	private class LSA {
@@ -123,7 +124,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private static BitSet simpleIdUsedSet = new BitSet();
 
 	private final int simpleID;
-	public final UUID id;
+	//public final UUID id;
 	private int _dimension;
 	private final int _xCoord;
 	private final int _yCoord;
@@ -142,7 +143,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		simpleIdUsedSet.clear();
 	}
 	
-	private static int claimSimpleID() {
+	private static int claimSimpleID(int id2) {
+		if(id2>=0 && !simpleIdUsedSet.get(id2)){
+			simpleIdUsedSet.set(id2);
+			return id2;
+		}
 		int idx = simpleIdUsedSet.nextClearBit(firstFreeId);
 		firstFreeId = idx + 1;
 		simpleIdUsedSet.set(idx);
@@ -159,9 +164,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return simpleIdUsedSet.size();
 	}
 	
-	public ServerRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord){
-		this.simpleID = claimSimpleID();
-		this.id = id;
+	public ServerRouter(int id2, int dimension, int xCoord, int yCoord, int zCoord){
+		this.simpleID = claimSimpleID(id2);
+//		this.id = id2;
 		this._dimension = dimension;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
@@ -236,10 +241,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return _routeCosts;
 	}
 	
-	@Override
+	/*@Override
 	public UUID getId() {
 		return this.id;
-	}
+	}*/
 	
 
 	/**
@@ -478,7 +483,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			_LSDVersion++;
 		}
 		SharedLSADatabasewriteLock.unlock();
-		SimpleServiceLocator.routerManager.removeRouter(this.id);
+		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
 		releaseSimpleID(simpleID);
 		updateNeighbors();
 	}
@@ -525,12 +530,12 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	@Override
-	public ForgeDirection getExitFor(UUID id) {
+	public ForgeDirection getExitFor(int id) {
 		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id)).getValue1();
 	}
 	
 	@Override
-	public boolean hasRoute(UUID id) {
+	public boolean hasRoute(int id) {
 		if (!SimpleServiceLocator.routerManager.isRouter(id)) return false;
 		
 		IRouter r = SimpleServiceLocator.routerManager.getRouter(id);

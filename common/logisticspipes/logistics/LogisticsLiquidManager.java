@@ -24,11 +24,11 @@ import net.minecraftforge.liquids.LiquidStack;
 
 public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	
-	public Pair<UUID, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<UUID> jamList) {
+	public Pair<Integer, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<Integer> jamList) {
 		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
-			if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
-			if(jamList.contains(candidateRouter.node.getId())) continue;
+			if(candidateRouter.node.getSimpleID() == sourceRouter.getSimpleID()) continue;
+			if(jamList.contains(candidateRouter.node.getSimpleID())) continue;
 			
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
 			CoreRoutedPipe pipe = candidateRouter.node.getPipe();
@@ -37,11 +37,11 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 			
 			int amount = ((ILiquidSink)pipe).sinkAmount(stack);
 			if(amount > 0) {
-				Pair<UUID, Integer> result = new Pair<UUID, Integer>(candidateRouter.node.getId(), amount);
+				Pair<Integer, Integer> result = new Pair<Integer, Integer>(candidateRouter.node.getSimpleID(), amount);
 				return result;
 			}
 		}
-		Pair<UUID, Integer> result = new Pair<UUID, Integer>(null, 0);
+		Pair<Integer, Integer> result = new Pair<Integer, Integer>(null, 0);
 		return result;
 	}
 

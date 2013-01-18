@@ -113,7 +113,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return 1;
 	}
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
 		ItemIdentifier item = stack.getItem();
 		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
@@ -137,7 +137,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			int sent = removed.stackSize;
 
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
-			routedItem.setSource(this.getRouter().getId());
+			routedItem.setSource(this.getRouter().getSimpleID());
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
 			super.queueRoutedItem(routedItem, tile.orientation);
@@ -200,7 +200,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
 			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId());
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
 			if (sent == 0)
 				break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
@@ -235,10 +235,10 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items) {
+	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> items) {
 		LogicProvider providerLogic = (LogicProvider) logic;
 		//HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getId());
+		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getSimpleID());
 		if(allItems == null) {
 			allItems = new HashMap<ItemIdentifier, Integer>();
 		}
@@ -280,7 +280,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				allItems.put(item, remaining);	
 			}
 		}
-		items.put(this.getRouter().getId(), allItems);
+		items.set(this.getRouter().getSimpleID(), allItems);
 	}
 
 	@Override
@@ -320,9 +320,9 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	
 	private void updateInv() {
 		itemList.clear();
-		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		ArrayList<Map<ItemIdentifier, Integer>> map = new ArrayList<Map<ItemIdentifier, Integer>>();
 		getAllItems(map);
-		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getId());
+		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getSimpleID());
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			itemList.add(new ItemIdentifierStack(item, list.get(item)));

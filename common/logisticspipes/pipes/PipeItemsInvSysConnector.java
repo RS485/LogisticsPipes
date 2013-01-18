@@ -51,7 +51,7 @@ import cpw.mods.fml.common.network.Player;
 public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
 	private boolean init = false;
-	private LinkedList<Pair4<ItemIdentifier,UUID,UUID,TransportMode>> destination = new LinkedList<Pair4<ItemIdentifier,UUID,UUID,TransportMode>>();
+	private LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
@@ -67,8 +67,8 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	@Override
 	public void enabledUpdateEntity() {
 		if(!init) {
-			if(hasConnectionUUID()) {
-				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionUUID(), getRouter())) {
+			if(hasConnectionint()) {
+				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionint(), getRouter())) {
 					dropFreqCard();
 				}
 				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
@@ -78,10 +78,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				getRouter().update(true);
 				this.refreshRender(true);
 				init = true;
-				idbuffer = getConnectionUUID();
+				idbuffer = getConnectionint();
 			}
 		}
-		if(init && !hasConnectionUUID()) {
+		if(init && !hasConnectionint()) {
 			init = false;
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
@@ -89,7 +89,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				CRP.refreshRender(true);
 			}
 		}
-		if(init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
+		if(init && idbuffer != null && !idbuffer.equals(getConnectionint())) {
 			init = false;
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
@@ -121,7 +121,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			ItemStack stack = inv.getStackInSlot(i);
 			if(stack != null) {
 				ItemIdentifier ident = ItemIdentifier.get(stack);
-				for(Pair4<ItemIdentifier,UUID,UUID,TransportMode> pair:destination) {
+				for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 					if(pair.getValue1() == ident) {
 						if(!useEnergy(6)) break;
 						sendStack(stack.splitStack(1),pair.getValue2(),pair.getValue3(),dir, pair.getValue4());
@@ -139,7 +139,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		}
 	}
 
-	public void sendStack(ItemStack stack, UUID source, UUID destination, ForgeDirection dir, TransportMode mode) {
+	public void sendStack(ItemStack stack, int source, int destination, ForgeDirection dir, TransportMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(source);
 		itemToSend.setDestination(destination);
@@ -148,12 +148,12 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
 	}
 	
-	private UUID getConnectionUUID() {
+	private UUID getConnectionint() {
 		if(inv != null) {
 			if(inv.getStackInSlot(0) != null) {
 				if(inv.getStackInSlot(0).hasTagCompound()) {
-					if(inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
-						return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
+					if(inv.getStackInSlot(0).getTagCompound().hasKey("int")) {
+						return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("int"));
 					}
 				}
 			}
@@ -161,11 +161,11 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		return null;
 	}
 	
-	private boolean hasConnectionUUID() {
+	private boolean hasConnectionint() {
 		if(inv != null) {
 			if(inv.getStackInSlot(0) != null) {
 				if(inv.getStackInSlot(0).hasTagCompound()) {
-					if(inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
+					if(inv.getStackInSlot(0).getTagCompound().hasKey("int")) {
 						return true;
 					}
 				}
@@ -183,7 +183,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	public LinkedList<ItemIdentifierStack> getExpectedItems() {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair4<ItemIdentifier,UUID,UUID,TransportMode> pair:destination) {
+		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 			boolean found = false;
 			for(ItemIdentifierStack stack:list) {
 				if(stack.getItem() == pair.getValue1()) {
@@ -263,7 +263,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	private boolean hasRemoteConnection() {
-		return hasConnectionUUID() && this.worldObj != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
+		return hasConnectionint() && this.worldObj != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
 	}
 	
 	private boolean inventoryConnected() {
@@ -306,9 +306,9 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 
 	@Override
-	public void addItem(ItemIdentifier item, UUID sourceId, UUID destinationId, TransportMode mode) {
-		if(item != null && destinationId != null) {
-			destination.addLast(new Pair4<ItemIdentifier,UUID,UUID,TransportMode>(item,sourceId,destinationId, mode));
+	public void addItem(ItemIdentifier item, int sourceId, int destinationId, TransportMode mode) {
+		if(item != null && destinationId >= 0) {
+			destination.addLast(new Pair4<ItemIdentifier,Integer,Integer,TransportMode>(item,sourceId,destinationId, mode));
 			updateContentListener();
 		}
 	}

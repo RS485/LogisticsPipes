@@ -3,7 +3,7 @@ package logisticspipes.routing;
 import java.util.UUID;
 
 public class DirectConnection {
-	public UUID Router1;
-	public UUID Router2;
+	public int Router1;
+	public int Router2;
 	public UUID identifier;
 }

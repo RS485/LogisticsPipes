@@ -108,7 +108,7 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 		if(!isConnectableTank(tile, data.output, true)) return;
 		if(data.output.ordinal() >= ForgeDirection.VALID_DIRECTIONS.length) return;
 		if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
-		if(!this.getRouter().getId().equals(((IRoutedItem)data.item).getDestination())) return;
+		if(this.getRouter().getSimpleID() != ((IRoutedItem)data.item).getDestination()) return;
 		((PipeTransportItems)this.transport).scheduleRemoval(data.item);
 		LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.item.getItemStack());
 		if(liquid != null) {

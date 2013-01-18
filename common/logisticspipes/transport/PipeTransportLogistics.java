@@ -161,7 +161,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		super.unscheduleRemoval(item);
 		if(item instanceof IRoutedItem) {
 			IRoutedItem routed = (IRoutedItem)item;
-			routed.changeDestination(null);
+			routed.changeDestination(-1);
 			EntityData data = travelingEntities.get(item.getEntityId());
 			IRoutedItem newRoute = routed.getNewUnRoutedItem();
 			data.item = newRoute.getEntityPassiveItem();

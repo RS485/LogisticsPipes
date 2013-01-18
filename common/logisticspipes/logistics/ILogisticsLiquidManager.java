@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.liquids.LiquidStack;
 
 public interface ILogisticsLiquidManager {
-	public Pair<UUID, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<UUID> jamList);
+	public Pair<Integer, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<Integer> jamList);
 	public ItemStack getLiquidContainer(LiquidStack stack);
 	public LiquidStack getLiquidFromContainer(ItemStack stack);
 	public LinkedList<ItemIdentifierStack> getAvailableLiquid(List<SearchNode> list);

@@ -1,9 +1,9 @@
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -21,14 +21,14 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ClientRouter implements IRouter {
 	
-	public UUID id;
+	public int id;
 	private final int _dimension;
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
 	public boolean[] routedExit = new boolean[6];
 	
-	public ClientRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
+	public ClientRouter(int id, int dimension, int xCoord, int yCoord, int zCoord) {
 		this.id = id;
 		this._dimension = dimension;
 		this._xCoord = xCoord;
@@ -38,7 +38,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void destroy() {
-		SimpleServiceLocator.routerManager.removeRouter(this.id);
+		SimpleServiceLocator.routerManager.removeRouter(this.getSimpleID());
 	}
 
 	@Override
@@ -65,7 +65,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean hasRoute(UUID id) {
+	public boolean hasRoute(int id) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -73,7 +73,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ForgeDirection getExitFor(UUID id) {
+	public ForgeDirection getExitFor(int id) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -81,7 +81,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>> getRouteTable() {
+	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -110,14 +110,14 @@ public class ClientRouter implements IRouter {
 		return (CoreRoutedPipe) pipe.pipe;
 	}
 
-	@Override
-	public UUID getId() {
+/*	@Override
+	public int getId() {
 		if(id != null) {
 			return id;
 		} else {
-			return id = UUID.randomUUID();
+			return id = <allocate a new ID>
 		}
-	}
+	}*/
 
 	@Override
 	public void itemDropped(RoutedEntityItem routedEntityItem) {

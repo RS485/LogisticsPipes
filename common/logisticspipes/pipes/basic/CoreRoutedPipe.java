@@ -77,7 +77,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected boolean stillNeedReplace = true;
 	
 	private IRouter router;
-	private String routerId;
+	private int routerId = -1;
 	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
 	protected int _delayOffset = 0;
@@ -352,14 +352,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
 		
-		synchronized (routerIdLock) {
+		/*synchronized (routerIdLock) {
 			if (routerId == null || routerId == ""){
 				routerId = UUID.randomUUID().toString();
 			}
-		}
-		if(router != null)
+		}*/
+		if(router != null){
+			routerId = router.getSimpleID();
 			router.clearPipeCache();
-		nbttagcompound.setString("routerId", routerId);
+		}
+		nbttagcompound.setInteger("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);
 		nbttagcompound.setLong("stat_lifetime_relayed", stat_lifetime_relayed);
@@ -376,7 +378,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		super.readFromNBT(nbttagcompound);
 		
 		synchronized (routerIdLock) {
-			routerId = nbttagcompound.getString("routerId");
+			routerId = nbttagcompound.getInteger("routerId");
 		}
 		
 		stat_lifetime_sent = nbttagcompound.getLong("stat_lifetime_sent");
@@ -396,10 +398,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		if (router == null){
 			synchronized (routerIdLock) {
-				if (routerId == null || routerId == ""){
+				/*if (routerId == null || routerId == ""){
 					routerId = UUID.randomUUID().toString();
-				}
-				router = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
+				}*/
+				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
 			}
 		}
 		return router;
@@ -629,9 +631,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	
 	/* --- CCCommands --- */
-	@CCCommand(description="Returns the Router UUID as String")
-	public String getRouterId() {
-		return getRouter().getId().toString();
+	@CCCommand(description="Returns the Router UUID as an integer; all pipes have a unique ID")
+	public int getRouterId() {
+		return getRouter().getSimpleID();
 	}
 
 	@CCCommand(description="Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")

@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -40,25 +39,25 @@ import net.minecraft.item.ItemStack;
 public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	
 	@Override
-	public boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource) {
+	public boolean hasDestination(ItemStack stack, boolean allowDefault, int sourceRouter, boolean excludeSource) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
-		Pair<UUID, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource, new ArrayList<UUID>());
+		Pair<Integer, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource, new ArrayList<Integer>());
 		
 		if (search.getValue2() == null) return false;
 		
 		return (allowDefault || !search.getValue2().isDefault);
 	}
 	
-	private Pair<UUID, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource, List<UUID> jamList){
-		UUID potentialDestination = null;
+	private Pair<Integer, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource, List<Integer> jamList){
+		int potentialDestination = -1;
 		SinkReply bestReply = null;
 		
 		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
 			if (excludeSource) {
-				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
+				if(candidateRouter.node.getSimpleID() == sourceRouter.getSimpleID()) continue;
 			}
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
-			if(jamList.contains(candidateRouter.node.getId())) continue;
+			if(jamList.contains(candidateRouter.node.getSimpleID())) continue;
 			
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
@@ -66,48 +65,48 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			SinkReply reply = module.sinksItem(item);
 			if (reply == null) continue;
 			if (bestReply == null){
-				potentialDestination = candidateRouter.node.getId();
+				potentialDestination = candidateRouter.node.getSimpleID();
 				bestReply = reply;
 				continue;
 			}
 			
 			if (reply.fixedPriority.ordinal() > bestReply.fixedPriority.ordinal()){
 				bestReply = reply;
-				potentialDestination = candidateRouter.node.getId();
+				potentialDestination = candidateRouter.node.getSimpleID();
 				continue;
 			}
 			
 			if (reply.fixedPriority == bestReply.fixedPriority && reply.customPriority >  bestReply.customPriority){
 				bestReply = reply;
-				potentialDestination = candidateRouter.node.getId();
+				potentialDestination = candidateRouter.node.getSimpleID();
 				continue;
 			}
 		}
-		Pair<UUID, SinkReply> result = new Pair<UUID, SinkReply>(potentialDestination, bestReply);
+		Pair<Integer, SinkReply> result = new Pair<Integer, SinkReply>(potentialDestination, bestReply);
 		return result;
 	}
 	
 	
 	
 	@Override
-	public IRoutedItem assignDestinationFor(IRoutedItem item, UUID sourceRouterUUID, boolean excludeSource) {
+	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource) {
 		
 		//If the source router does not exist we can't do anything with this
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterUUID)) return item;
+		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterint)) return item;
 		//If we for some reason can't get the router we can't do anything either
-		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterUUID);
+		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterint);
 		if (sourceRouter == null) return item;
 		
 		//Wipe current destination
-		item.changeDestination(null);
+		item.changeDestination(-1);
 		
-//		UUID potentialDestination = null;
+//		int potentialDestination = null;
 //		SinkReply bestReply = null;
 		
-		Pair<UUID, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource, item.getJamList());
+		Pair<Integer, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource, item.getJamList());
 		
 //		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
-//			if (excludeSource && candidateRouter.getId().equals(sourceRouterUUID)) continue;
+//			if (excludeSource && candidateRouter.getId().equals(sourceRouterint)) continue;
 //			ILogisticsModule module = candidateRouter.getLogisticsModule();
 //			if (module == null) continue;
 //			SinkReply reply = module.sinksItem(ItemIdentifier.get(item.getItemStack()));
@@ -130,7 +129,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 //				continue;
 //			}
 //		}
-		item.setSource(sourceRouterUUID);
+		item.setSource(sourceRouterint);
 		if (bestReply.getValue1() != null){
 			item.setDestination(bestReply.getValue1());
 			if (bestReply.getValue2().isPassive){
@@ -146,7 +145,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	@Override
-	public IRoutedItem destinationUnreachable(IRoutedItem item,	UUID currentRouter) {
+	public IRoutedItem destinationUnreachable(IRoutedItem item,	int currentRouter) {
 		// TODO Auto-generated method stub
 		return assignDestinationFor(item, currentRouter, false);
 	}
@@ -172,13 +171,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			return "Request";
 		}
  
-		return r.getId().toString();
+		return Integer.toString(r.getSimpleID());
 				
 	}
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
-		Map<UUID, Map<ItemIdentifier, Integer>> items = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		ArrayList<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>();
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
 			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
@@ -199,7 +198,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			*/
 		}
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(Map<ItemIdentifier, Integer> allItems:items.values()) {
+		for(Map<ItemIdentifier, Integer> allItems:items) {
 			for (ItemIdentifier item : allItems.keySet()){
 				if (!allAvailableItems.containsKey(item)){
 					allAvailableItems.put(item, allItems.get(item));

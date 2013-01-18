@@ -250,8 +250,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					stacksleft -= 1;
 					
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
-					item.setSource(this.getRouter().getId());
-					item.setDestination(order.getValue2().getRouter().getId());
+					item.setSource(this.getRouter().getSimpleID());
+					item.setDestination(order.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize);
@@ -357,7 +357,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list) {}
+	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> list) {}
 
 	@Override
 	public ItemIdentifier getCraftedItem() {

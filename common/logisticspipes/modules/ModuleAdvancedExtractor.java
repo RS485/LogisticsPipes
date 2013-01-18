@@ -216,7 +216,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	}
 
 	protected boolean shouldSend(ItemStack stack) {
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getSourceUUID(), true);
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getSourceint(), true);
 	}
 
 	public boolean areItemsIncluded() {

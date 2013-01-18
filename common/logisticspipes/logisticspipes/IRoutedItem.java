@@ -9,7 +9,6 @@
 package logisticspipes.logisticspipes;
 
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.routing.IRouter;
 import net.minecraft.item.ItemStack;
@@ -32,11 +31,11 @@ public interface IRoutedItem {
 		Active
 	}
 	
-	public UUID getDestination();
-	public void setDestination(UUID destination);
-	public void changeDestination(UUID destination);
-	public UUID getSource();
-	public void setSource(UUID source);
+	public int getDestination();
+	public void setDestination(int destination);
+	public void changeDestination(int destination);
+	public int getSource();
+	public void setSource(int source);
 	
 //	public boolean isPassive();
 //	public void setPassive(boolean isPassive);
@@ -72,7 +71,7 @@ public interface IRoutedItem {
 	public void setReRoute(boolean flag);
 	
 	public void addToJamList(IRouter router);
-	public List<UUID> getJamList();
+	public List<Integer> getJamList();
 	
 	public boolean isUnRouted();
 	

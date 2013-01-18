@@ -2,7 +2,6 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -18,7 +17,7 @@ import net.minecraftforge.liquids.LiquidStack;
 
 public class PipeLiquidInsertion extends LiquidRoutedPipe {
 	
-	private List<Pair<UUID, Integer>> localJamList = new ArrayList<Pair<UUID, Integer>>();
+	private List<Pair<Integer, Integer>> localJamList = new ArrayList<Pair<Integer, Integer>>();
 	private int[] nextSendMax = new int[ForgeDirection.VALID_DIRECTIONS.length];
 	private int[] nextSendMin = new int[ForgeDirection.VALID_DIRECTIONS.length];
 	
@@ -28,10 +27,10 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 
 	@Override
 	public void enabledUpdateEntity() {
-		List<UUID> tempJamList = new ArrayList<UUID>();
+		List<Integer> tempJamList = new ArrayList<Integer>();
 		if(!localJamList.isEmpty()) {
-			List<Pair<UUID, Integer>> toRemove = new ArrayList<Pair<UUID, Integer>>();
-			for(Pair<UUID, Integer> part: localJamList) {
+			List<Pair<Integer, Integer>> toRemove = new ArrayList<Pair<Integer, Integer>>();
+			for(Pair<Integer, Integer> part: localJamList) {
 				part.setValue2(part.getValue2() - 1);
 				if(part.getValue2() <= 0) {
 					toRemove.add(part);
@@ -58,7 +57,7 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 				continue;
 			}
 			
-			Pair<UUID, Integer> result = SimpleServiceLocator.logisticsLiquidManager.getBestReply(stack, getRouter(), tempJamList);
+			Pair<Integer, Integer> result = SimpleServiceLocator.logisticsLiquidManager.getBestReply(stack, getRouter(), tempJamList);
 			if(result == null || result.getValue1() == null || result.getValue2() == 0) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;

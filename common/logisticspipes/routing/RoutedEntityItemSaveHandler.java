@@ -1,7 +1,5 @@
 package logisticspipes.routing;
 
-import java.util.UUID;
-
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.api.transport.IPassiveItemContribution;
@@ -16,16 +14,16 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	
 	private RoutedEntityItem routedEntityItem;
 	
-	public UUID sourceUUID;
-	public UUID destinationUUID;
+	public int sourceint;
+	public int destinationint;
 	public int bufferCounter = 0;
 	public boolean arrived;
 	public TransportMode transportMode = TransportMode.Unknown;
 	
 	private void extract() {
 		if(routedEntityItem != null) {
-			sourceUUID = routedEntityItem.sourceUUID;
-			destinationUUID = routedEntityItem.destinationUUID;
+			sourceint = routedEntityItem.sourceint;
+			destinationint = routedEntityItem.destinationint;
 			bufferCounter = routedEntityItem.getBufferCounter();
 			arrived = routedEntityItem.arrived;
 			transportMode = routedEntityItem.getTransportMode();
@@ -34,11 +32,11 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		if(nbttagcompound.hasKey("sourceUUID")) {
-			sourceUUID = UUID.fromString(nbttagcompound.getString("sourceUUID"));
+		if(nbttagcompound.hasKey("sourceint")) {
+			sourceint = nbttagcompound.getInteger("sourceint");
 		}
-		if(nbttagcompound.hasKey("destinationUUID")) {
-			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
+		if(nbttagcompound.hasKey("destinationint")) {
+			destinationint = nbttagcompound.getInteger("destinationint");
 		}
 		arrived = nbttagcompound.getBoolean("arrived");
 		bufferCounter = nbttagcompound.getInteger("bufferCounter");
@@ -48,11 +46,10 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		this.extract();
-		if(sourceUUID != null) {
-			nbttagcompound.setString("sourceUUID", sourceUUID.toString());
+		if(sourceint >= 0) {
+			nbttagcompound.setInteger("sourceint", sourceint);
 		}
-		if(destinationUUID != null) {
-			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
+		if(destinationint >= 0) {
 		}
 		nbttagcompound.setBoolean("arrived", arrived);
 		nbttagcompound.setInteger("bufferCounter", bufferCounter);

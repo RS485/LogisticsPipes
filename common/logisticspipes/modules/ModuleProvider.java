@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -137,7 +136,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
 			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId());
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
 			if (sent == 0)
 				break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
@@ -172,10 +171,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items) {
+	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> items) {
 		if (_invProvider.getInventory() == null) return;
 		
-		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceUUID());
+		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceint());
 		if(allItems == null) {
 			allItems = new HashMap<ItemIdentifier, Integer>();
 		}
@@ -205,7 +204,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				allItems.put(item, remaining);	
 			}
 		}
-		items.put(_itemSender.getSourceUUID(), allItems);
+		items.set(_itemSender.getSourceint(), allItems);
 	}
 
 /*	@Override
@@ -217,7 +216,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return null;
 	}*/
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getInventory() == null) {
 			_orderManager.sendFailed();
@@ -324,9 +323,9 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		ArrayList<Map<ItemIdentifier, Integer>> map = new ArrayList<Map<ItemIdentifier, Integer>>();
 		getAllItems(map);
-		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceUUID());
+		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceint());
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			displayList.add(new ItemIdentifierStack(item, list.get(item)));

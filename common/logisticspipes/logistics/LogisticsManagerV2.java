@@ -177,7 +177,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
-		ArrayList<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>();
+		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
 			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
@@ -185,27 +185,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				continue;
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
-			provider.getAllItems(items);
+			Map<ItemIdentifier, Integer> items = provider.getAllItems();
 			
-			/*
-			for (ItemIdentifier item : allItems.keySet()){
+			for (ItemIdentifier item : items.keySet()){
 				if (!allAvailableItems.containsKey(item)){
-					allAvailableItems.put(item, allItems.get(item));
+					allAvailableItems.put(item, items.get(item));
 				} else {
-					allAvailableItems.put(item, allAvailableItems.get(item) + allItems.get(item));
-				}
-			}
-			*/
-		}
-		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(Map<ItemIdentifier, Integer> allItems:items) {
-			if(allItems == null)
-				continue;
-			for (ItemIdentifier item : allItems.keySet()){
-				if (!allAvailableItems.containsKey(item)){
-					allAvailableItems.put(item, allItems.get(item));
-				} else {
-					allAvailableItems.put(item, allAvailableItems.get(item) + allItems.get(item));
+					allAvailableItems.put(item, allAvailableItems.get(item) + items.get(item));
 				}
 			}
 		}

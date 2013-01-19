@@ -20,6 +20,5 @@ public interface IProvideItems {
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses);
 	public void fullFill(LogisticsPromise promise, IRequestItems destination);
 	public int getAvailableItemCount(ItemIdentifier item);
-	//public HashMap<ItemIdentifier, Integer> getAllItems();
-	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> items);
+	public Map<ItemIdentifier, Integer> getAllItems();
 }

@@ -171,13 +171,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void getAllItems(ArrayList<Map<ItemIdentifier, Integer>> items) {
-		if (_invProvider.getInventory() == null) return;
+	public Map<ItemIdentifier, Integer> getAllItems() {
+		if (_invProvider.getInventory() == null) return new HashMap<ItemIdentifier, Integer>();;
 		
-		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceint());
-		if(allItems == null) {
-			allItems = new HashMap<ItemIdentifier, Integer>();
-		}
+		Map<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>();
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
@@ -204,7 +201,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				allItems.put(item, remaining);	
 			}
 		}
-		items.set(_itemSender.getSourceint(), allItems);
+		return allItems;
 	}
 
 /*	@Override
@@ -323,9 +320,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		ArrayList<Map<ItemIdentifier, Integer>> map = new ArrayList<Map<ItemIdentifier, Integer>>();
-		getAllItems(map);
-		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceint());
+		Map<ItemIdentifier, Integer> list = getAllItems();
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			displayList.add(new ItemIdentifierStack(item, list.get(item)));

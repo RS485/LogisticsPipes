@@ -34,14 +34,6 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	@Override
 	public IRouter getRouter(int id){
 		if(MainProxy.isClient()) {
-			synchronized (_routersClient) {
-				for(IRouter router:_routersClient) {
-					if(router.getSimpleID() == id) {
-						return router;
-					}
-				}
-				
-			}
 			return null;
 		} else {
 			return _routersServer.get(id);
@@ -58,9 +50,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	}
 	@Override
 	public void removeRouter(int id) {
-		if(MainProxy.isClient()) {
-			_routersClient.set(id, null);
-		} else {
+		if(!MainProxy.isClient()) {
 			_routersServer.set(id,null);
 		}
 	}
@@ -73,22 +63,11 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		if (r == null){
 			if(MainProxy.isClient()) {
 				synchronized (_routersClient) {
-					if(!forceCreateDuplicate)
-						for (IRouter r2:_routersClient)
-							if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord))
-								return r2;
+					for (IRouter r2:_routersClient)
+						if (r2.isAt(dimension, xCoord, yCoord, zCoord))
+							return r2;
 					r = new ClientRouter(null, dimension, xCoord, yCoord, zCoord);
-					int rId= r.getSimpleID();
-					if(_routersClient.size()>rId)
-						_routersClient.set(rId, r);
-					else {
-						_routersClient.ensureCapacity(rId+1);
-						while(_routersClient.size()<=rId)
-							_routersClient.add(null);
-						_routersClient.set(rId, r);
-
-					}
-					this._uuidMap.put(r.getId(), r.getSimpleID());
+					_routersClient.add(r);
 				}
 			} else {
 				if(!forceCreateDuplicate)
@@ -116,14 +95,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	@Override
 	public boolean isRouter(int id) {
 		if(MainProxy.isClient()) {
-			synchronized (_routersClient) {
-				for(IRouter router:_routersClient) {
-					if(router.getSimpleID() == id) {
-						return true;
-					}
-				}
-			}
-			return false;
+			return true;
 		} else {
 			return _routersServer.get(id)!=null;
 		}

@@ -22,43 +22,11 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class ClientRouter implements IRouter {
-
-	private static int firstFreeId = 0;
-	private static BitSet simpleIdUsedSet = new BitSet();
-
-	private static int claimSimpleID() {
-		int idx = simpleIdUsedSet.nextClearBit(firstFreeId);
-		firstFreeId = idx + 1;
-		simpleIdUsedSet.set(idx);
-		return idx;
-	}
-	
-	private static void releaseSimpleID(int idx) {
-		simpleIdUsedSet.clear(idx);
-		if(idx < firstFreeId)
-			firstFreeId = idx;
-	}
-	
-	public static int getBiggestSimpleID() {
-		return simpleIdUsedSet.size();
-	}
-	
-	public final UUID globalId;
-	public final int id;
-	private final int _dimension;
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
-	public boolean[] routedExit = new boolean[6];
 	
 	public ClientRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
-		if(id != null) {
-			globalId=id;
-		} else {
-			globalId =UUID.randomUUID();
-		}
-		this.id = claimSimpleID();
-		this._dimension = dimension;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
@@ -66,12 +34,11 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void destroy() {
-		SimpleServiceLocator.routerManager.removeRouter(this.getSimpleID());
 	}
 
 	@Override
 	public int getSimpleID() {
-		return id;
+		return -420;
 	}
 
 	@Override
@@ -126,7 +93,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public CoreRoutedPipe getPipe() {
-		World worldObj = MainProxy.getWorld(_dimension);
+		World worldObj = MainProxy.proxy.getWorld();
 		if(worldObj == null) {
 			return null;
 		}
@@ -139,13 +106,13 @@ public class ClientRouter implements IRouter {
 	}
 	
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
-		return _dimension == dimension && _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
+		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}
 
 
 	@Override
 	public UUID getId() {
-		return globalId;
+		return null;
 	}
 
 	@Override

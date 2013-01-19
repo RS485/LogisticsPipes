@@ -71,6 +71,8 @@ public class LogisticsHUDRenderer {
 	private void refreshList(double x,double y,double z) {
 		ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>> newList = new ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>>();
 		for(IRouter router:SimpleServiceLocator.routerManager.getRouters()) {
+			if(router == null)
+				continue;
 			CoreRoutedPipe pipe = router.getPipe();
 			if(!(pipe instanceof IHeadUpDisplayRendererProvider)) continue;
 			if(MainProxy.getDimensionForWorld(pipe.worldObj) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {

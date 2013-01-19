@@ -330,6 +330,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public TextureType getTextureType(ForgeDirection connection) {
+		if(stillNeedReplace)
+			return getCenterTexture();
+
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
 		} else if ((router != null) && getRouter(connection).isRoutedExit(connection)) {

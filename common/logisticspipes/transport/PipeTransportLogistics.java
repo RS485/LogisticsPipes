@@ -123,7 +123,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	@Override
 	public void updateEntity() {
-		super.updateEntity();
+			super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
 			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
 			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
@@ -179,7 +179,12 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 		
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
-		ForgeDirection value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
+		ForgeDirection value;
+		if(this.getPipe().stillNeedReplace()){
+			routedItem.setDoNotBuffer(false);
+			value = ForgeDirection.UNKNOWN;
+		} else
+			value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
 		routedItem.setReRoute(false);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;

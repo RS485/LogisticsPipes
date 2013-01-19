@@ -158,6 +158,11 @@ public class PipeItemsFirewall extends RoutedPipe {
 			public UUID getUUID() {
 				return id;
 			}
+
+			@Override
+			public boolean blockRouting() {
+				return false;
+			}
 		};
 	}
 }

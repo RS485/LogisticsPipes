@@ -21,6 +21,7 @@ import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -33,7 +34,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.item.ItemStack;
 
@@ -42,50 +43,78 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
-		Pair<UUID, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource, new ArrayList<UUID>());
+		Pair3<UUID, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<UUID>(), new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>(), null);
 		
 		if (search.getValue2() == null) return false;
 		
 		return (allowDefault || !search.getValue2().isDefault);
 	}
 	
-	private Pair<UUID, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource, List<UUID> jamList){
-		UUID potentialDestination = null;
-		SinkReply bestReply = null;
+	private Pair3<UUID, SinkReply, List<IFilter>> getBestReply(ItemStack item, IRouter sourceRouter, List<SearchNode> validDestinations, boolean excludeSource, List<UUID> jamList, BitSet layer, List<IFilter> filters, Pair3<UUID, SinkReply, List<IFilter>> result){
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(ItemIdentifier.get(item)) || filter.blockRouting()) continue;
+		}
+		List<SearchNode> firewall = new LinkedList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
 		
-		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
+		if(result == null) {
+			result = new Pair3<UUID, SinkReply, List<IFilter>>(null, null, null);
+		}
+		
+		for (SearchNode candidateRouter : validDestinations){
 			if (excludeSource) {
 				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			}
 			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo))
-				continue;
+			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
+			
+			if(used.get(candidateRouter.node.getPipe().getSimpleID())) continue;
+			
+			used.set(candidateRouter.node.getPipe().getSimpleID());
+			
+			if(candidateRouter.node instanceof IFilteringRouter) {
+				firewall.add(candidateRouter);
+			}
 			
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
 			if (module == null) continue;
 			SinkReply reply = module.sinksItem(item);
 			if (reply == null) continue;
-			if (bestReply == null){
-				potentialDestination = candidateRouter.node.getId();
-				bestReply = reply;
+			if (result.getValue1() == null){
+				result.setValue1(candidateRouter.node.getId());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<IFilter>();
+				list.addAll(filters);
+				result.setValue3(list);
 				continue;
 			}
 			
-			if (reply.fixedPriority.ordinal() > bestReply.fixedPriority.ordinal()){
-				bestReply = reply;
-				potentialDestination = candidateRouter.node.getId();
+			if (reply.fixedPriority.ordinal() > result.getValue2().fixedPriority.ordinal()) {
+				result.setValue1(candidateRouter.node.getId());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<IFilter>();
+				list.addAll(filters);
+				result.setValue3(list);
 				continue;
 			}
 			
-			if (reply.fixedPriority == bestReply.fixedPriority && reply.customPriority >  bestReply.customPriority){
-				bestReply = reply;
-				potentialDestination = candidateRouter.node.getId();
+			if (reply.fixedPriority == result.getValue2().fixedPriority && reply.customPriority >  result.getValue2().customPriority) {
+				result.setValue1(candidateRouter.node.getId());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<IFilter>();
+				list.addAll(filters);
+				result.setValue3(list);
 				continue;
 			}
 		}
-		Pair<UUID, SinkReply> result = new Pair<UUID, SinkReply>(potentialDestination, bestReply);
+		for(SearchNode n:firewall) {
+			IFilter filter = ((IFilteringRouter)n.node).getFilter();
+			filters.add(filter);
+			result = getBestReply(item, sourceRouter, ((IFilteringRouter)n.node).getRouters(), excludeSource, jamList, used, filters, result);
+			filters.remove(filter);
+		}
 		return result;
 	}
 	
@@ -103,35 +132,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.changeDestination(null);
 		
-//		UUID potentialDestination = null;
-//		SinkReply bestReply = null;
+		Pair3<UUID, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>(), null);
 		
-		Pair<UUID, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource, item.getJamList());
-		
-//		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
-//			if (excludeSource && candidateRouter.getId().equals(sourceRouterUUID)) continue;
-//			ILogisticsModule module = candidateRouter.getLogisticsModule();
-//			if (module == null) continue;
-//			SinkReply reply = module.sinksItem(ItemIdentifier.get(item.getItemStack()));
-//			if (reply == null) continue;
-//			if (bestReply == null){
-//				potentialDestination = candidateRouter.getId();
-//				bestReply = reply;
-//				continue;
-//			}
-//			
-//			if (reply.fixedPriority.ordinal() > bestReply.fixedPriority.ordinal()){
-//				bestReply = reply;
-//				potentialDestination = candidateRouter.getId();
-//				continue;
-//			}
-//			
-//			if (reply.fixedPriority == bestReply.fixedPriority && reply.customPriority >  bestReply.customPriority){
-//				bestReply = reply;
-//				potentialDestination = candidateRouter.getId();
-//				continue;
-//			}
-//		}
 		item.setSource(sourceRouterUUID);
 		if (bestReply.getValue1() != null){
 			item.setDestination(bestReply.getValue1());
@@ -143,6 +145,11 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				}
 			}
 		}
+		List<IRelayItem> list = new LinkedList<IRelayItem>();
+		for(IFilter filter:bestReply.getValue3()) {
+			list.add(filter);
+		}
+		item.addRelayPoints(list);
 		
 		return item;
 	}

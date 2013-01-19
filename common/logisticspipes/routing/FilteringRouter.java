@@ -73,10 +73,11 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 		}
 		return new IFilter() {
 			@Override public UUID getUUID() {return UUID.randomUUID();}
-			@Override public boolean isBlocked() {return false;}
+			@Override public boolean isBlocked() {return true;}
 			@Override public List<ItemIdentifier> getFilteredItems() {return new ArrayList<ItemIdentifier>();}
 			@Override public boolean blockProvider() {return false;}
 			@Override public boolean blockCrafting() {return false;}
+			@Override public boolean blockRouting() {return false;}
 		};
 	}
 

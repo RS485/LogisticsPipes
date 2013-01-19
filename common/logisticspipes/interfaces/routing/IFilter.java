@@ -9,4 +9,5 @@ public interface IFilter extends IRelayItem {
 	List<ItemIdentifier> getFilteredItems();
 	boolean blockProvider();
 	boolean blockCrafting();
+	boolean blockRouting();
 }

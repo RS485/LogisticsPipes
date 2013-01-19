@@ -259,7 +259,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
 			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
-			if(getPipe().useEnergy(Math.round(add * 25))) {
+			if(getPipe().useEnergy(Math.round(add * 25), false)) {
 				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
 			}
 		}

@@ -592,11 +592,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public boolean useEnergy(int amount) {
+		return useEnergy(amount, true);
+	}
+		
+	public boolean useEnergy(int amount, boolean flag) {
 		if(MainProxy.isClient()) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
+			if(amount == 0) return true;
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);
 				int particlecount = amount;
@@ -606,7 +611,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				if (particlecount == 0) {
 					particlecount = 1;
 				}
-				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				if(flag) {
+					MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				}
 				return true;
 			}
 		}

@@ -172,16 +172,15 @@ class PathFinder {
 					//Don't go where we have been before
 					continue;
 				}
-
+				if(isDirectConnection) {  //ISC doesn't pass power
+					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
+				}
 				if(currentPipe.pipe instanceof PipeItemsObsidian){	//Obsidian seperates networks
 					continue;
 				}
 				if(currentPipe.pipe instanceof PipeItemsDiamond){	//Diamond only allows power through
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canRouteTo);
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canRequestFrom);
-				}
-				if(startPipe.pipe instanceof PipeItemsInvSysConnector){	//ISC doesn't pass power
-					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
 				}
 				if(startPipe.pipe instanceof PipeItemsIron){	//Iron requests and power can come from closed sides
 					if(!startPipe.pipe.outputOpen(direction)){

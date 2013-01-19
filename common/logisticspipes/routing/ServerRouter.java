@@ -425,7 +425,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				if(!newCT.isEmpty())
 					candidatesCost.add(new SearchNode(newCandidate.getKey(), candidateCost, newCT, lowestCostNode.root));
 			}
-			SharedLSADatabasereadLock.unlock();
 
 			lowestCostNode.removeFlags(lowestCostClosedFlags);
 			lowestCostClosedFlags.addAll(lowestCostNode.getFlags());

@@ -32,8 +32,8 @@ import buildcraft.transport.TileGenericPipe;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
-	int sourceint;
-	int destinationint;
+	int sourceint = -1;
+	int destinationint = -1;
 	
 	boolean _doNotBuffer;
 	

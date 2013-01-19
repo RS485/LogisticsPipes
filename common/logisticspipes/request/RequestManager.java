@@ -1,16 +1,21 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.pipes.PipeItemsLiquidSupplier;
+import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -24,8 +29,6 @@ import logisticspipes.utils.Pair;
 public class RequestManager {
 
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<SearchNode> validDestinations, RequestLog log) {
-		//List<IProvideItems> providers = getProviders(validDestinations);
-		//List<CraftingTemplate> crafters = getCrafters(validDestinations);
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
 		for(ItemIdentifierStack stack:items) {
@@ -93,17 +96,32 @@ public class RequestManager {
 	}
 
 	
-	private static List<IProvideItems> getProviders(List<SearchNode> validDestinations) {
-		List<IProvideItems> providers = new LinkedList<IProvideItems>();
+	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(List<SearchNode> validDestinations, BitSet layer, List<IFilter> filters) {
+		List<Pair<IProvideItems,List<IFilter>>> providers = new LinkedList<Pair<IProvideItems,List<IFilter>>>();
+		List<SearchNode> firewalls = new LinkedList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
 		for(SearchNode r : validDestinations) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)){
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getPipe().getSimpleID())) {
 				CoreRoutedPipe pipe = r.node.getPipe();
-				if (pipe instanceof IProvideItems){
-					providers.add((IProvideItems)pipe);
+				if (pipe instanceof IProvideItems) {
+					List<IFilter> list = new LinkedList<IFilter>();
+					list.addAll(filters);
+					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
+					used.set(r.node.getPipe().getSimpleID());
+				}
+				if(pipe instanceof PipeItemsFirewall) {
+					firewalls.add(r);
+					used.set(r.node.getPipe().getSimpleID());
 				}
 			}
 		}
-		
+		for(SearchNode r:firewalls) {
+			IFilter filter = ((PipeItemsFirewall)r.node.getPipe()).getFilter();
+			filters.add(filter);
+			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((PipeItemsFirewall)r.node.getPipe()).getRouters(r.node), used, filters);
+			filters.remove(filter);
+			providers.addAll(list);
+		}
 		return providers;
 	}
 	
@@ -231,8 +249,11 @@ public class RequestManager {
 	*/
 	
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		for(IProvideItems provider : getProviders(requester.getRouter().getIRoutersByCost())) {
-			provider.canProvide(treeNode, tree.getAllPromissesFor(provider));
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>())) {
+			if(provider.getValue1() instanceof PipeLogisticsChassi) {
+				System.out.println();
+			}
+			provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
 		}
 	}
 

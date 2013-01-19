@@ -125,6 +125,16 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 				list.add(ItemIdentifier.get(1, 0, null));
 				return list;
 			}
+
+			@Override
+			public boolean blockProvider() {
+				return true;
+			}
+
+			@Override
+			public boolean blockCrafting() {
+				return false;
+			}
 		};
 	}
 }

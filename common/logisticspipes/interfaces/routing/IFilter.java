@@ -7,4 +7,6 @@ import logisticspipes.utils.ItemIdentifier;
 public interface IFilter {
 	boolean isBlocked();
 	List<ItemIdentifier> getFilteredItems();
+	boolean blockProvider();
+	boolean blockCrafting();
 }

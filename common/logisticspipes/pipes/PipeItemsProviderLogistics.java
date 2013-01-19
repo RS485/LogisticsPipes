@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -47,7 +45,6 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.EmptyFilter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -214,10 +211,14 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
+		}
+		
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
 		}
 		
 		// Check the transaction and see if we have helped already
@@ -265,7 +266,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
 				
 				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.getFilteredItems().contains(currItem)) continue;
+					if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue;
 				}
 				
 				if (!addedItems.containsKey(currItem)) {
@@ -336,7 +337,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	private void updateInv() {
 		itemList.clear();
 		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
-		getAllItems(map, Lists.newArrayList(new IFilter[]{new EmptyFilter()}));
+		getAllItems(map, new ArrayList<IFilter>(0));
 		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getId());
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {

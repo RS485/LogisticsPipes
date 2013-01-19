@@ -374,7 +374,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -383,7 +383,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				((ILegacyActiveModule)x).canProvide(tree, donePromisses);
+				((ILegacyActiveModule)x).canProvide(tree, donePromisses, filters);
 			}
 		}
 	}

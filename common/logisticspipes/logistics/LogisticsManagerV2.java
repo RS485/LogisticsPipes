@@ -16,8 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import com.google.common.collect.Lists;
-
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
@@ -34,7 +32,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
-import logisticspipes.utils.EmptyFilter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
@@ -198,7 +195,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
-			provider.getAllItems(items, Lists.newArrayList(new IFilter[]{new EmptyFilter()}));
+			provider.getAllItems(items, new ArrayList<IFilter>(0));
 			used.set(r.node.getPipe().getSimpleID(), true);
 		}
 		for(SearchNode n:filterpipes) {
@@ -300,7 +297,7 @@ outer:
 			ICraftItems crafter = (ICraftItems) n.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.getFilteredItems().contains(craftedItem)) continue outer;
+				if(filter.isBlocked() == filter.getFilteredItems().contains(craftedItem) || filter.blockCrafting()) continue outer;
 			}
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);

@@ -99,7 +99,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		ArrayList<Pair<ForgeDirection, ForgeDirection>> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
 			if(table.get(i)!=null)
-			System.out.println(i + " -> " + r.getSimpleID());
+			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).getValue1().toString());
 		}
 		System.out.println();
 	}

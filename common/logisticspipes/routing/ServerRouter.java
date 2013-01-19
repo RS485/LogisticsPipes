@@ -120,7 +120,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private boolean _blockNeedsUpdate;
 	private boolean forceUpdate = true;
 
-	private static int firstFreeId = 0;
+	private static int firstFreeId = 1;
 	private static BitSet simpleIdUsedSet = new BitSet();
 
 	private final int simpleID;
@@ -139,7 +139,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.unlock();
 		_LSDVersion = 0;
 		_laser = new RouteLaser();
-		firstFreeId = 0;
+		firstFreeId = 1;
 		simpleIdUsedSet.clear();
 	}
 	
@@ -555,7 +555,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	@Override
 	public boolean hasRoute(int id) {
 		if (!SimpleServiceLocator.routerManager.isRouter(id)) return false;
-		
+		if(getRouteTable().size()<=id)
+			return false;
 		return this.getRouteTable().get(id)!=null;
 	}
 	

@@ -326,7 +326,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			return;
 		}
 
-		getRoutedPipe().getRouter().displayRouteTo(satelliteRouter);
+		getRoutedPipe().getRouter().displayRouteTo(satelliteRouter.getSimpleID());
 	}
 
 

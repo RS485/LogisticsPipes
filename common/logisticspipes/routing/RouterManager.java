@@ -77,7 +77,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 						for (IRouter r2:_routersClient)
 							if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord))
 								return r2;
-					r = new ClientRouter(null, id, dimension, xCoord, yCoord, zCoord);
+					r = new ClientRouter(null, dimension, xCoord, yCoord, zCoord);
 					int rId= r.getSimpleID();
 					if(_routersClient.size()>rId)
 						_routersClient.set(rId, r);
@@ -95,7 +95,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 					for (IRouter r2:_routersServer)
 						if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord))
 							return r2;
-				r = new ServerRouter(null, id, dimension, xCoord, yCoord, zCoord);
+				r = new ServerRouter(null, dimension, xCoord, yCoord, zCoord);
 				
 				int rId= r.getSimpleID();
 				if(_routersServer.size()>rId)

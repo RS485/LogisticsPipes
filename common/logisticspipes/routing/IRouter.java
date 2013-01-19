@@ -8,6 +8,7 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +29,7 @@ public interface IRouter extends IPowerRouter {
 	public boolean hasRoute(int id);
 	public ForgeDirection getExitFor(int id);
 	
-	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable();
+	public ArrayList<Pair<ForgeDirection, ForgeDirection>> getRouteTable();
 	public List<SearchNode> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
@@ -37,7 +38,7 @@ public interface IRouter extends IPowerRouter {
 	@Deprecated
 	public void displayRoutes();
 	@Deprecated
-	public void displayRouteTo(IRouter r);
+	public void displayRouteTo(int r);
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public ILogisticsModule getLogisticsModule();

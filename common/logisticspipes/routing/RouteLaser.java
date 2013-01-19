@@ -8,12 +8,14 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Pair;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -50,9 +52,9 @@ class RouteLaser implements IPaintPath{
 		}
 	}
 	
-	public void displayRoute(IRouter source, IRouter destination) {
+	public void displayRoute(IRouter source, Integer destination) {
 		_pewpewLazors = LaserKind.Red;
-		LinkedList<IRouter> routerList = new LinkedList<IRouter>();
+		LinkedList<Integer> routerList = new LinkedList<Integer>();
 		routerList.add(destination);
 		displayRoute(source, routerList);
 		_pewpewLazors = LaserKind.Stripes;
@@ -60,15 +62,17 @@ class RouteLaser implements IPaintPath{
 
 	
 	public void displayRoute(IRouter r){
-		LinkedList<IRouter> knownRouters = new LinkedList<IRouter>();
-		for (IRouter table : r.getRouteTable().keySet()){
-			if (table == r) continue;
-			knownRouters.add(table);
+		LinkedList<Integer> knownRouters = new LinkedList<Integer>();
+		ArrayList<Pair<ForgeDirection, ForgeDirection>> table = r.getRouteTable();
+		for (int i=0; i< table.size(); i++){
+			if (table.get(i)==null || i == r.getSimpleID())
+				continue;
+			knownRouters.add(i);
 		}
 		displayRoute(r, knownRouters);
 	}
 	
-	public void displayRoute(IRouter r, LinkedList<IRouter> knownRouters){
+	public void displayRoute(IRouter r, LinkedList<Integer> knownRouters){
 		clear();
 		if (r == _lastRouter){
 			_lastRouter = null;
@@ -79,7 +83,8 @@ class RouteLaser implements IPaintPath{
 		
 		while (!knownRouters.isEmpty()){
 			//Pick a router
-			IRouter targetRouter = knownRouters.pop();
+			int targetRouter = knownRouters.pop();
+			boolean found = false;
 			
 			//Get the first exit
 			ForgeDirection next = r.getRouteTable().get(targetRouter).getValue1();
@@ -88,13 +93,13 @@ class RouteLaser implements IPaintPath{
 			}
 			
 			IRouter nextRouter = r;
-			LinkedList<IRouter> visited = new LinkedList<IRouter>();
-			while(nextRouter != targetRouter){
+			LinkedList<Integer> visited = new LinkedList<Integer>();
+			while(nextRouter.getSimpleID() != targetRouter){
 				if (visited.contains(nextRouter)){
 					LogisticsPipes.log.info("ROUTE LOOP");
 					break;
 				}
-				visited.add(nextRouter);
+				visited.add(nextRouter.getSimpleID());
 				
 				//Paint that route
 				LinkedList<IRouter> discovered = new LinkedList<IRouter>();
@@ -116,7 +121,7 @@ class RouteLaser implements IPaintPath{
 					if (knownRouters.contains(dicoveredRouter)){
 						knownRouters.remove(dicoveredRouter);
 					}
-					if (dicoveredRouter.getRouteTable().containsKey(targetRouter))
+					if (dicoveredRouter.getRouteTable().get(targetRouter)!=null)
 					{
 						ok = true;
 						nextRouter = dicoveredRouter;

@@ -26,11 +26,7 @@ public class ClientRouter implements IRouter {
 	private static int firstFreeId = 0;
 	private static BitSet simpleIdUsedSet = new BitSet();
 
-	private static int claimSimpleID(int id2) {
-		if(id2>=0 && !simpleIdUsedSet.get(id2)){
-			simpleIdUsedSet.set(id2);
-			return id2;
-		}
+	private static int claimSimpleID() {
 		int idx = simpleIdUsedSet.nextClearBit(firstFreeId);
 		firstFreeId = idx + 1;
 		simpleIdUsedSet.set(idx);
@@ -55,13 +51,13 @@ public class ClientRouter implements IRouter {
 	private final int _zCoord;
 	public boolean[] routedExit = new boolean[6];
 	
-	public ClientRouter(UUID id, int simpleId, int dimension, int xCoord, int yCoord, int zCoord) {
+	public ClientRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord) {
 		if(id != null) {
 			globalId=id;
 		} else {
 			globalId =UUID.randomUUID();
 		}
-		this.id = claimSimpleID(simpleId);
+		this.id = claimSimpleID();
 		this._dimension = dimension;
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
@@ -113,11 +109,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable() {
+	public ArrayList<Pair<ForgeDirection, ForgeDirection>> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>>();
+		return new  ArrayList<Pair<ForgeDirection,ForgeDirection>>();
 	}
 
 	@Override
@@ -164,7 +160,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void displayRouteTo(IRouter r) {
+	public void displayRouteTo(int r) {
 		// TODO Auto-generated method stub
 		
 	}

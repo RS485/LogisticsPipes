@@ -8,6 +8,8 @@
 
 package logisticspipes.logic;
 
+import java.util.ArrayList;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
@@ -16,7 +18,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.pipes.PipeLogic;
 
 public abstract class BaseRoutingLogic extends PipeLogic{
@@ -92,8 +96,10 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		for (IRouter p : r.getRouteTable().keySet()) {
-			System.out.println(p.getSimpleID() + " -> " + r.getRouteTable().get(p).toString());
+		ArrayList<Pair<ForgeDirection, ForgeDirection>> table = r.getRouteTable();
+		for (int i=0; i < table.size(); i++){			
+			if(table.get(i)!=null)
+			System.out.println(i + " -> " + r.getSimpleID());
 		}
 		System.out.println();
 	}

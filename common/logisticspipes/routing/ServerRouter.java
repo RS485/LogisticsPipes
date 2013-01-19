@@ -393,7 +393,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			//Add new candidates from the newly approved route 
 			LSA lsa = SharedLSADatabase.get(lowestCostNode.node.getSimpleID());
 			if(lsa == null) {
-				SharedLSADatabasereadLock.unlock();
 				lowestCostNode.removeFlags(lowestCostClosedFlags);
 				lowestCostClosedFlags.addAll(lowestCostNode.getFlags());
 				if(lowestCostNode.containsFlag(PipeRoutingConnectionType.canRouteTo) || lowestCostNode.containsFlag(PipeRoutingConnectionType.canRequestFrom))

@@ -115,7 +115,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	protected boolean _blockNeedsUpdate;
 	private boolean forceUpdate = true;
-	
+
+	private static int firstFreeId = 0;
+	private static BitSet simpleIdUsedSet = new BitSet();
+
+	private final int simpleID;
 	public final UUID id;
 	private int _dimension;
 	private final int _xCoord;
@@ -131,9 +135,29 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.unlock();
 		_LSDVersion = 0;
 		_laser = new RouteLaser();
+		firstFreeId = 0;
+		simpleIdUsedSet.clear();
+	}
+	
+	private static int claimSimpleID() {
+		int idx = simpleIdUsedSet.nextClearBit(firstFreeId);
+		firstFreeId = idx + 1;
+		simpleIdUsedSet.set(idx);
+		return idx;
+	}
+	
+	private static void releaseSimpleID(int idx) {
+		simpleIdUsedSet.clear(idx);
+		if(idx < firstFreeId)
+			firstFreeId = idx;
+	}
+	
+	public static int getBiggestSimpleID() {
+		return simpleIdUsedSet.size();
 	}
 	
 	public ServerRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord){
+		this.simpleID = claimSimpleID();
 		this.id = id;
 		this._dimension = dimension;
 		this._xCoord = xCoord;
@@ -146,6 +170,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.lock();
 		SharedLSADatabase.put(this, _myLsa);
 		SharedLSADatabasewriteLock.unlock();
+	}
+	
+	public int getSimpleID() {
+		return this.simpleID;
 	}
 
 	@Override
@@ -316,8 +344,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		// the shortest way to yourself is to go nowhere
 		//tree.put(this,new SearchNode(this,0,EnumSet.noneOf(PipeRoutingConnectionType.class),null));
 
-		BitSet objectMapped = new BitSet(this.getPipe().getBiggestID());
-		objectMapped.set(this.getPipe().getSimpleID(),true);
+		BitSet objectMapped = new BitSet(getBiggestSimpleID());
+		objectMapped.set(this.getSimpleID(),true);
 
 		/** The total cost for the candidate route **/
 		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
@@ -334,7 +362,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SearchNode lowestCostNode;
 		while ((lowestCostNode=candidatesCost.poll()) != null){
 			
-			if(!lowestCostNode.hasActivePipe() || objectMapped.get(lowestCostNode.node.getPipe().getSimpleID())) // the node was inserted multiple times, skip it as we know a shorter path.
+			if(!lowestCostNode.hasActivePipe() || objectMapped.get(lowestCostNode.node.getSimpleID())) // the node was inserted multiple times, skip it as we know a shorter path.
 				continue;
 			
 			//Add new candidates from the newly approved route
@@ -347,7 +375,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			    Iterator<Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>> it = lsa.neighboursWithMetric.entrySet().iterator();
 			    while (it.hasNext()) {
 			    	Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> newCandidate = (Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>)it.next();
-					if(objectMapped.get(newCandidate.getKey().getPipe().getSimpleID()))
+					if(objectMapped.get(newCandidate.getKey().getSimpleID()))
 						continue;
 
 					int candidateCost = lowestCostNode.distance + newCandidate.getValue().getValue1();
@@ -359,7 +387,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			}
 
 			routeCosts.add(lowestCostNode);
-			objectMapped.set(lowestCostNode.node.getPipe().getSimpleID(),true);
+			objectMapped.set(lowestCostNode.node.getSimpleID(),true);
 			
 			SharedLSADatabasereadLock.unlock();
 		}
@@ -440,6 +468,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		SharedLSADatabasewriteLock.unlock();
 		SimpleServiceLocator.routerManager.removeRouter(this.id);
+		releaseSimpleID(simpleID);
 	}
 
 	@Override

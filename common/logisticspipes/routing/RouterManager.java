@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraftforge.common.ForgeDirection;
+
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -79,6 +81,24 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 				}
 			} else {
 				r = new ServerRouter(id, dimension, xCoord, yCoord, zCoord);
+				_routersServer.put(id, r);
+			}
+			lastRouterAdded = System.currentTimeMillis();
+		}
+		return r;
+	}
+
+	@Override
+	public IRouter getOrCreateFirewallRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir) {
+		IRouter r = this.getRouter(id);
+		if (r == null){
+			if(MainProxy.isClient()) {
+				r = new ClientRouter(id, dimension, xCoord, yCoord, zCoord);
+				synchronized (_routersClient) {
+					_routersClient.add(r);
+				}
+			} else {
+				r = new FilteringRouter(id, dimension, xCoord, yCoord, zCoord, dir);
 				_routersServer.put(id, r);
 			}
 			lastRouterAdded = System.currentTimeMillis();

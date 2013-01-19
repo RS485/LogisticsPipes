@@ -76,8 +76,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected boolean stillNeedReplace = true;
 	
-	private IRouter router;
-	private String routerId;
+	protected IRouter router;
+	protected String routerId;
 	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
 	protected int _delayOffset = 0;

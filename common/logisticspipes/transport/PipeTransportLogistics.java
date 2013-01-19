@@ -177,7 +177,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
-		
+				
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
 		ForgeDirection value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
 		routedItem.setReRoute(false);

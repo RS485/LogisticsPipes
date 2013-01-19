@@ -9,9 +9,11 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -43,6 +45,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	boolean arrived;
 	boolean reRoute;
 	boolean isUnrouted;
+	
+	LinkedList<UUID> relays = new LinkedList<UUID>();
 	
 	TransportMode _transportMode = TransportMode.Unknown;
 	
@@ -136,7 +140,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public UUID getDestination() {
-		return this.destinationUUID;
+		if(relays.isEmpty()) {
+			return this.destinationUUID;
+		} else {
+			return relays.getLast();
+		}
 	}
 
 	@Override
@@ -312,6 +320,30 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		routed.isUnrouted = isUnrouted;
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
+		routed.relays.addAll(relays);
 		return routed;
+	}
+
+	@Override
+	public void addRelayPoints(List<IRelayItem> relays) {
+		for(IRelayItem relay:relays) {
+			this.relays.add(relay.getUUID());
+		}
+	}
+
+	@Override
+	public void itemRelayed() {
+		relays.removeLast();
+	}
+
+	@Override
+	public boolean isItemRelayed() {
+		return !relays.isEmpty();
+	}
+
+	@Override
+	public void replaceRelayID(UUID newId) {
+		relays.removeLast();
+		relays.addLast(newId);
 	}
 }

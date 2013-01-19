@@ -1,9 +1,11 @@
 package logisticspipes.pipes;
 
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -79,11 +81,12 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 	
 	@Override
-	public void sendStack(ItemStack stack, UUID destination) {
+	public void sendStack(ItemStack stack, UUID destination, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getId());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 	
@@ -140,7 +143,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode) {
-		sendStack(stack,destination); // Ignore send mode
+	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode, List<IRelayItem> relays) {
+		sendStack(stack,destination, relays); // Ignore send mode
 	}
 }

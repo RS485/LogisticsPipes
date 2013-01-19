@@ -19,7 +19,7 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringPipe;
+import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -187,7 +187,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if (!(r.node.getPipe() instanceof IProvideItems)) {
-				if(r.node.getPipe() instanceof IFilteringPipe) {
+				if(r.node instanceof IFilteringRouter) {
 					used.set(r.node.getPipe().getSimpleID(), true);
 					filterpipes.add(r);
 				}
@@ -200,7 +200,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		for(SearchNode n:filterpipes) {
 			List<IFilter> list = new LinkedList<IFilter>();
-			list.add(((IFilteringPipe)n.node.getPipe()).getFilter());
+			list.add(((IFilteringRouter)n.node).getFilter());
 			handleAvailableSubFiltering(n, items, list, used);
 		}
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
@@ -219,13 +219,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	private void handleAvailableSubFiltering(SearchNode r, Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters, BitSet layer) {
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
-		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.node)) {
+		for(SearchNode n:((IFilteringRouter)r.node).getRouters()) {
 			if(n == null) continue;
 			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getPipe().getSimpleID())) continue;
 			
 			if (!(n.node.getPipe() instanceof IProvideItems)) {
-				if(n.node.getPipe() instanceof IFilteringPipe) {
+				if(n.node instanceof IFilteringRouter) {
 					used.set(n.node.getPipe().getSimpleID(), true);
 					filterpipes.add(n);
 				}
@@ -236,7 +236,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			used.set(n.node.getPipe().getSimpleID(), true);
 		}
 		for(SearchNode n:filterpipes) {
-			IFilter filter = ((IFilteringPipe)n.node.getPipe()).getFilter();
+			IFilter filter = ((IFilteringRouter)n.node).getFilter();
 			filters.add(filter);
 			handleAvailableSubFiltering(n, items, filters, used);
 			filters.remove(filter);
@@ -254,7 +254,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(used.get(r.node.getPipe().getSimpleID())) continue;
 			
 			if (!(r.node.getPipe() instanceof ICraftItems)) {
-				if(r.node.getPipe() instanceof IFilteringPipe) {
+				if(r.node instanceof IFilteringRouter) {
 					used.set(r.node.getPipe().getSimpleID(), true);
 					filterpipes.add(r);
 				}
@@ -270,7 +270,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		for(SearchNode n:filterpipes) {
 			List<IFilter> list = new LinkedList<IFilter>();
-			list.add(((IFilteringPipe)n.node.getPipe()).getFilter());
+			list.add(((IFilteringRouter)n.node).getFilter());
 			handleCraftableItemsSubFiltering(n, craftableItems, list, used);
 		}
 		return craftableItems;
@@ -281,13 +281,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
 outer:
-		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.node)) {
+		for(SearchNode n:((IFilteringRouter)r.node).getRouters()) {
 			if(n == null) continue;
 			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getPipe().getSimpleID())) continue;
 			
 			if (!(n.node.getPipe() instanceof ICraftItems)) {
-				if(n.node.getPipe() instanceof IFilteringPipe) {
+				if(n.node instanceof IFilteringRouter) {
 					used.set(n.node.getPipe().getSimpleID(), true);
 					filterpipes.add(n);
 				}
@@ -305,7 +305,7 @@ outer:
 			used.set(n.node.getPipe().getSimpleID(), true);
 		}
 		for(SearchNode n:filterpipes) {
-			IFilter filter = ((IFilteringPipe)n.node.getPipe()).getFilter();
+			IFilter filter = ((IFilteringRouter)n.node).getFilter();
 			filters.add(filter);
 			handleCraftableItemsSubFiltering(n, craftableItems, filters, used);
 			filters.remove(filter);

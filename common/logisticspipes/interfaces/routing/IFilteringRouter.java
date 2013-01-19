@@ -1,11 +1,12 @@
 package logisticspipes.interfaces.routing;
 
 import java.util.List;
+import java.util.UUID;
 
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.SearchNode;
 
-public interface IFilteringPipe {
-	public List<SearchNode> getRouters(IRouter router);
+public interface IFilteringRouter {
+	public List<SearchNode> getRouters();
 	public IFilter getFilter();
+	public boolean idIdforOtherSide(UUID id);
 }

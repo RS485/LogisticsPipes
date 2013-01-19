@@ -14,6 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -37,11 +39,12 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		_required.put(stack, crafter);
 	}
 	
-	public LogisticsPromise generatePromise(){
+	public LogisticsPromise generatePromise(List<IRelayItem> relays) {
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = _result.getItem();
 		promise.numberOfItems = _result.stackSize;
 		promise.sender = _crafter;
+		promise.relayPoints = relays;
 		return promise;
 	}
 	
@@ -75,11 +78,11 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		return c;
 	}
 	
-	public static class Prioritizer implements Comparator<CraftingTemplate>{
+	public static class PairPrioritizer implements Comparator<Pair<CraftingTemplate,List<IFilter>>>{
 
 		@Override
-		public int compare(CraftingTemplate o1, CraftingTemplate o2) {
-			return o1.priority-o2.priority;
+		public int compare(Pair<CraftingTemplate,List<IFilter>> o1, Pair<CraftingTemplate,List<IFilter>> o2) {
+			return o1.getValue1().priority-o2.getValue1().priority;
 		}
 		
 	}

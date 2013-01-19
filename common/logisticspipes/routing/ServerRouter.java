@@ -51,7 +51,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
 	}
 	
-	private class LSA {
+	protected class LSA {
 		public HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
 	}
@@ -89,23 +89,23 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 
-	private static int _LSDVersion = 0;
-	private int _lastLSDVersion = 0;
+	protected static int _LSDVersion = 0;
+	protected int _lastLSDVersion = 0;
 	
-	private RoutingUpdateThread updateThread = null;
+	protected RoutingUpdateThread updateThread = null;
 	
-	private static RouteLaser _laser = new RouteLaser();
+	protected static RouteLaser _laser = new RouteLaser();
 
-	private static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
-	private static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
-	private static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
-	private static final ReentrantReadWriteLock updateThreadLock = new ReentrantReadWriteLock();
-	private static final Lock updateThreadreadLock = updateThreadLock.readLock();
-	private static final Lock updateThreadwriteLock = updateThreadLock.writeLock();
+	protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
+	protected static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
+	protected static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
+	protected static final ReentrantReadWriteLock updateThreadLock = new ReentrantReadWriteLock();
+	protected static final Lock updateThreadreadLock = updateThreadLock.readLock();
+	protected static final Lock updateThreadwriteLock = updateThreadLock.writeLock();
 	public Object _externalRoutersByCostLock = new Object();
 	
-	private static final HashMap<IRouter,LSA> SharedLSADatabase = new HashMap<IRouter,LSA>();
-	private LSA _myLsa = new LSA();
+	protected static final HashMap<IRouter,LSA> SharedLSADatabase = new HashMap<IRouter,LSA>();
+	protected LSA _myLsa = new LSA();
 		
 	/** Map of router -> orientation for all known destinations **/
 	public HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>> _routeTable = new HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>>();
@@ -113,7 +113,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public LinkedList<IRouter> _externalRoutersByCost = null;
 
-	private boolean _blockNeedsUpdate;
+	protected boolean _blockNeedsUpdate;
 	private boolean forceUpdate = true;
 	
 	public final UUID id;
@@ -214,7 +214,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	/**
 	 * Rechecks the piped connection to all adjacent routers as well as discover new ones.
 	 */
-	private void recheckAdjacent() {
+	protected void recheckAdjacent() {
 		boolean adjacentChanged = false;
 		CoreRoutedPipe thisPipe = getPipe();
 		if (thisPipe == null) return;
@@ -276,11 +276,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 	}
 	
-	private void SendNewLSA() {
+	protected void SendNewLSA() {
 		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		ArrayList<ILogisticsPowerProvider> power = new ArrayList<ILogisticsPowerProvider>();
-		for (RoutedPipe adjacent : _adjacent.keySet()){
-			neighboursWithMetric.put(adjacent.getRouter(_adjacent.get(adjacent).insertOrientation), new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacent.get(adjacent).metric, _adjacent.get(adjacent).connectionDetails));
+		for (IRouter adjacent : _adjacentRouter.keySet()){
+			neighboursWithMetric.put(adjacent, new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacentRouter.get(adjacent).metric, _adjacentRouter.get(adjacent).connectionDetails));
 		}
 		for (ILogisticsPowerProvider provider : _powerAdjacent){
 			power.add(provider);
@@ -324,10 +324,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
-		for (Entry<RoutedPipe, ExitRoute> pipe :  _adjacent.entrySet()){
+		for (Entry<IRouter, ExitRoute> pipe :  _adjacentRouter.entrySet()){
 			ExitRoute currentE = pipe.getValue();
 			//currentE.connectionDetails.retainAll(blocksPower);
-			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(currentE.insertOrientation), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey().getRouter(currentE.insertOrientation)));
+			candidatesCost.add(new SearchNode(pipe.getKey(), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey()));
 			//objectMapped.set(pipe.getKey().getSimpleID(),true);
 		}
 
@@ -394,7 +394,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		outer:
 		for (int i = 0 ; i < 6; i++){
 			ForgeDirection o = ForgeDirection.values()[i];
-			for(ExitRoute route : _adjacent.values()) {
+			for(ExitRoute route : _adjacentRouter.values()) {
 				if (route.exitOrientation == o){
 					continue outer; //Its routed
 				}

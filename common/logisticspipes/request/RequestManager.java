@@ -9,13 +9,12 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.PipeItemsLiquidSupplier;
-import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -79,19 +78,39 @@ public class RequestManager {
 		}
 	}
 	
-	private static List<CraftingTemplate> getCrafters(List<SearchNode> validDestinations) {
-		List<CraftingTemplate> crafters = new ArrayList<CraftingTemplate>(validDestinations.size());
+	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(List<SearchNode> validDestinations, BitSet layer, List<IFilter> filters) {
+		List<Pair<CraftingTemplate,List<IFilter>>> crafters = new ArrayList<Pair<CraftingTemplate,List<IFilter>>>(validDestinations.size());
+		List<SearchNode> firewalls = new LinkedList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
 		for(SearchNode r : validDestinations) {
 			CoreRoutedPipe pipe = r.node.getPipe();
-			if (pipe instanceof ICraftItems){
-				if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)){
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getPipe().getSimpleID())) {
+				if (pipe instanceof ICraftItems){
+					used.set(r.node.getPipe().getSimpleID());
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
-					if(craftable!=null)
-					crafters.add(craftable);
+					if(craftable!=null) {
+						for(IFilter filter: filters) {
+							if(filter.isBlocked() == filter.getFilteredItems().contains(craftable.getResultStack().getItem()) || filter.blockCrafting()) continue;
+						}
+						List<IFilter> list = new LinkedList<IFilter>();
+						list.addAll(filters);
+						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
+					}
 				}
-			}			
+				if(r.node instanceof IFilteringRouter) {
+					firewalls.add(r);
+					used.set(r.node.getPipe().getSimpleID());
+				}
+			}		
 		}
-		Collections.sort(crafters,new CraftingTemplate.Prioritizer());
+		for(SearchNode r:firewalls) {
+			IFilter filter = ((IFilteringRouter)r.node).getFilter();
+			filters.add(filter);
+			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.node).getRouters(), used, filters);
+			filters.remove(filter);
+			crafters.addAll(list);
+		}
+		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
 		return crafters;
 	}
 
@@ -109,16 +128,16 @@ public class RequestManager {
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
 					used.set(r.node.getPipe().getSimpleID());
 				}
-				if(pipe instanceof PipeItemsFirewall) {
+				if(r.node instanceof IFilteringRouter) {
 					firewalls.add(r);
 					used.set(r.node.getPipe().getSimpleID());
 				}
 			}
 		}
 		for(SearchNode r:firewalls) {
-			IFilter filter = ((PipeItemsFirewall)r.node.getPipe()).getFilter();
+			IFilter filter = ((IFilteringRouter)r.node).getFilter();
 			filters.add(filter);
-			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((PipeItemsFirewall)r.node.getPipe()).getRouters(r.node), used, filters);
+			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((IFilteringRouter)r.node).getRouters(), used, filters);
 			filters.remove(filter);
 			providers.addAll(list);
 		}
@@ -151,6 +170,7 @@ public class RequestManager {
 	}
 
 	private static void checkExtras(RequestTree tree, RequestTreeNode treeNode) {
+		//TODO can this be send from crafter to crafter? (Firewall, pipe flags...)
 		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
 		for (LogisticsExtraPromise extraPromise : map.keySet()){
 			if(treeNode.isDone()) {
@@ -165,12 +185,12 @@ public class RequestManager {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
 		List<SearchNode> validDestinations = requester.getRouter().getIRoutersByCost();
-//		List<IProvideItems> providers = getProviders(validDestinations);
-		List<CraftingTemplate> crafters = getCrafters(validDestinations);
+		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validDestinations, new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
-		for(CraftingTemplate template:crafters) {
+		for(Pair<CraftingTemplate, List<IFilter>> crafter:crafters) {
+			CraftingTemplate template = crafter.getValue1();
 			if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
 				continue;
 			
@@ -206,7 +226,7 @@ public class RequestManager {
 				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
 				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree,node,requester,ignoreProviders)) {
+				if(!generateRequestTree(tree,node,template.getCrafter(),ignoreProviders)) {
 					failed = true;
 				}			
 			}
@@ -218,13 +238,17 @@ public class RequestManager {
 				continue;
 			}
 			handled = true;
-			while(treeNode.addPromise(template.generatePromise()));
+			List<IRelayItem> relays = new LinkedList<IRelayItem>();
+			for(IFilter filter:crafter.getValue2()) {
+				relays.add(filter);
+			}
+			while(treeNode.addPromise(template.generatePromise(relays)));
 			lastNode = null;
 			break;
 		}
 		if(!handled) {
 			if(lastNode != null && lastNodeTemplate != null) {
-				while(treeNode.addPromise(lastNodeTemplate.generatePromise()));
+				while(treeNode.addPromise(lastNodeTemplate.generatePromise(new ArrayList<IRelayItem>())));
 				treeNode.subRequests.addAll(lastNode);
 			}
 		}
@@ -250,9 +274,6 @@ public class RequestManager {
 	
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>())) {
-			if(provider.getValue1() instanceof PipeLogisticsChassi) {
-				System.out.println();
-			}
 			provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
 		}
 	}

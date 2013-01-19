@@ -26,6 +26,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logic.BaseChassiLogic;
@@ -206,20 +207,22 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public void sendStack(ItemStack stack, UUID destination) {
+	public void sendStack(ItemStack stack, UUID destination, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getId());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode) {
+	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getId());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 

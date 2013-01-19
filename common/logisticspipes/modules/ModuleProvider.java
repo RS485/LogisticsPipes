@@ -23,6 +23,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -39,7 +40,7 @@ import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.entity.player.EntityPlayer;
@@ -137,8 +138,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
-			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId());
+			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId(), order.getValue3());
 			if (sent == 0)
 				break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
@@ -160,14 +161,18 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		//TODO: FIX THIS CAST
 		promise.sender = (IProvideItems) _itemSender;
+		List<IRelayItem> relays = new LinkedList<IRelayItem>();
+		for(IFilter filter:filters) {
+			relays.add(filter);
+		}
+		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
 	@Override
@@ -234,7 +239,7 @@ outer:
 		return null;
 	}*/
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getInventory() == null) {
 			_orderManager.sendFailed();
@@ -255,7 +260,7 @@ outer:
 		
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		int sent = removed.stackSize;
-		_itemSender.sendStack(removed, destination, itemSendMode());
+		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
 		_orderManager.sendSuccessfull(sent);
 		return sent;
 	}

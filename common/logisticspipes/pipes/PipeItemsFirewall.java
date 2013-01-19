@@ -8,7 +8,6 @@ import java.util.UUID;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringPipe;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -21,7 +20,7 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 
-public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
+public class PipeItemsFirewall extends RoutedPipe {
 
 	private IRouter[] routers = new IRouter[ForgeDirection.VALID_DIRECTIONS.length];
 	private String[] routerIds = new String[ForgeDirection.VALID_DIRECTIONS.length];
@@ -49,12 +48,24 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord);
+					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, dir);
 				}
 			}
 			return routers[dir.ordinal()];
 		}
 		return super.getRouter();
+	}
+	
+	public IRouter getRouter() {
+		if (router == null){
+			synchronized (routerIdLock) {
+				if (routerId == null || routerId == ""){
+					routerId = UUID.randomUUID().toString();
+				}
+				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, ForgeDirection.UNKNOWN);
+			}
+		}
+		return router;
 	}
 	
 	public ForgeDirection getRouterSide(IRouter router) {
@@ -64,6 +75,15 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 			}
 		}
 		return ForgeDirection.UNKNOWN;
+	}
+
+	public boolean idIdforOtherSide(UUID id) {
+		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
+			if(getRouter(dir).getId().equals(id)) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	@Override
@@ -97,8 +117,7 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 	public ILogisticsModule getLogisticsModule() {
 		return null;
 	}
-
-	@Override
+	
 	public List<SearchNode> getRouters(IRouter from) {
 		List<SearchNode> list = new ArrayList<SearchNode>();
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
@@ -109,9 +128,8 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 		Collections.sort(list);
 		return list;
 	}
-
-	@Override
-	public IFilter getFilter() {
+	
+	public IFilter getFilter(final UUID id) {
 		//TODO
 		return new IFilter() {
 			@Override
@@ -128,12 +146,17 @@ public class PipeItemsFirewall extends RoutedPipe implements IFilteringPipe {
 
 			@Override
 			public boolean blockProvider() {
-				return true;
+				return false;
 			}
 
 			@Override
 			public boolean blockCrafting() {
 				return false;
+			}
+
+			@Override
+			public UUID getUUID() {
+				return id;
 			}
 		};
 	}

@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
@@ -32,6 +34,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
+import logisticspipes.utils.EmptyFilter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
@@ -181,24 +184,27 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
 		Map<UUID, Map<ItemIdentifier, Integer>> items = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = new BitSet(CoreRoutedPipe.getSBiggestID());
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
-			if (!(r.node.getPipe() instanceof IProvideItems)) continue;
-			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom))
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if (!(r.node.getPipe() instanceof IProvideItems)) {
+				if(r.node.getPipe() instanceof IFilteringPipe) {
+					used.set(r.node.getPipe().getSimpleID(), true);
+					filterpipes.add(r);
+				}
 				continue;
+			}
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
-			provider.getAllItems(items);
-			
-			/*
-			for (ItemIdentifier item : allItems.keySet()){
-				if (!allAvailableItems.containsKey(item)){
-					allAvailableItems.put(item, allItems.get(item));
-				} else {
-					allAvailableItems.put(item, allAvailableItems.get(item) + allItems.get(item));
-				}
-			}
-			*/
+			provider.getAllItems(items, Lists.newArrayList(new IFilter[]{new EmptyFilter()}));
+			used.set(r.node.getPipe().getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			List<IFilter> list = new LinkedList<IFilter>();
+			list.add(((IFilteringPipe)n.node.getPipe()).getFilter());
+			handleAvailableSubFiltering(n, items, list, used);
 		}
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(Map<ItemIdentifier, Integer> allItems:items.values()) {
@@ -212,7 +218,34 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return allAvailableItems;
 	}
-
+	
+	private void handleAvailableSubFiltering(SearchNode r, Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters, BitSet layer) {
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
+		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.node)) {
+			if(n == null) continue;
+			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(used.get(n.node.getPipe().getSimpleID())) continue;
+			
+			if (!(n.node.getPipe() instanceof IProvideItems)) {
+				if(n.node.getPipe() instanceof IFilteringPipe) {
+					used.set(n.node.getPipe().getSimpleID(), true);
+					filterpipes.add(n);
+				}
+				continue;
+			}
+			IProvideItems provider = (IProvideItems) n.node.getPipe();
+			provider.getAllItems(items, filters);
+			used.set(n.node.getPipe().getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			IFilter filter = ((IFilteringPipe)n.node.getPipe()).getFilter();
+			filters.add(filter);
+			handleAvailableSubFiltering(n, items, filters, used);
+			filters.remove(filter);
+		}
+	}
+	
 	@Override
 	public LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
@@ -221,6 +254,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for (SearchNode r : validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(used.get(r.node.getPipe().getSimpleID())) continue;
+			
 			if (!(r.node.getPipe() instanceof ICraftItems)) {
 				if(r.node.getPipe() instanceof IFilteringPipe) {
 					used.set(r.node.getPipe().getSimpleID(), true);
@@ -251,7 +286,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 outer:
 		for(SearchNode n:((IFilteringPipe)r.node.getPipe()).getRouters(r.node)) {
 			if(n == null) continue;
-			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getPipe().getSimpleID())) continue;
 			
 			if (!(n.node.getPipe() instanceof ICraftItems)) {

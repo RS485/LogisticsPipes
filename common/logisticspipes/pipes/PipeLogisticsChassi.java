@@ -24,6 +24,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
@@ -417,14 +418,14 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list) {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list, List<IFilter> filter) {
 		if (!isEnabled()){
 			return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
-				((ILegacyActiveModule)x).getAllItems(list);
+				((ILegacyActiveModule)x).getAllItems(list, filter);
 				return;
 			}
 		}

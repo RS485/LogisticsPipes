@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -24,6 +26,7 @@ import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicProvider;
@@ -44,6 +47,7 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.EmptyFilter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -235,9 +239,9 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items) {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
 		LogicProvider providerLogic = (LogicProvider) logic;
-		//HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
 		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getId());
 		if(allItems == null) {
 			allItems = new HashMap<ItemIdentifier, Integer>();
@@ -255,29 +259,40 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
-			for (ItemIdentifier currItem : currentInv.keySet()){
-				if (providerLogic.hasFilter() 
-						&& ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem)) 
-								|| (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
-
-				if (!allItems.containsKey(currItem)){
-					allItems.put(currItem, currentInv.get(currItem));
-				}else {
-					allItems.put(currItem, allItems.get(currItem) + currentInv.get(currItem));
+			for (ItemIdentifier currItem : currentInv.keySet()) {
+				if(allItems.containsKey(currItem)) continue;
+				
+				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
+				
+				for(IFilter filter:filters) {
+					if(filter.isBlocked() == filter.getFilteredItems().contains(currItem)) continue;
+				}
+				
+				if (!addedItems.containsKey(currItem)) {
+					addedItems.put(currItem, currentInv.get(currItem));
+				} else {
+					addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
 				}
 			}
 		}
 		
 		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = allItems.keySet().iterator();
+		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
 		while(iterator.hasNext()){
 			ItemIdentifier item = iterator.next();
 		
-			int remaining = allItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
 			if (remaining < 1){
 				iterator.remove();
 			} else {
-				allItems.put(item, remaining);	
+				addedItems.put(item, remaining);	
+			}
+		}
+		for(ItemIdentifier item: addedItems.keySet()) {
+			if (!allItems.containsKey(item)) {
+				allItems.put(item, addedItems.get(item));
+			} else {
+				allItems.put(item, addedItems.get(item) + allItems.get(item));
 			}
 		}
 		items.put(this.getRouter().getId(), allItems);
@@ -321,7 +336,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	private void updateInv() {
 		itemList.clear();
 		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
-		getAllItems(map);
+		getAllItems(map, Lists.newArrayList(new IFilter[]{new EmptyFilter()}));
 		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getId());
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {

@@ -26,6 +26,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -357,7 +358,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list) {}
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list, List<IFilter> filter) {}
 
 	@Override
 	public ItemIdentifier getCraftedItem() {

@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import com.google.common.collect.Lists;
+
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -21,6 +23,7 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.ExtractionMode;
@@ -36,6 +39,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.utils.EmptyFilter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
@@ -172,9 +176,9 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items) {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
 		if (_invProvider.getInventory() == null) return;
-		
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
 		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceUUID());
 		if(allItems == null) {
 			allItems = new HashMap<ItemIdentifier, Integer>();
@@ -182,27 +186,40 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
-		for (ItemIdentifier currItem : currentInv.keySet()){
-			if ( hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) 
-							|| (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
-
-			if (!allItems.containsKey(currItem)){
-				allItems.put(currItem, currentInv.get(currItem));
+outer:
+		for (ItemIdentifier currItem : currentInv.keySet()) {
+			if(allItems.containsKey(currItem)) continue;
+			
+			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
+			
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem)) continue outer;
+			}
+			
+			if (!addedItems.containsKey(currItem)){
+				addedItems.put(currItem, currentInv.get(currItem));
 			}else {
-				allItems.put(currItem, allItems.get(currItem) + currentInv.get(currItem));
+				addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
 			}
 		}
 		
 		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = allItems.keySet().iterator();
+		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
 		while(iterator.hasNext()){
 			ItemIdentifier item = iterator.next();
 		
-			int remaining = allItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
 			if (remaining < 1){
 				iterator.remove();
 			} else {
-				allItems.put(item, remaining);	
+				addedItems.put(item, remaining);	
+			}
+		}
+		for(ItemIdentifier item: addedItems.keySet()) {
+			if (!allItems.containsKey(item)) {
+				allItems.put(item, addedItems.get(item));
+			} else {
+				allItems.put(item, addedItems.get(item) + allItems.get(item));
 			}
 		}
 		items.put(_itemSender.getSourceUUID(), allItems);
@@ -325,7 +342,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
 		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
-		getAllItems(map);
+		getAllItems(map, Lists.newArrayList(new IFilter[]{new EmptyFilter()}));
 		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceUUID());
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {

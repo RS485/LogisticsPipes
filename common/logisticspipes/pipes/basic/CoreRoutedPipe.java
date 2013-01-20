@@ -111,16 +111,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		this(new PipeTransportLogistics(), logic, itemID);
 	}
 
-	private final int simpleID;
-	public int getSimpleID(){return simpleID;}
-	public int getBiggestID(){return pipecount;}
-	public static int getSBiggestID(){return pipecount;}
-	
 	public CoreRoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
 		super(transport, logic, itemID);
 		((PipeTransportItems) transport).allowBouncing = true;
 		
-		simpleID = pipecount;
 		pipecount++;
 		
 		//Roughly spread pipe updates throughout the frequency, no need to maintain balance

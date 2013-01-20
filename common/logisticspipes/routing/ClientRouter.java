@@ -42,6 +42,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
+	public int getSimpleID() {
+		return -1;
+	}
+
+	@Override
 	public void update(boolean fullRefresh) {
 		
 	}

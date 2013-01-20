@@ -42,4 +42,6 @@ public interface IRouter extends IPowerRouter {
 	
 	public ILogisticsModule getLogisticsModule();
 	public void clearPipeCache();
+	
+	public int getSimpleID();
 }

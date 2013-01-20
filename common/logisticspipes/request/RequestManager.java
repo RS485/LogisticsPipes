@@ -19,6 +19,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -84,9 +85,9 @@ public class RequestManager {
 		BitSet used = (BitSet) layer.clone();
 		for(SearchNode r : validDestinations) {
 			CoreRoutedPipe pipe = r.node.getPipe();
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getPipe().getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getSimpleID())) {
 				if (pipe instanceof ICraftItems){
-					used.set(r.node.getPipe().getSimpleID());
+					used.set(r.node.getSimpleID());
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null) {
 						for(IFilter filter: filters) {
@@ -99,7 +100,7 @@ public class RequestManager {
 				}
 				if(r.node instanceof IFilteringRouter) {
 					firewalls.add(r);
-					used.set(r.node.getPipe().getSimpleID());
+					used.set(r.node.getSimpleID());
 				}
 			}		
 		}
@@ -120,17 +121,17 @@ public class RequestManager {
 		List<SearchNode> firewalls = new LinkedList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
 		for(SearchNode r : validDestinations) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getPipe().getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getSimpleID())) {
 				CoreRoutedPipe pipe = r.node.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();
 					list.addAll(filters);
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
-					used.set(r.node.getPipe().getSimpleID());
+					used.set(r.node.getSimpleID());
 				}
 				if(r.node instanceof IFilteringRouter) {
 					firewalls.add(r);
-					used.set(r.node.getPipe().getSimpleID());
+					used.set(r.node.getSimpleID());
 				}
 			}
 		}
@@ -196,7 +197,7 @@ public class RequestManager {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
 		List<SearchNode> validDestinations = requester.getRouter().getIRoutersByCost();
-		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validDestinations, new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>());
+		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validDestinations, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
@@ -288,7 +289,7 @@ outer:
 	*/
 	
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(CoreRoutedPipe.getSBiggestID()), new LinkedList<IFilter>())) {
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
 		}
 	}

@@ -578,6 +578,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			return new ArrayList<ILogisticsPowerProvider>();
 		}
 	}
+
+	@Override
+	public IRouter getRouter(ForgeDirection insertOrientation) {
+		CoreRoutedPipe pipe = getPipe();
+		if(pipe==null)
+			return null;
+		return pipe.getRouter(insertOrientation);
+	}
 }
 
 

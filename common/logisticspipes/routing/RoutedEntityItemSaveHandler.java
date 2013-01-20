@@ -51,6 +51,7 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 		relays.clear();
 		int size = nbttagcompound.getInteger("relaysSize");
 		for(int i=0;i<size;i++) {
+			//TODO: WARNING - UUID's for not-yet-loaded chunks will be -1, and cause "issues" later.
 			relays.add(SimpleServiceLocator.routerManager.getIDforUUID(UUID.fromString(nbttagcompound.getString("relays" + i))));
 		}
 	}

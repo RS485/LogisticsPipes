@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 
@@ -22,4 +23,5 @@ public interface IProvideItems {
 	public int getAvailableItemCount(ItemIdentifier item);
 	//public HashMap<ItemIdentifier, Integer> getAllItems();
 	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filter);
+	public IRouter getRouter();
 }

@@ -36,6 +36,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
@@ -393,5 +394,10 @@ outer:
 	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
+	}
+
+	@Override
+	public IRouter getRouter() {
+		return _itemSender.getRouter();
 	}
 }

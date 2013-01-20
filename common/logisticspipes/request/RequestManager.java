@@ -170,14 +170,25 @@ public class RequestManager {
 	}
 
 	private static void checkExtras(RequestTree tree, RequestTreeNode treeNode) {
-		//TODO can this be send from crafter to crafter? (Firewall, pipe flags...)
 		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
 		for (LogisticsExtraPromise extraPromise : map.keySet()){
 			if(treeNode.isDone()) {
 				break;
 			}
-			treeNode.addPromise(extraPromise);
-			map.get(extraPromise).usePromise(extraPromise);
+			boolean valid = false;
+			if(treeNode.target.getRouter().getRouteTable().containsKey(extraPromise.sender.getRouter())) {
+				for(SearchNode node:treeNode.target.getRouter().getIRoutersByCost()) {
+					if(node.node == extraPromise.sender.getRouter()) {
+						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+							valid = true;
+						}
+					}
+				}
+			}
+			if(valid) {
+				treeNode.addPromise(extraPromise);
+				map.get(extraPromise).usePromise(extraPromise);
+			}
 		}
 	}
 

@@ -6,7 +6,13 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.BuildCraftTransport;
+import buildcraft.api.core.Position;
+import buildcraft.core.ITileBufferHolder;
+import buildcraft.core.TileBuffer;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
@@ -57,6 +63,23 @@ public class WorldTickHandler implements ITickHandler {
 						}
 					}
 				}
+				
+				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
+					pos.moveForwards(1.0);
+
+					newTile.tileBuffer[o.ordinal()] = new TileBuffer();
+					newTile.tileBuffer[o.ordinal()].initialize(newTile.worldObj, (int) pos.x, (int) pos.y, (int) pos.z);
+				}
+
+				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+					TileEntity tileSide = newTile.getTile(o);
+
+					if (tileSide instanceof ITileBufferHolder) {
+						((ITileBufferHolder) tileSide).blockCreated(o, BuildCraftTransport.genericPipeBlock.blockID, newTile);
+					}
+				}
+				
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

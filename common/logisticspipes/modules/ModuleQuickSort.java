@@ -89,7 +89,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	}
 	
 	private boolean shouldSend(ItemStack stack){
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, false, _itemSender.getSourceUUID(), true);
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, false, _itemSender.getRouter().getSimpleID(), true);
 	}
 
 	@Override

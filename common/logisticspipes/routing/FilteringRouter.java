@@ -69,10 +69,11 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			throw new UnsupportedOperationException();
 		}
 		if(this.getPipe() instanceof PipeItemsFirewall) {
-			return ((PipeItemsFirewall)this.getPipe()).getFilter(this.getId());
+			return ((PipeItemsFirewall)this.getPipe()).getFilter(this.getId(), this.getSimpleID());
 		}
 		return new IFilter() {
 			@Override public UUID getUUID() {return UUID.randomUUID();}
+			@Override public int getSimpleID() {return -1;}
 			@Override public boolean isBlocked() {return true;}
 			@Override public List<ItemIdentifier> getFilteredItems() {return new ArrayList<ItemIdentifier>();}
 			@Override public boolean blockProvider() {return false;}

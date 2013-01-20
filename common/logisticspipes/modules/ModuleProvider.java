@@ -182,19 +182,15 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
+	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
 		if (_invProvider.getInventory() == null) return;
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
-		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceUUID());
-		if(allItems == null) {
-			allItems = new HashMap<ItemIdentifier, Integer>();
-		}
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 outer:
 		for (ItemIdentifier currItem : currentInv.keySet()) {
-			if(allItems.containsKey(currItem)) continue;
+			if(items.containsKey(currItem)) continue;
 			
 			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
 			
@@ -222,13 +218,12 @@ outer:
 			}
 		}
 		for(ItemIdentifier item: addedItems.keySet()) {
-			if (!allItems.containsKey(item)) {
-				allItems.put(item, addedItems.get(item));
+			if (!items.containsKey(item)) {
+				items.put(item, addedItems.get(item));
 			} else {
-				allItems.put(item, addedItems.get(item) + allItems.get(item));
+				items.put(item, addedItems.get(item) + items.get(item));
 			}
 		}
-		items.put(_itemSender.getSourceUUID(), allItems);
 	}
 
 /*	@Override
@@ -347,10 +342,8 @@ outer:
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
-		getAllItems(map, new ArrayList<IFilter>(0));
-		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceUUID());
-		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
+		Map<ItemIdentifier, Integer> list = new HashMap<ItemIdentifier, Integer>();
+		getAllItems(list, new ArrayList<IFilter>(0));
 		for(ItemIdentifier item :list.keySet()) {
 			displayList.add(new ItemIdentifierStack(item, list.get(item)));
 		}

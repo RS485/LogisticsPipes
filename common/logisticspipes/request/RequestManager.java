@@ -177,7 +177,7 @@ public class RequestManager {
 				break;
 			}
 			boolean valid = false;
-			if(treeNode.target.getRouter().getRouteTable().containsKey(extraPromise.sender.getRouter())) {
+			if(extraPromise.sender.getRouter().getRouteTable().get(treeNode.target.getRouter().getSimpleID()) != null) {
 				for(SearchNode node:treeNode.target.getRouter().getIRoutersByCost()) {
 					if(node.node == extraPromise.sender.getRouter()) {
 						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {

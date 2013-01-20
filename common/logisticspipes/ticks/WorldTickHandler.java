@@ -36,7 +36,6 @@ public class WorldTickHandler implements ITickHandler {
 				int y = tile.yCoord;
 				int z = tile.zCoord;
 				World world = tile.worldObj;
-				world.removeBlockTileEntity(x, y, z);
 				TileGenericPipe newTile = LogisticsPipes.logisticsTileGenericPipe.newInstance();
 				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
@@ -48,8 +47,8 @@ public class WorldTickHandler implements ITickHandler {
 						e.printStackTrace();
 					}
 				}
-				world.setBlockTileEntity(x, y, z, newTile);
 				tile.pipe = null;
+				world.setBlockTileEntity(x, y, z, newTile);
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {

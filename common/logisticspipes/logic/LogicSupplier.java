@@ -43,6 +43,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
+	private int _lastSucess_count = 1024;
 
 	public boolean pause = false;
 	
@@ -140,17 +141,22 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				}
 			}
 			*/
-			
+
 			//Make request
 			for (ItemIdentifier need : needed.keySet()){
 				if (needed.get(need) < 1) continue;
-				int neededCount = needed.get(need);
-				
+				int amountRequested = needed.get(need);
+				int neededCount;
+				if(_requestPartials)
+					neededCount = Math.min(amountRequested,this._lastSucess_count);
+				else
+					neededCount=amountRequested;
 				if(!_power.useEnergy(10)) {
 					break;
 				}
 				
 				boolean success = false;
+					
 				do{ 
 					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
@@ -160,6 +166,14 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				} while (_requestPartials && !success);
 				
 				if (success){
+					if(neededCount == amountRequested)
+						_lastSucess_count=1024;
+					else {
+						if(neededCount == _lastSucess_count)
+							_lastSucess_count *= 2;
+						else
+							_lastSucess_count= neededCount;
+					}
 					if (!_requestedItems.containsKey(need)){
 						_requestedItems.put(need, neededCount);
 					}else
@@ -167,6 +181,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 						_requestedItems.put(need, _requestedItems.get(need) + neededCount);
 					}
 				} else{
+					_lastSucess_count=1;
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 				}
 				

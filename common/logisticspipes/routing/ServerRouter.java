@@ -362,8 +362,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		//space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
 		Vector<EnumSet<PipeRoutingConnectionType>> closedSet = new Vector<EnumSet<PipeRoutingConnectionType>>(getBiggestSimpleID());
+		closedSet.setSize(getBiggestSimpleID());
 		BitSet objectMapped = new BitSet(routingTableSize);
-		objectMapped.set(this.getPipe().getRouter().getSimpleID(),true);
+		objectMapped.set(this.getSimpleID(),true);
 
 		/** The total cost for the candidate route **/
 		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.

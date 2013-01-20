@@ -229,6 +229,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	public void serverStopClean() {
 		connectedPipes.clear();
 		_routersServer.clear();
+		_uuidMap.clear();
 		lastRouterAdded = -1;
 	}
 

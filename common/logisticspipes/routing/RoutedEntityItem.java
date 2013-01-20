@@ -361,6 +361,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void checkIDFromUUID() {	
+		if(destinationint == -1) return;
 		IRouterManager rm = SimpleServiceLocator.routerManager;
 		if(destinationUUID!=rm.getRouter(destinationint).getId()) {
 			destinationint=rm.getIDforUUID(destinationUUID);

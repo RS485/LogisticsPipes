@@ -170,7 +170,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	}
 	
 	protected boolean shouldSend(ItemStack stack){
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getSourceint(), true);
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getRouter().getSimpleID(), true);
 	}
 	
 	@Override

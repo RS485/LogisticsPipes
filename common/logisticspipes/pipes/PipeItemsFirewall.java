@@ -168,7 +168,7 @@ public class PipeItemsFirewall extends RoutedPipe {
 		return list;
 	}
 	
-	public IFilter getFilter(final UUID id) {
+	public IFilter getFilter(final UUID id, final int simpleid) {
 		return new IFilter() {
 			@Override
 			public boolean isBlocked() {
@@ -193,6 +193,11 @@ public class PipeItemsFirewall extends RoutedPipe {
 			@Override
 			public UUID getUUID() {
 				return id;
+			}
+
+			@Override
+			public int getSimpleID() {
+				return simpleid;
 			}
 
 			@Override

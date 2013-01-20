@@ -35,7 +35,7 @@ import net.minecraft.world.World;
 @CCType(name = "LogisticsPipes:Request")
 public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems {
 	
-	private final LinkedList<HashMap<ItemIdentifier, Integer>> _history = new LinkedList<HashMap<ItemIdentifier,Integer>>(); 
+	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<Map<ItemIdentifier,Integer>>(); 
 
 	public PipeItemsRequestLogistics(int itemID) {
 		super(new TemporaryLogic(), itemID);
@@ -77,7 +77,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		}
 	}
 	
-	public LinkedList<HashMap<ItemIdentifier, Integer>> getHistory(){
+	public LinkedList<Map<ItemIdentifier, Integer>> getHistory(){
 		return _history;
 	}
 

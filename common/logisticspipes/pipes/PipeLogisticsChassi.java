@@ -421,7 +421,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list, List<IFilter> filter) {
+	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter) {
 		if (!isEnabled()){
 			return;
 		}

@@ -8,6 +8,7 @@
 
 package logisticspipes.logistics;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.HashMap;
@@ -188,10 +189,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	@Override
-	public Map<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
-		Map<ItemIdentifier, Integer> items = new HashMap<ItemIdentifier, Integer>();
-		Map<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
+		List<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>(ServerRouter.getBiggestSimpleID());
+		for(int i = 0; i < ServerRouter.getBiggestSimpleID(); i++)
+			items.add(new HashMap<ItemIdentifier, Integer>());
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
 		for(SearchNode r: validDestinations){
@@ -206,26 +207,28 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 
 			IProvideItems provider = (IProvideItems) r.node.getPipe();
-			provider.getAllItems(items, new ArrayList<IFilter>(0));
+			provider.getAllItems(items.get(r.node.getSimpleID()), new ArrayList<IFilter>(0));
 			used.set(r.node.getSimpleID(), true);
-		
-			for(SearchNode n:filterpipes) {
-				List<IFilter> list = new LinkedList<IFilter>();
-				list.add(((IFilteringRouter)n.node).getFilter());
-				handleAvailableSubFiltering(n, items, list, used);
-			}
-			for (ItemIdentifier item : items.keySet()){
+		}
+		for(SearchNode n:filterpipes) {
+			List<IFilter> list = new LinkedList<IFilter>();
+			list.add(((IFilteringRouter)n.node).getFilter());
+			handleAvailableSubFiltering(n, items, list, used);
+		}
+		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
+		for(Map<ItemIdentifier, Integer> allItems:items) {
+			for (ItemIdentifier item : allItems.keySet()){
 				if (!allAvailableItems.containsKey(item)){
-					allAvailableItems.put(item, items.get(item));
+					allAvailableItems.put(item, allItems.get(item));
 				} else {
-					allAvailableItems.put(item, allAvailableItems.get(item) + items.get(item));
+					allAvailableItems.put(item, allAvailableItems.get(item) + allItems.get(item));
 				}
 			}
 		}
 		return allAvailableItems;
 	}
 	
-	private void handleAvailableSubFiltering(SearchNode r, Map<ItemIdentifier, Integer> items, List<IFilter> filters, BitSet layer) {
+	private void handleAvailableSubFiltering(SearchNode r, List<Map<ItemIdentifier, Integer>> items, List<IFilter> filters, BitSet layer) {
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
 		for(SearchNode n:((IFilteringRouter)r.node).getRouters()) {
@@ -241,7 +244,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				continue;
 			}
 			IProvideItems provider = (IProvideItems) n.node.getPipe();
-			provider.getAllItems(items, filters);
+			provider.getAllItems(items.get(r.node.getSimpleID()), filters);
 			used.set(n.node.getSimpleID(), true);
 		}
 		for(SearchNode n:filterpipes) {

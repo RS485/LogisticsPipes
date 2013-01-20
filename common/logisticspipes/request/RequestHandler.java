@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -83,7 +84,7 @@ public class RequestHandler {
 	}
 	
 	public static void refresh(EntityPlayerMP player, CoreRoutedPipe pipe, DisplayOptions option) {
-		HashMap<ItemIdentifier, Integer> _availableItems;
+		Map<ItemIdentifier, Integer> _availableItems;
 		LinkedList<ItemIdentifier> _craftableItems;
 		LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 		

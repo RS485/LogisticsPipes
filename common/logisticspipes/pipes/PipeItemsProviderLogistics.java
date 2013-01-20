@@ -247,14 +247,9 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
+	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
 		LogicProvider providerLogic = (LogicProvider) logic;
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
-		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getId());
-		if(allItems == null) {
-			allItems = new HashMap<ItemIdentifier, Integer>();
-		}
-		
 		
 		if (!isEnabled()){
 			return;
@@ -268,7 +263,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 			for (ItemIdentifier currItem : currentInv.keySet()) {
-				if(allItems.containsKey(currItem)) continue;
+				if(items.containsKey(currItem)) continue;
 				
 				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
 				
@@ -297,13 +292,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			}
 		}
 		for(ItemIdentifier item: addedItems.keySet()) {
-			if (!allItems.containsKey(item)) {
-				allItems.put(item, addedItems.get(item));
+			if (!items.containsKey(item)) {
+				items.put(item, addedItems.get(item));
 			} else {
-				allItems.put(item, addedItems.get(item) + allItems.get(item));
+				items.put(item, addedItems.get(item) + items.get(item));
 			}
 		}
-		items.put(this.getRouter().getId(), allItems);
 	}
 
 	@Override
@@ -343,10 +337,8 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	
 	private void updateInv() {
 		itemList.clear();
-		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
-		getAllItems(map, new ArrayList<IFilter>(0));
-		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getId());
-		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
+		Map<ItemIdentifier, Integer> list = new HashMap<ItemIdentifier, Integer>();
+		getAllItems(list, new ArrayList<IFilter>(0));
 		for(ItemIdentifier item :list.keySet()) {
 			itemList.add(new ItemIdentifierStack(item, list.get(item)));
 		}

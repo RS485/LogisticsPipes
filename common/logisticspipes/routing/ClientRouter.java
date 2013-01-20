@@ -159,4 +159,9 @@ public class ClientRouter implements IRouter {
 	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
 		return null;
 	}
+
+	@Override
+	public IRouter getRouter(ForgeDirection insertOrientation) {
+		return null;
+	}
 }

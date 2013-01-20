@@ -18,6 +18,7 @@ import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristRefiller;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
+import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
@@ -91,6 +92,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int ADVANCED_EXTRACTOR_MK3 = 200 + ADVANCED_EXTRACTOR;
 
 	public static final int ELECTRICMANAGER = 300;
+	public static final int ELECTRICBUFFER = 301;
 
 
 	//ACTIVE MODULES
@@ -176,6 +178,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(PROVIDER					, "Provider module"				, ModuleProvider.class);
 		registerModule(PROVIDER_MK2				, "Provider module MK2"			, ModuleProviderMk2.class);
 		registerModule(ELECTRICMANAGER			, "Electric Manager module"		, ModuleElectricManager.class, 96);
+		registerModule(ELECTRICBUFFER			, "Electric Buffer module"		, ModuleElectricBuffer.class, 97);
 		registerModule(BEEANALYZER				, "Bee Analyzer module"			, ModuleApiaristAnalyser.class);
 		registerModule(BEESINK					, "BeeSink module"				, ModuleApiaristSink.class);
 		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);

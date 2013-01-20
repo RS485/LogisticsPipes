@@ -66,7 +66,7 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
 			if(_power.useEnergy(5)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return reply;
 			}
 		}

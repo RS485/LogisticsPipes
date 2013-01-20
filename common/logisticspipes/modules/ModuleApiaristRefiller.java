@@ -81,6 +81,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 						if (!(_power.useEnergy(100))) return;
 						((ISpecialInventory) inv).addItem(stack[0], true, direction);
 						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
 						return;
 					}
 				}
@@ -92,6 +93,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 						if (!(_power.useEnergy(100))) return;
 						((ISpecialInventory) inv).addItem(stack[0], true, direction);
 						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
 						return;
 					}
 				}

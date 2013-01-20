@@ -9,7 +9,9 @@ public class SinkReply {
 		APIARIST_Analyser,
 		APIARIST_Refiller,
 		ItemSink,
-		PassiveSupplier
+		PassiveSupplier,
+		ElectricNetwork_Manager,
+		ElectricNetwork_Buffer,
 	}
 	
 	public FixedPriority fixedPriority;

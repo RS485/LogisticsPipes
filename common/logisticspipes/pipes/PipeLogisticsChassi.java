@@ -400,7 +400,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				((ILegacyActiveModule)x).fullFill(promise, destination);
-				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 2);
+				MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 			}
 		}
 	}

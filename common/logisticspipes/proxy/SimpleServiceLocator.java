@@ -16,7 +16,7 @@ import logisticspipes.logistics.ILogisticsManagerV2;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
@@ -34,9 +34,9 @@ public final class SimpleServiceLocator {
 		buildCraftProxy = bcProxy;
 	}
 	
-	public static IElectricItemProxy electricItemProxy;
-	public static void setElectricItemProxy(final IElectricItemProxy fProxy){
-		electricItemProxy = fProxy;
+	public static IIC2Proxy IC2Proxy;
+	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy){
+		IC2Proxy = ic2Proxy;
 	}
 
 	public static IForestryProxy forestryProxy;

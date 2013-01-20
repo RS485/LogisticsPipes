@@ -198,7 +198,7 @@ outer:
 			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
 			
 			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider() || filter.blockProvider()) continue outer;
+				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue outer;
 			}
 			
 			if (!addedItems.containsKey(currItem)){

@@ -326,8 +326,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void addRelayPoints(List<IRelayItem> relays) {
-		for(IRelayItem relay:relays) {
-			this.relays.add(relay.getUUID());
+		if(relays != null) {
+			for(IRelayItem relay:relays) {
+				this.relays.add(relay.getUUID());
+			}
 		}
 	}
 

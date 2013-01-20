@@ -189,12 +189,16 @@ public class RequestManager {
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
+outer:
 		for(Pair<CraftingTemplate, List<IFilter>> crafter:crafters) {
 			CraftingTemplate template = crafter.getValue1();
 			if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
 				continue;
 			
-			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;			
+			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;		
+			for(IFilter filter:crafter.getValue2()) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(template.getResultStack().getItem()) || filter.blockCrafting()) continue outer;
+			}
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
 
 			int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;

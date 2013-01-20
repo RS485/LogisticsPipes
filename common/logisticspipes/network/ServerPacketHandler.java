@@ -35,6 +35,7 @@ import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
+import logisticspipes.network.packets.PacketPipeBitSet;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
@@ -42,6 +43,7 @@ import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
@@ -319,6 +321,10 @@ public class ServerPacketHandler {
 					packetAv.readData(data);
 					onModBasedItemSinkList(player, packetAv);
 					break;
+				case NetworkConstants.FIREWALL_FLAG_SET:
+					final PacketPipeBitSet packetAw = new PacketPipeBitSet();
+					packetAw.readData(data);
+					onFirewallFlags(player, packetAw);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1287,6 +1293,18 @@ public class ServerPacketHandler {
 		
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
 			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}
+	}
+
+	private static void onFirewallFlags(EntityPlayerMP player, PacketPipeBitSet packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeItemsFirewall) {
+			PipeItemsFirewall firewall = (PipeItemsFirewall) pipe.pipe;
+			firewall.setFlags(packet.flags);
 		}
 	}
 	

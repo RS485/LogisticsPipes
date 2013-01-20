@@ -1,14 +1,21 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import cpw.mods.fml.common.network.Player;
+
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketPipeBitSet;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -17,13 +24,22 @@ import logisticspipes.routing.SearchNode;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.SimpleInventory;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class PipeItemsFirewall extends RoutedPipe {
 
 	private IRouter[] routers = new IRouter[ForgeDirection.VALID_DIRECTIONS.length];
 	private String[] routerIds = new String[ForgeDirection.VALID_DIRECTIONS.length];
+	
+	public SimpleInventory inv = new SimpleInventory(6 * 6, "Filter Inv", 1);
+	private boolean blockProvider = false;
+	private boolean blockCrafer = false;
+	private boolean blockSorting = false;
+	private boolean isBlocking = true;
 	
 	public PipeItemsFirewall(int itemID) {
 		super(new TemporaryLogic(), itemID);
@@ -34,6 +50,17 @@ public class PipeItemsFirewall extends RoutedPipe {
 		return ItemSendMode.Normal;
 	}
 	
+	@Override
+	public boolean blockActivated(World world, int x, int y, int z, EntityPlayer entityplayer) {
+		if(SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
+			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
+			return true;
+		} else {
+			return super.blockActivated(world, x, y, z, entityplayer);
+		}
+	}
+
 	public void ignoreDisableUpdateEntity() {
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			getRouter(dir).update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
@@ -95,6 +122,11 @@ public class PipeItemsFirewall extends RoutedPipe {
 				nbttagcompound.setString("routerId" + i, routerIds[i]);
 			}
 		}
+		inv.writeToNBT(nbttagcompound);
+		nbttagcompound.setBoolean("blockProvider", blockProvider);
+		nbttagcompound.setBoolean("blockCrafer", blockCrafer);
+		nbttagcompound.setBoolean("blockSorting", blockSorting);
+		nbttagcompound.setBoolean("isBlocking", isBlocking);
 	}
 
 	@Override
@@ -106,6 +138,11 @@ public class PipeItemsFirewall extends RoutedPipe {
 				routerIds[i] = nbttagcompound.getString("routerId" + i);
 			}
 		}
+		inv.readFromNBT(nbttagcompound);
+		blockProvider = nbttagcompound.getBoolean("blockProvider");
+		blockCrafer = nbttagcompound.getBoolean("blockCrafer");
+		blockSorting = nbttagcompound.getBoolean("blockSorting");
+		isBlocking = nbttagcompound.getBoolean("isBlocking");
 	}
 
 	@Override
@@ -130,28 +167,25 @@ public class PipeItemsFirewall extends RoutedPipe {
 	}
 	
 	public IFilter getFilter(final UUID id) {
-		//TODO
 		return new IFilter() {
 			@Override
 			public boolean isBlocked() {
-				return true;
+				return isBlocking;
 			}
 
 			@Override
 			public List<ItemIdentifier> getFilteredItems() {
-				List<ItemIdentifier> list = new ArrayList<ItemIdentifier>();
-				list.add(ItemIdentifier.get(1, 0, null));
-				return list;
+				return inv.getItems();
 			}
 
 			@Override
 			public boolean blockProvider() {
-				return false;
+				return blockProvider;
 			}
 
 			@Override
 			public boolean blockCrafting() {
-				return false;
+				return blockCrafer;
 			}
 
 			@Override
@@ -161,8 +195,60 @@ public class PipeItemsFirewall extends RoutedPipe {
 
 			@Override
 			public boolean blockRouting() {
-				return false;
+				return blockSorting;
 			}
 		};
+	}
+
+	public boolean isBlockProvider() {
+		return blockProvider;
+	}
+
+	public void setBlockProvider(boolean blockProvider) {
+		this.blockProvider = blockProvider;
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+	}
+
+	public boolean isBlockCrafer() {
+		return blockCrafer;
+	}
+
+	public void setBlockCrafer(boolean blockCrafer) {
+		this.blockCrafer = blockCrafer;
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+	}
+
+	public boolean isBlockSorting() {
+		return blockSorting;
+	}
+
+	public void setBlockSorting(boolean blockSorting) {
+		this.blockSorting = blockSorting;
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+	}
+
+	public boolean isBlocking() {
+		return isBlocking;
+	}
+
+	public void setBlocking(boolean isBlocking) {
+		this.isBlocking = isBlocking;
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+	}
+	
+	private BitSet getFlags() {
+		BitSet flags = new BitSet();
+		flags.set(0, blockProvider);
+		flags.set(1, blockCrafer);
+		flags.set(2, blockSorting);
+		flags.set(3, isBlocking);
+		return flags;
+	}
+	
+	public void setFlags(BitSet flags) {
+		blockProvider = flags.get(0);
+		blockCrafer = flags.get(1);
+		blockSorting = flags.get(2);
+		isBlocking = flags.get(3);
 	}
 }

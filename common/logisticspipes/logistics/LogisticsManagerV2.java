@@ -144,12 +144,14 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 					item.setTransportMode(TransportMode.Passive);
 				}
 			}
+			List<IRelayItem> list = new LinkedList<IRelayItem>();
+			if(bestReply.getValue3() != null) {
+				for(IFilter filter:bestReply.getValue3()) {
+					list.add(filter);
+				}
+			}
+			item.addRelayPoints(list);
 		}
-		List<IRelayItem> list = new LinkedList<IRelayItem>();
-		for(IFilter filter:bestReply.getValue3()) {
-			list.add(filter);
-		}
-		item.addRelayPoints(list);
 		
 		return item;
 	}

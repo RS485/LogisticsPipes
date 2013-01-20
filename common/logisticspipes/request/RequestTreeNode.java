@@ -1,10 +1,12 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
@@ -69,6 +71,8 @@ public class RequestTreeNode {
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
+			extra.relayPoints = new LinkedList<IRelayItem>();
+			extra.relayPoints.addAll(promise.relayPoints);
 			if(promise instanceof LogisticsExtraPromise) {
 				((LogisticsExtraPromise)promise).extraSource.addExtraPromise(extra);
 			} else {

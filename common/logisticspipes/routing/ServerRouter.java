@@ -53,7 +53,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 //		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
 	}
 	
-	private class LSA {
+	protected class LSA {
 		public HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric;
 		public List<ILogisticsPowerProvider> power;
 	}
@@ -91,23 +91,23 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 
-	private static int _LSDVersion = 0;
-	private int _lastLSDVersion = 0;
+	protected static int _LSDVersion = 0;
+	protected int _lastLSDVersion = 0;
 	
-	private RoutingUpdateThread updateThread = null;
+	protected RoutingUpdateThread updateThread = null;
 	
-	private static RouteLaser _laser = new RouteLaser();
+	protected static RouteLaser _laser = new RouteLaser();
 
-	private static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
-	private static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
-	private static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
-	private static final ReentrantReadWriteLock updateThreadLock = new ReentrantReadWriteLock();
-	private static final Lock updateThreadreadLock = updateThreadLock.readLock();
-	private static final Lock updateThreadwriteLock = updateThreadLock.writeLock();
+	protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
+	protected static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
+	protected static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
+	protected static final ReentrantReadWriteLock updateThreadLock = new ReentrantReadWriteLock();
+	protected static final Lock updateThreadreadLock = updateThreadLock.readLock();
+	protected static final Lock updateThreadwriteLock = updateThreadLock.writeLock();
 	public Object _externalRoutersByCostLock = new Object();
 	
-	private static final ArrayList<LSA> SharedLSADatabase = new ArrayList<LSA>();
-	private LSA _myLsa = new LSA();
+	protected static final ArrayList<LSA> SharedLSADatabase = new ArrayList<LSA>();
+	protected LSA _myLsa = new LSA();
 		
 	/** Map of router -> orientation for all known destinations **/
 	public ArrayList<Pair<ForgeDirection, ForgeDirection>> _routeTable = new ArrayList<Pair<ForgeDirection,ForgeDirection>>();
@@ -117,7 +117,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
 
-	private boolean _blockNeedsUpdate;
+	protected boolean _blockNeedsUpdate;
 	private boolean forceUpdate = true;
 
 	private static int firstFreeId = 1;
@@ -139,7 +139,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.unlock();
 		_LSDVersion = 0;
 		_laser = new RouteLaser();
-		firstFreeId = 1;
 		simpleIdUsedSet.clear();
 	}
 	
@@ -262,7 +261,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	/**
 	 * Rechecks the piped connection to all adjacent routers as well as discover new ones.
 	 */
-	private void recheckAdjacent() {
+	protected void recheckAdjacent() {
 		boolean adjacentChanged = false;
 		CoreRoutedPipe thisPipe = getPipe();
 		if (thisPipe == null) return;
@@ -327,11 +326,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 	}
 	
-	private void SendNewLSA() {
+	protected void SendNewLSA() {
 		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		ArrayList<ILogisticsPowerProvider> power = new ArrayList<ILogisticsPowerProvider>();
-		for (RoutedPipe adjacent : _adjacent.keySet()){
-			neighboursWithMetric.put(adjacent.getRouter(_adjacent.get(adjacent).insertOrientation), new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacent.get(adjacent).metric, _adjacent.get(adjacent).connectionDetails));
+		for (IRouter adjacent : _adjacentRouter.keySet()){
+			neighboursWithMetric.put(adjacent, new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacentRouter.get(adjacent).metric, _adjacentRouter.get(adjacent).connectionDetails));
 		}
 		for (ILogisticsPowerProvider provider : _powerAdjacent){
 			power.add(provider);
@@ -363,18 +362,18 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		//space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
 		Vector<EnumSet<PipeRoutingConnectionType>> closedSet = new Vector<EnumSet<PipeRoutingConnectionType>>(getBiggestSimpleID());
-		closedSet.setSize(getBiggestSimpleID());
-		closedSet.set(this.getSimpleID(), EnumSet.allOf(PipeRoutingConnectionType.class));
+		BitSet objectMapped = new BitSet(routingTableSize);
+		objectMapped.set(this.getPipe().getRouter().getSimpleID(),true);
 
 		/** The total cost for the candidate route **/
 		PriorityQueue<SearchNode> candidatesCost = new PriorityQueue<SearchNode>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
 		
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
-		for (Entry<RoutedPipe, ExitRoute> pipe : _adjacent.entrySet()){
+		for (Entry<IRouter, ExitRoute> pipe :  _adjacentRouter.entrySet()){
 			ExitRoute currentE = pipe.getValue();
 			//currentE.connectionDetails.retainAll(blocksPower);
-			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(currentE.insertOrientation), currentE.metric, pipe.getValue().connectionDetails.clone(), pipe.getKey().getRouter(currentE.insertOrientation)));
+			candidatesCost.add(new SearchNode(pipe.getKey().getRouter(currentE.insertOrientation), currentE.metric, pipe.getValue().connectionDetails, pipe.getKey().getRouter(currentE.insertOrientation)));
 			//objectMapped.set(pipe.getKey().getSimpleID(),true);
 		}
 

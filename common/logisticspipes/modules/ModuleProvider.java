@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -20,7 +21,9 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -33,11 +36,12 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.entity.player.EntityPlayer;
@@ -135,8 +139,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
-			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
+			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
 			if (sent == 0)
 				break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
@@ -146,7 +150,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+		}
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())) {
 			canProvide -= donePromisses.get(tree.getStack().getItem());
@@ -155,14 +162,18 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		//TODO: FIX THIS CAST
 		promise.sender = (IProvideItems) _itemSender;
+		List<IRelayItem> relays = new LinkedList<IRelayItem>();
+		for(IFilter filter:filters) {
+			relays.add(filter);
+		}
+		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
 	@Override
@@ -171,37 +182,53 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public Map<ItemIdentifier, Integer> getAllItems() {
-		if (_invProvider.getInventory() == null) return new HashMap<ItemIdentifier, Integer>();;
-		
-		Map<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>();
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
+		if (_invProvider.getInventory() == null) return;
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
+		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceUUID());
+		if(allItems == null) {
+			allItems = new HashMap<ItemIdentifier, Integer>();
+		}
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
-		for (ItemIdentifier currItem : currentInv.keySet()){
-			if ( hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) 
-							|| (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
-
-			if (!allItems.containsKey(currItem)){
-				allItems.put(currItem, currentInv.get(currItem));
+outer:
+		for (ItemIdentifier currItem : currentInv.keySet()) {
+			if(allItems.containsKey(currItem)) continue;
+			
+			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
+			
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue outer;
+			}
+			
+			if (!addedItems.containsKey(currItem)){
+				addedItems.put(currItem, currentInv.get(currItem));
 			}else {
-				allItems.put(currItem, allItems.get(currItem) + currentInv.get(currItem));
+				addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
 			}
 		}
 		
 		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = allItems.keySet().iterator();
+		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
 		while(iterator.hasNext()){
 			ItemIdentifier item = iterator.next();
 		
-			int remaining = allItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
 			if (remaining < 1){
 				iterator.remove();
 			} else {
-				allItems.put(item, remaining);	
+				addedItems.put(item, remaining);	
 			}
 		}
-		return allItems;
+		for(ItemIdentifier item: addedItems.keySet()) {
+			if (!allItems.containsKey(item)) {
+				allItems.put(item, addedItems.get(item));
+			} else {
+				allItems.put(item, addedItems.get(item) + allItems.get(item));
+			}
+		}
+		items.put(_itemSender.getSourceUUID(), allItems);
 	}
 
 /*	@Override
@@ -213,7 +240,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return null;
 	}*/
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getInventory() == null) {
 			_orderManager.sendFailed();
@@ -234,7 +261,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		int sent = removed.stackSize;
-		_itemSender.sendStack(removed, destination, itemSendMode());
+		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
 		_orderManager.sendSuccessfull(sent);
 		return sent;
 	}
@@ -320,7 +347,9 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		Map<ItemIdentifier, Integer> list = getAllItems();
+		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		getAllItems(map, new ArrayList<IFilter>(0));
+		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceUUID());
 		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			displayList.add(new ItemIdentifierStack(item, list.get(item)));
@@ -365,5 +394,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
+	}
+
+	@Override
+	public IRouter getRouter() {
+		return _itemSender.getRouter();
 	}
 }

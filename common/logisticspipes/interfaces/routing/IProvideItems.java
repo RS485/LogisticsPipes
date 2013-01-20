@@ -8,17 +8,19 @@
 
 package logisticspipes.interfaces.routing;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 
 public interface IProvideItems {
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses);
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filter);
 	public void fullFill(LogisticsPromise promise, IRequestItems destination);
 	public int getAvailableItemCount(ItemIdentifier item);
-	public Map<ItemIdentifier, Integer> getAllItems();
+	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);
+	public IRouter getRouter();
 }

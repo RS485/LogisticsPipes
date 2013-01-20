@@ -9,24 +9,24 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.inventory.ISpecialInventory;
 
 public class ModuleApiaristRefiller implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
-	private int maxInvSize = 12;
-	private int currentTicksEmpty = 0;
-	private int maxTicksEmpty = 50;
-	private boolean functionalStatus = true;
+	private ISendRoutedItem _itemSender;
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
 	private IWorldProvider _world;
 	
+	private int currentTickCount = 0;
+	private int ticksToOperation = 200;
 	public ModuleApiaristRefiller() {}
 	
 	@Override
@@ -34,48 +34,11 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
+		_itemSender = itemSender;
 	}
-	
-	private boolean apiaryCheck(ItemStack item) {
-		if (!SimpleServiceLocator.forestryProxy.isBee(item)) {
-			return false;
-		}
-		IInventory saidInventory = _invProvider.getInventory();
-		if (saidInventory == null) {
-			return false;
-		}
-		//TODO implement better method of limiting function to only apiary
-		if ((saidInventory.getSizeInventory() < 2) || (saidInventory.getSizeInventory() > maxInvSize)) {
-			return false;
-		}
-		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
-		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
-		if (SimpleServiceLocator.forestryProxy.isQueen(apiarySlot1)) {
-			return false;
-		}
-		if (SimpleServiceLocator.forestryProxy.isDrone(item) && (apiarySlot2 != null)) {
-			return false;
-		}
-		if (SimpleServiceLocator.forestryProxy.isPrincess(item) && (apiarySlot1 !=null)) {
-			return false;
-		}
-		return true;
-	}
-	
+		
 	@Override
 	public SinkReply sinksItem(ItemStack item) {
-		if (functionalStatus) {
-			if (apiaryCheck(item)) {
-				if (_power.useEnergy(50)) {
-					SinkReply reply = new SinkReply();
-					reply.fixedPriority = FixedPriority.APIARIST_Refiller;
-					reply.isDefault = false;
-					reply.isPassive = true;
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
-					return reply;
-				}
-			}
-		}
 		return null;
 	}
 	
@@ -99,31 +62,43 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		/* Disables modules if inventory has been empty for too long */
-		IInventory saidInventory = _invProvider.getInventory();
-		if (saidInventory == null) {
-			return;
-		}
-		if ((saidInventory.getSizeInventory() < 2) || (saidInventory.getSizeInventory() > maxInvSize)) {
-			return;
-		}
-		ItemStack apiarySlot1 = saidInventory.getStackInSlot(0);
-		ItemStack apiarySlot2 = saidInventory.getStackInSlot(1);
-		if (functionalStatus == true) {
-			if (apiarySlot1 == null && apiarySlot2 == null) {
-				currentTicksEmpty++;
+		doOperation();
+	}
+
+	private void doOperation() {
+		if (++currentTickCount < ticksToOperation) return;
+		currentTickCount = 0;
+        if (!(_power.canUseEnergy(100))) return;
+		IInventory inv = _invProvider.getRawInventory();
+		if (inv instanceof ISpecialInventory) {
+			ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
+			ItemStack[] stack = ((ISpecialInventory) inv).extractItem(true, direction, 1);
+			if (stack[0] == null) return;
+			//if no queen/princess
+			if ((inv.getStackInSlot(0) == null)) {
+				if (SimpleServiceLocator.forestryProxy.isPrincess(stack[0])) {
+					if (SimpleServiceLocator.forestryProxy.isPurebred(stack[0])) {
+						if (!(_power.useEnergy(100))) return;
+						((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+						return;
+					}
+				}
 			}
-		}
-		if (currentTicksEmpty > maxTicksEmpty) {
-			currentTicksEmpty = 0;
-			functionalStatus = false;
-		}
-		if (apiarySlot1 != null || apiarySlot2 != null) {
-			functionalStatus = true;
-			currentTicksEmpty = 0;
+			//if princess w/out drone
+			if ((inv.getStackInSlot(1) == null) && !(SimpleServiceLocator.forestryProxy.isQueen(inv.getStackInSlot(0)))) {
+				if (SimpleServiceLocator.forestryProxy.isDrone(stack[0])) {
+					if (SimpleServiceLocator.forestryProxy.isPurebred(stack[0])) {
+						if (!(_power.useEnergy(100))) return;
+						((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+						return;
+					}
+				}
+			}
+			//Extract unneeded items
+			if (!(_power.useEnergy(20))) return;
+			_itemSender.sendStack(stack[0]);
 		}
 	}
-	
-	
-
 }

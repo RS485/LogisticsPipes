@@ -9,7 +9,9 @@
 package logisticspipes.logisticspipes;
 
 import java.util.List;
+import java.util.UUID;
 
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -32,10 +34,16 @@ public interface IRoutedItem {
 	}
 	
 	public int getDestination();
+	public UUID getDestinationUUID();
 	public void setDestination(int destination);
 	public void changeDestination(int destination);
 	public int getSource();
 	public void setSource(int source);
+	
+	public void addRelayPoints(List<IRelayItem> relays);
+	public void itemRelayed();
+	public boolean isItemRelayed();
+	public void replaceRelayID(int newId);
 	
 //	public boolean isPassive();
 //	public void setPassive(boolean isPassive);
@@ -76,4 +84,5 @@ public interface IRoutedItem {
 	public boolean isUnRouted();
 	
 	public IRoutedItem getCopy();
+	public void checkIDFromUUID();
 }

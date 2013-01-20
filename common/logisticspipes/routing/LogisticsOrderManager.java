@@ -9,13 +9,16 @@
 package logisticspipes.routing;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 
 
 public class LogisticsOrderManager {
@@ -27,7 +30,7 @@ public class LogisticsOrderManager {
 	}
 	
 	//private LinkedList<LogisticsRequest> _orders = new LinkedList<LogisticsRequest>();
-	private LinkedList<Pair<ItemIdentifierStack,IRequestItems>> _orders = new LinkedList<Pair<ItemIdentifierStack,IRequestItems>>();
+	private LinkedList<Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>>> _orders = new LinkedList<Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>>>();
 	private IChangeListener listener = null;
 	
 	private void listen() {
@@ -59,7 +62,7 @@ public class LogisticsOrderManager {
 		return _orders.size() > 0;
 	}
 	
-	public Pair<ItemIdentifierStack,IRequestItems> getNextRequest(){
+	public Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> getNextRequest(){
 		return _orders.getFirst();
 	}
 	
@@ -79,7 +82,7 @@ public class LogisticsOrderManager {
 		listen();
 	}
 
-	public void addOrder(ItemIdentifierStack stack, IRequestItems requester) {
+	public void addOrder(ItemIdentifierStack stack, IRequestItems requester, List<IRelayItem> relays) {
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			if (request.getValue1().getItem() == stack.getItem()) {
 				if(request.getValue2() == requester) {
@@ -89,7 +92,7 @@ public class LogisticsOrderManager {
 				}
 			}
 		}
-		_orders.addLast(new Pair<ItemIdentifierStack,IRequestItems>(stack,requester));
+		_orders.addLast(new Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>>(stack,requester, relays));
 		listen();
 	}
 	

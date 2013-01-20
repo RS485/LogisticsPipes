@@ -47,6 +47,7 @@ import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
+import logisticspipes.network.packets.PacketPipeBitSet;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
@@ -54,6 +55,7 @@ import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRoutingStats;
 import logisticspipes.pipes.PipeItemsApiaristSink;
+import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
@@ -297,6 +299,10 @@ public class ClientPacketHandler {
 					packetAv.readData(data);
 					onModBasedItemSinkList(packetAv);
 					break;
+				case NetworkConstants.FIREWALL_FLAG_SET:
+					final PacketPipeBitSet packetAw = new PacketPipeBitSet();
+					packetAw.readData(data);
+					onFirewallFlags(packetAw);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -827,6 +833,18 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
 			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
 			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).ModListChanged();
+		}
+	}
+
+	private static void onFirewallFlags(PacketPipeBitSet packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getClientMainWorld(), packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		
+		if(pipe.pipe instanceof PipeItemsFirewall) {
+			PipeItemsFirewall firewall = (PipeItemsFirewall) pipe.pipe;
+			firewall.setFlags(packet.flags);
 		}
 	}
 	

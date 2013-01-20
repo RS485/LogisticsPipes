@@ -9,6 +9,7 @@ public class GuiIDs {
 	public static final int GUI_SupplierPipe_ID = 14;
 	public static final int GUI_Freq_Card_ID = 15;
 	public static final int GUI_Inv_Sys_Connector_ID = 16;
+	public static final int GUI_FIREWALL = 17;
 	
 	//Modules
 	public static final int GUI_Module_Extractor_ID = 20;

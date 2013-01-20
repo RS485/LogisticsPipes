@@ -15,6 +15,7 @@ public interface IRequestItems extends Comparable<IRequestItems>{
 	public IRouter getRouter();
 	public void itemCouldNotBeSend(ItemIdentifierStack item);
 	public boolean useEnergy(int amount);
+	public boolean useEnergy(int amount, boolean flag);
 	public int getID();
 	
 	@Override

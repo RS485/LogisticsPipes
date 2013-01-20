@@ -12,10 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import net.minecraftforge.common.ForgeDirection;
+
 
 public interface IRouterManager {
 	int getIDforUUID(UUID id);
-	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
+	public IRouter getOrCreateRouter(UUID routerUUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
+	public IRouter getOrCreateFirewallRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir);
 	public IRouter getRouter(int id);
 	public boolean isRouter(int id);
 	public void removeRouter(int id);

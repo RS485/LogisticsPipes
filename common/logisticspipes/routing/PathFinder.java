@@ -172,8 +172,7 @@ class PathFinder {
 					//Don't go where we have been before
 					continue;
 				}
-
-				if(isDirectConnection) {	//ISC doesn't pass power
+				if(isDirectConnection) {  //ISC doesn't pass power
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
 				}
 				if(currentPipe.pipe instanceof PipeItemsObsidian){	//Obsidian seperates networks

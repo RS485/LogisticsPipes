@@ -24,7 +24,9 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logic.BaseChassiLogic;
@@ -205,20 +207,22 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public void sendStack(ItemStack stack, int destination) {
+	public void sendStack(ItemStack stack, int destination, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, int destination, ItemSendMode mode) {
+	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
@@ -373,7 +377,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -382,7 +386,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				((ILegacyActiveModule)x).canProvide(tree, donePromisses);
+				((ILegacyActiveModule)x).canProvide(tree, donePromisses, filters);
 			}
 		}
 	}
@@ -417,17 +421,17 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public Map<ItemIdentifier, Integer> getAllItems() {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list, List<IFilter> filter) {
 		if (!isEnabled()){
-			return new HashMap<ItemIdentifier, Integer>();
+			return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
-				return ((ILegacyActiveModule)x).getAllItems();
+				((ILegacyActiveModule)x).getAllItems(list, filter);
+				return;
 			}
 		}
-		return new HashMap<ItemIdentifier, Integer>();
 	}
 	
 	@Override

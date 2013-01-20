@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraftforge.common.ForgeDirection;
+
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -56,17 +58,18 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	}
 
 	@Override
-	public IRouter getOrCreateRouter(int id, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicate) {
+	public IRouter getOrCreateRouter(UUID UUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicate) {
 		IRouter r = null;
+		int id=this.getIDforUUID(UUid);
 		if(id>0)
 			this.getRouter(id);
-		if (r == null){
+		if (r == null || !r.isAt(dimension, xCoord, yCoord, zCoord)){
 			if(MainProxy.isClient()) {
 				synchronized (_routersClient) {
 					for (IRouter r2:_routersClient)
 						if (r2.isAt(dimension, xCoord, yCoord, zCoord))
 							return r2;
-					r = new ClientRouter(null, dimension, xCoord, yCoord, zCoord);
+					r = new ClientRouter(UUid, dimension, xCoord, yCoord, zCoord);
 					_routersClient.add(r);
 				}
 			} else {
@@ -74,8 +77,38 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 					for (IRouter r2:_routersServer)
 						if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord))
 							return r2;
-				r = new ServerRouter(null, dimension, xCoord, yCoord, zCoord);
+				r = new ServerRouter(UUid, dimension, xCoord, yCoord, zCoord);
 				
+				int rId= r.getSimpleID();
+				if(_routersServer.size()>rId)
+					_routersServer.set(rId, r);
+				else {
+					_routersServer.ensureCapacity(rId+1);
+					while(_routersServer.size()<=rId)
+						_routersServer.add(null);
+					_routersServer.set(rId, r);
+				}
+				this._uuidMap.put(r.getId(), r.getSimpleID());
+			}
+			lastRouterAdded = System.currentTimeMillis();
+		}
+		return r;
+	}
+
+	@Override
+	public IRouter getOrCreateFirewallRouter(UUID UUid, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir) {
+		IRouter r = null;
+		int id=this.getIDforUUID(UUid);
+		if(id>0)
+			this.getRouter(id);
+		if (r == null || !r.isAt(dimension, xCoord, yCoord, zCoord)){
+			if(MainProxy.isClient()) {
+				r = new ClientRouter(UUid, dimension, xCoord, yCoord, zCoord);
+				synchronized (_routersClient) {
+					_routersClient.add(r);
+				}
+			} else {
+				r = new FilteringRouter(UUid, dimension, xCoord, yCoord, zCoord, dir);
 				int rId= r.getSimpleID();
 				if(_routersServer.size()>rId)
 					_routersServer.set(rId, r);

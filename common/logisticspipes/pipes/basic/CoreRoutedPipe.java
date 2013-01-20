@@ -76,8 +76,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected boolean stillNeedReplace = true;
 	
-	private IRouter router;
-	private String routerId = null;
+	protected IRouter router;
+	protected String routerId;
 	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
 	protected int _delayOffset = 0;
@@ -293,22 +293,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(worldObj.getWorldTime() % 10 != 0) return;
 		if(router == null) return;
 		boolean flag;
-		if((flag = canUsePower()) != _textureBufferPowered) {
+		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender(false);
 			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 		}
 	}
 	
-	private boolean canUsePower() {
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(1)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	public abstract TextureType getCenterTexture();
 	
@@ -404,9 +395,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if (router == null){
 			synchronized (routerIdLock) {
 				
-				int routerIntId = -1;
+				UUID routerIntId = null;
 				if(routerId!=null && !routerId.isEmpty())
-					routerIntId = SimpleServiceLocator.routerManager.getIDforUUID(UUID.fromString(routerId));
+					routerIntId = UUID.fromString(routerId);
 				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, false);
 			}
 		}
@@ -593,22 +584,42 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
-	public boolean useEnergy(int amount) {
+	public boolean canUseEnergy(int amount) {
 		if(MainProxy.isClient()) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean useEnergy(int amount) {
+		return useEnergy(amount, true);
+	}
+		
+	public boolean useEnergy(int amount, boolean flag) {
+		if(MainProxy.isClient()) return false;
+		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		if(list == null) return false;
+		for(ILogisticsPowerProvider provider: list) {
+			if(amount == 0) return true;
+			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);
 				int particlecount = amount;
-				if (particlecount > 5) {
-					particlecount = 5;
+				if (particlecount > 10) {
+					particlecount = 10;
 				}
 				if (particlecount == 0) {
 					particlecount = 1;
 				}
-				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				if(flag) {
+					MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				}
 				return true;
 			}
 		}

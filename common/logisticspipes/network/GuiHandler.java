@@ -5,6 +5,7 @@ import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
+import logisticspipes.gui.GuiFirewall;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLiquidBasic;
@@ -54,6 +55,7 @@ import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
@@ -365,6 +367,17 @@ public class GuiHandler implements IGuiHandler {
 				dummy = new DummyContainer(player.inventory, ((PipeLiquidBasic)pipe.pipe).filterInv);
 				dummy.addLiquidSlot(0, ((PipeLiquidBasic)pipe.pipe).filterInv, 28, 15);
 				dummy.addNormalSlotsForPlayerInventory(10, 45);
+				return dummy;
+				
+			case GuiIDs.GUI_FIREWALL:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
+				dummy = new DummyContainer(player.inventory, ((PipeItemsFirewall)pipe.pipe).inv);
+				dummy.addNormalSlotsForPlayerInventory(33, 147);
+				for(int i = 0;i < 6;i++) {
+					for(int j = 0;j < 6;j++) {
+						dummy.addDummySlot(i*6 + j, 0, 0);
+					}
+				}
 				return dummy;
 				
 			default:break;
@@ -685,6 +698,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Liquid_Basic_ID:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLiquidBasic))) return null;
 				return new GuiLiquidBasic(player, ((PipeLiquidBasic)pipe.pipe).filterInv);
+
+			case GuiIDs.GUI_FIREWALL:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
+				return new GuiFirewall((PipeItemsFirewall) pipe.pipe, player);
 				
 			default:break;
 			}

@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -26,6 +27,8 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -54,7 +57,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -242,8 +245,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			
 			while (extracted.stackSize > 0) {
 				int numtosend = Math.min(extracted.stackSize, ItemIdentifier.get(extracted).getMaxStackSize());
-				if (_orderManager.hasOrders()){
-					Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
+				if (_orderManager.hasOrders()) {
+					Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> order = _orderManager.getNextRequest();
 					numtosend = Math.min(numtosend, order.getValue1().stackSize);
 					ItemStack stackToSend = extracted.splitStack(numtosend);
 					itemsleft -= numtosend;
@@ -253,6 +256,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					item.setSource(this.getRouter().getSimpleID());
 					item.setDestination(order.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
+					item.addRelayPoints(order.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize);
 				} else {
@@ -287,7 +291,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -296,6 +300,12 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		if (_extras < 1) return;
 		ItemIdentifier providedItem = providedItem();
 		if (tree.getStack().getItem() != providedItem) return;
+
+		
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+		}
+		
 		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
 		if (alreadyPromised >= _extras) return;
 		int remaining = _extras - alreadyPromised;
@@ -305,6 +315,11 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		promise.sender = this;
 		promise.extraSource = tree;
 		promise.provided = true;
+		List<IRelayItem> relays = new LinkedList<IRelayItem>();
+		for(IFilter filter:filters) {
+			relays.add(filter);
+		}
+		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 
@@ -342,7 +357,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		if (promise instanceof LogisticsExtraPromise && ((LogisticsExtraPromise)promise).provided) {
 			_extras -= promise.numberOfItems;
 		}
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
 	@Override
@@ -357,9 +372,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public Map<ItemIdentifier, Integer> getAllItems() {
-		return new HashMap<ItemIdentifier, Integer>();
-	}
+	public void getAllItems(Map<ItemIdentifier, Integer> list,List<IFilter> filters) {}
 
 	@Override
 	public ItemIdentifier getCraftedItem() {

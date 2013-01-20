@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,7 +97,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	@CCCommand(description="Asks for all available ItemIdentifier inside the Logistics Network")
 	@CCQueued(event="available_items_return")
 	public List<Pair<ItemIdentifier, Integer>> getAvailableItems() {
-		HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
+		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
 		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<Pair<ItemIdentifier, Integer>>();
 		for(ItemIdentifier item:items.keySet()) {
 			int amount = items.get(item);

@@ -8,19 +8,24 @@
 
 package logisticspipes.routing;
 
+import java.util.List;
+
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.utils.ItemIdentifier;
 
 public class LogisticsPromise {
 	public ItemIdentifier item;
 	public int numberOfItems;
 	public IProvideItems sender;
+	public List<IRelayItem> relayPoints;
 	
 	public LogisticsPromise copy() {
 		LogisticsPromise result = new LogisticsPromise();
 		result.item = item;
 		result.numberOfItems = numberOfItems;
 		result.sender = sender;
+		result.relayPoints = relayPoints;
 		return result;
 	}
 }

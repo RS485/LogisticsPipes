@@ -83,6 +83,8 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 
 	@Override
 	public SinkReply sinksItem(ItemStack stack) {
+		IInventory inv = _invProvider.getInventory();
+		if (inv == null) return null;
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
 			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return positiveSinkReply();
@@ -97,9 +99,9 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	}
 
 	private SinkReply positiveSinkReply() {
-		if (!_power.useEnergy(5)) return null;
+		if (!_power.useEnergy(1)) return null;
 		SinkReply reply = new SinkReply();
-		reply.fixedPriority = FixedPriority.ElectricNetwork_Manager;
+		reply.fixedPriority = FixedPriority.ElectricNetwork;
 		reply.isPassive = true;
 		reply.maxNumberOfItems = 1;
 		MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
@@ -139,7 +141,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 			if (stack == null) return;
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
-				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork_Buffer)) {
+				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork)) {
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 						_itemSender.sendStack(inv.decrStackSize(i,1));
@@ -147,7 +149,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 					}
 				}
 				//If item set to charge  and its fully charged, then extract it.
-				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork_Buffer)) {
+				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork)) {
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 						_itemSender.sendStack(inv.decrStackSize(i,1));

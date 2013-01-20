@@ -24,7 +24,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	private IWorldProvider _world;
 	
 	private int currentTickCount = 0;
-	private int ticksToAction = 100;
+	private int ticksToAction = 80;
 
 	public ModuleElectricBuffer() {}
 
@@ -58,9 +58,9 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	}
 
 	private SinkReply positiveSinkReply() {
-		if (!_power.useEnergy(5)) return null;
+		if (!_power.useEnergy(1)) return null;
 		SinkReply reply = new SinkReply();
-		reply.fixedPriority = FixedPriority.ElectricNetwork_Buffer;
+		reply.fixedPriority = FixedPriority.ElectricNetwork;
 		reply.isPassive = true;
 		MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 		return reply;
@@ -82,7 +82,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				if (SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork_Manager)) {
+				if (SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork)) {
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 					_itemSender.sendStack(inv.decrStackSize(i, 1));
 					return;

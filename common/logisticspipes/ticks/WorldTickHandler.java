@@ -3,6 +3,7 @@ package logisticspipes.ticks;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
@@ -23,10 +24,13 @@ public class WorldTickHandler implements ITickHandler {
 	
 	public static LinkedList<TileGenericPipe> clientPipesToReplace = new LinkedList<TileGenericPipe>();
 	public static LinkedList<TileGenericPipe> serverPipesToReplace = new LinkedList<TileGenericPipe>();
+	private Field entitiesToLoad = null;
+	private Field delayedEntitiesToLoad = null;
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		LinkedList<TileGenericPipe> localList;
@@ -34,6 +38,20 @@ public class WorldTickHandler implements ITickHandler {
 			localList = clientPipesToReplace;
 		} else {
 			localList = serverPipesToReplace;
+		}
+		if(entitiesToLoad == null || delayedEntitiesToLoad == null) {
+			try {
+				entitiesToLoad = PipeTransportItems.class.getDeclaredField("entitiesToLoad");
+				entitiesToLoad.setAccessible(true);
+				delayedEntitiesToLoad = PipeTransportItems.class.getDeclaredField("delayedEntitiesToLoad");
+				delayedEntitiesToLoad.setAccessible(true);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
 		}
 		while(localList.size() > 0) {
 			try {
@@ -59,6 +77,12 @@ public class WorldTickHandler implements ITickHandler {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {
 						for(EntityData entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
+							entity.item.setContainer(newTile);
+						}
+						for(EntityData entity:((List<EntityData>)entitiesToLoad.get((PipeTransportItems)newTile.pipe.transport))) {
+							entity.item.setContainer(newTile);
+						}
+						for(EntityData entity:((List<EntityData>)delayedEntitiesToLoad.get((PipeTransportItems)newTile.pipe.transport))) {
 							entity.item.setContainer(newTile);
 						}
 					}

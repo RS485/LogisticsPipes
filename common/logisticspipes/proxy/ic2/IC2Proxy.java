@@ -82,6 +82,27 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public void addCraftingRecipes() {
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+			"CGC", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), Items.getItem("advancedCircuit"),
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+			" G ", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), Items.getItem("advancedCircuit"),
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+
+
 		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			"CGD", 
 			"rBr", 

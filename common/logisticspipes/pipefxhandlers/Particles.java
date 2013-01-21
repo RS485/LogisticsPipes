@@ -8,4 +8,15 @@ public class Particles {
 	public static final int GoldParticle = 5;
 	public static final int VioletParticle = 6;
 	public static final int OrangeParticle = 7;
+	
+	/**
+	 * General color arangement:
+	 * SinkReply: blue
+	 * Extract: orange
+	 * Provide/request: violet
+	 * Use power: gold
+	 * Render update: green
+	 * Power status change: red
+	 * Special cases: white
+	 */
 }

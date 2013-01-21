@@ -20,6 +20,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
@@ -41,6 +42,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	private ISendRoutedItem _itemSender;
 	private IChassiePowerProvider _power;
 	private SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
+	private IWorldProvider _world;
 	
 	private int slot = 0;
 	private int xCoord = 0;
@@ -60,6 +62,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
 	protected int ticksToAction(){
@@ -156,6 +159,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			int count = Math.min(itemsToExtract(), stackToSend.stackSize);
 			
 			while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 				count--;
 			}
 			

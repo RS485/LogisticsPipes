@@ -143,7 +143,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId(), order.getValue3());
 			if (sent == 0)
 				break;
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}

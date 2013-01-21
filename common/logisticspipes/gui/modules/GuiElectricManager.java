@@ -35,10 +35,10 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 		super.initGui();
 	    //Default item toggle:
 		controlList.clear();
-		controlList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler() {
+		controlList.add(new GuiStringHandlerButton(0, width / 2 - 6, height / 2 - 34, 88, 20, new GuiStringHandlerButton.StringHandler() {
 			@Override
 			public String getContent() {
-				return _module.isDischargeMode() ? "Yes" : "No";
+				return _module.isDischargeMode() ? "Discharge Items" : "Charge Items";
 			}
 		}));
 	}
@@ -78,7 +78,6 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
-		fontRenderer.drawString("Discharge:", 65, 45, 0x404040);
 	}
 
 	@Override

@@ -206,7 +206,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId(), order.getValue3());
 			if (sent == 0)
 				break;
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
 		}

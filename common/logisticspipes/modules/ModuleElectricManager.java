@@ -25,6 +25,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
@@ -79,40 +80,32 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 		_world = world;
 	}
 
-	public static int getCharge(ItemStack item)
-	{
-		if (SimpleServiceLocator.electricItemProxy.isElectricItem(item) && item.hasTagCompound())
-			return item.getTagCompound().getInteger("charge");
-		else
-			return 0;
-	}
-
-	public boolean findElectricItem(ItemStack item, boolean discharged, boolean partial) {
-		if (!SimpleServiceLocator.electricItemProxy.isElectricItem(item)) return false;
-
-		for (int i = 0; i < _filterInventory.getSizeInventory(); i++){
-			ItemStack stack = _filterInventory.getStackInSlot(i);
-			if (stack == null) continue;
-			if (discharged && SimpleServiceLocator.electricItemProxy.isDischarged(item,partial,stack.getItem()))
-				return true;
-			if (!discharged && SimpleServiceLocator.electricItemProxy.isCharged(item,partial,stack.getItem()))
-				return true;
-		}
-		return false;
-	}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
-		if (findElectricItem(item, !isDischargeMode(), true)) {
-			SinkReply reply = new SinkReply();
-			reply.fixedPriority = FixedPriority.PassiveSupplier;
-			reply.isPassive = true;
-			if(_power.useEnergy(2)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
-				return reply;
-			}
+	public SinkReply sinksItem(ItemStack stack) {
+		IInventory inv = _invProvider.getInventory();
+		if (inv == null) return null;
+		if (isOfInterest(stack)) {
+			//If item is full and in discharge mode, sink.
+			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return positiveSinkReply();
+			
+			//If item is empty and in charge mode, sink.
+			if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) return positiveSinkReply();
+			
+			//If item is partially charged, sink.
+			if (SimpleServiceLocator.IC2Proxy.isPartiallyCharged(stack)) return positiveSinkReply();
 		}
 		return null;
+	}
+
+	private SinkReply positiveSinkReply() {
+		if (!_power.useEnergy(1)) return null;
+		SinkReply reply = new SinkReply();
+		reply.fixedPriority = FixedPriority.ElectricNetwork;
+		reply.isPassive = true;
+		reply.maxNumberOfItems = 1;
+		MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+		return reply;
 	}
 
 	@Override
@@ -144,19 +137,46 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 		IInventory inv = _invProvider.getInventory();
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
-			ItemStack item = inv.getStackInSlot(i);
-			if (item != null && findElectricItem(item, isDischargeMode(), false)) {
-				if(_power.useEnergy(6)) {
-					_itemSender.sendStack(inv.decrStackSize(i,1));
+			ItemStack stack = inv.getStackInSlot(i);
+			if (stack == null) return;
+			if (isOfInterest(stack)) {
+				//If item set to discharge and its fully discharged, then extract it.
+				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork)) {
+					if(_power.useEnergy(10)) {
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+						_itemSender.sendStack(inv.decrStackSize(i,1));
+						return;
+					}
+				}
+				//If item set to charge  and its fully charged, then extract it.
+				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork)) {
+					if(_power.useEnergy(10)) {
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+						_itemSender.sendStack(inv.decrStackSize(i,1));
+						return;
+					}
 				}
 			}
 		}
 	}
 
+	private boolean isOfInterest(ItemStack stack) {
+		if (!SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) return false;
+		String stackName = stack.getItemName();
+		for (int i = 0; i < _filterInventory.getSizeInventory(); i++) {
+			ItemStack fStack = _filterInventory.getStackInSlot(i);
+			if (fStack == null) continue;
+			String fStackName = fStack.getItemName();
+			if (stackName.equals(fStackName)) return true;
+			continue;
+		}
+		return false;
+	}	
+
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
-		list.add("Discharge Mode: " + (isDischargeMode() ? "Yes" : "No"));
+		list.add("Mode: " + (isDischargeMode() ? "Discharge Items" : "Charge Items"));
 		list.add("Supplied: ");
 		list.add("<inventory>");
 		list.add("<that>");

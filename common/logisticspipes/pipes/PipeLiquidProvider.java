@@ -153,7 +153,7 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 		List<Pair<TileEntity,ForgeDirection>> adjTanks = getAdjacentTanks(false);
 		//Try to put liquid into all adjacent tanks.
 		for (int i = 0; i < adjTanks.size(); i++) {
-			Pair pair = adjTanks.get(i);
+			Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
 			ITankContainer tank = (ITankContainer) pair.getValue1();
 			ForgeDirection dir = (ForgeDirection) pair.getValue2();
 			int filled = tank.fill(dir, liquid, true);
@@ -165,7 +165,7 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 		//If liquids still exist,
 		if (netAmount > totalFilled) {
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
-			Pair replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
+			Pair<UUID, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
 			UUID dest = (UUID) replies.getValue1();
 			routedItem.setDestination(dest);
 			routedItem.setTransportMode(TransportMode.Passive);

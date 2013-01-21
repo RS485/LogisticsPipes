@@ -52,6 +52,7 @@ import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
+import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.main.LogisticsWorldManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
@@ -242,6 +243,7 @@ public class LogisticsPipes {
 			new RoutingTableUpdateThread(i);
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
+		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
 	}
 	
 	@PreInit

@@ -6,6 +6,7 @@ import logisticspipes.network.packets.PacketLiquidUpdate;
 import logisticspipes.pipes.basic.liquid.LogisitcsLiquidConnectionTransport;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
 import logisticspipes.proxy.MainProxy;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ILiquidTank;
@@ -264,4 +265,10 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 		return null;
 
 	}
+
+	@Override
+	protected boolean isItemExitable(ItemStack stack) {
+		return true;
+	}
+	
 }

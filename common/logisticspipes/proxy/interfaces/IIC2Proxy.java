@@ -1,6 +1,5 @@
 package logisticspipes.proxy.interfaces;
 
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 public interface IIC2Proxy {

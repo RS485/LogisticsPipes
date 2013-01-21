@@ -18,6 +18,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -127,5 +128,17 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 				}
 			}
 		}
+	}
+	
+	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		super.writeToNBT(nbttagcompound);
+		filterInv.writeToNBT(nbttagcompound);
+	}
+	
+	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		super.readFromNBT(nbttagcompound);
+		filterInv.readFromNBT(nbttagcompound);
 	}
 }

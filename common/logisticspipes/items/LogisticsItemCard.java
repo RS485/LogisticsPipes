@@ -40,6 +40,6 @@ public class LogisticsItemCard extends LogisticsItem {
 
 	@Override
 	public int getItemStackLimit() {
-		return 1;
+		return 2;
 	}
 }

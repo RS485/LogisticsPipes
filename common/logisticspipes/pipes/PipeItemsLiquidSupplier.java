@@ -52,9 +52,18 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	public ILogisticsModule getLogisticsModule() {
 		return null;
 	}
-	
+
+	@Override
+	public ItemSendMode getItemSendMode() {
+		return ItemSendMode.Fast;
+	}
+
+
+	/* IItemTravelingHook */
+
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+		((PipeTransportLogistics)pipe).markChunkModified(tile);
 		if (!(tile instanceof ITankContainer)) return;
 		if (tile instanceof TileGenericPipe) return;
 		ITankContainer container = (ITankContainer) tile;
@@ -94,8 +103,4 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	@Override
 	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 	
-	@Override
-	public ItemSendMode getItemSendMode() {
-		return ItemSendMode.Fast;
-	}
 }

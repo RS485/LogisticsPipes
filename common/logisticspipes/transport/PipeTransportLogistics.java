@@ -21,6 +21,7 @@ import java.util.Set;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -273,9 +274,12 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
 			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
-			if(getPipe().useEnergy(Math.round(add * 25), false)) {
+			if(getPipe().useEnergy(Math.round(add * 25))) {
 				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
 			}
+		}
+		if (MainProxy.isClient(worldObj)) {
+			MainProxy.spawnParticle(Particles.GoldParticle, xCoord, yCoord, zCoord, 1);
 		}
 	}
 	

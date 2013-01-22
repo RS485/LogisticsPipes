@@ -51,15 +51,17 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
+import buildcraft.api.transport.IPipedItem;
+import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
@@ -159,8 +161,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected void sendQueueChanged() {}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
-		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()) + 0.5F, this.zCoord + 0.5F, from);
-		p.moveForwards(0.5F);
+		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()), this.zCoord + 0.5F, from);
+		if(from == ForgeDirection.DOWN) {
+			p.moveForwards(0.24F);
+		} else if(from == ForgeDirection.UP) {
+			p.moveForwards(0.74F);
+		} else {
+			p.moveForwards(0.49F);
+		}
 		routedItem.SetPosition(p.x, p.y, p.z);
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
@@ -180,7 +188,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				if(tile != this.container) {
 					LogisticsPipes.log.severe("LocalCodeError");
 				}
-				if(MainProxy.isClient()) {
+				if(MainProxy.isClient(worldObj)) {
 					WorldTickHandler.clientPipesToReplace.add(this.container);
 				} else {
 					WorldTickHandler.serverPipesToReplace.add(this.container);
@@ -210,9 +218,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			return;
 		} else {
 			if(stillNeedReplace) {
+				stillNeedReplace = false;
 				worldObj.notifyBlockChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord, yCoord, zCoord));
+				for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
+					//assign world to any entityitem we created in readfromnbt
+					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
+				}
 			}
-			stillNeedReplace = false;
 		}
 		super.updateEntity();
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
@@ -220,7 +232,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-				Pair<IRoutedItem, ForgeDirection> itemToSend = _sendQueue.getFirst();
+				Pair3<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
 				if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
@@ -236,7 +248,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			} else if(getItemSendMode() == ItemSendMode.Fast) {
 				for(int i=0;i < 16;i++) {
 					if (!_sendQueue.isEmpty()){
-						Pair<IRoutedItem, ForgeDirection> itemToSend = _sendQueue.getFirst();
+						Pair3<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
 						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 						_sendQueue.removeFirst();
 					}
@@ -248,7 +260,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				throw new UnsupportedOperationException("getItemSendMode() returned unhandled value. " + getItemSendMode().name() + " in "+this.getClass().getName());
 			}
 		}
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient(worldObj)) return;
 		checkTexturePowered();
 		if (!isEnabled()) return;
 		enabledUpdateEntity();
@@ -367,6 +379,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		NBTTagCompound upgradeNBT = new NBTTagCompound();
 		upgradeManager.writeToNBT(upgradeNBT);
 		nbttagcompound.setCompoundTag("upgradeManager", upgradeNBT);
+
+		NBTTagList sendqueue = new NBTTagList();
+		for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
+			NBTTagCompound tagentry = new NBTTagCompound();
+			NBTTagCompound tagentityitem = new NBTTagCompound();
+			p.getValue1().getEntityPassiveItem().writeToNBT(tagentityitem);
+			tagentry.setCompoundTag("entityitem", tagentityitem);
+			tagentry.setByte("from", (byte)(p.getValue2().ordinal()));
+			tagentry.setByte("mode", (byte)(p.getValue3().ordinal()));
+			sendqueue.appendTag(tagentry);
+		}
+		nbttagcompound.setTag("sendqueue", sendqueue);
 	}
 	
 	@Override
@@ -384,6 +408,19 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			getLogisticsModule().readFromNBT(nbttagcompound);
 		}
 		upgradeManager.readFromNBT(nbttagcompound.getCompoundTag("upgradeManager"));
+
+		_sendQueue.clear();
+		NBTTagList sendqueue = nbttagcompound.getTagList("sendqueue");
+		for(int i = 0; i < sendqueue.tagCount(); i++) {
+			NBTTagCompound tagentry = (NBTTagCompound)sendqueue.tagAt(i);
+			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
+			IPipedItem entity = new EntityPassiveItem(null);
+			entity.readFromNBT(tagentityitem);
+			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(null, entity);
+			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
+			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
+			_sendQueue.add(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routeditem, from, mode));
+		}
 	}
 	
 	@Override
@@ -439,7 +476,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if(MainProxy.isServer()) {
+			if(MainProxy.isServer(world)) {
 				return getUpgradeManager().openGui(entityplayer, this);
 			}
 		}
@@ -577,7 +614,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	/* Power System */
 
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(worldObj)) {
 			return this.getRouter().getPowerProvider();
 		} else {
 			return null;
@@ -585,7 +622,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public boolean canUseEnergy(int amount) {
-		if(MainProxy.isClient()) return false;
+		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
@@ -602,7 +639,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 		
 	public boolean useEnergy(int amount, boolean flag) {
-		if(MainProxy.isClient()) return false;
+		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;

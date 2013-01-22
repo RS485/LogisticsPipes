@@ -80,7 +80,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 			if (!this.shouldSend(stackToSend)) continue;
 			if(!_power.useEnergy(500)) break;
 			_itemSender.sendStack(stackToSend);
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 8);
+			MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
 			targetInventory.setInventorySlotContents(i, null);
 			
 			sent = true;

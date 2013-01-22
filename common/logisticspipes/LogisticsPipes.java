@@ -52,6 +52,7 @@ import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
+import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.main.LogisticsWorldManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
@@ -66,9 +67,9 @@ import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.forestry.ForestryProxy;
-import logisticspipes.proxy.ic2.ElectricItemProxy;
+import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
@@ -242,6 +243,7 @@ public class LogisticsPipes {
 			new RoutingTableUpdateThread(i);
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
+		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
 	}
 	
 	@PreInit
@@ -304,18 +306,17 @@ public class LogisticsPipes {
 			log.info("Loaded Forestry DummyProxy");
 		}
 		if(Loader.isModLoaded("IC2")) {
-			SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy());
+			SimpleServiceLocator.setElectricItemProxy(new IC2Proxy());
 			log.info("Loaded IC2Proxy");
 		} else {
 			//DummyProxy
-			SimpleServiceLocator.setElectricItemProxy(new IElectricItemProxy() {
+			SimpleServiceLocator.setElectricItemProxy(new IIC2Proxy() {
 				@Override public boolean isElectricItem(ItemStack stack) {return false;}
 				@Override public int getCharge(ItemStack stack) {return 0;}
 				@Override public int getMaxCharge(ItemStack stack) {return 0;}
-				@Override public boolean isDischarged(ItemStack stack, boolean partial) {return false;}
-				@Override public boolean isCharged(ItemStack stack, boolean partial) {return false;}
-				@Override public boolean isDischarged(ItemStack stack, boolean partial, Item electricItem) {return false;}
-				@Override public boolean isCharged(ItemStack stack, boolean partial, Item electricItem) {return false;}
+				@Override public boolean isFullyCharged(ItemStack stack) {return false;}
+				@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
+				@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
 				@Override public void addCraftingRecipes() {}
 				@Override public boolean hasIC2() {return false;}
 			});
@@ -441,7 +442,7 @@ public class LogisticsPipes {
 		
 		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
 		
-		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
+		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
@@ -458,7 +459,7 @@ public class LogisticsPipes {
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		
 		//Power Junction
-		if(SimpleServiceLocator.electricItemProxy.hasIC2()) {
+		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
 				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
 			} else {

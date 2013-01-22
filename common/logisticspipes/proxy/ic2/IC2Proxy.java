@@ -5,72 +5,104 @@ import ic2.api.Ic2Recipes;
 import ic2.api.Items;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 
 
-public class ElectricItemProxy implements IElectricItemProxy {
+public class IC2Proxy implements IIC2Proxy {
 
-	public boolean isElectricItem(ItemStack stack)
-	{
+	/**
+	 * @return Boolean, true if itemstack is a ic2 electric item.
+	 * @param stack The stack to check.
+	 */
+	@Override
+	public boolean isElectricItem(ItemStack stack) {
 		return stack != null && stack.getItem() instanceof IElectricItem;
 	}
 
-	public int getCharge(ItemStack stack)
-	{
-		if (stack.getItem() instanceof IElectricItem && stack.hasTagCompound())
+	/**
+	 * @return Int value of current charge on electric item.
+	 * @param stack The stack to get charge for.
+	 */
+	@Override
+	public int getCharge(ItemStack stack) {
+		if (stack.getItem() instanceof IElectricItem && stack.hasTagCompound()) {
 			return stack.getTagCompound().getInteger("charge");
-		else
+		} else {
 			return 0;
-	}
-
-	public int getMaxCharge(ItemStack stack)
-	{
-		if (stack.getItem() instanceof IElectricItem)
-			return ((IElectricItem) stack.getItem()).getMaxCharge();
-		else
-			return 0;
-	}
-
-	public boolean isDischarged(ItemStack stack, boolean partial)
-	{
-		return isDischarged(stack, partial, stack.getItem());
-	}
-
-	public boolean isCharged(ItemStack stack, boolean partial)
-	{
-		return isCharged(stack, partial, stack.getItem());
-	}
-
-	public boolean isDischarged(ItemStack stack, boolean partial, Item electricItem)
-	{
-		if (electricItem instanceof IElectricItem && (((IElectricItem)electricItem).getChargedItemId() == stack.itemID || ((IElectricItem)electricItem).getEmptyItemId() == stack.itemID))
-		{
-			if (partial)
-				return getCharge(stack) < getMaxCharge(stack);
-			else
-				return getCharge(stack) == 0;
 		}
-		return false;
 	}
 
-	public boolean isCharged(ItemStack stack, boolean partial, Item electricItem)
-	{
-		if (electricItem instanceof IElectricItem && ((IElectricItem)electricItem).getChargedItemId() == stack.itemID)
-		{
-			if (partial)
-				return getCharge(stack) > 0;
-			else
-				return getCharge(stack) == getMaxCharge(stack);
-		}
-		return false;
+	/**
+	 * @return Int value of maximum charge on electric item.
+	 * @param stack The stack to get max charge for.
+	 */
+	@Override
+	public int getMaxCharge(ItemStack stack) {
+		if (!(stack.getItem() instanceof IElectricItem)) return 0;
+		return ((IElectricItem) stack.getItem()).getMaxCharge();
 	}
 
-	public void addCraftingRecipes()
-	{
+	/**
+	 * @return Boolean, true if electric item is fully charged.
+	 * @param stack The stack to check if its fully charged.
+	 */
+	@Override
+	public boolean isFullyCharged(ItemStack stack) {
+		if (!isElectricItem(stack)) return false;
+		int charge = getCharge(stack);
+		int maxCharge = getMaxCharge(stack);
+		return charge == maxCharge;
+	}
+	
+	/**
+	 * @return Boolean, true if electric item is fully discharged.
+	 * @param stack The stack to check if its fully discharged.
+	 */
+	@Override
+	public boolean isFullyDischarged(ItemStack stack) {
+		if (!isElectricItem(stack)) return false;
+		int charge = getCharge(stack);
+		return charge == 0;
+	}
+	
+	/**
+	 * @return Boolean, true if electric item contains charge but is not full.
+	 * @param stack The stack to check if its partially chraged.
+	 */
+	public boolean isPartiallyCharged(ItemStack stack) {
+		return (!isFullyCharged(stack) && !isFullyDischarged(stack));
+	}
+	
+	/**
+	 * Adds crafting recipes to "IC2 Crafting"
+	 */
+	@Override
+	public void addCraftingRecipes() {
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+			"CGC", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), Items.getItem("advancedCircuit"),
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
+		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+			" G ", 
+			"rBr", 
+			"CrC", 
+			Character.valueOf('C'), Items.getItem("advancedCircuit"),
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Item.redstone,
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+
+
 		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			"CGD", 
 			"rBr", 
@@ -140,9 +172,13 @@ public class ElectricItemProxy implements IElectricItemProxy {
 		});
 	}
 
+	/**
+	 * @return If IC2 is loaded, returns true.
+	 */
 	@Override
 	public boolean hasIC2() {
 		return true;
 	}
+
 
 }

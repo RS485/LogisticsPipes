@@ -82,7 +82,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		reply.fixedPriority = FixedPriority.PassiveSupplier;
 		reply.isPassive = true;
 		if(_power.useEnergy(2)) {
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
+			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return reply;
 		}
 		return null;

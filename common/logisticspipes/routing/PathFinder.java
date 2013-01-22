@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
-import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;

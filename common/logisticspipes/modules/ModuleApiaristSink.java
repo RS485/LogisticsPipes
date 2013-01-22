@@ -269,7 +269,7 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 					reply.fixedPriority = SinkReply.FixedPriority.APIARIST_BeeSink;
 					reply.isPassive = true;
 					if(_power.useEnergy(2)) {
-						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, worldProvider.getWorld(), 2);
+						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, worldProvider.getWorld(), 2);
 						return reply;
 					}
 				}

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
@@ -201,6 +202,14 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			return ForgeDirection.UNKNOWN;
 		}
 		
+		if(value != ForgeDirection.UNKNOWN && !_pipe.getRouter().isRoutedExit(value)) {
+			if(!isItemExitable(routedItem.getItemStack())) {
+				routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
+				scheduleRemoval(data.item);
+				return ForgeDirection.UNKNOWN;
+			}
+		}
+		
 		readjustSpeed(routedItem.getEntityPassiveItem());
 		
 		return value;
@@ -278,6 +287,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			TileGenericPipe pipe = (TileGenericPipe) tile;
 			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
+			if(!isItemExitable(data.item.getItemStack())) return;
 			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 				//LogisticsPipes start
 				UpgradeManager manager = getPipe().getUpgradeManager();
@@ -319,6 +329,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		}
 	}
 	//BC copy end
+	
+	protected boolean isItemExitable(ItemStack stack) {
+		if(stack != null && stack.getItem() instanceof IItemAdvancedExistance) {
+			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory();
+		}
+		return true;
+	}
 	
 	protected void reverseItem(EntityData data) {
 		if(reverseItem != null) {

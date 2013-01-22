@@ -183,7 +183,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 					int count = Math.min(itemsToExtract(), slot.stackSize);
 
 					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 						count--;
 					}
 					

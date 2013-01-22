@@ -56,7 +56,7 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 				reply.fixedPriority = FixedPriority.Terminus;
 				reply.isDefault = false;
 				reply.isPassive = true;
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return reply;
 			}
 		}

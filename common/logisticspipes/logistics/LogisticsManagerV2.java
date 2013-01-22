@@ -37,10 +37,20 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.item.ItemStack;
 
 public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	
+	/**
+	 * Method used to check if a given stack has a destination.
+	 * 
+	 * @return Boolean, true if stack has a valid destination.
+	 * @param stack The stack to check if it has destination.
+	 * @param allowDefault Boolean, if true then a default route will be considered a valid destination.
+	 * @param sourceRouter The UUID of the router pipe that wants to send the stack.
+	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
+	 */
 	@Override
 	public boolean hasDestination(ItemStack stack, boolean allowDefault, int sourceRouter, boolean excludeSource) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
@@ -50,6 +60,24 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		
 		return (allowDefault || !search.getValue2().isDefault);
 	}
+	
+	/**
+	 * Method used to check if a given stack has a destination at a priority.
+	 * 
+	 * @return Boolean, true if stack has a destination with the given priority.
+	 * @param stack The stack to check if it has destination.
+	 * @param sourceRouter The UUID of the router pipe that wants to send the stack.
+	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
+	 * @param priority The priority that the stack must have.
+	 */
+	@Override
+	public boolean hasDestinationWithPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
+		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<int>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		if (search.getValue2() == null) return false;
+		return (search.getValue2().fixedPriority == priority);
+	}
+
 	
 	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack item, IRouter sourceRouter, List<SearchNode> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
 		for(IFilter filter:filters) {
@@ -119,8 +147,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		return result;
 	}
 	
-	
-	
+	/**
+	 * Will assign a destination for a IRoutedItem based on a best sink reply recieved from other pipes.
+	 * @param item The item that needs to be routed.
+	 * @param sourceRouterUUID The SimpleID of the pipe that is sending the item. (the routedItem will cache the UUID, and that the SimpleID belongs to the UUID will be checked when appropriate)
+	 * @param excludeSource Boolean, true means that it wont set the source as the destination.
+	 * @return IRoutedItem with a newly assigned destination
+	 */
 	@Override
 	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterUUID, boolean excludeSource) {
 		
@@ -157,12 +190,23 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		return item;
 	}
 
+	/**
+	 * Passes (item, int, false) to assignDestinationFor. Sets an item with unreachable destination to the source router.
+	 * @param item The IRoutedItem being routed.
+	 * @param currentRouter The simpleID of the source router.
+	 * @return IRoutedItem with calculated destination. (simpleID and UUID stored)
+	 */
 	@Override
 	public IRoutedItem destinationUnreachable(IRoutedItem item,	int currentRouter) {
 		// TODO Auto-generated method stub
 		return assignDestinationFor(item, currentRouter, false);
 	}
 	
+	/**
+	 * If there is a better router name available, it will return it.  Else, it will return the UUID as a string.
+	 * @param r The IRouter that you want the name for.
+	 * @return String with value of a better name if available, else just the UUID as a string.
+	 */
 	@Override
 	public String getBetterRouterName(IRouter r){
 		
@@ -188,6 +232,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				
 	}
 
+	/**
+	 * @param validDestinations a list of SearchNode of valid destinations.
+	 * @return HashMap with ItemIdentifier and Integer item count of available items.
+	 */
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>(ServerRouter.getBiggestSimpleID());
@@ -255,6 +303,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 	}
 	
+	/**
+	 * @param validDestinations a List of SearchNode of valid destinations.
+	 * @return LinkedList with ItemIdentifier 
+	 */
 	@Override
 	public LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();

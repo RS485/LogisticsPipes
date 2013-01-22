@@ -60,7 +60,7 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		this.extract();
 		if(sourceUUID != null) {
-			nbttagcompound.setString("sourceint", sourceUUID.toString());
+			nbttagcompound.setString("sourceUUID", sourceUUID.toString());
 		}
 		if(destinationUUID !=null) {
 			nbttagcompound.setString("destinationUUID", destinationUUID.toString());

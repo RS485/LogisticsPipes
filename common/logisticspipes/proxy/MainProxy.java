@@ -1,8 +1,8 @@
 package logisticspipes.proxy;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.WeakHashMap;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -31,7 +31,7 @@ public class MainProxy {
 	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
 	public static IProxy proxy;
 	
-	private static HashMap<Thread, Side> threadSideMap = new HashMap<Thread, Side>();
+	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();
 	
 	private static Side getEffectiveSide() {
 		Thread thr = Thread.currentThread();
@@ -58,6 +58,13 @@ public class MainProxy {
     }
 	
 	public static boolean isClient(World world) {
+		if(world != null) {
+			return world.isRemote;
+		}
+		if(LogisticsPipes.DEBUG) {
+			System.err.println("isClient called with NULL world");
+			new Exception().printStackTrace();
+		}
 		return isClient();
 	}
 	
@@ -66,6 +73,13 @@ public class MainProxy {
 	}
 	
 	public static boolean isServer(World world) {
+		if(world != null) {
+			return !world.isRemote;
+		}
+		if(LogisticsPipes.DEBUG) {
+			System.err.println("isServer called with NULL world");
+			new Exception().printStackTrace();
+		}
 		return isServer();
 	}
 	

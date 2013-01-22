@@ -369,5 +369,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		if(router==null || destinationUUID!=router.getId()) {
 			destinationint=rm.getIDforUUID(destinationUUID);
 		}		
+		router = rm.getRouter(sourceint);
+		if(router==null || sourceUUID!=router.getId()) {
+			sourceint=rm.getIDforUUID(sourceUUID);
+		}		
 	}
 }

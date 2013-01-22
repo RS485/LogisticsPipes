@@ -164,4 +164,16 @@ public class ClientRouter implements IRouter {
 	public IRouter getRouter(ForgeDirection insertOrientation) {
 		return null;
 	}
+
+	@Override
+	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void flagForRoutingUpdate() {
+		// TODO Auto-generated method stub
+		
+	}
 }

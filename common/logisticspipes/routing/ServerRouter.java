@@ -11,6 +11,7 @@ package logisticspipes.routing;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,11 +47,26 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
 	
+	class flagForLSAUpdate implements IRAction{
+
+		@Override
+		public boolean doTo(IRouter that) {
+			that.flagForRoutingUpdate();
+			return false;
+		}
+		
+	}
+	
 	//may not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 
 	public int hashCode(){
 		return simpleID; // guaranteed to be unique, and uniform distribution over a range.
 //		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
+	}
+	
+	@Override
+	public void flagForRoutingUpdate(){
+		_LSAVersion++;
 	}
 	
 	protected class LSA {
@@ -75,7 +91,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				synchronized (_externalRoutersByCostLock) {
 					_externalRoutersByCost = null;
 				}
-				_lastLSDVersion = newVersion;
+				if(_lastLSAVersion.get(simpleID)<newVersion)
+					_lastLSAVersion.set(simpleID,newVersion);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -91,8 +108,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 
-	protected static int _LSDVersion = 0;
-	protected int _lastLSDVersion = 0;
+	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
+	protected int _LSAVersion = -1;
+	protected LSA _myLsa = new LSA();
 	
 	protected RoutingUpdateThread updateThread = null;
 	
@@ -107,7 +125,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public Object _externalRoutersByCostLock = new Object();
 	
 	protected static final ArrayList<LSA> SharedLSADatabase = new ArrayList<LSA>();
-	protected LSA _myLsa = new LSA();
+	protected static ArrayList<Integer> _lastLsa = new ArrayList<Integer>();
 		
 	/** Map of router -> orientation for all known destinations **/
 	public ArrayList<Pair<ForgeDirection, ForgeDirection>> _routeTable = new ArrayList<Pair<ForgeDirection,ForgeDirection>>();
@@ -137,7 +155,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.lock();
 		SharedLSADatabase.clear();
 		SharedLSADatabasewriteLock.unlock();
-		_LSDVersion = 0;
+		Collections.fill(_lastLSAVersion, 0);
 		_laser = new RouteLaser();
 		simpleIdUsedSet.clear();
 	}
@@ -214,11 +232,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	private void ensureRouteTableIsUpToDate(boolean force){
-		if (_LSDVersion > _lastLSDVersion) {
+		if (_LSAVersion > _lastLSAVersion.get(this.getSimpleID())) {
 			if(Configs.multiThreadEnabled && !force && SimpleServiceLocator.routerManager.routerAddingDone()) {
 				updateThreadreadLock.lock();
 				if(updateThread != null) {
-					if(updateThread.newVersion == _LSDVersion) {
+					if(updateThread.newVersion == _lastLSAVersion.get(simpleID)) {
 						updateThreadreadLock.unlock();
 						return;
 					}
@@ -226,8 +244,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 					RoutingTableUpdateThread.remove(updateThread);
 				}
 				updateThreadreadLock.unlock();
-				updateThread = new RoutingUpdateThread(_LSDVersion);
-				if(_lastLSDVersion == 0) {
+				updateThread = new RoutingUpdateThread(_LSAVersion);
+				if(_LSAVersion <= 0) {
 					RoutingTableUpdateThread.addPriority(updateThread);
 				} else {
 					RoutingTableUpdateThread.add(updateThread);
@@ -235,7 +253,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			} else {
 				CreateRouteTable();
 				_externalRoutersByCost = null;
-				_lastLSDVersion = _LSDVersion;
+				_lastLSAVersion.set(simpleID,_LSAVersion);
 			}
 		}
 	}
@@ -338,7 +356,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.lock();
 		_myLsa.neighboursWithMetric = neighboursWithMetric;
 		_myLsa.power = power;
-		_LSDVersion++;
+		_LSAVersion++;
 		SharedLSADatabasewriteLock.unlock();
 	}
 	
@@ -488,6 +506,23 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		//TODO
 	}
 	
+	@Override
+	public boolean act(BitSet hasBeenProcessed,IRAction actor){
+		boolean hasBeenReset=false;
+		if(hasBeenProcessed.get(this.simpleID))
+			return hasBeenReset;
+		hasBeenProcessed.set(this.simpleID);
+		if(actor.doTo(this)){
+			hasBeenProcessed.clear();
+			// don't need to worry about resetting the recursion, as we are the neighbour of our neighbour, and are no longer flaged as processed.
+			hasBeenReset=true;
+		}
+		for(RoutedPipe r:_adjacent.keySet())
+			hasBeenReset=hasBeenReset || r.getRouter().act(hasBeenProcessed, actor);
+			
+		return hasBeenReset;
+	}
+	
 	/**
 	 * Flags the last sent LSA as expired. Each router will be responsible of purging it from its database.
 	 */
@@ -496,7 +531,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.lock(); // take a write lock so that we don't overlap with any ongoing route updates
 		if (SharedLSADatabase.get(simpleID)!=null) {
 			SharedLSADatabase.set(simpleID, null);
-			_LSDVersion++;
+			_LSAVersion++;
 		}
 		SharedLSADatabasewriteLock.unlock();
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);

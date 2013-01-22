@@ -9,6 +9,7 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -16,12 +17,14 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.routing.IRouter.IRAction;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
 public interface IRouter extends IPowerRouter {
+	public interface IRAction{ public boolean doTo(IRouter that);}
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
@@ -46,4 +49,6 @@ public interface IRouter extends IPowerRouter {
 	
 	public IRouter getRouter(ForgeDirection insertOrientation);
 	public int getSimpleID();
+	public boolean act(BitSet hasBeenProcessed, IRAction actor);
+	public void flagForRoutingUpdate();
 }

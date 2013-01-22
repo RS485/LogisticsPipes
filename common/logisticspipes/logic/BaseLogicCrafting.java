@@ -83,11 +83,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void setNextSatellite(EntityPlayer player) {
-		satelliteId = getNextConnectSatelliteId(false);
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
+			satelliteId = getNextConnectSatelliteId(false);
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
@@ -100,11 +100,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void setPrevSatellite(EntityPlayer player) {
-		satelliteId = getNextConnectSatelliteId(true);
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE, xCoord, yCoord, zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
+			satelliteId = getNextConnectSatelliteId(true);
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}

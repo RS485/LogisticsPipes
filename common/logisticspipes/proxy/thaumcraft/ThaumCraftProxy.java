@@ -10,7 +10,7 @@ import org.lwjgl.opengl.GL11;
 
 import thaumcraft.api.EnumTag;
 import thaumcraft.api.ObjectTags;
-import thaumcraft.api.ThaumcraftApi;
+import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.client.UtilsFX;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -21,8 +21,8 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		if(!MainProxy.isClient()) return;
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		ObjectTags tags = ThaumcraftApi.getObjectTags(item);
-		tags = ThaumcraftApi.getBonusObjectTags(item, tags);
+		ObjectTags tags = ThaumcraftApiHelper.getObjectTags(item);
+		tags = ThaumcraftApiHelper.getBonusObjectTags(item, tags);
 		if (tags != null) {
 			int index = 0;
 			for (EnumTag tag : tags.getAspectsSorted()) {

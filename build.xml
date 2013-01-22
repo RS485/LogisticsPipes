@@ -60,20 +60,12 @@
 		
 		<echo message="Download finished"/>
 		
-		
+
         <unzip dest="${lib.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
                 <include name="ant-contrib-${antcont.version}-bin.zip"/>
             </fileset>
         </unzip>
-		
-        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
-			<classpath>
-				<pathelement location="${lib.dir}/ant-contrib/lib/ant-contrib.jar"/>
-			</classpath>
-		</taskdef>
-		
-		<echo message="Loaded ant-contrib"/>
 		
         <unzip dest="${mcp.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
@@ -196,7 +188,17 @@
 
 
     <target name="copySRC" >
-        
+    <!-- Pull in ant-contrib for if task -->
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${lib.dir}/ant-contrib/lib/ant-contrib.jar"/>
+			</classpath>
+		</taskdef>
+		<echo message="Loaded ant-contrib"/>
+		
+	<!-- Delete LP source in build space -->
+        <delete dir="${commonsrc.dir}/logisticspipes"/>
+
 	<!-- Copy LP source -->
         <copy todir="${commonsrc.dir}">
             <fileset dir="${src.dir}/common"/>
@@ -251,7 +253,10 @@
 		<replace file="${classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
         
 		<echo message="Compiling finished"/>
-	
+		
+		<!-- Create resources zip for MC in mcp -->
+        <zip destfile="${mcp.dir}/jars/mods/LogisticsPipes_resources.zip" basedir="${src.dir}/resources" excludes="mcmod.info"/>
+        
     </target>
     
     <target name="package-simple" depends="compile">

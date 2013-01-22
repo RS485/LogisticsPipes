@@ -146,4 +146,10 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public int getSourceID() {
 		return this.getRouterId();
 	}
+
+	@Override
+	public void setTile(TileEntity tile) {
+		super.setTile(tile);
+		analyserModule.registerPosition(xCoord, yCoord, zCoord, 0);
+	}
 }

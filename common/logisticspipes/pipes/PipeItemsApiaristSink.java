@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import net.minecraft.tileentity.TileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleApiaristSink;
@@ -30,5 +31,11 @@ public class PipeItemsApiaristSink extends RoutedPipe {
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
+	}
+
+	@Override
+	public void setTile(TileEntity tile) {
+		super.setTile(tile);
+		sinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
 	}
 }

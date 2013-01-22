@@ -119,4 +119,10 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		}
 		return list;
 	}
+
+	@Override
+	public void setTile(TileEntity tile) {
+		super.setTile(tile);
+		itemSinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
+	}
 }

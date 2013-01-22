@@ -9,7 +9,7 @@ import logisticspipes.routing.IRouter;
 import net.minecraft.item.ItemStack;
 
 public interface ISendRoutedItem {
-//	public UUID getSourceUUID();
+	public int getSourceID();
 	public IRouter getRouter();
 	public void sendStack(ItemStack stack);
 	public void sendStack(ItemStack stack, int destination, List<IRelayItem> relays);

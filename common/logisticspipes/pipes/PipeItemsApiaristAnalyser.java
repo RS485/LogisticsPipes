@@ -141,4 +141,9 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
 		sendStack(stack, destination, relays); // Ignore send mode
 	}
+
+	@Override
+	public int getSourceID() {
+		return this.getRouterId();
+	}
 }

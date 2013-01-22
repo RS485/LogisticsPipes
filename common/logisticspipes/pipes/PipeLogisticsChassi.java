@@ -526,4 +526,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 	}
+
+	@Override
+	public int getSourceID() {
+		return this.getRouterId();
+	}
+
 }

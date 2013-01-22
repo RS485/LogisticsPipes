@@ -82,7 +82,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				if (SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceUUID(), true, FixedPriority.ElectricNetwork)) {
+				if (SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 					_itemSender.sendStack(inv.decrStackSize(i, 1));
 					return;

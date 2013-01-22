@@ -165,8 +165,8 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 		//If liquids still exist,
 		if (netAmount > totalFilled) {
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
-			Pair<UUID, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
-			UUID dest = (UUID) replies.getValue1();
+			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
+			int dest = replies.getValue1();
 			routedItem.setDestination(dest);
 			routedItem.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routedItem, data.output.getOpposite());

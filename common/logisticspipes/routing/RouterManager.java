@@ -35,7 +35,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 
 	@Override
 	public IRouter getRouter(int id){
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient() || id<=0) {
 			return null;
 		} else {
 			return _routersServer.get(id);

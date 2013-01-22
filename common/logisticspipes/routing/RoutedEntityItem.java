@@ -64,8 +64,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
 			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
-			setSource(settings.sourceint);
-			setDestination(settings.destinationint);
+			this.sourceUUID=settings.sourceUUID;
+			this.destinationUUID=settings.destinationUUID;
+			this.checkIDFromUUID();
+
 			bufferCounter = settings.bufferCounter;
 			arrived = settings.arrived;
 			_transportMode = settings.transportMode;
@@ -176,7 +178,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setSource(int source) {
 		this.sourceint = source;
-		this.sourceUUID = SimpleServiceLocator.routerManager.getRouter(source).getId();
+		this.checkIDFromUUID();
 		
 	}
 
@@ -361,9 +363,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void checkIDFromUUID() {	
-		if(destinationint == -1) return;
+//		if(destinationint == -1) return;
 		IRouterManager rm = SimpleServiceLocator.routerManager;
-		if(destinationUUID!=rm.getRouter(destinationint).getId()) {
+		IRouter router = rm.getRouter(destinationint);
+		if(router==null || destinationUUID!=router.getId()) {
 			destinationint=rm.getIDforUUID(destinationUUID);
 		}		
 	}

@@ -18,8 +18,8 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	
 	private RoutedEntityItem routedEntityItem;
 	
-	public int sourceint;
-	public int destinationint;
+	public UUID sourceUUID;
+	public UUID destinationUUID;
 	public int bufferCounter = 0;
 	public boolean arrived;
 	public TransportMode transportMode = TransportMode.Unknown;
@@ -27,8 +27,8 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	
 	private void extract() {
 		if(routedEntityItem != null) {
-			sourceint = routedEntityItem.sourceint;
-			destinationint = routedEntityItem.destinationint;
+			sourceUUID = routedEntityItem.sourceUUID;
+			destinationUUID = routedEntityItem.destinationUUID;
 			bufferCounter = routedEntityItem.getBufferCounter();
 			arrived = routedEntityItem.arrived;
 			transportMode = routedEntityItem.getTransportMode();
@@ -39,11 +39,11 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		if(nbttagcompound.hasKey("sourceint")) {
-			sourceint = nbttagcompound.getInteger("sourceint");
+		if(nbttagcompound.hasKey("sourceUUID")) {
+			sourceUUID = UUID.fromString(nbttagcompound.getString("sourceUUID"));
 		}
-		if(nbttagcompound.hasKey("destinationint")) {
-			destinationint = nbttagcompound.getInteger("destinationint");
+		if(nbttagcompound.hasKey("destinationUUID")) {
+			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
 		}
 		arrived = nbttagcompound.getBoolean("arrived");
 		bufferCounter = nbttagcompound.getInteger("bufferCounter");
@@ -59,10 +59,11 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		this.extract();
-		if(sourceint >= 0) {
-			nbttagcompound.setInteger("sourceint", sourceint);
+		if(sourceUUID != null) {
+			nbttagcompound.setString("sourceint", sourceUUID.toString());
 		}
-		if(destinationint >= 0) {
+		if(destinationUUID !=null) {
+			nbttagcompound.setString("destinationUUID", destinationUUID.toString());
 		}
 		nbttagcompound.setBoolean("arrived", arrived);
 		nbttagcompound.setInteger("bufferCounter", bufferCounter);

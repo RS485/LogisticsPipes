@@ -22,9 +22,11 @@ public interface ILogisticsModule extends ISaveState {
 	/**
 	 * Gives an sink answer on the given itemstack 
 	 * @param item to sink
-	 * @return SinkReply wether the module sinks the item or not
+	 * @param bestPriority best priority seen so far
+	 * @param bestCustomPriority best custom subpriority
+	 * @return SinkReply whether the module sinks the item or not
 	 */
-	public SinkReply sinksItem(ItemStack item);
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority);
 	
 	/**
 	 * Returns submodules. Normal modules don't have submodules 

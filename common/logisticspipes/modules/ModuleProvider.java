@@ -126,9 +126,15 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return 1;
 	}
 
-	@Override	public SinkReply sinksItem(ItemStack item) {return null;}
+	@Override
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+		return null;
+	}
 
-	@Override	public ILogisticsModule getSubModule(int slot) {return null;}
+	@Override
+	public ILogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void tick() {

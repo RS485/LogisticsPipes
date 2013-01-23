@@ -126,7 +126,7 @@ public class RequestHandler {
 	}
 	
 
-	public static void requestMacrolist(NBTTagCompound itemlist, IRequestItems requester, final EntityPlayer player) {
+	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe requester, final EntityPlayer player) {
 		if(!requester.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
 			return;

@@ -72,7 +72,7 @@ public interface IRoutedItem {
 	public void setArrived(boolean flag);
 	public boolean getArrived();
 	
-	public IRoutedItem split(World worldObj, int itemsToTake, ForgeDirection orientation);
+	public void split(World worldObj, int itemsToTake, ForgeDirection orientation);
 	public void SetPosition(double x, double y, double z);
 	
 	public boolean isReRoute();

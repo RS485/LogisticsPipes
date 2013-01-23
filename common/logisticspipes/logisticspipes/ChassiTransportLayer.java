@@ -15,7 +15,6 @@ public class ChassiTransportLayer extends TransportLayer{
 
 	@Override
 	public ForgeDirection itemArrived(IRoutedItem item) {
-//		item.setSpeedBoost(50F);	//Boost speed to help item arrive faster so we don't get overflow
 		return _chassiPipe.getPointedOrientation();
 	}
 
@@ -24,18 +23,16 @@ public class ChassiTransportLayer extends TransportLayer{
 		ILogisticsModule module = _chassiPipe.getLogisticsModule();
 		if (module == null) return false;
 		if (!_chassiPipe.isEnabled()) return false;
-		SinkReply reply = module.sinksItem(item.getItemStack());
+		SinkReply reply = module.sinksItem(item.getItemStack(), -1, 0);
 		if (reply == null) return false;
 		
 		if (reply.maxNumberOfItems != 0 && item.getItemStack().stackSize > reply.maxNumberOfItems){
 			ForgeDirection o = _chassiPipe.getPointedOrientation();
 			if (o==null || o == ForgeDirection.UNKNOWN) o = ForgeDirection.UP;
 			
-			item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o.getOpposite());
-			//return false;
+			item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o);
 		}
-		
-		return module.sinksItem(item.getItemStack()) != null;	
+		return true;
 	}
 
 }

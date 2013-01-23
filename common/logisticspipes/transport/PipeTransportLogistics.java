@@ -21,6 +21,7 @@ import java.util.Set;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -33,6 +34,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipeEntry;
 import buildcraft.api.transport.IPipedItem;
@@ -52,6 +54,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	private Method reverseItem = null;
 	private Field toRemove = null;
 	private Set<Integer> notToRemove = new HashSet<Integer>();
+	private Chunk chunk;
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
@@ -71,6 +74,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			@SuppressWarnings("unchecked")
 			@Override
 			public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+				((PipeTransportLogistics)pipe).markChunkModified(tile);
 				try {
 					Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
 					toRemoveList.add(data.item.getEntityId());
@@ -96,6 +100,29 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			public void centerReached(PipeTransportItems pipe, EntityData data) {
 			}
 		};
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		if(MainProxy.isServer(worldObj)) {
+			//cache chunk for marking dirty
+			chunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
+		}
+	}
+
+	public void markChunkModified(TileEntity tile) {
+		if(MainProxy.isServer(tile.worldObj)) {
+			//items are crossing a chunk boundary, mark both chunks modified
+			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
+				chunk.isModified = true;
+				if((tile instanceof TileGenericPipe) && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics) {
+					((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
+				} else {
+					worldObj.updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
+				}
+			}
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -124,7 +151,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	@Override
 	public void updateEntity() {
-			super.updateEntity();
+		super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
 			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
 			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
@@ -273,9 +300,12 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
 			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
-			if(getPipe().useEnergy(Math.round(add * 25), false)) {
+			if(getPipe().useEnergy(Math.round(add * 25))) {
 				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
 			}
+		}
+		if (MainProxy.isClient(worldObj)) {
+			MainProxy.spawnParticle(Particles.GoldParticle, xCoord, yCoord, zCoord, 1);
 		}
 	}
 	
@@ -290,6 +320,15 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			if(!isItemExitable(data.item.getItemStack())) return;
 			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 				//LogisticsPipes start
+				//last chance for chassi to back out
+				if(data.item instanceof IRoutedItem) {
+					IRoutedItem routed = (IRoutedItem) data.item;
+					if (!getPipe().getTransportLayer().stillWantItem(routed)) {
+						reverseItem(data);
+						return;
+					}
+				}
+				//sneaky insertion
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				ForgeDirection insertion = data.output.getOpposite();
 				if(manager.hasSneakyUpgrade()) {

@@ -49,21 +49,17 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 		this.zCoord = zCoord;
 	}
 
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack stack) {
+	public SinkReply sinksItem(ItemStack stack, int bestPriority, int bestCustomPriority) {
+		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-			return positiveSinkReply();
+			if (_power.canUseEnergy(1)) {
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+				return _sinkReply;
+			}
 		}
 		return null;
-	}
-
-	private SinkReply positiveSinkReply() {
-		if (!_power.useEnergy(1)) return null;
-		SinkReply reply = new SinkReply();
-		reply.fixedPriority = FixedPriority.ElectricNetwork;
-		reply.isPassive = true;
-		MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-		return reply;
 	}
 
 	@Override

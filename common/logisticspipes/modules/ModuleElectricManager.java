@@ -80,10 +80,13 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	}
 
 
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 1);
 	@Override
-	public SinkReply sinksItem(ItemStack stack) {
+	public SinkReply sinksItem(ItemStack stack, int bestPriority, int bestCustomPriority) {
+		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		IInventory inv = _invProvider.getInventory();
 		if (inv == null) return null;
+		if (!_power.canUseEnergy(1)) return null;
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
 			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return positiveSinkReply();
@@ -98,13 +101,8 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	}
 
 	private SinkReply positiveSinkReply() {
-		if (!_power.useEnergy(1)) return null;
-		SinkReply reply = new SinkReply();
-		reply.fixedPriority = FixedPriority.ElectricNetwork;
-		reply.isPassive = true;
-		reply.maxNumberOfItems = 1;
 		MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-		return reply;
+		return _sinkReply;
 	}
 
 	@Override
@@ -167,7 +165,6 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 			if (fStack == null) continue;
 			String fStackName = fStack.getItemName();
 			if (stackName.equals(fStackName)) return true;
-			continue;
 		}
 		return false;
 	}	

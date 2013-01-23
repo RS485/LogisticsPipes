@@ -9,6 +9,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
+import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.tileentity.TileEntity;
@@ -110,7 +111,10 @@ public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravel
 		}
 		return true;
 	}
-	
+
+
+	/* IItemTravelingHook */
+
 	@Override
 	public void drop(PipeTransportItems pipe, EntityData data) {}
 
@@ -118,5 +122,8 @@ public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravel
 	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 
 	@Override
-	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {}
+	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+		((PipeTransportLogistics)pipe).markChunkModified(tile);
+	}
+
 }

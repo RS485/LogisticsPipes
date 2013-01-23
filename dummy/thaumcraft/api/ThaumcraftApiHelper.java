@@ -3,7 +3,7 @@ package thaumcraft.api;
 import net.minecraft.item.ItemStack;
 
 //Dummy Class
-public class ThaumcraftApi {
+public class ThaumcraftApiHelper {
 	public static ObjectTags getObjectTags(ItemStack is) {
 		//Dummy Class
 		return null;

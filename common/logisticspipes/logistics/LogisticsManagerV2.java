@@ -109,7 +109,12 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
 			if (module == null) continue;
-			SinkReply reply = module.sinksItem(item);
+			SinkReply reply = null;
+			if (result.getValue2() == null) {
+				reply = module.sinksItem(item, -1, 0);
+			} else {
+				reply = module.sinksItem(item, result.getValue2().fixedPriority.ordinal(), result.getValue2().customPriority);
+			}
 			if (reply == null) continue;
 			if (result.getValue1() == null){
 				result.setValue1(candidateRouter.node.getSimpleID());
@@ -143,6 +148,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			filters.add(filter);
 			result = getBestReply(item, sourceRouter, ((IFilteringRouter)n.node).getRouters(), excludeSource, jamList, used, filters, result);
 			filters.remove(filter);
+		}
+		if(filters.isEmpty() && result.getValue1() != null) {
+			SimpleServiceLocator.routerManager.getRouter(result.getValue1()).getPipe().useEnergy(result.getValue2().energyUse);
 		}
 		return result;
 	}

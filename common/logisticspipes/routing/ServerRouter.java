@@ -24,6 +24,7 @@ import java.util.Vector;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
@@ -66,6 +67,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	
 	@Override
 	public void flagForRoutingUpdate(){
+		if(LogisticsPipes.DEBUG)
+			System.out.println("[LogisticsPipes] flag for routing update to "+_LSAVersion+" for Node" +  simpleID);
 		_LSAVersion++;
 	}
 	
@@ -187,6 +190,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
+		this._LSAVersion = 0;
 		clearPipeCache();
 		_myLsa = new LSA();
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
@@ -202,8 +206,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabasereadLock.lock();
 			_lastLSAVersion.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(_lastLSAVersion.size()<=(int)simpleID*1.5)
-				_lastLSAVersion.add(0);
+				_lastLSAVersion.add(-2);
 		}
+		_lastLSAVersion.set(this.simpleID,-2);
 		SharedLSADatabase.set(this.simpleID, _myLsa); // make non-structural change (threadsafe)
 		SharedLSADatabasereadLock.unlock();
 	}
@@ -343,6 +348,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			_adjacent = adjacent;
 			_powerAdjacent = power;
 			_blockNeedsUpdate = true;
+			
+			this.act(new BitSet(this.getBiggestSimpleID()), new flagForLSAUpdate());
 			SendNewLSA();
 		}
 	}
@@ -360,6 +367,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		_myLsa.neighboursWithMetric = neighboursWithMetric;
 		_myLsa.power = power;
 		_LSAVersion++;
+		
+		if(LogisticsPipes.DEBUG)
+			System.out.println("[LogisticsPipes] routing update to "+_LSAVersion+" for Node" +  simpleID);
 		SharedLSADatabasewriteLock.unlock();
 	}
 	
@@ -534,9 +544,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.lock(); // take a write lock so that we don't overlap with any ongoing route updates
 		if (SharedLSADatabase.get(simpleID)!=null) {
 			SharedLSADatabase.set(simpleID, null);
-			_LSAVersion++;
 		}
 		SharedLSADatabasewriteLock.unlock();
+		this.act(new BitSet(this.getBiggestSimpleID()), new flagForLSAUpdate());
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
 		releaseSimpleID(simpleID);
 		updateNeighbors();

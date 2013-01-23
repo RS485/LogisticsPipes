@@ -22,7 +22,11 @@ public class PacketRequestSubmit extends PacketCoordinates {
 	}
 
 	public PacketRequestSubmit(int x, int y, int z, int dim, ItemIdentifier selectedItem, int amount) {
-		super(NetworkConstants.REQUEST_SUBMIT, x, y, z);
+		this(x, y, z, dim, selectedItem, amount, NetworkConstants.REQUEST_SUBMIT);
+	}
+
+	public PacketRequestSubmit(int x, int y, int z, int dim, ItemIdentifier selectedItem, int amount, int id) {
+		super(id, x, y, z);
 		itemID = selectedItem.itemID;
 		dataValue = selectedItem.itemDamage;
 		tag = selectedItem.tag;

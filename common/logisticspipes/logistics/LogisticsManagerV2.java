@@ -9,14 +9,19 @@
 package logisticspipes.logistics;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -25,62 +30,129 @@ import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.item.ItemStack;
 
 public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	
+	/**
+	 * Method used to check if a given stack has a destination.
+	 * 
+	 * @return Boolean, true if stack has a valid destination.
+	 * @param stack The stack to check if it has destination.
+	 * @param allowDefault Boolean, if true then a default route will be considered a valid destination.
+	 * @param sourceRouter The UUID of the router pipe that wants to send the stack.
+	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
+	 */
 	@Override
 	public boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
-		Pair<UUID, SinkReply> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), excludeSource, new ArrayList<UUID>());
+		Pair3<UUID, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<UUID>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		
 		if (search.getValue2() == null) return false;
 		
 		return (allowDefault || !search.getValue2().isDefault);
 	}
 	
-	private Pair<UUID, SinkReply> getBestReply(ItemStack item, IRouter sourceRouter, boolean excludeSource, List<UUID> jamList){
-		UUID potentialDestination = null;
-		SinkReply bestReply = null;
+	/**
+	 * Method used to check if a given stack has a destination at a priority.
+	 * 
+	 * @return Boolean, true if stack has a destination with the given priority.
+	 * @param stack The stack to check if it has destination.
+	 * @param sourceRouter The UUID of the router pipe that wants to send the stack.
+	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
+	 * @param priority The priority that the stack must have.
+	 */
+	@Override
+	public boolean hasDestinationWithPriority(ItemStack stack, UUID sourceRouter, boolean excludeSource, FixedPriority priority) {
+		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
+		Pair3<UUID, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<UUID>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		if (search.getValue2() == null) return false;
+		return (search.getValue2().fixedPriority == priority);
+	}
+
+	
+	private Pair3<UUID, SinkReply, List<IFilter>> getBestReply(ItemStack item, IRouter sourceRouter, List<SearchNode> validDestinations, boolean excludeSource, List<UUID> jamList, BitSet layer, List<IFilter> filters, Pair3<UUID, SinkReply, List<IFilter>> result){
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(ItemIdentifier.get(item)) || filter.blockRouting()) continue;
+		}
+		List<SearchNode> firewall = new LinkedList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
 		
-		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
+		if(result == null) {
+			result = new Pair3<UUID, SinkReply, List<IFilter>>(null, null, null);
+		}
+		
+		for (SearchNode candidateRouter : validDestinations){
 			if (excludeSource) {
-				if(candidateRouter.getId().equals(sourceRouter.getId())) continue;
+				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			}
-			if(jamList.contains(candidateRouter.getId())) continue;
+			if(jamList.contains(candidateRouter.node.getId())) continue;
 			
-			ILogisticsModule module = candidateRouter.getLogisticsModule();
-			if (candidateRouter.getPipe() == null || !candidateRouter.getPipe().isEnabled()) continue;
+			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
+			
+			if(used.get(candidateRouter.node.getSimpleID())) continue;
+			
+			used.set(candidateRouter.node.getSimpleID());
+			
+			if(candidateRouter.node instanceof IFilteringRouter) {
+				firewall.add(candidateRouter);
+			}
+			
+			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
+			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
 			if (module == null) continue;
 			SinkReply reply = module.sinksItem(item);
 			if (reply == null) continue;
-			if (bestReply == null){
-				potentialDestination = candidateRouter.getId();
-				bestReply = reply;
+			if (result.getValue1() == null){
+				result.setValue1(candidateRouter.node.getId());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<IFilter>();
+				list.addAll(filters);
+				result.setValue3(list);
 				continue;
 			}
 			
-			if (reply.fixedPriority.ordinal() > bestReply.fixedPriority.ordinal()){
-				bestReply = reply;
-				potentialDestination = candidateRouter.getId();
+			if (reply.fixedPriority.ordinal() > result.getValue2().fixedPriority.ordinal()) {
+				result.setValue1(candidateRouter.node.getId());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<IFilter>();
+				list.addAll(filters);
+				result.setValue3(list);
 				continue;
 			}
 			
-			if (reply.fixedPriority == bestReply.fixedPriority && reply.customPriority >  bestReply.customPriority){
-				bestReply = reply;
-				potentialDestination = candidateRouter.getId();
+			if (reply.fixedPriority == result.getValue2().fixedPriority && reply.customPriority >  result.getValue2().customPriority) {
+				result.setValue1(candidateRouter.node.getId());
+				result.setValue2(reply);
+				List<IFilter> list = new LinkedList<IFilter>();
+				list.addAll(filters);
+				result.setValue3(list);
 				continue;
 			}
 		}
-		Pair<UUID, SinkReply> result = new Pair<UUID, SinkReply>(potentialDestination, bestReply);
+		for(SearchNode n:firewall) {
+			IFilter filter = ((IFilteringRouter)n.node).getFilter();
+			filters.add(filter);
+			result = getBestReply(item, sourceRouter, ((IFilteringRouter)n.node).getRouters(), excludeSource, jamList, used, filters, result);
+			filters.remove(filter);
+		}
 		return result;
 	}
 	
-	
-	
+	/**
+	 * Will assign a destination for a IRoutedItem based on a best sink reply recieved from other pipes.
+	 * @param item The item that needs to be routed.
+	 * @param sourceRouterUUID The UUID of the pipe that is sending the item.
+	 * @param excludeSource Boolean, true means that it wont set the source as the destination.
+	 * @return IRoutedItem with a newly assigned destination
+	 */
 	@Override
 	public IRoutedItem assignDestinationFor(IRoutedItem item, UUID sourceRouterUUID, boolean excludeSource) {
 		
@@ -93,35 +165,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.changeDestination(null);
 		
-//		UUID potentialDestination = null;
-//		SinkReply bestReply = null;
+		Pair3<UUID, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		
-		Pair<UUID, SinkReply> bestReply = getBestReply(item.getItemStack(), sourceRouter, excludeSource, item.getJamList());
-		
-//		for (IRouter candidateRouter : sourceRouter.getIRoutersByCost()){
-//			if (excludeSource && candidateRouter.getId().equals(sourceRouterUUID)) continue;
-//			ILogisticsModule module = candidateRouter.getLogisticsModule();
-//			if (module == null) continue;
-//			SinkReply reply = module.sinksItem(ItemIdentifier.get(item.getItemStack()));
-//			if (reply == null) continue;
-//			if (bestReply == null){
-//				potentialDestination = candidateRouter.getId();
-//				bestReply = reply;
-//				continue;
-//			}
-//			
-//			if (reply.fixedPriority.ordinal() > bestReply.fixedPriority.ordinal()){
-//				bestReply = reply;
-//				potentialDestination = candidateRouter.getId();
-//				continue;
-//			}
-//			
-//			if (reply.fixedPriority == bestReply.fixedPriority && reply.customPriority >  bestReply.customPriority){
-//				bestReply = reply;
-//				potentialDestination = candidateRouter.getId();
-//				continue;
-//			}
-//		}
 		item.setSource(sourceRouterUUID);
 		if (bestReply.getValue1() != null){
 			item.setDestination(bestReply.getValue1());
@@ -132,17 +177,35 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 					item.setTransportMode(TransportMode.Passive);
 				}
 			}
+			List<IRelayItem> list = new LinkedList<IRelayItem>();
+			if(bestReply.getValue3() != null) {
+				for(IFilter filter:bestReply.getValue3()) {
+					list.add(filter);
+				}
+			}
+			item.addRelayPoints(list);
 		}
 		
 		return item;
 	}
 
+	/**
+	 * Passes (item, UUID, false) to assignDestinationFor. Sets an item with unreachable destination to the source router.
+	 * @param item The IRoutedItem being routed.
+	 * @param currentRouter The UUID of the source router.
+	 * @return IRoutedItem with calculated destination.
+	 */
 	@Override
 	public IRoutedItem destinationUnreachable(IRoutedItem item,	UUID currentRouter) {
 		// TODO Auto-generated method stub
 		return assignDestinationFor(item, currentRouter, false);
 	}
 	
+	/**
+	 * If there is a better router name available, it will return it.  Else, it will return the UUID as a string.
+	 * @param r The IRouter that you want the name for.
+	 * @return String with value of a better name if available, else just the UUID as a string.
+	 */
 	@Override
 	public String getBetterRouterName(IRouter r){
 		
@@ -168,16 +231,37 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				
 	}
 
+	/**
+	 * @param validDestinations a list of SearchNode of valid destinations.
+	 * @return HashMap with ItemIdentifier and Integer item count of available items.
+	 */
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<IRouter> validDestinations) {
-		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(IRouter r: validDestinations){
+	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
+		Map<UUID, Map<ItemIdentifier, Integer>> items = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+		for(SearchNode r: validDestinations){
 			if(r == null) continue;
-			if (!(r.getPipe() instanceof IProvideItems)) continue;
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if (!(r.node.getPipe() instanceof IProvideItems)) {
+				if(r.node instanceof IFilteringRouter) {
+					used.set(r.node.getSimpleID(), true);
+					filterpipes.add(r);
+				}
+				continue;
+			}
 
-			IProvideItems provider = (IProvideItems) r.getPipe();
-			HashMap<ItemIdentifier, Integer> allItems = provider.getAllItems();
-			
+			IProvideItems provider = (IProvideItems) r.node.getPipe();
+			provider.getAllItems(items, new ArrayList<IFilter>(0));
+			used.set(r.node.getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			List<IFilter> list = new LinkedList<IFilter>();
+			list.add(((IFilteringRouter)n.node).getFilter());
+			handleAvailableSubFiltering(n, items, list, used);
+		}
+		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
+		for(Map<ItemIdentifier, Integer> allItems:items.values()) {
 			for (ItemIdentifier item : allItems.keySet()){
 				if (!allAvailableItems.containsKey(item)){
 					allAvailableItems.put(item, allItems.get(item));
@@ -188,20 +272,104 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return allAvailableItems;
 	}
-
-	@Override
-	public LinkedList<ItemIdentifier> getCraftableItems(List<IRouter> validDestinations) {
-		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
-		for (IRouter r : validDestinations){
-			if(r == null) continue;
-			if (!(r.getPipe() instanceof ICraftItems)) continue;
+	
+	private void handleAvailableSubFiltering(SearchNode r, Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters, BitSet layer) {
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
+		for(SearchNode n:((IFilteringRouter)r.node).getRouters()) {
+			if(n == null) continue;
+			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(used.get(n.node.getSimpleID())) continue;
 			
-			ICraftItems crafter = (ICraftItems) r.getPipe();
+			if (!(n.node.getPipe() instanceof IProvideItems)) {
+				if(n.node instanceof IFilteringRouter) {
+					used.set(n.node.getSimpleID(), true);
+					filterpipes.add(n);
+				}
+				continue;
+			}
+			IProvideItems provider = (IProvideItems) n.node.getPipe();
+			provider.getAllItems(items, filters);
+			used.set(n.node.getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			IFilter filter = ((IFilteringRouter)n.node).getFilter();
+			filters.add(filter);
+			handleAvailableSubFiltering(n, items, filters, used);
+			filters.remove(filter);
+		}
+	}
+	
+	/**
+	 * @param validDestinations a List of SearchNode of valid destinations.
+	 * @return LinkedList with ItemIdentifier 
+	 */
+	@Override
+	public LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> validDestinations) {
+		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+		for (SearchNode r : validDestinations){
+			if(r == null) continue;
+			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(used.get(r.node.getSimpleID())) continue;
+			
+			if (!(r.node.getPipe() instanceof ICraftItems)) {
+				if(r.node instanceof IFilteringRouter) {
+					used.set(r.node.getSimpleID(), true);
+					filterpipes.add(r);
+				}
+				continue;
+			}
+			
+			ICraftItems crafter = (ICraftItems) r.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);
 			}
+			used.set(r.node.getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			List<IFilter> list = new LinkedList<IFilter>();
+			list.add(((IFilteringRouter)n.node).getFilter());
+			handleCraftableItemsSubFiltering(n, craftableItems, list, used);
 		}
 		return craftableItems;
+	}
+	
+	private void handleCraftableItemsSubFiltering(SearchNode r, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
+		if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) return;
+		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
+outer:
+		for(SearchNode n:((IFilteringRouter)r.node).getRouters()) {
+			if(n == null) continue;
+			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
+			if(used.get(n.node.getSimpleID())) continue;
+			
+			if (!(n.node.getPipe() instanceof ICraftItems)) {
+				if(n.node instanceof IFilteringRouter) {
+					used.set(n.node.getSimpleID(), true);
+					filterpipes.add(n);
+				}
+				continue;
+			}
+			
+			ICraftItems crafter = (ICraftItems) n.node.getPipe();
+			ItemIdentifier craftedItem = crafter.getCraftedItem();
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(craftedItem) || filter.blockCrafting()) continue outer;
+			}
+			if (craftedItem != null && !craftableItems.contains(craftedItem)){
+				craftableItems.add(craftedItem);
+			}
+			used.set(n.node.getSimpleID(), true);
+		}
+		for(SearchNode n:filterpipes) {
+			IFilter filter = ((IFilteringRouter)n.node).getFilter();
+			filters.add(filter);
+			handleCraftableItemsSubFiltering(n, craftableItems, filters, used);
+			filters.remove(filter);
+		}
 	}
 }

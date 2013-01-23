@@ -1,33 +1,40 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IFilteringRouter;
+import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
+import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 
 public class RequestManager {
 
-	public static boolean request(LinkedList<ItemIdentifierStack> items, IRequestItems requester, LinkedList<IRouter> validDestinations, RequestLog log) {
-		LinkedList<IProvideItems> providers = getProviders(validDestinations);
-		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
+	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<SearchNode> validDestinations, RequestLog log) {
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
 		for(ItemIdentifierStack stack:items) {
-			RequestTree node = new RequestTree(stack, requester);
-			tree.subRequests.add(node);
+			RequestTree node = new RequestTree(stack, requester, tree);
 			messages.add(new ItemMessage(stack));
-			generateRequestTree(tree, node, crafters, providers);
+			generateRequestTree(tree, node, requester);
 		}
 		if(tree.isAllDone()) {
 			handleRequestTree(tree);
@@ -47,11 +54,9 @@ public class RequestManager {
 		}
 	}
 	
-	public static boolean request(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
-		LinkedList<IProvideItems> providers = getProviders(validDestinations);
-		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
-		RequestTree tree = new RequestTree(item, requester);
-		generateRequestTree(tree, tree, crafters, providers);
+	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
+		RequestTree tree = new RequestTree(item, requester, null);
+		generateRequestTree(tree, tree, requester);
 		if(tree.isAllDone()) {
 			handleRequestTree(tree);
 			if(log != null) {
@@ -66,50 +71,77 @@ public class RequestManager {
 		}
 	}
 	
-	public static void simulate(ItemIdentifierStack item, IRequestItems requester, List<IRouter> validDestinations, RequestLog log) {
-		LinkedList<IProvideItems> providers = new LinkedList<IProvideItems>();
-		LinkedList<CraftingTemplate> crafters = getCrafters(validDestinations);
-		RequestTree tree = new RequestTree(item, requester);
-		generateRequestTree(tree, tree, crafters, providers);
+	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
+		RequestTree tree = new RequestTree(item, requester, null);
+		generateRequestTree(tree, tree, requester,true);
 		if(log != null) {
 				tree.sendMissingMessage(log);
 		}
 	}
 	
-	private static LinkedList<CraftingTemplate> getCrafters(List<IRouter> validDestinations) {
-		LinkedList<CraftingTemplate> crafters = new LinkedList<CraftingTemplate>();
-		for(IRouter r : validDestinations) {
-			CoreRoutedPipe pipe = r.getPipe();
-			if (pipe instanceof ICraftItems){
-				LinkedList<CraftingTemplate> added = new LinkedList<CraftingTemplate>();
-				((ICraftItems)pipe).addCrafting(added);
-				for(CraftingTemplate template:added) {
-					boolean done = false;
-					for(int i=0; i<crafters.size();i++) {
-						if(template.getPriority() > crafters.get(i).getPriority()) {
-							crafters.add(i, template);
-							done = true;
-							break;
+	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(List<SearchNode> validDestinations, BitSet layer, List<IFilter> filters) {
+		List<Pair<CraftingTemplate,List<IFilter>>> crafters = new ArrayList<Pair<CraftingTemplate,List<IFilter>>>(validDestinations.size());
+		List<SearchNode> firewalls = new LinkedList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
+		for(SearchNode r : validDestinations) {
+			CoreRoutedPipe pipe = r.node.getPipe();
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getSimpleID())) {
+				if (pipe instanceof ICraftItems){
+					used.set(r.node.getSimpleID());
+					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
+					if(craftable!=null) {
+						for(IFilter filter: filters) {
+							if(filter.isBlocked() == filter.getFilteredItems().contains(craftable.getResultStack().getItem()) || filter.blockCrafting()) continue;
 						}
+						List<IFilter> list = new LinkedList<IFilter>();
+						list.addAll(filters);
+						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
 					}
-					if(!done) {
-						crafters.addLast(template);
-					}
+				}
+				if(r.node instanceof IFilteringRouter) {
+					firewalls.add(r);
+					used.set(r.node.getSimpleID());
+				}
+			}		
+		}
+		for(SearchNode r:firewalls) {
+			IFilter filter = ((IFilteringRouter)r.node).getFilter();
+			filters.add(filter);
+			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.node).getRouters(), used, filters);
+			filters.remove(filter);
+			crafters.addAll(list);
+		}
+		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
+		return crafters;
+	}
+
+	
+	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(List<SearchNode> validDestinations, BitSet layer, List<IFilter> filters) {
+		List<Pair<IProvideItems,List<IFilter>>> providers = new LinkedList<Pair<IProvideItems,List<IFilter>>>();
+		List<SearchNode> firewalls = new LinkedList<SearchNode>();
+		BitSet used = (BitSet) layer.clone();
+		for(SearchNode r : validDestinations) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.node.getSimpleID())) {
+				CoreRoutedPipe pipe = r.node.getPipe();
+				if (pipe instanceof IProvideItems) {
+					List<IFilter> list = new LinkedList<IFilter>();
+					list.addAll(filters);
+					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
+					used.set(r.node.getSimpleID());
+				}
+				if(r.node instanceof IFilteringRouter) {
+					firewalls.add(r);
+					used.set(r.node.getSimpleID());
 				}
 			}
 		}
-		return crafters;
-	}
-	
-	private static LinkedList<IProvideItems> getProviders(List<IRouter> validDestinations) {
-		LinkedList<IProvideItems> providers = new LinkedList<IProvideItems>();
-		for(IRouter r : validDestinations) {
-			CoreRoutedPipe pipe = r.getPipe();
-			if (pipe instanceof IProvideItems){
-				providers.add((IProvideItems)pipe);
-			}
+		for(SearchNode r:firewalls) {
+			IFilter filter = ((IFilteringRouter)r.node).getFilter();
+			filters.add(filter);
+			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((IFilteringRouter)r.node).getRouters(), used, filters);
+			filters.remove(filter);
+			providers.addAll(list);
 		}
-		
 		return providers;
 	}
 	
@@ -117,9 +149,16 @@ public class RequestManager {
 		tree.fullFillAll();
 		tree.registerExtras();
 	}
+	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
+		return generateRequestTree(tree, treeNode, requester, false);
+		
+	}
 	
-	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, LinkedList<CraftingTemplate> crafters, LinkedList<IProvideItems> providers) {
-		checkProvider(tree,treeNode,providers);
+	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
+
+		if(!ignoreProviders)
+			checkProvider(tree,treeNode,requester);
+		
 		if(treeNode.isDone()) {
 			return true;
 		}
@@ -127,7 +166,7 @@ public class RequestManager {
 		if(treeNode.isDone()) {
 			return true;
 		}
-		checkCrafting(tree,treeNode,crafters,providers);
+		checkCrafting(tree,treeNode,requester,ignoreProviders);
 		return treeNode.isDone();
 	}
 
@@ -137,84 +176,152 @@ public class RequestManager {
 			if(treeNode.isDone()) {
 				break;
 			}
-			treeNode.addPromise(extraPromise);
-			map.get(extraPromise).usePromise(extraPromise);
+			boolean valid = false;
+			if(treeNode.target.getRouter().getRouteTable().containsKey(extraPromise.sender.getRouter())) {
+				for(SearchNode node:treeNode.target.getRouter().getIRoutersByCost()) {
+					if(node.node == extraPromise.sender.getRouter()) {
+						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+							valid = true;
+						}
+					}
+				}
+			}
+			if(valid) {
+				treeNode.addPromise(extraPromise);
+				map.get(extraPromise).usePromise(extraPromise);
+			}
 		}
 	}
 
-	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, LinkedList<CraftingTemplate> crafters, LinkedList<IProvideItems> providers) {
+	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
+		List<SearchNode> validDestinations = requester.getRouter().getIRoutersByCost();
+		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validDestinations, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
+		
+		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
-		for(CraftingTemplate template:crafters) {
-			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;
+outer:
+		for(Pair<CraftingTemplate, List<IFilter>> crafter:crafters) {
+			CraftingTemplate template = crafter.getValue1();
+			if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
+				continue;
+			
+			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;		
+			for(IFilter filter:crafter.getValue2()) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(template.getResultStack().getItem()) || filter.blockCrafting()) continue outer;
+			}
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
-			RequestTreeNode treeNodeCopy = treeNode.copy();
-			while(treeNodeCopy.addPromise(template.generatePromise())) {
-				for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
-					boolean done = false;
-					for(Pair<ItemIdentifierStack,IRequestItems> part:stacks) {
-						if(part.getValue1().getItem() == stack.getValue1().getItem() && part.getValue2() == stack.getValue2()) {
-							part.getValue1().stackSize += stack.getValue1().stackSize;
-							done = true;
-							break;
-						}
-					}
-					if(!done) {
-						Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-						stacks.add(pair);
+
+			int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+			
+			// for each thing needed to satisfy this promise
+			for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
+				boolean done = false;
+				//search for an existing requests from here and it to stacks <requester,item>
+				for(Pair<ItemIdentifierStack,IRequestItems> part:stacks) {
+					if(part.getValue1().getItem() == stack.getValue1().getItem() && part.getValue2() == stack.getValue2()) {
+						part.getValue1().stackSize += stack.getValue1().stackSize * nCraftingSetsNeeded;
+						done = true;
+						break;
 					}
 				}
+				if(!done) {
+					//if its a new request, add it to the end.
+					Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2() );
+					pair.getValue1().stackSize *= nCraftingSetsNeeded;
+					stacks.add(pair);
+				}
 			}
+			
 			boolean failed = false;
-			if(lastNode != null && lastNode.size() > 0) {
-				for(RequestTreeNode subNode:lastNode) {
-					subNode.revertExtraUsage();
-				}
-			}
 			
 			lastNode = new ArrayList<RequestTreeNode>();
 			lastNodeTemplate = template;
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2());
+				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
-				treeNode.subRequests.add(node);
-				if(!generateRequestTree(tree,node,getCraftersWithOutCrafter(crafters,template),providers)) {
+				node.declareCrafterUsed(template);
+				if(!generateRequestTree(tree,node,template.getCrafter(),ignoreProviders)) {
 					failed = true;
 				}			
 			}
 			if(failed) {
 				for(RequestTreeNode subNode:lastNode) {
-					treeNode.subRequests.remove(subNode);
+					subNode.revertExtraUsage();
+					treeNode.remove(subNode);
 				}
 				continue;
 			}
 			handled = true;
-			while(treeNode.addPromise(template.generatePromise()));
+			List<IRelayItem> relays = new LinkedList<IRelayItem>();
+			for(IFilter filter:crafter.getValue2()) {
+				relays.add(filter);
+			}
+			while(treeNode.addPromise(template.generatePromise(relays)));
 			lastNode = null;
 			break;
 		}
 		if(!handled) {
 			if(lastNode != null && lastNodeTemplate != null) {
-				while(treeNode.addPromise(lastNodeTemplate.generatePromise()));
+				while(treeNode.addPromise(lastNodeTemplate.generatePromise(new ArrayList<IRelayItem>())));
 				treeNode.subRequests.addAll(lastNode);
 			}
 		}
 	}
+	
+	/*
+	
+	//if the item is the same, and the router is the same ... different stack sizes are allowed
+	private class RequestPairCompare implements Comparator<Pair<ItemIdentifierStack,IRequestItems> >{
 
-	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, LinkedList<IProvideItems> providers) {
-		for(IProvideItems provider : providers) {
-			provider.canProvide(treeNode, tree.getAllPromissesFor(provider));
+		@Override
+		public int compare(Pair<ItemIdentifierStack, IRequestItems> o1,
+				Pair<ItemIdentifierStack, IRequestItems> o2) {
+			int c=o1.getValue1().getItem().compareTo(o2.getValue1().getItem());
+			if (c==0)
+				return o1.getValue2().compareTo(o2.getValue2());
+			return c;
 		}
+		
 	}
 	
-	private static LinkedList<CraftingTemplate> getCraftersWithOutCrafter(LinkedList<CraftingTemplate> crafters, CraftingTemplate crafter) {
-		LinkedList<CraftingTemplate> result = new LinkedList<CraftingTemplate>();
-		for(CraftingTemplate template:crafters) {
-			if(template != crafter) {
-				result.add(template);
+	*/
+	
+	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
+			provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
+		}
+	}
+
+	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<SearchNode> list, RequestLog log) {
+		List<ILiquidProvider> providers = getLiquidProviders(list);
+		LiquidRequest request = new LiquidRequest(liquid, amount);
+		for(ILiquidProvider provider:providers) {
+			provider.canProvide(request);
+		}
+		if(request.isAllDone()) {
+			request.fullFill(pipe);
+			if(log != null) {
+				log.handleSucessfullRequestOf(new ItemMessage(request.getStack()));
+			}
+			return true;
+		} else {
+			if(log != null) {
+				request.sendMissingMessage(log);
+			}
+			return false;
+		}
+	}
+
+	private static List<ILiquidProvider> getLiquidProviders(List<SearchNode> list) {
+		List<ILiquidProvider> providers = new LinkedList<ILiquidProvider>();
+		for(SearchNode r : list) {
+			CoreRoutedPipe pipe = r.node.getPipe();
+			if (pipe instanceof ILiquidProvider){
+				providers.add((ILiquidProvider)pipe);
 			}
 		}
-		return result;
+		return providers;
 	}
 }

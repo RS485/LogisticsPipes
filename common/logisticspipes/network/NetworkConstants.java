@@ -86,4 +86,9 @@ public class NetworkConstants {
 	public static final int COMPONENT_LIST = 80;
 	public static final int REQUEST_UPDATE_NAMES = 81;
 	public static final int UPDATE_NAMES = 82;
+	public static final int LIQUID_UPDATE_PACKET = 83;
+	public static final int ORDERER_LIQUID_REFRESH_REQUEST = 84;
+	public static final int LIQUID_REQUEST_SUBMIT = 85;
+	public static final int MODBASEDITEMSINKLIST = 86;
+	public static final int FIREWALL_FLAG_SET = 87;
 }

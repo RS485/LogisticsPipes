@@ -9,16 +9,18 @@
 package logisticspipes.routing;
 
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
-public interface IRouter {
+public interface IRouter extends IPowerRouter {
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
@@ -26,9 +28,8 @@ public interface IRouter {
 	public boolean hasRoute(UUID id);
 	public ForgeDirection getExitFor(UUID id);
 	
-	@Deprecated
-	public HashMap<IRouter, ForgeDirection> getRouteTable();
-	public LinkedList<IRouter> getIRoutersByCost();
+	public HashMap<IRouter, Pair<ForgeDirection, ForgeDirection>> getRouteTable();
+	public List<SearchNode> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	
 	public UUID getId();
@@ -40,4 +41,7 @@ public interface IRouter {
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public ILogisticsModule getLogisticsModule();
+	public void clearPipeCache();
+	
+	public int getSimpleID();
 }

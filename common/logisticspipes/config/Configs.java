@@ -13,6 +13,7 @@ public class Configs {
 	public static final String CATEGORY_MULTITHREAD = "multiThread";
 	
 	// Ids
+	public static int ItemLiquidContainerId							= 6864;
 	public static int ItemUpgradeManagerId							= 6865;
 	public static int ItemUpgradeId									= 6866;
 	public static int ItemPartsId									= 6867;
@@ -45,6 +46,13 @@ public class Configs {
 	public static int LOGISTICSPIPE_ENTRANCE_ID						= 6894;
 	public static int LOGISTICSPIPE_DESTINATION_ID					= 6895;
 	public static int LOGISTICSPIPE_CRAFTING_MK3_ID					= 6896;
+	public static int LOGISTICSPIPE_FIREWALL_ID						= 6897;
+
+	public static int LOGISTICSPIPE_LIQUID_CONNECTOR				= 6901;
+	public static int LOGISTICSPIPE_LIQUID_BASIC					= 6902;
+	public static int LOGISTICSPIPE_LIQUID_INSERTION				= 6903;
+	public static int LOGISTICSPIPE_LIQUID_PROVIDER					= 6904;
+	public static int LOGISTICSPIPE_LIQUID_REQUEST					= 6905;
 	
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID				= 6900;
 	
@@ -249,6 +257,37 @@ public class Configs {
 		
 		Property logisticPipeCraftingMK3IdProperty = configuration.getItem("logisticsPipeCraftingMK3.id", LOGISTICSPIPE_CRAFTING_MK3_ID);
 		logisticPipeCraftingMK3IdProperty.comment = "The item id for the crafting logistics pipe MK3";
+
+		//DEBUG (TEST) ONLY (FIREWALL)
+		Property logisticPipeFirewallIdProperty = null;
+		if(LogisticsPipes.DEBUG) {
+			logisticPipeFirewallIdProperty = configuration.getItem("logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID);
+			logisticPipeFirewallIdProperty.comment = "The item id for the firewall logistics pipe";
+		}
+		
+		//DEBUG (TEST) ONLY (LIQUID)
+		Property logisticPipeLiquidConnectorIdProperty = null;
+		Property logisticPipeLiquidBasicIdProperty = null;
+		Property logisticPipeLiquidInsertionIdProperty = null;
+		Property logisticPipeLiquidProviderIdProperty = null;
+		Property logisticPipeLiquidRequestIdProperty = null;
+		if(LogisticsPipes.DEBUG) {
+			
+			logisticPipeLiquidConnectorIdProperty = configuration.getItem("logisticPipeLiquidConnector.id", LOGISTICSPIPE_LIQUID_CONNECTOR);
+			logisticPipeLiquidConnectorIdProperty.comment = "The item id for the liquid connector pipe.";
+			
+			logisticPipeLiquidBasicIdProperty = configuration.getItem("logisticPipeLiquidBasic.id", LOGISTICSPIPE_LIQUID_BASIC);
+			logisticPipeLiquidBasicIdProperty.comment = "The item id for the liquid basic pipe.";
+			
+			logisticPipeLiquidInsertionIdProperty = configuration.getItem("logisticPipeLiquidInsertion.id", LOGISTICSPIPE_LIQUID_INSERTION);
+			logisticPipeLiquidInsertionIdProperty.comment = "The item id for the liquid insertion pipe.";
+			
+			logisticPipeLiquidProviderIdProperty = configuration.getItem("logisticPipeLiquidProvider.id", LOGISTICSPIPE_LIQUID_PROVIDER);
+			logisticPipeLiquidProviderIdProperty.comment = "The item id for the liquid provider pipe.";
+			
+			logisticPipeLiquidRequestIdProperty = configuration.getItem("logisticPipeLiquidRequest.id", LOGISTICSPIPE_LIQUID_REQUEST);
+			logisticPipeLiquidRequestIdProperty.comment = "The item id for the liquid requestor pipe.";
+		}
 		
 		Property logisticPipeRequesterMK2IdProperty = configuration.getItem("logisticsPipeRequesterMK2.id", LOGISTICSPIPE_REQUEST_MK2_ID);
 		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
@@ -303,7 +342,13 @@ public class Configs {
 
 		Property logisticItemCardIdProperty = configuration.getItem("logisticItemCard.id", ItemCardId);
 		logisticItemCardIdProperty.comment = "The item id for the logistics item card";
-
+		
+		//DEBUG (TEST) ONLY
+		Property logisticsLiquidContainerIdProperty = null;
+		if(LogisticsPipes.DEBUG) {
+			logisticsLiquidContainerIdProperty = configuration.getItem("LogisticsLiquidContainer.id", ItemLiquidContainerId);
+			logisticsLiquidContainerIdProperty.comment = "The item id for the logistics liquid container";
+		}
 		
 		Property detectionLength = configuration.get(Configuration.CATEGORY_GENERAL, "detectionLength", LOGISTICS_DETECTION_LENGTH);
 		detectionLength.comment = "The maximum shortest length between logistics pipes. This is an indicator on the maxim depth of the recursion algorithm to discover logistics neighbours. A low value might use less CPU, a high value will allow longer pipe sections";
@@ -365,6 +410,11 @@ public class Configs {
 		ItemCardId							= Integer.parseInt(logisticItemCardIdProperty.value);
 		ItemHUDId							= Integer.parseInt(logisticItemHUDIdProperty.value);
 		ItemPartsId							= Integer.parseInt(logisticItemPartsIdProperty.value);
+
+		//DEBUG (TEST) ONLY
+		if(LogisticsPipes.DEBUG) {
+			ItemLiquidContainerId				= Integer.parseInt(logisticsLiquidContainerIdProperty.value);
+		}
 		 
 		LOGISTICSPIPE_BASIC_ID 				= Integer.parseInt(logisticPipeIdProperty.value);
 		LOGISTICSPIPE_REQUEST_ID			= Integer.parseInt(logisticPipeRequesterIdProperty.value);
@@ -389,6 +439,20 @@ public class Configs {
 		LOGISTICSPIPE_INVSYSCON_ID			= Integer.parseInt(logisticInvSysConIdProperty.value);
 		LOGISTICS_SIGN_ID 					= Integer.parseInt(logisticsSignId.value);
 		LOGISTICS_SOLID_BLOCK_ID 			= Integer.parseInt(logisticsSolidBlockId.value);
+		
+		//DEBUG (TEST) ONLY (FIREWALL)
+		if(LogisticsPipes.DEBUG) {
+			LOGISTICSPIPE_FIREWALL_ID	= logisticPipeFirewallIdProperty.getInt();
+		}
+
+		//DEBUG (TEST) ONLY (LIQUID)
+		if(LogisticsPipes.DEBUG) {
+			LOGISTICSPIPE_LIQUID_CONNECTOR	= logisticPipeLiquidConnectorIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_BASIC		= logisticPipeLiquidBasicIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_INSERTION	= logisticPipeLiquidInsertionIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_PROVIDER	= logisticPipeLiquidProviderIdProperty.getInt();
+			LOGISTICSPIPE_LIQUID_REQUEST	= logisticPipeLiquidRequestIdProperty.getInt();
+		}
 		
 		LOGISTICS_DETECTION_LENGTH			= Integer.parseInt(detectionLength.value);
 		LOGISTICS_DETECTION_COUNT			= Integer.parseInt(detectionCount.value);

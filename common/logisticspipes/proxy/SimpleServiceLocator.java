@@ -11,15 +11,15 @@ package logisticspipes.proxy;
 import java.util.LinkedList;
 
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
+import logisticspipes.logistics.ILogisticsLiquidManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
@@ -34,9 +34,9 @@ public final class SimpleServiceLocator {
 		buildCraftProxy = bcProxy;
 	}
 	
-	public static IElectricItemProxy electricItemProxy;
-	public static void setElectricItemProxy(final IElectricItemProxy fProxy){
-		electricItemProxy = fProxy;
+	public static IIC2Proxy IC2Proxy;
+	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy){
+		IC2Proxy = ic2Proxy;
 	}
 
 	public static IForestryProxy forestryProxy;
@@ -64,6 +64,11 @@ public final class SimpleServiceLocator {
 		logisticsManager = logisticsMngr;
 	}
 	
+	public static ILogisticsLiquidManager logisticsLiquidManager;
+	public static void setLogisticsLiquidManager(final ILogisticsLiquidManager logisticsMngr){
+		logisticsLiquidManager = logisticsMngr;
+	}
+	
 	public static InventoryUtilFactory inventoryUtilFactory;
 	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
 		inventoryUtilFactory = invUtilFactory;
@@ -81,11 +86,6 @@ public final class SimpleServiceLocator {
 		specialconnection = special;
 	}
 	
-	public static SpecialInventoryHandler specialinventory;
-	public static void setSpecialInventoryHandler(final SpecialInventoryHandler special){
-		specialinventory = special;
-	}
-
 	public static IThaumCraftProxy thaumCraftProxy;
 	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
 		thaumCraftProxy = proxy;

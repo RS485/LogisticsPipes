@@ -9,6 +9,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
@@ -24,7 +25,6 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -75,14 +75,14 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		if (!_filterInventory.containsItem(ItemIdentifier.get(item))) return null;
 		
 		int targetCount = _filterInventory.itemCount(ItemIdentifier.get(item));
-		InventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
+		IInventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
 		if (targetCount <= targetUtil.itemCount(ItemIdentifier.get(item))) return null;
 		
 		SinkReply reply = new SinkReply();
 		reply.fixedPriority = FixedPriority.PassiveSupplier;
 		reply.isPassive = true;
 		if(_power.useEnergy(2)) {
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
+			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return reply;
 		}
 		return null;

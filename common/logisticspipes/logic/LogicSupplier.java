@@ -9,10 +9,10 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
@@ -23,16 +23,14 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
-import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
-import buildcraft.core.utils.Utils;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
 import buildcraft.transport.TileGenericPipe;
@@ -90,9 +88,9 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			//Do not attempt to supply redstone engines
 			if (tile.tile instanceof TileEngine && ((TileEngine)tile.tile).engine instanceof EngineWood) continue;
 			
-			IInventory inv = Utils.getInventory((IInventory) tile.tile);
+			IInventory inv = (IInventory) tile.tile;
 			if (inv.getSizeInventory() < 1) continue;
-			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
 			//How many do I want?
 			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
@@ -116,7 +114,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			LinkedList<IRouter> valid = getRouter().getIRoutersByCost();
+			//List<SearchNode> valid = getRouter().getIRoutersByCost();
 			
 			/*
 			//TODO Double Chests, Simplyfication
@@ -154,7 +152,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, valid, null);
+					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}
@@ -192,17 +190,17 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	
 	
 	@Override
-	public void itemLost(ItemIdentifier item) {
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+	public void itemLost(ItemIdentifierStack item) {
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 		super.resetThrottle();
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
 	}
 	

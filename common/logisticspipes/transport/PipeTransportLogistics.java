@@ -19,11 +19,13 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
@@ -35,7 +37,6 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipeEntry;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.inventory.Transactor;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
@@ -101,9 +102,11 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	@Override
 	public void performRemoval() {
 		try {
-			Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
-			toRemoveList.removeAll(notToRemove);
-			notToRemove.clear();
+			if(!notToRemove.isEmpty()){
+				Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+				toRemoveList.removeAll(notToRemove);
+				notToRemove.clear();
+			}
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -175,7 +178,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
-		
+				
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
 		ForgeDirection value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
 		routedItem.setReRoute(false);
@@ -192,6 +195,14 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
 			scheduleRemoval(data.item);
 			return ForgeDirection.UNKNOWN;
+		}
+		
+		if(value != ForgeDirection.UNKNOWN && !_pipe.getRouter().isRoutedExit(value)) {
+			if(!isItemExitable(routedItem.getItemStack())) {
+				routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
+				scheduleRemoval(data.item);
+				return ForgeDirection.UNKNOWN;
+			}
 		}
 		
 		readjustSpeed(routedItem.getEntityPassiveItem());
@@ -257,7 +268,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
 			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
-			if(getPipe().useEnergy(Math.round(add * 25))) {
+			if(getPipe().useEnergy(Math.round(add * 25), false)) {
 				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
 			}
 		}
@@ -271,6 +282,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			TileGenericPipe pipe = (TileGenericPipe) tile;
 			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
+			if(!isItemExitable(data.item.getItemStack())) return;
 			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 				//LogisticsPipes start
 				UpgradeManager manager = getPipe().getUpgradeManager();
@@ -281,7 +293,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 						insertion = data.output.getOpposite();
 					}
 				}
-				ItemStack added = Transactor.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
+				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 				
 				data.item.getItemStack().stackSize -= added.stackSize;
 				
@@ -313,6 +325,13 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	//BC copy end
 	
+	protected boolean isItemExitable(ItemStack stack) {
+		if(stack != null && stack.getItem() instanceof IItemAdvancedExistance) {
+			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory();
+		}
+		return true;
+	}
+	
 	protected void reverseItem(EntityData data) {
 		if(reverseItem != null) {
 			try {
@@ -331,6 +350,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");
 		}
 	}
-	
+
 	protected void insertedItemStack(EntityData data, TileEntity tile) {}
 }

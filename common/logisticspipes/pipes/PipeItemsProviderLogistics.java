@@ -21,9 +21,12 @@ import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logisticspipes.ExtractionMode;
@@ -43,17 +46,16 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.CroppedInventory;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
@@ -65,7 +67,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	private final HUDProvider HUD = new HUDProvider(this);
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
-	//private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
+	private boolean doContentUpdate = true;
 		
 	public PipeItemsProviderLogistics(int itemID) {
 		super(new LogicProvider(), itemID);
@@ -95,39 +97,62 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil(tile);
+			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			count += inv.itemCount(item);
 		}
 		return count;
 	}
 
-	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
-		int sent = 0;
+	protected int neededEnergy() {
+		return 1;
+	}
+	
+	protected int itemsToExtract() {
+		return 8;
+	}
+
+	protected int stacksToExtract() {
+		return 1;
+	}
+	
+	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination, List<IRelayItem> relays) {
+		ItemIdentifier item = stack.getItem();
+		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			
-			InventoryUtil inv = getAdaptedInventoryUtil(tile);
+			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
+			int available = inv.itemCount(item);
+			if (available == 0) continue;
 			
-			if (inv.itemCount(item)> 0){
-				ItemStack removed = inv.getSingleItem(item);
-				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
-				routedItem.setSource(this.getRouter().getId());
-				routedItem.setDestination(destination);
-				routedItem.setTransportMode(TransportMode.Active);
-				super.queueRoutedItem(routedItem, tile.orientation);
-				//super.sendRoutedItem(removed, destination, p);
-				sent++;
-				maxCount--;
-				if (maxCount < 1) break;
-			}			
+			int wanted = Math.min(available, stack.stackSize);
+			wanted = Math.min(wanted, maxCount);
+			wanted = Math.min(wanted, item.getMaxStackSize());
+			
+			if(!useEnergy(wanted * neededEnergy())) {
+				return 0;
+			}
+			ItemStack removed = inv.getMultipleItems(item, wanted);
+			if(removed == null) continue;
+			int sent = removed.stackSize;
+
+			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
+			routedItem.setSource(this.getRouter().getId());
+			routedItem.setDestination(destination);
+			routedItem.setTransportMode(TransportMode.Active);
+			routedItem.addRelayPoints(relays);
+			super.queueRoutedItem(routedItem, tile.orientation);
+			
+			_orderManager.sendSuccessfull(sent);
+			return sent;
 		}
-		updateInv(false);
-		return sent;
+		_orderManager.sendFailed();
+		return 0;
 	}
 	
-	private InventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
+	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
 		IInventory base = (IInventory) tile.tile;
 		if (base instanceof ISidedInventory) {
 			base = new SidedInventoryAdapter((ISidedInventory) base, tile.orientation.getOpposite());
@@ -135,21 +160,17 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		ExtractionMode mode = ((LogicProvider)logic).getExtractionMode();
 		switch(mode){
 			case LeaveFirst:
-				base = new CroppedInventory(base, 1, 0);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
 			case LeaveLast:
-				base = new CroppedInventory(base, 0, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
 			case LeaveFirstAndLast:
-				base = new CroppedInventory(base, 1, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
 			default:
 				break;
 		}
-		
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
 	}
 
 	@Override
@@ -166,37 +187,40 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		
 		if(worldObj.getWorldTime() % 6 == 0) {
-			updateInv(false);
+			updateInv();
+		}
+		
+		if (doContentUpdate) {
+			checkContentUpdate();
 		}
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
-		
-		if(!this.getClass().equals(PipeItemsProviderLogistics.class)) return;
-		
-		if(!useEnergy(1)) return;
-		
-		Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-		int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 3);
-		if (sent > 0){
-			_orderManager.sendSuccessfull(sent);
-		}
-		else {
-			_orderManager.sendFailed();
+
+		int itemsleft = itemsToExtract();
+		int stacksleft = stacksToExtract();
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
+			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId(), order.getValue3());
+			if (sent == 0)
+				break;
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 3);
+			stacksleft -= 1;
+			itemsleft -= sent;
 		}
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
+		}
+		
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
 		}
 		
 		// Check the transaction and see if we have helped already
@@ -209,57 +233,77 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
 		promise.sender = this;
+		List<IRelayItem> relays = new LinkedList<IRelayItem>();
+		for(IFilter filter:filters) {
+			relays.add(filter);
+		}
+		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 	
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
 		LogicProvider providerLogic = (LogicProvider) logic;
-		HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-	
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
+		Map<ItemIdentifier, Integer> allItems = items.get(this.getRouter().getId());
+		if(allItems == null) {
+			allItems = new HashMap<ItemIdentifier, Integer>();
+		}
+		
+		
 		if (!isEnabled()){
-			return allItems;
+			return;
 		}
 		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
-			InventoryUtil inv = this.getAdaptedInventoryUtil(tile);
+			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
-			for (ItemIdentifier currItem : currentInv.keySet()){
-				if (providerLogic.hasFilter() 
-						&& ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem)) 
-								|| (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
-
-				if (!allItems.containsKey(currItem)){
-					allItems.put(currItem, currentInv.get(currItem));
-				}else {
-					allItems.put(currItem, allItems.get(currItem) + currentInv.get(currItem));
+			for (ItemIdentifier currItem : currentInv.keySet()) {
+				if(allItems.containsKey(currItem)) continue;
+				
+				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
+				
+				for(IFilter filter:filters) {
+					if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue;
+				}
+				
+				if (!addedItems.containsKey(currItem)) {
+					addedItems.put(currItem, currentInv.get(currItem));
+				} else {
+					addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
 				}
 			}
 		}
 		
 		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = allItems.keySet().iterator();
+		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
 		while(iterator.hasNext()){
 			ItemIdentifier item = iterator.next();
 		
-			int remaining = allItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
 			if (remaining < 1){
 				iterator.remove();
 			} else {
-				allItems.put(item, remaining);	
+				addedItems.put(item, remaining);	
 			}
 		}
-		
-		return allItems;
+		for(ItemIdentifier item: addedItems.keySet()) {
+			if (!allItems.containsKey(item)) {
+				allItems.put(item, addedItems.get(item));
+			} else {
+				allItems.put(item, addedItems.get(item) + allItems.get(item));
+			}
+		}
+		items.put(this.getRouter().getId(), allItems);
 	}
 
 	@Override
@@ -297,13 +341,16 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
 	}
 	
-	private void updateInv(boolean force) {
+	private void updateInv() {
 		itemList.clear();
-		HashMap<ItemIdentifier, Integer> list = getAllItems();
+		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		getAllItems(map, new ArrayList<IFilter>(0));
+		Map<ItemIdentifier, Integer> list = map.get(this.getRouter().getId());
+		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			itemList.add(new ItemIdentifierStack(item, list.get(item)));
 		}
-		if(!itemList.equals(oldList) || force) {
+		if(!itemList.equals(oldList)) {
 			oldList.clear();
 			oldList.addAll(itemList);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, itemList).getPacket(), localModeWatchers);
@@ -312,6 +359,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	@Override
 	public void listenedChanged() {
+		doContentUpdate = true;
+	}
+
+	private void checkContentUpdate() {
+		doContentUpdate = false;
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
 		if(!oldManagerList.equals(all)) {
 			oldManagerList.clear();
@@ -319,13 +371,13 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
 		}
 	}
-
+	
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			updateInv(true);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, _orderManager.getContentList()).getPacket(), localModeWatchers);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, oldList).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, oldManagerList).getPacket(), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}

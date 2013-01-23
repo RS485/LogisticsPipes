@@ -8,8 +8,10 @@
 
 package logisticspipes.utils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
@@ -29,6 +31,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	private final String _name;
 	private final int _stackLimit;
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
+	private final ArrayList<ItemIdentifier> _contentsList;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	
@@ -37,6 +40,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_name = name;
 		_stackLimit = stackLimit;
 		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
+		_contentsList = new ArrayList<ItemIdentifier>((int)(size * 1.5));
 	}
 	
 	@Override
@@ -54,19 +58,19 @@ public class SimpleInventory implements IInventory, ISaveState{
 		if (_contents[i] == null) return null;
 		if (_contents[i].stackSize > j) {
 			ItemStack ret = _contents[i].splitStack(j);
-			updateContentsMap();
+			updateContents();
 			return ret;
 		}
 		ItemStack ret = _contents[i];
 		_contents[i] = null;
-		updateContentsMap();
+		updateContents();
 		return ret;
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		_contents[i] = itemstack;
-		updateContentsMap();
+		updateContents();
 	}
 
 	@Override
@@ -81,7 +85,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public void onInventoryChanged() {
-		updateContentsMap();
+		updateContents();
 		for (ISimpleInventoryEventHandler handler : _listener){
 			handler.InventoryChanged(this);
 		}
@@ -113,7 +117,7 @@ public class SimpleInventory implements IInventory, ISaveState{
     			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
     		}
     	}
-		updateContentsMap();
+		updateContents();
 	}
 
 	@Override
@@ -143,7 +147,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 			    	dropItems(worldObj, todrop, xCoord, yCoord, zCoord);
 				}
 			}
-			updateContentsMap();
+			updateContents();
 		}
 	}
 
@@ -177,7 +181,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		
 		ItemStack stackToTake = this._contents[i];
 		this._contents[i] = null;
-		updateContentsMap();
+		updateContents();
 		return stackToTake;
 	}
 
@@ -232,8 +236,9 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	/* InventoryUtil-like functions */
 
-	private void updateContentsMap() {
+	private void updateContents() {
 		_contentsMap.clear();
+		_contentsList.clear();
 		for (int i = 0; i < _contents.length; i++) {
 			ItemStack stack = _contents[i];
 			if (stack == null) {
@@ -242,6 +247,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			if (!_contentsMap.containsKey(itemId)) {
 				_contentsMap.put(itemId, stack.stackSize);
+				_contentsList.add(itemId);
 			} else {
 				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
 			}
@@ -265,5 +271,9 @@ public class SimpleInventory implements IInventory, ISaveState{
 	
 	public boolean isEmpty() {
 		return _contentsMap.isEmpty();
+	}
+
+	public List<ItemIdentifier> getItems() {
+		return _contentsList;
 	}
 }

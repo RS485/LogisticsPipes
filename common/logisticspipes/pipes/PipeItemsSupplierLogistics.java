@@ -28,11 +28,6 @@ public class PipeItemsSupplierLogistics extends RoutedPipe implements IRequestIt
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_SUPPLIER_TEXTURE;
 	}
-	
-	@Override
-	public void updateEntity() {
-		super.updateEntity();
-	}
 
 	/* TRIGGER INTERFACE */
 	public boolean isRequestFailed(){

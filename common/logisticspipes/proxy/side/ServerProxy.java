@@ -5,6 +5,7 @@ import java.io.File;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
@@ -44,7 +45,9 @@ public class ServerProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsSignTileEntity.class, "logisticspipes.blocks.LogisticsSignTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 		GameRegistry.registerTileEntity(LogisticsPipes.powerTileEntity, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
-		GameRegistry.registerTileEntity(LogisticsPipes.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
+		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
+			GameRegistry.registerTileEntity(LogisticsPipes.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
+		}
 	}
 
 	@Override

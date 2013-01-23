@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
@@ -14,6 +15,7 @@ import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.LogisticsPipesTextureStatic;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -47,7 +49,11 @@ public class ClientProxy implements IProxy {
 		ClientRegistry.registerTileEntity(LogisticsSignTileEntity.class, "logisticspipes.blocks.LogisticsSignTileEntity", new CraftingSignRenderer());
 		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 		GameRegistry.registerTileEntity(LogisticsPipes.powerTileEntity, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
-		GameRegistry.registerTileEntity(LogisticsPipes.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
+		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
+			GameRegistry.registerTileEntity(LogisticsPipes.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
+		}
+		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
+		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsPipes.logisticsTileGenericPipe, lrp);
 	}
 
 	@Override

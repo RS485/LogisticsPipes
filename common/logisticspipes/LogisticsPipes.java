@@ -45,11 +45,14 @@ import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.log.RequestLogFormator;
+import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
+import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.main.LogisticsWorldManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
@@ -64,9 +67,9 @@ import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.forestry.ForestryProxy;
-import logisticspipes.proxy.ic2.ElectricItemProxy;
+import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
@@ -78,7 +81,7 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
+import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -93,6 +96,7 @@ import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
@@ -106,12 +110,14 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.Mod.ServerStarting;
 import cpw.mods.fml.common.Mod.ServerStopping;
+import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -123,12 +129,10 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
-import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
+@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", certificateFingerprint="%------------CERTIFICATE-SUM-----------%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
 @NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
 public class LogisticsPipes {
-	
 
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
@@ -138,6 +142,8 @@ public class LogisticsPipes {
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
 	public static String MCVersion = "%MCVERSION%";
+	
+	private boolean certificateError = false;
 
 	// Items
 	public static Item LogisticsBasicPipe;
@@ -163,6 +169,14 @@ public class LogisticsPipes {
 	public static Item LogisticsEntrance;
 	public static Item LogisticsDestination;
 	public static Item LogisticsCraftingPipeMK3;
+	public static Item LogisticsFirewall;
+	
+	//Liquid Pipes
+	public static Item LogisticsLiquidConnector;
+	public static Item LogisticsLiquidBasic;
+	public static Item LogisticsLiquidInsertion;
+	public static Item LogisticsLiquidProvider;
+	public static Item LogisticsLiquidRequest;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -173,6 +187,7 @@ public class LogisticsPipes {
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
 	public static Item LogisticsUpgradeManager;
+	public static Item LogisticsLiquidContainer;
 
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
@@ -180,7 +195,7 @@ public class LogisticsPipes {
 	private Textures textures = new Textures();
 	
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;	
-	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe;
+	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
@@ -202,7 +217,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
-		SimpleServiceLocator.setSpecialInventoryHandler(new SpecialInventoryHandler());
+		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
 		
 		textures.load(event);
 		
@@ -228,6 +243,7 @@ public class LogisticsPipes {
 			new RoutingTableUpdateThread(i);
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
+		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
 	}
 	
 	@PreInit
@@ -244,6 +260,10 @@ public class LogisticsPipes {
 		} catch (Exception e) {}
 		if(DEBUG) {
 			log.setLevel(Level.ALL);
+		}
+		if(certificateError) {
+			log.severe("Certificate not correct");
+			log.severe("This in not a LogisticsPipes version from RS485.");
 		}
 	}
 	
@@ -286,18 +306,17 @@ public class LogisticsPipes {
 			log.info("Loaded Forestry DummyProxy");
 		}
 		if(Loader.isModLoaded("IC2")) {
-			SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy());
+			SimpleServiceLocator.setElectricItemProxy(new IC2Proxy());
 			log.info("Loaded IC2Proxy");
 		} else {
 			//DummyProxy
-			SimpleServiceLocator.setElectricItemProxy(new IElectricItemProxy() {
+			SimpleServiceLocator.setElectricItemProxy(new IIC2Proxy() {
 				@Override public boolean isElectricItem(ItemStack stack) {return false;}
 				@Override public int getCharge(ItemStack stack) {return 0;}
 				@Override public int getMaxCharge(ItemStack stack) {return 0;}
-				@Override public boolean isDischarged(ItemStack stack, boolean partial) {return false;}
-				@Override public boolean isCharged(ItemStack stack, boolean partial) {return false;}
-				@Override public boolean isDischarged(ItemStack stack, boolean partial, Item electricItem) {return false;}
-				@Override public boolean isCharged(ItemStack stack, boolean partial, Item electricItem) {return false;}
+				@Override public boolean isFullyCharged(ItemStack stack) {return false;}
+				@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
+				@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
 				@Override public void addCraftingRecipes() {}
 				@Override public boolean hasIC2() {return false;}
 			});
@@ -334,15 +353,15 @@ public class LogisticsPipes {
 		}
 		
 		if(Loader.isModLoaded("factorization")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new BarrelInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());
 		}
 		
 		if(Loader.isModLoaded("GregTech_Addon")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new QuantumChestHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new QuantumChestHandler());
 		}
 
 		if(Loader.isModLoaded("BetterStorage")) {
-			SimpleServiceLocator.specialinventory.registerHandler(new CrateInventoryHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
 		}
 
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
@@ -396,6 +415,11 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
 		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
 		
+		if(DEBUG) {
+			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ItemLiquidContainerId);
+			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
+			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -412,7 +436,13 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
 		
-		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
+		if(DEBUG) {
+			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
+		}
+		
+		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
+		
+		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
@@ -429,7 +459,7 @@ public class LogisticsPipes {
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		
 		//Power Junction
-		if(SimpleServiceLocator.electricItemProxy.hasIC2()) {
+		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
 				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
 			} else {
@@ -446,7 +476,7 @@ public class LogisticsPipes {
 		//LogisticsTileGenerticPipe
 		if(SimpleServiceLocator.ccProxy.isCC()) {
 			logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
-		} else {
+		} else if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
 			logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
 		}
 		
@@ -456,6 +486,11 @@ public class LogisticsPipes {
 		
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
+		
+		//init Liquids
+		LiquidIdentifier.initFromForge(false);
+		LiquidIdentifier.get(9, 0, "water");
+		LiquidIdentifier.get(11, 0, "lava");
 	}
 	
 	@ServerStopping
@@ -470,5 +505,16 @@ public class LogisticsPipes {
 	@ServerStarting
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
+	}
+	
+	@FingerprintWarning
+	public void certificateWarning(FMLFingerprintViolationEvent warning) {
+		if(!DEBUG) {
+			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
+			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
+			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
+			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
+			certificateError = true;
+		}
 	}
 }

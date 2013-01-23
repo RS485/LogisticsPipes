@@ -13,6 +13,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -20,7 +21,9 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -29,17 +32,16 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.CroppedInventory;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.entity.player.EntityPlayer;
@@ -112,6 +114,18 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return 1;
 	}
 	
+	protected ItemSendMode itemSendMode() {
+		return ItemSendMode.Normal;
+	}
+	
+	protected int itemsToExtract() {
+		return 8;
+	}
+
+	protected int stacksToExtract() {
+		return 1;
+	}
+
 	@Override	public SinkReply sinksItem(ItemStack item) {return null;}
 
 	@Override	public ILogisticsModule getSubModule(int slot) {return null;}
@@ -122,23 +136,24 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);
-		while (_orderManager.hasOrders()) {
-			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-			
-			if(!_power.useEnergy(neededEnergy())) break;
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 3);
-			if (sent > 0) {
-				_orderManager.sendSuccessfull(sent);
-			} else {
-				_orderManager.sendFailed();
+		int itemsleft = itemsToExtract();
+		int stacksleft = stacksToExtract();
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
+			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getId(), order.getValue3());
+			if (sent == 0)
 				break;
-			}
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 3);
+			stacksleft -= 1;
+			itemsleft -= sent;
 		}
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+		}
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())) {
 			canProvide -= donePromisses.get(tree.getStack().getItem());
@@ -147,14 +162,18 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		//TODO: FIX THIS CAST
 		promise.sender = (IProvideItems) _itemSender;
+		List<IRelayItem> relays = new LinkedList<IRelayItem>();
+		for(IFilter filter:filters) {
+			relays.add(filter);
+		}
+		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
 	@Override
@@ -163,58 +182,87 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
-		HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-		if (_invProvider.getInventory() == null) return allItems;
-	
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> items, List<IFilter> filters) {
+		if (_invProvider.getInventory() == null) return;
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
+		Map<ItemIdentifier, Integer> allItems = items.get(_itemSender.getSourceUUID());
+		if(allItems == null) {
+			allItems = new HashMap<ItemIdentifier, Integer>();
+		}
+		
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
-		for (ItemIdentifier currItem : currentInv.keySet()){
-			if ( hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) 
-							|| (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
-
-			if (!allItems.containsKey(currItem)){
-				allItems.put(currItem, currentInv.get(currItem));
+outer:
+		for (ItemIdentifier currItem : currentInv.keySet()) {
+			if(allItems.containsKey(currItem)) continue;
+			
+			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
+			
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue outer;
+			}
+			
+			if (!addedItems.containsKey(currItem)){
+				addedItems.put(currItem, currentInv.get(currItem));
 			}else {
-				allItems.put(currItem, allItems.get(currItem) + currentInv.get(currItem));
+				addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
 			}
 		}
 		
 		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = allItems.keySet().iterator();
+		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
 		while(iterator.hasNext()){
 			ItemIdentifier item = iterator.next();
 		
-			int remaining = allItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
 			if (remaining < 1){
 				iterator.remove();
 			} else {
-				allItems.put(item, remaining);	
+				addedItems.put(item, remaining);	
 			}
 		}
-		
-		return allItems;	
+		for(ItemIdentifier item: addedItems.keySet()) {
+			if (!allItems.containsKey(item)) {
+				allItems.put(item, addedItems.get(item));
+			} else {
+				allItems.put(item, addedItems.get(item) + allItems.get(item));
+			}
+		}
+		items.put(_itemSender.getSourceUUID(), allItems);
 	}
 
-	@Override
+/*	@Override
 	public IRouter getRouter() {
+		if(LogisticsPipes.DEBUG) {
+			throw new UnsupportedOperationException();
+		}
 		//THIS IS NEVER SUPPOSED TO HAPPEN
 		return null;
-	}
+	}*/
 	
-	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
-		int sent = 0;
-		if (_invProvider.getInventory() == null) return 0;
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
-		if (inv.itemCount(item)> 0){
-			ItemStack removed = inv.getSingleItem(item);
-			if(removed != null) {
-				_itemSender.sendStack(removed, destination);
-				sent++;
-				maxCount--;
-			}
-		}			
-
+	private int sendStack(ItemIdentifierStack stack, int maxCount, UUID destination, List<IRelayItem> relays) {
+		ItemIdentifier item = stack.getItem();
+		if (_invProvider.getInventory() == null) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		
+		int available = inv.itemCount(item);
+		if (available == 0) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		int wanted = Math.min(available, stack.stackSize);
+		wanted = Math.min(wanted, maxCount);
+		wanted = Math.min(wanted, item.getMaxStackSize());
+		
+		if(!_power.useEnergy(wanted * neededEnergy())) return 0;
+		
+		ItemStack removed = inv.getMultipleItems(item, wanted);
+		int sent = removed.stackSize;
+		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
+		_orderManager.sendSuccessfull(sent);
 		return sent;
 	}
 	
@@ -226,7 +274,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
 						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
 		
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
 		return inv.itemCount(item);
 	}
 	
@@ -238,23 +286,20 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		return _filterInventory.containsItem(item);
 	}
 	
-	public InventoryUtil getAdaptedUtil(IInventory base){
+	public IInventoryUtil getAdaptedUtil(IInventory base){
 		switch(_extractionMode){
 			case LeaveFirst:
-				base = new CroppedInventory(base, 1, 0);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
 			case LeaveLast:
-				base = new CroppedInventory(base, 0, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
 			case LeaveFirstAndLast:
-				base = new CroppedInventory(base, 1, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
 			default:
 				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
 	}
 
 
@@ -302,7 +347,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		HashMap<ItemIdentifier, Integer> list = getAllItems();
+		Map<UUID, Map<ItemIdentifier, Integer>> map = new HashMap<UUID, Map<ItemIdentifier, Integer>>();
+		getAllItems(map, new ArrayList<IFilter>(0));
+		Map<ItemIdentifier, Integer> list = map.get(_itemSender.getSourceUUID());
+		if(list == null) list = new HashMap<ItemIdentifier, Integer>();
 		for(ItemIdentifier item :list.keySet()) {
 			displayList.add(new ItemIdentifierStack(item, list.get(item)));
 		}
@@ -346,5 +394,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
+	}
+
+	@Override
+	public IRouter getRouter() {
+		return _itemSender.getRouter();
 	}
 }

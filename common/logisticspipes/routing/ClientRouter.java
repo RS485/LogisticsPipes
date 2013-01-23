@@ -2,13 +2,16 @@ package logisticspipes.routing;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -39,6 +42,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
+	public int getSimpleID() {
+		return -1;
+	}
+
+	@Override
 	public void update(boolean fullRefresh) {
 		
 	}
@@ -66,23 +74,23 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public ForgeDirection getExitFor(UUID id) {
-		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id));
+		return this.getRouteTable().get(SimpleServiceLocator.routerManager.getRouter(id)).getValue1();
 	}
 
 	@Override
-	public HashMap<IRouter, ForgeDirection> getRouteTable() {
+	public HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new HashMap<IRouter, ForgeDirection>();
+		return new HashMap<IRouter, Pair<ForgeDirection,ForgeDirection>>();
 	}
 
 	@Override
-	public LinkedList<IRouter> getIRoutersByCost() {
+	public List<SearchNode> getIRoutersByCost() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new LinkedList<IRouter>();
+		return new LinkedList<SearchNode>();
 	}
 
 	@Override
@@ -135,5 +143,20 @@ public class ClientRouter implements IRouter {
 		CoreRoutedPipe pipe = this.getPipe();
 		if (pipe == null) return null;
 		return pipe.getLogisticsModule();
+	}
+
+	@Override
+	public void clearPipeCache() {
+		//Not On Client Side		
+	}
+
+	@Override
+	public List<ILogisticsPowerProvider> getPowerProvider() {
+		return null;
+	}
+
+	@Override
+	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
+		return null;
 	}
 }

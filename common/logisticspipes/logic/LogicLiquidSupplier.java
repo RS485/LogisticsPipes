@@ -20,6 +20,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
@@ -120,7 +121,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, null);
 					if (success || countToRequest == 1){
 						break;
 					}
@@ -156,19 +157,18 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
     }
 	
 	@Override
-	public void itemLost(ItemIdentifier item) {
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+	public void itemLost(ItemIdentifierStack item) {
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 		super.resetThrottle();
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
-		
 	}
 	
 	public boolean isRequestingPartials(){

@@ -1,8 +1,12 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
@@ -10,17 +14,38 @@ import logisticspipes.utils.ItemIdentifierStack;
 
 public class RequestTreeNode {
 
-	public RequestTreeNode(ItemIdentifierStack item, IRequestItems requester) {
+	public RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
 		this.request = item;
 		this.target = requester;
+		this.parentNode=parentNode;
+		if(parentNode!=null)
+			parentNode.subRequests.add(this);
 	}
 
 	
 	protected final IRequestItems target;
 	protected final ItemIdentifierStack request;
+	protected final RequestTreeNode parentNode;
 	protected List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
 	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
+	protected SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
+	
+	public boolean isCrafterUsed(CraftingTemplate test) {
+		if(!usedCrafters.isEmpty() && usedCrafters.contains(test))
+			return true;
+		if(parentNode==null)
+			return false;
+		return parentNode.isCrafterUsed(test);
+	}
+	
+	// returns false if the crafter was already on the list.
+	public boolean declareCrafterUsed(CraftingTemplate test) {
+		if(isCrafterUsed(test))
+			return false;
+		usedCrafters.add(test);
+		return true;
+	}
 	
 	public int getPromiseItemCount() {
 		int count = 0;
@@ -46,6 +71,8 @@ public class RequestTreeNode {
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
+			extra.relayPoints = new LinkedList<IRelayItem>();
+			extra.relayPoints.addAll(promise.relayPoints);
 			if(promise instanceof LogisticsExtraPromise) {
 				((LogisticsExtraPromise)promise).extraSource.addExtraPromise(extra);
 			} else {
@@ -82,7 +109,7 @@ public class RequestTreeNode {
 	}
 
 	public void revertExtraUsage() {
-		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>();
+		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>(promises.size());
 		for(LogisticsPromise promise:promises) {
 			if(promise instanceof LogisticsExtraPromise) {
 				if(((LogisticsExtraPromise)promise).extraSource != this) {
@@ -99,17 +126,31 @@ public class RequestTreeNode {
 		}
 	}
 	
-	public RequestTreeNode copy() {
-		RequestTreeNode result = new RequestTreeNode(request, target);
-		for(RequestTreeNode subNode:subRequests) {
-			result.subRequests.add(subNode.copy());
+	public RequestTreeNode(RequestTreeNode other) {
+		this.parentNode = other.parentNode;
+		this.subRequests = new ArrayList<RequestTreeNode>(other.subRequests.size());
+		for(RequestTreeNode subNode:other.subRequests) {
+			this.subRequests.add(new RequestTreeNode(subNode));
 		}
-		for(LogisticsPromise subpromises:promises) {
-			result.promises.add(subpromises.copy());
+		
+		this.promises = new ArrayList<LogisticsPromise>(other.promises.size());
+		for(LogisticsPromise subpromises:other.promises) {
+			this.promises.add(subpromises.copy());
 		}
-		for(LogisticsExtraPromise subpromises:extrapromises) {
-			result.extrapromises.add(subpromises.copy());
+
+		this.extrapromises = new ArrayList<LogisticsExtraPromise>(other.extrapromises.size());
+		for(LogisticsExtraPromise subpromises:other.extrapromises) {
+			this.extrapromises.add(subpromises.copy());
 		}
-		return result;
+
+		this.usedCrafters = new TreeSet<CraftingTemplate>(other.usedCrafters);
+		
+		this.request = other.request;
+		this.target = other.target;
+
+	}
+
+	public boolean remove(RequestTreeNode subNode) {
+		return subRequests.remove(subNode);		
 	}
 }

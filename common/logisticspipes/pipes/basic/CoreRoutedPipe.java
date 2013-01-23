@@ -25,6 +25,7 @@ import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -34,6 +35,7 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
+import logisticspipes.network.packets.PacketRoutingStats;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -41,7 +43,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.ServerRouter;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
@@ -75,15 +76,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected boolean stillNeedReplace = true;
 	
-	private IRouter router;
-	private String routerId;
-	private Object routerIdLock = new Object();
+	protected IRouter router;
+	protected String routerId;
+	protected Object routerIdLock = new Object();
 	private static int pipecount = 0;
-	private int _delayOffset = 0;
+	protected int _delayOffset = 0;
 	
 	private boolean _textureBufferPowered;
 	
-	private boolean _initialInit = true;
+	protected boolean _initialInit = true;
 	
 	private boolean enabled = true;
 	
@@ -109,12 +110,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);
 	}
-	
+
 	public CoreRoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
 		super(transport, logic, itemID);
 		((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
+		
 		//Roughly spread pipe updates throughout the frequency, no need to maintain balance
 		_delayOffset = pipecount % Configs.LOGISTICS_DETECTION_FREQUENCY; 
 	}
@@ -189,8 +191,20 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
+	/*** 
+	 * Only Called Server Side
+	 * Only Called when the pipe is enabled
+	 */
+	public void enabledUpdateEntity() {}
+	
+	/***
+	 * Called Server and Client Side
+	 * Called every tick
+	 */
+	public void ignoreDisableUpdateEntity() {}
+	
 	@Override
-	public void updateEntity() {
+	public final void updateEntity() {
 		super.updateEntity();
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
@@ -202,6 +216,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			stillNeedReplace = false;
 		}
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		ignoreDisableUpdateEntity();
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
@@ -233,9 +248,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				throw new UnsupportedOperationException("getItemSendMode() returned unhandled value. " + getItemSendMode().name() + " in "+this.getClass().getName());
 			}
 		}
+		if(MainProxy.isClient()) return;
 		checkTexturePowered();
-		if (getLogisticsModule() == null) return;
 		if (!isEnabled()) return;
+		enabledUpdateEntity();
+		if (getLogisticsModule() == null) return;
 		getLogisticsModule().tick();
 	}	
 	
@@ -243,8 +260,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void onBlockRemoval() {
 		try {
 			super.onBlockRemoval();
-			if(getRouter() != null) {
-				getRouter().destroy();
+			if(router != null) {
+				router.destroy();
+				router = null;
 			}
 			if (logic instanceof BaseRoutingLogic){
 				((BaseRoutingLogic)logic).destroy();
@@ -263,8 +281,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void invalidate() {
-		if(getRouter() != null) {
-			getRouter().destroy();
+		if(router != null) {
+			router.destroy();
 			router = null;
 		}
 		super.invalidate();
@@ -273,24 +291,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
-		if(MainProxy.isClient()) return;
+		if(router == null) return;
 		boolean flag;
-		if((flag = canUsePower()) != _textureBufferPowered) {
+		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender(false);
 			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 		}
 	}
 	
-	private boolean canUsePower() {
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(1)) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
 	public abstract TextureType getCenterTexture();
 	
@@ -314,7 +323,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public TextureType getTextureType(ForgeDirection connection) {
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
-		} else if (getRouter().isRoutedExit(connection)) {
+		} else if ((router != null) && getRouter(connection).isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
 		} else {
@@ -339,7 +348,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				routerId = UUID.randomUUID().toString();
 			}
 		}
-		
+		if(router != null)
+			router.clearPipeCache();
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
 		nbttagcompound.setLong("stat_lifetime_recieved", stat_lifetime_recieved);
@@ -382,12 +392,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return router;
 	}
 	
-	public void refreshRouterIdFromRouter() {
-		if(router != null) {
-			synchronized (routerIdLock) {
-				routerId = router.getId().toString();
-			}
-		}
+	public IRouter getRouter(ForgeDirection dir) {
+		return getRouter();
 	}
 	
 	public boolean isEnabled(){
@@ -522,6 +528,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void itemCouldNotBeSend(ItemIdentifierStack item) {
+		if(logic instanceof IRequireReliableTransport) {
+			((IRequireReliableTransport)logic).itemLost(item);
+		}
 		//Override by subclasses //TODO
 	}
 
@@ -529,13 +538,21 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
+	public boolean logisitcsIsPipeConnected(TileEntity tile) {
+		return false;
+	}
+	
+	public boolean disconnectPipe(TileEntity tile) {
+		return false;
+	}
+	
 	@Override
-	public boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
+	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
-		return super.isPipeConnected(tile, dir);
+		return (super.isPipeConnected(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile);
 	}
 	
 	public void connectionUpdate() {
@@ -549,27 +566,48 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
 		if(MainProxy.isServer()) {
-			return ((ServerRouter)this.getRouter()).getPowerProvider();
+			return this.getRouter().getPowerProvider();
 		} else {
 			return null;
 		}
 	}
 	
-	public boolean useEnergy(int amount) {
+	public boolean canUseEnergy(int amount) {
 		if(MainProxy.isClient()) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
+			if(provider.canUseEnergy(amount)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean useEnergy(int amount) {
+		return useEnergy(amount, true);
+	}
+		
+	public boolean useEnergy(int amount, boolean flag) {
+		if(MainProxy.isClient()) return false;
+		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		if(list == null) return false;
+		for(ILogisticsPowerProvider provider: list) {
+			if(amount == 0) return true;
 			if(provider.canUseEnergy(amount)) {
 				provider.useEnergy(amount);
 				int particlecount = amount;
-				if (particlecount > 5) {
-					particlecount = 5;
+				if (particlecount > 10) {
+					particlecount = 10;
 				}
 				if (particlecount == 0) {
 					particlecount = 1;
 				}
-				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				if(flag) {
+					MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				}
 				return true;
 			}
 		}
@@ -585,6 +623,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public boolean stillNeedReplace() {
 		return stillNeedReplace;
 	}
+	
+	@Override
+	public int compareTo(IRequestItems other){
+		return this.getID()-other.getID();
+	}
+	
+	@Override
+	public int getID(){
+		return this.itemID;
+	}
+	
 	
 	/* --- CCCommands --- */
 	@CCCommand(description="Returns the Router UUID as String")

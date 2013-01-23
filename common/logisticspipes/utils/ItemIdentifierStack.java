@@ -16,7 +16,7 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
 
-public final class ItemIdentifierStack {
+public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>{
 	private final ItemIdentifier _item;
 	public int stackSize;
 	
@@ -93,5 +93,13 @@ public final class ItemIdentifierStack {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public int compareTo(ItemIdentifierStack o) {
+		int c= _item.compareTo(o._item);
+		if(c==0)
+			return stackSize-o.stackSize;
+		return c;
 	}
 }

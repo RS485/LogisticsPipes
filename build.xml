@@ -1,22 +1,18 @@
 <project name="LogisticsPipes" basedir="../" default="main">
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<pathelement location="/usr/share/java/ant-contrib.jar"/>
-			<pathelement location="/usr/share/java/commons-httpclient.jar"/>
-		</classpath>
-    </taskdef>
     <property environment="env" />
 
     <!-- Properties -->
     
     <property name="build.dir"           value="build" />
     <property name="src.dir"             value="src" />
+    <property name="sign.dir"            value="/home/jenkins/.sign" />
     
     <property name="download.dir"        value="download" />
     <property name="files.minecraft.dir" value="jars" />
     
     <property name="classes.dir"         value="${build.dir}/classes" />
     <property name="jar.dir"             value="${build.dir}/dist" />
+    <property name="lib.dir"             value="${build.dir}/lib" />
           
     <property name="mcp.dir"             value="${build.dir}/mcp" />
     <property name="forge.dir"           value="${mcp.dir}/forge" />
@@ -32,6 +28,7 @@
     <property name="downloadserver.dir"  value="rs485/" />
     <property name="downloadserver.full" value="${downloadserver}/${downloadserver.dir}" />
           
+    <property name="antcont.version"     value="1.0b2" />
     <property name="mcp.version"         value="726" />
     <property name="mc.version"          value="1.4.7" />
     <property name="forge.version"       value="6.6.0.497" />
@@ -51,7 +48,6 @@
     </target>
     
     <target name="setup">
-        
         <mkdir dir="${download.dir}"/>
         
         <get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True" />
@@ -60,8 +56,24 @@
         <get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True" />
         <get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        
+        <get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True" />
+		
 		<echo message="Download finished"/>
+		
+		
+        <unzip dest="${lib.dir}" failOnEmptyArchive="true">
+            <fileset dir="${download.dir}">
+                <include name="ant-contrib-${antcont.version}-bin.zip"/>
+            </fileset>
+        </unzip>
+		
+        <taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${lib.dir}/ant-contrib/lib/ant-contrib.jar"/>
+			</classpath>
+		</taskdef>
+		
+		<echo message="Loaded ant-contrib"/>
 		
         <unzip dest="${mcp.dir}" failOnEmptyArchive="true">
             <fileset dir="${download.dir}">
@@ -191,7 +203,16 @@
         </copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
-		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>		
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
+		
+        <echo message="Loading FingerPrint"/>
+		<if>
+			<available file="${sign.dir}/.fingerprint"/>
+			<then>
+				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
+				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value="${fingerprint}"/>
+			</then>
+		</if>
     </target>
     
 
@@ -233,16 +254,43 @@
 	
     </target>
     
-    <target name="package" depends="compile">
-        
-		<echo message="Packing version ${lp.version.full}"/>
+    <target name="package-simple" depends="compile">
+        <echo message="Packing version ${lp.version.full}"/>
 	
         <jar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
-        
+		
 		<echo message="Packing finished"/>
-	
     </target>
     
-    <target name="main" depends="clean, setup, package"/>
+    <target name="package-sign" depends="compile">
+        <echo message="Loading SignSettings"/>
+		<loadfile property="key" srcFile="${sign.dir}/.key"/>
+		
+		<echo message="Packing version ${lp.version.full}"/>
+	
+        <jar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
+			<manifest>
+				<attribute name="Built-By" value="RS485-Jenkins"/>
+				<attribute name="Implementation-Vendor" value="RS485"/>
+				<attribute name="Implementation-Title" value="LogisticsPipes"/>
+				<attribute name="Implementation-Version" value="${lp.version.full}"/>
+			</manifest>
+		</jar>
+		<signjar jar="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" alias="RS485" keystore="${sign.dir}/.keystore" storepass="${key}"/>
+		
+		<echo message="Packing finished"/>
+		
+    </target>
+    
+    <target name="main" depends="clean, setup, package-simple"/>
+	
+    <target name="ci" depends="clean, setup, package-sign"/>
+	
+	<target name="vars-test">
+		<property name="lp.version.full"     value="0.0.0.0" />
+		<property name="DEBUG"               value="true" />
+	</target>
+	
+	<target name="test" depends="vars-test, clean, setup, compile"/> 
 
 </project>

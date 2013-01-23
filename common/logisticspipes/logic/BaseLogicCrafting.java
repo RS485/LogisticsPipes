@@ -17,8 +17,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.RequestManager;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.block.Block;
@@ -44,7 +45,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public int signEntityZ = 0;
 	//public LogisticsTileEntiy signEntity;
 
-	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
+	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
 	@TileNetworkData
 	public int satelliteId = 0;
@@ -59,14 +60,17 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	/* ** SATELLITE CODE ** */
 
 	protected int getNextConnectSatelliteId(boolean prev) {
-		final List<IRouter> routes = getRouter().getIRoutersByCost();
+		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			if (routes.contains(satellite.getRouter())) {
-				if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
-					closestIdFound = satellite.satelliteId;
-				} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
-					closestIdFound = satellite.satelliteId;
+			IRouter satRouter = satellite.getRoutedPipe().getRouter();
+			for (SearchNode route:routes){
+				if (route.node == satRouter) {
+					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
+						closestIdFound = satellite.satelliteId;
+					} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
+						closestIdFound = satellite.satelliteId;
+					}
 				}
 			}
 		}
@@ -107,10 +111,14 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public boolean isSatelliteConnected() {
+		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				if (getRouter().getIRoutersByCost().contains(satellite.getRouter())) {
-					return true;
+				IRouter satRouter = satellite.getRoutedPipe().getRouter();
+				for (SearchNode route:routes) {
+					if (route.node == satRouter) {
+						return true;
+					}
 				}
 			}
 		}
@@ -120,7 +128,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public IRouter getSatelliteRouter() {
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				return satellite.getRouter();
+				return satellite.getRoutedPipe().getRouter();
 			}
 		}
 		return null;
@@ -174,20 +182,21 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
+		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			if (RequestManager.request(iterator.next().makeStack(1), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
+			// FIXME try partial requests
+			if (RequestManager.request(iterator.next(), ((RoutedPipe) container.pipe), null)) {
 				iterator.remove();
 			}
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 	}
 
 	@Override
-	public void itemLost(ItemIdentifier item) {
+	public void itemLost(ItemIdentifierStack item) {
 		_lostItems.add(item);
 	}
 
@@ -317,7 +326,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			return;
 		}
 
-		getRouter().displayRouteTo(satelliteRouter);
+		getRoutedPipe().getRouter().displayRouteTo(satelliteRouter);
 	}
 
 

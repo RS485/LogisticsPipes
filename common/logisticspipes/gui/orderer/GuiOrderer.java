@@ -15,7 +15,6 @@ import java.util.List;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.packets.PacketRequestComponents;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.proxy.MainProxy;
@@ -106,15 +105,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		controlList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
 		controlList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
 		controlList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
-		controlList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh
-		controlList.add(new SmallGuiButton(10, xCenter - 41, bottom - 15, 26, 10, "---")); // -64
-		controlList.add(new SmallGuiButton(4, xCenter - 41, bottom - 26, 15, 10, "--")); // -10
-		controlList.add(new SmallGuiButton(5, xCenter - 25, bottom - 26, 10, 10, "-")); // -1
-		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
-		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
-		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
+		controlList.add(new SmallGuiButton(10, xCenter - 51, bottom - 15, 26, 10, "---")); // -64
+		controlList.add(new SmallGuiButton(4, xCenter - 51, bottom - 26, 15, 10, "--")); // -10
+		controlList.add(new SmallGuiButton(5, xCenter - 35, bottom - 26, 10, 10, "-")); // -1
+		controlList.add(new SmallGuiButton(6, xCenter + 26, bottom - 26, 10, 10, "+")); // +1
+		controlList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
+		controlList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
 		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.displayPopup)); // Popup
-		controlList.add(new SmallGuiButton(13,  guiLeft + 10, bottom - 28, 46, 10, "Content")); // Component
 	}
 	
 	@Override
@@ -138,13 +135,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
 		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , guiTop + 6 , 0x404040);
 		
-		if(controlList.get(10) instanceof GuiCheckBox && ((GuiCheckBox)controlList.get(10)).getState()) {
+		if(controlList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)controlList.get(9)).getState()) {
 			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
 			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
 		}
 		
-		String StackrequestCount = ""+(requestCount/64) + "+" + (requestCount % 64);
+		String StackrequestCount = ""+(requestCount/getStackAmount()) + "+" + (requestCount % getStackAmount());
 		
 		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 24, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", xCenter - fontRenderer.getStringWidth(StackrequestCount+"") / 2, bottom - 14, 0x404040);
@@ -247,25 +244,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
 					specialItemRendering(item, x, y);
 				}
-				/*
-				renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-				String s;
-				if (st.stackSize == 1){
-					s = "";
-				} else if (st.stackSize < 1000) {
-					s = st.stackSize + "";
-				} else if (st.stackSize < 1000000){
-					s = st.stackSize / 1000 + "K";
-				} else {
-					s = st.stackSize / 1000000 + "M";
-				}
-					
-				GL11.glDisable(2896 /*GL_LIGHTING* /);
-				GL11.glDisable(2929 /*GL_DEPTH_TEST* /);			
-				fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-	            GL11.glEnable(2929 /*GL_DEPTH_TEST* /);
-				GL11.glEnable(2896 /*GL_LIGHTING* /);
-				*/
+				
 				column++;
 				if (column == 10){
 					row++;
@@ -338,7 +317,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			return;
 		}
 		
-		if (isShift && !isControl){
+		if (isShift && !isControl && isShiftPageChange()){
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					prevPage();
@@ -350,52 +329,68 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					nextPage();
 				} else {
 					prevPage();
+				}
+			}
+		} else if (isShift && !isControl && !isShiftPageChange()){
+			if (wheel > 0){
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(4)));
+				} else {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= wheel * getAmountChangeMode(4);
+				}
+			} else {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= -(wheel * getAmountChangeMode(4));	
+				} else {
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(4));
 				}
 			}
 		} else if(!isControl) {
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel);
+					requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(1)));
 				} else {
-					requestCount+= wheel;
+					requestCount+= wheel * getAmountChangeMode(1);
 				}
 			} else {
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount+= -wheel;	
+					requestCount+= -(wheel * getAmountChangeMode(1));	
 				} else {
-					requestCount = Math.max(1, requestCount + wheel);
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(1));
 				}
 			}
 		} else if(isControl && !isShift) {
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel*10);
+					requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(2));
 				} else {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= wheel*10;
+					requestCount+= wheel * getAmountChangeMode(2);
 				}
 			} else {
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= -wheel*10;	
+					requestCount+= -wheel * getAmountChangeMode(2);	
 				} else {
-					requestCount = Math.max(1, requestCount + wheel*10);
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(2));
 				}
 			}
 		} else if(isControl && isShift) {
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel*64);
+					requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(3));
 				} else {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= wheel*64;
+					requestCount+= wheel * getAmountChangeMode(3);
 				}
 			} else {
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= -wheel*64;	
+					requestCount+= -wheel * getAmountChangeMode(3);	
 				} else {
-					requestCount = Math.max(1, requestCount + wheel*64);
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(3));
 				}
 			}
 		}
@@ -494,32 +489,50 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		} else if (guibutton.id == 3) {
 			refreshItems();
 		} else if (guibutton.id == 10) {
-			requestCount = Math.max(1, requestCount - 64);
+			requestCount = Math.max(1, requestCount - getAmountChangeMode(3));
 		} else if (guibutton.id == 4) {
-			requestCount = Math.max(1, requestCount - 10);
+			requestCount = Math.max(1, requestCount - getAmountChangeMode(2));
 		} else if (guibutton.id == 5) {
-			requestCount = Math.max(1, requestCount - 1);
+			requestCount = Math.max(1, requestCount - getAmountChangeMode(1));
 		} else if (guibutton.id == 6) {
-			requestCount+=1;
+			requestCount+=getAmountChangeMode(1);
 		} else if (guibutton.id == 7) {
 			if(requestCount == 1) {
 				requestCount-=1;
 			}
-			requestCount+=10;
+			requestCount+=getAmountChangeMode(2);
 		} else if (guibutton.id == 11) {
 			if(requestCount == 1) {
 				requestCount-=1;
 			}
-			requestCount+=64;
+			requestCount+=getAmountChangeMode(3);
 		} else if (guibutton.id == 8) {
-			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
+			GuiCheckBox button = (GuiCheckBox)guibutton;
 			Configs.displayPopup = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
-			MainProxy.sendPacketToServer(new PacketRequestComponents(xCoord,yCoord,zCoord,dimension,selectedItem.getItem()).getPacket());
+			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount).getPacket());
 		}
 		
 		super.actionPerformed(guibutton);
+	}
+	
+	protected int getAmountChangeMode(int step) {
+		if(step == 1) {
+			return 1;
+		} else if(step == 2) {
+			return 10;
+		} else {
+			return 64;
+		}
+	}
+	
+	protected int getStackAmount() {
+		return 64;
+	}
+	
+	protected boolean isShiftPageChange() {
+		return true;
 	}
 	
 	private void nextPage(){

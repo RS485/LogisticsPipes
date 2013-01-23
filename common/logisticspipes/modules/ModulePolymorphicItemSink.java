@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -8,7 +9,6 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -39,7 +39,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
-		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
+		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
 		if (!invUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
 		SinkReply reply = new SinkReply();
@@ -47,7 +47,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		reply.isDefault = false;
 		reply.isPassive = true;
 		if(_power.useEnergy(3)) {
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
+			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return reply;
 		}
 		return null;

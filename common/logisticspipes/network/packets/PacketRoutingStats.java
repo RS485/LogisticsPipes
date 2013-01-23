@@ -1,10 +1,10 @@
-package logisticspipes.pipes.basic;
+package logisticspipes.network.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 
 public class PacketRoutingStats extends PacketCoordinates {
 

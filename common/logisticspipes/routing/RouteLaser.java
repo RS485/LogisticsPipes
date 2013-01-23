@@ -80,10 +80,9 @@ class RouteLaser implements IPaintPath{
 		while (!knownRouters.isEmpty()){
 			//Pick a router
 			IRouter targetRouter = knownRouters.pop();
-			boolean found = false;
 			
 			//Get the first exit
-			ForgeDirection next = r.getRouteTable().get(targetRouter);
+			ForgeDirection next = r.getRouteTable().get(targetRouter).getValue1();
 			if (next == ForgeDirection.UNKNOWN){
 				LogisticsPipes.log.warning("BAAAD MOJO");
 			}
@@ -121,7 +120,7 @@ class RouteLaser implements IPaintPath{
 					{
 						ok = true;
 						nextRouter = dicoveredRouter;
-						next = dicoveredRouter.getRouteTable().get(targetRouter);
+						next = dicoveredRouter.getRouteTable().get(targetRouter).getValue1();
 					}
 				}
 				if (!ok){

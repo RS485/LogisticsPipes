@@ -11,8 +11,13 @@ package logisticspipes.interfaces.routing;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifierStack;
 
-public interface IRequestItems {
+public interface IRequestItems extends Comparable<IRequestItems>{
 	public IRouter getRouter();
 	public void itemCouldNotBeSend(ItemIdentifierStack item);
 	public boolean useEnergy(int amount);
+	public boolean useEnergy(int amount, boolean flag);
+	public int getID();
+	
+	@Override
+	public int compareTo(IRequestItems value2);
 }

@@ -27,7 +27,7 @@ public class PipeItemsSystemEntranceLogistics extends RoutedPipe {
 		if(inv.getStackInSlot(0) == null) return null;
 		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
 		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
-		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 2);
+		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
 	

@@ -29,6 +29,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair4;
@@ -44,7 +45,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
 import cpw.mods.fml.common.network.Player;
 
@@ -65,9 +65,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(MainProxy.isClient()) return;
+	public void enabledUpdateEntity() {
 		if(!init) {
 			if(hasConnectionUUID()) {
 				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionUUID(), getRouter())) {
@@ -108,7 +106,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile instanceof IInventory) {
-				IInventory inv = Utils.getInventory((IInventory) tile.tile);
+				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 				if(inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory)inv, tile.orientation.getOpposite());
 				}
@@ -147,7 +145,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
-		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
+		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, this.worldObj, 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -327,7 +325,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 						for(int i=0; i < data.item.getItemStack().stackSize;i++) {
 							pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getSource(), routed.getDestination(), routed.getTransportMode());
-							MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 4);
+							MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, this.worldObj, 4);
 						}
 					}
 				}

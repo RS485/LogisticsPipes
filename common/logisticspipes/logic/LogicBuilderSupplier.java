@@ -12,24 +12,22 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import buildcraft.builders.TileBuilder;
-import buildcraft.core.utils.Utils;
 
 public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireReliableTransport {
-	
-	private final InventoryUtilFactory _invUtilFactory;
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
@@ -41,11 +39,6 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	
 	
 	public LogicBuilderSupplier() {
-		this(new InventoryUtilFactory());
-	}
-	
-	public LogicBuilderSupplier(InventoryUtilFactory inventoryUtilFactory){
-		_invUtilFactory = inventoryUtilFactory;
 		throttleTime = 100;
 	}
 	
@@ -62,8 +55,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			if (!(tile.tile instanceof TileBuilder)) continue;
 			TileBuilder builder = (TileBuilder) tile.tile;
 			
-			IInventory inv = Utils.getInventory((IInventory) tile.tile);
-			InventoryUtil invUtil = _invUtilFactory.getInventoryUtil(inv);
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile.tile);
 			
 			//How many do I want?
 			Collection<ItemStack> neededItems = builder.getNeededItems();
@@ -108,7 +100,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, getRouter().getIRoutersByCost(), null);
+					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}
@@ -131,19 +123,18 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	}
 
 	@Override
-	public void itemLost(ItemIdentifier item) {
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+	public void itemLost(ItemIdentifierStack item) {
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 		super.resetThrottle();
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+		if (_requestedItems.containsKey(item.getItem())){
+			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}
-		
 	}
 
 	@Override

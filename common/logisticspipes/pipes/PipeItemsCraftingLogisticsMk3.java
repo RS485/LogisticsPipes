@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -14,20 +15,20 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.core.inventory.Transactor;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	
 	public SimpleInventory inv = new SimpleInventory(16, "Buffer", 127);
 	
-	public LinkedList<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
+	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
@@ -37,15 +38,32 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(MainProxy.isClient()) return;
+	protected int neededEnergy() {
+		return 20;
+	}
+
+	@Override
+	protected int itemsToExtract() {
+		return 128;
+	}
+	
+	@Override
+	protected int stacksToExtract() {
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return 8;
+		}
+		return 2;
+	}
+	
+	@Override
+	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		if(inv.isEmpty()) return;
 		//Add from interal buffer
-		LinkedList<AdjacentTile> crafters = locateCrafters();
+		List<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;
 		boolean change = false;
-		for(AdjacentTile tile:locateCrafters()) {
+		for(AdjacentTile tile : crafters) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				ItemStack slot = inv.getStackInSlot(i);
 				if(slot == null) continue;
@@ -58,7 +76,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 				}
 				ItemStack toadd = slot.copy();
 				toadd.stackSize = toadd.stackSize > 64 ? 64 : toadd.stackSize;
-				ItemStack added = Transactor.getTransactorFor(tile.tile).add(toadd, insertion, true);
+				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd, insertion, true);
 				slot.stackSize -= added.stackSize;
 				if(added.stackSize != 0) {
 					change = true;
@@ -83,11 +101,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 
 	@Override
 	public TextureType getCenterTexture() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
-		} else {
-			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE_DIS;
-		}
+		return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
 	}
 
 	@Override

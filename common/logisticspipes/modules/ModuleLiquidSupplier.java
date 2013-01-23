@@ -44,7 +44,7 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 			SinkReply reply = new SinkReply();
 			reply.fixedPriority = FixedPriority.ItemSink;
 			reply.isPassive = true;
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, this.zCoord, _world.getWorld(), 2);
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return reply;
 		}
 

@@ -3,10 +3,17 @@ package logisticspipes.ticks;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.BuildCraftTransport;
+import buildcraft.api.core.Position;
+import buildcraft.core.ITileBufferHolder;
+import buildcraft.core.TileBuffer;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
@@ -17,10 +24,13 @@ public class WorldTickHandler implements ITickHandler {
 	
 	public static LinkedList<TileGenericPipe> clientPipesToReplace = new LinkedList<TileGenericPipe>();
 	public static LinkedList<TileGenericPipe> serverPipesToReplace = new LinkedList<TileGenericPipe>();
+	private Field entitiesToLoad = null;
+	private Field delayedEntitiesToLoad = null;
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		LinkedList<TileGenericPipe> localList;
@@ -29,6 +39,20 @@ public class WorldTickHandler implements ITickHandler {
 		} else {
 			localList = serverPipesToReplace;
 		}
+		if(entitiesToLoad == null || delayedEntitiesToLoad == null) {
+			try {
+				entitiesToLoad = PipeTransportItems.class.getDeclaredField("entitiesToLoad");
+				entitiesToLoad.setAccessible(true);
+				delayedEntitiesToLoad = PipeTransportItems.class.getDeclaredField("delayedEntitiesToLoad");
+				delayedEntitiesToLoad.setAccessible(true);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (NoSuchFieldException e) {
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			}
+		}
 		while(localList.size() > 0) {
 			try {
 				TileGenericPipe tile = localList.get(0);
@@ -36,7 +60,6 @@ public class WorldTickHandler implements ITickHandler {
 				int y = tile.yCoord;
 				int z = tile.zCoord;
 				World world = tile.worldObj;
-				world.removeBlockTileEntity(x, y, z);
 				TileGenericPipe newTile = LogisticsPipes.logisticsTileGenericPipe.newInstance();
 				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
@@ -48,16 +71,39 @@ public class WorldTickHandler implements ITickHandler {
 						e.printStackTrace();
 					}
 				}
-				world.setBlockTileEntity(x, y, z, newTile);
 				tile.pipe = null;
+				world.setBlockTileEntity(x, y, z, newTile);
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {
 						for(EntityData entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
 							entity.item.setContainer(newTile);
 						}
+						for(EntityData entity:((List<EntityData>)entitiesToLoad.get((PipeTransportItems)newTile.pipe.transport))) {
+							entity.item.setContainer(newTile);
+						}
+						for(EntityData entity:((List<EntityData>)delayedEntitiesToLoad.get((PipeTransportItems)newTile.pipe.transport))) {
+							entity.item.setContainer(newTile);
+						}
 					}
 				}
+				
+				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
+					pos.moveForwards(1.0);
+
+					newTile.tileBuffer[o.ordinal()] = new TileBuffer();
+					newTile.tileBuffer[o.ordinal()].initialize(newTile.worldObj, (int) pos.x, (int) pos.y, (int) pos.z);
+				}
+
+				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
+					TileEntity tileSide = newTile.getTile(o);
+
+					if (tileSide instanceof ITileBufferHolder) {
+						((ITileBufferHolder) tileSide).blockCreated(o, BuildCraftTransport.genericPipeBlock.blockID, newTile);
+					}
+				}
+				
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {

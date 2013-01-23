@@ -9,7 +9,6 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,9 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logic.BaseChassiLogic;
@@ -47,11 +48,11 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -65,7 +66,6 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.core.DefaultProps;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -177,7 +177,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		TileEntity tile = getPointedTileEntity();
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
-		return Utils.getInventory((IInventory) tile);
+		return InventoryHelper.getInventory((IInventory) tile);
 	}
 	
 	@Override
@@ -207,20 +207,22 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public void sendStack(ItemStack stack, UUID destination) {
+	public void sendStack(ItemStack stack, UUID destination, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getId());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode) {
+	public void sendStack(ItemStack stack, UUID destination, ItemSendMode mode, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getId());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
@@ -302,9 +304,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		if(stillNeedReplace) return;
+	public void ignoreDisableUpdateEntity() {
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
 			if(MainProxy.isServer(this.worldObj)) {
@@ -377,7 +377,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
+	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -386,7 +386,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				((ILegacyActiveModule)x).canProvide(tree, donePromisses);
+				((ILegacyActiveModule)x).canProvide(tree, donePromisses, filters);
 			}
 		}
 	}
@@ -400,7 +400,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				((ILegacyActiveModule)x).fullFill(promise, destination);
-				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, this.zCoord, this.worldObj, 2);
+				MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 			}
 		}
 	}
@@ -421,22 +421,17 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
+	public void getAllItems(Map<UUID, Map<ItemIdentifier, Integer>> list, List<IFilter> filter) {
 		if (!isEnabled()){
-			return new HashMap<ItemIdentifier, Integer>();
+			return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
-			if (x instanceof ILegacyActiveModule){
-				return ((ILegacyActiveModule)x).getAllItems();
+			if (x instanceof ILegacyActiveModule) {
+				((ILegacyActiveModule)x).getAllItems(list, filter);
+				return;
 			}
 		}
-		return new HashMap<ItemIdentifier, Integer>();
-	}
-	
-	@Override
-	public IRouter getRouter() {
-		return super.getRouter();
 	}
 	
 	@Override

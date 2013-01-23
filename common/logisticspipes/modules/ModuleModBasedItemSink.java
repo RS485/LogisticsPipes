@@ -58,16 +58,15 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		this.slot = slot;
 	}
 	
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 5, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+		if(bestPriority >= FixedPriority.ItemSink.ordinal()) return null;
 		ItemIdentifier ident = ItemIdentifier.get(item);
 		if(modList.contains(ident.getModId())) {
-			SinkReply reply = new SinkReply();
-			reply.fixedPriority = FixedPriority.ItemSink;
-			reply.isPassive = true;
-			if(_power.useEnergy(5)) {
+			if(_power.canUseEnergy(5)) {
 				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-				return reply;
+				return _sinkReply;
 			}
 		}
 		return null;

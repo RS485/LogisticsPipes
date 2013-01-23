@@ -9,6 +9,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -49,16 +50,15 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		
 	}
 
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+		if (bestPriority >= FixedPriority.APIARIST_Analyser.ordinal()) return null;
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(!SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-				SinkReply reply = new SinkReply();
-				reply.fixedPriority = SinkReply.FixedPriority.APIARIST_Analyser;
-				reply.isPassive = true;
-				if(_power.useEnergy(3)) {
+				if(_power.canUseEnergy(3)) {
 					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
-					return reply;
+					return _sinkReply;
 				}
 			}
 		}

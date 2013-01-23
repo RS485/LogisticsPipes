@@ -81,26 +81,23 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		this.slot = slot;
 	}
 	
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
+	private final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+		if(bestPriority >= FixedPriority.ItemSink.ordinal()) return null;
 		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
-			SinkReply reply = new SinkReply();
-			reply.fixedPriority = FixedPriority.ItemSink;
-			reply.isPassive = true;
-			if(_power.useEnergy(1)) {
+			if(_power.canUseEnergy(1)) {
 				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-				return reply;
+				return _sinkReply;
 			}
 			return null;
 		}
-		
+		if(bestPriority >= FixedPriority.DefaultRoute.ordinal()) return null;
 		if (_isDefaultRoute){
-			SinkReply reply = new SinkReply();
-			reply.fixedPriority = FixedPriority.DefaultRoute;
-			reply.isPassive = true;
-			reply.isDefault = true;
-			if(_power.useEnergy(1)) {
-				return reply;
+			if(_power.canUseEnergy(1)) {
+				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 1);
+				return _sinkReplyDefault;
 			}
 			return null;
 		}

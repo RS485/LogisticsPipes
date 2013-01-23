@@ -42,11 +42,11 @@ public class ChassiModule implements ILogisticsGuiModule{
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		SinkReply result = null;
 		for (ILogisticsModule module : _modules){
 			if (module != null){
-				result = module.sinksItem(item);
+				result = module.sinksItem(item, bestPriority, bestCustomPriority);
 				if (result != null){
 					break;
 				}
@@ -63,12 +63,9 @@ public class ChassiModule implements ILogisticsGuiModule{
 		if (roomForItem < 1) return null;
 
 		if(result.maxNumberOfItems == 0) {
-			result.maxNumberOfItems = roomForItem;
-		} else {
-			result.maxNumberOfItems = Math.min(result.maxNumberOfItems, roomForItem);
+			return new SinkReply(result, roomForItem);
 		}
-				
-		return result;
+		return new SinkReply(result, Math.min(result.maxNumberOfItems, roomForItem));
 	}
 
 

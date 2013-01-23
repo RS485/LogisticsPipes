@@ -51,7 +51,6 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
-	
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);
 	}
@@ -68,7 +67,8 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+		if (bestPriority >= FixedPriority.PassiveSupplier.ordinal()) return null;
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
@@ -79,13 +79,9 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		int haveCount = targetUtil.itemCount(ItemIdentifier.get(item));
 		if (targetCount <= haveCount) return null;
 		
-		SinkReply reply = new SinkReply();
-		reply.fixedPriority = FixedPriority.PassiveSupplier;
-		reply.isPassive = true;
-		reply.maxNumberOfItems = targetCount - haveCount;
-		if(_power.useEnergy(2)) {
+		if(_power.canUseEnergy(2)) {
 			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-			return reply;
+			return new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, targetCount - haveCount);
 		}
 		return null;
 	}

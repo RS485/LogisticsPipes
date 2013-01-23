@@ -34,21 +34,19 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		_world = world;
 	}
 
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+		if (bestPriority >= FixedPriority.ItemSink.ordinal()) return null;
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
 		if (!invUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
-		SinkReply reply = new SinkReply();
-		reply.fixedPriority = FixedPriority.ItemSink;
-		reply.isDefault = false;
-		reply.isPassive = true;
-		if(_power.useEnergy(3)) {
+		if(_power.canUseEnergy(3)) {
 			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-			return reply;
+			return _sinkReply;
 		}
 		return null;
 	}

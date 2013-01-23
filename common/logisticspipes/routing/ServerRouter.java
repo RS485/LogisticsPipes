@@ -196,10 +196,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabasereadLock.unlock(); // promote lock type
 			SharedLSADatabasewriteLock.lock();
 			SharedLSADatabase.ensureCapacity((int) (simpleID*1.5)); // make structural change
-			while(SharedLSADatabase.size()<=simpleID)
+			while(SharedLSADatabase.size()<=(int)simpleID*1.5)
 				SharedLSADatabase.add(null);
 			SharedLSADatabasewriteLock.unlock(); // demote lock
 			SharedLSADatabasereadLock.lock();
+			_lastLSAVersion.ensureCapacity((int) (simpleID*1.5)); // make structural change
+			while(_lastLSAVersion.size()<=(int)simpleID*1.5)
+				_lastLSAVersion.add(0);
 		}
 		SharedLSADatabase.set(this.simpleID, _myLsa); // make non-structural change (threadsafe)
 		SharedLSADatabasereadLock.unlock();

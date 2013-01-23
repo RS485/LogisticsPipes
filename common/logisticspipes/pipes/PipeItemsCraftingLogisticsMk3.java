@@ -19,6 +19,7 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
@@ -59,7 +60,8 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
 		if(inv.isEmpty()) return;
-		//Add from interal buffer
+		if(worldObj.getWorldTime() % 6 != 0) return;
+		//Add from internal buffer
 		List<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) return;
 		boolean change = false;
@@ -75,7 +77,8 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 					}
 				}
 				ItemStack toadd = slot.copy();
-				toadd.stackSize = toadd.stackSize > 64 ? 64 : toadd.stackSize;
+				toadd.stackSize = Math.min(toadd.stackSize, toadd.getMaxStackSize());
+				toadd.stackSize = Math.min(toadd.stackSize, ((IInventory)tile.tile).getInventoryStackLimit());
 				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd, insertion, true);
 				slot.stackSize -= added.stackSize;
 				if(added.stackSize != 0) {

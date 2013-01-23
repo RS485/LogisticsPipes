@@ -105,18 +105,22 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	@Override
 	public void initialize() {
 		super.initialize();
-		//cache chunk for marking dirty
-		chunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
+		if(MainProxy.isServer(worldObj)) {
+			//cache chunk for marking dirty
+			chunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
+		}
 	}
 
 	public void markChunkModified(TileEntity tile) {
-		//items are crossing a chunk boundary, mark both chunks modified
-		if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
-			chunk.isModified = true;
-			if((tile instanceof TileGenericPipe) && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics) {
-				((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
-			} else {
-				worldObj.updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
+		if(MainProxy.isServer(tile.worldObj)) {
+			//items are crossing a chunk boundary, mark both chunks modified
+			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
+				chunk.isModified = true;
+				if((tile instanceof TileGenericPipe) && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics) {
+					((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
+				} else {
+					worldObj.updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
+				}
 			}
 		}
 	}

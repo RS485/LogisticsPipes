@@ -316,6 +316,15 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			if(!isItemExitable(data.item.getItemStack())) return;
 			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 				//LogisticsPipes start
+				//last chance for chassi to back out
+				if(data.item instanceof IRoutedItem) {
+					IRoutedItem routed = (IRoutedItem) data.item;
+					if (!getPipe().getTransportLayer().stillWantItem(routed)) {
+						reverseItem(data);
+						return;
+					}
+				}
+				//sneaky insertion
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				ForgeDirection insertion = data.output.getOpposite();
 				if(manager.hasSneakyUpgrade()) {

@@ -209,25 +209,23 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public IRoutedItem split(World worldObj, int itemsToTake, ForgeDirection orientation) {
+	public void split(World worldObj, int itemsToTake, ForgeDirection orientation) {
 		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 			throw new UnsupportedOperationException("Can't split up a LiquidContainer");
 		}
 		EntityPassiveItem newItem = new EntityPassiveItem(worldObj);
 		newItem.setPosition(position.x, position.y, position.z);
 		newItem.setSpeed(this.speed);
-		newItem.setItemStack(this.item.splitStack(itemsToTake));
+		newItem.setItemStack(this.item.splitStack(this.item.stackSize - itemsToTake));
 		
 		if (this.container instanceof TileGenericPipe && ((TileGenericPipe)this.container).pipe.transport instanceof PipeTransportItems){
 			if (((TileGenericPipe)this.container).pipe instanceof PipeLogisticsChassi){
 				PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((TileGenericPipe)this.container).pipe;
-				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation.getOpposite());
+				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation);
 			} else {
-				((PipeTransportItems)((TileGenericPipe)this.container).pipe.transport).entityEntering(newItem, orientation);
+				((PipeTransportItems)((TileGenericPipe)this.container).pipe.transport).entityEntering(newItem, orientation.getOpposite());
 			}
 		}
-		
-		return SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem);
 	}
 
 	@Override

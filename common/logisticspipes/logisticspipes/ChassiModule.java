@@ -62,7 +62,11 @@ public class ChassiModule implements ILogisticsGuiModule{
 		
 		if (roomForItem < 1) return null;
 
-		result.maxNumberOfItems = roomForItem;
+		if(result.maxNumberOfItems == 0) {
+			result.maxNumberOfItems = roomForItem;
+		} else {
+			result.maxNumberOfItems = Math.min(result.maxNumberOfItems, roomForItem);
+		}
 				
 		return result;
 	}

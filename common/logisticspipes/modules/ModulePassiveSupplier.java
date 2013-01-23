@@ -76,11 +76,13 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		
 		int targetCount = _filterInventory.itemCount(ItemIdentifier.get(item));
 		IInventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		if (targetCount <= targetUtil.itemCount(ItemIdentifier.get(item))) return null;
+		int haveCount = targetUtil.itemCount(ItemIdentifier.get(item));
+		if (targetCount <= haveCount) return null;
 		
 		SinkReply reply = new SinkReply();
 		reply.fixedPriority = FixedPriority.PassiveSupplier;
 		reply.isPassive = true;
+		reply.maxNumberOfItems = targetCount - haveCount;
 		if(_power.useEnergy(2)) {
 			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return reply;

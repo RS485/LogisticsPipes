@@ -112,7 +112,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 
 	public void markChunkModified(TileEntity tile) {
-		if(MainProxy.isServer(tile.worldObj)) {
+		if(tile!=null && MainProxy.isServer(tile.worldObj)) {
 			//items are crossing a chunk boundary, mark both chunks modified
 			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
 				chunk.isModified = true;

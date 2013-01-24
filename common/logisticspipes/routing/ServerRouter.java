@@ -34,7 +34,6 @@ import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -42,6 +41,7 @@ import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
@@ -208,7 +208,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public CoreRoutedPipe getPipe(){
 		if(_myPipeCache!=null && _myPipeCache.get()!=null)
 			return _myPipeCache.get();
-		World worldObj = MainProxy.getWorld(_dimension);
+		World worldObj = DimensionManager.getWorld(_dimension);
 		if(worldObj == null) {
 			return null;
 		}

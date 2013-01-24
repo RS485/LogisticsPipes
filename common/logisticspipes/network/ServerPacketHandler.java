@@ -1320,6 +1320,9 @@ public class ServerPacketHandler {
 	 * @return
 	 */
 	private static TileGenericPipe getPipe(World world, int x, int y, int z) {
+		if(world == null) {
+			return null;
+		}
 		if (!world.blockExists(x, y, z)) {
 			return null;
 		}

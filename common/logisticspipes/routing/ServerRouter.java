@@ -634,6 +634,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				updateAdjacentAndLsa();
 			}
 			ensureRouteTableIsUpToDate(false);
+			return;
+		}
+		if (Configs.multiThreadEnabled) {
+			ensureRouteTableIsUpToDate(false);
 		}
 	}
 

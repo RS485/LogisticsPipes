@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.powertile.NeedsPowerTrigger;
 import logisticspipes.config.Configs;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.main.ActionDisableLogistics;
@@ -79,7 +80,7 @@ public class BuildCraftProxy {
 	public static List<Item> pipelist = new ArrayList<Item>();
 	
 	public static Trigger LogisticsFailedTrigger;
-	
+	public static Trigger LogisticsNeedPowerTrigger;	
 	public static Action LogisticsDisableAction;
 	
 	public boolean checkPipesConnections(TileEntity tile1, TileEntity tile2) {
@@ -123,6 +124,7 @@ public class BuildCraftProxy {
 
 	public void registerTrigger() {
 		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
+		LogisticsNeedPowerTrigger = new NeedsPowerTrigger(701);
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		LogisticsDisableAction = new ActionDisableLogistics(700);
 	}

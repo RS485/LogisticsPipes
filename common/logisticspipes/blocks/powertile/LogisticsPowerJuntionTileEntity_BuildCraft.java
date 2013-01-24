@@ -16,16 +16,22 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.gui.DummyContainer;
+
+import buildcraft.api.power.IPowerProvider;
+import buildcraft.api.power.IPowerReceptor;
+import buildcraft.api.power.PowerFramework;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import buildcraft.api.power.IPowerProvider;
-import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerFramework;
+
+
 
 public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+	
+	// true if it needs more power, turns off at full, turns on at 50%.
+	boolean needMorePowerTriggerCheck=true;
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int MAX_STORAGE = 2000000;
@@ -51,6 +57,8 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public boolean useEnergy(int amount) {
 		if(canUseEnergy(amount)) {
 			internalStorage -= (amount * Configs.powerUsageMultiplyer);
+			if(internalStorage<MAX_STORAGE/2)
+				needMorePowerTriggerCheck=true;
 			return true;
 		}
 		return false;
@@ -76,6 +84,8 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		if(internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
 		}
+		if(internalStorage == MAX_STORAGE)
+			needMorePowerTriggerCheck=false;
 	}
 	
 	@Override

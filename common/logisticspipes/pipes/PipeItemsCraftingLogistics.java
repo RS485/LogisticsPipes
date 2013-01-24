@@ -412,9 +412,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		((BaseLogicCrafting)logic).signEntityX = 0;
 		((BaseLogicCrafting)logic).signEntityY = 0;
 		((BaseLogicCrafting)logic).signEntityZ = 0;
-		if(MainProxy.isServer()) {
-			MainProxy.sendToPlayerList(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,this.getLogisticsNetworkPacket()).getPacket(), localModeWatchers);
-		}
+		MainProxy.sendToPlayerList(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,this.getLogisticsNetworkPacket()).getPacket(), localModeWatchers);
 	}
 
 	@Override

@@ -32,7 +32,7 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 	@Override
 	public void onNeighborBlockChange(int blockId) {
 		super.onNeighborBlockChange(blockId);
-		if(!stillNeedReplace && MainProxy.isServer()) {
+		if(!stillNeedReplace && MainProxy.isServer(worldObj)) {
 			onNeighborBlockChange_Logistics();
 		}
 	}

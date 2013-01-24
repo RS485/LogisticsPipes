@@ -254,7 +254,7 @@ public class ItemModule extends LogisticsItem {
 	@Override
 	public ItemStack onItemRightClick(final ItemStack par1ItemStack, final World par2World, final EntityPlayer par3EntityPlayer)
 	{
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
 			openConfigGui(par1ItemStack, par3EntityPlayer, par2World);
 		}
 		return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
@@ -262,7 +262,7 @@ public class ItemModule extends LogisticsItem {
 
 	@Override
 	public boolean onItemUse(final ItemStack par1ItemStack, final EntityPlayer par2EntityPlayer, final World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10) {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(par2EntityPlayer.worldObj)) {
 			TileEntity tile = par3World.getBlockTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
 				return true;

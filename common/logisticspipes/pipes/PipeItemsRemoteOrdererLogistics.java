@@ -26,7 +26,7 @@ public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequ
 
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && MainProxy.isServer()) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && MainProxy.isServer(entityplayer.worldObj)) {
 			ItemStack orderer = entityplayer.getCurrentEquippedItem();
 			RemoteOrderer.connectToPipe(orderer, this);
 			entityplayer.sendChatToPlayer("Connected to pipe");

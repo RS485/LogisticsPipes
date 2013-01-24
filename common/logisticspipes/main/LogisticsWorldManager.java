@@ -14,13 +14,13 @@ public class LogisticsWorldManager {
 	
 	@ForgeSubscribe
 	public void WorldLoad(WorldEvent.Load event) {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(event.world)) {
 			int dim = MainProxy.getDimensionForWorld(event.world);
 			if(!WorldLoadTime.containsKey(dim)) {
 				WorldLoadTime.put(dim, System.currentTimeMillis());
 			}
 		}
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(event.world)) {
 			SimpleServiceLocator.routerManager.clearClientRouters();
 			LogisticsHUDRenderer.instance().clear();
 		}

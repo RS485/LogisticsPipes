@@ -278,7 +278,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		priority++;
 		if(MainProxy.isClient()) {
 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
-		} else if(MainProxy.isServer() && player != null) {
+		} else if(player != null && MainProxy.isServer(player.worldObj)) {
 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
 		}
 	}
@@ -287,7 +287,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		priority--;
 		if(MainProxy.isClient()) {
 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
-		} else if(MainProxy.isServer() && player != null) {
+		} else if(player != null && MainProxy.isServer(player.worldObj)) {
 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
 		}
 	}

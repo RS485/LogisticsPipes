@@ -167,7 +167,7 @@ public class MainProxy {
 
 	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
 		if(!Configs.ENABLE_PARTICLE_FX) return;
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(dimension)) {
 			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(dimension), new PacketRenderFX(NetworkConstants.PARTICLE_FX_RENDER_DATA, xCoord, yCoord, zCoord, particle, amount).getPacket());
 		} else {
 			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
@@ -176,10 +176,6 @@ public class MainProxy {
 	
 	public static void spawnParticle(int particle, int xCoord, int yCoord, int zCoord, int amount) {
 		if(!Configs.ENABLE_PARTICLE_FX || !Minecraft.isFancyGraphicsEnabled()) return;
-		if(MainProxy.isClient()) {
-			PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
-		} else {
-			LogisticsPipes.log.severe("Client only method on Server (Particle Spawning)");
-		}
+		PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
 	}
 }

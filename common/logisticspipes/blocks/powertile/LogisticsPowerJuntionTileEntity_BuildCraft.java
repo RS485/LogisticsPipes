@@ -102,7 +102,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(this.worldObj)) {
 			float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
 			if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
 				energy = 1;

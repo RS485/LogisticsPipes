@@ -58,14 +58,7 @@ public class MainProxy {
     }
 	
 	public static boolean isClient(World world) {
-		if(world != null) {
-			return world.isRemote;
-		}
-		if(LogisticsPipes.DEBUG) {
-			System.err.println("isClient called with NULL world");
-			new Exception().printStackTrace();
-		}
-		return isClient();
+		return world.isRemote;
 	}
 	
 	public static boolean isClient() {
@@ -73,14 +66,7 @@ public class MainProxy {
 	}
 	
 	public static boolean isServer(World world) {
-		if(world != null) {
-			return !world.isRemote;
-		}
-		if(LogisticsPipes.DEBUG) {
-			System.err.println("isServer called with NULL world");
-			new Exception().printStackTrace();
-		}
-		return isServer();
+		return !world.isRemote;
 	}
 	
 	public static boolean isServer() {

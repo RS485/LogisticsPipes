@@ -85,4 +85,14 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUID_INSERTION;
 	}
+
+	@Override
+	public boolean canInsertToTanks() {
+		return false;
+	}
+
+	@Override
+	public boolean canInsertFromSideToTanks() {
+		return false;
+	}
 }

@@ -1,12 +1,10 @@
 package logisticspipes.pipes;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
@@ -25,8 +23,6 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ILiquidTank;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
-import buildcraft.transport.EntityData;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.PipeTransportLiquids;
 import buildcraft.transport.TileGenericPipe;
 
@@ -139,36 +135,14 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	public void fullFill(LiquidLogisticsPromise promise, IRequestLiquid destination) {
 		manager.add(promise, destination);
 	}
-	
+
 	@Override
-	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-		if(!this.isConnectableTank(tile, data.output, false)) return;
-		if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
-		if(!this.getRouter().getId().equals(((IRoutedItem)data.item).getDestination())) return;
-		((PipeTransportItems)this.transport).scheduleRemoval(data.item);
-		LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.item.getItemStack());
-		int netAmount = liquid.amount;
-		int totalFilled = 0;
-		List<Pair<TileEntity,ForgeDirection>> adjTanks = getAdjacentTanks(false);
-		//Try to put liquid into all adjacent tanks.
-		for (int i = 0; i < adjTanks.size(); i++) {
-			Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
-			ITankContainer tank = (ITankContainer) pair.getValue1();
-			ForgeDirection dir = (ForgeDirection) pair.getValue2();
-			int filled = tank.fill(dir, liquid, true);
-			totalFilled = totalFilled + filled;
-			liquid.amount -= filled;
-			if (liquid.amount != filled) continue;
-			return;
-		}
-		//If liquids still exist,
-		if (netAmount > totalFilled) {
-			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
-			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
-			int dest = replies.getValue1();
-			routedItem.setDestination(dest);
-			routedItem.setTransportMode(TransportMode.Passive);
-			this.queueRoutedItem(routedItem, data.output.getOpposite());
-		}
+	public boolean canInsertToTanks() {
+		return true;
+	}
+
+	@Override
+	public boolean canInsertFromSideToTanks() {
+		return true;
 	}
 }

@@ -10,6 +10,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.ticks.RoutingTableUpdateThread;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
@@ -50,7 +51,7 @@ public class MainProxy {
         if(SimpleServiceLocator.ccProxy != null && SimpleServiceLocator.ccProxy.isLuaThread(thr)) {
         	return Side.SERVER;
         }
-        if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread))
+        if ((thr instanceof ThreadMinecraftServer) || (thr instanceof ServerListenThread) || (thr instanceof RoutingTableUpdateThread))
         {
             return Side.SERVER;
         }

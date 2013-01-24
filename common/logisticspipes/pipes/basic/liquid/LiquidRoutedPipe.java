@@ -3,9 +3,15 @@ package logisticspipes.pipes.basic.liquid;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
@@ -15,6 +21,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.core.IMachine;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
@@ -111,8 +118,51 @@ public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravel
 		}
 		return true;
 	}
+	
+	@Override
+	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
+		if(canInsertFromSideToTanks()) {
+			int validDirections = 0;
+			List<Pair<TileEntity,ForgeDirection>> list = getAdjacentTanks(true);
+			for(Pair<TileEntity,ForgeDirection> pair:list) {
+				LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
+				validDirections++;
+				if(tank.getLiquid() == null) continue;
+				int filled = ((ITankContainer)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getLiquid(), true);
+				if(filled == 0) continue;
+				LiquidStack drain = tank.drain(filled, true);
+				if(drain == null || filled != drain.amount) {
+					if(LogisticsPipes.DEBUG) {
+						throw new UnsupportedOperationException("Liquid Multiplication");
+					}
+				}
+			}
+			if(validDirections == 0) return;
+			LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).internalTank;
+			LiquidStack stack = tank.getLiquid();
+			if(stack == null) return;
+			for(Pair<TileEntity,ForgeDirection> pair:list) {
+				LogisticsLiquidSection tankSide = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
+				stack = tank.getLiquid();
+				if(stack == null) continue;
+				stack = stack.copy();
+				int filled = tankSide.fill(stack , true);
+				if(filled == 0) continue;
+				LiquidStack drain = tank.drain(filled, true);
+				if(drain == null || filled != drain.amount) {
+					if(LogisticsPipes.DEBUG) {
+						throw new UnsupportedOperationException("Liquid Multiplication");
+					}
+				}
+			}
+		}
+	}
 
-
+	public abstract boolean canInsertFromSideToTanks();
+	
+	public abstract boolean canInsertToTanks();
+	
 	/* IItemTravelingHook */
 
 	@Override
@@ -124,6 +174,46 @@ public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravel
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 		((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if(canInsertToTanks() && MainProxy.isServer(worldObj)) {
+			if(!this.isConnectableTank(tile, data.output, false)) return;
+			if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
+			if(this.getRouter().getSimpleID() != ((IRoutedItem)data.item).getDestination()) return;
+			((PipeTransportItems)this.transport).scheduleRemoval(data.item);
+			LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.item.getItemStack());
+			List<Pair<TileEntity,ForgeDirection>> adjTanks = getAdjacentTanks(false);
+			//Try to put liquid into all adjacent tanks.
+			for (int i = 0; i < adjTanks.size(); i++) {
+				Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
+				ITankContainer tank = (ITankContainer) pair.getValue1();
+				ForgeDirection dir = (ForgeDirection) pair.getValue2();
+				int filled = tank.fill(dir.getOpposite(), liquid, true);
+				liquid.amount -= filled;
+				if (liquid.amount != 0) continue;
+				return;
+			}
+			//Try inserting the liquid into the pipe side tank
+			int filled = ((PipeLiquidTransportLogistics)this.transport).sideTanks[data.output.ordinal()].fill(liquid, true);
+			if(filled == liquid.amount) return;
+			liquid.amount -= filled;
+			//Try inserting the liquid into the pipe internal tank
+			filled = ((PipeLiquidTransportLogistics)this.transport).internalTank.fill(liquid, true);
+			if(filled == liquid.amount) return;
+			//If liquids still exist,
+			liquid.amount -= filled;
+			if(((IRoutedItem)data.item).getSource() != -1) {
+				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
+				routedItem.setDestination(((IRoutedItem)data.item).getSource());
+				routedItem.setTransportMode(TransportMode.Passive);
+				this.queueRoutedItem(routedItem, data.output.getOpposite());
+			} else {
+				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
+				Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
+				int dest = replies.getValue1();
+				routedItem.setDestination(dest);
+				routedItem.setTransportMode(TransportMode.Passive);
+				this.queueRoutedItem(routedItem, data.output.getOpposite());
+			}
+		}
 	}
 
 }

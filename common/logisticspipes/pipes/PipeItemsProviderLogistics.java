@@ -243,6 +243,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
+		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 	}
 
 	@Override

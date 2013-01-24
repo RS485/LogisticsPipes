@@ -38,6 +38,7 @@ import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -212,6 +213,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		
 		ItemIdentifier wanteditem = providedItem();
 		if(wanteditem == null) return;
+
+		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 		
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
@@ -356,6 +359,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			_extras -= promise.numberOfItems;
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
+		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 	}
 
 	@Override

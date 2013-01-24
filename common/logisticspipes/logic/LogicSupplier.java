@@ -18,6 +18,7 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -81,6 +82,13 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if(MainProxy.isClient(this.worldObj)) return;
 		if (pause) return;
 		super.throttledUpdateEntity();
+
+		for(int amount : _requestedItems.values()) {
+			if(amount > 0) {
+				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
+			}
+		}
+
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;

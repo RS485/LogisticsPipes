@@ -69,8 +69,8 @@ import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
@@ -106,7 +106,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -194,8 +193,7 @@ public class LogisticsPipes {
 	
 	private Textures textures = new Textures();
 	
-	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;	
-	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
+	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
@@ -475,9 +473,9 @@ public class LogisticsPipes {
 		
 		//LogisticsTileGenerticPipe
 		if(SimpleServiceLocator.ccProxy.isCC()) {
-			logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
+			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
 		} else if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
+			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
 		}
 		
 		MainProxy.proxy.registerTileEntitis();

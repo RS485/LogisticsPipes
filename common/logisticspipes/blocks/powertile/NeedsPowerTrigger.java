@@ -3,7 +3,6 @@ package logisticspipes.blocks.powertile;
 
 import logisticspipes.textures.Textures;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.api.gates.ITrigger;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.Trigger;
 

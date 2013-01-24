@@ -2,10 +2,10 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import net.minecraft.creativetab.CreativeTabs;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import logisticspipes.interfaces.IItemAdvancedExistance;
 
 public class LogisticsLiquidContainer extends LogisticsItem implements IItemAdvancedExistance {
 	public LogisticsLiquidContainer(int i) {

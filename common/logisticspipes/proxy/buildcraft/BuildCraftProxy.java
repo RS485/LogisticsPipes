@@ -71,11 +71,14 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxyClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {
+	
+	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
 
 	public static List<Item> pipelist = new ArrayList<Item>();
 	

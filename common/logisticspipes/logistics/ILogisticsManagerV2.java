@@ -8,10 +8,9 @@
 
 package logisticspipes.logistics;
 
-import java.util.Map;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
+import java.util.Map;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.IRouter;

@@ -1,12 +1,12 @@
 package logisticspipes.pipes;
 
-import net.minecraft.tileentity.TileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import net.minecraft.tileentity.TileEntity;
 
 public class PipeItemsApiaristSink extends RoutedPipe {
 	

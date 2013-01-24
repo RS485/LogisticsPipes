@@ -610,7 +610,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	private void updateAdjacentAndLsa() {
 		//this already got a checkAdjacentUpdate, so start the recursion with neighbors
-		BitSet visited = new BitSet(this.getBiggestSimpleID());
+		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
 		IRAction flood = new floodCheckAdjacent();
 		visited.set(simpleID);
 		for(IRouter r : _adjacentRouter.keySet()) {

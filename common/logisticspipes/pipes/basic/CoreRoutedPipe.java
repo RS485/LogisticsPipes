@@ -40,6 +40,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
@@ -183,7 +184,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private boolean checkTileEntity(boolean force) {
 		if(worldObj.getWorldTime() % 10 == 0 || force) {
-			if(this.container.getClass() != LogisticsPipes.logisticsTileGenericPipe) {
+			if(this.container.getClass() != BuildCraftProxy.logisticsTileGenericPipe) {
 				TileEntity tile = worldObj.getBlockTileEntity(xCoord, yCoord, zCoord);
 				if(tile != this.container) {
 					LogisticsPipes.log.severe("LocalCodeError");

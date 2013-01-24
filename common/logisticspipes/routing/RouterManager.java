@@ -15,11 +15,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import net.minecraftforge.common.ForgeDirection;
-
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import net.minecraftforge.common.ForgeDirection;
 
 
 public class RouterManager implements IRouterManager, IDirectConnectionManager {

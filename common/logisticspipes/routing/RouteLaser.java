@@ -84,7 +84,6 @@ class RouteLaser implements IPaintPath{
 		while (!knownRouters.isEmpty()){
 			//Pick a router
 			int targetRouter = knownRouters.pop();
-			boolean found = false;
 			
 			//Get the first exit
 			ForgeDirection next = r.getRouteTable().get(targetRouter).getValue1();

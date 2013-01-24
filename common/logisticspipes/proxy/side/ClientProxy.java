@@ -14,6 +14,7 @@ import logisticspipes.pipefxhandlers.providers.EntityOrangeSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.LogisticsPipesTextureStatic;
@@ -50,10 +51,10 @@ public class ClientProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 		GameRegistry.registerTileEntity(LogisticsPipes.powerTileEntity, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
 		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			GameRegistry.registerTileEntity(LogisticsPipes.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
+			GameRegistry.registerTileEntity(BuildCraftProxy.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
 		}
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
-		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsPipes.logisticsTileGenericPipe, lrp);
+		ClientRegistry.bindTileEntitySpecialRenderer(BuildCraftProxy.logisticsTileGenericPipe, lrp);
 	}
 
 	@Override

@@ -3,8 +3,6 @@ package logisticspipes.routing;
 import java.util.EnumSet;
 
 public class SearchNode implements Comparable<SearchNode> {
-
-	private final int ROUTING_PENALITY = 10000;
 	
 	public int distance;
 	private final EnumSet<PipeRoutingConnectionType> connectionFlags;

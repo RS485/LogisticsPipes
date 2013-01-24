@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import cpw.mods.fml.common.network.Player;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -29,6 +27,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsFirewall extends RoutedPipe {
 

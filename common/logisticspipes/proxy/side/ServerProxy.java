@@ -8,6 +8,7 @@ import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -46,7 +47,7 @@ public class ServerProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 		GameRegistry.registerTileEntity(LogisticsPipes.powerTileEntity, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
 		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			GameRegistry.registerTileEntity(LogisticsPipes.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
+			GameRegistry.registerTileEntity(BuildCraftProxy.logisticsTileGenericPipe, LogisticsPipes.logisticsTileGenericPipeMapping);
 		}
 	}
 

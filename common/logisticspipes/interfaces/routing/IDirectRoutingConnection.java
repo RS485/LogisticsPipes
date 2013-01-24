@@ -1,7 +1,5 @@
 package logisticspipes.interfaces.routing;
 
-import java.util.UUID;
-
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.utils.ItemIdentifier;
 

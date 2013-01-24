@@ -2,7 +2,6 @@ package logisticspipes.logistics;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.SearchNode;

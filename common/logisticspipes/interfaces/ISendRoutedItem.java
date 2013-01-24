@@ -1,7 +1,6 @@
 package logisticspipes.interfaces;
 
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;

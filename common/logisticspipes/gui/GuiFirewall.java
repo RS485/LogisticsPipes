@@ -1,7 +1,5 @@
 package logisticspipes.gui;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -9,6 +7,8 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.GuiStringHandlerButton.StringHandler;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiFirewall extends KraphtBaseGuiScreen {
 	

@@ -10,14 +10,12 @@ package logisticspipes.routing;
 
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.routing.IRouter.IRAction;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;

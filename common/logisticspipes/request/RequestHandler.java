@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.packets.PacketItems;

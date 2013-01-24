@@ -1,7 +1,6 @@
 package logisticspipes.pipes;
 
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;

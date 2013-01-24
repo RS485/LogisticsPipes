@@ -10,7 +10,6 @@ package logisticspipes.interfaces.routing;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;

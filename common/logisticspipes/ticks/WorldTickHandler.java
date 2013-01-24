@@ -5,8 +5,8 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -60,7 +60,7 @@ public class WorldTickHandler implements ITickHandler {
 				int y = tile.yCoord;
 				int z = tile.zCoord;
 				World world = tile.worldObj;
-				TileGenericPipe newTile = LogisticsPipes.logisticsTileGenericPipe.newInstance();
+				TileGenericPipe newTile = BuildCraftProxy.logisticsTileGenericPipe.newInstance();
 				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
 						field.setAccessible(true);

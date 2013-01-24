@@ -1,7 +1,6 @@
 package logisticspipes.interfaces.routing;
 
 import java.util.List;
-import java.util.UUID;
 
 import logisticspipes.routing.SearchNode;
 

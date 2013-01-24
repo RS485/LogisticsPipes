@@ -24,7 +24,11 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 
 public interface IRouter extends IPowerRouter {
-	public interface IRAction{ public boolean doTo(IRouter that);}
+	public interface IRAction {
+		public boolean isInteresting(IRouter that);
+		public boolean doTo(IRouter that);
+		public void doneWith(IRouter that);
+	}
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
@@ -49,6 +53,9 @@ public interface IRouter extends IPowerRouter {
 	
 	public IRouter getRouter(ForgeDirection insertOrientation);
 	public int getSimpleID();
+
 	public boolean act(BitSet hasBeenProcessed, IRAction actor);
 	public void flagForRoutingUpdate();
+	public boolean checkAdjacentUpdate();
+	public void clearPrevAdjacent();
 }

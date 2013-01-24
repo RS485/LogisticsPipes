@@ -224,10 +224,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
 				}
+				//first tick just create a router and do nothing.
+				getRouter();
+				return;
 			}
 		}
-		super.updateEntity();
+		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		super.updateEntity();
 		ignoreDisableUpdateEntity();
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
@@ -272,10 +276,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void onBlockRemoval() {
 		try {
 			super.onBlockRemoval();
-			if(router != null) {
-				router.destroy();
-				router = null;
-			}
+			//invalidate() removes the router
 			if (logic instanceof BaseRoutingLogic){
 				((BaseRoutingLogic)logic).destroy();
 			}
@@ -293,11 +294,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void invalidate() {
+		super.invalidate();
 		if(router != null) {
 			router.destroy();
 			router = null;
 		}
-		super.invalidate();
 	}
 	
 	public void checkTexturePowered() {

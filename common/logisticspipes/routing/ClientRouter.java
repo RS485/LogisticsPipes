@@ -176,4 +176,16 @@ public class ClientRouter implements IRouter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public boolean checkAdjacentUpdate() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void clearPrevAdjacent() {
+		// TODO Auto-generated method stub
+		
+	}
 }

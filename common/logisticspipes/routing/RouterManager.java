@@ -31,7 +31,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
 
 	private long lastRouterAdded = -1;
-	private static int DELAY_TIME = 2 * 1000;
+	private static int DELAY_TIME = 100;
 
 	@Override
 	public IRouter getRouter(int id){

@@ -48,28 +48,11 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
 	
-	class flagForLSAUpdate implements IRAction{
-
-		@Override
-		public boolean doTo(IRouter that) {
-			that.flagForRoutingUpdate();
-			return false;
-		}
-		
-	}
-	
 	//may not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 
 	public int hashCode(){
 		return simpleID; // guaranteed to be unique, and uniform distribution over a range.
 //		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
-	}
-	
-	@Override
-	public void flagForRoutingUpdate(){
-		if(LogisticsPipes.DEBUG)
-			System.out.println("[LogisticsPipes] flag for routing update to "+_LSAVersion+" for Node" +  simpleID);
-		_LSAVersion++;
 	}
 	
 	protected class LSA {
@@ -111,6 +94,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 
+	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
+
 	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
 	protected int _LSAVersion = -1;
 	protected LSA _myLsa = new LSA();
@@ -138,9 +123,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
 
-	protected boolean _blockNeedsUpdate;
-	private boolean forceUpdate = true;
-
 	private static int firstFreeId = 1;
 	private static BitSet simpleIdUsedSet = new BitSet();
 
@@ -161,6 +143,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		Collections.fill(_lastLSAVersion, 0);
 		_laser = new RouteLaser();
 		simpleIdUsedSet.clear();
+		firstFreeId = 1;
 	}
 	
 	private static int claimSimpleID() {
@@ -287,10 +270,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	/**
 	 * Rechecks the piped connection to all adjacent routers as well as discover new ones.
 	 */
-	protected void recheckAdjacent() {
+	private boolean recheckAdjacent() {
 		boolean adjacentChanged = false;
 		CoreRoutedPipe thisPipe = getPipe();
-		if (thisPipe == null) return;
+		if (thisPipe == null) return false;
 		HashMap<RoutedPipe, ExitRoute> adjacent;
 		List<ILogisticsPowerProvider> power;
 		if(thisPipe instanceof PipeItemsFirewall) {
@@ -303,7 +286,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		for(RoutedPipe pipe : adjacent.keySet()) {
 			if(pipe.stillNeedReplace()) {
-				return;
+				return false;
 			}
 		}
 		
@@ -338,23 +321,23 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		
 		if (adjacentChanged) {
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
-			_routedExits.clear();
+			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
 			for(Entry<RoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
 				adjacentRouter.put(((CoreRoutedPipe) pipe.getKey()).getRouter(pipe.getValue().insertOrientation), pipe.getValue());
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
-					_routedExits.add(pipe.getValue().exitOrientation);
+					routedexits.add(pipe.getValue().exitOrientation);
 			}
+			_prevAdjacentRouter = _adjacentRouter;
 			_adjacentRouter = adjacentRouter;
 			_adjacent = adjacent;
 			_powerAdjacent = power;
-			_blockNeedsUpdate = true;
-			
-			this.act(new BitSet(this.getBiggestSimpleID()), new flagForLSAUpdate());
+			_routedExits = routedexits;
 			SendNewLSA();
 		}
+		return adjacentChanged;
 	}
 	
-	protected void SendNewLSA() {
+	private void SendNewLSA() {
 		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		ArrayList<ILogisticsPowerProvider> power = new ArrayList<ILogisticsPowerProvider>();
 		for (IRouter adjacent : _adjacentRouter.keySet()){
@@ -366,17 +349,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		SharedLSADatabasewriteLock.lock();
 		_myLsa.neighboursWithMetric = neighboursWithMetric;
 		_myLsa.power = power;
-		_LSAVersion++;
-		
-		if(LogisticsPipes.DEBUG)
-			System.out.println("[LogisticsPipes] routing update to "+_LSAVersion+" for Node" +  simpleID);
 		SharedLSADatabasewriteLock.unlock();
 	}
 	
 	/**
 	 * Create a route table from the link state database
 	 */
-	private void CreateRouteTable()	{ 
+	private void CreateRouteTable()	{
 		//Dijkstra!
 		
 		
@@ -525,14 +504,22 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		if(hasBeenProcessed.get(this.simpleID))
 			return hasBeenReset;
 		hasBeenProcessed.set(this.simpleID);
+		if(!actor.isInteresting(this))
+			return hasBeenReset;
 		if(actor.doTo(this)){
 			hasBeenProcessed.clear();
 			// don't need to worry about resetting the recursion, as we are the neighbour of our neighbour, and are no longer flaged as processed.
 			hasBeenReset=true;
 		}
-		for(RoutedPipe r:_adjacent.keySet())
-			hasBeenReset=hasBeenReset || r.getRouter().act(hasBeenProcessed, actor);
-			
+		for(IRouter r : _adjacentRouter.keySet()) {
+			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
+		}
+		if(_prevAdjacentRouter != null) {
+			for(IRouter r : _prevAdjacentRouter.keySet()) {
+				hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
+			}
+		}
+		actor.doneWith(this);
 		return hasBeenReset;
 	}
 	
@@ -546,37 +533,108 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabase.set(simpleID, null);
 		}
 		SharedLSADatabasewriteLock.unlock();
-		this.act(new BitSet(this.getBiggestSimpleID()), new flagForLSAUpdate());
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
+		updateAdjacentAndLsa();
 		releaseSimpleID(simpleID);
-		updateNeighbors();
 	}
 
-	private void updateNeighbors() {
-		for(RoutedPipe p : _adjacent.keySet()) {
-			p.getRouter().update(true);
+
+	/**
+	 * Floodfill recheckAdjacent, leave _prevAdjacentRouter around for LSA updating
+	 */
+	class floodCheckAdjacent implements IRAction{
+		@Override
+		public boolean isInteresting(IRouter that) {
+			return that.checkAdjacentUpdate();
 		}
+		@Override
+		public boolean doTo(IRouter that) {
+			return false;
+		}
+		@Override
+		public void doneWith(IRouter that) {
+		}
+	}
+
+	@Override
+	public boolean checkAdjacentUpdate() {
+		boolean blockNeedsUpdate = recheckAdjacent();
+		if(!blockNeedsUpdate) return false;
+
+		updateThreadreadLock.lock();
+		if(updateThread != null) {
+			updateThread.run = false;
+			RoutingTableUpdateThread.remove(updateThread);
+		}
+		updateThreadreadLock.unlock();
+		updateThread = null;
+
+		CoreRoutedPipe pipe = getPipe();
+		if (pipe == null) return true;
+		pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
+		pipe.refreshRender(true);
+		return true;
+	}
+
+	/**
+	 * Floodfill LSA increment and clean up the _prevAdjacentRouter list left by floodCheckAdjacent
+	 */
+	class flagForLSAUpdate implements IRAction{
+		@Override
+		public boolean isInteresting(IRouter that) {
+			return true;
+		}
+		@Override
+		public boolean doTo(IRouter that) {
+			that.flagForRoutingUpdate();
+			return false;
+		}
+		@Override
+		public void doneWith(IRouter that) {
+			that.clearPrevAdjacent();
+		}
+	}
+
+	@Override
+	public void flagForRoutingUpdate() {
+		_LSAVersion++;
+		if(LogisticsPipes.DEBUG)
+			System.out.println("[LogisticsPipes] flag for routing update to "+_LSAVersion+" for Node" +  simpleID);
+	}
+
+	@Override
+	public void clearPrevAdjacent() {
+		_prevAdjacentRouter = null;
+	}
+
+
+	private void updateAdjacentAndLsa() {
+		//this already got a checkAdjacentUpdate, so start the recursion with neighbors
+		BitSet visited = new BitSet(this.getBiggestSimpleID());
+		IRAction flood = new floodCheckAdjacent();
+		visited.set(simpleID);
+		for(IRouter r : _adjacentRouter.keySet()) {
+			r.act(visited, flood);
+		}
+		if(_prevAdjacentRouter != null) {
+			for(IRouter r : _prevAdjacentRouter.keySet()) {
+				r.act(visited, flood);
+			}
+		}
+		//now increment LSA version in the network and clean up _prevAdjacentRouter
+		visited.clear();
+		this.act(visited, new flagForLSAUpdate());
 	}
 	
 	@Override
 	public void update(boolean doFullRefresh){
-		if (doFullRefresh || forceUpdate) {
-			if(updateThread == null) {
-				forceUpdate = false;
-				recheckAdjacent();
-				if (_blockNeedsUpdate){
-					CoreRoutedPipe pipe = getPipe();
-					if (pipe == null) return;
-					pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
-					pipe.refreshRender(true);
-					_blockNeedsUpdate = false;
-					updateNeighbors();
-				}
-			} else {
-				forceUpdate = true;
+		if (doFullRefresh) {
+			boolean blockNeedsUpdate = checkAdjacentUpdate();
+			if (blockNeedsUpdate) {
+				updateAdjacentAndLsa();
 			}
+			ensureRouteTableIsUpToDate(false);
 		}
-		ensureRouteTableIsUpToDate(false);
 	}
 
 	/************* IROUTER *******************/

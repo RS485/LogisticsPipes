@@ -63,6 +63,7 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -443,7 +444,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -456,7 +457,7 @@ public class ServerPacketHandler {
 	}
 	
 	private static void onRequestComponents(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -470,7 +471,7 @@ public class ServerPacketHandler {
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
 		int dimension = (packet.integer - (packet.integer % 10)) / 10;
-		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -1257,7 +1258,7 @@ public class ServerPacketHandler {
 
 	private static void onLiquidRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
 		int dimension = packet.integer;
-		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}
@@ -1270,7 +1271,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onLiquidRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(MainProxy.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;
 		}

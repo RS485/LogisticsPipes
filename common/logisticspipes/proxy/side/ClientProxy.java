@@ -58,15 +58,6 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public World getWorld(int _dimension) {
-		if(FMLCommonHandler.instance().getEffectiveSide().equals(Side.CLIENT)) {
-			return getWorld();
-		} else {
-			return DimensionManager.getWorld(_dimension);
-		}
-	}
-
-	@Override
 	public EntityPlayer getClientPlayer() {
 		return FMLClientHandler.instance().getClient().thePlayer;
 	}

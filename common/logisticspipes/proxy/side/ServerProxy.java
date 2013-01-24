@@ -52,11 +52,6 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public World getWorld(int _dimension) {
-		return DimensionManager.getWorld(_dimension);
-	}
-
-	@Override
 	public EntityPlayer getClientPlayer() {
 		return null;
 	}

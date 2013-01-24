@@ -101,10 +101,6 @@ public class MainProxy {
 		return world.getWorldInfo().getDimension();
 	}
 
-	public static World getWorld(int _dimension) {
-		return proxy.getWorld(_dimension);
-	}
-	
 	public static void sendPacketToPlayer(Packet packet, Player player) {
 		if(!isDirectSendPacket(packet)) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, player);

@@ -102,7 +102,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(worldObj)) {
 			float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
 			if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
 				energy = 1;
@@ -116,7 +116,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		  	}
 		}
 		if(!init) {
-			if(MainProxy.isClient()) {
+			if(MainProxy.isClient(worldObj)) {
 				LogisticsHUDRenderer.instance().add(this);
 			}
 			init = true;

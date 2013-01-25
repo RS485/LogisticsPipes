@@ -151,7 +151,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 	private static final ForgeDirection[] orientations = ForgeDirection.values();
 
 	private void updateLiquid() {
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient(worldObj)) return;
 		if (tracker.markTimeIfDelay(worldObj, BuildCraftCore.updateFactor)) {
 
 			boolean init = false;

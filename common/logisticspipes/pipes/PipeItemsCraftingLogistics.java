@@ -183,14 +183,13 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	@Override
 	public void ignoreDisableUpdateEntity() {
 		if(!init) {
-			if(MainProxy.isClient()) {
+			if(MainProxy.isClient(worldObj)) {
 				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
 					MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE, xCoord, yCoord, zCoord).getPacket());
 				}
 			}
 			init = true;
 		}
-		if(MainProxy.isClient()) return;
 	}
 
 	@Override

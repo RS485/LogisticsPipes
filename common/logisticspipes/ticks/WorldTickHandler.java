@@ -34,10 +34,13 @@ public class WorldTickHandler implements ITickHandler {
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		LinkedList<TileGenericPipe> localList;
-		if(MainProxy.isClient()) {
+		if(type.contains(TickType.CLIENT)) {
 			localList = clientPipesToReplace;
-		} else {
+		} else if(type.contains(TickType.SERVER)) {
 			localList = serverPipesToReplace;
+		} else {
+			System.out.println("not client, not server ... what is " + type);
+			return;
 		}
 		if(entitiesToLoad == null || delayedEntitiesToLoad == null) {
 			try {

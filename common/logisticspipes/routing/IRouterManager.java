@@ -23,6 +23,5 @@ public interface IRouterManager {
 	public void removeRouter(int id);
 	public List<IRouter> getRouters();
 	public void serverStopClean();
-	public boolean routerAddingDone();
 	public void clearClientRouters();
 }

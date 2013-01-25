@@ -224,7 +224,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	private void ensureRouteTableIsUpToDate(boolean force){
 		if (_LSAVersion > _lastLSAVersion.get(this.getSimpleID())) {
-			if(Configs.multiThreadEnabled && !force && SimpleServiceLocator.routerManager.routerAddingDone()) {
+			if(Configs.multiThreadEnabled && !force) {
 				updateThreadreadLock.lock();
 				if(updateThread != null) {
 					if(updateThread.newVersion == _lastLSAVersion.get(simpleID)) {

@@ -137,7 +137,6 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 
 	@Override
 	public void tick() {
-		if(MainProxy.isClient()) return;
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);

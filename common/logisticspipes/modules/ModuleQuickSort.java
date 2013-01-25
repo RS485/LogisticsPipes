@@ -56,7 +56,6 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		if(MainProxy.isClient()) return;
 		if (sent){
 			ticksToResend = 6;
 			sent = false;

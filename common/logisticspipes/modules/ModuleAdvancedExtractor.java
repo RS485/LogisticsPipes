@@ -135,7 +135,6 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	
 	@Override
 	public void tick() {
-		if(MainProxy.isClient()) return;
 		if (++currentTick < ticksToAction())
 			return;
 		currentTick = 0;

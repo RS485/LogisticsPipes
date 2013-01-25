@@ -62,10 +62,6 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		doOperation();
-	}
-
-	private void doOperation() {
 		if (++currentTickCount < ticksToOperation) return;
 		currentTickCount = 0;
         if (!(_power.canUseEnergy(100))) return;

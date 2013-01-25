@@ -72,7 +72,6 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		if(MainProxy.isClient()) return;
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 		

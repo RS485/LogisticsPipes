@@ -67,6 +67,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		UpdateRouterRunnable(IRouter target) {
 			run = true;
 			newVersion = _LSAVersion;
+			this.target=target;
 		}
 		
 		@Override

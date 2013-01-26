@@ -59,19 +59,13 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.cc.CCProxy;
-import logisticspipes.proxy.cc.CCTurtleProxy;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
-import logisticspipes.proxy.forestry.ForestryProxy;
-import logisticspipes.proxy.ic2.IC2Proxy;
-import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.IForestryProxy;
-import logisticspipes.proxy.interfaces.IIC2Proxy;
-import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
@@ -81,7 +75,6 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
-import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -95,16 +88,11 @@ import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Loader;
@@ -267,101 +255,9 @@ public class LogisticsPipes {
 	
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
-		if(Loader.isModLoaded("Forestry")) {
-			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
-			log.info("Loaded ForestryProxy");
-		} else {
-			//DummyProxy
-			SimpleServiceLocator.setForestryProxy(new IForestryProxy() {
-				@Override public boolean isBee(ItemStack item) {return false;}
-				@Override public boolean isBee(ItemIdentifier item) {return false;}
-				@Override public boolean isAnalysedBee(ItemStack item) {return false;}
-				@Override public boolean isAnalysedBee(ItemIdentifier item) {return false;}
-				@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
-				@Override public boolean forestryEnabled() {return false;}
-				@Override public boolean isKnownAlleleId(String uid, World world) {return false;}
-				@Override public String getAlleleName(String uid) {return "";}
-				@Override public String getFirstAlleleId(ItemStack bee) {return "";}
-				@Override public String getSecondAlleleId(ItemStack bee) {return "";}
-				@Override public boolean isDrone(ItemStack bee) {return false;}
-				@Override public boolean isFlyer(ItemStack bee) {return false;}
-				@Override public boolean isPrincess(ItemStack bee) {return false;}
-				@Override public boolean isQueen(ItemStack bee) {return false;}
-				@Override public boolean isPurebred(ItemStack bee) {return false;}
-				@Override public boolean isNocturnal(ItemStack bee) {return false;}
-				@Override public boolean isPureNocturnal(ItemStack bee) {return false;}
-				@Override public boolean isPureFlyer(ItemStack bee) {return false;}
-				@Override public boolean isCave(ItemStack bee) {return false;}
-				@Override public boolean isPureCave(ItemStack bee) {return false;}
-				@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
-				@Override public int getIconIndexForAlleleId(String id, int phase) {return 0;}
-				@Override public int getColorForAlleleId(String id, int phase) {return 0;}
-				@Override public int getRenderPassesForAlleleId(String id) {return 0;}
-				@Override public void addCraftingRecipes() {}
-				@Override public String getNextAlleleId(String uid, World world) {return "";}
-				@Override public String getPrevAlleleId(String uid, World world) {return "";}
-			});
-			log.info("Loaded Forestry DummyProxy");
-		}
-		if(Loader.isModLoaded("IC2")) {
-			SimpleServiceLocator.setElectricItemProxy(new IC2Proxy());
-			log.info("Loaded IC2Proxy");
-		} else {
-			//DummyProxy
-			SimpleServiceLocator.setElectricItemProxy(new IIC2Proxy() {
-				@Override public boolean isElectricItem(ItemStack stack) {return false;}
-				@Override public int getCharge(ItemStack stack) {return 0;}
-				@Override public int getMaxCharge(ItemStack stack) {return 0;}
-				@Override public boolean isFullyCharged(ItemStack stack) {return false;}
-				@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
-				@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
-				@Override public void addCraftingRecipes() {}
-				@Override public boolean hasIC2() {return false;}
-			});
-			log.info("Loaded IC2 DummyProxy");
-		}
-		if(Loader.isModLoaded("ComputerCraft")) {
-			if(Loader.isModLoaded("CCTurtle")) {
-				SimpleServiceLocator.setCCProxy(new CCTurtleProxy());
-				log.info("Loaded CCTurtleProxy");
-			} else {
-				SimpleServiceLocator.setCCProxy(new CCProxy());
-				log.info("Loaded CCProxy");
-			}
-		} else {
-			//DummyProxy
-			SimpleServiceLocator.setCCProxy(new ICCProxy() {
-				@Override public boolean isTurtle(TileEntity tile) {return false;}
-				@Override public boolean isComputer(TileEntity tile) {return false;}
-				@Override public boolean isCC() {return false;}
-				@Override public ForgeDirection getOrientation(Object computer, int side, TileEntity tile) {return ForgeDirection.UNKNOWN;}
-				@Override public boolean isLuaThread(Thread thread) {return false;}
-			});
-			log.info("Loaded CC DummyProxy");
-		}
+		ProxyManager.load();
+		SpecialInventoryHandlerManager.load();
 		
-		if(Loader.isModLoaded("Thaumcraft")) {
-			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
-			log.info("Loaded Thaumcraft Proxy");
-		} else {
-			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
-				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
-			});
-			log.info("Loaded Thaumcraft DummyProxy");
-		}
-		
-		if(Loader.isModLoaded("factorization")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new BarrelInventoryHandler());
-		}
-		
-		if(Loader.isModLoaded("GregTech_Addon")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new QuantumChestHandler());
-		}
-
-		if(Loader.isModLoaded("BetterStorage")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
-		}
-
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);

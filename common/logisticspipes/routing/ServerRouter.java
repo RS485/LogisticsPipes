@@ -74,10 +74,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public void run() {
 			if(!run) return;
 			try {
-				if(_lastLSAVersion.get(simpleID)<newVersion){
-					_lastLSAVersion.set(simpleID,newVersion);
-					CreateRouteTable(newVersion);
-				}
+				CreateRouteTable(newVersion);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -466,13 +463,15 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		routingTableUpdateWriteLock.lock();
 		if(version_to_update_to==this._LSAVersion){
+			SharedLSADatabasereadLock.lock();
+
 			if(_lastLSAVersion.get(simpleID)<version_to_update_to){
 				_lastLSAVersion.set(simpleID,version_to_update_to);
 				_powerTable = powerTable;
 				_routeTable = routeTable;
 				_routeCosts = routeCosts;
-//			SharedLSADatabasewriteLock.lock(); // take a write lock so that we don't overlap with any ongoing route updates
 			}
+			SharedLSADatabasereadLock.unlock();
 		}
 		routingTableUpdateWriteLock.unlock();
 	}

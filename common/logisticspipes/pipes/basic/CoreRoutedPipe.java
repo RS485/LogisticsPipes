@@ -498,6 +498,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	public void refreshConnectionAndRender(boolean spawnPart) {
+		this.container.scheduleNeighborChange();
+		if (spawnPart) {
+			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
+		}
+	}
+	
 	/***  --  IAdjacentWorldAccess  --  ***/
 	
 	@Override
@@ -508,7 +515,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		Iterator<AdjacentTile> iterator = adjacent.iterator();
 		while (iterator.hasNext()){
 			AdjacentTile tile = iterator.next();
-			if (!SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile.tile)){
+			if (!SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile.tile, tile.orientation)){
 				iterator.remove();
 			}
 		}
@@ -579,7 +586,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
-	public boolean disconnectPipe(TileEntity tile) {
+	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
+		if(!stillNeedReplace) {
+			if(getRouter().isAutoDisconnectionEnabled()) {
+				return getRouter().isSideDisconneceted(dir);
+			}
+		}
 		return false;
 	}
 	
@@ -589,7 +601,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
-		return (super.isPipeConnected(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile);
+		return (super.isPipeConnected(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile, dir);
 	}
 	
 	public void connectionUpdate() {

@@ -97,7 +97,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
-
+	
+	public boolean[] sideDisconnected = new boolean[6];
+	private static boolean disconnectionEnabled = true;
+	
+	private UUID securityId = null;
+	private int securityFrom = -1;
+	
 	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
 
 	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
@@ -264,6 +270,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		if (thisPipe == null) return false;
 		HashMap<RoutedPipe, ExitRoute> adjacent;
 		List<ILogisticsPowerProvider> power;
+		//disconnectionEnabled = false;
 		if(thisPipe instanceof PipeItemsFirewall) {
 			adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, ((PipeItemsFirewall)thisPipe).getRouterSide(this));
 			power = new LinkedList<ILogisticsPowerProvider>();
@@ -271,6 +278,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH);
 			power = this.getConnectedPowerProvider();
 		}
+		//disconnectionEnabled = true;
 		
 		for(RoutedPipe pipe : adjacent.keySet()) {
 			if(pipe.stillNeedReplace()) {
@@ -278,9 +286,33 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			}
 		}
 		
-		for (RoutedPipe pipe : _adjacent.keySet()){
-			if(!adjacent.containsKey(pipe))
+		/*
+		boolean[] oldSideDisconnected = sideDisconnected.clone();
+		
+		for(int i=0;i<6;i++) {
+			sideDisconnected[i] = false;
+		}
+		checkSecurity(adjacent);
+		
+		boolean changed = false;
+		
+		for(int i=0;i<6;i++) {
+			changed |= sideDisconnected[i] != oldSideDisconnected[i];
+		}
+		if(changed) {
+			CoreRoutedPipe pipe = getPipe();
+			if (pipe != null) {
+				pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
+				pipe.worldObj.notifyBlocksOfNeighborChange(pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj.getBlockId(pipe.xCoord, pipe.yCoord, pipe.zCoord));
+				pipe.refreshConnectionAndRender(false);
+			}
+		}
+		*/
+		
+		for (RoutedPipe pipe : _adjacent.keySet()) {
+			if(!adjacent.containsKey(pipe)) {
 				adjacentChanged = true;
+			}
 		}
 		
 		for (ILogisticsPowerProvider provider : _powerAdjacent){
@@ -324,7 +356,110 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		return adjacentChanged;
 	}
-	
+	/*
+	private void checkSecurity(HashMap<RoutedPipe, ExitRoute> adjacent) {
+		List<RoutedPipe> toRemove = new ArrayList<RoutedPipe>();
+		if(securityId == null) {
+			if(getPipe() instanceof PipeItemsBasicLogistics) {
+				List<Pair<LogisticsSecurityTileEntity, ForgeDirection>> list = ((PipeItemsBasicLogistics)getPipe()).getConnectedSecurityProviders();
+				if(list.size() == 1) {
+					securityId = list.get(0).getValue1().getSecId();
+					securityFrom = list.get(0).getValue2().ordinal();
+					return;
+				} else if(list.size() > 1) {
+					for(Pair<LogisticsSecurityTileEntity, ForgeDirection> pair:list) {
+						sideDisconnected[pair.getValue2().ordinal()] = true;
+					}
+					return;
+				}
+			}
+			int from = -1;
+			int fromId = -1;
+			UUID found = null;
+			boolean fine = true;
+			RoutedPipe lastChecked = null;
+			for (Entry<RoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
+				if(!pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && !pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) continue;
+				UUID id = pipe.getKey().getRouter(pipe.getValue().insertOrientation).getSecurityID();
+				if(id != null) {
+					if(found != null) {
+						fine = false;
+						sideDisconnected[from] = true;
+						toRemove.add(pipe.getKey());
+					}
+					from = pipe.getValue().exitOrientation.ordinal();
+					fromId = pipe.getKey().getRouter(pipe.getValue().insertOrientation).getSimpleID();
+					found = id;
+					lastChecked = pipe.getKey();
+				}
+			}
+			if(fine) {
+				securityId = found;
+				securityFrom = fromId;
+			} else {
+				sideDisconnected[from] = true;
+				if(lastChecked != null) {
+					toRemove.add(lastChecked);
+				}
+			}
+		} else {
+			if(getPipe() instanceof PipeItemsBasicLogistics) {
+				List<Pair<LogisticsSecurityTileEntity, ForgeDirection>> list = ((PipeItemsBasicLogistics)getPipe()).getConnectedSecurityProviders();
+				if(list.size() > 0) {
+					boolean found = false;
+					for(Pair<LogisticsSecurityTileEntity, ForgeDirection> pair:list) {
+						if(pair.getValue1().getSecId() == securityId) {
+							found = true;
+						}
+					}
+					if(!found) {
+						securityId = null;
+						securityFrom = -1;
+						//checkSecurity(adjacent);
+						return;
+					}
+					return;
+				}
+			}
+			boolean found = false;
+			int fromSide = -1;
+			for (Entry<RoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
+				if(!pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && !pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) continue;
+				UUID id = pipe.getKey().getRouter(pipe.getValue().insertOrientation).getSecurityID();
+				if(securityFrom == pipe.getKey().getRouter(pipe.getValue().insertOrientation).getSimpleID()) {
+					if(!securityId.equals(id)) {
+						securityId = null;
+						securityFrom = -1;
+						//checkSecurity(adjacent);
+						return;
+					}
+					fromSide = pipe.getValue().exitOrientation.ordinal();
+					found = true;
+					break;
+				}
+			}
+			if(!found) {
+				securityId = null;
+				securityFrom = -1;
+				//checkSecurity(adjacent);
+				return;
+			} else {
+				for (Entry<RoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
+					if(!pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom) && !pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) continue;
+					if(securityId != pipe.getKey().getRouter(pipe.getValue().insertOrientation).getSecurityID()) {
+						if(fromSide != pipe.getValue().exitOrientation.ordinal()) {
+								sideDisconnected[pipe.getValue().exitOrientation.ordinal()] = true;
+						}
+						toRemove.add(pipe.getKey());
+					}
+				}
+			}
+		}
+		for(RoutedPipe pipe:toRemove) {
+			adjacent.remove(pipe);
+		}
+	}
+	*/
 	private void SendNewLSA() {
 		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		ArrayList<ILogisticsPowerProvider> power = new ArrayList<ILogisticsPowerProvider>();
@@ -673,8 +808,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		return _powerTable;
 	}
 	
-	@Override
-	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
+	private List<ILogisticsPowerProvider> getConnectedPowerProvider() {
 		CoreRoutedPipe pipe = getPipe();
 		if(pipe instanceof PipeItemsBasicLogistics) {
 			return ((PipeItemsBasicLogistics)pipe).getConnectedPowerProviders();
@@ -682,13 +816,28 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			return new ArrayList<ILogisticsPowerProvider>();
 		}
 	}
-
+	
 	@Override
 	public IRouter getRouter(ForgeDirection insertOrientation) {
 		CoreRoutedPipe pipe = getPipe();
 		if(pipe==null)
 			return null;
 		return pipe.getRouter(insertOrientation);
+	}
+
+	@Override
+	public boolean isSideDisconneceted(ForgeDirection dir) {
+		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
+	}
+
+	@Override
+	public boolean isAutoDisconnectionEnabled() {
+		return disconnectionEnabled;
+	}
+
+	@Override
+	public UUID getSecurityID() {
+		return securityId;
 	}
 }
 

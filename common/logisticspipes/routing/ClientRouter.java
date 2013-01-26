@@ -154,11 +154,6 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ILogisticsPowerProvider> getConnectedPowerProvider() {
-		return null;
-	}
-
-	@Override
 	public IRouter getRouter(ForgeDirection insertOrientation) {
 		return null;
 	}
@@ -185,5 +180,20 @@ public class ClientRouter implements IRouter {
 	public void clearPrevAdjacent() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean isSideDisconneceted(ForgeDirection dir) {
+		return false;
+	}
+
+	@Override
+	public boolean isAutoDisconnectionEnabled() {
+		return false;
+	}
+
+	@Override
+	public UUID getSecurityID() {
+		return null;
 	}
 }

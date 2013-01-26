@@ -172,7 +172,7 @@ class PathFinder {
 			
 			if (tile == null) continue;
 			
-			if (tile instanceof TileGenericPipe && (isDirectConnection || SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile))) {
+			if (tile instanceof TileGenericPipe && (isDirectConnection || SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile, direction))) {
 				TileGenericPipe currentPipe = (TileGenericPipe) tile;
 				if (setVisited.contains(tile)) {
 					//Don't go where we have been before

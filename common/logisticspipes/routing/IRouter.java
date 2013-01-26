@@ -56,4 +56,11 @@ public interface IRouter extends IPowerRouter {
 	public void flagForRoutingUpdate();
 	public boolean checkAdjacentUpdate();
 	public void clearPrevAdjacent();
+	
+	/* Automated Disconnection */
+	public boolean isSideDisconneceted(ForgeDirection dir);
+	public boolean isAutoDisconnectionEnabled();
+	
+	/* Security */
+	public UUID getSecurityID();
 }

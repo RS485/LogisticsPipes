@@ -20,6 +20,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
+	public static final int LOGISTICS_SECURITY_STATION = 2;
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -41,6 +42,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return true;
 			case LOGISTICS_POWER_JUNCTION:
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Junction_ID, par1World, par2, par3, par4);
+				return true;
+			case LOGISTICS_SECURITY_STATION:
+				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Security_Station_ID, par1World, par2, par3, par4);
 				return true;
 				default:break;
 			}
@@ -110,6 +114,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 					instance = new LogisticsPowerJuntionTileEntity_BuildCraft();
 				}
 	    		return instance;
+	    	case LOGISTICS_SECURITY_STATION:
+	    		return new LogisticsSecurityTileEntity();
         	default: 
         		return null;
         }
@@ -206,6 +212,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return 5;
 			default: //Front
 				return 6;
+			}
+		case LOGISTICS_SECURITY_STATION:
+			switch (side) {
+			case 1: //TOP
+				return 20;
+			case 0: //Bottom
+				return 21;
+			default: //Front
+				return 22;
 			}
 		default:
 			return 0;

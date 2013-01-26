@@ -102,7 +102,7 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	}
 	
 	@Override
-	public boolean disconnectPipe(TileEntity tile) {
+	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
 		return tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe != null && ((TileGenericPipe)tile).pipe.transport instanceof PipeTransportLiquids;
 	}
 	

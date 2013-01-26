@@ -128,7 +128,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 
 		if (tile == null) return false;
 		if (tile instanceof TileGenericPipe) return false;
-		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile);
+		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile, connection);
 	}
 	
 	public IInventory getModuleInventory(){

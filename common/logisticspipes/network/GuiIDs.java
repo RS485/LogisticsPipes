@@ -37,6 +37,7 @@ public class GuiIDs {
 	//Blocks
 	public static final int GUI_Soldering_Station_ID = 50;
 	public static final int GUI_Power_Junction_ID = 51;
+	public static final int GUI_Security_Station_ID = 52;
 
 	public static final int GUI_Upgrade_Manager = 60;
 

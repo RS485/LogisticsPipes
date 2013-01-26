@@ -86,8 +86,18 @@ public class BuildCraftProxy {
 	public static Trigger LogisticsNeedPowerTrigger;	
 	public static Action LogisticsDisableAction;
 	
-	public boolean checkPipesConnections(TileEntity tile1, TileEntity tile2) {
-		return Utils.checkPipesConnections(tile1, tile2);
+	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
+		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
+			if (!((TileGenericPipe)from).pipe.isPipeConnected(to, way)) {
+				return false;
+			}
+			if (!((TileGenericPipe) to).pipe.isPipeConnected(to, way.getOpposite())) {
+				return false;
+			}
+			return true;
+		} else {
+			return Utils.checkPipesConnections(from, to);
+		}
 	}
 
 	public void dropItems(World world, IInventory inventory, int x, int y, int z) {

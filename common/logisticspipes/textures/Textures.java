@@ -25,6 +25,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_ROUTED_TEXTURE					= empty;
 	public static TextureType LOGISTICSPIPE_NOTROUTED_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_POWERED_TEXTURE					= empty;
+	public static TextureType LOGISTICSPIPE_SECURITY_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_TEXTURE					= empty;
 	public static TextureType LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE			= empty;
 	public static TextureType LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE		= empty;
@@ -88,6 +89,7 @@ public class Textures {
 	public static final String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/routed.png";
 	public static final String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/not_routed.png";
 	public static final String LOGISTICSPIPE_POWERED_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/powered.png";
+	public static final String LOGISTICSPIPE_SECURITY_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/security.png";
 	public static final String LOGISTICSPIPE_LIQUID_TEXTURE_FILE			= "/logisticspipes/pipes/status_overlay/liquid_connection.png";
 	// Chassi pipes
 	public static final String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			= "/logisticspipes/pipes/chassi/chassi_mk1.png";
@@ -155,6 +157,7 @@ public class Textures {
 		LOGISTICSPIPE_ROUTED_TEXTURE 				= registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_NOTROUTED_TEXTURE 			= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(LOGISTICSPIPE_POWERED_TEXTURE_FILE, false);
+		LOGISTICSPIPE_SECURITY_TEXTURE 				= registerTexture(LOGISTICSPIPE_SECURITY_TEXTURE_FILE, false);
 		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture(LOGISTICSPIPE_LIQUID_TEXTURE_FILE, false);
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
 		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);

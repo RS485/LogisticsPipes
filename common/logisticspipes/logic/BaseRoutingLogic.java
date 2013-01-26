@@ -9,6 +9,7 @@
 package logisticspipes.logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
@@ -102,6 +103,12 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).getValue1().toString());
 		}
 		System.out.println();
+		System.out.println("~~~~~~~~~~SECURITY ID~~~~~~~~~~~~~~~");
+		System.out.println(r.getSecurityID());
+		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
+		System.out.println(Arrays.toString(ForgeDirection.VALID_DIRECTIONS));
+		System.out.println(Arrays.toString(sr.sideDisconnected));
+		getRoutedPipe().refreshConnectionAndRender(true);
 	}
 
 }

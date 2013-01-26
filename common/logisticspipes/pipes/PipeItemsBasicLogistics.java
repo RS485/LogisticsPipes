@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.logic.TemporaryLogic;
@@ -22,6 +23,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -43,6 +45,13 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 					}
 					return true;
 				}
+				if(tile instanceof LogisticsSecurityTileEntity) {
+					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
+						return false;
+					}
+					return true;
+				}
 				return false;
 			}
 		}, new TemporaryLogic(), itemID);
@@ -55,12 +64,15 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		if(isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
+		if(isSecurityProvider(connection)) {
+			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
+		}
 		return super.getNonRoutedTexture(connection);
 	}
 
 	@Override
 	public boolean isLockedExit(ForgeDirection orientation) {
-		if(isPowerProvider(orientation)) {
+		if(isPowerProvider(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
@@ -70,7 +82,18 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof ILogisticsPowerProvider && ori ==tile.orientation) {
+			if(tile.tile instanceof ILogisticsPowerProvider && ori == tile.orientation) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isSecurityProvider(ForgeDirection ori) {
+		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
+		for(AdjacentTile tile:adjacent) {
+			if(tile.tile instanceof LogisticsSecurityTileEntity && ori == tile.orientation) {
 				return true;
 			}
 		}
@@ -115,6 +138,18 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
 				list.add((ILogisticsPowerProvider)tile.tile);
+			}
+		}
+		return list;
+	}
+	
+	public List<Pair<LogisticsSecurityTileEntity,ForgeDirection>> getConnectedSecurityProviders() {
+		List<Pair<LogisticsSecurityTileEntity,ForgeDirection>> list = new ArrayList<Pair<LogisticsSecurityTileEntity,ForgeDirection>>();
+		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
+		for(AdjacentTile tile:adjacent) {
+			if(tile.tile instanceof LogisticsSecurityTileEntity && isSideOrientation(tile.orientation)) {
+				list.add(new Pair<LogisticsSecurityTileEntity,ForgeDirection>((LogisticsSecurityTileEntity)tile.tile, tile.orientation));
 			}
 		}
 		return list;

@@ -72,6 +72,11 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
+import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
+import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -276,6 +281,10 @@ public class LogisticsPipes {
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 		
+		if(Loader.isModLoaded("AppliedEnergistics")) {
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
+		}
+
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);

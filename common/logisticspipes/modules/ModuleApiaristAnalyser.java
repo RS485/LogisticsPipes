@@ -57,7 +57,6 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(!SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
 				if(_power.canUseEnergy(3)) {
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 					return _sinkReply;
 				}
 			}

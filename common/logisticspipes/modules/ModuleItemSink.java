@@ -88,7 +88,6 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		if(bestPriority >= FixedPriority.ItemSink.ordinal()) return null;
 		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
 			if(_power.canUseEnergy(1)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 			return null;
@@ -96,7 +95,6 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		if(bestPriority >= FixedPriority.DefaultRoute.ordinal()) return null;
 		if (_isDefaultRoute){
 			if(_power.canUseEnergy(1)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 1);
 				return _sinkReplyDefault;
 			}
 			return null;

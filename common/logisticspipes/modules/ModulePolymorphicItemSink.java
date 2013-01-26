@@ -45,7 +45,6 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		if (!invUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
 		if(_power.canUseEnergy(3)) {
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return _sinkReply;
 		}
 		return null;

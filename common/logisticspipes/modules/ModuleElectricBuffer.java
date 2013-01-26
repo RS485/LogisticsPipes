@@ -55,7 +55,6 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
 			if (_power.canUseEnergy(1)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 		}

@@ -89,20 +89,15 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 		if (!_power.canUseEnergy(1)) return null;
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
-			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return positiveSinkReply();
+			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return _sinkReply;
 			
 			//If item is empty and in charge mode, sink.
-			if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) return positiveSinkReply();
+			if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) return _sinkReply;
 			
 			//If item is partially charged, sink.
-			if (SimpleServiceLocator.IC2Proxy.isPartiallyCharged(stack)) return positiveSinkReply();
+			if (SimpleServiceLocator.IC2Proxy.isPartiallyCharged(stack)) return _sinkReply;
 		}
 		return null;
-	}
-
-	private SinkReply positiveSinkReply() {
-		MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-		return _sinkReply;
 	}
 
 	@Override

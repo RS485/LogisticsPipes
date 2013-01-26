@@ -137,7 +137,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 			if (stack == null) return;
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
-				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
+				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 						_itemSender.sendStack(inv.decrStackSize(i,1));
@@ -145,7 +145,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 					}
 				}
 				//If item set to charge  and its fully charged, then extract it.
-				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
+				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 						_itemSender.sendStack(inv.decrStackSize(i,1));

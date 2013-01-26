@@ -69,11 +69,11 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 * @param priority The priority that the stack must have.
 	 */
 	@Override
-	public boolean hasDestinationWithPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
+	public boolean hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		if (search.getValue2() == null) return false;
-		return (search.getValue2().fixedPriority == priority);
+		return (search.getValue2().fixedPriority.ordinal() >= priority.ordinal());
 	}
 
 	

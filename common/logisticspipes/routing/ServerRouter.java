@@ -73,16 +73,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		@Override
 		public void run() {
 			if(!run) return;
-			updateThreadreadLock.lock();
 			try {
 				if(_lastLSAVersion.get(simpleID)<newVersion){
 					_lastLSAVersion.set(simpleID,newVersion);
-					CreateRouteTable();
+					CreateRouteTable(newVersion);
 				}
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
-			updateThreadreadLock.unlock();
 			run = false;
 		}
 
@@ -116,9 +114,9 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
 	protected static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
 	protected static final Lock SharedLSADatabasewriteLock = SharedLSADatabaseLock.writeLock();
-	protected static final ReentrantReadWriteLock updateThreadLock = new ReentrantReadWriteLock();
-	protected static final Lock updateThreadreadLock = updateThreadLock.readLock();
-	protected static final Lock updateThreadwriteLock = updateThreadLock.writeLock();
+	protected final ReentrantReadWriteLock routingTableUpdateLock = new ReentrantReadWriteLock();
+	protected final Lock routingTableUpdateReadLock = routingTableUpdateLock.readLock();
+	protected final Lock routingTableUpdateWriteLock = routingTableUpdateLock.writeLock();
 	public Object _externalRoutersByCostLock = new Object();
 	
 	protected static final ArrayList<LSA> SharedLSADatabase = new ArrayList<LSA>();
@@ -236,9 +234,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			if(Configs.multiThreadEnabled && !force) {
 				RoutingTableUpdateThread.add(new UpdateRouterRunnable(this));
 			} else {
-				CreateRouteTable();
+				CreateRouteTable(_LSAVersion);
 				_externalRoutersByCost = null;
-				_lastLSAVersion.set(simpleID,_LSAVersion);
 			}
 		}
 	}
@@ -349,7 +346,11 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	/**
 	 * Create a route table from the link state database
 	 */
-	private void CreateRouteTable()	{
+	private void CreateRouteTable(int version_to_update_to)	{
+		
+		if(_lastLSAVersion.get(simpleID)>=version_to_update_to)
+			return; // this update is already done.
+
 		//Dijkstra!
 		
 		
@@ -463,9 +464,17 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				routeTable.add(null);
 			routeTable.set(node.node.getSimpleID(), new Pair<ForgeDirection,ForgeDirection>(hop.exitOrientation, hop.insertOrientation));
 		}
-		_powerTable = powerTable;
-		_routeTable = routeTable;
-		_routeCosts = routeCosts;
+		routingTableUpdateWriteLock.lock();
+		if(version_to_update_to==this._LSAVersion){
+			if(_lastLSAVersion.get(simpleID)<version_to_update_to){
+				_lastLSAVersion.set(simpleID,version_to_update_to);
+				_powerTable = powerTable;
+				_routeTable = routeTable;
+				_routeCosts = routeCosts;
+//			SharedLSADatabasewriteLock.lock(); // take a write lock so that we don't overlap with any ongoing route updates
+			}
+		}
+		routingTableUpdateWriteLock.unlock();
 	}
 	
 	@Override
@@ -555,14 +564,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		boolean blockNeedsUpdate = recheckAdjacent();
 		if(!blockNeedsUpdate) return false;
 
-		updateThreadreadLock.lock();
-		if(updateThread != null) {
-			updateThread.run = false;
-			RoutingTableUpdateThread.remove(updateThread);
-		}
-		updateThreadreadLock.unlock();
-		updateThread = null;
-
 		CoreRoutedPipe pipe = getPipe();
 		if (pipe == null) return true;
 		pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
@@ -592,8 +593,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	@Override
 	public void flagForRoutingUpdate() {
 		_LSAVersion++;
-		if(LogisticsPipes.DEBUG)
-			System.out.println("[LogisticsPipes] flag for routing update to "+_LSAVersion+" for Node" +  simpleID);
+		//if(LogisticsPipes.DEBUG)
+			//System.out.println("[LogisticsPipes] flag for routing update to "+_LSAVersion+" for Node" +  simpleID);
 	}
 
 	@Override

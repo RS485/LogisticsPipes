@@ -221,7 +221,6 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
-		super.resetThrottle();
 		if (_requestedItems.containsKey(item.getItem())){
 			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
 		}

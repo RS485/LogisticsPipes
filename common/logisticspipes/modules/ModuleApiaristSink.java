@@ -231,33 +231,28 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	}
 	
 	public boolean isFiltered(ItemStack itemBee) {
-		Boolean[] groups = new Boolean[6];
-		for(int i = 0;i < 6;i++) {
-			groups[i] = null;
-			for(SinkSetting setting:filter) {
-				if(setting.filterGroup - 1 == i) {
-					if(groups[i] == null) {
-						groups[i] = setting.isFiltered(itemBee);
+		for (int i = 0; i < 6; i++) {
+			Boolean accept = null;
+			for (SinkSetting setting : filter) {
+				if (setting.filterGroup - 1 == i) {
+					if (accept == null) {
+						accept = setting.isFiltered(itemBee);
 					} else {
-						groups[i] &= setting.isFiltered(itemBee);
+						accept = accept && setting.isFiltered(itemBee);
 					}
 				}
 			}
+			if (accept != null && accept) {
+				return true;
+			}
 		}
-		for(int i = 0;i < 6;i++) {
-			if(groups[i] != null) {
-				if(groups[i]) {
+		for (SinkSetting setting : filter) {
+			if (setting.filterGroup == 0) {
+				if (setting.isFiltered(itemBee)) {
 					return true;
 				}
 			}
-		}
-		for(SinkSetting setting:filter) {
-			if(setting.filterGroup == 0) {
-				if(setting.isFiltered(itemBee)) {
-					return true;
-				}
-			}
-		}
+	    }
 		return false;
 	}
 	

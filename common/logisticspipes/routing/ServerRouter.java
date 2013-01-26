@@ -21,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.PriorityQueue;
 import java.util.UUID;
 import java.util.Vector;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -48,11 +49,9 @@ import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
 	
-	//may not speed up the code - consumes about 7% of CreateRouteTable runtume
 	@Override 
 	public int hashCode(){
 		return simpleID; // guaranteed to be unique, and uniform distribution over a range.
-//		return (int)id.getLeastSignificantBits(); // RandomID is cryptographcially secure, so this is a good approximation of true random.
 	}
 	
 	protected class LSA {
@@ -60,34 +59,43 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public List<ILogisticsPowerProvider> power;
 	}
 	
-	private class RoutingUpdateThread implements Runnable {
+	private class UpdateRouterRunnable implements Comparable<UpdateRouterRunnable>, Runnable {
 		
 		int newVersion = 0;
 		boolean run = false;
-		RoutingUpdateThread(int version) {
-			newVersion = version;
+		IRouter target;
+		UpdateRouterRunnable(IRouter target) {
 			run = true;
+			newVersion = _LSAVersion;
 		}
 		
 		@Override
 		public void run() {
 			if(!run) return;
+			updateThreadreadLock.lock();
 			try {
-				CreateRouteTable();
-				synchronized (_externalRoutersByCostLock) {
-					_externalRoutersByCost = null;
-				}
-				if(_lastLSAVersion.get(simpleID)<newVersion)
+				if(_lastLSAVersion.get(simpleID)<newVersion){
 					_lastLSAVersion.set(simpleID,newVersion);
+					CreateRouteTable();
+				}
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
+			updateThreadreadLock.unlock();
 			run = false;
-			updateThreadwriteLock.lock();
-			updateThread = null;
-			updateThreadwriteLock.unlock();
 		}
-		
+
+		@Override
+		public int compareTo(UpdateRouterRunnable o) {
+			int c=0;
+			if(o.newVersion<=0)
+				c = newVersion-o.newVersion; // negative numbers have priority, more negative first
+			if(c!=0) return 0;
+				c = this.target.getSimpleID()-o.target.getSimpleID(); // do things in order of router id, to minimize router recursion
+			if(c!=0) return 0;
+				c = o.newVersion - newVersion; // higher version first
+			return c;
+		}		
 	}
 
 	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
@@ -100,7 +108,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	protected int _LSAVersion = -1;
 	protected LSA _myLsa = new LSA();
 	
-	protected RoutingUpdateThread updateThread = null;
+	protected UpdateRouterRunnable updateThread = null;
 	
 	protected static RouteLaser _laser = new RouteLaser();
 
@@ -225,22 +233,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void ensureRouteTableIsUpToDate(boolean force){
 		if (_LSAVersion > _lastLSAVersion.get(this.getSimpleID())) {
 			if(Configs.multiThreadEnabled && !force) {
-				updateThreadreadLock.lock();
-				if(updateThread != null) {
-					if(updateThread.newVersion == _lastLSAVersion.get(simpleID)) {
-						updateThreadreadLock.unlock();
-						return;
-					}
-					updateThread.run = false;
-					RoutingTableUpdateThread.remove(updateThread);
-				}
-				updateThreadreadLock.unlock();
-				updateThread = new RoutingUpdateThread(_LSAVersion);
-				if(_LSAVersion <= 0) {
-					RoutingTableUpdateThread.addPriority(updateThread);
-				} else {
-					RoutingTableUpdateThread.add(updateThread);
-				}
+				RoutingTableUpdateThread.add(new UpdateRouterRunnable(this));
 			} else {
 				CreateRouteTable();
 				_externalRoutersByCost = null;

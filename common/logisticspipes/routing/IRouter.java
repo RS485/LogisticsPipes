@@ -59,8 +59,4 @@ public interface IRouter extends IPowerRouter {
 	
 	/* Automated Disconnection */
 	public boolean isSideDisconneceted(ForgeDirection dir);
-	public boolean isAutoDisconnectionEnabled();
-	
-	/* Security */
-	public UUID getSecurityID();
 }

@@ -23,7 +23,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -138,18 +137,6 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
 				list.add((ILogisticsPowerProvider)tile.tile);
-			}
-		}
-		return list;
-	}
-	
-	public List<Pair<LogisticsSecurityTileEntity,ForgeDirection>> getConnectedSecurityProviders() {
-		List<Pair<LogisticsSecurityTileEntity,ForgeDirection>> list = new ArrayList<Pair<LogisticsSecurityTileEntity,ForgeDirection>>();
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
-		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof LogisticsSecurityTileEntity && isSideOrientation(tile.orientation)) {
-				list.add(new Pair<LogisticsSecurityTileEntity,ForgeDirection>((LogisticsSecurityTileEntity)tile.tile, tile.orientation));
 			}
 		}
 		return list;

@@ -10,6 +10,7 @@ package logisticspipes.proxy;
 
 import java.util.LinkedList;
 
+import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsLiquidManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
@@ -52,6 +53,11 @@ public final class SimpleServiceLocator {
 	public static IDirectConnectionManager connectionManager;
 	public static void setDirectConnectionManager(final IDirectConnectionManager conMngr){
 		connectionManager = conMngr;
+	}
+	
+	public static ISecurityStationManager securityStationManager;
+	public static void setSecurityStationManager(final ISecurityStationManager secStationMngr){
+		securityStationManager = secStationMngr;
 	}
 	
 	public static IRouterManager routerManager;

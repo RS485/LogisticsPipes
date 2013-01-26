@@ -8,7 +8,6 @@
 
 package logisticspipes.pipes.basic;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -66,7 +65,6 @@ import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Normal")
@@ -227,11 +225,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				}
 				//first tick just create a router and do nothing.
 				getRouter();
+				this.refreshConnectionAndRender(false);
 				return;
 			}
 		}
 		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getUpgradeManager().securityTick();
 		super.updateEntity();
 		ignoreDisableUpdateEntity();
 		_initialInit = false;
@@ -587,19 +587,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
-		if(!stillNeedReplace) {
-			if(getRouter().isAutoDisconnectionEnabled()) {
-				return getRouter().isSideDisconneceted(dir);
-			}
-		}
 		return false;
 	}
 	
 	@Override
 	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
+		return isPipeConnected(tile, dir, false);
+	}
+	
+	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
+		}
+		if(!stillNeedReplace) {
+			if(getRouter().isSideDisconneceted(dir) && !ignoreSystemDisconnection) {
+				return false;
+			}
 		}
 		return (super.isPipeConnected(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile, dir);
 	}
@@ -609,6 +613,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			container.scheduleNeighborChange();
 			worldObj.notifyBlockChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord, yCoord, zCoord));
 		}
+	}
+	
+	public UUID getSecurityID() {
+		return getUpgradeManager().getSecurityID();
+	}
+
+	public void insetSecurityID(UUID id) {
+		getUpgradeManager().insetSecurityID(id);
 	}
 	
 	/* Power System */

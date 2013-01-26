@@ -186,14 +186,4 @@ public class ClientRouter implements IRouter {
 	public boolean isSideDisconneceted(ForgeDirection dir) {
 		return false;
 	}
-
-	@Override
-	public boolean isAutoDisconnectionEnabled() {
-		return false;
-	}
-
-	@Override
-	public UUID getSecurityID() {
-		return null;
-	}
 }

@@ -371,7 +371,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	protected boolean isItemExitable(ItemStack stack) {
 		if(stack != null && stack.getItem() instanceof IItemAdvancedExistance) {
-			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory();
+			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory(stack);
 		}
 		return true;
 	}

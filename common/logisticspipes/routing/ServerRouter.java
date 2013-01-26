@@ -565,7 +565,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 		CoreRoutedPipe pipe = getPipe();
 		if (pipe == null) return true;
-		pipe.worldObj.markBlockForRenderUpdate(pipe.xCoord, pipe.yCoord, pipe.zCoord);
 		pipe.refreshRender(true);
 		return true;
 	}

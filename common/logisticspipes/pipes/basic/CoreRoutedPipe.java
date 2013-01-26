@@ -492,23 +492,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public void refreshRender(boolean spawnPart) {
-		Field refreshRenderStateFiled;
-		try {
-			refreshRenderStateFiled = TileGenericPipe.class.getDeclaredField("refreshRenderState");
-			refreshRenderStateFiled.setAccessible(true);
-			refreshRenderStateFiled.set(this.container, true);
-			if (spawnPart) {
-				MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
-			}
-
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
+		this.container.scheduleRenderUpdate();
+		if (spawnPart) {
+			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
 		}
 	}
 	

@@ -65,7 +65,6 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		ItemIdentifier ident = ItemIdentifier.get(item);
 		if(modList.contains(ident.getModId())) {
 			if(_power.canUseEnergy(5)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 		}

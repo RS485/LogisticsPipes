@@ -269,7 +269,6 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 			if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
 				if(isFiltered(item)) {
 					if(_power.canUseEnergy(2)) {
-						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, worldProvider.getWorld(), 2);
 						return _sinkReply;
 					}
 				}

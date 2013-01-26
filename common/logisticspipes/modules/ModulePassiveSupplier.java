@@ -80,7 +80,6 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		if (targetCount <= haveCount) return null;
 		
 		if(_power.canUseEnergy(2)) {
-			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 			return new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, targetCount - haveCount);
 		}
 		return null;

@@ -84,7 +84,6 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 		if (bestPriority >= FixedPriority.Terminus.ordinal()) return null;
 		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
 			if(_power.canUseEnergy(2)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 		}

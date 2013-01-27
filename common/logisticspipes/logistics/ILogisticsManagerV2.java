@@ -24,7 +24,7 @@ public interface ILogisticsManagerV2 {
 	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
 	public IRoutedItem destinationUnreachable(IRoutedItem item, int currentRouter);
 	boolean hasDestination(ItemStack stack, boolean allowDefault, int uuid, boolean excludeSource);
-	boolean hasDestinationWithPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
+	boolean hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
 	LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> list);
 	Map<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> list);
 	String getBetterRouterName(IRouter r);

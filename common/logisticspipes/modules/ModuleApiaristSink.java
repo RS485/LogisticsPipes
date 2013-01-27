@@ -231,45 +231,39 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	}
 	
 	public boolean isFiltered(ItemStack itemBee) {
-		Boolean[] groups = new Boolean[6];
-		for(int i = 0;i < 6;i++) {
-			groups[i] = null;
-			for(SinkSetting setting:filter) {
-				if(setting.filterGroup - 1 == i) {
-					if(groups[i] == null) {
-						groups[i] = setting.isFiltered(itemBee);
+		for (int i = 0; i < 6; i++) {
+			Boolean accept = null;
+			for (SinkSetting setting : filter) {
+				if (setting.filterGroup - 1 == i) {
+					if (accept == null) {
+						accept = setting.isFiltered(itemBee);
 					} else {
-						groups[i] &= setting.isFiltered(itemBee);
+						accept = accept && setting.isFiltered(itemBee);
 					}
 				}
 			}
+			if (accept != null && accept) {
+				return true;
+			}
 		}
-		for(int i = 0;i < 6;i++) {
-			if(groups[i] != null) {
-				if(groups[i]) {
+		for (SinkSetting setting : filter) {
+			if (setting.filterGroup == 0) {
+				if (setting.isFiltered(itemBee)) {
 					return true;
 				}
 			}
-		}
-		for(SinkSetting setting:filter) {
-			if(setting.filterGroup == 0) {
-				if(setting.isFiltered(itemBee)) {
-					return true;
-				}
-			}
-		}
+	    }
 		return false;
 	}
 	
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_BeeSink, 0, true, false, 2, 0);
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_BeeSink, 0, true, false, 2, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		if (bestPriority >= FixedPriority.APIARIST_BeeSink.ordinal()) return null;
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
 				if(isFiltered(item)) {
 					if(_power.canUseEnergy(2)) {
-						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, worldProvider.getWorld(), 2);
 						return _sinkReply;
 					}
 				}

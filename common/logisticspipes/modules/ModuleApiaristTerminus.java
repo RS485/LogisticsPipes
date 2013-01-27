@@ -47,14 +47,13 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 		return false;
 	}
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 5, 0);
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 5, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		if (bestPriority >= FixedPriority.Terminus.ordinal()) return null;
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		boolean decision = replyCheck(item);
 		if (decision) {
 			if (_power.canUseEnergy(5)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 		}

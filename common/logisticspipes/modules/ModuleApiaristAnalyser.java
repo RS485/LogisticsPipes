@@ -50,14 +50,13 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		
 	}
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		if (bestPriority >= FixedPriority.APIARIST_Analyser.ordinal()) return null;
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(!SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
 				if(_power.canUseEnergy(3)) {
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 					return _sinkReply;
 				}
 			}

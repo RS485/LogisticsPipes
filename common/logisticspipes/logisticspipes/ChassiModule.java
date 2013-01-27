@@ -43,17 +43,19 @@ public class ChassiModule implements ILogisticsGuiModule{
 	
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		SinkReply result = null;
+		SinkReply bestresult = null;
 		for (ILogisticsModule module : _modules){
 			if (module != null){
-				result = module.sinksItem(item, bestPriority, bestCustomPriority);
-				if (result != null){
-					break;
+				SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority);
+				if (result != null) {
+					bestresult = result;
+					bestPriority = result.fixedPriority.ordinal();
+					bestCustomPriority = result.customPriority;
 				}
 			}
 		}
 
-		if (result == null) return null;
+		if (bestresult == null) return null;
 		//Always deny items when we can't put the item anywhere
 		IInventory inv = _parentPipe.getInventory();
 		if (inv == null) return null;
@@ -62,10 +64,10 @@ public class ChassiModule implements ILogisticsGuiModule{
 		
 		if (roomForItem < 1) return null;
 
-		if(result.maxNumberOfItems == 0) {
-			return new SinkReply(result, roomForItem);
+		if(bestresult .maxNumberOfItems == 0) {
+			return new SinkReply(bestresult , roomForItem);
 		}
-		return new SinkReply(result, Math.min(result.maxNumberOfItems, roomForItem));
+		return new SinkReply(bestresult , Math.min(bestresult .maxNumberOfItems, roomForItem));
 	}
 
 

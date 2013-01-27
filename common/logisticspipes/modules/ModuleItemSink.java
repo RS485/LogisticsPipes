@@ -81,22 +81,20 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		this.slot = slot;
 	}
 	
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
-	private final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
+	private static final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		if(bestPriority >= FixedPriority.ItemSink.ordinal()) return null;
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
 			if(_power.canUseEnergy(1)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 			return null;
 		}
-		if(bestPriority >= FixedPriority.DefaultRoute.ordinal()) return null;
+		if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
 		if (_isDefaultRoute){
 			if(_power.canUseEnergy(1)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 1);
 				return _sinkReplyDefault;
 			}
 			return null;

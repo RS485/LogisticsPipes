@@ -55,7 +55,6 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
 			if (_power.canUseEnergy(1)) {
-				MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 				return _sinkReply;
 			}
 		}
@@ -78,7 +77,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				if (SimpleServiceLocator.logisticsManager.hasDestinationWithPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
+				if (SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 					_itemSender.sendStack(inv.decrStackSize(i, 1));
 					return;

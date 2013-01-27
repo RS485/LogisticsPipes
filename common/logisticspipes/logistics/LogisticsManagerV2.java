@@ -23,10 +23,13 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -69,11 +72,11 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 * @param priority The priority that the stack must have.
 	 */
 	@Override
-	public boolean hasDestinationWithPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
+	public boolean hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		if (search.getValue2() == null) return false;
-		return (search.getValue2().fixedPriority == priority);
+		return (search.getValue2().fixedPriority.ordinal() >= priority.ordinal());
 	}
 
 	
@@ -92,7 +95,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if (excludeSource) {
 				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			}
-			if(jamList.contains(candidateRouter.node.getId())) continue;
+			if(jamList.contains(candidateRouter.node.getSimpleID())) continue;
 			
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 			
@@ -148,7 +151,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			filters.remove(filter);
 		}
 		if(filters.isEmpty() && result.getValue1() != null) {
-			SimpleServiceLocator.routerManager.getRouter(result.getValue1()).getPipe().useEnergy(result.getValue2().energyUse);
+			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouter(result.getValue1()).getPipe();
+			pipe.useEnergy(result.getValue2().energyUse);
+			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj, 10);
 		}
 		return result;
 	}
@@ -156,17 +161,17 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	/**
 	 * Will assign a destination for a IRoutedItem based on a best sink reply recieved from other pipes.
 	 * @param item The item that needs to be routed.
-	 * @param sourceRouterUUID The SimpleID of the pipe that is sending the item. (the routedItem will cache the UUID, and that the SimpleID belongs to the UUID will be checked when appropriate)
+	 * @param sourceRouterID The SimpleID of the pipe that is sending the item. (the routedItem will cache the UUID, and that the SimpleID belongs to the UUID will be checked when appropriate)
 	 * @param excludeSource Boolean, true means that it wont set the source as the destination.
 	 * @return IRoutedItem with a newly assigned destination
 	 */
 	@Override
-	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterUUID, boolean excludeSource) {
+	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterID, boolean excludeSource) {
 		
 		//If the source router does not exist we can't do anything with this
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterUUID)) return item;
+		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterID)) return item;
 		//If we for some reason can't get the router we can't do anything either
-		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterUUID);
+		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterID);
 		if (sourceRouter == null) return item;
 		
 		//Wipe current destination
@@ -174,7 +179,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		
 		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		
-		item.setSource(sourceRouterUUID);
+		item.setSource(sourceRouterID);
 		if (bestReply.getValue1() != null){
 			item.setDestination(bestReply.getValue1());
 			if (bestReply.getValue2().isPassive){

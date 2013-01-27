@@ -122,6 +122,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		destinationint = newDestination;
 		if(newDestination >= 0) {
 			isUnrouted = false;
+			this.destinationUUID = SimpleServiceLocator.routerManager.getRouter(newDestination).getId();
+		} else {
+			this.destinationUUID = null;
 		}
 	}
 	

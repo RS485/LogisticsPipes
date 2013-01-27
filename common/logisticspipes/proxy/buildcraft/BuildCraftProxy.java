@@ -91,7 +91,7 @@ public class BuildCraftProxy {
 			if (!((TileGenericPipe)from).pipe.isPipeConnected(to, way)) {
 				return false;
 			}
-			if (!((TileGenericPipe) to).pipe.isPipeConnected(to, way.getOpposite())) {
+			if (!((TileGenericPipe) to).pipe.isPipeConnected(from, way.getOpposite())) {
 				return false;
 			}
 			return true;

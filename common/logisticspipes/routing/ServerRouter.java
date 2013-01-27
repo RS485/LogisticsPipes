@@ -74,6 +74,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public void run() {
 			if(!run) return;
 			try {
+				CoreRoutedPipe p = target.getPipe();
+				if(p==null){
+					run = false;
+					return;
+				}
+				//spinlock during the first tick, we can't touch the routing table, untill Update() has been called on every pipe.
+				while(p.stillNeedReplace()){Thread.sleep(10);}
 				CreateRouteTable(newVersion);
 			} catch(Exception e) {
 				e.printStackTrace();

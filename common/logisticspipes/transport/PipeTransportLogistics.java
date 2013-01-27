@@ -332,10 +332,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				ForgeDirection insertion = data.output.getOpposite();
 				if(manager.hasSneakyUpgrade()) {
-					insertion = manager.getSneakyUpgrade().getSneakyOrientation();
-					if(insertion == null) {
-						insertion = data.output.getOpposite();
-					}
+					insertion = manager.getSneakyOrientation();
 				}
 				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 				

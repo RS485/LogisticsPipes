@@ -74,10 +74,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		if (liquidId == null) return;
 		ForgeDirection orientation = data.output.getOpposite();
 		if(getUpgradeManager().hasSneakyUpgrade()) {
-			orientation = getUpgradeManager().getSneakyUpgrade().getSneakyOrientation();
-			if(orientation == null) {
-				orientation = data.output.getOpposite();
-			}
+			orientation = getUpgradeManager().getSneakyOrientation();
 		}
 		while (data.item.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(orientation, liquidId, true);

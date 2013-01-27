@@ -1,5 +1,6 @@
 package logisticspipes.pipes.upgrades;
 
+import java.util.EnumSet;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -25,6 +26,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[8];
 	private CoreRoutedPipe pipe;
 	private int securityDelay = 0;
+
+	/* cached attributes */
+	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
+	private int speedUpgradeCount = 0;
+	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
 	
 	public UpgradeManager(CoreRoutedPipe pipe) {
 		this.pipe = pipe;
@@ -41,61 +47,59 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		InventoryChanged(inv);
 	}
 
-	private void updateModule(int slot) {
+	private boolean updateModule(int slot) {
 		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
-		if(upgrades[slot].needsUpdate()) {
-			pipe.connectionUpdate();
-		}
+		return upgrades[slot].needsUpdate();
 	}
 	
-	private void removeUpgrade(int slot) {
-		boolean needUpdate = false;
-		if(upgrades[slot].needsUpdate()) {
-			needUpdate = true;
-		}
+	private boolean removeUpgrade(int slot) {
+		boolean needUpdate = upgrades[slot].needsUpdate();
 		upgrades[slot] = null;
-		if(needUpdate) {
-			pipe.connectionUpdate();
-		}
+		return needUpdate;
 	}
 	
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
+		boolean needUpdate = false;
 		for(int i=0;i<inv.getSizeInventory() - 1;i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item != null) {
-				updateModule(i);
+				needUpdate = needUpdate || updateModule(i);
 			} else if(item == null && upgrades[i] != null) {
-				removeUpgrade(i);
+				needUpdate = needUpdate || removeUpgrade(i);
 			}
+		}
+		//update sneaky direction, speed upgrade count and disconnection
+		sneakyOrientation = ForgeDirection.UNKNOWN;
+		speedUpgradeCount = 0;
+		disconnectedSides.clear();
+		for(int i=0;i<upgrades.length;i++) {
+			IPipeUpgrade upgrade = upgrades[i];
+			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
+				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
+			} else if(upgrade instanceof SpeedUpgrade) {
+				speedUpgradeCount += inv.getStackInSlot(i).stackSize;
+			} else if(upgrade instanceof ConnectionUpgrade) {
+				disconnectedSides.add(((ConnectionUpgrade)upgrade).getSide());
+			}
+		}
+		if(needUpdate) {
+			pipe.connectionUpdate();
 		}
 	}
 
 	/* Special implementations */
 	
 	public boolean hasSneakyUpgrade() {
-		return getSneakyUpgrade() != null;
+		return sneakyOrientation != ForgeDirection.UNKNOWN;
 	}
 
-	public SneakyUpgrade getSneakyUpgrade() {
-		for(int i=0;i<upgrades.length;i++) {
-			IPipeUpgrade update = upgrades[i];
-			if(update instanceof SneakyUpgrade) {
-				return (SneakyUpgrade) update;
-			}
-		}
-		return null;
+	public ForgeDirection getSneakyOrientation() {
+		return sneakyOrientation;
 	}
 	
 	public int getSpeedUpgradeCount() {
-		int count = 0;
-		for(int i=0;i<upgrades.length;i++) {
-			IPipeUpgrade update = upgrades[i];
-			if(update instanceof SpeedUpgrade) {
-				count += inv.getStackInSlot(i).stackSize;
-			}
-		}
-		return count;
+		return speedUpgradeCount;
 	}
 
 	public boolean openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
@@ -128,15 +132,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public boolean isSideDisconnected(ForgeDirection side) {
-		for(int i=0;i<upgrades.length;i++) {
-			IPipeUpgrade upgrade = upgrades[i];
-			if(upgrade instanceof ConnectionUpgrade) {
-				if(((ConnectionUpgrade)upgrade).getSide() == side) {
-					return true;
-				}
-			}
-		}
-		return false;
+		return disconnectedSides.contains(side);
 	}
 
 	public boolean tryIserting(EntityPlayer entityplayer) {

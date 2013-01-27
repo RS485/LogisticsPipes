@@ -164,9 +164,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setDestination(int destination) {
 		this.destinationint = destination;
-		if(destination >=0) {
+		if(destination >= 0) {
 			isUnrouted = false;
 			this.destinationUUID = SimpleServiceLocator.routerManager.getRouter(destination).getId();
+		} else {
+			this.destinationUUID = null;
 		}
 	}
 
@@ -178,8 +180,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setSource(int source) {
 		this.sourceint = source;
-		this.checkIDFromUUID();
-		
+		if(source >= 0) {
+			this.sourceUUID = SimpleServiceLocator.routerManager.getRouter(source).getId();
+		} else {
+			this.sourceUUID = null;
+		}
 	}
 
 	@Override

@@ -305,7 +305,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
-		if(router == null) return;
+		if(stillNeedReplace || _initialInit || router == null) return;
 		boolean flag;
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
@@ -335,7 +335,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public TextureType getTextureType(ForgeDirection connection) {
-		if(stillNeedReplace)
+		if(stillNeedReplace || _initialInit)
 			return getCenterTexture();
 
 		if (connection == ForgeDirection.UNKNOWN){

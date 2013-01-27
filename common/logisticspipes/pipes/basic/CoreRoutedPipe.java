@@ -601,7 +601,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			return false;
 		}
 		if(!stillNeedReplace) {
-			if(getRouter().isSideDisconneceted(dir) && !ignoreSystemDisconnection) {
+			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection) {
 				return false;
 			}
 		}

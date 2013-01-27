@@ -6,8 +6,6 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
@@ -20,10 +18,6 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
 	private IChassiePowerProvider _power;
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
-	private IWorldProvider _world;
 	
 	public ModulePolymorphicItemSink() {}
 
@@ -31,7 +25,6 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_power = powerprovider;
-		_world = world;
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0);
@@ -63,9 +56,5 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	public void tick() {}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
-	}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
 }

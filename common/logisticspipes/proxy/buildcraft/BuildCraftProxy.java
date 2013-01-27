@@ -97,7 +97,7 @@ public class BuildCraftProxy {
 					return false;
 				}
 			} else {
-				if (!((TileGenericPipe) to).pipe.isPipeConnected(to, way.getOpposite())) {
+				if (!((TileGenericPipe) from).pipe.isPipeConnected(to, way.getOpposite())) {
 					return false;
 				}
 			}
@@ -106,7 +106,7 @@ public class BuildCraftProxy {
 				return false;
 			}
 			} else {
-				if (!((TileGenericPipe) to).pipe.isPipeConnected(to, way.getOpposite())) {
+				if (!((TileGenericPipe) to).pipe.isPipeConnected(from, way.getOpposite())) {
 					return false;
 				}
 			}

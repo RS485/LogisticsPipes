@@ -21,7 +21,6 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -45,7 +44,6 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
-	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDPassiveSupplier(this);
 	
@@ -59,7 +57,6 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_power = powerprovider;
-		_world = world;
 	}
 
 	public IInventory getFilterInventory(){

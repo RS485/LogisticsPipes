@@ -283,6 +283,12 @@
 
 	<target name="main" depends="clean, setup, package-simple"/>
 
+	<target name="vars-dev">
+		<property name="lp.version.full"      value="${lp.version}.dev.${BUILD_NUMBER}"/>
+	</target>
+
+	<target name="ci-dev" depends="vars-dev, clean, setup, package-sign"/>
+
 	<target name="ci" depends="clean, setup, package-sign"/>
 
 	<target name="vars-test">

@@ -156,14 +156,14 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		if(MainProxy.isClient()) return false;
 		boolean added = false;
 		for(DirectConnection con:connectedPipes) {
-			if(ident != con.identifier) {
+			if(!ident.equals(con.identifier)) {
 				if(con.Router1 >= 0 && con.Router1 == router.getSimpleID()) {
 					con.Router1 = -1;
 				} else if(con.Router2 >= 0 && con.Router2 == router.getSimpleID()) {
 					con.Router2 = -1;
 				}
 			} else {
-				if(con.Router1 <0  || con.Router1 == router.getSimpleID()) {
+				if(con.Router1 < 0 || con.Router1 == router.getSimpleID()) {
 					con.Router1 = router.getSimpleID();
 					added = true;
 					break;

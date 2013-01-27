@@ -67,8 +67,8 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	@Override
 	public void enabledUpdateEntity() {
 		if(!init) {
-			if(hasConnectionint()) {
-				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionint(), getRouter())) {
+			if(hasConnectionUUID()) {
+				if(!SimpleServiceLocator.connectionManager.addDirectConnection(getConnectionUUID(), getRouter())) {
 					dropFreqCard();
 				}
 				CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
@@ -78,10 +78,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				getRouter().update(true);
 				this.refreshRender(true);
 				init = true;
-				idbuffer = getConnectionint();
+				idbuffer = getConnectionUUID();
 			}
 		}
-		if(init && !hasConnectionint()) {
+		if(init && !hasConnectionUUID()) {
 			init = false;
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
@@ -89,7 +89,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 				CRP.refreshRender(true);
 			}
 		}
-		if(init && idbuffer != null && !idbuffer.equals(getConnectionint())) {
+		if(init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
 			init = false;
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
@@ -148,12 +148,12 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, this.worldObj, 4);
 	}
 	
-	private UUID getConnectionint() {
+	private UUID getConnectionUUID() {
 		if(inv != null) {
 			if(inv.getStackInSlot(0) != null) {
 				if(inv.getStackInSlot(0).hasTagCompound()) {
-					if(inv.getStackInSlot(0).getTagCompound().hasKey("int")) {
-						return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("int"));
+					if(inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
+						return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 					}
 				}
 			}
@@ -161,11 +161,11 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		return null;
 	}
 	
-	private boolean hasConnectionint() {
+	private boolean hasConnectionUUID() {
 		if(inv != null) {
 			if(inv.getStackInSlot(0) != null) {
 				if(inv.getStackInSlot(0).hasTagCompound()) {
-					if(inv.getStackInSlot(0).getTagCompound().hasKey("int")) {
+					if(inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
 						return true;
 					}
 				}
@@ -263,7 +263,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	private boolean hasRemoteConnection() {
-		return hasConnectionint() && this.worldObj != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
+		return hasConnectionUUID() && this.worldObj != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
 	}
 	
 	private boolean inventoryConnected() {

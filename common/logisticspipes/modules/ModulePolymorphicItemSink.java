@@ -34,10 +34,10 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		_world = world;
 	}
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0);
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 3, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		if (bestPriority >= FixedPriority.ItemSink.ordinal()) return null;
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		

@@ -66,9 +66,11 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		return _filterInventory;
 	}
 	
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		if (bestPriority >= FixedPriority.PassiveSupplier.ordinal()) return null;
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+
 		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
@@ -80,7 +82,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		if (targetCount <= haveCount) return null;
 		
 		if(_power.canUseEnergy(2)) {
-			return new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, targetCount - haveCount);
+			return new SinkReply(_sinkReply, targetCount - haveCount);
 		}
 		return null;
 	}

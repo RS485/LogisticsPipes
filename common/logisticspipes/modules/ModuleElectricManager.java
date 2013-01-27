@@ -84,8 +84,6 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	@Override
 	public SinkReply sinksItem(ItemStack stack, int bestPriority, int bestCustomPriority) {
 		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
-		IInventory inv = _invProvider.getInventory();
-		if (inv == null) return null;
 		if (!_power.canUseEnergy(1)) return null;
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
@@ -125,7 +123,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 
-		IInventory inv = _invProvider.getInventory();
+		IInventory inv = _invProvider.getPointedInventory();
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);

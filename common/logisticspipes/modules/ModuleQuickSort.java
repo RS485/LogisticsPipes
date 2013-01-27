@@ -69,7 +69,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 		currentTick = 0;
 		
 		//Extract Item
-		IInventory targetInventory = _invProvider.getInventory();
+		IInventory targetInventory = _invProvider.getPointedInventory();
 		if (targetInventory == null) return;
 		if (targetInventory.getSizeInventory() < 27) return;
 		ItemStack stackToSend;

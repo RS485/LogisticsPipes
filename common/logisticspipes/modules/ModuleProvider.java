@@ -187,10 +187,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		if (_invProvider.getInventory() == null) return;
+		if (_invProvider.getPointedInventory() == null) return;
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
 		
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 outer:
 		for (ItemIdentifier currItem : currentInv.keySet()) {
@@ -241,11 +241,11 @@ outer:
 	
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
-		if (_invProvider.getInventory() == null) {
+		if (_invProvider.getPointedInventory() == null) {
 			_orderManager.sendFailed();
 			return 0;
 		}
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
@@ -267,13 +267,13 @@ outer:
 	
 	public int getTotalItemCount(ItemIdentifier item) {
 		
-		if (_invProvider.getInventory() == null) return 0;
+		if (_invProvider.getPointedInventory() == null) return 0;
 		
 		if (!_filterInventory.isEmpty()
 				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
 						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
 		
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		return inv.itemCount(item);
 	}
 	

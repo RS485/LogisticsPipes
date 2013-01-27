@@ -13,6 +13,7 @@ import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -120,12 +121,24 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 	
 	@Override
-	public IInventory getInventory() {
+	public IInventory getPointedInventory() {
 		IInventory rawInventory = getRawInventory();
 		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
 		return rawInventory;
 	}
-	
+
+	@Override
+	public IInventory getSneakyInventory() {
+		UpgradeManager manager = getUpgradeManager();
+		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
+		if(manager.hasSneakyUpgrade()) {
+			insertion = manager.getSneakyOrientation();
+		}
+		IInventory rawInventory = getRawInventory();
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, insertion);
+		return rawInventory;
+	}
+
 	@Override
 	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();

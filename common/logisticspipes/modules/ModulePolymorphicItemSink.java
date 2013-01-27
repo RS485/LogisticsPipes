@@ -31,7 +31,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		IInventory targetInventory = _invProvider.getInventory();
+		IInventory targetInventory = _invProvider.getSneakyInventory();
 		if (targetInventory == null) return null;
 		
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);

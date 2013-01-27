@@ -44,6 +44,7 @@ import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -180,9 +181,21 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 	
 	@Override
-	public IInventory getInventory() {
+	public IInventory getPointedInventory() {
 		IInventory rawInventory = getRawInventory();
 		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
+		return rawInventory;
+	}
+
+	@Override
+	public IInventory getSneakyInventory() {
+		UpgradeManager manager = getUpgradeManager();
+		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
+		if(manager.hasSneakyUpgrade()) {
+			insertion = manager.getSneakyOrientation();
+		}
+		IInventory rawInventory = getRawInventory();
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, insertion);
 		return rawInventory;
 	}
 

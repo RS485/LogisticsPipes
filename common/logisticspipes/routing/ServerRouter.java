@@ -367,14 +367,16 @@ public class ServerRouter implements IRouter, IPowerRouter {
 					entry.getKey().insetSecurityID(id);
 				} else if(!id.equals(thatId)) {
 					sideDisconnected[entry.getValue().exitOrientation.ordinal()] = true;
+				}
+			}
+			for(Entry<RoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
+				if(sideDisconnected[entry.getValue().exitOrientation.ordinal()]) {
 					toRemove.add(entry.getKey());
 				}
 			}
-		} else {
-			
-		}
-		for(RoutedPipe remove:toRemove) {
-			adjacent.remove(remove);
+			for(RoutedPipe remove:toRemove) {
+				adjacent.remove(remove);
+			}
 		}
 	}
 

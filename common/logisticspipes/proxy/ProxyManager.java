@@ -1,5 +1,7 @@
 package logisticspipes.proxy;
 
+import thaumcraft.api.EnumTag;
+import thaumcraft.api.ObjectTags;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cc.CCTurtleProxy;
@@ -100,6 +102,8 @@ public class ProxyManager {
 		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
+				@Override public void renderAspectAt(EnumTag etag, int x, int y, GuiScreen gui) {}
+				@Override public ObjectTags getTagsForStack(ItemStack stack) {return null;}
 			});
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}

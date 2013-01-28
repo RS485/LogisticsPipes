@@ -69,13 +69,17 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if (inv instanceof ISpecialInventory) {
 			ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();
 			ItemStack[] stack = ((ISpecialInventory) inv).extractItem(true, direction, 1);
-			if (stack[0] == null) return;
+			if (stack == null || stack.length < 1 || stack[0] == null) return;
 			//if no queen/princess
 			if ((inv.getStackInSlot(0) == null)) {
 				if (SimpleServiceLocator.forestryProxy.isPrincess(stack[0])) {
 					if (SimpleServiceLocator.forestryProxy.isPurebred(stack[0])) {
 						if (!(_power.useEnergy(100))) return;
-						((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						int inserted = ((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						if (inserted == 0) {
+							_itemSender.sendStack(stack[0]);
+							return;
+						}
 						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
 						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
 						return;
@@ -87,7 +91,11 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 				if (SimpleServiceLocator.forestryProxy.isDrone(stack[0])) {
 					if (SimpleServiceLocator.forestryProxy.isPurebred(stack[0])) {
 						if (!(_power.useEnergy(100))) return;
-						((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						int inserted = ((ISpecialInventory) inv).addItem(stack[0], true, direction);
+						if (inserted == 0) {
+							_itemSender.sendStack(stack[0]);
+							return;
+						}
 						MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
 						MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
 						return;

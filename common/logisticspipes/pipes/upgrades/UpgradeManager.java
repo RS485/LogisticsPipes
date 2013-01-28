@@ -153,6 +153,14 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				}
 			}
 		}
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsItemCard.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
+			if(inv.getStackInSlot(8) == null) {
+				inv.setInventorySlotContents(8, entityplayer.getCurrentEquippedItem().copy());
+				inv.getStackInSlot(8).stackSize = 1;
+				entityplayer.getCurrentEquippedItem().splitStack(1);
+				return true;
+			}
+		}
 		return false;
 	}
 	

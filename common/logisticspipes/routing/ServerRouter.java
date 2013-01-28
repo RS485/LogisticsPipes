@@ -104,7 +104,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 	
-	public boolean[] sideConnected = new boolean[6];
+	public boolean[] sideDisconnected = new boolean[6];
 	
 	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
 
@@ -287,17 +287,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		
 		if(LogisticsPipes.DEBUG) {
-			boolean[] oldSideConnected = sideConnected.clone();
-			
-			for(int i=0;i<6;i++) {
-				sideConnected[i] = true;
-			}
+			boolean[] oldSideDisconnected = sideDisconnected;
+			sideDisconnected = new boolean[6];
 			checkSecurity(adjacent);
 			
 			boolean changed = false;
 			
 			for(int i=0;i<6;i++) {
-				changed |= sideConnected[i] != oldSideConnected[i];
+				changed |= sideDisconnected[i] != oldSideDisconnected[i];
 			}
 			if(changed) {
 				CoreRoutedPipe pipe = getPipe();
@@ -369,7 +366,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				if(thatId == null) {
 					entry.getKey().insetSecurityID(id);
 				} else if(!id.equals(thatId)) {
-					sideConnected[entry.getValue().exitOrientation.ordinal()] = false;
+					sideDisconnected[entry.getValue().exitOrientation.ordinal()] = true;
 					toRemove.add(entry.getKey());
 				}
 			}
@@ -748,7 +745,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public boolean isSideDisconneceted(ForgeDirection dir) {
-		return ForgeDirection.UNKNOWN != dir && !sideConnected[dir.ordinal()];
+		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
 	}
 }
 

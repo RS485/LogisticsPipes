@@ -106,6 +106,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	
 	public void nextOrientation() {
 		boolean found = false;
+		ForgeDirection oldOrientation = ChassiLogic.orientation;
 		for (int l = 0; l < 6; ++l) {
 			ChassiLogic.orientation = ForgeDirection.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
 			if(isValidOrientation(ChassiLogic.orientation)) {
@@ -116,8 +117,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if (!found) {
 			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
 		}
-		MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
-		refreshRender(true);
+		if(ChassiLogic.orientation != oldOrientation) {
+			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
+			refreshRender(true);
+		}
 	}
 	
 	private boolean isValidOrientation(ForgeDirection connection){
@@ -249,7 +252,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
-			switchOrientationOnTick = false;
+			switchOrientationOnTick = (ChassiLogic.orientation == ForgeDirection.UNKNOWN);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

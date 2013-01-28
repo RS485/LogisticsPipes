@@ -680,6 +680,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				updateAdjacentAndLsa();
 			}
 			ensureRouteTableIsUpToDate(false);
+			CoreRoutedPipe pipe = getPipe();
+			if (pipe != null) {
+				pipe.refreshRender(false);
+			}
 			return;
 		}
 		if (Configs.multiThreadEnabled) {

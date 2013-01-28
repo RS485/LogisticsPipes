@@ -109,7 +109,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
 
 	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
-	protected int _LSAVersion = -1;
+	protected int _LSAVersion = 0;
 	protected LSA _myLsa = new LSA();
 	
 	protected UpdateRouterRunnable updateThread = null;
@@ -185,7 +185,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
-		this._LSAVersion = 0;
 		clearPipeCache();
 		_myLsa = new LSA();
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
@@ -197,13 +196,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabase.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(SharedLSADatabase.size()<=(int)simpleID*1.5)
 				SharedLSADatabase.add(null);
-			SharedLSADatabasewriteLock.unlock(); // demote lock
-			SharedLSADatabasereadLock.lock();
 			_lastLSAVersion.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(_lastLSAVersion.size()<=(int)simpleID*1.5)
-				_lastLSAVersion.add(-2);
+				_lastLSAVersion.add(0);
+			SharedLSADatabasewriteLock.unlock(); // demote lock
+			SharedLSADatabasereadLock.lock();
 		}
-		_lastLSAVersion.set(this.simpleID,-2);
+		_lastLSAVersion.set(this.simpleID,0);
 		SharedLSADatabase.set(this.simpleID, _myLsa); // make non-structural change (threadsafe)
 		SharedLSADatabasereadLock.unlock();
 	}

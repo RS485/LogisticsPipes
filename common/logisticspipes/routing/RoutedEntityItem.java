@@ -35,9 +35,7 @@ import buildcraft.transport.TileGenericPipe;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
-	int sourceint = -1;
 	int destinationint = -1;
-	UUID sourceUUID;
 	UUID destinationUUID;
 	
 	boolean _doNotBuffer;
@@ -45,7 +43,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	int bufferCounter = 0;
 	
 	boolean arrived;
-	boolean reRoute;
 	
 	LinkedList<Integer> relays = new LinkedList<Integer>();
 	
@@ -63,7 +60,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
 			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
-			this.sourceUUID=settings.sourceUUID;
 			this.destinationUUID=settings.destinationUUID;
 			this.checkIDFromUUID();
 
@@ -108,30 +104,27 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 	
 	@Override
-	public void clearDestination(){
+	public void clearDestination() {
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
-			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint);
-
-			destinationRouter.itemDropped(this);
-			
+			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
 		}
+		//keep buffercounter and jamlist
 		destinationint = -1;
 		destinationUUID = null;
+		_doNotBuffer = false;
+		arrived = false;
+		relays.clear();
+		_transportMode = TransportMode.Unknown;
 	}
 	
 	@Override
 	public void remove() {
 		if(MainProxy.isClient()) return;
-		if (sourceint >= 0 && SimpleServiceLocator.routerManager.isRouter(sourceint)) {
-			SimpleServiceLocator.routerManager.getRouter(sourceint).itemDropped(this);
-		}
-		
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
-			destinationRouter.itemDropped(this);
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
@@ -166,22 +159,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			this.destinationUUID = router.getId();
 		} else {
 			this.destinationUUID = null;
-		}
-	}
-
-	@Override
-	public int getSource() {
-		return this.sourceint;
-	}
-
-	@Override
-	public void setSource(int source) {
-		this.sourceint = source;
-		IRouter router = SimpleServiceLocator.routerManager.getRouter(source);
-		if(router != null) {
-			this.sourceUUID = router.getId();
-		} else {
-			this.sourceUUID = null;
 		}
 	}
 
@@ -248,21 +225,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public IRoutedItem getNewUnRoutedItem() {
-		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
-			throw new UnsupportedOperationException("Can't change LiquidContainer to UnRoutedItem");
-		}
-		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
-		Entityitem.setContainer(container);
-		Entityitem.setPosition(position.x, position.y, position.z);
-		Entityitem.setSpeed(speed);
-		Entityitem.setItemStack(item);
-		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
-		routed.jamlist.addAll(jamlist);
-		return routed;
-	}
-
-	@Override
 	public EntityPassiveItem getNewEntityPassiveItem() {
 		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 			throw new UnsupportedOperationException("Can't change LiquidContainer to EntityPassiveItem");
@@ -273,16 +235,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		Entityitem.setSpeed(speed);
 		Entityitem.setItemStack(item);
 		return Entityitem;
-	}
-
-	@Override
-	public boolean isReRoute() {
-		return reRoute;
-	}
-
-	@Override
-	public void setReRoute(boolean flag) {
-		reRoute = flag;
 	}
 
 	@Override
@@ -313,12 +265,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		Entityitem.setSpeed(speed);
 		Entityitem.setItemStack(item.copy());
 		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
-		routed.sourceint = sourceint;
 		routed.destinationint = destinationint;
 		routed._doNotBuffer = _doNotBuffer;
 		routed.bufferCounter = bufferCounter;
 		routed.arrived = arrived;
-		routed.reRoute = reRoute;
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
 		routed.relays.addAll(relays);
@@ -357,15 +307,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void checkIDFromUUID() {	
-//		if(destinationint == -1) return;
 		IRouterManager rm = SimpleServiceLocator.routerManager;
 		IRouter router = rm.getRouter(destinationint);
 		if(router==null || destinationUUID!=router.getId()) {
 			destinationint=rm.getIDforUUID(destinationUUID);
-		}		
-		router = rm.getRouter(sourceint);
-		if(router==null || sourceUUID!=router.getId()) {
-			sourceint=rm.getIDforUUID(sourceUUID);
 		}		
 	}
 }

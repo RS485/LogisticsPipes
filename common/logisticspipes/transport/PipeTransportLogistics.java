@@ -190,12 +190,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if(item instanceof IRoutedItem) {
 			IRoutedItem routed = (IRoutedItem)item;
 			routed.clearDestination();
-			EntityData data = travelingEntities.get(item.getEntityId());
-			IRoutedItem newRoute = routed.getNewUnRoutedItem();
-			data.item = newRoute.getEntityPassiveItem();
-			newRoute.setReRoute(true);
-			newRoute.addToJamList(getPipe().getRouter());
-			newRoute.setBufferCounter(routed.getBufferCounter());
+			routed.addToJamList(getPipe().getRouter());
 		}
 	}
 	
@@ -213,7 +208,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			value = ForgeDirection.UNKNOWN;
 		} else
 			value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
-		routedItem.setReRoute(false);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);

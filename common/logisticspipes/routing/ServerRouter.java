@@ -564,11 +564,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	@Override
-	public void itemDropped(RoutedEntityItem routedEntityItem) {
-		//TODO
-	}
-	
-	@Override
 	public boolean act(BitSet hasBeenProcessed,IRAction actor){
 		boolean hasBeenReset=false;
 		if(hasBeenProcessed.get(this.simpleID))

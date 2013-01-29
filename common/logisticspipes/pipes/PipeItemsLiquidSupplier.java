@@ -84,7 +84,6 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 				if (item.hasContainerItem()){
 					Item containerItem = item.getContainerItem();
 					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(new ItemStack(containerItem, 1), this.worldObj);
-					itemToSend.setSource(this.getRouter().getSimpleID());
 					this.queueRoutedItem(itemToSend, data.output);
 				}
 			}

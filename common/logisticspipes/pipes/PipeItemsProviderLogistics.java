@@ -138,7 +138,6 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			int sent = removed.stackSize;
 
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
-			routedItem.setSource(this.getRouter().getSimpleID());
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
 			routedItem.addRelayPoints(relays);

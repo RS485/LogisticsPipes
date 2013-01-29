@@ -120,11 +120,6 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void itemDropped(RoutedEntityItem routedEntityItem) {
-		//Not On Client Side
-	}
-
-	@Override
 	public void displayRoutes() {
 		// TODO Auto-generated method stub
 		

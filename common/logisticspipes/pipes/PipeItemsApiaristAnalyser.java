@@ -100,7 +100,6 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	@Override
 	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.addRelayPoints(relays);

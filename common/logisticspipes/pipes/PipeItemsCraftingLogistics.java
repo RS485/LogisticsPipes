@@ -253,7 +253,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					stacksleft -= 1;
 					
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
-					item.setSource(this.getRouter().getSimpleID());
 					item.setDestination(order.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					item.addRelayPoints(order.getValue3());

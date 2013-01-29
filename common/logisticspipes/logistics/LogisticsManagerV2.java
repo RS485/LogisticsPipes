@@ -182,8 +182,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
-		item.setSource(sourceRouterID);
 		if (bestReply.getValue1() != null){
+			item.setBufferCounter(0);
 			item.setDestination(bestReply.getValue1());
 			if (bestReply.getValue2().isPassive){
 				if (bestReply.getValue2().isDefault){
@@ -191,6 +191,8 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				} else {
 					item.setTransportMode(TransportMode.Passive);
 				}
+			} else {
+				item.setTransportMode(TransportMode.Active);
 			}
 			List<IRelayItem> list = new LinkedList<IRelayItem>();
 			if(bestReply.getValue3() != null) {

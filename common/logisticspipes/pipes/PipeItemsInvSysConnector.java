@@ -32,7 +32,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair4;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.item.EntityItem;
@@ -51,7 +51,7 @@ import cpw.mods.fml.common.network.Player;
 public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
 	private boolean init = false;
-	private LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>>();
+	private LinkedList<Pair3<ItemIdentifier,Integer,TransportMode>> destination = new LinkedList<Pair3<ItemIdentifier,Integer,TransportMode>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
@@ -121,10 +121,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 			ItemStack stack = inv.getStackInSlot(i);
 			if(stack != null) {
 				ItemIdentifier ident = ItemIdentifier.get(stack);
-				for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
+				for(Pair3<ItemIdentifier,Integer,TransportMode> pair:destination) {
 					if(pair.getValue1() == ident) {
 						if(!useEnergy(6)) break;
-						sendStack(stack.splitStack(1),pair.getValue2(),pair.getValue3(),dir, pair.getValue4());
+						sendStack(stack.splitStack(1),pair.getValue2(),dir, pair.getValue3());
 						destination.remove(pair);
 						if(stack.stackSize <=0 ) {
 							inv.setInventorySlotContents(i, null);	
@@ -139,9 +139,8 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		}
 	}
 
-	public void sendStack(ItemStack stack, int source, int destination, ForgeDirection dir, TransportMode mode) {
+	public void sendStack(ItemStack stack, int destination, ForgeDirection dir, TransportMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		itemToSend.setSource(source);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
@@ -183,7 +182,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 
 	public LinkedList<ItemIdentifierStack> getExpectedItems() {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
+		for(Pair3<ItemIdentifier,Integer,TransportMode> pair:destination) {
 			boolean found = false;
 			for(ItemIdentifierStack stack:list) {
 				if(stack.getItem() == pair.getValue1()) {
@@ -306,9 +305,9 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 
 	@Override
-	public void addItem(ItemIdentifier item, int sourceId, int destinationId, TransportMode mode) {
+	public void addItem(ItemIdentifier item, int destinationId, TransportMode mode) {
 		if(item != null && destinationId >= 0) {
-			destination.addLast(new Pair4<ItemIdentifier,Integer,Integer,TransportMode>(item,sourceId,destinationId, mode));
+			destination.addLast(new Pair3<ItemIdentifier,Integer,TransportMode>(item,destinationId, mode));
 			updateContentListener();
 		}
 	}
@@ -337,7 +336,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 					if(CRP instanceof IDirectRoutingConnection) {
 						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 						for(int i=0; i < data.item.getItemStack().stackSize;i++) {
-							pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getSource(), routed.getDestination(), routed.getTransportMode());
+							pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getDestination(), routed.getTransportMode());
 							MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, this.worldObj, 4);
 						}
 					}

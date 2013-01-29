@@ -104,6 +104,11 @@ public class ClientRouter implements IRouter {
 		return (CoreRoutedPipe) pipe.pipe;
 	}
 	
+	@Override
+	public CoreRoutedPipe getCachedPipe(){
+		return getPipe();
+	}
+	
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}

@@ -73,7 +73,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public void run() {
 			if(!run) return;
 			try {
-				CoreRoutedPipe p = target.getPipe();
+				CoreRoutedPipe p = target.getCachedPipe();
 				if(p==null){
 					run = false;
 					return;
@@ -231,6 +231,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		_myPipeCache=new WeakReference<CoreRoutedPipe>((CoreRoutedPipe) pipe.pipe);
 
 		return (CoreRoutedPipe) pipe.pipe;
+	}
+
+	@Override
+	public CoreRoutedPipe getCachedPipe(){
+		if(_myPipeCache!=null && _myPipeCache.get()!=null)
+			return _myPipeCache.get();
+		return null;
 	}
 
 	private void ensureRouteTableIsUpToDate(boolean force){
@@ -742,7 +749,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	
 	@Override
 	public IRouter getRouter(ForgeDirection insertOrientation) {
-		CoreRoutedPipe pipe = getPipe();
+		CoreRoutedPipe pipe = getCachedPipe();
 		if(pipe==null)
 			return null;
 		return pipe.getRouter(insertOrientation);

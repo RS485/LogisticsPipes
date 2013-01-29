@@ -301,6 +301,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if(router != null){
+			router.clearPipeCache();
+		}
+	}
+	
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
@@ -366,9 +374,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				else
 					routerId = UUID.randomUUID().toString();
 			}
-		}
-		if(router != null){
-			router.clearPipeCache();
 		}
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);

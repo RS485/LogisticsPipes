@@ -15,6 +15,7 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
@@ -26,6 +27,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -44,17 +46,17 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	protected IChassiePowerProvider _power;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-	
+
 	private int slot = 0;
 	public int xCoord = 0;
 	public int yCoord = 0;
 	public int zCoord = 0;
 	private IWorldProvider _world;
-	
+
 	private IHUDModuleRenderer HUD = new HUDElectricManager(this);
-	
+
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
-	
+
 	public ModuleElectricManager() {
 		_filterInventory.addListener(this);
 	}
@@ -88,10 +90,10 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
 			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return _sinkReply;
-			
+
 			//If item is empty and in charge mode, sink.
 			if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) return _sinkReply;
-			
+
 			//If item is partially charged, sink.
 			if (SimpleServiceLocator.IC2Proxy.isPartiallyCharged(stack)) return _sinkReply;
 		}
@@ -130,18 +132,22 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 			if (stack == null) return;
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
-				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
+				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-						_itemSender.sendStack(inv.decrStackSize(i,1));
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
 						return;
 					}
 				}
 				//If item set to charge  and its fully charged, then extract it.
-				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack) && SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
+				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-						_itemSender.sendStack(inv.decrStackSize(i,1));
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
 						return;
 					}
 				}

@@ -1,11 +1,15 @@
 package logisticspipes.modules;
 
+import java.util.List;
+
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
@@ -13,16 +17,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleApiaristAnalyser implements ILogisticsModule {
-	
+
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-	
+
 	private IChassiePowerProvider _power;
-	
+
 	public ModuleApiaristAnalyser() {
-		
+
 	}
 
 	@Override
@@ -31,15 +35,15 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		_itemSender = itemSender;
 		_power = powerprovider;
 	}
-	
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		
+
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		
+
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
@@ -65,15 +69,17 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	public void tick() {
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
-		
+
 		IInventory inv = _invProvider.getRawInventory();
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 				if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
+					Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(item, true);
+					if(reply == null) continue;
 					if(_power.useEnergy(6)) {
-						_itemSender.sendStack(inv.decrStackSize(i,1));
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
 					}
 				}
 			}

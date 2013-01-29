@@ -1,9 +1,11 @@
 package logisticspipes.pipes;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -19,6 +21,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -29,7 +33,7 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryProvider, ISendRoutedItem {
-	
+
 	private ModuleApiaristAnalyser analyserModule;
 
 	public PipeItemsApiaristAnalyser(int itemID) {
@@ -53,7 +57,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		}
 		return _transportLayer;
 	}
-	
+
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(getPointedOrientation())){
@@ -61,30 +65,48 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}
-	
+
 	@Override
 	public ILogisticsModule getLogisticsModule() {
 		return analyserModule;
 	}
 
 	@Override
-	public void sendStack(ItemStack stack) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault) {
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
+	}
+
+	@Override
+	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		//itemToSend.setSource(this.getRouter().getId());
-		itemToSend.setTransportMode(TransportMode.Passive);
+		itemToSend.setDestination(reply.getValue1());
+		if (reply.getValue2().isPassive){
+			if (reply.getValue2().isDefault){
+				itemToSend.setTransportMode(TransportMode.Default);
+			} else {
+				itemToSend.setTransportMode(TransportMode.Passive);
+			}
+		}
+		List<IRelayItem> list = new LinkedList<IRelayItem>();
+		if(reply.getValue3() != null) {
+			for(IFilter filter:reply.getValue3()) {
+				list.add(filter);
+			}
+		}
+		itemToSend.addRelayPoints(list);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
-	
+
 	@Override
-	public void sendStack(ItemStack stack, int destination, List<IRelayItem> relays) {
+	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.addRelayPoints(relays);
-		super.queueRoutedItem(itemToSend, getPointedOrientation());
+		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
-	
+
 	private ForgeDirection getPointedOrientation() {
 		for(ForgeDirection ori:ForgeDirection.values()) {
 			Position pos = new Position(this.container);
@@ -99,7 +121,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		}
 		return null;
 	}
-	
+
 	private TileEntity getPointedTileEntity() {
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
@@ -111,7 +133,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		}
 		return null;
 	}
-	
+
 	@Override
 	public IInventory getRawInventory() {
 		TileEntity tile = getPointedTileEntity();
@@ -119,7 +141,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
-	
+
 	@Override
 	public IInventory getPointedInventory() {
 		IInventory rawInventory = getRawInventory();
@@ -147,11 +169,6 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
-	}
-
-	@Override
-	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
-		sendStack(stack, destination, relays); // Ignore send mode
 	}
 
 	@Override

@@ -42,71 +42,74 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.item.ItemStack;
 
 public class LogisticsManagerV2 implements ILogisticsManagerV2 {
-	
+
 	/**
 	 * Method used to check if a given stack has a destination.
 	 * 
-	 * @return Boolean, true if stack has a valid destination.
+	 * @return Pair3 of destinationSimpleID, sinkreply, relays; null if nothing found
 	 * @param stack The stack to check if it has destination.
 	 * @param allowDefault Boolean, if true then a default route will be considered a valid destination.
 	 * @param sourceRouter The UUID of the router pipe that wants to send the stack.
 	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
 	 */
 	@Override
-	public boolean hasDestination(ItemStack stack, boolean allowDefault, int sourceRouter, boolean excludeSource) {
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, int sourceRouter, boolean excludeSource) {
+		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
-		
-		if (search.getValue2() == null) return false;
-		
-		return (allowDefault || !search.getValue2().isDefault);
+
+		if (search.getValue2() == null) return null;
+
+		if (!allowDefault && search.getValue2().isDefault) return null;
+
+		return search;
 	}
-	
+
 	/**
 	 * Method used to check if a given stack has a destination at a priority.
 	 * 
-	 * @return Boolean, true if stack has a destination with the given priority.
+	 * @return Pair3 of destinationSimpleID, sinkreply, relays; null if nothing found
 	 * @param stack The stack to check if it has destination.
 	 * @param sourceRouter The UUID of the router pipe that wants to send the stack.
 	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
 	 * @param priority The priority that the stack must have.
 	 */
 	@Override
-	public boolean hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return false;
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
+		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
-		if (search.getValue2() == null) return false;
-		return (search.getValue2().fixedPriority.ordinal() >= priority.ordinal());
+		if (search.getValue2() == null) return null;
+		if (search.getValue2().fixedPriority.ordinal() < priority.ordinal()) return null;
+		return search;
 	}
 
-	
+
 	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack item, IRouter sourceRouter, List<SearchNode> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
 		for(IFilter filter:filters) {
 			if(filter.isBlocked() == filter.getFilteredItems().contains(ItemIdentifier.get(item)) || filter.blockRouting()) continue;
 		}
 		List<SearchNode> firewall = new LinkedList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
-		
+
 		if(result == null) {
 			result = new Pair3<Integer, SinkReply, List<IFilter>>(null, null, null);
 		}
-		
+
 		for (SearchNode candidateRouter : validDestinations){
 			if (excludeSource) {
 				if(candidateRouter.node.getId().equals(sourceRouter.getId())) continue;
 			}
 			if(jamList.contains(candidateRouter.node.getSimpleID())) continue;
-			
+
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
-			
+
 			if(used.get(candidateRouter.node.getSimpleID())) continue;
-			
+
 			used.set(candidateRouter.node.getSimpleID());
-			
+
 			if(candidateRouter.node instanceof IFilteringRouter) {
 				firewall.add(candidateRouter);
 			}
-			
+
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
 			if (module == null) continue;
@@ -125,7 +128,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				result.setValue3(list);
 				continue;
 			}
-			
+
 			if (reply.fixedPriority.ordinal() > result.getValue2().fixedPriority.ordinal()) {
 				result.setValue1(candidateRouter.node.getSimpleID());
 				result.setValue2(reply);
@@ -134,7 +137,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				result.setValue3(list);
 				continue;
 			}
-			
+
 			if (reply.fixedPriority == result.getValue2().fixedPriority && reply.customPriority >  result.getValue2().customPriority) {
 				result.setValue1(candidateRouter.node.getSimpleID());
 				result.setValue2(reply);
@@ -157,7 +160,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Will assign a destination for a IRoutedItem based on a best sink reply recieved from other pipes.
 	 * @param item The item that needs to be routed.
@@ -167,18 +170,18 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 */
 	@Override
 	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterID, boolean excludeSource) {
-		
+
 		//If the source router does not exist we can't do anything with this
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterID)) return item;
 		//If we for some reason can't get the router we can't do anything either
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterID);
 		if (sourceRouter == null) return item;
-		
+
 		//Wipe current destination
 		item.clearDestination();
-		
+
 		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
-		
+
 		item.setSource(sourceRouterID);
 		if (bestReply.getValue1() != null){
 			item.setDestination(bestReply.getValue1());
@@ -197,7 +200,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 			item.addRelayPoints(list);
 		}
-		
+
 		return item;
 	}
 
@@ -212,7 +215,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		// TODO Auto-generated method stub
 		return assignDestinationFor(item, currentRouter, false);
 	}
-	
+
 	/**
 	 * If there is a better router name available, it will return it.  Else, it will return the UUID as a string.
 	 * @param r The IRouter that you want the name for.
@@ -220,27 +223,27 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 */
 	@Override
 	public String getBetterRouterName(IRouter r){
-		
+
 		if (r.getPipe() instanceof PipeItemsCraftingLogistics){
 			PipeItemsCraftingLogistics pipe = (PipeItemsCraftingLogistics) r.getPipe();
 			if (pipe.getCraftedItem() != null){
 				return ("Crafter<" + pipe.getCraftedItem().getFriendlyName() + ">");
 			}
 		}
-		
+
 		if (r.getPipe() instanceof PipeItemsProviderLogistics){
 			return ("Provider");
 		}
-		
+
 		if (r.getPipe() instanceof PipeLogisticsChassi) {
 			return "Chassis";
 		}
 		if (r.getPipe() instanceof PipeItemsRequestLogistics) {
 			return "Request";
 		}
- 
+
 		return r.getId().toString();
-				
+
 	}
 
 	/**
@@ -286,7 +289,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return allAvailableItems;
 	}
-	
+
 	private void handleAvailableSubFiltering(SearchNode r, List<Map<ItemIdentifier, Integer>> items, List<IFilter> filters, BitSet layer) {
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
@@ -294,7 +297,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(n == null) continue;
 			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getSimpleID())) continue;
-			
+
 			if (!(n.node.getPipe() instanceof IProvideItems)) {
 				if(n.node instanceof IFilteringRouter) {
 					used.set(n.node.getSimpleID(), true);
@@ -313,7 +316,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			filters.remove(filter);
 		}
 	}
-	
+
 	/**
 	 * @param validDestinations a List of SearchNode of valid destinations.
 	 * @return LinkedList with ItemIdentifier 
@@ -327,7 +330,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(r.node.getSimpleID())) continue;
-			
+
 			if (!(r.node.getPipe() instanceof ICraftItems)) {
 				if(r.node instanceof IFilteringRouter) {
 					used.set(r.node.getSimpleID(), true);
@@ -335,7 +338,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				}
 				continue;
 			}
-			
+
 			ICraftItems crafter = (ICraftItems) r.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
@@ -350,7 +353,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return craftableItems;
 	}
-	
+
 	private void handleCraftableItemsSubFiltering(SearchNode r, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
 		if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) return;
 		List<SearchNode> filterpipes = new ArrayList<SearchNode>();
@@ -360,7 +363,7 @@ outer:
 			if(n == null) continue;
 			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.node.getSimpleID())) continue;
-			
+
 			if (!(n.node.getPipe() instanceof ICraftItems)) {
 				if(n.node instanceof IFilteringRouter) {
 					used.set(n.node.getSimpleID(), true);
@@ -368,7 +371,7 @@ outer:
 				}
 				continue;
 			}
-			
+
 			ICraftItems crafter = (ICraftItems) n.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			for(IFilter filter:filters) {

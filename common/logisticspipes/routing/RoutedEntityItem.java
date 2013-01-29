@@ -120,10 +120,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			}
 		}
 		destinationint = newDestination;
-		if(newDestination >= 0) {
+		IRouter router = SimpleServiceLocator.routerManager.getRouter(newDestination);
+		if(router != null) {
 			isUnrouted = false;
-			this.destinationUUID = SimpleServiceLocator.routerManager.getRouter(newDestination).getId();
+			this.destinationUUID = router.getId();
 		} else {
+			isUnrouted = true;
 			this.destinationUUID = null;
 		}
 	}
@@ -167,10 +169,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setDestination(int destination) {
 		this.destinationint = destination;
-		if(destination >= 0) {
+		IRouter router = SimpleServiceLocator.routerManager.getRouter(destination);
+		if(router != null) {
 			isUnrouted = false;
-			this.destinationUUID = SimpleServiceLocator.routerManager.getRouter(destination).getId();
+			this.destinationUUID = router.getId();
 		} else {
+			isUnrouted = true;
 			this.destinationUUID = null;
 		}
 	}

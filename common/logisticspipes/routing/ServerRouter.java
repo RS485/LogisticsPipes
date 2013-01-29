@@ -596,6 +596,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabase.set(simpleID, null);
 		}
 		SharedLSADatabasewriteLock.unlock();
+		clearPipeCache();
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
 		updateAdjacentAndLsa();
 		releaseSimpleID(simpleID);

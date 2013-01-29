@@ -183,8 +183,9 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setSource(int source) {
 		this.sourceint = source;
-		if(source >= 0) {
-			this.sourceUUID = SimpleServiceLocator.routerManager.getRouter(source).getId();
+		IRouter router = SimpleServiceLocator.routerManager.getRouter(source);
+		if(router != null) {
+			this.sourceUUID = router.getId();
 		} else {
 			this.sourceUUID = null;
 		}

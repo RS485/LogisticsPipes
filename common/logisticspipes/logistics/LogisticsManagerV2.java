@@ -175,7 +175,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		if (sourceRouter == null) return item;
 		
 		//Wipe current destination
-		item.changeDestination(-1);
+		item.clearDestination();
 		
 		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		

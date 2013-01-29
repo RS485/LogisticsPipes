@@ -46,7 +46,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	boolean arrived;
 	boolean reRoute;
-	boolean isUnrouted;
 	
 	LinkedList<Integer> relays = new LinkedList<Integer>();
 	
@@ -109,7 +108,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 	
 	@Override
-	public void changeDestination(int newDestination){
+	public void clearDestination(){
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint);
 
@@ -119,15 +118,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
 		}
-		destinationint = newDestination;
-		IRouter router = SimpleServiceLocator.routerManager.getRouter(newDestination);
-		if(router != null) {
-			isUnrouted = false;
-			this.destinationUUID = router.getId();
-		} else {
-			isUnrouted = true;
-			this.destinationUUID = null;
-		}
+		destinationint = -1;
+		destinationUUID = null;
 	}
 	
 	@Override
@@ -171,10 +163,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		this.destinationint = destination;
 		IRouter router = SimpleServiceLocator.routerManager.getRouter(destination);
 		if(router != null) {
-			isUnrouted = false;
 			this.destinationUUID = router.getId();
 		} else {
-			isUnrouted = true;
 			this.destinationUUID = null;
 		}
 	}
@@ -268,7 +258,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		Entityitem.setSpeed(speed);
 		Entityitem.setItemStack(item);
 		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
-		routed.isUnrouted = true;
 		routed.jamlist.addAll(jamlist);
 		return routed;
 	}
@@ -307,11 +296,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public boolean isUnRouted() {
-		return isUnrouted;
-	}
-
-	@Override
 	public int getBufferCounter() {
 		return bufferCounter;
 	}
@@ -335,7 +319,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		routed.bufferCounter = bufferCounter;
 		routed.arrived = arrived;
 		routed.reRoute = reRoute;
-		routed.isUnrouted = isUnrouted;
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
 		routed.relays.addAll(relays);

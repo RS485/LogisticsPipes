@@ -36,7 +36,7 @@ public interface IRoutedItem {
 	public int getDestination();
 	public UUID getDestinationUUID();
 	public void setDestination(int destination);
-	public void changeDestination(int destination);
+	public void clearDestination();
 	public int getSource();
 	public void setSource(int source);
 	
@@ -80,8 +80,6 @@ public interface IRoutedItem {
 	
 	public void addToJamList(IRouter router);
 	public List<Integer> getJamList();
-	
-	public boolean isUnRouted();
 	
 	public IRoutedItem getCopy();
 	public void checkIDFromUUID();

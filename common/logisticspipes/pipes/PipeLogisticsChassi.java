@@ -430,21 +430,6 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
-		if (!isEnabled()){
-			return 0;
-		}
-
-		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule x = _module.getSubModule(i);
-			if (x instanceof ILegacyActiveModule){
-				return ((ILegacyActiveModule)x).getAvailableItemCount(item);
-			}
-		}
-		return 0;
-	}
-
-	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter) {
 		if (!isEnabled()){
 			return;
@@ -516,7 +501,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		localModeWatchers.remove(player);
 	}
 
-	public void handleModuleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+	public void handleModuleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
@@ -531,7 +516,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 	}
 
-	public void handleSendQueueItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems){
+	public void handleSendQueueItemIdentifierList(List<ItemIdentifierStack> _allItems){
 		displayList.clear();
 		displayList.addAll(_allItems);
 	}

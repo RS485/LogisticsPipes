@@ -403,7 +403,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	@Override
-	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

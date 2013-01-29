@@ -361,11 +361,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
-		return 0;
-	}
-
-	@Override
 	public void registerExtras(int count) {
 		_extras += count;
 		LogisticsPipes.requestLog.info(count + " extras registered");
@@ -479,7 +474,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

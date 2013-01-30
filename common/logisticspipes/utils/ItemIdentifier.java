@@ -73,14 +73,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 	}
 
-	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>();
+	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.75f, 2);;
 
 	private final static ConcurrentSkipListSet<ItemIdentifier> _itemIdentifierTagCache = new ConcurrentSkipListSet<ItemIdentifier>();
 	
-	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>();
+	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.75f, 2);
 	
-	private final static ConcurrentHashMap<Integer, String> _modItemIdMap = new ConcurrentHashMap<Integer, String>();
-	private final static ConcurrentSkipListSet<String> _modList = new ConcurrentSkipListSet<String>();
+	private final static String _modItemIdMap[] = new String[32768];
 	
 	private static boolean init = false;
 	
@@ -168,13 +167,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public static void tick() {
 		if(init) return;
 		init = true;
-		NBTTagList list = new NBTTagList();
-		GameData.writeItemData(list);
-		Set<ItemData> set = GameData.buildWorldItemData(list);
-		for(ItemData data:set) {
-			_modItemIdMap.put(data.getItemId(), data.getModId());
-			if(!_modList.contains(data.getModId())) {
-				_modList.add(data.getModId());
+		synchronized(_modItemIdMap) {
+			NBTTagList list = new NBTTagList();
+			GameData.writeItemData(list);
+			Set<ItemData> set = GameData.buildWorldItemData(list);
+			for(ItemData data:set) {
+				_modItemIdMap[data.getItemId()] = data.getModId();
 			}
 		}
 	}
@@ -234,11 +232,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public String getModId() {
-		String name = "UNKNOWN";
-		if(_modItemIdMap.containsKey(this.itemID)) {
-			name = _modItemIdMap.get(this.itemID);
+		if(_modItemIdMap[this.itemID] != null) {
+			return _modItemIdMap[this.itemID];
 		}
-		return name;
+		return "UNKNOWN";
 	}
 	
 	public ItemIdentifierStack makeStack(int stackSize){
@@ -312,7 +309,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
-	@SuppressWarnings("unused")
 	private <T> Map<Integer, T> getListAsMap(List<T> array) {
 		HashMap<Integer, T> map = new HashMap<Integer, T>();
 		int i = 1;

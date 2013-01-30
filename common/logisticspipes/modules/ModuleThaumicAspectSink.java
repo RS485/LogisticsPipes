@@ -20,6 +20,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,7 +30,6 @@ import cpw.mods.fml.common.network.Player;
 
 public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInformationProvider, IModuleWatchReciver {
 
-	private final SimpleInventory _filterInventory = new SimpleInventory(18, "Requested Aspects from items", 1);
 	private int slot = 0;
 	private int xCoord = 0;
 	private int yCoord = 0;
@@ -52,11 +52,25 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		this.zCoord = zCoord;
 		this.slot = slot;		
 	}
-
+	
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
-		// TODO Auto-generated method stub
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		if(isOfInterest(item)) return _sinkReply;
 		return null;
+	}
+
+	private boolean isOfInterest(ItemStack stack) {
+		if (stack == null || aspectList.size() == 0) return false;
+		ObjectTags objTags = SimpleServiceLocator.thaumCraftProxy.getTagsForStack(stack);
+		EnumTag[] tagArray = objTags.getAspectsSorted();
+		System.out.println("2");
+		if (tagArray.length == 0 || tagArray == null) return false;
+		for (int i = 0; i < tagArray.length; i++) {
+			if (aspectList.contains(tagArray[i].id)) return true;
+		}
+		return false;
 	}
 
 	@Override
@@ -115,8 +129,11 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	public List<String> getClientInformation() {
 		List<String> info = new ArrayList<String>();
 		info.add("Aspects: ");
+		if (aspectList.size() == 0) {
+			info.add("none");
+		}
 		for (int i = 0; i < aspectList.size(); i++) {
-			info.add(" - " + EnumTag.get(i).name);
+			info.add(" - " + EnumTag.get(aspectList.get(i)).name);
 		}
 		return info;
 	}
@@ -130,14 +147,22 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		ObjectTags tags = SimpleServiceLocator.thaumCraftProxy.getTagsForStack(stack);
 		if (tags == null) {
 			return;
+			
 		}
 		EnumTag[] tagArray = tags.getAspectsSorted();
 		for (int i = 0; i < tagArray.length; i++) {
 			EnumTag tagInArray = tagArray[i];
-			if (!aspectList.contains(tagInArray.ordinal()) && aspectList.size() >= 9) {
-				aspectList.add(tagInArray.ordinal());
+			if (!aspectList.contains(tagInArray.id) && aspectList.size() <= 9) {
+				aspectList.add(tagInArray.id);
 			}
 		}
+		aspectListChanged();
+	}
+
+	public void clearAspectList() {
+		NBTTagCompound nbt = new NBTTagCompound();
+		readFromNBT(nbt);
+		aspectListChanged();
 	}
 
 }

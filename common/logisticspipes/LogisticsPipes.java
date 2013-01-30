@@ -113,8 +113,29 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", certificateFingerprint="%------------CERTIFICATE-SUM-----------%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
-@NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
+@Mod(
+		modid = "LogisticsPipes|Main",
+		name = "Logistics Pipes",
+		version = "%VERSION%",
+		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
+		dependencies = "required-after:Forge@[6.5.0.0,);" +
+				"required-after:BuildCraft|Core;" +
+				"required-after:BuildCraft|Transport;" +
+				"required-after:BuildCraft|Builders;" +
+				"required-after:BuildCraft|Silicon;" +
+				"after:IC2;" +
+				"after:Forestry;" +
+				"after:Thaumcraft;" +
+				"after:CCTurtle;" +
+				"after:ComputerCraft;" +
+				"after:factorization;" +
+				"after:GregTech_Addon;" +
+				"after:BetterStorage")
+@NetworkMod(
+		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},
+		packetHandler = PacketHandler.class,
+		clientSideRequired = true,
+		serverSideRequired = true)
 public class LogisticsPipes {
 
 	@Instance("LogisticsPipes|Main")

@@ -71,12 +71,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 	}
 
-	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.75f, 2);;
+	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.5f, 1);
 
 	// for when things differ by NBT tags, and an itemKey isn't enough to get the full object
-	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>>();
+	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
 	
-	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.75f, 2);
+	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
 	
 	private final static String _modItemIdMap[] = new String[32768];
 	

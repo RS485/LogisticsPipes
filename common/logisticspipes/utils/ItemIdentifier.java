@@ -9,14 +9,12 @@
 package logisticspipes.utils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
 
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.Item;
@@ -49,8 +47,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	private static class ItemKey implements Comparable<ItemKey>{
 		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
-		public int itemID;
-		public int itemDamage;
+		public final int itemID;
+		public final int itemDamage;
 		@Override 
 		public boolean equals(Object that){
 			if (!(that instanceof ItemKey))
@@ -75,7 +73,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.75f, 2);;
 
-	private final static ConcurrentSkipListSet<ItemIdentifier> _itemIdentifierTagCache = new ConcurrentSkipListSet<ItemIdentifier>();
+	// for when things differ by NBT tags, and an itemKey isn't enough to get the full object
+	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>>();
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.75f, 2);
 	
@@ -99,8 +98,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
+		ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
 		if(tag == null) {
-			ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
 			ItemIdentifier unknownItem = _itemIdentifierCache.get(itemKey);
 			if(unknownItem != null) {
 				return unknownItem;
@@ -111,15 +110,20 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		} else {
-			for(ItemIdentifier item : _itemIdentifierTagCache) {
-				if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
-					return item;
+			ConcurrentHashMap<NBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+			if(itemNBTList!=null){
+				ItemIdentifier unknownItem = itemNBTList.get(tag);
+				if(unknownItem!=null){
+					return unknownItem;
 				}
+			} else {
+				itemNBTList = new ConcurrentHashMap<NBTTagCompound, ItemIdentifier>();
+				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
-			int id = getUnusedId();
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, id);
-			_itemIdentifierTagCache.add(unknownItem);
-			_itemIdentifierIdCache.put(id, unknownItem);
+			
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, getUnusedId());
+			itemNBTList.put(tag,unknownItem);
+			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
 		}
 	}
@@ -361,7 +365,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			map.put("value", getArrayAsMap(((NBTTagIntArray)nbt).intArray));
 			return map;
 		} else if(nbt instanceof NBTTagList) {
-			ArrayList internal = new ArrayList();
 			Field fList;
 			try {
 				fList = NBTTagList.class.getDeclaredField("tagList");
@@ -369,7 +372,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				fList = NBTTagList.class.getDeclaredField("a");
 			}
 			fList.setAccessible(true);
-			internal = (ArrayList) fList.get(nbt);
+			List internal = (List) fList.get(nbt);
 			
 			HashMap<Integer, Object> content = new HashMap<Integer, Object>();
 			int i = 1;
@@ -439,6 +442,15 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	@Override
 	public int compareTo(ItemIdentifier o) {
+		/*if(uniqueID==0 || o.uniqueID==0){
+			int c= this.itemID - o.itemID;
+			if(c!=0) return c;
+			c= this.itemDamage - o.itemDamage;
+			if(c!=0) return c;
+			if(tagsequal(this.tag,o.tag))
+				return 0;
+			return this.tag.hashCode() - o.tag.hashCode();
+		}*/
 		if(uniqueID<o.uniqueID)
 			return -1;
 		if(uniqueID>o.uniqueID)

@@ -118,21 +118,15 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	}
 
 	@Override
-	public List<ItemStack> simulateRequest(ItemStack wanted) {
+	public SimulationResult simulateRequest(ItemStack wanted) {
+		final List<ItemStack> used = new LinkedList<ItemStack>();
 		final List<ItemStack> missing = new LinkedList<ItemStack>();
 		RequestManager.simulate(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-outer:
 				for(ItemMessage msg:list) {
 					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
 					is.setTagCompound(msg.tag);
-					for(ItemStack seen : missing) {
-						if(seen.isItemEqual(is) && ItemStack.areItemStackTagsEqual(seen, is)) {
-							seen.stackSize += is.stackSize;
-							continue outer;
-						}
-					}
 					missing.add(is);
 				}
 			}
@@ -141,9 +135,18 @@ outer:
 			public void handleSucessfullRequestOf(ItemMessage item) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {}
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+				for(ItemMessage msg:items) {
+					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
+					is.setTagCompound(msg.tag);
+					used.add(is);
+				}
+			}
 		});
-		return missing;
+		SimulationResult r = new SimulationResult();
+		r.used = used;
+		r.missing = missing;
+		return r;
 	}
 
 	@Override

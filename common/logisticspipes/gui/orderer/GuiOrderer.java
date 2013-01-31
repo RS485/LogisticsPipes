@@ -401,45 +401,22 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public void handleRequestAnswer(ItemMessage itemMessage, boolean error, ISubGuiControler control, EntityPlayer player) {
 		List<ItemMessage> list = new ArrayList<ItemMessage>();
 		list.add(itemMessage);
-		handleRequestAnswer(list, error, control, player, false);
+		handleRequestAnswer(list, error, control, player);
 	}
 
 	public void handleRequestAnswer(List<ItemMessage> items, boolean error, ISubGuiControler control, EntityPlayer player) {
-		handleRequestAnswer(items, error, control, player, false);
-	}
-	
-	public void handleRequestAnswer(List<ItemMessage> items, boolean error, ISubGuiControler control, EntityPlayer player, boolean isComponentList) {
-		if(!isComponentList) {
-			if (!error){
-				ArrayList<String> msg = new ArrayList<String>();
-				msg.add("You are missing:");
-				for (ItemMessage item : items){
-					if(!Configs.displayPopup) {
-						player.addChatMessage("Missing: " + item.toString());
-					} else {
-						msg.add(item.toString());
-					}
-				}
-				if(Configs.displayPopup) {
-					control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
-				}
-			} else {
-				if(Configs.displayPopup) {
-					if(control.hasSubGui()) {
-						ISubGuiControler newcontroller = control;
-						while(newcontroller.hasSubGui()) {
-							newcontroller = newcontroller.getSubGui();
-						}
-						newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
-					} else {
-						control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
-					}
+		if (!error){
+			ArrayList<String> msg = new ArrayList<String>();
+			msg.add("You are missing:");
+			for (ItemMessage item : items){
+				if(!Configs.displayPopup) {
+					player.addChatMessage("Missing: " + item.toString());
 				} else {
-					for(ItemMessage item:items) {
-						player.addChatMessage("Requested: " + item);
-					}
-					player.addChatMessage("Request successful!");
+					msg.add(item.toString());
 				}
+			}
+			if(Configs.displayPopup) {
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
 		} else {
 			if(Configs.displayPopup) {
@@ -448,18 +425,40 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					while(newcontroller.hasSubGui()) {
 						newcontroller = newcontroller.getSubGui();
 					}
-					newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ",items.toArray()));
+					newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
 				} else {
-					control.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ",items.toArray()));
+					control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
 				}
 			} else {
 				for(ItemMessage item:items) {
-					player.addChatMessage("Components: " + item);
+					player.addChatMessage("Requested: " + item);
 				}
+				player.addChatMessage("Request successful!");
 			}
 		}
 	}
-	
+
+	public void handleSimulateAnswer(List<ItemMessage> used, List<ItemMessage> missing, ISubGuiControler control, EntityPlayer player) {
+		if(Configs.displayPopup) {
+			if(control.hasSubGui()) {
+				ISubGuiControler newcontroller = control;
+				while(newcontroller.hasSubGui()) {
+					newcontroller = newcontroller.getSubGui();
+				}
+				newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used.toArray(), "Missing: ", missing.toArray()));
+			} else {
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used.toArray(), "Missing: ", missing.toArray()));
+			}
+		} else {
+			for(ItemMessage item:used) {
+				player.addChatMessage("Component: " + item);
+			}
+			for(ItemMessage item:missing) {
+				player.addChatMessage("Missing: " + item);
+			}
+		}
+	}
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if(editsearch) {

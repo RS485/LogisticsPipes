@@ -73,9 +73,9 @@ public class RequestManager {
 	
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		generateRequestTree(tree, tree, requester,true);
+		generateRequestTree(tree, tree, requester);
 		if(log != null) {
-				tree.sendMissingMessage(log);
+			tree.sendUsedMessage(log);
 		}
 	}
 	
@@ -150,14 +150,7 @@ public class RequestManager {
 		tree.registerExtras();
 	}
 	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		return generateRequestTree(tree, treeNode, requester, false);
-		
-	}
-	
-	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
-
-		if(!ignoreProviders)
-			checkProvider(tree,treeNode,requester);
+		checkProvider(tree,treeNode,requester);
 		
 		if(treeNode.isDone()) {
 			return true;
@@ -166,7 +159,7 @@ public class RequestManager {
 		if(treeNode.isDone()) {
 			return true;
 		}
-		checkCrafting(tree,treeNode,requester,ignoreProviders);
+		checkCrafting(tree,treeNode,requester);
 		return treeNode.isDone();
 	}
 
@@ -193,7 +186,7 @@ public class RequestManager {
 		}
 	}
 
-	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
+	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
 		List<SearchNode> validDestinations = requester.getRouter().getIRoutersByCost();
@@ -242,7 +235,7 @@ outer:
 				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
 				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree,node,template.getCrafter(),ignoreProviders)) {
+				if(!generateRequestTree(tree,node,template.getCrafter())) {
 					failed = true;
 				}			
 			}

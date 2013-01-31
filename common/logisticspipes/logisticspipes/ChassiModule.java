@@ -64,10 +64,10 @@ public class ChassiModule implements ILogisticsGuiModule{
 		
 		if (roomForItem < 1) return null;
 
-		if(bestresult .maxNumberOfItems == 0) {
-			return new SinkReply(bestresult , roomForItem);
+		if(bestresult.maxNumberOfItems == 0) {
+			return new SinkReply(bestresult, roomForItem);
 		}
-		return new SinkReply(bestresult , Math.min(bestresult .maxNumberOfItems, roomForItem));
+		return new SinkReply(bestresult, Math.min(bestresult.maxNumberOfItems, roomForItem));
 	}
 
 

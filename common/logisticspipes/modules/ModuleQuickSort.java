@@ -73,14 +73,20 @@ public class ModuleQuickSort implements ILogisticsModule {
 		if (targetInventory == null) return;
 		if (targetInventory.getSizeInventory() < 27) return;
 
-		if(!_power.canUseEnergy(500)) {stalled = true;return;}
-
+		if(!_power.canUseEnergy(500)) {
+			stalled = true;
+			return;
+		}
+		
+		if(lastSuceededStack >= targetInventory.getSizeInventory())
+			lastSuceededStack = 0;
+		
 		ItemStack stackToSend = null;
 		while(stackToSend==null) {
 			lastStackLookedAt++;
-			if (targetInventory.getSizeInventory()<=lastStackLookedAt)
-				lastStackLookedAt=0;
-			if(lastStackLookedAt == this.lastSuceededStack){
+			if (lastStackLookedAt >= targetInventory.getSizeInventory())
+				lastStackLookedAt = 0;
+			if(lastStackLookedAt == lastSuceededStack){
 				stalled = true;
 				return; // then we have been around the list without sending, halt for now
 			}
@@ -90,7 +96,10 @@ public class ModuleQuickSort implements ILogisticsModule {
 		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
 		if (reply == null) 
 			return;
-		if(!_power.useEnergy(500)) {stalled = true;return;}
+		if(!_power.useEnergy(500)) {
+			stalled = true;
+			return;
+		}
 		lastSuceededStack=lastStackLookedAt;
 		stalled = false;
 		_itemSender.sendStack(stackToSend, reply);

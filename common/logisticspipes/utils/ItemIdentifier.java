@@ -9,9 +9,11 @@
 package logisticspipes.utils;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -78,7 +80,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
 	
-	private final static String _modItemIdMap[] = new String[32768];
+	//array of mod names, used for id -> name, 0 is unknown
+	private final static ArrayList<String> _modNameList = new ArrayList<String>();
+	//map of mod name -> internal LP modid, first modname gets 1
+	private final static Map<String, Integer> _modNameToModIdMap = new HashMap();
+	//map of itemid -> modid
+	private final static int _modItemIdMap[] = new int[32768];
 	
 	private static boolean init = false;
 	
@@ -170,14 +177,29 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public static void tick() {
 		if(init) return;
-		init = true;
 		synchronized(_modItemIdMap) {
+			if(init) return;
+			init = true;
+			_modNameToModIdMap.put("UNKNOWN", 0);
+			_modNameList.add("UNKNOWN");
 			NBTTagList list = new NBTTagList();
 			GameData.writeItemData(list);
 			Set<ItemData> set = GameData.buildWorldItemData(list);
 			for(ItemData data:set) {
-				_modItemIdMap[data.getItemId()] = data.getModId();
+				String modname = data.getModId();
+				if(modname == null)
+					continue;
+				int modid = -1;
+				if(_modNameToModIdMap.containsKey(modname)) {
+					modid = _modNameToModIdMap.get(modname);
+				} else {
+					modid = _modNameList.size();
+					_modNameList.add(modname);
+					_modNameToModIdMap.put(modname, modid);
+				}
+				_modItemIdMap[data.getItemId()] = modid;
 			}
+			_modNameList.ensureCapacity(_modNameToModIdMap.size());
 		}
 	}
 	
@@ -235,13 +257,21 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return "<Item name not found>";
 	}
 	
-	public String getModId() {
-		if(_modItemIdMap[this.itemID] != null) {
-			return _modItemIdMap[this.itemID];
-		}
-		return "UNKNOWN";
+	public int getModId() {
+		return _modItemIdMap[this.itemID];
+	}
+
+	public String getModName() {
+		return _modNameList.get(_modItemIdMap[this.itemID]);
 	}
 	
+	public static int getModIdForName(String modname) {
+		if(_modNameToModIdMap.containsKey(modname)) {
+			return _modNameToModIdMap.get(modname);
+		}
+		return 0;
+	}
+
 	public ItemIdentifierStack makeStack(int stackSize){
 		return new ItemIdentifierStack(this, stackSize);
 	}
@@ -437,7 +467,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public String toString() {
-		return getModId() + ":" + getFriendlyName();
+		return getModName() + "(" + getModId() + "):" + getFriendlyName();
 	}
 
 	@Override

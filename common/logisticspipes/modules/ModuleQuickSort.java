@@ -18,10 +18,12 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleQuickSort implements ILogisticsModule {
 
-	private final int ticksToAction = 100;
+	private final int stalledDelay = 24;
+	private final int normalDelay = 6;
 	private int currentTick = 0;
-	private boolean sent;
-	private int ticksToResend = 0;
+	private boolean stalled;
+	private int lastStackLookedAt = 0;
+	private int lastSuceededStack = 0;
 
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
@@ -59,36 +61,42 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		if (sent){
-			ticksToResend = 6;
-			sent = false;
-		}
 
-		if (ticksToResend > 0 && --ticksToResend < 1){
-			currentTick = ticksToAction;
-		}
-
-		if (++currentTick < ticksToAction) return;
-		currentTick = 0;
-
+		if (--currentTick > 0) return;
+		if(stalled)
+			currentTick = stalledDelay;
+		else
+			currentTick = normalDelay;
+		
 		//Extract Item
 		IInventory targetInventory = _invProvider.getPointedInventory();
 		if (targetInventory == null) return;
 		if (targetInventory.getSizeInventory() < 27) return;
-		ItemStack stackToSend;
-		for (int i = 0; i < targetInventory.getSizeInventory(); i++){
-			stackToSend = targetInventory.getStackInSlot(i);
-			if (stackToSend == null) continue;
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
-			if (reply == null) continue;
-			if(!_power.useEnergy(500)) break;
-			_itemSender.sendStack(stackToSend, reply);
-			MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
-			targetInventory.setInventorySlotContents(i, null);
 
-			sent = true;
-			break;
-		}		
+		if(!_power.canUseEnergy(500)) {stalled = true;return;}
+
+		ItemStack stackToSend = null;
+		while(stackToSend==null) {
+			lastStackLookedAt++;
+			if (targetInventory.getSizeInventory()<=lastStackLookedAt)
+				lastStackLookedAt=0;
+			if(lastStackLookedAt == this.lastSuceededStack){
+				stalled = true;
+				return; // then we have been around the list without sending, halt for now
+			}
+			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+		}
+
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
+		if (reply == null) 
+			return;
+		if(!_power.useEnergy(500)) {stalled = true;return;}
+		lastSuceededStack=lastStackLookedAt;
+		stalled = false;
+		_itemSender.sendStack(stackToSend, reply);
+		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
+		targetInventory.setInventorySlotContents(lastStackLookedAt, null);
+				
 	}
 
 	@Override

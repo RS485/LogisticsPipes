@@ -8,11 +8,14 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.TemporaryLogic;
@@ -24,15 +27,19 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
+import logisticspipes.request.RequestLog;
+import logisticspipes.request.RequestManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 @CCType(name = "LogisticsPipes:Request")
-public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems {
+public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems, IRequestAPI {
 	
 	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<Map<ItemIdentifier,Integer>>(); 
 
@@ -84,7 +91,93 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
+
 	
+	/* IRequestAPI */
+
+	@Override
+	public List<ItemStack> getProvidedItems() {
+		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
+		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
+		for(Entry <ItemIdentifier, Integer> item:items.entrySet()) {
+			ItemStack is = item.getKey().makeNormalStack(item.getValue());
+			list.add(is);
+		}
+		return list;
+	}
+
+	@Override
+	public List<ItemStack> getCraftedItems() {
+		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
+		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
+		for(ItemIdentifier item:items) {
+			ItemStack is = item.makeNormalStack(0);
+			list.add(is);
+		}
+		return list;
+	}
+
+	@Override
+	public List<ItemStack> simulateRequest(ItemStack wanted) {
+		final List<ItemStack> missing = new LinkedList<ItemStack>();
+		RequestManager.simulate(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+outer:
+				for(ItemMessage msg:list) {
+					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
+					is.setTagCompound(msg.tag);
+					for(ItemStack seen : missing) {
+						if(seen.isItemEqual(is) && ItemStack.areItemStackTagsEqual(seen, is)) {
+							seen.stackSize += is.stackSize;
+							continue outer;
+						}
+					}
+					missing.add(is);
+				}
+			}
+
+			@Override
+			public void handleSucessfullRequestOf(ItemMessage item) {}
+
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {}
+		});
+		return missing;
+	}
+
+	@Override
+	public List<ItemStack> performRequest(ItemStack wanted) {
+		final List<ItemStack> missing = new LinkedList<ItemStack>();
+		RequestManager.request(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+outer:
+				for(ItemMessage msg:list) {
+					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
+					is.setTagCompound(msg.tag);
+					for(ItemStack seen : missing) {
+						if(seen.isItemEqual(is) && ItemStack.areItemStackTagsEqual(seen, is)) {
+							seen.stackSize += is.stackSize;
+							continue outer;
+						}
+					}
+					missing.add(is);
+				}
+			}
+
+			@Override
+			public void handleSucessfullRequestOf(ItemMessage item) {}
+
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {}
+		});
+		return missing;
+	}
+
+
+	/* CC */
+
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	@CCQueued(event="request_successfull\n      ---request_failed", realQueue=false)
 	public int makeRequest(Double itemId, Double amount) throws Exception {

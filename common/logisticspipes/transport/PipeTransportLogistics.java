@@ -112,11 +112,11 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 
 	public void markChunkModified(TileEntity tile) {
-		if(tile!=null && MainProxy.isServer(tile.worldObj)) {
+		if(tile != null && chunk != null) {
 			//items are crossing a chunk boundary, mark both chunks modified
 			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
 				chunk.isModified = true;
-				if((tile instanceof TileGenericPipe) && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics) {
+				if(tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics && ((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk != null) {
 					((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
 				} else {
 					worldObj.updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
@@ -189,13 +189,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		super.unscheduleRemoval(item);
 		if(item instanceof IRoutedItem) {
 			IRoutedItem routed = (IRoutedItem)item;
-			routed.changeDestination(-1);
-			EntityData data = travelingEntities.get(item.getEntityId());
-			IRoutedItem newRoute = routed.getNewUnRoutedItem();
-			data.item = newRoute.getEntityPassiveItem();
-			newRoute.setReRoute(true);
-			newRoute.addToJamList(getPipe().getRouter());
-			newRoute.setBufferCounter(routed.getBufferCounter());
+			routed.clearDestination();
+			routed.addToJamList(getPipe().getRouter());
 		}
 	}
 	
@@ -213,7 +208,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			value = ForgeDirection.UNKNOWN;
 		} else
 			value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
-		routedItem.setReRoute(false);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);
@@ -332,10 +326,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				ForgeDirection insertion = data.output.getOpposite();
 				if(manager.hasSneakyUpgrade()) {
-					insertion = manager.getSneakyUpgrade().getSneakyOrientation();
-					if(insertion == null) {
-						insertion = data.output.getOpposite();
-					}
+					insertion = manager.getSneakyOrientation();
 				}
 				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 				
@@ -371,7 +362,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	protected boolean isItemExitable(ItemStack stack) {
 		if(stack != null && stack.getItem() instanceof IItemAdvancedExistance) {
-			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory();
+			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory(stack);
 		}
 		return true;
 	}

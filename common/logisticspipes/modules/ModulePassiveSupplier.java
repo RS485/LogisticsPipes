@@ -1,7 +1,6 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDPassiveSupplier;
@@ -21,7 +20,6 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -45,7 +43,6 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
-	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDPassiveSupplier(this);
 	
@@ -59,7 +56,6 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_power = powerprovider;
-		_world = world;
 	}
 
 	public IInventory getFilterInventory(){
@@ -71,7 +67,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventory targetInventory = _invProvider.getInventory();
+		IInventory targetInventory = _invProvider.getSneakyInventory();
 		if (targetInventory == null) return null;
 		
 		if (!_filterInventory.containsItem(ItemIdentifier.get(item))) return null;
@@ -152,7 +148,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	}
 
 	@Override
-	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+	public void handleInvContent(List<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 

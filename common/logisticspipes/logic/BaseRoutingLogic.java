@@ -78,11 +78,11 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		return super.blockActivated(entityplayer);
 	}
 	
-	private void doDebugStuff(EntityPlayer entityplayer){
+	private void doDebugStuff(EntityPlayer entityplayer) {
 		//entityplayer.worldObj.setWorldTime(4951);
-		System.out.println("***");
 		IRouter r = getRoutedPipe().getRouter();
 		if(!(r instanceof ServerRouter)) return;
+		System.out.println("***");
 		ServerRouter sr = (ServerRouter) r;
 		
 		System.out.println("ID: " + r.getSimpleID());
@@ -103,11 +103,10 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).getValue1().toString());
 		}
 		System.out.println();
-		System.out.println("~~~~~~~~~~SECURITY ID~~~~~~~~~~~~~~~");
-		System.out.println(r.getSecurityID());
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
 		System.out.println(Arrays.toString(ForgeDirection.VALID_DIRECTIONS));
 		System.out.println(Arrays.toString(sr.sideDisconnected));
+		System.out.println(Arrays.toString(getRoutedPipe().container.pipeConnectionsBuffer));
 		getRoutedPipe().refreshConnectionAndRender(true);
 	}
 

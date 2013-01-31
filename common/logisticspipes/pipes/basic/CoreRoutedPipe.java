@@ -8,7 +8,6 @@
 
 package logisticspipes.pipes.basic;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -66,7 +65,6 @@ import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Normal")
@@ -232,6 +230,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getUpgradeManager().securityTick();
 		super.updateEntity();
 		ignoreDisableUpdateEntity();
 		_initialInit = false;
@@ -302,10 +301,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if(router != null){
+			router.clearPipeCache();
+		}
+	}
+	
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
-		if(router == null) return;
+		if(stillNeedReplace || _initialInit || router == null) return;
 		boolean flag;
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
@@ -335,7 +342,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public TextureType getTextureType(ForgeDirection connection) {
-		if(stillNeedReplace)
+		if(stillNeedReplace || _initialInit)
 			return getCenterTexture();
 
 		if (connection == ForgeDirection.UNKNOWN){
@@ -367,9 +374,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				else
 					routerId = UUID.randomUUID().toString();
 			}
-		}
-		if(router != null){
-			router.clearPipeCache();
 		}
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
@@ -587,19 +591,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public boolean disconnectPipe(TileEntity tile, ForgeDirection dir) {
-		if(!stillNeedReplace) {
-			if(getRouter().isAutoDisconnectionEnabled()) {
-				return getRouter().isSideDisconneceted(dir);
-			}
-		}
 		return false;
 	}
 	
 	@Override
 	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
+		return isPipeConnected(tile, dir, false);
+	}
+	
+	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
+		}
+		if(!stillNeedReplace) {
+			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection) {
+				return false;
+			}
 		}
 		return (super.isPipeConnected(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile, dir);
 	}
@@ -611,14 +619,24 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
+	public UUID getSecurityID() {
+		return getUpgradeManager().getSecurityID();
+	}
+
+	public void insetSecurityID(UUID id) {
+		getUpgradeManager().insetSecurityID(id);
+	}
+	
 	/* Power System */
 
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
-		if(MainProxy.isServer(worldObj)) {
-			return this.getRouter().getPowerProvider();
-		} else {
+		if(MainProxy.isClient(worldObj)) {
 			return null;
 		}
+		if(stillNeedReplace) {
+			return null;
+		}
+		return this.getRouter().getPowerProvider();
 	}
 	
 	public boolean canUseEnergy(int amount) {

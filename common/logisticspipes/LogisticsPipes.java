@@ -72,9 +72,6 @@ import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.SpecialConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
-import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
-import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
-import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -95,7 +92,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
@@ -117,8 +113,29 @@ import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", certificateFingerprint="%------------CERTIFICATE-SUM-----------%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry;after:Thaumcraft;after:CCTurtle;after:ComputerCraft;after:factorization;after:GregTech_Addon;after:BetterStorage", useMetadata = true)
-@NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
+@Mod(
+		modid = "LogisticsPipes|Main",
+		name = "Logistics Pipes",
+		version = "%VERSION%",
+		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
+		dependencies = "required-after:Forge@[6.5.0.0,);" +
+				"required-after:BuildCraft|Core;" +
+				"required-after:BuildCraft|Transport;" +
+				"required-after:BuildCraft|Builders;" +
+				"required-after:BuildCraft|Silicon;" +
+				"after:IC2;" +
+				"after:Forestry;" +
+				"after:Thaumcraft;" +
+				"after:CCTurtle;" +
+				"after:ComputerCraft;" +
+				"after:factorization;" +
+				"after:GregTech_Addon;" +
+				"after:BetterStorage")
+@NetworkMod(
+		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},
+		packetHandler = PacketHandler.class,
+		clientSideRequired = true,
+		serverSideRequired = true)
 public class LogisticsPipes {
 
 	@Instance("LogisticsPipes|Main")
@@ -200,6 +217,7 @@ public class LogisticsPipes {
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
+		SimpleServiceLocator.setSecurityStationManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());

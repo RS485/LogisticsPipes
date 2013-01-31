@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -326,6 +327,12 @@ public class ServerPacketHandler {
 					final PacketPipeBitSet packetAw = new PacketPipeBitSet();
 					packetAw.readData(data);
 					onFirewallFlags(player, packetAw);
+					break;
+				case NetworkConstants.SECURITY_CARD:
+					final PacketPipeInteger packetAx = new PacketPipeInteger();
+					packetAx.readData(data);
+					onSecurityCardButton(player, packetAx);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1287,6 +1294,16 @@ public class ServerPacketHandler {
 	}
 
 	private static void onModBasedItemSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
+		if(packet.slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleModBasedItemSink) {
+					((ModuleModBasedItemSink)dummy.getModule()).readFromNBT(packet.tag);
+					return;
+				}
+			}
+		}
+
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null) {
 			return;
@@ -1306,6 +1323,13 @@ public class ServerPacketHandler {
 		if(pipe.pipe instanceof PipeItemsFirewall) {
 			PipeItemsFirewall firewall = (PipeItemsFirewall) pipe.pipe;
 			firewall.setFlags(packet.flags);
+		}
+	}
+
+	private static void onSecurityCardButton(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer);
 		}
 	}
 	

@@ -104,6 +104,11 @@ public class ClientRouter implements IRouter {
 		return (CoreRoutedPipe) pipe.pipe;
 	}
 	
+	@Override
+	public CoreRoutedPipe getCachedPipe(){
+		return getPipe();
+	}
+	
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}
@@ -112,11 +117,6 @@ public class ClientRouter implements IRouter {
 	@Override
 	public UUID getId() {
 		return null;
-	}
-
-	@Override
-	public void itemDropped(RoutedEntityItem routedEntityItem) {
-		//Not On Client Side
 	}
 
 	@Override
@@ -185,15 +185,5 @@ public class ClientRouter implements IRouter {
 	@Override
 	public boolean isSideDisconneceted(ForgeDirection dir) {
 		return false;
-	}
-
-	@Override
-	public boolean isAutoDisconnectionEnabled() {
-		return false;
-	}
-
-	@Override
-	public UUID getSecurityID() {
-		return null;
 	}
 }

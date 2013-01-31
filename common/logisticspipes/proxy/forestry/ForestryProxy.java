@@ -26,7 +26,6 @@ import forestry.api.core.ItemInterface;
 import forestry.api.genetics.AlleleManager;
 import forestry.api.genetics.IAllele;
 import forestry.api.genetics.IAlleleSpecies;
-import forestry.api.genetics.IApiaristTracker;
 import forestry.api.recipes.RecipeManagers;
 
 public class ForestryProxy implements IForestryProxy {

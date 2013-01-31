@@ -185,7 +185,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		return stackToTake;
 	}
 
-	public void handleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+	public void handleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
 		int i=0;
 		for(ItemIdentifierStack stack:_allItems) {
 			if(_contents.length <= i) break;

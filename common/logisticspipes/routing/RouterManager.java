@@ -14,18 +14,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.WeakHashMap;
 
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraftforge.common.ForgeDirection;
 
 
-public class RouterManager implements IRouterManager, IDirectConnectionManager {
+public class RouterManager implements IRouterManager, IDirectConnectionManager, ISecurityStationManager {
 	
 	private final ArrayList<IRouter> _routersClient = new ArrayList<IRouter>();
 	private final ArrayList<IRouter> _routersServer = new ArrayList<IRouter>();
 	private final Map<UUID,Integer> _uuidMap= new HashMap<UUID,Integer>();
+	
+	private final WeakHashMap<LogisticsSecurityTileEntity, Void> _security= new WeakHashMap<LogisticsSecurityTileEntity, Void>();
 	
 	private final ArrayList<DirectConnection> connectedPipes = new ArrayList<DirectConnection>();
 
@@ -156,14 +161,14 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		if(MainProxy.isClient()) return false;
 		boolean added = false;
 		for(DirectConnection con:connectedPipes) {
-			if(ident != con.identifier) {
+			if(!ident.equals(con.identifier)) {
 				if(con.Router1 >= 0 && con.Router1 == router.getSimpleID()) {
 					con.Router1 = -1;
 				} else if(con.Router2 >= 0 && con.Router2 == router.getSimpleID()) {
 					con.Router2 = -1;
 				}
 			} else {
-				if(con.Router1 <0  || con.Router1 == router.getSimpleID()) {
+				if(con.Router1 < 0 || con.Router1 == router.getSimpleID()) {
 					con.Router1 = router.getSimpleID();
 					added = true;
 					break;
@@ -224,6 +229,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		connectedPipes.clear();
 		_routersServer.clear();
 		_uuidMap.clear();
+		_security.clear();
 	}
 
 	@Override
@@ -231,5 +237,25 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager {
 		synchronized (_routersClient) {
 			_routersClient.clear();
 		}
+	}
+	
+	@Override
+	public void add(LogisticsSecurityTileEntity tile) {
+		_security.put(tile, null);
+	}
+	
+	@Override
+	public LogisticsSecurityTileEntity getStation(UUID id) {
+		for(LogisticsSecurityTileEntity tile:_security.keySet()) {
+			if(id.equals(tile.getSecId())) {
+				return tile;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public void remove(LogisticsSecurityTileEntity tile) {
+		_security.remove(tile);
 	}
 }

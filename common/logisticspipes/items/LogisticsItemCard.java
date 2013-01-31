@@ -2,6 +2,7 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -10,10 +11,14 @@ import org.lwjgl.input.Keyboard;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class LogisticsItemCard extends LogisticsItem {
+public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExistance {
 
+	public static final int FREQ_CARD = 0;
+	public static final int SEC_CARD = 1;
+	
 	public LogisticsItemCard(int i) {
 		super(i);
+		this.hasSubtypes = true;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -25,7 +30,11 @@ public class LogisticsItemCard extends LogisticsItem {
 			list.add("This is no valid Card");
 		} else {
 			if(itemStack.getTagCompound().hasKey("UUID")) {
-				list.add("Freq. Card");
+				if(itemStack.getItemDamage() == FREQ_CARD) {
+					list.add("Freq. Card");
+				} else if(itemStack.getItemDamage() == SEC_CARD) {
+					list.add("Sec. Card");
+				}
 				if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
 					list.add("Id: " + itemStack.getTagCompound().getString("UUID"));
 				}
@@ -40,6 +49,19 @@ public class LogisticsItemCard extends LogisticsItem {
 
 	@Override
 	public int getItemStackLimit() {
-		return 2;
+		return 64;
+	}
+
+	@Override
+	public boolean canExistInNormalInventory(ItemStack stack) {
+		return true;
+	}
+
+	@Override
+	public boolean canExistInWorld(ItemStack stack) {
+		if(stack.getItemDamage() == SEC_CARD) {
+			return false;
+		}
+		return true;
 	}
 }

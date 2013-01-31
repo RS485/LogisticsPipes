@@ -87,12 +87,28 @@ public class BuildCraftProxy {
 	public static Action LogisticsDisableAction;
 	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
+		return checkPipesConnections(from, to, way, false);
+	}
+	
+	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
 		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
-			if (!((TileGenericPipe)from).pipe.isPipeConnected(to, way)) {
-				return false;
+			if(((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
+				if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).isPipeConnected(to, way, ignoreSystemDisconnection)) {
+					return false;
+				}
+			} else {
+				if (!((TileGenericPipe) from).pipe.isPipeConnected(to, way)) {
+					return false;
+				}
 			}
-			if (!((TileGenericPipe) to).pipe.isPipeConnected(from, way.getOpposite())) {
-				return false;
+			if(((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
+				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).isPipeConnected(from, way.getOpposite(), ignoreSystemDisconnection)) {
+					return false;
+				}
+			} else {
+				if (!((TileGenericPipe) to).pipe.isPipeConnected(from, way.getOpposite())) {
+					return false;
+				}
 			}
 			return true;
 		} else {

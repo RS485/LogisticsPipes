@@ -5,6 +5,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
@@ -35,7 +37,15 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		super(180,200,0,0);
 		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
 		
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.itemID);
+		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, new ISlotCheck() {
+			@Override
+			public boolean isStackAllowed(ItemStack itemStack) {
+				if(itemStack == null) return false;
+				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+				if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+				return true;
+			}
+		});
 		
 		dummy.addNormalSlotsForPlayerInventory(10, 115);
 		

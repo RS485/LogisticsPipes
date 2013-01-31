@@ -253,7 +253,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					stacksleft -= 1;
 					
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
-					item.setSource(this.getRouter().getSimpleID());
 					item.setDestination(order.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					item.addRelayPoints(order.getValue3());
@@ -359,11 +358,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
-	}
-
-	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
-		return 0;
 	}
 
 	@Override
@@ -480,7 +474,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

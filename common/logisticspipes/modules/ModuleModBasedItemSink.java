@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +20,6 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
@@ -32,11 +32,11 @@ import cpw.mods.fml.common.network.Player;
 public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 	
 	public final List<String> modList = new LinkedList<String>();
+	private BitSet modIdSet;
 	private int slot = 0;
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
-	private IWorldProvider _world;
 	
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
@@ -47,7 +47,6 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_power = powerprovider;
-		_world = world;
 	}
 
 	@Override
@@ -63,7 +62,10 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		ItemIdentifier ident = ItemIdentifier.get(item);
-		if(modList.contains(ident.getModId())) {
+		if(modIdSet == null) {
+			buildModIdSet();
+		}
+		if(modIdSet.get(ident.getModId())) {
 			if(_power.canUseEnergy(5)) {
 				return _sinkReply;
 			}
@@ -79,6 +81,14 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	@Override
 	public ILogisticsModule getSubModule(int slot) {return null;}
 
+	private void buildModIdSet() {
+		modIdSet = new BitSet();
+		for(String modname : modList) {
+			int modid = ItemIdentifier.getModIdForName(modname);
+			modIdSet.set(modid);
+		}
+	}
+
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		modList.clear();
@@ -86,6 +96,7 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		for(int i = 0; i < limit; i++) {
 			modList.add(nbttagcompound.getString("Mod" + i));
 		}
+		modIdSet = null;
 	}
 
 	@Override
@@ -94,6 +105,7 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		for(int i = 0; i < modList.size(); i++) {
 			nbttagcompound.setString("Mod" + i, modList.get(i));
 		}
+		modIdSet = null;
 	}
 
 	@Override

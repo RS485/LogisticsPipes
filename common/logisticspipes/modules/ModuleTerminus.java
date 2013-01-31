@@ -1,7 +1,6 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
@@ -20,7 +19,6 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
@@ -41,7 +39,6 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	private int yCoord;
 	private int zCoord;
 	private int slot;
-	private IWorldProvider _world;
 	
 	private IChassiePowerProvider _power;
 	
@@ -60,7 +57,6 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
 		_power = powerprovider;
-		_world = world;
 	}
 
 	@Override
@@ -146,7 +142,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	}
 
 	@Override
-	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+	public void handleInvContent(List<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 }

@@ -5,8 +5,8 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -106,7 +106,7 @@ public class WorldTickHandler implements ITickHandler {
 						((ITileBufferHolder) tileSide).blockCreated(o, BuildCraftTransport.genericPipeBlock.blockID, newTile);
 					}
 				}
-				
+				//newTile.scheduleNeighborChange();
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 			} catch (IllegalAccessException e) {
@@ -114,6 +114,7 @@ public class WorldTickHandler implements ITickHandler {
 			}
 			localList.remove(0);
 		}
+		ItemIdentifier.tick();
 	}
 
 	@Override

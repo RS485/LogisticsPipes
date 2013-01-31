@@ -4,6 +4,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -13,12 +14,12 @@ public class LogisticsLiquidContainer extends LogisticsItem implements IItemAdva
 	}
 
 	@Override
-	public boolean canExistInNormalInventory() {
+	public boolean canExistInNormalInventory(ItemStack stack) {
 		return false;
 	}
 
 	@Override
-	public boolean canExistInWorld() {
+	public boolean canExistInWorld(ItemStack stack) {
 		return false;
 	}
 

@@ -59,8 +59,11 @@ import cpw.mods.fml.common.network.Player;
 public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
-	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+
+	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
+	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
+	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
+
 	public final LinkedList<ItemIdentifierStack> oldManagerList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> itemListOrderer = new LinkedList<ItemIdentifierStack>();
 	private final HUDProvider HUD = new HUDProvider(this);
@@ -138,7 +141,6 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			int sent = removed.stackSize;
 
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
-			routedItem.setSource(this.getRouter().getSimpleID());
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
 			routedItem.addRelayPoints(relays);
@@ -177,8 +179,14 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return Textures.LOGISTICSPIPE_PROVIDER_TEXTURE;
 	}
 
-	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
+	private int getCachedAvailableItemCount(ItemIdentifier item) {
+		if(displayMap.containsKey(item)) {
+			return displayMap.get(item);
+		}
+		return 0;
+	}
+
+	private int getAvailableItemCount(ItemIdentifier item) {
 		if (!isEnabled()){
 			return 0;
 		}
@@ -223,7 +231,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		}
 		
 		// Check the transaction and see if we have helped already
-		int canProvide = getAvailableItemCount(tree.getStack().getItem());
+		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
+		if (donePromisses.containsKey(tree.getStack().getItem())){
+			canProvide -= donePromisses.get(tree.getStack().getItem());
+		}
+		if (canProvide < 1) return;
+		canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())){
 			canProvide -= donePromisses.get(tree.getStack().getItem());
 		}
@@ -336,16 +349,18 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 	
 	private void updateInv() {
-		itemList.clear();
-		Map<ItemIdentifier, Integer> list = new HashMap<ItemIdentifier, Integer>();
-		getAllItems(list, new ArrayList<IFilter>(0));
-		for(ItemIdentifier item :list.keySet()) {
-			itemList.add(new ItemIdentifierStack(item, list.get(item)));
+		displayList.clear();
+		displayMap.clear();
+		getAllItems(displayMap, new ArrayList<IFilter>(0));
+		displayList.ensureCapacity(displayMap.size());
+		for(ItemIdentifier item :displayMap.keySet()) {
+			displayList.add(new ItemIdentifierStack(item, displayMap.get(item)));
 		}
-		if(!itemList.equals(oldList)) {
+		if(!oldList.equals(displayList)) {
 			oldList.clear();
-			oldList.addAll(itemList);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, itemList).getPacket(), localModeWatchers);
+			oldList.ensureCapacity(displayList.size());
+			oldList.addAll(displayList);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, displayList).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -382,9 +397,10 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void setReceivedChestContent(LinkedList<ItemIdentifierStack> list) {
-		itemList.clear();
-		itemList.addAll(list);
+	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
+		displayList.clear();
+		displayList.ensureCapacity(list.size());
+		displayList.addAll(list);
 	}
 
 	@Override
@@ -393,7 +409,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
 		itemListOrderer.clear();
 		itemListOrderer.addAll(list);
 	}

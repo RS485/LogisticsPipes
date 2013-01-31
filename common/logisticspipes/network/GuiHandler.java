@@ -1,6 +1,7 @@
 package logisticspipes.network;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.gui.GuiChassiPipe;
@@ -14,6 +15,7 @@ import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
 import logisticspipes.gui.GuiSatellitePipe;
+import logisticspipes.gui.GuiSecurityStation;
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.GuiUpgradeManager;
@@ -34,8 +36,10 @@ import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.BaseRoutingLogic;
@@ -321,7 +325,15 @@ public class GuiHandler implements IGuiHandler {
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsInvSysConnector)) return null;
 				dummy = new DummyContainer(player.inventory, ((PipeItemsInvSysConnector)pipe.pipe).inv);
 				
-				dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector)pipe.pipe).inv, 50, 10, LogisticsPipes.LogisticsItemCard.itemID);
+				dummy.addRestrictedSlot(0, ((PipeItemsInvSysConnector)pipe.pipe).inv, 50, 10, new ISlotCheck() {
+					@Override
+					public boolean isStackAllowed(ItemStack itemStack) {
+						if(itemStack == null) return false;
+						if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+						if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+						return true;
+					}
+				});
 				
 				dummy.addNormalSlotsForPlayerInventory(0, 50);
 				
@@ -344,7 +356,15 @@ public class GuiHandler implements IGuiHandler {
 				
 				dummy = new DummyContainer(player.inventory, inv);
 				
-				dummy.addRestrictedSlot(0, inv, 40, 40, LogisticsPipes.LogisticsItemCard.itemID);
+				dummy.addRestrictedSlot(0, inv, 40, 40, new ISlotCheck() {
+					@Override
+					public boolean isStackAllowed(ItemStack itemStack) {
+						if(itemStack == null) return false;
+						if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+						if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+						return true;
+					}
+				});
 				dummy.addNormalSlotsForPlayerInventory(0, 0);
 				
 				return dummy;
@@ -378,6 +398,13 @@ public class GuiHandler implements IGuiHandler {
 						dummy.addDummySlot(i*6 + j, 0, 0);
 					}
 				}
+				return dummy;
+
+			case GuiIDs.GUI_Security_Station_ID:
+				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
+				dummy = new DummyContainer(player.inventory, null);
+				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, -1);
+				dummy.addNormalSlotsForPlayerInventory(10, 210);
 				return dummy;
 				
 			default:break;
@@ -702,6 +729,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_FIREWALL:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) return null;
 				return new GuiFirewall((PipeItemsFirewall) pipe.pipe, player);
+
+			case GuiIDs.GUI_Security_Station_ID:
+				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
+				return new GuiSecurityStation((LogisticsSecurityTileEntity)tile, player);
 				
 			default:break;
 			}

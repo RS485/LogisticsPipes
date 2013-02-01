@@ -400,6 +400,7 @@ public class ForestryProxy implements IForestryProxy {
 	/**
 	 * Void method, called to initialize LogisticsPipes' Forestry recipes.
 	 */
+	@SuppressWarnings("unchecked")
 	@Override
 	public void addCraftingRecipes() {
 		if(!has_all) return;

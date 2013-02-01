@@ -102,6 +102,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		return false;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
 		try {

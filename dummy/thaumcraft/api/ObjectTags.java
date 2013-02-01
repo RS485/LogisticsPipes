@@ -3,6 +3,7 @@ package thaumcraft.api;
 import java.io.Serializable;
 
 //Dummy Class
+@SuppressWarnings("serial")
 public class ObjectTags implements Serializable {
 
 	public EnumTag[] getAspectsSorted() {

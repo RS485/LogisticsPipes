@@ -275,7 +275,7 @@ public class LogisticsPipes {
 	public void PostLoad(FMLPostInitializationEvent event) {
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
-		
+
 		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);

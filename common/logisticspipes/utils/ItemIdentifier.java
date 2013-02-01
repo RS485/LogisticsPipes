@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -83,7 +82,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	//array of mod names, used for id -> name, 0 is unknown
 	private final static ArrayList<String> _modNameList = new ArrayList<String>();
 	//map of mod name -> internal LP modid, first modname gets 1
-	private final static Map<String, Integer> _modNameToModIdMap = new HashMap();
+	private final static Map<String, Integer> _modNameToModIdMap = new HashMap<String, Integer>();
 	//map of itemid -> modid
 	private final static int _modItemIdMap[] = new int[32768];
 	
@@ -168,7 +167,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private static boolean isIdUsed(int id) {
 		return _itemIdentifierIdCache.containsKey(id);
 	}
-	
+	/*
 	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
 		if(tag1 == null && tag2 == null) {
 			return true;
@@ -181,6 +180,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		return tag1.equals(tag2);
 	}
+	*/
 
 	public static void tick() {
 		if(init) return;
@@ -354,6 +354,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
+	/*
 	private <T> Map<Integer, T> getListAsMap(List<T> array) {
 		HashMap<Integer, T> map = new HashMap<Integer, T>();
 		int i = 1;
@@ -363,6 +364,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		return map;
 	}
+	*/
 	
 	@SuppressWarnings("rawtypes")
 	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {

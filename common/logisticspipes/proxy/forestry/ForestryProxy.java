@@ -16,6 +16,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
@@ -521,7 +522,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK),
 		});
 
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
+		CraftingManager.getInstance().getRecipeList().add(new ShapedOreRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTTERMINUS), new Object[] { 
 			"CGD", 
 			"rBr", 
 			"DrC", 
@@ -530,7 +531,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('G'), pollen, 
 			Character.valueOf('r'), Item.redstone, 
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
-		});
+		}));
 		
 		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
 			"CGC", 

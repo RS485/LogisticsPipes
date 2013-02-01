@@ -96,8 +96,28 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		listbyserver = true;
 		_allItems.clear();
 		_allItems.addAll(packet._allItems);
+		keepLastItemSelected();
 	}
-	
+
+	private void keepLastItemSelected() {
+		if(selectedItem == null) return;
+		int itemindex = 0;
+		int panelxSize = 20;
+		int panelySize = 20;
+		ItemIdentifier selected = selectedItem.getItem();
+		for(ItemIdentifierStack itemStack : _allItems) {
+			ItemIdentifier item = itemStack.getItem();
+			if(!itemSearched(item)) continue;
+			if(item.equals(selected)) {
+				page = itemindex / 70;
+				lastClickedy = guiTop + 18 + panelySize * ((itemindex % 70) / 10);
+				lastClickedx = guiLeft + 10 + panelxSize * (itemindex % 10);
+				return;
+			}
+			itemindex++;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
@@ -126,7 +146,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		//drawDefaultBackground();
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
+		maxPage = (getSearchedItemNumber() - 1) / 70;
 		if(maxPage == -1) maxPage = 0;
 		if (page > maxPage){
 			page = maxPage;
@@ -185,8 +205,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		}
 		
 		int ppi = 0;
-		int row = 0;
-		int column = 0;
 		
 		int panelxSize = 20;
 		int panelySize = 20;
@@ -220,7 +238,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				ppi++;
 				
 				if (ppi <= 70 * page) continue;
-				if (ppi > 70 * (page+1)) continue;
+				if (ppi > 70 * (page+1)) break;
+				int row = ((ppi - 1) % 70) / 10;
+				int column = (ppi - 1) % 10;
 				ItemStack st = itemStack.makeNormalStack();
 				int x = guiLeft + 10 + panelxSize * column;
 				int y = guiTop + 18 + panelySize * row;
@@ -244,12 +264,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
 					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
 					specialItemRendering(item, x, y);
-				}
-				
-				column++;
-				if (column == 10){
-					row++;
-					column = 0;
 				}
 			}
 			BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, this, page, guiLeft + 10, guiTop + 18, 10, 70, panelxSize, panelySize, mc, true, false);
@@ -297,7 +311,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		clickWasButton = false;
 		editsearchb = true;
 		super.mouseClicked(i, j, k);
-		if ((!clickWasButton & i > guiLeft & i < right && j > guiTop && j < bottom) || editsearch){
+		if ((!clickWasButton && i >= guiLeft + 10 && i < right - 10 && j >= guiTop + 18 && j < bottom - 63) || editsearch){
 			if(!editsearchb) {
 				editsearch = false;
 			}

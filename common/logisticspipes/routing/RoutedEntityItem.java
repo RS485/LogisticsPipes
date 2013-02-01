@@ -76,10 +76,23 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			if (getItemStack().stackSize <= 0) {
 				return null;
 			}
-			
+
 			if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 				remove();
 				return null;
+			}
+
+			//detect items spawning in the center of pipes and move them to the exit side
+			if(position.x == container.xCoord + 0.5 && position.y == container.yCoord + 0.25 && position.z == container.zCoord + 0.5) {
+				System.out.println("bla");
+				position.orientation = dir;
+				if(dir == ForgeDirection.DOWN) {
+					position.moveForwards(0.25);
+				} else  if(dir == ForgeDirection.UP) {
+					position.moveForwards(0.75);
+				} else {
+					position.moveForwards(0.5);
+				}
 			}
 
 			Position motion = new Position(0, 0, 0, dir);
@@ -90,7 +103,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			entityitem.lifespan = BuildCraftCore.itemLifespan;
 			entityitem.delayBeforeCanPickup = 10;
 
-			float f3 = 0.00F + worldObj.rand.nextFloat() * 0.01F - 0.02F;
+			float f3 = worldObj.rand.nextFloat() * 0.01F - 0.02F;
 			entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.x;
 			entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.y;
 			entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.z;

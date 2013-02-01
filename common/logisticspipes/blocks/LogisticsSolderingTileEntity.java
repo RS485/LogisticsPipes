@@ -38,7 +38,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
-	
+	public boolean hasWork = false;
 	public int rotation = 0;
 	private boolean init = false;
 	
@@ -250,7 +250,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			}
 			return;
 		}
-		if(hasWork() && heat < 100) {
+		hasWork = hasWork();
+		if(hasWork && heat < 100) {
 			if(provider.useEnergy(1, 100, false) >= 1) {
 				heat += provider.useEnergy(1, 100, true);
 				if(heat > 100) {
@@ -266,11 +267,11 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 					updateHeat();
 				}
 			}
-		} else if(!hasWork() && heat > 0) {
+		} else if(!hasWork && heat > 0) {
 			heat--;
 			updateHeat();
 		}
-		if(hasWork() && heat >= 100) {
+		if(hasWork && heat >= 100) {
 			progress += provider.useEnergy(1, 3, true);
 			if(progress >= 100) {
 				if(tryCraft()) {
@@ -280,7 +281,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 				}
 			}
 			updateProgress();
-		} else if(!hasWork() && progress != 0) {
+		} else if(!hasWork && progress != 0) {
 			progress = 0;
 			updateProgress();
 		}

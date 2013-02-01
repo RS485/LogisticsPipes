@@ -332,11 +332,13 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
 		if ( stack == null) return null;
-		
+
+		boolean hasSatellite = craftingLogic.isSatelliteConnected();
+		if(craftingLogic.satelliteId != 0 && !hasSatellite) return null;
+
 		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
 		//Check all materials
-		boolean hasSatellite = craftingLogic.isSatelliteConnected(); 
 		for (int i = 0; i < 9; i++){
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;

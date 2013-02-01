@@ -103,6 +103,25 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
+	public boolean containsUndamagedItem(ItemIdentifier item) {
+		try {
+			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
+				ItemIdentifier ident = ItemIdentifier.getUndamaged(items);
+				if(ident == item) {
+					return true;
+				}
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
 	public int roomForItem(ItemIdentifier item) {
 		try {
 			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.makeNormalStack(1), item.getMaxStackSize()});

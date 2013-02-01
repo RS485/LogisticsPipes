@@ -54,7 +54,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				final int slotNumber = i * 3 + j;
-				dummy.addRestrictedSlot(slotNumber, this, 30 + (j * 18),
+				dummy.addRestrictedSlot(slotNumber, this, 44 + (j * 18),
 						17 + (i * 18), new ISlotCheck() {
 							@Override
 							public boolean isStackAllowed(ItemStack itemStack) {
@@ -63,9 +63,9 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 						});
 			}
 		}
-		dummy.addRestrictedSlot(9, this, 93, 17, Item.ingotIron.itemID);
-		dummy.addRestrictedSlot(10, this, 127, 47, -1);
-		dummy.addRestrictedSlot(11, this, 149, 11, new ISlotCheck() {
+		dummy.addRestrictedSlot(9, this, 107, 17, Item.ingotIron.itemID);
+		dummy.addRestrictedSlot(10, this, 141, 47, -1);
+		dummy.addRestrictedSlot(11, this, 9, 9, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				return getRecipeForTaget(itemStack) != null && areStacksEmpty();

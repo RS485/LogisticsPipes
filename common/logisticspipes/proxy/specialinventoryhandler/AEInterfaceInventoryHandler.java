@@ -61,22 +61,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		try {
-			ItemStack lookingFor = null;
-			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
-				if(ItemIdentifier.get(items) == item) {
-					lookingFor = items;
-					break;
-				}
-			}
-			if(lookingFor == null) {
-				lookingFor = item.makeNormalStack(1);
-			} else {
-				if(lookingFor.stackSize <= (_hideOnePerStack ? 1:0)) {
-					return null;
-				}
-				lookingFor.stackSize = 1;
-			}
-			return (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{lookingFor, true});
+			return (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{item.makeNormalStack(1), true});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {

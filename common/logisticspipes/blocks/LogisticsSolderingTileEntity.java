@@ -273,20 +273,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		if(hasWork() && heat >= 100) {
 			progress += provider.useEnergy(1, 3, true);
 			if(progress >= 100) {
-				ItemStack content = inv.getStackInSlot(10);
-				if(content == null) {
-					ICraftingResultHandler handler = getHandlerForRecipe();
-					content = getTagetForRecipe(true);
-					if(handler != null) {
-						handler.handleCrafting(content);
-					}
-					inv.setInventorySlotContents(10, content);
-					inv.getStackInSlot(9).stackSize -= 1;
-					if(inv.getStackInSlot(9).stackSize <= 0) {
-						inv.setInventorySlotContents(9, null);
-					}
-					
-					updateInventory();
+				if(tryCraft()) {
 					progress = 0;
 				} else {
 					progress -= 50;
@@ -297,6 +284,40 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			progress = 0;
 			updateProgress();
 		}
+	}
+
+	private boolean tryCraft() {
+		ItemStack content = inv.getStackInSlot(10);
+		ICraftingResultHandler handler = getHandlerForRecipe();
+		ItemStack toAdd = getTagetForRecipe(false);
+		if(handler != null) {
+			handler.handleCrafting(toAdd);
+		}
+		if(content != null) {
+			if(!content.isItemEqual(toAdd) || !ItemStack.areItemStackTagsEqual(content, toAdd)) {
+				return false;
+			}
+			if(content.stackSize + toAdd.stackSize > content.getMaxStackSize()) {
+				return false;
+			}
+			toAdd.stackSize += content.stackSize;
+		}
+
+		//dummy
+		content = getTagetForRecipe(true);
+
+		inv.setInventorySlotContents(10, toAdd);
+
+		inv.getStackInSlot(9).stackSize -= 1;
+		if(inv.getStackInSlot(9).stackSize <= 0) {
+			inv.setInventorySlotContents(9, null);
+		}
+
+		inv.onInventoryChanged();
+		super.onInventoryChanged();
+		updateInventory();
+
+		return true;
 	}
 
 	@Override
@@ -387,6 +408,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			int toAdd = Math.min(stack.stackSize, freespace);
 			if (doAdd) {
 				iron.stackSize += toAdd;
+				inv.onInventoryChanged();
+				super.onInventoryChanged();
 			}
 			if (iron.stackSize == 0) {
 				inv.setInventorySlotContents(9, null);
@@ -448,6 +471,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			i++;
 		}
 		inv.onInventoryChanged();
+		super.onInventoryChanged();
 		return toadd;
 	}
 
@@ -457,6 +481,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		if (doRemove) {
 			inv.setInventorySlotContents(10, null);
 			inv.onInventoryChanged();
+			super.onInventoryChanged();
 		}
 		return tmp;
 	}

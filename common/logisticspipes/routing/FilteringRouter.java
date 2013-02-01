@@ -75,7 +75,7 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			@Override public UUID getUUID() {return UUID.randomUUID();}
 			@Override public int getSimpleID() {return -1;}
 			@Override public boolean isBlocked() {return true;}
-			@Override public List<ItemIdentifier> getFilteredItems() {return new ArrayList<ItemIdentifier>();}
+			@Override public boolean isFilteredItem(ItemIdentifier item) {return false;}
 			@Override public boolean blockProvider() {return false;}
 			@Override public boolean blockCrafting() {return false;}
 			@Override public boolean blockRouting() {return false;}

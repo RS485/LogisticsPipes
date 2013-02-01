@@ -8,8 +8,8 @@
 
 package logisticspipes.utils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +31,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	private final String _name;
 	private final int _stackLimit;
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
-	private final ArrayList<ItemIdentifier> _contentsList;
+	private final HashSet<ItemIdentifier> _contentsUndamagedSet;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	
@@ -40,7 +40,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_name = name;
 		_stackLimit = stackLimit;
 		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
-		_contentsList = new ArrayList<ItemIdentifier>((int)(size * 1.5));
+		_contentsUndamagedSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
 	}
 	
 	@Override
@@ -238,7 +238,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	private void updateContents() {
 		_contentsMap.clear();
-		_contentsList.clear();
+		_contentsUndamagedSet.clear();
 		for (int i = 0; i < _contents.length; i++) {
 			ItemStack stack = _contents[i];
 			if (stack == null) {
@@ -247,9 +247,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			if (!_contentsMap.containsKey(itemId)) {
 				_contentsMap.put(itemId, stack.stackSize);
-				_contentsList.add(itemId);
 			} else {
 				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
+			}
+			ItemIdentifier itemUndamagedId = ItemIdentifier.getUndamaged(stack);
+			if (!_contentsUndamagedSet.contains(itemUndamagedId)) {
+				_contentsUndamagedSet.add(itemUndamagedId);
 			}
 		}
 	}
@@ -268,12 +271,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public boolean containsItem(final ItemIdentifier item) {
 		return _contentsMap.containsKey(item);
 	}
-	
-	public boolean isEmpty() {
-		return _contentsMap.isEmpty();
+
+	public boolean containsUndamagedItem(final ItemIdentifier item) {
+		return _contentsUndamagedSet.contains(item);
 	}
 
-	public List<ItemIdentifier> getItems() {
-		return _contentsList;
+	public boolean isEmpty() {
+		return _contentsMap.isEmpty();
 	}
 }

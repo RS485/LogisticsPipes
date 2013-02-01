@@ -157,7 +157,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().toUndamaged()) || filter.blockProvider()) return;
 		}
 		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())) {
@@ -211,7 +211,7 @@ outer:
 			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
 			
 			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue outer;
+				if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue outer;
 			}
 			
 			if (!addedItems.containsKey(currItem)){

@@ -227,7 +227,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		}
 		
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().toUndamaged()) || filter.blockProvider()) return;
 		}
 		
 		// Check the transaction and see if we have helped already
@@ -281,7 +281,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
 				
 				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue;
+					if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue;
 				}
 				
 				if (!addedItems.containsKey(currItem)) {

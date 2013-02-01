@@ -85,7 +85,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack item, IRouter sourceRouter, List<SearchNode> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(ItemIdentifier.get(item)) || filter.blockRouting()) continue;
+			if(filter.isBlocked() == filter.isFilteredItem(ItemIdentifier.getUndamaged(item)) || filter.blockRouting()) continue;
 		}
 		List<SearchNode> firewall = new LinkedList<SearchNode>();
 		BitSet used = (BitSet) layer.clone();
@@ -377,7 +377,7 @@ outer:
 			ICraftItems crafter = (ICraftItems) n.node.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
 			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.getFilteredItems().contains(craftedItem) || filter.blockCrafting()) continue outer;
+				if(filter.isBlocked() == filter.isFilteredItem(craftedItem.toUndamaged()) || filter.blockCrafting()) continue outer;
 			}
 			if (craftedItem != null && !craftableItems.contains(craftedItem)){
 				craftableItems.add(craftedItem);

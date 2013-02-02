@@ -113,7 +113,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 
 	public TileEntity getPointedTileEntity(){
 		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
-		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation.getOpposite());
+		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
 		pos.moveForwards(1.0);
 		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 	}
@@ -201,7 +201,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public IInventory getPointedInventory() {
 		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation());
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
 		return rawInventory;
 	}
 

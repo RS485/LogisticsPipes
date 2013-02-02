@@ -112,6 +112,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 			ILogisticsModule module = candidateRouter.node.getLogisticsModule();
 			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
+			if (excludeSource) {
+				if(candidateRouter.node.getPipe().sharesInventoryWith(sourceRouter.getPipe())) continue;
+			}
 			if (module == null) continue;
 			SinkReply reply = null;
 			if (result.getValue2() == null) {

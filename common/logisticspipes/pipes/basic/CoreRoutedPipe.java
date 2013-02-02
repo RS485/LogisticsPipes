@@ -110,7 +110,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 
-	protected LinkedList<AdjacentTile> _cachedAdjacentInventories;
+	protected List<AdjacentTile> _cachedAdjacentInventories;
 	
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);

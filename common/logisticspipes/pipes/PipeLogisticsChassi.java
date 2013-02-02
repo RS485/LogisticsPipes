@@ -103,6 +103,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			return _cachedAdjacentInventories;
 		List<AdjacentTile> adjacent = new ArrayList<AdjacentTile>(1);
 		adjacent.add(new AdjacentTile(getPointedTileEntity(),ChassiLogic.orientation));
+		_cachedAdjacentInventories = adjacent;
 		return _cachedAdjacentInventories;
 	}	
 	

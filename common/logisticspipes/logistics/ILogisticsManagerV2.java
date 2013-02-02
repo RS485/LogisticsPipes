@@ -25,7 +25,6 @@ import net.minecraft.item.ItemStack;
 public interface ILogisticsManagerV2 {
 
 	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
-	IRoutedItem destinationUnreachable(IRoutedItem item, int currentRouter);
 	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, int uuid, boolean excludeSource);
 	Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
 	LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> list);

@@ -117,11 +117,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public void clearDestination() {
-		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
-			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
-			if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
-				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
+		if (destinationint >= 0) {
+			if (SimpleServiceLocator.routerManager.isRouter(destinationint)){
+				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
+				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
+					((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
+				}
 			}
+			jamlist.add(destinationint);
 		}
 		//keep buffercounter and jamlist
 		destinationint = -1;

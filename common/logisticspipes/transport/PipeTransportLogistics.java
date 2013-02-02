@@ -185,16 +185,6 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 	
 	@Override
-	public void unscheduleRemoval(IPipedItem item) {
-		super.unscheduleRemoval(item);
-		if(item instanceof IRoutedItem) {
-			IRoutedItem routed = (IRoutedItem)item;
-			routed.clearDestination();
-			routed.addToJamList(getPipe().getRouter());
-		}
-	}
-	
-	@Override
 	public ForgeDirection resolveDestination(EntityData data) {
 		
 		if(data.item != null && data.item.getItemStack() != null) {

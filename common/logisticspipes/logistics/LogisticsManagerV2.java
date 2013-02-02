@@ -210,18 +210,6 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	/**
-	 * Passes (item, int, false) to assignDestinationFor. Sets an item with unreachable destination to the source router.
-	 * @param item The IRoutedItem being routed.
-	 * @param currentRouter The simpleID of the source router.
-	 * @return IRoutedItem with calculated destination. (simpleID and UUID stored)
-	 */
-	@Override
-	public IRoutedItem destinationUnreachable(IRoutedItem item,	int currentRouter) {
-		// TODO Auto-generated method stub
-		return assignDestinationFor(item, currentRouter, false);
-	}
-
-	/**
 	 * If there is a better router name available, it will return it.  Else, it will return the UUID as a string.
 	 * @param r The IRouter that you want the name for.
 	 * @return String with value of a better name if available, else just the UUID as a string.

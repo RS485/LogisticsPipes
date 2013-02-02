@@ -15,6 +15,7 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -282,8 +283,10 @@ outer:
 	*/
 	
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
+		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
-			provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
+			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe()))
+				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
 		}
 	}
 

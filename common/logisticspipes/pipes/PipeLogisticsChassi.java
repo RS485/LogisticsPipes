@@ -51,6 +51,7 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -58,6 +59,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -95,6 +97,15 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
 
+	@Override
+	protected List<AdjacentTile> getConnectedInventories()	{
+		if(_cachedAdjacentInventories !=null)
+			return _cachedAdjacentInventories;
+		List<AdjacentTile> adjacent = new ArrayList<AdjacentTile>(1);
+		adjacent.add(new AdjacentTile(getPointedTileEntity(),ChassiLogic.orientation));
+		return _cachedAdjacentInventories;
+	}	
+	
 	public ForgeDirection getPointedOrientation(){
 		return ChassiLogic.orientation;
 	}

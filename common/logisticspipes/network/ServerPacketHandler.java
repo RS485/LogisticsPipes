@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -338,6 +339,10 @@ public class ServerPacketHandler {
 					final PacketModuleNBT packetAy = new PacketModuleNBT();
 					packetAy.readData(data);
 					onThaumicAspectSinkList(player, packetAy);
+				case NetworkConstants.CHEATJUNCTIONPOWER:
+					final PacketCoordinates packetAz = new PacketCoordinates();
+					packetAz.readData(data);
+					onCheatJunctionPower(player, packetAz);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1338,6 +1343,18 @@ public class ServerPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleThaumicAspectSink) {
 			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
 		}		
+	}
+
+	private static void onCheatJunctionPower(EntityPlayerMP player, PacketCoordinates packet) {
+		World world = player.worldObj;
+		if (!world.blockExists(packet.posX, packet.posY, packet.posZ)) {
+			return;
+		}
+
+		final TileEntity tile = world.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if (tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
+			((LogisticsPowerJuntionTileEntity_BuildCraft) tile).addEnergy(100000);
+		}
 	}
 
 	private static void onFirewallFlags(EntityPlayerMP player, PacketPipeBitSet packet) {

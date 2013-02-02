@@ -93,4 +93,5 @@ public class NetworkConstants {
 	public static final int FIREWALL_FLAG_SET = 87;
 	public static final int SECURITY_CARD = 89;
 	public static final int THAUMICASPECTSINKLIST = 90;
+	public static final int CHEATJUNCTIONPOWER = 91;
 }

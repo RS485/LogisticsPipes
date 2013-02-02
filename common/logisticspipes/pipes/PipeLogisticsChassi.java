@@ -97,14 +97,14 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
 
-	@Override
+/*	@Override
 	protected List<AdjacentTile> getConnectedInventories()	{
 		if(_cachedAdjacentInventories !=null)
 			return _cachedAdjacentInventories;
 		List<AdjacentTile> adjacent = new ArrayList<AdjacentTile>(1);
 		adjacent.add(new AdjacentTile(getPointedTileEntity(),ChassiLogic.orientation));
 		return _cachedAdjacentInventories;
-	}	
+	}	*/
 	
 	public ForgeDirection getPointedOrientation(){
 		return ChassiLogic.orientation;
@@ -112,7 +112,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 
 	public TileEntity getPointedTileEntity(){
 		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
-		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
+		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation.getOpposite());
 		pos.moveForwards(1.0);
 		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 	}

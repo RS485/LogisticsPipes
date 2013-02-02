@@ -209,9 +209,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	 */
 	public boolean sharesInventoryWith(CoreRoutedPipe other){
 		List<AdjacentTile> others = other.getConnectedInventories();
+		if(others==null || others.size()==0)
+			return false;
 		for(AdjacentTile i : getConnectedInventories()){
 			for(AdjacentTile o : others){
-				if(i.tile==o.tile)
+				if(i!=null && o!=null && (i.tile==o.tile))
 					return true;
 			}
 		}

@@ -18,8 +18,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import thaumcraft.api.EnumTag;
-import thaumcraft.api.ObjectTags;
 import cpw.mods.fml.common.Loader;
 
 public class ProxyManager {
@@ -104,9 +102,11 @@ public class ProxyManager {
 		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
-				@Override public void renderAspectAt(EnumTag etag, int x, int y, GuiScreen gui) {}
-				@Override public ObjectTags getTagsForStack(ItemStack stack) {return null;}
-				@Override public void renderAspectsInGrid(List<EnumTag> etag, int x, int y, int legnth, int width, GuiScreen gui) {}
+				@Override public void renderAspectAt(Object etag, int x, int y, GuiScreen gui) {}
+				@Override public Object getTagsForStack(ItemStack stack) {return null;}
+				@Override public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {}
+				@Override public List<Integer> getListOfTagIDsForStack(ItemStack stack) {return null;}
+				@Override public String getNameForTagID(int id) {return null;}
 			});
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}

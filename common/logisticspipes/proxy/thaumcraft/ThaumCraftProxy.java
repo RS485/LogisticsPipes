@@ -1,5 +1,6 @@
 package logisticspipes.proxy.thaumcraft;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.proxy.MainProxy;
@@ -64,12 +65,12 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param gui The gui to render on.
 	 */
 	@Override
-	public void renderAspectAt(EnumTag etag, int x, int y, GuiScreen gui) {
-		if(!MainProxy.isClient()) return;
-		if (etag == null) return;
+	public void renderAspectAt(Object etag, int x, int y, GuiScreen gui) {
+		if (!(etag instanceof EnumTag)) return;
+		if (!MainProxy.isClient()) return;
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		UtilsFX.drawTag(mc, x, y, etag, 1, gui, true, false);
+		UtilsFX.drawTag(mc, x, y, (EnumTag)etag, 1, gui, true, false);
 		GL11.glPopMatrix();
 	}
 
@@ -78,7 +79,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * Used to render a rectangle of different aspects. Algorithm does top row 
 	 * then the next row down, and so on. It will stop when it runs out of 
 	 * aspects to render.
-	 * @param etag A list of aspects in EnumTag to render.
+	 * @param etagIDs A list of aspect IDs in Integer list to render.
 	 * @param x Starting coordinate, top left.
 	 * @param y Starting coordinate, top left.
 	 * @param legnth Int of number of columns.
@@ -86,22 +87,52 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param gui The GuiScreen to render on.
 	 */
 	@Override
-	public void renderAspectsInGrid(List<EnumTag> etag, int x, int y, int legnth, int width, GuiScreen gui) {
+	public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {
 		if(!MainProxy.isClient()) return;
-		if (etag.size() == 0) return;
+		if (etagIDs.size() == 0) return;
 		int xshift = x;
 		int yshift = y;
-		int currentTag = 0;
+		int currentListIndex = 0;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < legnth; j++) {
-				renderAspectAt(etag.get(currentTag), xshift, yshift, gui);
-				currentTag += 1;
-				if(currentTag == etag.size()) return;
+				renderAspectAt(EnumTag.get(etagIDs.get(currentListIndex)), xshift, yshift, gui);
+				currentListIndex += 1;
+				if(currentListIndex == etagIDs.size()) return;
 				xshift += 18;
 			}
 			xshift = x;
 			yshift += 18;
 		}
+	}
+
+	/**
+	 * Used to get a list of integers representing the IDs of all the aspects
+	 * in the given ItemStack.  Returns null if object has no tags.
+	 * @param stack The item to get tags for.
+	 * @return An Integer list of aspect IDs.
+	 */
+	@Override
+	public List<Integer> getListOfTagIDsForStack(ItemStack stack) {
+		if (stack == null) return null;
+		List<Integer> list = new LinkedList<Integer>();
+		ObjectTags tags = getTagsForStack(stack);
+		EnumTag[] tagArray = tags.getAspectsSorted();
+		if (tagArray.length == 0 || tagArray == null) return null;
+		for (int i = 0; i < tagArray.length; i++) {
+			int ID = tagArray[i].id;
+			list.add(ID);
+		}
+		return list;
+	}
+
+	/**
+	 * Used to get name for given aspect ID.
+	 * @param id The id to get name for.
+	 * @return String of the aspect name.
+	 */
+	@Override
+	public String getNameForTagID(int id) {
+		return EnumTag.get(id).name;
 	}
 	
 }

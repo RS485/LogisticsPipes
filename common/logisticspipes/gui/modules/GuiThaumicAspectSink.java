@@ -1,8 +1,5 @@
 package logisticspipes.gui.modules;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -11,7 +8,6 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
-import thaumcraft.api.EnumTag;
 import buildcraft.core.utils.SimpleInventory;
 import buildcraft.transport.Pipe;
 
@@ -104,11 +100,6 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 			SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(tmpInv.getStackInSlot(0), guiLeft + 175, guiTop + 8, this);
 		}
 		
-		if (_module.aspectList.size() == 0) return;
-		List<EnumTag> etag = new LinkedList<EnumTag>();
-		for (int i = 0; i < _module.aspectList.size(); i++) {
-			etag.add(EnumTag.get(_module.aspectList.get(i)));
-		}
-		SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(etag, guiLeft + 61, guiTop + 37, 3, 3, this);
+		SimpleServiceLocator.thaumCraftProxy.renderAspectsInGrid(_module.aspectList, guiLeft + 61, guiTop + 37, 3, 3, this);
 	}
 }

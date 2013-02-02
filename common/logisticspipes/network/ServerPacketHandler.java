@@ -1307,17 +1307,6 @@ public class ServerPacketHandler {
 	}
 
 	private static void onModBasedItemSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
-		if(packet.slot == 20) {
-			if(player.openContainer instanceof DummyModuleContainer) {
-				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ModuleModBasedItemSink) {
-					ModuleModBasedItemSink module = (ModuleModBasedItemSink) dummy.getModule();
-					module.readFromNBT(packet.tag);
-				}
-			}
-			return;
-		}
-
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null) {
 			return;

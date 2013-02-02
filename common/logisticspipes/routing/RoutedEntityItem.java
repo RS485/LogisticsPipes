@@ -84,7 +84,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 			//detect items spawning in the center of pipes and move them to the exit side
 			if(position.x == container.xCoord + 0.5 && position.y == container.yCoord + 0.25 && position.z == container.zCoord + 0.5) {
-				System.out.println("bla");
 				position.orientation = dir;
 				if(dir == ForgeDirection.DOWN) {
 					position.moveForwards(0.25);

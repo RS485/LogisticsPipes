@@ -142,7 +142,7 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		if (itemAspectList == null) return;
 		boolean listChanged = false;
 		for (int i = 0; i < itemAspectList.size(); i++) {
-			if (aspectList.contains(itemAspectList.get(i))) continue;
+			if (aspectList.contains(itemAspectList.get(i)) || aspectList.size() >= 9) continue;
 			aspectList.add(itemAspectList.get(i));
 			listChanged = true;
 		}

@@ -19,7 +19,6 @@ import logisticspipes.utils.ItemIdentifier;
 public interface IProvideItems {
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filter);
 	public void fullFill(LogisticsPromise promise, IRequestItems destination);
-	public int getAvailableItemCount(ItemIdentifier item);
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);
 	public IRouter getRouter();
 }

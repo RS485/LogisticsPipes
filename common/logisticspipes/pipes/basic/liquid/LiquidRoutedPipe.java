@@ -200,19 +200,13 @@ public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravel
 			if(filled == liquid.amount) return;
 			//If liquids still exist,
 			liquid.amount -= filled;
-			if(((IRoutedItem)data.item).getSource() != -1) {
-				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
-				routedItem.setDestination(((IRoutedItem)data.item).getSource());
-				routedItem.setTransportMode(TransportMode.Passive);
-				this.queueRoutedItem(routedItem, data.output.getOpposite());
-			} else {
-				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
-				Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
-				int dest = replies.getValue1();
-				routedItem.setDestination(dest);
-				routedItem.setTransportMode(TransportMode.Passive);
-				this.queueRoutedItem(routedItem, data.output.getOpposite());
-			}
+
+			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
+			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
+			int dest = replies.getValue1();
+			routedItem.setDestination(dest);
+			routedItem.setTransportMode(TransportMode.Passive);
+			this.queueRoutedItem(routedItem, data.output.getOpposite());
 		}
 	}
 

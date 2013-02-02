@@ -71,8 +71,9 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public int zCoord = 0;
 	private IWorldProvider _world;
 
-	public LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
+	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
+	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
 	
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
@@ -156,9 +157,14 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().toUndamaged()) || filter.blockProvider()) return;
 		}
-		int canProvide = getAvailableItemCount(tree.getStack().getItem());
+		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
+		if (donePromisses.containsKey(tree.getStack().getItem())) {
+			canProvide -= donePromisses.get(tree.getStack().getItem());
+		}
+		if (canProvide < 1) return;
+		canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())) {
 			canProvide -= donePromisses.get(tree.getStack().getItem());
 		}
@@ -180,17 +186,23 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
-	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
+	private int getCachedAvailableItemCount(ItemIdentifier item) {
+		if(displayMap.containsKey(item)) {
+			return displayMap.get(item);
+		}
+		return 0;
+	}
+
+	private int getAvailableItemCount(ItemIdentifier item) {
 		return getTotalItemCount(item) - _orderManager.totalItemsCountInOrders(item);
 	}
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		if (_invProvider.getInventory() == null) return;
+		if (_invProvider.getPointedInventory() == null) return;
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
 		
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 outer:
 		for (ItemIdentifier currItem : currentInv.keySet()) {
@@ -199,7 +211,7 @@ outer:
 			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
 			
 			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue outer;
+				if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue outer;
 			}
 			
 			if (!addedItems.containsKey(currItem)){
@@ -241,11 +253,11 @@ outer:
 	
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
-		if (_invProvider.getInventory() == null) {
+		if (_invProvider.getPointedInventory() == null) {
 			_orderManager.sendFailed();
 			return 0;
 		}
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
@@ -267,13 +279,13 @@ outer:
 	
 	public int getTotalItemCount(ItemIdentifier item) {
 		
-		if (_invProvider.getInventory() == null) return 0;
+		if (_invProvider.getPointedInventory() == null) return 0;
 		
 		if (!_filterInventory.isEmpty()
 				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
 						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
 		
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		return inv.itemCount(item);
 	}
 	
@@ -346,15 +358,17 @@ outer:
 	
 	private void checkUpdate(EntityPlayer player) {
 		displayList.clear();
-		Map<ItemIdentifier, Integer> list = new HashMap<ItemIdentifier, Integer>();
-		getAllItems(list, new ArrayList<IFilter>(0));
-		for(ItemIdentifier item :list.keySet()) {
-			displayList.add(new ItemIdentifierStack(item, list.get(item)));
+		displayMap.clear();
+		getAllItems(displayMap, new ArrayList<IFilter>(0));
+		displayList.ensureCapacity(displayMap.size());
+		for(ItemIdentifier item :displayMap.keySet()) {
+			displayList.add(new ItemIdentifierStack(item, displayMap.get(item)));
 		}
 		if(!oldList.equals(displayList)) {
-			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
 			oldList.clear();
+			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
+			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
 		}
 		if(player != null) {
 			MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
@@ -388,7 +402,7 @@ outer:
 	}
 
 	@Override
-	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+	public void handleInvContent(List<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

@@ -110,7 +110,7 @@ public class HUDProvider extends BasicHUDGui {
 		GL11.glTranslatef(0.0F, 0.0F, -0.005F);
 		GL11.glScalef(1.5F, 1.5F, 0.0001F);
 		GL11.glScalef(0.8F, 0.8F, -1F);
-		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.itemList, null, page, -35, -35, 4, 12, 18, 18, mc, true, true, true, true);
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.displayList, null, page, -35, -35, 4, 12, 18, 18, mc, true, true, true, true);
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(pipe.itemListOrderer, null, pageB, -35, 25, 4, 4, 18, 18, mc, true, true, true, true);
 		GL11.glScalef(0.8F, 0.8F, -1F);
 		String message = "(" + Integer.toString(page + 1) + "/" + Integer.toString(getMaxPage()) + ")";
@@ -120,8 +120,8 @@ public class HUDProvider extends BasicHUDGui {
 	}
 	
 	public int getMaxPage() {
-		int ret = pipe.itemList.size() / 12;
-		if(pipe.itemList.size() % 12 != 0 || ret == 0) {
+		int ret = pipe.displayList.size() / 12;
+		if(pipe.displayList.size() % 12 != 0 || ret == 0) {
 			ret++;
 		}
 		return ret;
@@ -137,7 +137,7 @@ public class HUDProvider extends BasicHUDGui {
 
 	@Override
 	public boolean display(HUDConfig config) {
-		return pipe.itemList.size() > 0 && config.isHUDProvider();
+		return pipe.displayList.size() > 0 && config.isHUDProvider();
 	}
 	
 	@Override

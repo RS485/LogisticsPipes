@@ -37,12 +37,12 @@
 	<property name="ic2.version"          value="1.112.189-lf"/>
 	<property name="cc.version"           value="1.48pr2"/>
 	<property name="lp.version"           value="0.7.0"/>
-	<property name="lp.version.full"      value="${lp.version}.${BUILD_NUMBER}"/>
-
-	<echo message="Starting build for ${lp.version.full} for MC ${mc.version} for BC ${bc.version}"/>
-
+	
 	<!-- Targets -->
-
+	<target name="init-msg">
+		<echo message="Starting build for ${lp.version.full} for MC ${mc.version} for BC ${bc.version}"/>
+	</target>
+	
 	<target name="clean">
 		<delete dir="${build.dir}"/>
 	</target>
@@ -280,22 +280,26 @@
 		<echo message="Packing finished"/>
 
 	</target>
-
-	<target name="main" depends="clean, setup, package-simple"/>
-
+	
+	<target name="vars">
+		<property name="lp.version.full"      value="${lp.version}.${BUILD_NUMBER}"/>
+	</target>
+	
 	<target name="vars-dev">
 		<property name="lp.version.full"      value="${lp.version}.dev.${BUILD_NUMBER}"/>
 	</target>
-
-	<target name="ci-dev" depends="vars-dev, clean, setup, package-sign"/>
-
-	<target name="ci" depends="clean, setup, package-sign"/>
-
+	
 	<target name="vars-test">
 		<property name="lp.version.full" value="0.0.0.0"/>
 		<property name="DEBUG"           value="true"/>
 	</target>
-
-	<target name="test" depends="vars-test, clean, setup, compile"/>
-
+	
+	<target name="main" depends="vars, init-msg, clean, setup, package-simple"/>
+	
+	<target name="ci-dev" depends="vars-dev, init-msg, clean, setup, package-sign"/>
+	
+	<target name="ci" depends="vars, init-msg, clean, setup, package-sign"/>
+	
+	<target name="test" depends="vars-test, init-msg, clean, setup, compile"/>
+	
 </project>

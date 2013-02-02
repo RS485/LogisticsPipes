@@ -2,9 +2,9 @@ package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
 
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketSimulate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
@@ -28,8 +28,8 @@ public class MessageManager {
 		MainProxy.sendPacketToPlayer(new PacketItems(items,false).getPacket(), (Player)player);
 	}
 
-	public static void simulated(EntityPlayerMP player, LinkedList<ItemMessage> items) {
-		MainProxy.sendPacketToPlayer(new PacketItems(items,NetworkConstants.COMPONENT_LIST).getPacket(), (Player)player);		
+	public static void simulated(EntityPlayerMP player, LinkedList<ItemMessage> used, LinkedList<ItemMessage> missing) {
+		MainProxy.sendPacketToPlayer(new PacketSimulate(used,missing).getPacket(), (Player)player);		
 	}
 	
 }

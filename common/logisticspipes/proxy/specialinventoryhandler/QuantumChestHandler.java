@@ -133,6 +133,23 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
+	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+		ItemStack[] data = new ItemStack[]{};
+		try {
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return false;
+		ItemIdentifier dataIdent = ItemIdentifier.getUndamaged(data[0]);
+		return itemIdent == dataIdent;
+	}
+
+	@Override
 	public int roomForItem(ItemIdentifier itemIdent) {
 		int result = Integer.MAX_VALUE - 128;
 		ItemStack[] data = new ItemStack[]{};

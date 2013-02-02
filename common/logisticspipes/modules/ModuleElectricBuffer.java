@@ -1,13 +1,17 @@
 package logisticspipes.modules;
 
+import java.util.List;
+
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
@@ -22,7 +26,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	private int yCoord;
 	private int zCoord;
 	private IWorldProvider _world;
-	
+
 	private int currentTickCount = 0;
 	private int ticksToAction = 80;
 
@@ -70,18 +74,18 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	public void tick() {
 		if (++currentTickCount < ticksToAction) return;
 		currentTickCount = 0;
-		
-		IInventory inv = _invProvider.getInventory();
+
+		IInventory inv = _invProvider.getPointedInventory();
 		if (inv == null) return;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				if (SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork)) {
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
-					_itemSender.sendStack(inv.decrStackSize(i, 1));
-					return;
-				}
+				Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+				if(reply == null) continue;
+				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+				_itemSender.sendStack(inv.decrStackSize(i, 1), reply);
+				return;
 			}
 			continue;
 		}

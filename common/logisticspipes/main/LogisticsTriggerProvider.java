@@ -10,6 +10,7 @@ package logisticspipes.main;
 
 import java.util.LinkedList;
 
+import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
@@ -33,6 +34,11 @@ public class LogisticsTriggerProvider implements ITriggerProvider{
 	public LinkedList<ITrigger> getNeighborTriggers(Block block, TileEntity tile) {
 		// TODO Auto-generated method stub
 		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft){
+			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
+			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
+			return triggers;
+		}
+		if(tile instanceof LogisticsSolderingTileEntity){
 			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;

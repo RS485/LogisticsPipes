@@ -112,11 +112,11 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 
 	public void markChunkModified(TileEntity tile) {
-		if(tile!=null && MainProxy.isServer(tile.worldObj)) {
+		if(tile != null && chunk != null) {
 			//items are crossing a chunk boundary, mark both chunks modified
 			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
 				chunk.isModified = true;
-				if((tile instanceof TileGenericPipe) && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics) {
+				if(tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics && ((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk != null) {
 					((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
 				} else {
 					worldObj.updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
@@ -161,8 +161,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				if (currentTimeOut > 0){
 					_itemBuffer.get(next).setValue1(currentTimeOut - 1);
 				} else {
-					EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
-					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
+					EntityPassiveItem item = new EntityPassiveItem(worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
+					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 					routedItem.setDoNotBuffer(true);
 					routedItem.setBufferCounter(_itemBuffer.get(next).getValue2() + 1);
 					toAdd.add(routedItem);
@@ -179,23 +179,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
 		while (iterator.hasNext()){
 			ItemStack next = iterator.next();
-			SimpleServiceLocator.buildCraftProxy.dropItems(this.container.worldObj, next, this.xCoord, this.yCoord, this.zCoord);
+			SimpleServiceLocator.buildCraftProxy.dropItems(worldObj, next, this.xCoord, this.yCoord, this.zCoord);
 			iterator.remove();
-		}
-	}
-	
-	@Override
-	public void unscheduleRemoval(IPipedItem item) {
-		super.unscheduleRemoval(item);
-		if(item instanceof IRoutedItem) {
-			IRoutedItem routed = (IRoutedItem)item;
-			routed.changeDestination(-1);
-			EntityData data = travelingEntities.get(item.getEntityId());
-			IRoutedItem newRoute = routed.getNewUnRoutedItem();
-			data.item = newRoute.getEntityPassiveItem();
-			newRoute.setReRoute(true);
-			newRoute.addToJamList(getPipe().getRouter());
-			newRoute.setBufferCounter(routed.getBufferCounter());
 		}
 	}
 	
@@ -205,15 +190,14 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
-				
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
+		data.item.setWorld(worldObj);
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
 		ForgeDirection value;
 		if(this.getPipe().stillNeedReplace()){
 			routedItem.setDoNotBuffer(false);
 			value = ForgeDirection.UNKNOWN;
 		} else
 			value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
-		routedItem.setReRoute(false);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);
@@ -332,10 +316,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				ForgeDirection insertion = data.output.getOpposite();
 				if(manager.hasSneakyUpgrade()) {
-					insertion = manager.getSneakyUpgrade().getSneakyOrientation();
-					if(insertion == null) {
-						insertion = data.output.getOpposite();
-					}
+					insertion = manager.getSneakyOrientation();
 				}
 				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 				

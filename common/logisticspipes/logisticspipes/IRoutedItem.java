@@ -36,9 +36,7 @@ public interface IRoutedItem {
 	public int getDestination();
 	public UUID getDestinationUUID();
 	public void setDestination(int destination);
-	public void changeDestination(int destination);
-	public int getSource();
-	public void setSource(int source);
+	public void clearDestination();
 	
 	public void addRelayPoints(List<IRelayItem> relays);
 	public void itemRelayed();
@@ -66,7 +64,6 @@ public interface IRoutedItem {
 	//public float getSpeedBoost();
 	
 	public EntityPassiveItem getEntityPassiveItem();
-	public IRoutedItem getNewUnRoutedItem();
 	public IPipedItem getNewEntityPassiveItem();
 	
 	public void setArrived(boolean flag);
@@ -75,13 +72,8 @@ public interface IRoutedItem {
 	public void split(World worldObj, int itemsToTake, ForgeDirection orientation);
 	public void SetPosition(double x, double y, double z);
 	
-	public boolean isReRoute();
-	public void setReRoute(boolean flag);
-	
 	public void addToJamList(IRouter router);
 	public List<Integer> getJamList();
-	
-	public boolean isUnRouted();
 	
 	public IRoutedItem getCopy();
 	public void checkIDFromUUID();

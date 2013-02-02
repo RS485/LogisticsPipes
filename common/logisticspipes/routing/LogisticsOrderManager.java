@@ -83,16 +83,14 @@ public class LogisticsOrderManager {
 	}
 
 	public void addOrder(ItemIdentifierStack stack, IRequestItems requester, List<IRelayItem> relays) {
-		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
-			if (request.getValue1().getItem() == stack.getItem()) {
-				if(request.getValue2() == requester) {
-					request.getValue1().stackSize += stack.stackSize;
-					listen();
-					return;
-				}
+		for (Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> request : _orders){
+			if (request.getValue1().getItem() == stack.getItem() && request.getValue2() == requester) {
+				stack.stackSize += request.getValue1().stackSize;
+				_orders.remove(request);
+				break;
 			}
 		}
-		_orders.addLast(new Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>>(stack,requester, relays));
+		_orders.addLast(new Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>>(stack, requester, relays));
 		listen();
 	}
 	

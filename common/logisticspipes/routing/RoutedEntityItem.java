@@ -35,7 +35,9 @@ import buildcraft.transport.TileGenericPipe;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
+	int sourceint = -1;
 	int destinationint = -1;
+	UUID sourceUUID;
 	UUID destinationUUID;
 	
 	boolean _doNotBuffer;
@@ -43,6 +45,8 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	int bufferCounter = 0;
 	
 	boolean arrived;
+	boolean reRoute;
+	boolean isUnrouted;
 	
 	LinkedList<Integer> relays = new LinkedList<Integer>();
 	
@@ -60,6 +64,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
 			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
+			this.sourceUUID=settings.sourceUUID;
 			this.destinationUUID=settings.destinationUUID;
 			this.checkIDFromUUID();
 
@@ -76,22 +81,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			if (getItemStack().stackSize <= 0) {
 				return null;
 			}
-
+			
 			if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 				remove();
 				return null;
-			}
-
-			//detect items spawning in the center of pipes and move them to the exit side
-			if(position.x == container.xCoord + 0.5 && position.y == container.yCoord + 0.25 && position.z == container.zCoord + 0.5) {
-				position.orientation = dir;
-				if(dir == ForgeDirection.DOWN) {
-					position.moveForwards(0.25);
-				} else  if(dir == ForgeDirection.UP) {
-					position.moveForwards(0.75);
-				} else {
-					position.moveForwards(0.5);
-				}
 			}
 
 			Position motion = new Position(0, 0, 0, dir);
@@ -102,7 +95,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			entityitem.lifespan = BuildCraftCore.itemLifespan;
 			entityitem.delayBeforeCanPickup = 10;
 
-			float f3 = worldObj.rand.nextFloat() * 0.01F - 0.02F;
+			float f3 = 0.00F + worldObj.rand.nextFloat() * 0.01F - 0.02F;
 			entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.x;
 			entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.y;
 			entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.z;
@@ -116,30 +109,35 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 	
 	@Override
-	public void clearDestination() {
-		if (destinationint >= 0) {
-			if (SimpleServiceLocator.routerManager.isRouter(destinationint)){
-				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
-				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
-					((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
-				}
+	public void changeDestination(int newDestination){
+		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
+			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint);
+
+			destinationRouter.itemDropped(this);
+			
+			if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
+				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
-			jamlist.add(destinationint);
 		}
-		//keep buffercounter and jamlist
-		destinationint = -1;
-		destinationUUID = null;
-		_doNotBuffer = false;
-		arrived = false;
-		relays.clear();
-		_transportMode = TransportMode.Unknown;
+		destinationint = newDestination;
+		if(newDestination >= 0) {
+			isUnrouted = false;
+			this.destinationUUID = SimpleServiceLocator.routerManager.getRouter(newDestination).getId();
+		} else {
+			this.destinationUUID = null;
+		}
 	}
 	
 	@Override
 	public void remove() {
 		if(MainProxy.isClient()) return;
+		if (sourceint >= 0 && SimpleServiceLocator.routerManager.isRouter(sourceint)) {
+			SimpleServiceLocator.routerManager.getRouter(sourceint).itemDropped(this);
+		}
+		
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
+			destinationRouter.itemDropped(this);
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 			}
@@ -169,11 +167,26 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public void setDestination(int destination) {
 		this.destinationint = destination;
-		IRouter router = SimpleServiceLocator.routerManager.getRouter(destination);
-		if(router != null) {
-			this.destinationUUID = router.getId();
+		if(destination >= 0) {
+			isUnrouted = false;
+			this.destinationUUID = SimpleServiceLocator.routerManager.getRouter(destination).getId();
 		} else {
 			this.destinationUUID = null;
+		}
+	}
+
+	@Override
+	public int getSource() {
+		return this.sourceint;
+	}
+
+	@Override
+	public void setSource(int source) {
+		this.sourceint = source;
+		if(source >= 0) {
+			this.sourceUUID = SimpleServiceLocator.routerManager.getRouter(source).getId();
+		} else {
+			this.sourceUUID = null;
 		}
 	}
 
@@ -240,6 +253,22 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
+	public IRoutedItem getNewUnRoutedItem() {
+		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
+			throw new UnsupportedOperationException("Can't change LiquidContainer to UnRoutedItem");
+		}
+		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
+		Entityitem.setContainer(container);
+		Entityitem.setPosition(position.x, position.y, position.z);
+		Entityitem.setSpeed(speed);
+		Entityitem.setItemStack(item);
+		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
+		routed.isUnrouted = true;
+		routed.jamlist.addAll(jamlist);
+		return routed;
+	}
+
+	@Override
 	public EntityPassiveItem getNewEntityPassiveItem() {
 		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 			throw new UnsupportedOperationException("Can't change LiquidContainer to EntityPassiveItem");
@@ -253,6 +282,16 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
+	public boolean isReRoute() {
+		return reRoute;
+	}
+
+	@Override
+	public void setReRoute(boolean flag) {
+		reRoute = flag;
+	}
+
+	@Override
 	public void addToJamList(IRouter router) {
 		jamlist.add(router.getSimpleID());
 	}
@@ -260,6 +299,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	@Override
 	public List<Integer> getJamList() {
 		return jamlist;
+	}
+
+	@Override
+	public boolean isUnRouted() {
+		return isUnrouted;
 	}
 
 	@Override
@@ -280,10 +324,13 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		Entityitem.setSpeed(speed);
 		Entityitem.setItemStack(item.copy());
 		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
+		routed.sourceint = sourceint;
 		routed.destinationint = destinationint;
 		routed._doNotBuffer = _doNotBuffer;
 		routed.bufferCounter = bufferCounter;
 		routed.arrived = arrived;
+		routed.reRoute = reRoute;
+		routed.isUnrouted = isUnrouted;
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
 		routed.relays.addAll(relays);
@@ -322,10 +369,15 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public void checkIDFromUUID() {	
+//		if(destinationint == -1) return;
 		IRouterManager rm = SimpleServiceLocator.routerManager;
 		IRouter router = rm.getRouter(destinationint);
 		if(router==null || destinationUUID!=router.getId()) {
 			destinationint=rm.getIDforUUID(destinationUUID);
+		}		
+		router = rm.getRouter(sourceint);
+		if(router==null || sourceUUID!=router.getId()) {
+			sourceint=rm.getIDforUUID(sourceUUID);
 		}		
 	}
 }

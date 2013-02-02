@@ -44,7 +44,6 @@ import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -55,9 +54,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
-import logisticspipes.utils.SinkReply;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -80,7 +77,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	private boolean init = false;
 	BaseChassiLogic ChassiLogic;
 	private boolean convertFromMeta = false;
-
+	
 	//HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
@@ -94,35 +91,20 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		_module = new ChassiModule(getChassiSize(), this);
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
-
-	@Override
-	protected List<IInventory> getConnectedRawInventories()	{
-		if(_cachedAdjacentInventories != null) {
-			return _cachedAdjacentInventories;
-		}
-		List<IInventory> adjacent = new ArrayList<IInventory>(1);
-		IInventory adjinv = getRawInventory();
-		if(adjinv != null) {
-			adjacent.add(adjinv);
-		}
-		_cachedAdjacentInventories = adjacent;
-		return _cachedAdjacentInventories;
-	}	
 	
 	public ForgeDirection getPointedOrientation(){
 		return ChassiLogic.orientation;
 	}
-
+	
 	public TileEntity getPointedTileEntity(){
 		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
 		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
 		pos.moveForwards(1.0);
 		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 	}
-
+	
 	public void nextOrientation() {
 		boolean found = false;
-		ForgeDirection oldOrientation = ChassiLogic.orientation;
 		for (int l = 0; l < 6; ++l) {
 			ChassiLogic.orientation = ForgeDirection.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
 			if(isValidOrientation(ChassiLogic.orientation)) {
@@ -133,13 +115,10 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if (!found) {
 			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
 		}
-		if(ChassiLogic.orientation != oldOrientation) {
-			clearCache();
-			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
-			refreshRender(true);
-		}
+		MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
+		refreshRender(true);
 	}
-
+	
 	private boolean isValidOrientation(ForgeDirection connection){
 		if (connection == ForgeDirection.UNKNOWN) return false;
 		if (getRouter().isRoutedExit(connection)) return false;
@@ -151,21 +130,21 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if (tile instanceof TileGenericPipe) return false;
 		return SimpleServiceLocator.buildCraftProxy.checkPipesConnections(this.container, tile, connection);
 	}
-
+	
 	public IInventory getModuleInventory(){
 		return this._moduleInventory;
 	}
-
+	
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
-
+	
 	@Override
 	public TextureType getRoutedTexture(ForgeDirection connection) {
 		return Textures.LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE;
 	}
-
+	
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if (connection.equals(ChassiLogic.orientation)){
@@ -173,7 +152,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
 	}
-
+	
 	@Override
 	public void onNeighborBlockChange_Logistics() {
 		if (!isValidOrientation(ChassiLogic.orientation)){
@@ -182,41 +161,28 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 	};
-
+	
 	@Override
 	public void onBlockPlaced() {
 		super.onBlockPlaced();
 		switchOrientationOnTick = true;
 	}
-
-
+	
+	
 	/*** IInventoryProvider ***/
-
+	
 	@Override
 	public IInventory getRawInventory() {
 		TileEntity tile = getPointedTileEntity();
-		if (tile == null ) return null;
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
-
+	
 	@Override
-	public IInventory getPointedInventory() {
+	public IInventory getInventory() {
 		IInventory rawInventory = getRawInventory();
 		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
-		return rawInventory;
-	}
-
-	@Override
-	public IInventory getSneakyInventory() {
-		UpgradeManager manager = getUpgradeManager();
-		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
-		if(manager.hasSneakyUpgrade()) {
-			insertion = manager.getSneakyOrientation();
-		}
-		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, insertion);
 		return rawInventory;
 	}
 
@@ -224,49 +190,42 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();
 	}
-
+	
 	/*** ISendRoutedItem ***/
-
+	
 	public int getSourceint() {
 		return this.getRouter().getSimpleID();
 	};
-
+	
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault) {
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
-	}
-
-	@Override
-	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply) {
+	public void sendStack(ItemStack stack) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
-		itemToSend.setDestination(reply.getValue1());
-		if (reply.getValue2().isPassive){
-			if (reply.getValue2().isDefault){
-				itemToSend.setTransportMode(TransportMode.Default);
-			} else {
-				itemToSend.setTransportMode(TransportMode.Passive);
-			}
-		}
-		List<IRelayItem> list = new LinkedList<IRelayItem>();
-		if(reply.getValue3() != null) {
-			for(IFilter filter:reply.getValue3()) {
-				list.add(filter);
-			}
-		}
-		itemToSend.addRelayPoints(list);
+		//itemToSend.setSource(this.getRouter().getSimpleID());
+		itemToSend.setTransportMode(TransportMode.Passive);
+		super.queueRoutedItem(itemToSend, getPointedOrientation());
+	}
+	
+	@Override
+	public void sendStack(ItemStack stack, int destination, List<IRelayItem> relays) {
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		itemToSend.setSource(this.getRouter().getSimpleID());
+		itemToSend.setDestination(destination);
+		itemToSend.setTransportMode(TransportMode.Active);
+		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation());
 	}
 
 	@Override
 	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		itemToSend.setSource(this.getRouter().getSimpleID());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
-
+	
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		try {
 			super.readFromNBT(nbttagcompound);
@@ -277,12 +236,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
-			switchOrientationOnTick = (ChassiLogic.orientation == ForgeDirection.UNKNOWN);
+			switchOrientationOnTick = false;
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
-
+	
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
@@ -317,7 +276,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				}
 				continue;
 			}
-
+			
 			if (stack.getItem() instanceof ItemModule){
 				ILogisticsModule current = _module.getModule(i);
 				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this, this);
@@ -362,14 +321,14 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 	}
-
+	
 	public abstract int getChassiSize();
-
+	
 	@Override
 	public final ILogisticsModule getLogisticsModule() {
 		return _module;
 	}
-
+	
 	@Override
 	public TransportLayer getTransportLayer() {
 		if (this._transportLayer == null){
@@ -377,7 +336,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 		return _transportLayer;
 	}
-
+	
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
 		if(MainProxy.isClient()) return false;
 		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID) {
@@ -394,11 +353,11 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 		return false;
 	}
-
+	
 	@Override
 	public boolean blockActivated(World world, int x, int y, int z,	EntityPlayer entityplayer) {
 		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, x, y, z, entityplayer);
-
+		
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
 			if (entityplayer.isSneaking()){
 				if(MainProxy.isServer(this.worldObj)) {
@@ -411,18 +370,18 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		if(tryInsertingModule(entityplayer)) {
 			return true;
 		}
-
+		
 		return super.blockActivated(world, x, y, z, entityplayer);
 	}
-
+	
 	/*** IProvideItems ***/
 	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
-
+		
 		if (!isEnabled()){
 			return;
 		}
-
+		
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
@@ -430,7 +389,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 	}
-
+	
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
 		if (!isEnabled()){
@@ -444,7 +403,22 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 	}
-
+	
+	@Override
+	public int getAvailableItemCount(ItemIdentifier item) {
+		if (!isEnabled()){
+			return 0;
+		}
+		
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			if (x instanceof ILegacyActiveModule){
+				return ((ILegacyActiveModule)x).getAvailableItemCount(item);
+			}
+		}
+		return 0;
+	}
+	
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter) {
 		if (!isEnabled()){
@@ -458,12 +432,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			}
 		}
 	}
-
+	
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
-
+	
 	@Override
 	public World getWorld() {
 		return this.worldObj;
@@ -517,7 +491,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		localModeWatchers.remove(player);
 	}
 
-	public void handleModuleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
+	public void handleModuleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
@@ -532,11 +506,11 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 	}
 
-	public void handleSendQueueItemIdentifierList(List<ItemIdentifierStack> _allItems){
+	public void handleSendQueueItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems){
 		displayList.clear();
 		displayList.addAll(_allItems);
 	}
-
+	
 	public ChassiModule getModules() {
 		return _module;
 	}

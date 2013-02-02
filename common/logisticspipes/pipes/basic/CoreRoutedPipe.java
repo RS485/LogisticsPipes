@@ -48,14 +48,12 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -67,7 +65,6 @@ import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Normal")
@@ -110,8 +107,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>(); 
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
-
-	protected List<IInventory> _cachedAdjacentInventories;
 	
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);
@@ -203,38 +198,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
-	/**
-	 * Designed to help protect against routing loops - if both pipes are on the same block, and of ISided overlapps, return true
-	 * @param other
-	 * @return boolean indicating if both pull from the same inventory.
-	 */
-	public boolean sharesInventoryWith(CoreRoutedPipe other){
-		List<IInventory> others = other.getConnectedRawInventories();
-		if(others==null || others.size()==0)
-			return false;
-		for(IInventory i : getConnectedRawInventories()) {
-			if(others.contains(i)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	protected List<IInventory> getConnectedRawInventories()	{
-		if(_cachedAdjacentInventories != null) {
-			return _cachedAdjacentInventories;
-		}
-		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
-		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
-			if (tile.tile instanceof TileGenericPipe) continue;
-			if (!(tile.tile instanceof IInventory)) continue;
-			adjacent.add(InventoryHelper.getInventory((IInventory)tile.tile));
-		}
-		_cachedAdjacentInventories=adjacent;
-		return _cachedAdjacentInventories;
-	}
-	
 	/*** 
 	 * Only Called Server Side
 	 * Only Called when the pipe is enabled
@@ -262,6 +225,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				}
 				//first tick just create a router and do nothing.
 				getRouter();
+				this.refreshConnectionAndRender(false);
 				return;
 			}
 		}
@@ -338,14 +302,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
-	@Override
-	public void onChunkUnload() {
-		super.onChunkUnload();
-		if(router != null){
-			router.clearPipeCache();
-		}
-	}
-	
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
@@ -411,6 +367,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				else
 					routerId = UUID.randomUUID().toString();
 			}
+		}
+		if(router != null){
+			router.clearPipeCache();
 		}
 		nbttagcompound.setString("routerId", routerId);
 		nbttagcompound.setLong("stat_lifetime_sent", stat_lifetime_sent);
@@ -495,15 +454,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled; 
 	}
-
-	@Override
-	public void onNeighborBlockChange(int blockId) {
-		super.onNeighborBlockChange(blockId);
-		clearCache();
-		if(!stillNeedReplace && MainProxy.isServer(worldObj)) {
-			onNeighborBlockChange_Logistics();
-		}
-	}
+	
 
 	public void onNeighborBlockChange_Logistics(){}
 	
@@ -539,13 +490,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
-
-	protected void clearCache() {
-		_cachedAdjacentInventories=null;
-	}
 	
 	public void refreshRender(boolean spawnPart) {
-		
 		this.container.scheduleRenderUpdate();
 		if (spawnPart) {
 			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
@@ -553,7 +499,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public void refreshConnectionAndRender(boolean spawnPart) {
-		clearCache();
 		this.container.scheduleNeighborChange();
 		if (spawnPart) {
 			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
@@ -681,13 +626,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	/* Power System */
 
 	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isServer(worldObj)) {
+			return this.getRouter().getPowerProvider();
+		} else {
 			return null;
 		}
-		if(stillNeedReplace) {
-			return null;
-		}
-		return this.getRouter().getPowerProvider();
 	}
 	
 	public boolean canUseEnergy(int amount) {

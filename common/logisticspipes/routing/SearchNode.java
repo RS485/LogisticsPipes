@@ -17,7 +17,7 @@ public class SearchNode implements Comparable<SearchNode> {
 	}
 	
 	public boolean hasActivePipe(){
-		return node!=null && node.getCachedPipe()!=null;
+		return node!=null && node.getPipe()!=null;
 	}
 	
 	//copies

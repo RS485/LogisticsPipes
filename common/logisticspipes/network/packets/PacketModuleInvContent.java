@@ -3,7 +3,7 @@ package logisticspipes.network.packets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.List;
+import java.util.LinkedList;
 
 import logisticspipes.utils.ItemIdentifierStack;
 
@@ -15,7 +15,7 @@ public class PacketModuleInvContent extends PacketPipeInvContent {
 		super();
 	}
 
-	public PacketModuleInvContent(int id, int x, int y, int z, int slot, List<ItemIdentifierStack> allItems) {
+	public PacketModuleInvContent(int id, int x, int y, int z, int slot, LinkedList<ItemIdentifierStack> allItems) {
 		super(id, x, y, z, allItems);
 		this.slot = slot;
 	}

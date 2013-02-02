@@ -74,7 +74,10 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 		if (liquidId == null) return;
 		ForgeDirection orientation = data.output.getOpposite();
 		if(getUpgradeManager().hasSneakyUpgrade()) {
-			orientation = getUpgradeManager().getSneakyOrientation();
+			orientation = getUpgradeManager().getSneakyUpgrade().getSneakyOrientation();
+			if(orientation == null) {
+				orientation = data.output.getOpposite();
+			}
 		}
 		while (data.item.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
 			container.fill(orientation, liquidId, true);
@@ -84,6 +87,7 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 				if (item.hasContainerItem()){
 					Item containerItem = item.getContainerItem();
 					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(new ItemStack(containerItem, 1), this.worldObj);
+					itemToSend.setSource(this.getRouter().getSimpleID());
 					this.queueRoutedItem(itemToSend, data.output);
 				}
 			}

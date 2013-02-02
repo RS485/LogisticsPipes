@@ -15,7 +15,6 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
@@ -74,9 +73,9 @@ public class RequestManager {
 	
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		generateRequestTree(tree, tree, requester);
+		generateRequestTree(tree, tree, requester,true);
 		if(log != null) {
-			tree.sendUsedMessage(log);
+				tree.sendMissingMessage(log);
 		}
 	}
 	
@@ -92,7 +91,7 @@ public class RequestManager {
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null) {
 						for(IFilter filter: filters) {
-							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultStack().getItem().toUndamaged()) || filter.blockCrafting()) continue;
+							if(filter.isBlocked() == filter.getFilteredItems().contains(craftable.getResultStack().getItem()) || filter.blockCrafting()) continue;
 						}
 						List<IFilter> list = new LinkedList<IFilter>();
 						list.addAll(filters);
@@ -151,7 +150,14 @@ public class RequestManager {
 		tree.registerExtras();
 	}
 	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		checkProvider(tree,treeNode,requester);
+		return generateRequestTree(tree, treeNode, requester, false);
+		
+	}
+	
+	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
+
+		if(!ignoreProviders)
+			checkProvider(tree,treeNode,requester);
 		
 		if(treeNode.isDone()) {
 			return true;
@@ -160,7 +166,7 @@ public class RequestManager {
 		if(treeNode.isDone()) {
 			return true;
 		}
-		checkCrafting(tree,treeNode,requester);
+		checkCrafting(tree,treeNode,requester,ignoreProviders);
 		return treeNode.isDone();
 	}
 
@@ -187,7 +193,7 @@ public class RequestManager {
 		}
 	}
 
-	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
+	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester, boolean ignoreProviders) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
 		List<SearchNode> validDestinations = requester.getRouter().getIRoutersByCost();
@@ -203,7 +209,7 @@ outer:
 			
 			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;		
 			for(IFilter filter:crafter.getValue2()) {
-				if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().toUndamaged()) || filter.blockCrafting()) continue outer;
+				if(filter.isBlocked() == filter.getFilteredItems().contains(template.getResultStack().getItem()) || filter.blockCrafting()) continue outer;
 			}
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
 
@@ -236,7 +242,7 @@ outer:
 				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
 				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree,node,template.getCrafter())) {
+				if(!generateRequestTree(tree,node,template.getCrafter(),ignoreProviders)) {
 					failed = true;
 				}			
 			}
@@ -283,10 +289,8 @@ outer:
 	*/
 	
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(requester.getRouter().getIRoutersByCost(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
-			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe()))
-				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
+			provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
 		}
 	}
 

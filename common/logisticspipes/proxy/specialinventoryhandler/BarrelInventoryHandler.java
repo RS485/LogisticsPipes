@@ -117,22 +117,6 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
-		try {
-			ItemStack itemStack = (ItemStack) item.get(_tile);
-			if(itemStack != null) {
-				return ItemIdentifier.getUndamaged(itemStack) == itemIdent;
-			}
-			return false;
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return false;
-	}
-
-	@Override
 	public int roomForItem(ItemIdentifier itemIdent) {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);

@@ -1,16 +1,13 @@
 package logisticspipes.modules;
 
-import java.util.List;
-
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.Pair3;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -18,13 +15,11 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleQuickSort implements ILogisticsModule {
 
-	private final int stalledDelay = 24;
-	private final int normalDelay = 6;
+	private final int ticksToAction = 100;
 	private int currentTick = 0;
-	private boolean stalled;
-	private int lastStackLookedAt = 0;
-	private int lastSuceededStack = 0;
-
+	private boolean sent;
+	private int ticksToResend = 0;
+	
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private IChassiePowerProvider _power;
@@ -32,7 +27,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	private int yCoord;
 	private int zCoord;
 	private IWorldProvider _world;
-
+	
 	public ModuleQuickSort() {}
 
 	@Override
@@ -48,7 +43,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
-
+	
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		return null;
@@ -61,51 +56,39 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-
-		if (--currentTick > 0) return;
-		if(stalled)
-			currentTick = stalledDelay;
-		else
-			currentTick = normalDelay;
+		if (sent){
+			ticksToResend = 6;
+			sent = false;
+		}
+		
+		if (ticksToResend > 0 && --ticksToResend < 1){
+			currentTick = ticksToAction;
+		}
+		
+		if (++currentTick < ticksToAction) return;
+		currentTick = 0;
 		
 		//Extract Item
-		IInventory targetInventory = _invProvider.getPointedInventory();
+		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return;
 		if (targetInventory.getSizeInventory() < 27) return;
-
-		if(!_power.canUseEnergy(500)) {
-			stalled = true;
-			return;
-		}
-		
-		if(lastSuceededStack >= targetInventory.getSizeInventory())
-			lastSuceededStack = 0;
-		
-		ItemStack stackToSend = null;
-		while(stackToSend==null) {
-			lastStackLookedAt++;
-			if (lastStackLookedAt >= targetInventory.getSizeInventory())
-				lastStackLookedAt = 0;
-			if(lastStackLookedAt == lastSuceededStack){
-				stalled = true;
-				return; // then we have been around the list without sending, halt for now
-			}
-			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
-		}
-
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
-		if (reply == null) 
-			return;
-		if(!_power.useEnergy(500)) {
-			stalled = true;
-			return;
-		}
-		lastSuceededStack=lastStackLookedAt;
-		stalled = false;
-		_itemSender.sendStack(stackToSend, reply);
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
-		targetInventory.setInventorySlotContents(lastStackLookedAt, null);
-				
+		ItemStack stackToSend;
+		for (int i = 0; i < targetInventory.getSizeInventory(); i++){
+			stackToSend = targetInventory.getStackInSlot(i);
+			if (stackToSend == null) continue;
+			if (!this.shouldSend(stackToSend)) continue;
+			if(!_power.useEnergy(500)) break;
+			_itemSender.sendStack(stackToSend);
+			MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
+			targetInventory.setInventorySlotContents(i, null);
+			
+			sent = true;
+			break;
+		}		
+	}
+	
+	private boolean shouldSend(ItemStack stack){
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, false, _itemSender.getRouter().getSimpleID(), true);
 	}
 
 	@Override

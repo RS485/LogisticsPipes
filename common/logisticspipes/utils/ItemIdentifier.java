@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.Item;
@@ -48,8 +49,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	private static class ItemKey implements Comparable<ItemKey>{
 		public ItemKey(int id, int d){ itemID=id;itemDamage=d;}
-		public final int itemID;
-		public final int itemDamage;
+		public int itemID;
+		public int itemDamage;
 		@Override 
 		public boolean equals(Object that){
 			if (!(that instanceof ItemKey))
@@ -72,19 +73,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 	}
 
-	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.5f, 1);
+	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>();
 
-	// for when things differ by NBT tags, and an itemKey isn't enough to get the full object
-	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
+	private final static ConcurrentSkipListSet<ItemIdentifier> _itemIdentifierTagCache = new ConcurrentSkipListSet<ItemIdentifier>();
 	
-	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
+	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>();
 	
-	//array of mod names, used for id -> name, 0 is unknown
-	private final static ArrayList<String> _modNameList = new ArrayList<String>();
-	//map of mod name -> internal LP modid, first modname gets 1
-	private final static Map<String, Integer> _modNameToModIdMap = new HashMap<String, Integer>();
-	//map of itemid -> modid
-	private final static int _modItemIdMap[] = new int[32768];
+	private final static ConcurrentHashMap<Integer, String> _modItemIdMap = new ConcurrentHashMap<Integer, String>();
+	private final static ConcurrentSkipListSet<String> _modList = new ConcurrentSkipListSet<String>();
 	
 	private static boolean init = false;
 	
@@ -104,8 +100,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
-		ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
 		if(tag == null) {
+			ItemKey itemKey = new ItemKey(itemID, itemUndamagableDamage);
 			ItemIdentifier unknownItem = _itemIdentifierCache.get(itemKey);
 			if(unknownItem != null) {
 				return unknownItem;
@@ -116,32 +112,20 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		} else {
-			ConcurrentHashMap<NBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
-			if(itemNBTList!=null){
-				ItemIdentifier unknownItem = itemNBTList.get(tag);
-				if(unknownItem!=null){
-					return unknownItem;
+			for(ItemIdentifier item : _itemIdentifierTagCache) {
+				if(item.itemID == itemID && item.itemDamage == itemUndamagableDamage && tagsequal(item.tag, tag)){
+					return item;
 				}
-			} else {
-				itemNBTList = new ConcurrentHashMap<NBTTagCompound, ItemIdentifier>();
-				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
-			
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, getUnusedId());
-			itemNBTList.put(tag,unknownItem);
-			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
+			int id = getUnusedId();
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, id);
+			_itemIdentifierTagCache.add(unknownItem);
+			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		}
 	}
 	
 	public static ItemIdentifier get(ItemStack itemStack) {
-		if (itemStack == null && allowNullsForTesting){
-			return null;
-		}
-		return get(itemStack.itemID, itemStack.getItemDamage(), itemStack.stackTagCompound);
-	}
-	
-	public static ItemIdentifier getUndamaged(ItemStack itemStack) {
 		if (itemStack == null && allowNullsForTesting){
 			return null;
 		}
@@ -151,7 +135,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
 	}
-
+	
 	public static ItemIdentifier getForId(int id) {
 		return _itemIdentifierIdCache.get(id);
 	}
@@ -167,7 +151,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private static boolean isIdUsed(int id) {
 		return _itemIdentifierIdCache.containsKey(id);
 	}
-	/*
+	
 	private static boolean tagsequal(NBTTagCompound tag1, NBTTagCompound tag2) {
 		if(tag1 == null && tag2 == null) {
 			return true;
@@ -180,33 +164,18 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		return tag1.equals(tag2);
 	}
-	*/
 
 	public static void tick() {
 		if(init) return;
-		synchronized(_modItemIdMap) {
-			if(init) return;
-			init = true;
-			_modNameToModIdMap.put("UNKNOWN", 0);
-			_modNameList.add("UNKNOWN");
-			NBTTagList list = new NBTTagList();
-			GameData.writeItemData(list);
-			Set<ItemData> set = GameData.buildWorldItemData(list);
-			for(ItemData data:set) {
-				String modname = data.getModId();
-				if(modname == null)
-					continue;
-				int modid = -1;
-				if(_modNameToModIdMap.containsKey(modname)) {
-					modid = _modNameToModIdMap.get(modname);
-				} else {
-					modid = _modNameList.size();
-					_modNameList.add(modname);
-					_modNameToModIdMap.put(modname, modid);
-				}
-				_modItemIdMap[data.getItemId()] = modid;
+		init = true;
+		NBTTagList list = new NBTTagList();
+		GameData.writeItemData(list);
+		Set<ItemData> set = GameData.buildWorldItemData(list);
+		for(ItemData data:set) {
+			_modItemIdMap.put(data.getItemId(), data.getModId());
+			if(!_modList.contains(data.getModId())) {
+				_modList.add(data.getModId());
 			}
-			_modNameList.ensureCapacity(_modNameToModIdMap.size());
 		}
 	}
 	
@@ -221,12 +190,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public boolean isValid() {
 		return Item.itemsList[itemID] != null;
-	}
-
-	public ItemIdentifier toUndamaged() {
-		if (!Item.itemsList[this.itemID].isDamageable())
-			return this;
-		return get(this.itemID, 0, this.tag);
 	}
 
 	private String getName(int id,ItemStack stack) {
@@ -270,21 +233,14 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return "<Item name not found>";
 	}
 	
-	public int getModId() {
-		return _modItemIdMap[this.itemID];
-	}
-
-	public String getModName() {
-		return _modNameList.get(_modItemIdMap[this.itemID]);
+	public String getModId() {
+		String name = "UNKNOWN";
+		if(_modItemIdMap.containsKey(this.itemID)) {
+			name = _modItemIdMap.get(this.itemID);
+		}
+		return name;
 	}
 	
-	public static int getModIdForName(String modname) {
-		if(_modNameToModIdMap.containsKey(modname)) {
-			return _modNameToModIdMap.get(modname);
-		}
-		return 0;
-	}
-
 	public ItemIdentifierStack makeStack(int stackSize){
 		return new ItemIdentifierStack(this, stackSize);
 	}
@@ -305,7 +261,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public boolean fuzzyMatch(ItemStack stack) {
 		if(stack.itemID != this.itemID) return false;
-		if(stack.getItemDamage() != this.itemDamage) return false;
+		if(!Item.itemsList[this.itemID].isDamageable()) {
+			if(this.itemDamage != stack.getItemDamage()) return false;
+		}
 		return true;
 	}
 	
@@ -354,7 +312,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
-	/*
+	@SuppressWarnings("unused")
 	private <T> Map<Integer, T> getListAsMap(List<T> array) {
 		HashMap<Integer, T> map = new HashMap<Integer, T>();
 		int i = 1;
@@ -364,7 +322,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 		return map;
 	}
-	*/
 	
 	@SuppressWarnings("rawtypes")
 	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
@@ -408,6 +365,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			map.put("value", getArrayAsMap(((NBTTagIntArray)nbt).intArray));
 			return map;
 		} else if(nbt instanceof NBTTagList) {
+			ArrayList internal = new ArrayList();
 			Field fList;
 			try {
 				fList = NBTTagList.class.getDeclaredField("tagList");
@@ -415,7 +373,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				fList = NBTTagList.class.getDeclaredField("a");
 			}
 			fList.setAccessible(true);
-			List internal = (List) fList.get(nbt);
+			internal = (ArrayList) fList.get(nbt);
 			
 			HashMap<Integer, Object> content = new HashMap<Integer, Object>();
 			int i = 1;
@@ -480,20 +438,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public String toString() {
-		return getModName() + "(" + getModId() + "):" + getFriendlyName();
+		return getModId() + ":" + getFriendlyName();
 	}
 
 	@Override
 	public int compareTo(ItemIdentifier o) {
-		/*if(uniqueID==0 || o.uniqueID==0){
-			int c= this.itemID - o.itemID;
-			if(c!=0) return c;
-			c= this.itemDamage - o.itemDamage;
-			if(c!=0) return c;
-			if(tagsequal(this.tag,o.tag))
-				return 0;
-			return this.tag.hashCode() - o.tag.hashCode();
-		}*/
 		if(uniqueID<o.uniqueID)
 			return -1;
 		if(uniqueID>o.uniqueID)

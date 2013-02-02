@@ -1,7 +1,6 @@
 package logisticspipes.blocks.powertile;
 
 
-import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.textures.Textures;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITriggerParameter;
@@ -32,18 +31,15 @@ public class NeedsPowerTrigger extends Trigger{
 
 	@Override
 	public String getDescription() {
-		return "Needs More Power";
+		return "LogisticsNetworkNeedsMorePower";
 	}
 
 	@Override
-	public boolean isTriggerActive(TileEntity tile, ITriggerParameter parameter) {
-		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
-			LogisticsPowerJuntionTileEntity_BuildCraft LPJTE = (LogisticsPowerJuntionTileEntity_BuildCraft)tile;
+	public boolean isTriggerActive(TileEntity tile,
+			ITriggerParameter parameter) {
+		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft){
+			LogisticsPowerJuntionTileEntity_BuildCraft LPJTE= (LogisticsPowerJuntionTileEntity_BuildCraft)tile;
 			return LPJTE.needMorePowerTriggerCheck;
-		}
-		if(tile instanceof LogisticsSolderingTileEntity) {
-			LogisticsSolderingTileEntity LSTE = (LogisticsSolderingTileEntity)tile;
-			return LSTE.hasWork;
 		}
 		return false;
 	}	

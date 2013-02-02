@@ -56,6 +56,7 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 							IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, worldObj);
 							item.setDestination(order.getValue3().getRouter().getSimpleID());
 							item.setTransportMode(TransportMode.Active);
+							item.setSource(this.getRouter().getSimpleID());
 							this.queueRoutedItem(item, pair.getValue2());
 							manager.sendAmount(amount);
 							if(amountToSend <= 0) break;

@@ -1,11 +1,11 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
+import java.util.LinkedList;
 
 import logisticspipes.utils.ItemIdentifierStack;
 
 public interface IChestContentReceiver {
 	
-	public void setReceivedChestContent(List<ItemIdentifierStack> list);
+	public void setReceivedChestContent(LinkedList<ItemIdentifierStack> list);
 	
 }

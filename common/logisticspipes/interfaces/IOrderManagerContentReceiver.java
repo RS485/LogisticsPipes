@@ -1,9 +1,9 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
+import java.util.LinkedList;
 
 import logisticspipes.utils.ItemIdentifierStack;
 
 public interface IOrderManagerContentReceiver {
-	public void setOrderManagerContent(List<ItemIdentifierStack> list);
+	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list);
 }

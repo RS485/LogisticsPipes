@@ -1,9 +1,9 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
+import java.util.LinkedList;
 
 import logisticspipes.utils.ItemIdentifierStack;
 
 public interface IModuleInventoryReceive {
-	public void handleInvContent(List<ItemIdentifierStack> list);
+	public void handleInvContent(LinkedList<ItemIdentifierStack> list);
 }

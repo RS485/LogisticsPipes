@@ -82,7 +82,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 
 		@Override
 		public int compare(Pair<CraftingTemplate,List<IFilter>> o1, Pair<CraftingTemplate,List<IFilter>> o2) {
-			return o2.getValue1().priority-o1.getValue1().priority;
+			return o1.getValue1().priority-o2.getValue1().priority;
 		}
 		
 	}

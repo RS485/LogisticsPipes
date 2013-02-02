@@ -55,7 +55,6 @@ import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRoutingStats;
-import logisticspipes.network.packets.PacketSimulate;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
@@ -280,7 +279,7 @@ public class ClientPacketHandler {
 					onParticleRenderUpdate(packetAr);
 					break;
 				case NetworkConstants.COMPONENT_LIST:
-					final PacketSimulate packetAs = new PacketSimulate();
+					final PacketItems packetAs = new PacketItems();
 					packetAs.readData(data);
 					onComponentList(packetAs);
 					break;
@@ -791,15 +790,12 @@ public class ClientPacketHandler {
 		}
 	}
 
-	private static void onComponentList(PacketSimulate packet) {
+	private static void onComponentList(PacketItems packet) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(packet.used,packet.missing,(GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer);
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(packet.items,!packet.error,(GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer, true);
 		} else {
-			for (final ItemMessage items : packet.used) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Used: " + items);
-			}
-			for (final ItemMessage items : packet.missing) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Missing: " + items);
+			for (final ItemMessage items : packet.items) {
+				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Content: " + items);
 			}
 		}
 	}

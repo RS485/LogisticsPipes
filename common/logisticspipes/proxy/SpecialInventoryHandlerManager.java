@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
@@ -19,10 +18,6 @@ public class SpecialInventoryHandlerManager {
 
 		if(Loader.isModLoaded("BetterStorage")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new CrateInventoryHandler());
-		}
-
-		if(Loader.isModLoaded("AppliedEnergistics")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 	}
 }

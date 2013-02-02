@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
@@ -15,7 +16,6 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.GuiIDs;
@@ -25,10 +25,10 @@ import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SneakyOrientation;
@@ -51,17 +51,17 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	protected ISendRoutedItem _itemSender;
 	protected IChassiePowerProvider _power;
 	protected SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
-
+	
 	private int slot = 0;
 	public int xCoord = 0;
 	public int yCoord = 0;
 	public int zCoord = 0;
 	private IWorldProvider _world;
-
+	
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
-
+	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
-
+	
 
 	public ModuleAdvancedExtractor() {
 		_filterInventory.addListener(this);
@@ -74,19 +74,19 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 		_power = powerprovider;
 		_world = world;
 	}
-
+	
 	public SimpleInventory getFilterInventory() {
 		return _filterInventory;
 	}
-
+	
 	public SneakyOrientation getSneakyOrientation(){
 		return _sneakyOrientation;
 	}
-
+	
 	public void setSneakyOrientation(SneakyOrientation sneakyOrientation){
 		_sneakyOrientation = sneakyOrientation;
 	}
-
+	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound);
@@ -123,16 +123,16 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	protected int itemsToExtract() {
 		return 1;
 	}
-
+	
 	protected int neededEnergy() {
 		return 6;
 	}
-
+	
 	public boolean connectedToSidedInventory() {
 		if(_invProvider == null) return false;
 		return _invProvider.getRawInventory() instanceof ISidedInventory;
 	}
-
+	
 	@Override
 	public void tick() {
 		if (++currentTick < ticksToAction())
@@ -158,42 +158,49 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 			}
 			inventory = new SidedInventoryAdapter((ISidedInventory) inventory, extractOrientation);
 		}
-
-		checkExtract(inventory);
+		
+		ItemStack stack = checkExtract(inventory, true, _invProvider.inventoryOrientation().getOpposite());
+		if (stack == null) return;
+		_itemSender.sendStack(stack);
 	}
 
-	private void checkExtract(IInventory inventory) {
+	public ItemStack checkExtract(IInventory inventory, boolean doRemove, ForgeDirection from) {
 		IInventory inv = InventoryHelper.getInventory(inventory);
-		for (int k = 0; k < inv.getSizeInventory(); k++) {
-			if ((inv.getStackInSlot(k) == null) || (inventory.getStackInSlot(k).stackSize <= 0)) {
+		ItemStack result = checkExtractGeneric(inv, doRemove, from);
+		return result;
+	}
+
+	public ItemStack checkExtractGeneric(IInventory inventory, boolean doRemove, ForgeDirection from) {
+		for (int k = 0; k < inventory.getSizeInventory(); k++) {
+			if ((inventory.getStackInSlot(k) == null) || (inventory.getStackInSlot(k).stackSize <= 0)) {
 				continue;
 			}
+			
+			ItemStack slot = inventory.getStackInSlot(k);
+			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot)) && (shouldSend(slot))) {
+				if (doRemove) {
+					int count = Math.min(itemsToExtract(), slot.stackSize);
 
-			ItemStack slot = inv.getStackInSlot(k);
-			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot))) {
-				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(slot, true);
-				if (reply == null) continue;
-
-				int count = Math.min(itemsToExtract(), slot.stackSize);
-
-				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
-					count--;
+					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+						count--;
+					}
+					
+					if(count <= 0) {
+						return null;
+					}
+					
+					return inventory.decrStackSize(k, count);
 				}
-
-				if(count <= 0) {
-					return;
-				}
-
-				ItemStack stackToSend = inv.decrStackSize(k, count);
-				_itemSender.sendStack(stackToSend, reply);
+				return slot;
 			}
 		}
+		return null;
 	}
 
 	public boolean CanExtract(ItemStack item) {
 		for (int i = 0; i < this._filterInventory.getSizeInventory(); i++) {
-
+			
 			ItemStack stack = this._filterInventory.getStackInSlot(i);
 			if ((stack != null) && (stack.itemID == item.itemID)) {
 				if (Item.itemsList[item.itemID].isDamageable()) {
@@ -207,6 +214,10 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 		return !areItemsIncluded();
 	}
 
+	protected boolean shouldSend(ItemStack stack) {
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getRouter().getSimpleID(), true);
+	}
+
 	public boolean areItemsIncluded() {
 		return _itemsIncluded;
 	}
@@ -215,7 +226,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 		_itemsIncluded = flag;
 		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, xCoord, yCoord, zCoord, slot, areItemsIncluded() ? 1 : 0).getPacket(), localModeWatchers);
 	}
-
+	
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
@@ -234,14 +245,14 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 		this.zCoord = zCoord;
 		this.slot = slot;
 	}
-
+	
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
 		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
 	}
 
 	@Override
-	public void handleInvContent(List<ItemIdentifierStack> list) {
+	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 

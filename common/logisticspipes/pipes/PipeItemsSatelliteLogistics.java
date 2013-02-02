@@ -158,7 +158,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 	}
 
 	@Override
-	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(LinkedList<ItemIdentifierStack> list) {
 		itemList.clear();
 		itemList.addAll(list);
 	}

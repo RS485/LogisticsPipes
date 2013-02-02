@@ -1,5 +1,7 @@
 package logisticspipes.gui;
 
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
@@ -8,8 +10,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiSecurityStation extends KraphtBaseGuiScreen {
 	

@@ -15,7 +15,17 @@
   "parent" : "",
   "screenshots" : [
   ],
+  "requiredMods": [
+    "Forge",
+    "BuildCraft|Core",
+	"BuildCraft|Transport",
+    "BuildCraft|Builders",
+    "BuildCraft|Silicon"
+  ],
   "dependencies": [
-  ]
+	"IC2",
+	"Forestry"
+  ],
+  "useDependencyInformation": "true"
 }
 ]

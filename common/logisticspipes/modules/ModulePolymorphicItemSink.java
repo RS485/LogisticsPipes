@@ -31,11 +31,11 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		IInventory targetInventory = _invProvider.getSneakyInventory();
+		IInventory targetInventory = _invProvider.getInventory();
 		if (targetInventory == null) return null;
 		
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		if (!invUtil.containsUndamagedItem(ItemIdentifier.getUndamaged(item))) return null;
+		if (!invUtil.containsItem(ItemIdentifier.get(item))) return null;
 		
 		if(_power.canUseEnergy(3)) {
 			return _sinkReply;

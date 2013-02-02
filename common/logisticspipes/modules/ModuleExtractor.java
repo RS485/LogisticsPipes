@@ -14,7 +14,6 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.GuiIDs;
@@ -23,7 +22,7 @@ import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.Pair3;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,24 +37,24 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
-
+	
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private IChassiePowerProvider _power;
 	private SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 	private IWorldProvider _world;
-
+	
 	private int slot = 0;
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
-
+	
 	private IHUDModuleRenderer HUD = new HUDExtractor(this);
-
+	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
-
+	
 	public ModuleExtractor() {
-
+		
 	}
 
 	@Override
@@ -73,20 +72,20 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	protected int itemsToExtract(){
 		return 1;
 	}
-
+	
 	protected int neededEnergy() {
 		return 5;
 	}
-
+	
 	public SneakyOrientation getSneakyOrientation(){
 		return _sneakyOrientation;
 	}
-
+	
 	public void setSneakyOrientation(SneakyOrientation sneakyOrientation){
 		_sneakyOrientation = sneakyOrientation;
 		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyOrientation.ordinal()).getPacket(), localModeWatchers);
 	}
-
+	
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		return null;
@@ -114,67 +113,69 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	public void tick() {
 		if (++currentTick < ticksToAction()) return;
 		currentTick = 0;
-
+		
 		//Extract Item
 		IInventory targetInventory = _invProvider.getRawInventory();
 		if (targetInventory == null) return;
 		ForgeDirection extractOrientation;
 		switch (_sneakyOrientation){
-		case Bottom:
-			extractOrientation = ForgeDirection.DOWN;
-			break;
-		case Top:
-			extractOrientation = ForgeDirection.UP;
-			break;
-		case Side:
-			extractOrientation = ForgeDirection.SOUTH;
-			break;
-		default:
-			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
+			case Bottom:
+				extractOrientation = ForgeDirection.DOWN;
+				break;
+			case Top:
+				extractOrientation = ForgeDirection.UP;
+				break;
+			case Side:
+				extractOrientation = ForgeDirection.SOUTH;
+				break;
+			default:
+				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
-
+		
 		if (targetInventory instanceof ISpecialInventory){
 			ItemStack[] stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation,1);
 			if (stack == null) return;
 			if (stack.length < 1) return;
 			if (stack[0] == null) return;
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stack[0], true);
-			if (reply == null) return;
+			if (!shouldSend(stack[0])) return;
 			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
-			_itemSender.sendStack(stack[0], reply);
+			_itemSender.sendStack(stack[0]);
 			return;
 		}
-
+		
 		if (targetInventory instanceof ISidedInventory){
 			targetInventory = new SidedInventoryAdapter((ISidedInventory) targetInventory, extractOrientation);
 		}
-
+		
 		ItemStack stackToSend;
-
+		
 		for (int i = 0; i < targetInventory.getSizeInventory(); i++){
 			stackToSend = targetInventory.getStackInSlot(i);
 			if (stackToSend == null) continue;
-
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, true);
-			if (reply == null) continue;
-
+			
+			if (!this.shouldSend(stackToSend)) continue;
+			
 			int count = Math.min(itemsToExtract(), stackToSend.stackSize);
-
+			
 			while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
 				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
 				count--;
 			}
-
+			
 			if(count <= 0) {
 				break;
 			}
-
+			
 			stackToSend = targetInventory.decrStackSize(i, count);
-			_itemSender.sendStack(stackToSend, reply);
+			_itemSender.sendStack(stackToSend);
 			break;
 		}
 	}
-
+	
+	protected boolean shouldSend(ItemStack stack){
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, true, _itemSender.getRouter().getSimpleID(), true);
+	}
+	
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
@@ -189,7 +190,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 		this.zCoord = zCoord;
 		this.slot = slot;
 	}
-
+	
 	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());

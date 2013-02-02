@@ -97,14 +97,14 @@ public class BuildCraftProxy {
 					return false;
 				}
 			} else {
-				if (!((TileGenericPipe) from).pipe.isPipeConnected(to, way)) {
+				if (!((TileGenericPipe) from).pipe.isPipeConnected(to, way.getOpposite())) {
 					return false;
 				}
 			}
 			if(((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
-				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).isPipeConnected(from, way.getOpposite(), ignoreSystemDisconnection)) {
-					return false;
-				}
+			if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).isPipeConnected(from, way.getOpposite(), ignoreSystemDisconnection)) {
+				return false;
+			}
 			} else {
 				if (!((TileGenericPipe) to).pipe.isPipeConnected(from, way.getOpposite())) {
 					return false;

@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
@@ -78,7 +79,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	@Override
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsUndamagedItem(ItemIdentifier.getUndamaged(item))){
+		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
 			if(_power.canUseEnergy(2)) {
 				return _sinkReply;
 			}
@@ -142,7 +143,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	}
 
 	@Override
-	public void handleInvContent(List<ItemIdentifierStack> list) {
+	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 }

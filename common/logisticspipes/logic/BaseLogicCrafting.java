@@ -63,10 +63,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			RoutedPipe satPipe = satellite.getRoutedPipe();
-			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
-				continue;
-			IRouter satRouter = satPipe.getRouter();
+			IRouter satRouter = satellite.getRoutedPipe().getRouter();
 			for (SearchNode route:routes){
 				if (route.node == satRouter) {
 					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
@@ -117,10 +114,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				RoutedPipe satPipe = satellite.getRoutedPipe();
-				if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
-					continue;
-				IRouter satRouter = satPipe.getRouter();
+				IRouter satRouter = satellite.getRoutedPipe().getRouter();
 				for (SearchNode route:routes) {
 					if (route.node == satRouter) {
 						return true;
@@ -134,10 +128,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public IRouter getSatelliteRouter() {
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				RoutedPipe satPipe = satellite.getRoutedPipe();
-				if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
-					continue;
-				return satPipe.getRouter();
+				return satellite.getRoutedPipe().getRouter();
 			}
 		}
 		return null;

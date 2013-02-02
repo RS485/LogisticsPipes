@@ -6,8 +6,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -115,8 +113,6 @@ public class WorldTickHandler implements ITickHandler {
 			}
 			localList.remove(0);
 		}
-		ItemIdentifier.tick();
-		LiquidIdentifier.initFromForge(true);
 	}
 
 	@Override

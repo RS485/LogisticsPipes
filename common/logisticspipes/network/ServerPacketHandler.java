@@ -339,20 +339,20 @@ public class ServerPacketHandler {
 					final PacketModuleNBT packetAy = new PacketModuleNBT();
 					packetAy.readData(data);
 					onThaumicAspectSinkList(player, packetAy);
-                                        break;
+					break;
 				case NetworkConstants.CHEATJUNCTIONPOWER:
-                                        if (!LogisticsPipes.DEBUG) break;
+					if (!LogisticsPipes.DEBUG) break;
 					final PacketCoordinates packetAz = new PacketCoordinates();
 					packetAz.readData(data);
 					onCheatJunctionPower(player, packetAz);
-                                        break;
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	private static void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinate packet) {
+	private static void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
 			return;

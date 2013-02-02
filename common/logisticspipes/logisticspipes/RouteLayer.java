@@ -34,7 +34,7 @@ public class RouteLayer {
 		item.checkIDFromUUID();
 		//If items have no destination, see if we can get one (unless it has a source, then drop it)
 		if (item.getDestination() < 0){
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true);
+			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
 		}
 		
 		//If the destination is unknown / unroutable		

@@ -97,14 +97,14 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
 
-/*	@Override
+	@Override
 	protected List<AdjacentTile> getConnectedInventories()	{
 		if(_cachedAdjacentInventories !=null)
 			return _cachedAdjacentInventories;
 		List<AdjacentTile> adjacent = new ArrayList<AdjacentTile>(1);
 		adjacent.add(new AdjacentTile(getPointedTileEntity(),ChassiLogic.orientation));
 		return _cachedAdjacentInventories;
-	}	*/
+	}	
 	
 	public ForgeDirection getPointedOrientation(){
 		return ChassiLogic.orientation;
@@ -191,6 +191,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public IInventory getRawInventory() {
 		TileEntity tile = getPointedTileEntity();
+		if (tile == null ) return null;
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
@@ -199,7 +200,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public IInventory getPointedInventory() {
 		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, this.getPointedOrientation());
 		return rawInventory;
 	}
 

@@ -23,15 +23,15 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 				{
 					continue;
 				}
-				PositionedStack stack = new PositionedStack(recipe.source[y*3 + x], 25+x*18, 6+y*18);
+				PositionedStack stack = new PositionedStack(recipe.source[y*3 + x], 39+x*18, 6+y*18);
 				stack.setMaxSize(1);
 				shape.ingredients.add(stack);
 			}
 		}
-		PositionedStack stack = new PositionedStack(new ItemStack(Item.ingotIron,1), 88, 6);
+		PositionedStack stack = new PositionedStack(new ItemStack(Item.ingotIron,1), 102, 6);
 		stack.setMaxSize(1);
 		shape.ingredients.add(stack);
-		shape.result.relx = 122;
+		shape.result.relx = 136;
 		shape.result.rely = 36;
 		return shape;
 	}

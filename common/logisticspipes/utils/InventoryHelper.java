@@ -25,19 +25,19 @@ public class InventoryHelper {
 			TileEntity tile;
 			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.WEST);
 			if (tile instanceof TileEntityChest) {
-				return new InventoryLargeChest("", (IInventory) tile, inv);
+				return new InventoryLargeChestLogistics("", (IInventory) tile, inv);
 			}
 			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.EAST);
 			if (tile instanceof TileEntityChest) {
-				return new InventoryLargeChest("", inv, (IInventory) tile);
+				return new InventoryLargeChestLogistics("", inv, (IInventory) tile);
 			}
 			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.NORTH);
 			if (tile instanceof TileEntityChest) {
-				return new InventoryLargeChest("", (IInventory) tile, inv);
+				return new InventoryLargeChestLogistics("", (IInventory) tile, inv);
 			}
 			tile = Utils.getTile(chest.worldObj, pos, ForgeDirection.SOUTH);
 			if (tile instanceof TileEntityChest) {
-				return new InventoryLargeChest("", inv, (IInventory) tile);
+				return new InventoryLargeChestLogistics("", inv, (IInventory) tile);
 			}
 		}
 		return inv;

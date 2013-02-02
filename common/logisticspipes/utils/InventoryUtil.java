@@ -104,6 +104,17 @@ public class InventoryUtil implements IInventoryUtil {
 	
 	//Ignores slot/item hiding
 	@Override
+	public boolean containsUndamagedItem(ItemIdentifier item){
+		for (int i = 0; i < _inventory.getSizeInventory(); i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			if (ItemIdentifier.getUndamaged(stack) == item) return true;
+		}
+		return false;
+	}
+
+	//Ignores slot/item hiding
+	@Override
 	public int roomForItem(ItemIdentifier item){
 		int totalRoom = 0;
 		for (int i = 0; i < _inventory.getSizeInventory(); i++){

@@ -71,10 +71,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 				if(slot == null) continue;
 				ForgeDirection insertion = tile.orientation.getOpposite();
 				if(getUpgradeManager().hasSneakyUpgrade()) {
-					insertion = getUpgradeManager().getSneakyUpgrade().getSneakyOrientation();
-					if(insertion == null) {
-						insertion = tile.orientation.getOpposite();
-					}
+					insertion = getUpgradeManager().getSneakyOrientation();
 				}
 				ItemStack toadd = slot.copy();
 				toadd.stackSize = Math.min(toadd.stackSize, toadd.getMaxStackSize());
@@ -133,7 +130,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public void setReceivedChestContent(LinkedList<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
 		bufferList.clear();
 		bufferList.addAll(list);
 	}

@@ -105,6 +105,38 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 	
+	public void sendUsedMessage(RequestLog log) {
+		LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
+		LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
+		sendUsedMessage(used, missing, this);
+		ItemMessage.compress(used);
+		ItemMessage.compress(missing);
+		log.handleSucessfullRequestOfList(used);
+		log.handleMissingItems(missing);
+	}
+
+	private void sendUsedMessage(LinkedList<ItemMessage> used, LinkedList<ItemMessage> missing, RequestTreeNode node) {
+		int usedcount = 0;
+		for(LogisticsPromise promise:node.promises) {
+			if(promise.sender instanceof IProvideItems && !(promise.sender instanceof ICraftItems)) {
+				usedcount += promise.numberOfItems;
+			}
+		}
+		if(usedcount != 0) {
+			ItemIdentifierStack stack = node.getStack().clone();
+			stack.stackSize = usedcount;
+			used.add(new ItemMessage(stack));
+		}
+		if(node.getMissingItemCount() != 0) {
+			ItemIdentifierStack stack = node.getStack().clone();
+			stack.stackSize = node.getMissingItemCount();
+			missing.add(new ItemMessage(stack));
+		}
+		for(RequestTreeNode subNode:node.subRequests) {
+			sendUsedMessage(used, missing, subNode);
+		}
+	}
+
 	public void registerExtras() {
 		registerExtras(this);
 	}

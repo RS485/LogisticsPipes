@@ -93,20 +93,9 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
-				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
-				if (count <= (_hideOnePerStack?1:0)) return null;
-				return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1), 1});
-			}
-			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
-			for(int i = 0; i < numitems; i++) {
-				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
-				if (itemStack.stackSize <= (_hideOnePerStack?1:0)) continue;
-				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
-				if(itemId == itemIdent) {
-					return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemStack, 1});
-				}
-			}
+			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+			if (count <= (_hideOnePerStack?1:0)) return null;
+			return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1), 1});
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
@@ -121,6 +110,22 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
+			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+			return (count > 0);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+		try {
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
 				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
 				return (count > 0);
@@ -128,7 +133,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
 			for(int i = 0; i < numitems; i++) {
 				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
-				ItemIdentifier itemId = ItemIdentifier.get(itemStack);
+				ItemIdentifier itemId = ItemIdentifier.getUndamaged(itemStack);
 				if(itemId == itemIdent) {
 					return true;
 				}

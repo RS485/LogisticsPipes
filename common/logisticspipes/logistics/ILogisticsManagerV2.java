@@ -12,19 +12,21 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.SearchNode;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.item.ItemStack;
 
 public interface ILogisticsManagerV2 {
-	
-	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
-	public IRoutedItem destinationUnreachable(IRoutedItem item, int currentRouter);
-	boolean hasDestination(ItemStack stack, boolean allowDefault, int uuid, boolean excludeSource);
-	boolean hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
+
+	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, int uuid, boolean excludeSource);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
 	LinkedList<ItemIdentifier> getCraftableItems(List<SearchNode> list);
 	Map<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> list);
 	String getBetterRouterName(IRouter r);

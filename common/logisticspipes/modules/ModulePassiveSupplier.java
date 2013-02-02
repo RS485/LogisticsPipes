@@ -1,7 +1,6 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDPassiveSupplier;
@@ -68,7 +67,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventory targetInventory = _invProvider.getInventory();
+		IInventory targetInventory = _invProvider.getSneakyInventory();
 		if (targetInventory == null) return null;
 		
 		if (!_filterInventory.containsItem(ItemIdentifier.get(item))) return null;
@@ -149,7 +148,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	}
 
 	@Override
-	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+	public void handleInvContent(List<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 

@@ -175,8 +175,8 @@ public class PipeItemsFirewall extends RoutedPipe {
 			}
 
 			@Override
-			public List<ItemIdentifier> getFilteredItems() {
-				return inv.getItems();
+			public boolean isFilteredItem(ItemIdentifier item) {
+				return inv.containsUndamagedItem(item);
 			}
 
 			@Override

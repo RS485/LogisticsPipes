@@ -53,10 +53,10 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 	@Override
 	protected void actionPerformed(GuiButton par1GuiButton) {
 		if(par1GuiButton.id == 0) {
-			if(_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModId())) {
-				_itemSink.modList.remove(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModId());
+			if(_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName())) {
+				_itemSink.modList.remove(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName());
 			} else {
-				_itemSink.modList.add(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModId());
+				_itemSink.modList.add(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName());
 			}
 			_itemSink.ModListChanged();
 			page = 0;
@@ -78,8 +78,8 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 100);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 7, guiTop + 7);
 		if(tmpInv.getStackInSlot(0) != null) {
-			mc.fontRenderer.drawString(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModId(), guiLeft + 28, guiTop + 13, 0x404040);
-			if(_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModId())) {
+			mc.fontRenderer.drawString(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName(), guiLeft + 28, guiTop + 13, 0x404040);
+			if(_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName())) {
 				((GuiButton)controlList.get(0)).displayString = "Remove";
 			} else {
 				((GuiButton)controlList.get(0)).displayString = "Add";

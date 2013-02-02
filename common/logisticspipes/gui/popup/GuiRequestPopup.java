@@ -54,7 +54,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			super.initGui();
 		}
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		for(int i=0;i < 9 && i < this.text.length;i++) {
+		for(int i=0;i < this.text.length;i++) {
 			if(this.text[i] == null) continue;
 			String msg = BasicGuiHelper.getCuttedString(this.text[i], mWidth - 10, this.fontRenderer);
 			int stringWidth = this.fontRenderer.getStringWidth(msg);

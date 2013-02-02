@@ -253,7 +253,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 					stacksleft -= 1;
 					
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
-					item.setSource(this.getRouter().getSimpleID());
 					item.setDestination(order.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					item.addRelayPoints(order.getValue3());
@@ -303,7 +302,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 		
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().toUndamaged()) || filter.blockProvider()) return;
 		}
 		
 		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
@@ -333,11 +332,13 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
 		if ( stack == null) return null;
-		
+
+		boolean hasSatellite = craftingLogic.isSatelliteConnected();
+		if(craftingLogic.satelliteId != 0 && !hasSatellite) return null;
+
 		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
 		//Check all materials
-		boolean hasSatellite = craftingLogic.isSatelliteConnected(); 
 		for (int i = 0; i < 9; i++){
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;
@@ -359,11 +360,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
-	}
-
-	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
-		return 0;
 	}
 
 	@Override
@@ -480,7 +476,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void setOrderManagerContent(LinkedList<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

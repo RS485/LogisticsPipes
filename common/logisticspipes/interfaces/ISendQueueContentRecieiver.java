@@ -1,9 +1,9 @@
 package logisticspipes.interfaces;
 
-import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.utils.ItemIdentifierStack;
 
 public interface ISendQueueContentRecieiver {
-	public void handleSendQueueItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems);
+	public void handleSendQueueItemIdentifierList(List<ItemIdentifierStack> _allItems);
 }

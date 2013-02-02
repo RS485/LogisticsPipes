@@ -73,7 +73,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		public void run() {
 			if(!run) return;
 			try {
-				CoreRoutedPipe p = target.getPipe();
+				CoreRoutedPipe p = target.getCachedPipe();
 				if(p==null){
 					run = false;
 					return;
@@ -104,12 +104,12 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 	
-	public boolean[] sideConnected = new boolean[6];
+	public boolean[] sideDisconnected = new boolean[6];
 	
 	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
 
 	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
-	protected int _LSAVersion = -1;
+	protected int _LSAVersion = 0;
 	protected LSA _myLsa = new LSA();
 	
 	protected UpdateRouterRunnable updateThread = null;
@@ -185,7 +185,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		this._xCoord = xCoord;
 		this._yCoord = yCoord;
 		this._zCoord = zCoord;
-		this._LSAVersion = 0;
 		clearPipeCache();
 		_myLsa = new LSA();
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
@@ -197,13 +196,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabase.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(SharedLSADatabase.size()<=(int)simpleID*1.5)
 				SharedLSADatabase.add(null);
-			SharedLSADatabasewriteLock.unlock(); // demote lock
-			SharedLSADatabasereadLock.lock();
 			_lastLSAVersion.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(_lastLSAVersion.size()<=(int)simpleID*1.5)
-				_lastLSAVersion.add(-2);
+				_lastLSAVersion.add(0);
+			SharedLSADatabasewriteLock.unlock(); // demote lock
+			SharedLSADatabasereadLock.lock();
 		}
-		_lastLSAVersion.set(this.simpleID,-2);
+		_lastLSAVersion.set(this.simpleID,0);
 		SharedLSADatabase.set(this.simpleID, _myLsa); // make non-structural change (threadsafe)
 		SharedLSADatabasereadLock.unlock();
 	}
@@ -232,6 +231,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		_myPipeCache=new WeakReference<CoreRoutedPipe>((CoreRoutedPipe) pipe.pipe);
 
 		return (CoreRoutedPipe) pipe.pipe;
+	}
+
+	@Override
+	public CoreRoutedPipe getCachedPipe(){
+		if(_myPipeCache!=null && _myPipeCache.get()!=null)
+			return _myPipeCache.get();
+		return null;
 	}
 
 	private void ensureRouteTableIsUpToDate(boolean force){
@@ -287,17 +293,14 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		
 		if(LogisticsPipes.DEBUG) {
-			boolean[] oldSideConnected = sideConnected.clone();
-			
-			for(int i=0;i<6;i++) {
-				sideConnected[i] = true;
-			}
+			boolean[] oldSideDisconnected = sideDisconnected;
+			sideDisconnected = new boolean[6];
 			checkSecurity(adjacent);
 			
 			boolean changed = false;
 			
 			for(int i=0;i<6;i++) {
-				changed |= sideConnected[i] != oldSideConnected[i];
+				changed |= sideDisconnected[i] != oldSideDisconnected[i];
 			}
 			if(changed) {
 				CoreRoutedPipe pipe = getPipe();
@@ -359,25 +362,34 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void checkSecurity(HashMap<RoutedPipe, ExitRoute> adjacent) {
 		CoreRoutedPipe pipe = getPipe();
 		if(pipe == null) return;
-		if(pipe instanceof PipeItemsFirewall) return;
 		UUID id = pipe.getSecurityID();
 		List<RoutedPipe> toRemove = new ArrayList<RoutedPipe>();
 		if(id != null) {
 			for(Entry<RoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
 				if(!entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) && !entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom)) continue;
 				UUID thatId = entry.getKey().getSecurityID();
-				if(thatId == null) {
-					entry.getKey().insetSecurityID(id);
-				} else if(!id.equals(thatId)) {
-					sideConnected[entry.getValue().exitOrientation.ordinal()] = false;
+				if(!(pipe instanceof PipeItemsFirewall)) {
+					if(thatId == null) {
+						entry.getKey().insetSecurityID(id);
+					} else if(!id.equals(thatId)) {
+						sideDisconnected[entry.getValue().exitOrientation.ordinal()] = true;
+					}
+				} else {
+					if(!(entry.getKey() instanceof PipeItemsFirewall)) {
+						if(thatId != null && !id.equals(thatId)) {
+							sideDisconnected[entry.getValue().exitOrientation.ordinal()] = true;
+						}
+					}
+				}
+			}
+			for(Entry<RoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
+				if(sideDisconnected[entry.getValue().exitOrientation.ordinal()]) {
 					toRemove.add(entry.getKey());
 				}
 			}
-		} else {
-			
-		}
-		for(RoutedPipe remove:toRemove) {
-			adjacent.remove(remove);
+			for(RoutedPipe remove:toRemove) {
+				adjacent.remove(remove);
+			}
 		}
 	}
 
@@ -552,11 +564,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 
 	@Override
-	public void itemDropped(RoutedEntityItem routedEntityItem) {
-		//TODO
-	}
-	
-	@Override
 	public boolean act(BitSet hasBeenProcessed,IRAction actor){
 		boolean hasBeenReset=false;
 		if(hasBeenProcessed.get(this.simpleID))
@@ -591,6 +598,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 			SharedLSADatabase.set(simpleID, null);
 		}
 		SharedLSADatabasewriteLock.unlock();
+		clearPipeCache();
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
 		updateAdjacentAndLsa();
 		releaseSimpleID(simpleID);
@@ -683,6 +691,10 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				updateAdjacentAndLsa();
 			}
 			ensureRouteTableIsUpToDate(false);
+			CoreRoutedPipe pipe = getPipe();
+			if (pipe != null) {
+				pipe.refreshRender(false);
+			}
 			return;
 		}
 		if (Configs.multiThreadEnabled) {
@@ -740,7 +752,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	
 	@Override
 	public IRouter getRouter(ForgeDirection insertOrientation) {
-		CoreRoutedPipe pipe = getPipe();
+		CoreRoutedPipe pipe = getCachedPipe();
 		if(pipe==null)
 			return null;
 		return pipe.getRouter(insertOrientation);
@@ -748,7 +760,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 
 	@Override
 	public boolean isSideDisconneceted(ForgeDirection dir) {
-		return ForgeDirection.UNKNOWN != dir && !sideConnected[dir.ordinal()];
+		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
 	}
 }
 

@@ -64,6 +64,8 @@ public class RequestHandler {
 	}
 	
 	public static void simulate(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
+		final LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
+		final LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
 		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
@@ -72,14 +74,15 @@ public class RequestHandler {
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				MessageManager.simulated(player, list);
+				missing.addAll(list);
 			}
 
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				//Not needed here
+				used.addAll(items);
 			}
 		});
+		MessageManager.simulated(player, used, missing);
 	}
 	
 	public static void refresh(EntityPlayerMP player, CoreRoutedPipe pipe, DisplayOptions option) {

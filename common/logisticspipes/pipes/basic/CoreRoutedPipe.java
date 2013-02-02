@@ -48,6 +48,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
@@ -110,7 +111,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 
-	protected List<AdjacentTile> _cachedAdjacentInventories;
+	protected List<IInventory> _cachedAdjacentInventories;
 	
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);
@@ -208,27 +209,27 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	 * @return boolean indicating if both pull from the same inventory.
 	 */
 	public boolean sharesInventoryWith(CoreRoutedPipe other){
-		List<AdjacentTile> others = other.getConnectedInventories();
+		List<IInventory> others = other.getConnectedRawInventories();
 		if(others==null || others.size()==0)
 			return false;
-		for(AdjacentTile i : getConnectedInventories()){
-			for(AdjacentTile o : others){
-				if(i!=null && o!=null && (i.tile==o.tile))
-					return true;
+		for(IInventory i : getConnectedRawInventories()) {
+			if(others.contains(i)) {
+				return true;
 			}
 		}
 		return false;
 	}
 	
-	protected List<AdjacentTile> getConnectedInventories()	{
-		if(_cachedAdjacentInventories !=null)
+	protected List<IInventory> getConnectedRawInventories()	{
+		if(_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
+		}
 		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = new LinkedList<AdjacentTile>();
+		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
-			adjacent.add(tile);
+			adjacent.add(InventoryHelper.getInventory((IInventory)tile.tile));
 		}
 		_cachedAdjacentInventories=adjacent;
 		return _cachedAdjacentInventories;
@@ -494,7 +495,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled; 
 	}
-	
+
+	@Override
+	public void onNeighborBlockChange(int blockId) {
+		super.onNeighborBlockChange(blockId);
+		clearCache();
+		if(!stillNeedReplace && MainProxy.isServer(worldObj)) {
+			onNeighborBlockChange_Logistics();
+		}
+	}
 
 	public void onNeighborBlockChange_Logistics(){}
 	
@@ -507,7 +516,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		clearCache();
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule){
 				if(MainProxy.isServer(world)) {

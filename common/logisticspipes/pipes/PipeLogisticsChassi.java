@@ -51,7 +51,6 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -59,7 +58,6 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -98,11 +96,15 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	protected List<AdjacentTile> getConnectedInventories()	{
-		if(_cachedAdjacentInventories !=null)
+	protected List<IInventory> getConnectedRawInventories()	{
+		if(_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
-		List<AdjacentTile> adjacent = new ArrayList<AdjacentTile>(1);
-		adjacent.add(new AdjacentTile(getPointedTileEntity(),ChassiLogic.orientation));
+		}
+		List<IInventory> adjacent = new ArrayList<IInventory>(1);
+		IInventory adjinv = getRawInventory();
+		if(adjinv != null) {
+			adjacent.add(adjinv);
+		}
 		_cachedAdjacentInventories = adjacent;
 		return _cachedAdjacentInventories;
 	}	
@@ -132,6 +134,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
 		}
 		if(ChassiLogic.orientation != oldOrientation) {
+			clearCache();
 			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
 			refreshRender(true);
 		}

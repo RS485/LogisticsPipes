@@ -30,14 +30,6 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void onNeighborBlockChange(int blockId) {
-		super.onNeighborBlockChange(blockId);
-		if(!stillNeedReplace && MainProxy.isServer(worldObj)) {
-			onNeighborBlockChange_Logistics();
-		}
-	}
-
-	@Override
 	public LinkedList<IAction> getActions() {
 		LinkedList<IAction> actions = super.getActions();
 		actions.add(BuildCraftProxy.LogisticsDisableAction);

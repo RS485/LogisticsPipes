@@ -60,8 +60,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
 			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
-			this.destinationUUID=settings.destinationUUID;
-			this.checkIDFromUUID();
+
+			/* clear destination on load for activerouted items
+			 * we'll have to keep this until active requesters are smarter about remebering things over unload/reload
+			 */
+			if(settings.transportMode != TransportMode.Active) {
+				this.destinationUUID=settings.destinationUUID;
+				this.checkIDFromUUID();
+			}
 
 			bufferCounter = settings.bufferCounter;
 			arrived = settings.arrived;

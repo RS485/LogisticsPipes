@@ -86,16 +86,20 @@ public class ModuleQuickSort implements ILogisticsModule {
 			lastStackLookedAt++;
 			if (lastStackLookedAt >= targetInventory.getSizeInventory())
 				lastStackLookedAt = 0;
-			if(lastStackLookedAt == lastSuceededStack){
+			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+			if(lastStackLookedAt == lastSuceededStack && stackToSend == null) {
 				stalled = true;
 				return; // then we have been around the list without sending, halt for now
 			}
-			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
 		}
 
 		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
-		if (reply == null) 
+		if (reply == null) {
+			if(lastStackLookedAt == lastSuceededStack) {
+				stalled = true;
+			}
 			return;
+		}
 		if(!_power.useEnergy(500)) {
 			stalled = true;
 			return;

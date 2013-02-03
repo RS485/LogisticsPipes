@@ -37,7 +37,7 @@ public class ItemModuleInformationManager {
     		list.appendTag(new NBTTagString(null ,info1));
     		list.appendTag(new NBTTagString(null ,info2));
     		if(!itemStack.hasTagCompound()) {
-            	itemStack.setTagCompound(new NBTTagCompound());
+            	itemStack.setTagCompound(new NBTTagCompound("tag"));
             }
     		NBTTagCompound stacktag = itemStack.getTagCompound();
     		stacktag.setTag("informationList", list);
@@ -45,7 +45,7 @@ public class ItemModuleInformationManager {
     		return;
 		}
         if(!itemStack.hasTagCompound()) {
-        	itemStack.setTagCompound(new NBTTagCompound());
+        	itemStack.setTagCompound(new NBTTagCompound("tag"));
         }
         NBTTagCompound stacktag = itemStack.getTagCompound();
         stacktag.setCompoundTag("moduleInformation", nbt);
@@ -79,7 +79,7 @@ public class ItemModuleInformationManager {
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
 			Collection<?> collection = nbt.getTags();
-			nbt = new NBTTagCompound();
+			nbt = new NBTTagCompound("tag");
 			for(Object obj:collection) {
 				if(obj instanceof NBTBase) {
 					if(!Filter.contains(((NBTBase)obj).getName())) {

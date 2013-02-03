@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -126,8 +128,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				itemNBTList = new ConcurrentHashMap<NBTTagCompound, ItemIdentifier>();
 				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
-			
 			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, getUnusedId());
+			if(LogisticsPipes.DEBUG){
+				checkNBTbadness(unknownItem, tag);
+			}
 			itemNBTList.put(tag,unknownItem);
 			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
@@ -515,5 +519,57 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public LiquidIdentifier getLiquidIdentifier() {
 		return LiquidIdentifier.get(itemID, itemDamage);
+	}
+
+	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
+		if(nbt.getName() == "") {
+			System.out.println("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
+		}
+		try {
+			String s = checkNBTbadness_recurse(nbt);
+			if(s != null) {
+				System.out.println("Bad item " + item.getDebugName() + " : " + s);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private static String checkNBTbadness_recurse(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		if(nbt instanceof NBTTagList) {
+			NBTTagList l = (NBTTagList) nbt;
+			for(int i = 0; i < l.tagCount(); i++) {
+				NBTBase b = l.tagAt(i);
+				if(!b.getName().equals("")) {
+					return "NBTTagList containing named tag " + b.getName();
+				}
+				String ret = checkNBTbadness_recurse(b);
+				if(ret != null)
+					return ret;
+			}
+		} else if(nbt instanceof NBTTagCompound) {
+			NBTTagCompound c = (NBTTagCompound) nbt;
+			Field fMap;
+			try {
+				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
+			} catch(Exception e) {
+				fMap = NBTTagCompound.class.getDeclaredField("a");
+			}
+			fMap.setAccessible(true);
+			HashMap<String, NBTBase> internal = (HashMap) fMap.get(nbt);
+			for(Entry<String, NBTBase> e : internal.entrySet()) {
+				String k = e.getKey();
+				NBTBase v = e.getValue();
+				if(k == null || k.equals("")) {
+					return "NBTTagCompound containing empty key";
+				}
+				if(!k.equals(v.getName())) {
+					return "NBTTagCompound key " + k + " doesn't match value name " + v;
+				}
+				String ret = checkNBTbadness_recurse(v);
+				if(ret != null)
+					return ret;
+			}
+		}
+		return null;
 	}
 }

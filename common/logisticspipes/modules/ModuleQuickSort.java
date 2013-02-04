@@ -89,9 +89,9 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 		while(stackToSend==null) {
 			lastStackLookedAt++;
-			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
 			if (lastStackLookedAt >= targetInventory.getSizeInventory())
 				lastStackLookedAt = 0;
+			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
 			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 				return; // then we have been around the list without sending, halt for now

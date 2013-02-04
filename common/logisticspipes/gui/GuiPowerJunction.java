@@ -51,6 +51,7 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		mc.fontRenderer.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 65, 0x404040);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

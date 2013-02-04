@@ -328,11 +328,11 @@ public class ClientPacketHandler {
 					packetAz.readData(data);
 					onOpenSecurityPlayer(packetAz);
 					break;
-					break;
 				case NetworkConstants.THAUMICASPECTSINKLIST:
-					final PacketModuleNBT packetAx = new PacketModuleNBT();
-					packetAx.readData(data);
-					onThaumicAspectList(packetAx);
+					final PacketModuleNBT packetBa = new PacketModuleNBT();
+					packetBa.readData(data);
+					onThaumicAspectList(packetBa);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();

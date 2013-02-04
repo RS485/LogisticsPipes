@@ -6,6 +6,8 @@ public enum EnumTag {
 	;
 	
 	public String name;
+	public int id;
+	
 	private EnumTag(int id, String name, String meaning, int element,boolean aggro, int color ) {
 	}
 

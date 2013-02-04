@@ -3,7 +3,6 @@ package logisticspipes.utils;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -11,6 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 public class FinalNBTTagCompound extends NBTTagCompound {
 	private final int hashcode;
 
+	@SuppressWarnings("unchecked")
 	public FinalNBTTagCompound(NBTTagCompound base) {
 		super(base.getName());
 		try {
@@ -21,9 +21,9 @@ public class FinalNBTTagCompound extends NBTTagCompound {
 				fMap = NBTTagCompound.class.getDeclaredField("a");
 			}
 			fMap.setAccessible(true);
-			HashMap<String, NBTBase> source = (HashMap) fMap.get(base);
+			HashMap<String, NBTBase> source = (HashMap<String, NBTBase>) fMap.get(base);
 
-			Iterator var2 = source.keySet().iterator();
+			Iterator<String> var2 = source.keySet().iterator();
 			while (var2.hasNext())
 			{
 				String var3 = (String)var2.next();

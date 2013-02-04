@@ -354,10 +354,9 @@ public class ServerPacketHandler {
 					onPlayerListRequest(player);
 					break;
 				case NetworkConstants.OPEN_SECURITY_PLAYER:
-					final PacketStringCoordinates
-					packetAy = new PacketStringCoordinates();
-					packetAy.readData(data);
-					onOpenSecurityPlayer(player, packetAy);
+					final PacketStringCoordinates packetBa = new PacketStringCoordinates();
+					packetBa.readData(data);
+					onOpenSecurityPlayer(player, packetBa);
 					break;
 			}
 		} catch (final Exception ex) {

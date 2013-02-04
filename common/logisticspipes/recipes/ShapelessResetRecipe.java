@@ -1,20 +1,17 @@
 package logisticspipes.recipes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.ShapelessRecipes;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.world.World;
 
-public class ShapelessResetRecipe extends ShapelessRecipes {
+public class ShapelessResetRecipe implements IRecipe {
 	private final int itemID;
 	private final int meta;
+	private final ItemStack output;
 
 	public ShapelessResetRecipe(int itemID, int meta) {
-		super(new ItemStack(itemID, 1, meta), new ArrayList<ItemStack>(1));
-		recipeItems.add(super.getRecipeOutput());
+		this.output = new ItemStack(itemID, 1, meta);
 		this.itemID = itemID;
 		this.meta = meta;
 	}
@@ -48,5 +45,10 @@ public class ShapelessResetRecipe extends ShapelessRecipes {
 	@Override
 	public int getRecipeSize() {
 		return 1;
+	}
+
+	@Override
+	public ItemStack getRecipeOutput() {
+		return this.output;
 	}
 }

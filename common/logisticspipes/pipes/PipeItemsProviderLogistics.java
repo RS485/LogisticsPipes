@@ -261,12 +261,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		LogicProvider providerLogic = (LogicProvider) logic;
-		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
-		
 		if (!isEnabled()){
 			return;
 		}
+		LogicProvider providerLogic = (LogicProvider) logic;
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>();
 		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
@@ -275,13 +274,14 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
+outer:
 			for (ItemIdentifier currItem : currentInv.keySet()) {
 				if(items.containsKey(currItem)) continue;
 				
-				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
+				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
 				
 				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue;
+					if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue outer;
 				}
 				
 				if (!addedItems.containsKey(currItem)) {
@@ -292,24 +292,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			}
 		}
 		
-		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
-		while(iterator.hasNext()){
-			ItemIdentifier item = iterator.next();
-		
-			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
-			if (remaining < 1){
-				iterator.remove();
-			} else {
-				addedItems.put(item, remaining);	
-			}
-		}
+		//Reduce what has been reserved, add.
 		for(ItemIdentifier item: addedItems.keySet()) {
-			if (!items.containsKey(item)) {
-				items.put(item, addedItems.get(item));
-			} else {
-				items.put(item, addedItems.get(item) + items.get(item));
-			}
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			if (remaining < 1) continue;
+
+			items.put(item, remaining);
 		}
 	}
 

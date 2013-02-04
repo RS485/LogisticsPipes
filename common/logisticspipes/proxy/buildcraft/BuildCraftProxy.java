@@ -91,13 +91,14 @@ public class BuildCraftProxy {
 	}
 	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
+		//Yes, the direction in TileGenericPipe.isPipeConnected(tile, direction) is the reverse of where tile is as seen from this...
 		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
 			if(((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
 				if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).isPipeConnected(to, way, ignoreSystemDisconnection)) {
 					return false;
 				}
 			} else {
-				if (!((TileGenericPipe) from).pipe.isPipeConnected(to, way)) {
+				if (!((TileGenericPipe) from).isPipeConnected(to, way.getOpposite())) {
 					return false;
 				}
 			}
@@ -106,7 +107,7 @@ public class BuildCraftProxy {
 					return false;
 				}
 			} else {
-				if (!((TileGenericPipe) to).pipe.isPipeConnected(from, way.getOpposite())) {
+				if (!((TileGenericPipe) to).isPipeConnected(from, way)) {
 					return false;
 				}
 			}

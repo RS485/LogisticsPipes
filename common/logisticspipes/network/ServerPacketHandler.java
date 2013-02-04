@@ -2,11 +2,14 @@ package logisticspipes.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.gui.PacketStringCoordinates;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -44,6 +47,7 @@ import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.network.packets.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -345,6 +349,15 @@ public class ServerPacketHandler {
 					final PacketCoordinates packetAz = new PacketCoordinates();
 					packetAz.readData(data);
 					onCheatJunctionPower(player, packetAz);
+					break;
+				case NetworkConstants.PLAYER_LIST:
+					onPlayerListRequest(player);
+					break;
+				case NetworkConstants.OPEN_SECURITY_PLAYER:
+					final PacketStringCoordinates
+					packetAy = new PacketStringCoordinates();
+					packetAy.readData(data);
+					onOpenSecurityPlayer(player, packetAy);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1375,6 +1388,28 @@ public class ServerPacketHandler {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer);
+		}
+	}
+
+	private static void onPlayerListRequest(EntityPlayerMP player) {
+		List<String> list = new LinkedList<String>();
+		File root = DimensionManager.getCurrentSaveRootDirectory();
+		if(root == null) return;
+		if(!root.exists()) return;
+		File players = new File(root, "players");
+		if(!players.exists()) return;
+		for(String names:players.list()) {
+			if(names.endsWith(".dat") && new File(players, names).isFile()) {
+				list.add(names.substring(0, names.length() - 4));
+			}
+		}
+		MainProxy.sendPacketToPlayer(new PacketStringList(NetworkConstants.PLAYER_LIST, list).getPacket(), (Player) player);
+	}
+
+	private static void onOpenSecurityPlayer(EntityPlayerMP player, PacketStringCoordinates packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).handleOpenSecurityPlayer(player, packet.string);
 		}
 	}
 	

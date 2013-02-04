@@ -556,7 +556,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 					return ret;
 			}
 		} else if(nbt instanceof NBTTagCompound) {
-			NBTTagCompound c = (NBTTagCompound) nbt;
 			Field fMap;
 			try {
 				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
@@ -564,7 +563,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				fMap = NBTTagCompound.class.getDeclaredField("a");
 			}
 			fMap.setAccessible(true);
-			HashMap<String, NBTBase> internal = (HashMap) fMap.get(nbt);
+			@SuppressWarnings("unchecked")
+			HashMap<String, NBTBase> internal = (HashMap<String, NBTBase>) fMap.get(nbt);
 			for(Entry<String, NBTBase> e : internal.entrySet()) {
 				String k = e.getKey();
 				NBTBase v = e.getValue();

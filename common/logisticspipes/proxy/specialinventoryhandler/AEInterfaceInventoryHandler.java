@@ -57,7 +57,6 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		return result;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		try {

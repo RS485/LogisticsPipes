@@ -7,11 +7,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
+import logisticspipes.gui.GuiSecurityStation;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiExtractor;
@@ -24,6 +26,7 @@ import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.items.PacketInteger;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
@@ -39,6 +42,7 @@ import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.packets.PacketBufferTransfer;
+import logisticspipes.network.packets.PacketCoordinatesUUID;
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
@@ -47,6 +51,7 @@ import logisticspipes.network.packets.PacketLiquidUpdate;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketModuleNBT;
+import logisticspipes.network.packets.PacketNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBitSet;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -56,6 +61,7 @@ import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRoutingStats;
 import logisticspipes.network.packets.PacketSimulate;
+import logisticspipes.network.packets.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
@@ -65,6 +71,7 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.SneakyOrientation;
@@ -305,6 +312,22 @@ public class ClientPacketHandler {
 					final PacketPipeBitSet packetAw = new PacketPipeBitSet();
 					packetAw.readData(data);
 					onFirewallFlags(packetAw);
+					break;
+				case NetworkConstants.PLAYER_LIST:
+					final PacketStringList packetAx = new PacketStringList();
+					packetAx.readData(data);
+					onPlayerList(packetAx);
+					break;
+				case NetworkConstants.SECURITY_STATION_ID:
+					final PacketCoordinatesUUID packetAy = new PacketCoordinatesUUID();
+					packetAy.readData(data);
+					onSecurityID(packetAy);
+					break;
+				case NetworkConstants.OPEN_SECURITY_PLAYER:
+					final PacketNBT packetAz = new PacketNBT();
+					packetAz.readData(data);
+					onOpenSecurityPlayer(packetAz);
+					break;
 					break;
 				case NetworkConstants.THAUMICASPECTSINKLIST:
 					final PacketModuleNBT packetAx = new PacketModuleNBT();
@@ -864,6 +887,27 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof PipeItemsFirewall) {
 			PipeItemsFirewall firewall = (PipeItemsFirewall) pipe.pipe;
 			firewall.setFlags(packet.flags);
+		}
+	}
+
+	private static void onPlayerList(PacketStringList packet) {
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof PlayerListReciver) {
+			((PlayerListReciver)FMLClientHandler.instance().getClient().currentScreen).recivePlayerList(packet.list);
+		}
+	}
+
+	private static void onSecurityID(PacketCoordinatesUUID packet) {
+		TileEntity tile = MainProxy.getClientMainWorld().getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).setClientUUID(packet.uuid);
+		}
+	}
+
+	private static void onOpenSecurityPlayer(PacketNBT packet) {
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSecurityStation) {
+			SecuritySettings setting = new SecuritySettings(null);
+			setting.readFromNBT(packet.tag);
+			((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).handlePlayerSecurityOpen(setting);
 		}
 	}
 	

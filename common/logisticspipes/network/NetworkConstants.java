@@ -94,4 +94,7 @@ public class NetworkConstants {
 	public static final int SECURITY_CARD = 89;
 	public static final int THAUMICASPECTSINKLIST = 90;
 	public static final int CHEATJUNCTIONPOWER = 91;
+	public static final int PLAYER_LIST = 92;
+	public static final int SECURITY_STATION_ID = 93;
+	public static final int OPEN_SECURITY_PLAYER = 94;
 }

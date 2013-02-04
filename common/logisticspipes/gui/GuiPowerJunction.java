@@ -1,8 +1,13 @@
 package logisticspipes.gui;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
@@ -45,4 +50,25 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		mc.fontRenderer.drawString("1 MJ = 5 LP", guiLeft + 30, guiTop + 65, 0x404040);
 		mc.fontRenderer.drawString("1 EU = 2 LP", guiLeft + 100, guiTop + 65, 0x404040);
 	}
+	
+	@Override
+	public void initGui() {
+		super.initGui();
+		this.controlList.clear();
+		if (LogisticsPipes.DEBUG) {
+			this.controlList.add(new GuiButton(0, guiLeft + 140, guiTop + 20, 20, 20, "+"));
+		}
+	}
+	
+	@Override
+	protected void actionPerformed(GuiButton par1GuiButton) {
+		if(par1GuiButton.id == 0) {
+			junction.addEnergy(100000);
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CHEATJUNCTIONPOWER, junction.getX(), junction.getY(), junction.getZ()).getPacket());
+		} else {
+			super.actionPerformed(par1GuiButton);		
+		}
+	}
+
+
 }

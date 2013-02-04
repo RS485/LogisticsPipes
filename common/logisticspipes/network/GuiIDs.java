@@ -22,6 +22,8 @@ public class GuiIDs {
 	public static final int GUI_Module_Advanced_Extractor_ID = 27;
 	public static final int GUI_Module_Apiarist_Sink_ID = 28;
 	public static final int GUI_Module_ModBased_ItemSink_ID = 29;
+	public static final int GUI_Module_ElectricManager_ID = 40;
+	public static final int GUI_Module_Thaumic_AspectSink_ID = 41;
 	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;
@@ -31,8 +33,6 @@ public class GuiIDs {
 	public static final int GUI_HUD_Settings = 35;
 	public static final int GUI_Liquid_Orderer_ID = 36;
 	public static final int GUI_Liquid_Basic_ID = 37;
-
-	public static final int GUI_Module_ElectricManager_ID = 40;
 	
 	//Blocks
 	public static final int GUI_Soldering_Station_ID = 50;

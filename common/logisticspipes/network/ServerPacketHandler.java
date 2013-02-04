@@ -6,6 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -27,6 +28,7 @@ import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketHUDSettings;
@@ -332,6 +334,17 @@ public class ServerPacketHandler {
 					final PacketPipeInteger packetAx = new PacketPipeInteger();
 					packetAx.readData(data);
 					onSecurityCardButton(player, packetAx);
+					break;
+				case NetworkConstants.THAUMICASPECTSINKLIST:
+					final PacketModuleNBT packetAy = new PacketModuleNBT();
+					packetAy.readData(data);
+					onThaumicAspectSinkList(player, packetAy);
+					break;
+				case NetworkConstants.CHEATJUNCTIONPOWER:
+					if (!LogisticsPipes.DEBUG) break;
+					final PacketCoordinates packetAz = new PacketCoordinates();
+					packetAz.readData(data);
+					onCheatJunctionPower(player, packetAz);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1311,6 +1324,38 @@ public class ServerPacketHandler {
 		
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
 			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}
+	}
+
+	private static void onThaumicAspectSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
+		if(packet.slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleThaumicAspectSink) {
+					ModuleThaumicAspectSink module = (ModuleThaumicAspectSink) dummy.getModule();
+					module.readFromNBT(packet.tag);
+				}
+			}
+			return;
+		}
+
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) return;
+	
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleThaumicAspectSink) {
+			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}		
+	}
+
+	private static void onCheatJunctionPower(EntityPlayerMP player, PacketCoordinates packet) {
+		World world = player.worldObj;
+		if (!world.blockExists(packet.posX, packet.posY, packet.posZ)) {
+			return;
+		}
+
+		final TileEntity tile = world.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if (tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
+			((LogisticsPowerJuntionTileEntity_BuildCraft) tile).addEnergy(100000);
 		}
 	}
 

@@ -200,10 +200,11 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
 		if (_invProvider.getPointedInventory() == null) return;
-		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
+
+		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
 outer:
 		for (ItemIdentifier currItem : currentInv.keySet()) {
 			if(items.containsKey(currItem)) continue;
@@ -213,32 +214,11 @@ outer:
 			for(IFilter filter:filters) {
 				if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue outer;
 			}
-			
-			if (!addedItems.containsKey(currItem)){
-				addedItems.put(currItem, currentInv.get(currItem));
-			}else {
-				addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
-			}
-		}
-		
-		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
-		while(iterator.hasNext()){
-			ItemIdentifier item = iterator.next();
-		
-			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
-			if (remaining < 1){
-				iterator.remove();
-			} else {
-				addedItems.put(item, remaining);	
-			}
-		}
-		for(ItemIdentifier item: addedItems.keySet()) {
-			if (!items.containsKey(item)) {
-				items.put(item, addedItems.get(item));
-			} else {
-				items.put(item, addedItems.get(item) + items.get(item));
-			}
+
+			int remaining = currentInv.get(currItem) - _orderManager.totalItemsCountInOrders(currItem);
+			if (remaining < 1) continue;
+
+			items.put(currItem, remaining);
 		}
 	}
 

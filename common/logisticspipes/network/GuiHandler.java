@@ -30,6 +30,7 @@ import logisticspipes.gui.modules.GuiModBasedItemSink;
 import logisticspipes.gui.modules.GuiPassiveSupplier;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiTerminus;
+import logisticspipes.gui.modules.GuiThaumicAspectSink;
 import logisticspipes.gui.modules.GuiWithPreviousGuiContainer;
 import logisticspipes.gui.orderer.LiquidGuiOrderer;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
@@ -56,6 +57,7 @@ import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
+import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -581,6 +583,25 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				}
+			case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
+				if(slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
+					NBTTagCompound nbt = new NBTTagCompound();
+					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+					MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleThaumicAspectSink)) return null;
+					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				}
+
 				
 			default:break;
 			}
@@ -881,6 +902,24 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiModBasedItemSink(player.inventory, null, (ModuleModBasedItemSink) module, null, slot);
 				}
 				
+			case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
+				if(slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
+					return new GuiThaumicAspectSink(player.inventory, pipe.pipe, (ModuleThaumicAspectSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot),  ModLoader.getMinecraftInstance().currentScreen, slot + 1);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerPosition(0, -1, z, 20);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleThaumicAspectSink)) return null;
+					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, null, slot);
+				}
+
 				
 				
 			default:break;

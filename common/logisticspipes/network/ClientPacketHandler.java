@@ -36,6 +36,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCraftingLoop;
@@ -304,6 +305,11 @@ public class ClientPacketHandler {
 					final PacketPipeBitSet packetAw = new PacketPipeBitSet();
 					packetAw.readData(data);
 					onFirewallFlags(packetAw);
+					break;
+				case NetworkConstants.THAUMICASPECTSINKLIST:
+					final PacketModuleNBT packetAx = new PacketModuleNBT();
+					packetAx.readData(data);
+					onThaumicAspectList(packetAx);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -837,6 +843,15 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleModBasedItemSink) {
 			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
 			((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).ModListChanged();
+		}
+	}
+
+	private static void onThaumicAspectList(PacketModuleNBT packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getClientMainWorld(), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) return;
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleThaumicAspectSink) {
+			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).aspectListChanged();
 		}
 	}
 

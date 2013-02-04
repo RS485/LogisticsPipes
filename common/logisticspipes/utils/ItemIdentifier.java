@@ -302,7 +302,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public ItemStack makeNormalStack(int stackSize){
 		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
-		stack.setTagCompound((NBTTagCompound)this.tag.copy());
+		if(this.tag != null) {
+			stack.setTagCompound((NBTTagCompound)this.tag.copy());
+		}
 		return stack;
 	}
 	

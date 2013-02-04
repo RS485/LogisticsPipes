@@ -42,7 +42,9 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 
 	public ItemStack makeNormalStack(){
 		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
-		stack.setTagCompound((NBTTagCompound)_item.tag.copy());
+		if(_item.tag != null) {
+			stack.setTagCompound((NBTTagCompound)_item.tag.copy());
+		}
 		return stack;
 	}
 	

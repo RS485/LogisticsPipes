@@ -120,12 +120,12 @@ public class InventoryUtil implements IInventoryUtil {
 		for (int i = 0; i < _inventory.getSizeInventory(); i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null){
-				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize());
+				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize());
 				continue;
 			}
 			if (ItemIdentifier.get(stack) != item) continue;
 			
-			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()) - stack.stackSize);
+			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize()) - stack.stackSize);
 		}
 		return totalRoom;
 	}

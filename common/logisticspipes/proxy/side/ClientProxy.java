@@ -86,13 +86,13 @@ public class ClientProxy implements IProxy {
 	public String getName(ItemIdentifier item) {
 		String name = "???";
 		try {
-			name = Item.itemsList[item.itemID].getItemDisplayName(item.makeNormalStack(1));
+			name = Item.itemsList[item.itemID].getItemDisplayName(item.unsafeMakeNormalStack(1));
 			if(name == null) {
 				throw new Exception();
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getItemNameIS(item.makeNormalStack(1));
+				name = Item.itemsList[item.itemID].getItemNameIS(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}

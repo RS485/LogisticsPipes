@@ -241,7 +241,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				if (ppi > 70 * (page+1)) break;
 				int row = ((ppi - 1) % 70) / 10;
 				int column = (ppi - 1) % 10;
-				ItemStack st = itemStack.makeNormalStack();
+				ItemStack st = itemStack.unsafeMakeNormalStack();
 				int x = guiLeft + 10 + panelxSize * column;
 				int y = guiTop + 18 + panelySize * row;
 	

@@ -77,7 +77,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.5f, 1);
 
 	// for when things differ by NBT tags, and an itemKey isn't enough to get the full object
-	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
+	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
 	
@@ -91,7 +91,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private static boolean init = false;
 	
 	//Hide default constructor
-	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag, int uniqueID) {
+	private ItemIdentifier(int itemID, int itemDamage, FinalNBTTagCompound tag, int uniqueID) {
 		this.itemID =  itemID;
 		this.itemDamage = itemDamage;
 		this.tag = tag;
@@ -100,7 +100,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public final int itemID;
 	public final int itemDamage;
-	public final NBTTagCompound tag;
+	public final FinalNBTTagCompound tag;
 	public final int uniqueID;
 	
 	public static boolean allowNullsForTesting;
@@ -113,26 +113,27 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				return unknownItem;
 			}
 			int id = getUnusedId();
-			unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, id);
+			unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, null, id);
 			_itemIdentifierCache.put(itemKey, unknownItem);
 			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		} else {
-			ConcurrentHashMap<NBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+			ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
 			if(itemNBTList!=null){
 				ItemIdentifier unknownItem = itemNBTList.get(tag);
 				if(unknownItem!=null){
 					return unknownItem;
 				}
 			} else {
-				itemNBTList = new ConcurrentHashMap<NBTTagCompound, ItemIdentifier>();
+				itemNBTList = new ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier>(16, 0.5f, 1);
 				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, getUnusedId());
+			FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag);
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, getUnusedId());
 			if(LogisticsPipes.DEBUG){
 				checkNBTbadness(unknownItem, tag);
 			}
-			itemNBTList.put(tag,unknownItem);
+			itemNBTList.put(finaltag,unknownItem);
 			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
 		}
@@ -262,7 +263,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getFriendlyName() {
 		if (Item.itemsList[itemID] != null) {
-			return getName(itemID,this.makeNormalStack(1));
+			return getName(itemID,this.unsafeMakeNormalStack(1));
 		}
 		return "<Item name not found>";
 	}
@@ -293,9 +294,15 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return new ItemIdentifierStack(this, stackSize);
 	}
 	
-	public ItemStack makeNormalStack(int stackSize){
+	public ItemStack unsafeMakeNormalStack(int stackSize){
 		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
 		stack.setTagCompound(this.tag);
+		return stack;
+	}
+
+	public ItemStack makeNormalStack(int stackSize){
+		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
+		stack.setTagCompound((NBTTagCompound)this.tag.copy());
 		return stack;
 	}
 	

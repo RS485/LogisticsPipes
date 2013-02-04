@@ -14,6 +14,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 
 public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>{
@@ -33,9 +34,15 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return _item;
 	}
 
-	public ItemStack makeNormalStack(){
+	public ItemStack unsafeMakeNormalStack(){
 		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
 		stack.setTagCompound(_item.tag);
+		return stack;
+	}
+
+	public ItemStack makeNormalStack(){
+		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
+		stack.setTagCompound((NBTTagCompound)_item.tag.copy());
 		return stack;
 	}
 	

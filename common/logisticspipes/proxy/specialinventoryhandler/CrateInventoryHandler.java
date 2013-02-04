@@ -93,7 +93,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
 			if (count <= (_hideOnePerStack?1:0)) return null;
 			return (ItemStack) removeItems.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1), 1});
 		} catch (IllegalArgumentException e) {
@@ -110,7 +110,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public boolean containsItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
 			return (count > 0);
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -127,7 +127,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			if (!Item.itemsList[itemIdent.itemID].isDamageable()) {
-				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+				int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
 				return (count > 0);
 			}
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
@@ -152,7 +152,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public int roomForItem(ItemIdentifier itemIdent) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
-			int space = (Integer) spaceForItem.invoke(cratePileData, new Object[]{itemIdent.makeNormalStack(1)});
+			int space = (Integer) spaceForItem.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});
 			return space;
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();

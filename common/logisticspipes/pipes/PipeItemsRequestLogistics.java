@@ -100,7 +100,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
 		for(Entry <ItemIdentifier, Integer> item:items.entrySet()) {
-			ItemStack is = item.getKey().makeNormalStack(item.getValue());
+			ItemStack is = item.getKey().unsafeMakeNormalStack(item.getValue());
 			list.add(is);
 		}
 		return list;
@@ -111,7 +111,7 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
 		for(ItemIdentifier item:items) {
-			ItemStack is = item.makeNormalStack(0);
+			ItemStack is = item.unsafeMakeNormalStack(0);
 			list.add(is);
 		}
 		return list;

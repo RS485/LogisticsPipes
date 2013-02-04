@@ -66,7 +66,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
 			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
 			for (ItemIdentifier item : wantContainers.keySet()){
-				ItemStack wantItem = item.makeNormalStack(1);
+				ItemStack wantItem = item.unsafeMakeNormalStack(1);
 				LiquidStack liquidstack = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 				if (liquidstack == null) continue;
 				wantLiquids.put(LiquidIdentifier.get(liquidstack), wantContainers.get(item) * liquidstack.amount);
@@ -96,10 +96,10 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			//Reduce what have been requested already
 			for (LiquidIdentifier liquidId : wantLiquids.keySet()){
 				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
-					ItemStack wantItem = requestedItem.makeNormalStack(1);
+					ItemStack wantItem = requestedItem.unsafeMakeNormalStack(1);
 					LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 					if (requestedLiquidId == null) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidContainerRegistry.getLiquidForFilledItem(requestedItem.makeNormalStack(1)).amount);
+					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidContainerRegistry.getLiquidForFilledItem(requestedItem.unsafeMakeNormalStack(1)).amount);
 				}
 			}
 			
@@ -109,10 +109,10 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			Map<ItemIdentifier, Integer> allNeededContainers = dummyInventory.getItemsAndCount();
 			for (ItemIdentifier need : allNeededContainers.keySet()){
-				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1));
+				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1));
 				if (requestedLiquidId == null) continue;
 				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
-				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
+				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1)).amount;
 				if (countToRequest < 1) continue;
 				
 				if(!_power.useEnergy(11)) {

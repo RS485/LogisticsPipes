@@ -89,7 +89,7 @@ public class BasicGuiHelper {
 			
 			if (ppi <= items * page) continue;
 			if (ppi > items * (page+1)) continue;
-			ItemStack st = itemStack.makeNormalStack();
+			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = left + xSize * column;
 			int y = top + ySize * row;
 

@@ -95,7 +95,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			
 			if (ppi <= 27 * page) continue;
 			if (ppi > 27 * (page+1)) continue;
-			ItemStack st = itemStack.makeNormalStack();
+			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = 9 + 18 * column + guiLeft;
 			int y = 59 + 18 * row + guiTop;
 

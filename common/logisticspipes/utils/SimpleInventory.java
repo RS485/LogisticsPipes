@@ -192,7 +192,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 			if(stack == null) {
 				_contents[i] = null;
 			} else {
-				_contents[i] = stack.makeNormalStack();
+				_contents[i] = stack.unsafeMakeNormalStack();
 			}
 			i++;
 		}

@@ -69,7 +69,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isBee(ItemIdentifier item) {
-		return isBee(item.makeNormalStack(1));
+		return isBee(item.unsafeMakeNormalStack(1));
 	}
 
 	/**
@@ -91,7 +91,7 @@ public class ForestryProxy implements IForestryProxy {
 	 */
 	@Override
 	public boolean isAnalysedBee(ItemIdentifier item) {
-		return isAnalysedBee(item.makeNormalStack(1));
+		return isAnalysedBee(item.unsafeMakeNormalStack(1));
 	}
 
 	/**

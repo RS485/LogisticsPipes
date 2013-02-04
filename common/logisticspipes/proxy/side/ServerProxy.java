@@ -75,13 +75,13 @@ public class ServerProxy implements IProxy {
 	private String tryGetName(ItemIdentifier item) {
 		String name = "???";
 		try {
-			name = Item.itemsList[item.itemID].getItemDisplayName(item.makeNormalStack(1));
+			name = Item.itemsList[item.itemID].getItemDisplayName(item.unsafeMakeNormalStack(1));
 			if(name == null) {
 				throw new Exception();
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getItemNameIS(item.makeNormalStack(1));
+				name = Item.itemsList[item.itemID].getItemNameIS(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
@@ -103,7 +103,7 @@ public class ServerProxy implements IProxy {
 		String name = langDatabase.get(category, "name", "").value;
 		if(name.equals("")) {
 			saveLangDatabase();
-			if(item.makeNormalStack(1).isItemStackDamageable()) {
+			if(item.unsafeMakeNormalStack(1).isItemStackDamageable()) {
 				return tryGetName(item);
 			} else {
 				return  "LP|UNDEFINED";
@@ -124,7 +124,7 @@ public class ServerProxy implements IProxy {
 	@Override
 	public String getName(ItemIdentifier item) {
 		String category = "";
-		if(item.makeNormalStack(1).isItemStackDamageable()) {
+		if(item.unsafeMakeNormalStack(1).isItemStackDamageable()) {
 			category = "itemNames." + Integer.toString(item.itemID);
 		} else {
 			if(item.itemDamage == 0) {
@@ -151,7 +151,7 @@ public class ServerProxy implements IProxy {
 	@Override
 	public void updateNames(ItemIdentifier item, String name) {
 		String category = "";
-		if(item.makeNormalStack(1).isItemStackDamageable()) {
+		if(item.unsafeMakeNormalStack(1).isItemStackDamageable()) {
 			category = "itemNames." + Integer.toString(item.itemID);
 		} else {
 			if(item.itemDamage == 0) {

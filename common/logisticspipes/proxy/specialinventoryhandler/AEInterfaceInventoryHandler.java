@@ -75,7 +75,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean containsItem(ItemIdentifier item) {
 		try {
-			ItemStack result = (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{item.makeNormalStack(1), false});
+			ItemStack result = (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{item.unsafeMakeNormalStack(1), false});
 			return result != null;
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
@@ -110,7 +110,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int roomForItem(ItemIdentifier item) {
 		try {
-			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.makeNormalStack(1), item.getMaxStackSize()});
+			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.unsafeMakeNormalStack(1), item.getMaxStackSize()});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {

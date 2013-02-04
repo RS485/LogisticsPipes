@@ -71,6 +71,6 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 
 	@Override
 	public void specialItemRendering(ItemIdentifier item, int x, int y) {
-		SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.makeNormalStack(1), guiLeft - 20, guiTop + 10, this);
+		SimpleServiceLocator.thaumCraftProxy.renderAspectsDown(item.unsafeMakeNormalStack(1), guiLeft - 20, guiTop + 10, this);
 	}
 }

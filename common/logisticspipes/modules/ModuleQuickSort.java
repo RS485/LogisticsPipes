@@ -111,14 +111,14 @@ public class ModuleQuickSort implements ILogisticsModule {
 			lastStackLookedAt++;
 			return;
 		}
-		lastSuceededStack=lastStackLookedAt;
-		lastStackLookedAt++;
 		
 		stalled = false;
 		_itemSender.sendStack(stackToSend, reply);
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
 		targetInventory.setInventorySlotContents(lastStackLookedAt, null);
 				
+		lastSuceededStack=lastStackLookedAt;
+		lastStackLookedAt++;
 	}
 
 	@Override

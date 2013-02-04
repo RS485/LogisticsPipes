@@ -62,7 +62,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 					if(!method.isAnnotationPresent(CCCommand.class)) continue;
 					for(Class<?> param:method.getParameterTypes()) {
 						if(!param.getName().startsWith("java")) {
-							throw new InternalError("Internel Excption (Code: 2)");
+							throw new InternalError("Internal Excption (Code: 2)");
 						}
 					}
 					commandMap.put(i, method.getName());
@@ -116,7 +116,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 
 	@Override
 	public Object[] callMethod(IComputerAccess computer, int methodId, Object[] arguments) throws Exception {
-		if(getCPipe() == null) throw new InternalError("Pipe in not a LogisticsPipe");
+		if(getCPipe() == null) throw new InternalError("Pipe is not a LogisticsPipe");
 		init();
 		lastPC = computer;
 		if(methodId == 0) {
@@ -126,7 +126,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			head.append("PipeType: ");
 			head.append(typeName);
 			head.append("\n");
-			head2.append("Commads: \n");
+			head2.append("Commands: \n");
 			for(Integer num:commands.keySet()) {
 				Method method = commands.get(num);
 				StringBuilder command = new StringBuilder();
@@ -292,7 +292,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			}
 			if(!handled) {
 				error = new StringBuilder();
-				error.append("Internel Excption (Code: 1, ");
+				error.append("Internal Excption (Code: 1, ");
 				error.append(name);
 				error.append(")");
 			}

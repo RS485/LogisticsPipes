@@ -81,13 +81,18 @@ public class ModuleQuickSort implements ILogisticsModule {
 		if(lastSuceededStack >= targetInventory.getSizeInventory())
 			lastSuceededStack = 0;
 		
-		ItemStack stackToSend = null;
+		//incremented at the end of the previous loop.
+		if (lastStackLookedAt >= targetInventory.getSizeInventory())
+			lastStackLookedAt = 0;
+		
+		ItemStack stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+
 		while(stackToSend==null) {
 			lastStackLookedAt++;
+			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
 			if (lastStackLookedAt >= targetInventory.getSizeInventory())
 				lastStackLookedAt = 0;
-			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
-			if(lastStackLookedAt == lastSuceededStack && stackToSend == null) {
+			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 				return; // then we have been around the list without sending, halt for now
 			}
@@ -98,13 +103,17 @@ public class ModuleQuickSort implements ILogisticsModule {
 			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 			}
+			lastStackLookedAt++;
 			return;
 		}
 		if(!_power.useEnergy(500)) {
 			stalled = true;
+			lastStackLookedAt++;
 			return;
 		}
 		lastSuceededStack=lastStackLookedAt;
+		lastStackLookedAt++;
+		
 		stalled = false;
 		_itemSender.sendStack(stackToSend, reply);
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);

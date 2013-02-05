@@ -3,6 +3,7 @@ package logisticspipes.network.packets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.TreeSet;
 
@@ -14,7 +15,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class PacketRequestGuiContent extends LogisticsPipesPacket {
 
-	public TreeSet<ItemIdentifierStack> _allItems;
+	public Collection<ItemIdentifierStack> _allItems;
 	private int id;
 
 	public PacketRequestGuiContent() {
@@ -28,7 +29,7 @@ public class PacketRequestGuiContent extends LogisticsPipesPacket {
 		id = NetworkConstants.ORDERER_CONTENT_ANSWER;
 	}
 
-	public PacketRequestGuiContent(TreeSet<ItemIdentifierStack> allItems, int id) {
+	public PacketRequestGuiContent(Collection<ItemIdentifierStack> allItems, int id) {
 		super();
 		_allItems = allItems;
 		this.id = id;

@@ -3,6 +3,7 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -1091,7 +1092,7 @@ public class ServerPacketHandler {
 		
 		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
 			PipeItemsInvSysConnector connector = (PipeItemsInvSysConnector) pipe.pipe;
-			TreeSet<ItemIdentifierStack> allItems = connector.getExpectedItems();
+			Collection<ItemIdentifierStack> allItems = connector.getExpectedItems();
 			PacketRequestGuiContent packetContent = new PacketRequestGuiContent(allItems, NetworkConstants.INC_SYS_CON_CONTENT);
 			MainProxy.sendPacketToPlayer(packetContent.getPacket(), (Player)player);
 		}

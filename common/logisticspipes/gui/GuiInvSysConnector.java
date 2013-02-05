@@ -1,6 +1,7 @@
 package logisticspipes.gui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
@@ -176,9 +177,9 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		return GuiIDs.GUI_Inv_Sys_Connector_ID;
 	}
 
-	public void handleContentAnswer(TreeSet<ItemIdentifierStack> _allItems2) {
+	public void handleContentAnswer(Collection<ItemIdentifierStack> allItems) {
 		_allItems.clear();
-		_allItems.addAll(_allItems2);
+		_allItems.addAll(allItems);
 	}
 
 	public void handleResistanceAnswer(int resistance) {

@@ -109,7 +109,6 @@ public class RequestHandler {
 			_allItems.add(newStack);
 		}
 		
-		outer:
 		for (ItemIdentifier item : _craftableItems){
 			if (_availableItems.containsKey(item)) continue;
 			_allItems.add(item.makeStack(0));

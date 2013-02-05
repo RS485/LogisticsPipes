@@ -131,7 +131,7 @@ class PathFinder {
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags, side);
 				for(Entry<RoutedPipe, ExitRoute> pipe : result.entrySet()) {
 					pipe.getValue().exitOrientation = ForgeDirection.UNKNOWN;
-					ExitRoute foundPipe=foundPipes.get(pipe);
+					ExitRoute foundPipe=foundPipes.get(pipe.getKey());
 					if (foundPipe==null || (pipe.getValue().metric < foundPipe.metric)) {
 						// New path OR 	If new path is better, replace old path
 						foundPipes.put(pipe.getKey(), pipe.getValue());

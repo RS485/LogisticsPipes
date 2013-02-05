@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.UUID;
 
@@ -187,12 +190,18 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		inv.setInventorySlotContents(0, null);
 	}
 
-	public TreeSet<ItemIdentifierStack> getExpectedItems() {
-		TreeSet<ItemIdentifierStack> list = new TreeSet<ItemIdentifierStack>(new ItemIdentifierStack.itemComparitor());
+	public Set<ItemIdentifierStack> getExpectedItems() {
+		// got to be a TreeMap, because a TreeSet doesn't have the ability to retrieve the key.
+		TreeMap<ItemIdentifierStack,?> list = new TreeMap<ItemIdentifierStack,Integer>();
 		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-				list.add(new ItemIdentifierStack(pair.getValue1(), 1));
+			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
+			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
+			if(entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
+				entry.getKey().stackSize += currentStack.stackSize;
+			} else 
+				list.put(currentStack,null);
 		}
-		return list;
+		return list.keySet();
 	}
 	
 	@Override

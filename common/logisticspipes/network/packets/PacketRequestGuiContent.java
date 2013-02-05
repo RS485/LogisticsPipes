@@ -19,7 +19,7 @@ public class PacketRequestGuiContent extends LogisticsPipesPacket {
 
 	public PacketRequestGuiContent() {
 		super();
-		_allItems = new TreeSet<ItemIdentifierStack>();
+		_allItems = new TreeSet<ItemIdentifierStack>(new ItemIdentifierStack.itemComparitor());
 	}
 
 	public PacketRequestGuiContent(TreeSet<ItemIdentifierStack> _allItems2) {

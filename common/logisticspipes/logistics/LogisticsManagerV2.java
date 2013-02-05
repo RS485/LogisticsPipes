@@ -292,9 +292,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(Map<ItemIdentifier, Integer> allItems:items) {
 			for (Entry<ItemIdentifier, Integer> item : allItems.entrySet()){
-				Integer currentItem=allAvailableItems.get(item);
+				Integer currentItem=allAvailableItems.get(item.getKey());
 				if (currentItem==null){
-					allAvailableItems.put(item.getKey(),item.getValue());
+					allAvailableItems.put(item.getKey(), item.getValue());
 				} else {
 					allAvailableItems.put(item.getKey(), currentItem + item.getValue());
 				}

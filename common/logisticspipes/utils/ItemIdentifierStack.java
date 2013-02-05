@@ -8,6 +8,7 @@
 
 package logisticspipes.utils;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -18,6 +19,41 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 
 public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>{
+	public static class orderedComparitor implements Comparator<ItemIdentifierStack>{
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c=o1._item.itemID-o2._item.itemID;
+			if(c!=0) return c;
+			c=o1._item.itemDamage-o2._item.itemDamage;
+			if(c!=0) return c;
+			c=o1._item.uniqueID-o2._item.uniqueID;
+			if(c!=0) return c;
+
+			return o2.stackSize-o1.stackSize;
+		}		
+	}
+	public static class itemComparitor implements Comparator<ItemIdentifierStack>{
+
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c=o1._item.itemID-o2._item.itemID;
+			if(c!=0) return c;
+			c=o1._item.itemDamage-o2._item.itemDamage;
+			if(c!=0) return c;
+			return o1._item.uniqueID-o2._item.uniqueID;
+		}
+		
+	}
+	public static class simpleItemComparitor implements Comparator<ItemIdentifierStack>{
+
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c=o1._item.itemID-o2._item.itemID;
+			if(c!=0) return c;
+			return o1._item.itemDamage-o2._item.itemDamage;
+		}
+		
+	}
 	private final ItemIdentifier _item;
 	public int stackSize;
 	

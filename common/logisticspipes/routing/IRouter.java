@@ -30,6 +30,8 @@ public interface IRouter extends IPowerRouter {
 	public void destroy();
 	public void update(boolean fullRefresh);
 	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
+	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
+	
 	public boolean isRoutedExit(ForgeDirection connection);
 	public boolean hasRoute(int id);
 	public ForgeDirection getExitFor(int id);

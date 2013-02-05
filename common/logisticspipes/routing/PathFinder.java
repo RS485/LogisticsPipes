@@ -12,6 +12,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -128,15 +129,12 @@ class PathFinder {
 					continue;
 				}
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags, side);
-				for(RoutedPipe pipe : result.keySet()) {
-					result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
-					if (!foundPipes.containsKey(pipe)) {
-						// New path
-						foundPipes.put(pipe, result.get(pipe));
-					}
-					else if (result.get(pipe).metric < foundPipes.get(pipe).metric) {
-						//If new path is better, replace old path, otherwise do nothing
-						foundPipes.put(pipe, result.get(pipe));
+				for(Entry<RoutedPipe, ExitRoute> pipe : result.entrySet()) {
+					pipe.getValue().exitOrientation = ForgeDirection.UNKNOWN;
+					ExitRoute foundPipe=foundPipes.get(pipe);
+					if (foundPipe==null || (pipe.getValue().metric < foundPipe.metric)) {
+						// New path OR 	If new path is better, replace old path
+						foundPipes.put(pipe.getKey(), pipe.getValue());
 					}
 				}
 			}

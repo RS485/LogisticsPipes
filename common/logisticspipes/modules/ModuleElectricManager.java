@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDElectricManager;
@@ -218,7 +219,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	}
 
 	@Override
-	public void handleInvContent(List<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 }

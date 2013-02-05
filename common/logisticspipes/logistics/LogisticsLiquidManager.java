@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ILiquidProvider;
@@ -62,7 +64,7 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	}
 	
 	@Override
-	public LinkedList<ItemIdentifierStack> getAvailableLiquid(List<SearchNode> validDestinations) {
+	public TreeSet<ItemIdentifierStack> getAvailableLiquid(List<SearchNode> validDestinations) {
 		Map<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(SearchNode r: validDestinations){
 			if(r == null) continue;
@@ -72,15 +74,16 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 			ILiquidProvider provider = (ILiquidProvider) r.node.getPipe();
 			Map<LiquidIdentifier, Integer> allItems = provider.getAvailableLiquids();
 			
-			for (LiquidIdentifier liquid : allItems.keySet()){
-				if (!allAvailableItems.containsKey(liquid.getItemIdentifier())){
-					allAvailableItems.put(liquid.getItemIdentifier(), allItems.get(liquid));
+			for (Entry<LiquidIdentifier, Integer> liquid : allItems.entrySet()){
+				Integer amount = allAvailableItems.get(liquid.getKey().getItemIdentifier());
+				if (amount==null){
+					allAvailableItems.put(liquid.getKey().getItemIdentifier(), liquid.getValue());
 				} else {
-					allAvailableItems.put(liquid.getItemIdentifier(), allAvailableItems.get(liquid.getItemIdentifier()) + allItems.get(liquid));
+					allAvailableItems.put(liquid.getKey().getItemIdentifier(), amount + liquid.getValue());
 				}
 			}
 		}
-		LinkedList<ItemIdentifierStack> itemIdentifierStackList = new LinkedList<ItemIdentifierStack>();
+		TreeSet<ItemIdentifierStack> itemIdentifierStackList = new TreeSet<ItemIdentifierStack>();
 		for(ItemIdentifier item:allAvailableItems.keySet()) {
 			itemIdentifierStackList.add(new ItemIdentifierStack(item, allAvailableItems.get(item)));
 		}

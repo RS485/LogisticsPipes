@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -245,6 +246,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 */
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<SearchNode> validDestinations) {
+		//TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>(ServerRouter.getBiggestSimpleID());
 		for(int i = 0; i < ServerRouter.getBiggestSimpleID(); i++)
 			items.add(new HashMap<ItemIdentifier, Integer>());
@@ -270,13 +272,16 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			list.add(((IFilteringRouter)n.node).getFilter());
 			handleAvailableSubFiltering(n, items, list, used);
 		}
+		
+		//TODO: Fix this doubly nested list
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(Map<ItemIdentifier, Integer> allItems:items) {
-			for (ItemIdentifier item : allItems.keySet()){
-				if (!allAvailableItems.containsKey(item)){
-					allAvailableItems.put(item, allItems.get(item));
+			for (Entry<ItemIdentifier, Integer> item : allItems.entrySet()){
+				Integer currentItem=allAvailableItems.get(item);
+				if (currentItem==null){
+					allAvailableItems.put(item.getKey(),item.getValue());
 				} else {
-					allAvailableItems.put(item, allAvailableItems.get(item) + allItems.get(item));
+					allAvailableItems.put(item.getKey(), currentItem + item.getValue());
 				}
 			}
 		}

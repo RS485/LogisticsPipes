@@ -8,6 +8,10 @@
 
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import net.minecraft.item.ItemStack;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicBuilderSupplier;
@@ -47,5 +51,10 @@ public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRe
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
 	}
 }

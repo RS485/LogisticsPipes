@@ -15,6 +15,7 @@ import java.util.List;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
+import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.RoutedPipe;
@@ -24,6 +25,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -146,5 +148,18 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		itemSinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
+	}
+	
+	@Override
+	public List<ItemStack> getSpecificInterests() {
+		List<ItemStack> l1 = new ArrayList<ItemStack>(10);
+		for(int i=0; i<9;i++)
+			l1.add(this.itemSinkModule.getFilterInventory().getStackInSlot(i));
+		return l1;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return this.itemSinkModule.isDefaultRoute();
 	}
 }

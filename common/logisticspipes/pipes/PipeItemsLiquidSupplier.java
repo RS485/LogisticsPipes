@@ -1,5 +1,8 @@
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -99,4 +102,8 @@ public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems
 	@Override
 	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 	
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
 }

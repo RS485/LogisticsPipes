@@ -57,6 +57,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			
 			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile.tile);
 			
+			//TODO: don't double get
 			//How many do I want?
 			Collection<ItemStack> neededItems = builder.getNeededItems();
 			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>();
@@ -73,6 +74,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 			
+			//TODO: don't double get
 			//Reduce what I have
 			for (ItemIdentifier item : needed.keySet()){
 				if (have.containsKey(item)){
@@ -80,6 +82,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				}
 			}
 			
+			//TODO: don't double get
 			//Reduce what have been requested already
 			for (ItemIdentifier item : needed.keySet()){
 				if (_requestedItems.containsKey(item)){
@@ -122,6 +125,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 		}
 	}
 
+	//TODO: don't double get
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
 		if (_requestedItems.containsKey(item.getItem())){
@@ -129,6 +133,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 		}
 	}
 
+	//TODO: don't double get
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
 		super.resetThrottle();

@@ -2,9 +2,12 @@ package logisticspipes.request;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
 import logisticspipes.interfaces.routing.IRequestLiquid;
@@ -88,7 +91,6 @@ public class RequestHandler {
 	public static void refresh(EntityPlayerMP player, CoreRoutedPipe pipe, DisplayOptions option) {
 		Map<ItemIdentifier, Integer> _availableItems;
 		LinkedList<ItemIdentifier> _craftableItems;
-		LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 		
 		if (option == DisplayOptions.SupplyOnly || option == DisplayOptions.Both){
 			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
@@ -100,29 +102,17 @@ public class RequestHandler {
 		} else {
 			_craftableItems = new LinkedList<ItemIdentifier>();
 		}
-		_allItems.clear();
+		TreeSet<ItemIdentifierStack>_allItems= new TreeSet<ItemIdentifierStack>();
 		
-		outer:
-		for (ItemIdentifier item : _availableItems.keySet()){
-			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
-					_allItems.add(i, item.makeStack(_availableItems.get(item)));
-					continue outer;
-				}
-			}
-			_allItems.addLast(item.makeStack(_availableItems.get(item)));
+		for (Entry<ItemIdentifier, Integer> item : _availableItems.entrySet()){
+			ItemIdentifierStack newStack = item.getKey().makeStack(item.getValue());
+			_allItems.add(newStack);
 		}
 		
 		outer:
 		for (ItemIdentifier item : _craftableItems){
 			if (_availableItems.containsKey(item)) continue;
-			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
-					_allItems.add(i, item.makeStack(0));
-					continue outer;
-				}
-			}
-			_allItems.addLast(item.makeStack(0));
+			_allItems.add(item.makeStack(0));
 		}
 		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
 	}
@@ -196,7 +186,7 @@ public class RequestHandler {
 	}
 
 	public static void refreshLiquid(EntityPlayerMP player, CoreRoutedPipe pipe) {
-		LinkedList<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
+		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
 		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
 	}
 

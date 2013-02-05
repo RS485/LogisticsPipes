@@ -3,8 +3,10 @@ package logisticspipes.network.packets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.utils.ItemIdentifier;
@@ -13,13 +15,13 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class PacketPipeInvContent extends PacketCoordinates {
 
-	public List<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
+	public Collection<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
 
 	public PacketPipeInvContent() {
 		super();
 	}
 
-	public PacketPipeInvContent(int id, int x, int y, int z, List<ItemIdentifierStack> allItems) {
+	public PacketPipeInvContent(int id, int x, int y, int z, Collection<ItemIdentifierStack> allItems) {
 		super(id, x, y, z);
 		_allItems = allItems;
 	}

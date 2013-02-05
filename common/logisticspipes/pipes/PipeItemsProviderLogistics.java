@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -180,10 +181,10 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	private int getCachedAvailableItemCount(ItemIdentifier item) {
-		if(displayMap.containsKey(item)) {
-			return displayMap.get(item);
-		}
-		return 0;
+		Integer i = displayMap.get(item);
+		if(i==null)
+			return 0;
+		return i;
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -385,7 +386,7 @@ outer:
 	}
 
 	@Override
-	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.ensureCapacity(list.size());
 		displayList.addAll(list);
@@ -397,8 +398,17 @@ outer:
 	}
 
 	@Override
-	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		itemListOrderer.clear();
 		itemListOrderer.addAll(list);
 	}
+
+	/*@Override work in progress, currently not active code.
+	public List<ItemStack> getSpecificInterests() {
+		List<ItemStack> l1 = new ArrayList<ItemStack>(10);
+		for(int i=0; i<9;i++)
+			l1.add(this.itemSinkModule.getFilterInventory().getStackInSlot(i));
+		return l1;
+	}*/
+
 }

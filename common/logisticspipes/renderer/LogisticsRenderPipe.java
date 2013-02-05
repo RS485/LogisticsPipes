@@ -153,16 +153,19 @@ public class LogisticsRenderPipe extends RenderPipe {
 	}
 
 	private DisplayLiquidList getDisplayLiquidLists(int liquidId, int meta, World world) {
-		if (displayLiquidLists.containsKey(liquidId)) {
+		HashMap<Integer, DisplayLiquidList> list = displayLiquidLists.get(liquidId);
+		if (list!=null) {
 			HashMap<Integer, DisplayLiquidList> x = displayLiquidLists.get(liquidId);
-			if (x.containsKey(meta))
-				return x.get(meta);
+			DisplayLiquidList liquidList = x.get(meta);
+			if (liquidList!=null)
+				return liquidList;
 		} else {
-			displayLiquidLists.put(liquidId, new HashMap<Integer, DisplayLiquidList>());
+			list = new HashMap<Integer, DisplayLiquidList>();
+			displayLiquidLists.put(liquidId, list);
 		}
 
 		DisplayLiquidList d = new DisplayLiquidList();
-		displayLiquidLists.get(liquidId).put(meta, d);
+		list.put(meta, d);
 
 		BlockInterface block = new BlockInterface();
 		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {

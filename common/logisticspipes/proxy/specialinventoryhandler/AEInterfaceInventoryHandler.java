@@ -41,8 +41,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		try {
 			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
 				ItemIdentifier ident = ItemIdentifier.get(items);
-				if(result.containsKey(ident)) {
-					result.put(ident, result.get(ident) + items.stackSize - (_hideOnePerStack ? 1:0));
+				Integer count = result.get(ident);
+				if(count != null) {
+					result.put(ident, count + items.stackSize - (_hideOnePerStack ? 1:0));
 				} else {
 					result.put(ident, items.stackSize - (_hideOnePerStack ? 1:0));
 				}

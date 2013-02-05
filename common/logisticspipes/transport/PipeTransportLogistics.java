@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
@@ -154,17 +155,17 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
 			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
-			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
+			Iterator<Entry<ItemStack, Pair<Integer, Integer>>> iterator = _itemBuffer.entrySet().iterator();
 			while (iterator.hasNext()){
-				ItemStack next = iterator.next();
-				int currentTimeOut = _itemBuffer.get(next).getValue1();
+				Entry<ItemStack, Pair<Integer, Integer>> next = iterator.next();
+				int currentTimeOut = next.getValue().getValue1();
 				if (currentTimeOut > 0){
-					_itemBuffer.get(next).setValue1(currentTimeOut - 1);
+					next.getValue().setValue1(currentTimeOut - 1);
 				} else {
-					EntityPassiveItem item = new EntityPassiveItem(worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
+					EntityPassiveItem item = new EntityPassiveItem(worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next.getKey()) - 0.1, this.zCoord + 0.5, next.getKey());
 					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 					routedItem.setDoNotBuffer(true);
-					routedItem.setBufferCounter(_itemBuffer.get(next).getValue2() + 1);
+					routedItem.setBufferCounter(next.getValue().getValue2() + 1);
 					toAdd.add(routedItem);
 					iterator.remove();
 				}

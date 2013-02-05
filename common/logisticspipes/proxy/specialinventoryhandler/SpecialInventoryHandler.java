@@ -15,10 +15,11 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil {
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
 		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
-		if(map.containsKey(itemIdent)) {
-			return map.get(itemIdent);
+		Integer count = map.get(itemIdent);
+		if(count==null) {
+			return 0;
 		}
-		return 0;
+		return count;
 	}
 
 	@Override

@@ -186,4 +186,10 @@ public class ClientRouter implements IRouter {
 	public boolean isSideDisconneceted(ForgeDirection dir) {
 		return false;
 	}
+
+	@Override
+	public void updateInterests() {
+		// TODO Auto-generated method stub
+		
+	}
 }

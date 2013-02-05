@@ -24,6 +24,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -257,4 +258,5 @@ public class PipeItemsFirewall extends RoutedPipe {
 		blockSorting = flags.get(2);
 		isBlocking = flags.get(3);
 	}
+
 }

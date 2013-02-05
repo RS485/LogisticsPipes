@@ -201,10 +201,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				String modname = data.getModId();
 				if(modname == null)
 					continue;
-				int modid = -1;
-				if(_modNameToModIdMap.containsKey(modname)) {
-					modid = _modNameToModIdMap.get(modname);
-				} else {
+				Integer modid = _modNameToModIdMap.get(modname);
+				if(modid==null){
 					modid = _modNameList.size();
 					_modNameList.add(modname);
 					_modNameToModIdMap.put(modname, modid);
@@ -284,10 +282,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public static int getModIdForName(String modname) {
-		if(_modNameToModIdMap.containsKey(modname)) {
-			return _modNameToModIdMap.get(modname);
+		Integer m =  _modNameToModIdMap.get(modname);
+		if(m==null) {
+			return 0;
 		}
-		return 0;
+		return m;
 	}
 
 	public ItemIdentifierStack makeStack(int stackSize){
@@ -456,10 +455,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			HashMap<Object, Object> content = new HashMap<Object, Object>();
 			HashMap<Integer, Object> keys = new HashMap<Integer, Object>();
 			int i = 1;
-			for(Object object:internal.keySet()) {
-				if(internal.get(object) instanceof NBTBase) {
-					content.put(object, getNBTBaseAsMap((NBTBase)internal.get(object)));
-					keys.put(i, object);
+			for(Object object:internal.entrySet()) {
+				Entry e = (Entry)object;
+				if(e.getValue() instanceof NBTBase) {
+					content.put(e.getKey(), getNBTBaseAsMap((NBTBase)e.getValue()));
+					keys.put(i, e.getKey());
 				}
 				i++;
 			}

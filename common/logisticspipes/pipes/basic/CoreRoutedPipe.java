@@ -56,6 +56,7 @@ import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -797,5 +798,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
+	}
+
+	public List<ItemStack> getSpecificInterests() {
+		return null;
+	}
+
+	public boolean hasGenericInterests() {
+		return false;
 	}
 }

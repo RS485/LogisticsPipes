@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -1090,7 +1091,7 @@ public class ServerPacketHandler {
 		
 		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
 			PipeItemsInvSysConnector connector = (PipeItemsInvSysConnector) pipe.pipe;
-			LinkedList<ItemIdentifierStack> allItems = connector.getExpectedItems();
+			TreeSet<ItemIdentifierStack> allItems = connector.getExpectedItems();
 			PacketRequestGuiContent packetContent = new PacketRequestGuiContent(allItems, NetworkConstants.INC_SYS_CON_CONTENT);
 			MainProxy.sendPacketToPlayer(packetContent.getPacket(), (Player)player);
 		}

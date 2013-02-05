@@ -10,6 +10,7 @@ package logisticspipes.pipes.basic;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.main.ActionDisableLogistics;
@@ -41,9 +42,9 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 
 		setEnabled(true);
 		// Activate the actions
-		for (Integer i : actions.keySet()) {
-			if (actions.get(i)) {
-				if (ActionManager.actions[i] instanceof ActionDisableLogistics){
+		for (Entry<Integer, Boolean> i : actions.entrySet()) {
+			if (i.getValue()) {
+				if (ActionManager.actions[i.getKey()] instanceof ActionDisableLogistics){
 					setEnabled(false);
 				}
 			}

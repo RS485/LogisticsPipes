@@ -9,6 +9,7 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -108,16 +109,18 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 			
 			//Reduce what I have
-			for (ItemIdentifier item : needed.keySet()){
-				if (have.containsKey(item)){
-					needed.put(item, needed.get(item) - have.get(item));
+			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+				Integer haveCount = have.get(item);
+				if (haveCount != null){
+					item.setValue(item.getValue() - haveCount);
 				}
 			}
 			
 			//Reduce what have been requested already
-			for (ItemIdentifier item : needed.keySet()){
-				if (_requestedItems.containsKey(item)){
-					needed.put(item, needed.get(item) - _requestedItems.get(item));
+			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+				Integer requestedCount =  _requestedItems.get(item);
+				if (requestedCount!=null){
+					item.setValue(item.getValue() - requestedCount);
 				}
 			}
 			
@@ -151,9 +154,9 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			*/
 
 			//Make request
-			for (ItemIdentifier need : needed.keySet()){
-				if (needed.get(need) < 1) continue;
-				int amountRequested = needed.get(need);
+			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
+				Integer amountRequested = need.getValue();
+				if (amountRequested==null || amountRequested < 1) continue;
 				int neededCount;
 				if(_requestPartials)
 					neededCount = Math.min(amountRequested,this._lastSucess_count);
@@ -166,7 +169,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				boolean success = false;
 					
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
+					success = RequestManager.request(need.getKey().makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}
@@ -182,11 +185,12 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 						else
 							_lastSucess_count= neededCount;
 					}
-					if (!_requestedItems.containsKey(need)){
-						_requestedItems.put(need, neededCount);
+					Integer currentRequest = _requestedItems.get(need);
+					if (currentRequest == null){
+						_requestedItems.put(need.getKey(), neededCount);
 					}else
 					{
-						_requestedItems.put(need, _requestedItems.get(need) + neededCount);
+						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
 				} else{
 					_lastSucess_count=1;
@@ -214,15 +218,17 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null){
+			_requestedItems.put(item.getItem(), Math.max(0, count - item.stackSize));
 		}
 	}
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null){
+			_requestedItems.put(item.getItem(), Math.max(0, count - item.stackSize));
 		}
 	}
 	

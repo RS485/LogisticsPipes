@@ -1,10 +1,12 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -159,13 +161,14 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().toUndamaged()) || filter.blockProvider()) return;
 		}
 		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
-		if (donePromisses.containsKey(tree.getStack().getItem())) {
-			canProvide -= donePromisses.get(tree.getStack().getItem());
+		Integer donePromise = donePromisses.get(tree.getStack().getItem());
+		if (donePromise!=null) {
+			canProvide -= donePromise;
 		}
 		if (canProvide < 1) return;
 		canProvide = getAvailableItemCount(tree.getStack().getItem());
-		if (donePromisses.containsKey(tree.getStack().getItem())) {
-			canProvide -= donePromisses.get(tree.getStack().getItem());
+		if (donePromise!=null) {
+			canProvide -= donePromise;
 		}
 		if (canProvide < 1) return;
 		LogisticsPromise promise = new LogisticsPromise();
@@ -186,10 +189,11 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	private int getCachedAvailableItemCount(ItemIdentifier item) {
-		if(displayMap.containsKey(item)) {
-			return displayMap.get(item);
+		Integer count = displayMap.get(item);
+		if(count==null) {
+			return 0;
 		}
-		return 0;
+		return count;
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -205,19 +209,19 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 
 		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
 outer:
-		for (ItemIdentifier currItem : currentInv.keySet()) {
-			if(items.containsKey(currItem)) continue;
+		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
+			if(items.containsKey(currItem.getKey())) continue;
 			
-			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) || (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
+			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem.getKey())) || (!isExcludeFilter && !itemIsFiltered(currItem.getKey())))) continue;
 			
 			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.isFilteredItem(currItem.toUndamaged()) || filter.blockProvider()) continue outer;
+				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().toUndamaged()) || filter.blockProvider()) continue outer;
 			}
 
-			int remaining = currentInv.get(currItem) - _orderManager.totalItemsCountInOrders(currItem);
+			int remaining = currItem.getValue() - _orderManager.totalItemsCountInOrders(currItem.getKey());
 			if (remaining < 1) continue;
 
-			items.put(currItem, remaining);
+			items.put(currItem.getKey(), remaining);
 		}
 	}
 
@@ -340,8 +344,8 @@ outer:
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));
 		displayList.ensureCapacity(displayMap.size());
-		for(ItemIdentifier item :displayMap.keySet()) {
-			displayList.add(new ItemIdentifierStack(item, displayMap.get(item)));
+		for(Entry<ItemIdentifier, Integer> item :displayMap.entrySet()) {
+			displayList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
 		}
 		if(!oldList.equals(displayList)) {
 			oldList.clear();
@@ -381,7 +385,7 @@ outer:
 	}
 
 	@Override
-	public void handleInvContent(List<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

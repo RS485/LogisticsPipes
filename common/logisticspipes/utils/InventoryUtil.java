@@ -33,10 +33,12 @@ public class InventoryUtil implements IInventoryUtil {
 	@Override
 	public int itemCount(ItemIdentifier item) {
 		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
-		if(map.containsKey(item)) {
-			return map.get(item);
+		Integer count = map.get(item);
+		
+		if(count==null) {
+			return 0;
 		}
-		return 0;
+		return count;
 	}
 	
 	@Override
@@ -47,10 +49,11 @@ public class InventoryUtil implements IInventoryUtil {
 			if (stack == null) continue;
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			int stackSize = stack.stackSize - (_hideOnePerStack?1:0);
-			if (!items.containsKey(itemId)){
+			Integer currentSize = items.get(itemId);
+			if (currentSize==null){
 				items.put(itemId, stackSize - (_hideOne?1:0));
 			} else {
-				items.put(itemId, items.get(itemId) + stackSize);
+				items.put(itemId, currentSize + stackSize);
 			}
 		}
 		return items;

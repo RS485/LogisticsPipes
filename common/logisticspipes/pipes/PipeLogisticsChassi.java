@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -517,11 +518,11 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		localModeWatchers.remove(player);
 	}
 
-	public void handleModuleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
+	public void handleModuleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
-	public void handleContentItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+	public void handleContentItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
@@ -532,7 +533,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 	}
 
-	public void handleSendQueueItemIdentifierList(List<ItemIdentifierStack> _allItems){
+	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems){
 		displayList.clear();
 		displayList.addAll(_allItems);
 	}

@@ -19,6 +19,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 import java.util.Vector;
 import java.util.concurrent.locks.Lock;
@@ -36,6 +38,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
@@ -47,6 +50,14 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter {
+	
+	// things with specific interests -- providers (including crafters)
+	static HashMap<ItemIdentifier,Set<IRouter>> specificInterests = new HashMap<ItemIdentifier,Set<IRouter>>();
+	// things potentially interested in every item (chassi with generic sinks)
+	static Set<IRouter> genericInterests = new TreeSet<IRouter>();
+	
+	// things this pipe is interested in (either providing or sinking)
+	List<Pair<ItemIdentifier,ItemStack>> hasInterestIn = null;
 	
 	@Override 
 	public int hashCode(){
@@ -322,13 +333,13 @@ public class ServerRouter implements IRouter, IPowerRouter {
 				adjacentChanged = true;
 		}
 		
-		for (RoutedPipe pipe : adjacent.keySet())	{
-			if (!_adjacent.containsKey(pipe)){
+		for (Entry<RoutedPipe, ExitRoute> pipe : adjacent.entrySet())	{
+			ExitRoute oldExit = _adjacent.get(pipe);
+			if (oldExit==null){
 				adjacentChanged = true;
 				break;
 			}
-			ExitRoute newExit = adjacent.get(pipe);
-			ExitRoute oldExit = _adjacent.get(pipe);
+			ExitRoute newExit = pipe.getValue();
 			
 			if (!newExit.equals(oldExit))	{
 				adjacentChanged = true;
@@ -396,8 +407,8 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	private void SendNewLSA() {
 		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		ArrayList<ILogisticsPowerProvider> power = new ArrayList<ILogisticsPowerProvider>();
-		for (IRouter adjacent : _adjacentRouter.keySet()){
-			neighboursWithMetric.put(adjacent, new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacentRouter.get(adjacent).metric, _adjacentRouter.get(adjacent).connectionDetails));
+		for (Entry<IRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()){
+			neighboursWithMetric.put(adjacent.getKey(), new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(adjacent.getValue().metric, adjacent.getValue().connectionDetails));
 		}
 		for (ILogisticsPowerProvider provider : _powerAdjacent){
 			power.add(provider);
@@ -684,7 +695,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	@Override
-	public void update(boolean doFullRefresh){
+	public void update(boolean doFullRefresh){			
 		if (doFullRefresh) {
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
@@ -761,6 +772,80 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	@Override
 	public boolean isSideDisconneceted(ForgeDirection dir) {
 		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
+	}
+
+	@Override
+	public void updateInterests() {
+		CoreRoutedPipe pipe = getPipe();
+		boolean different = false;
+		if(pipe==null)
+			return;
+		List<ItemStack> newInterests = pipe.getSpecificInterests();
+		if(pipe.hasGenericInterests())
+			this.declareGenericInterest();
+		else
+			this.removeGenericInterest();
+		List<Pair<ItemIdentifier,ItemStack>> newInterestPairs = new ArrayList<Pair<ItemIdentifier,ItemStack>>(newInterests.size());
+
+		Iterator<ItemStack> i1 = newInterests.iterator();
+		Iterator<Pair<ItemIdentifier,ItemStack>> i2 = hasInterestIn.iterator();
+		while(i1.hasNext() && i2.hasNext()){
+			Pair<ItemIdentifier,ItemStack> p2 = i2.next();
+			ItemStack items = i1.next();
+			Pair<ItemIdentifier,ItemStack> p= new Pair<ItemIdentifier,ItemStack> (ItemIdentifier.get(items),items);
+			newInterestPairs.add(p);
+			if(p.getValue1()==null) {
+				this.removeInterest(p2);
+				continue;
+			}
+			if(p2.getValue1()==null) {
+				this.addInterest(p);
+				continue;
+			}
+			
+			if(p.getValue2().stackSize != items.stackSize || p.getValue1().uniqueID != p2.getValue1().uniqueID){
+				this.addInterest(p);
+				this.removeInterest(p2);
+			}
+		}
+		while(i2.hasNext()) { // remove extras
+			this.removeInterest(i2.next());			
+		}
+		while(i1.hasNext()) { // remove extras
+			ItemStack items = i1.next();
+			Pair<ItemIdentifier,ItemStack> p= new Pair<ItemIdentifier,ItemStack> (ItemIdentifier.get(items),items);
+			newInterestPairs.add(p);
+			this.addInterest(p);			
+		}
+		hasInterestIn=newInterestPairs;
+	}
+
+	private void removeGenericInterest() {
+		genericInterests.add(this);
+	}
+
+	private void declareGenericInterest() {
+		genericInterests.remove(this);
+	}
+
+	private void addInterest(Pair<ItemIdentifier, ItemStack> p) {
+		Set<IRouter> interests = specificInterests.get(p.getValue1());
+		if(interests==null) {
+			interests = new TreeSet<IRouter>();
+			specificInterests.put(p.getValue1(), interests);
+		}
+		interests.add(this);		
+	}
+
+	private void removeInterest(Pair<ItemIdentifier, ItemStack> p2) {
+		Set<IRouter> interests = specificInterests.get(p2.getValue1());
+		if(interests==null) {
+			return;
+		}
+		interests.remove(this);
+		if(interests.isEmpty())
+			specificInterests.remove(p2.getValue1());
+		
 	}
 }
 

@@ -156,6 +156,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
+	//TODO: don't double get
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
 		if (_requestedItems.containsKey(item.getItem())){
@@ -163,6 +164,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		}
 	}
 
+	//TODO: don't double get
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
 		super.resetThrottle();

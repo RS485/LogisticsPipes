@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -158,7 +159,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 	}
 
 	@Override
-	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
 		itemList.clear();
 		itemList.addAll(list);
 	}

@@ -8,6 +8,7 @@
 
 package logisticspipes.utils;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -185,7 +186,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		return stackToTake;
 	}
 
-	public void handleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
+	public void handleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		int i=0;
 		for(ItemIdentifierStack stack:_allItems) {
 			if(_contents.length <= i) break;
@@ -245,23 +246,22 @@ public class SimpleInventory implements IInventory, ISaveState{
 				continue;
 			}
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			if (!_contentsMap.containsKey(itemId)) {
+			Integer count = _contentsMap.get(itemId);
+			if (count == null) {
 				_contentsMap.put(itemId, stack.stackSize);
 			} else {
 				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
 			}
 			ItemIdentifier itemUndamagedId = ItemIdentifier.getUndamaged(stack);
-			if (!_contentsUndamagedSet.contains(itemUndamagedId)) {
-				_contentsUndamagedSet.add(itemUndamagedId);
-			}
+			_contentsUndamagedSet.add(itemUndamagedId); // add is cheaper than check then add; it just returns false if it is already there
 		}
 	}
 
 	public int itemCount(final ItemIdentifier item) {
-		if(_contentsMap.containsKey(item)) {
-			return _contentsMap.get(item);
-		}
-		return 0;
+		Integer i =  _contentsMap.get(item);
+		if(i == null) 
+			return 0;
+		return i;
 	}
 
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {

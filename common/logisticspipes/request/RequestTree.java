@@ -32,10 +32,11 @@ public class RequestTree extends RequestTreeNode {
 	private void checkSubPromisses(IProvideItems provider, RequestTreeNode node, Map<ItemIdentifier, Integer> result) {
 		for(LogisticsPromise promise: node.promises) {
 			if(promise.sender == provider) {
-				if(result.containsKey(promise.item)) {
-					result.put(promise.item, promise.numberOfItems + result.get(promise.item));
-				} else {
+				Integer count=result.get(promise.item);
+				if(count == null) {
 					result.put(promise.item, promise.numberOfItems);
+				} else {
+					result.put(promise.item, promise.numberOfItems + count);
 				}
 			}
 		}

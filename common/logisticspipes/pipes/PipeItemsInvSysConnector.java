@@ -1,8 +1,10 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -185,19 +187,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		inv.setInventorySlotContents(0, null);
 	}
 
-	public LinkedList<ItemIdentifierStack> getExpectedItems() {
-		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+	public TreeSet<ItemIdentifierStack> getExpectedItems() {
+		TreeSet<ItemIdentifierStack> list = new TreeSet<ItemIdentifierStack>(new ItemIdentifierStack.itemComparitor());
 		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-			boolean found = false;
-			for(ItemIdentifierStack stack:list) {
-				if(stack.getItem() == pair.getValue1()) {
-					found = true;
-					stack.stackSize += pair.getValue2();
-				}
-			}
-			if(!found) {
 				list.add(new ItemIdentifierStack(pair.getValue1(), 1));
-			}
 		}
 		return list;
 	}
@@ -382,7 +375,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		if(!getExpectedItems().equals(oldList)) {
 			oldList.clear();
 			oldList.addAll(getExpectedItems());
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, getExpectedItems()).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, (List<ItemIdentifierStack>) getExpectedItems()).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -403,7 +396,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	@Override
-	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

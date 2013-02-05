@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -476,7 +477,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}
@@ -492,4 +493,14 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public void reimport() {
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
 	}
+
+	@Override
+	public List<ItemStack> getSpecificInterests() {
+		List<ItemStack> l1 = new ArrayList<ItemStack>(10);
+		l1.add(((BaseLogicCrafting) this.logic).getCraftedItem());
+		//for(int i=0; i<9;i++)
+		//	l1.add(((BaseLogicCrafting) this.logic).getMaterials(i));
+		return l1;
+	}
+
 }

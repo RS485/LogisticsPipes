@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
@@ -142,7 +143,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	}
 
 	@Override
-	public void handleInvContent(List<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
 }

@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
 		bufferList.clear();
 		bufferList.addAll(list);
 	}

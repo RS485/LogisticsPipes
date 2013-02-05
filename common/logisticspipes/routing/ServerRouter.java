@@ -334,7 +334,7 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		}
 		
 		for (Entry<RoutedPipe, ExitRoute> pipe : adjacent.entrySet())	{
-			ExitRoute oldExit = _adjacent.get(pipe);
+			ExitRoute oldExit = _adjacent.get(pipe.getKey());
 			if (oldExit==null){
 				adjacentChanged = true;
 				break;

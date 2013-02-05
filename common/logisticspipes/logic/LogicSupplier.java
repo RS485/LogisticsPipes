@@ -110,7 +110,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			//Reduce what I have
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer haveCount = have.get(item);
+				Integer haveCount = have.get(item.getKey());
 				if (haveCount != null){
 					item.setValue(item.getValue() - haveCount);
 				}
@@ -118,7 +118,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			//Reduce what have been requested already
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer requestedCount =  _requestedItems.get(item);
+				Integer requestedCount =  _requestedItems.get(item.getKey());
 				if (requestedCount!=null){
 					item.setValue(item.getValue() - requestedCount);
 				}
@@ -185,7 +185,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 						else
 							_lastSucess_count= neededCount;
 					}
-					Integer currentRequest = _requestedItems.get(need);
+					Integer currentRequest = _requestedItems.get(need.getKey());
 					if (currentRequest == null){
 						_requestedItems.put(need.getKey(), neededCount);
 					}else

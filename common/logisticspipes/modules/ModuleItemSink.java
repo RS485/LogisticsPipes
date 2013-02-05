@@ -88,8 +88,8 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 			}
 			return null;
 		}
-		if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
 		if (_isDefaultRoute){
+			if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
 			if(_power.canUseEnergy(1)) {
 				return _sinkReplyDefault;
 			}

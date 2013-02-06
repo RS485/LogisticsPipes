@@ -2,39 +2,19 @@ package logisticspipes.routing;
 
 import java.util.EnumSet;
 
-public class SearchNode implements Comparable<SearchNode> {
+import net.minecraftforge.common.ForgeDirection;
+
+public class SearchNode extends ExitRoute implements Comparable<ExitRoute> {
 	
-	public int distance;
-	private final EnumSet<PipeRoutingConnectionType> connectionFlags;
-	public final IRouter node;
 	public IRouter root;
 	
 	public SearchNode(IRouter r, int d, EnumSet<PipeRoutingConnectionType> enumSet, IRouter p) {
-		distance = d;
-		connectionFlags = enumSet;
-		node = r;
+		super(r,ForgeDirection.UNKNOWN,ForgeDirection.UNKNOWN,d,enumSet);
 		root = p;
 	}
 	
-	public boolean hasActivePipe(){
-		return node!=null && node.getCachedPipe()!=null;
-	}
-	
-	//copies
-	public EnumSet<PipeRoutingConnectionType> getFlags() {
-		return EnumSet.copyOf(connectionFlags);
-	}
-
-	@Override
-	public int compareTo(SearchNode o) {
-		return this.distance-o.distance;
-	}
-
-	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {
-		connectionFlags.removeAll(flags);		
-	}
-
-	public boolean containsFlag(PipeRoutingConnectionType flag) {
-		return connectionFlags.contains(flag);
+	public SearchNode(IRouter r, int d, EnumSet<PipeRoutingConnectionType> enumSet, IRouter p,ForgeDirection exit,ForgeDirection enter) {
+		super(r,exit,enter,d,enumSet);
+		root = p;
 	}
 }

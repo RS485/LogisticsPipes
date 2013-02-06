@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -495,9 +497,9 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public List<ItemStack> getSpecificInterests() {
-		List<ItemStack> l1 = new ArrayList<ItemStack>(10);
-		l1.add(((BaseLogicCrafting) this.logic).getCraftedItem());
+	public List<ItemIdentifier> getSpecificInterests() {
+		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(1);
+		l1.add(ItemIdentifier.get(((BaseLogicCrafting) this.logic).getCraftedItem()));
 		//for(int i=0; i<9;i++)
 		//	l1.add(((BaseLogicCrafting) this.logic).getMaterials(i));
 		return l1;

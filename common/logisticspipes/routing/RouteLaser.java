@@ -63,7 +63,7 @@ class RouteLaser implements IPaintPath{
 	
 	public void displayRoute(IRouter r){
 		LinkedList<Integer> knownRouters = new LinkedList<Integer>();
-		ArrayList<Pair<ForgeDirection, ForgeDirection>> table = r.getRouteTable();
+		ArrayList<ExitRoute> table = r.getRouteTable();
 		for (int i=0; i< table.size(); i++){
 			if (table.get(i)==null || i == r.getSimpleID())
 				continue;
@@ -86,7 +86,7 @@ class RouteLaser implements IPaintPath{
 			int targetRouter = knownRouters.pop();
 			
 			//Get the first exit
-			ForgeDirection next = r.getRouteTable().get(targetRouter).getValue1();
+			ForgeDirection next = r.getRouteTable().get(targetRouter).exitOrientation;
 			if (next == ForgeDirection.UNKNOWN){
 				LogisticsPipes.log.warning("BAAAD MOJO");
 			}
@@ -124,7 +124,7 @@ class RouteLaser implements IPaintPath{
 					{
 						ok = true;
 						nextRouter = dicoveredRouter;
-						next = dicoveredRouter.getRouteTable().get(targetRouter).getValue1();
+						next = dicoveredRouter.getRouteTable().get(targetRouter).exitOrientation;
 					}
 				}
 				if (!ok){

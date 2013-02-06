@@ -18,7 +18,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
@@ -157,11 +157,11 @@ public class PipeItemsFirewall extends RoutedPipe {
 		return null;
 	}
 	
-	public List<SearchNode> getRouters(IRouter from) {
-		List<SearchNode> list = new ArrayList<SearchNode>();
+	public List<ExitRoute> getRouters(IRouter from) {
+		List<ExitRoute> list = new ArrayList<ExitRoute>();
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(getRouter(dir).equals(from)) continue;
-			List<SearchNode> nodes = getRouter(dir).getIRoutersByCost();
+			List<ExitRoute> nodes = getRouter(dir).getIRoutersByCost();
 			list.addAll(nodes);
 		}
 		Collections.sort(list);
@@ -259,4 +259,8 @@ public class PipeItemsFirewall extends RoutedPipe {
 		isBlocking = flags.get(3);
 	}
 
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
 }

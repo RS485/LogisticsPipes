@@ -558,4 +558,17 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		return this.getRouterId();
 	}
 
+	/*@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(10);
+		for(int i=0; i<9;i++)
+			l1.add(ItemIdentifier.get(this.itemSinkModule.getFilterInventory().getStackInSlot(i)));
+		return l1;
+	}*/
+
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+		//return this.itemSinkModule.isDefaultRoute();
+	}
 }

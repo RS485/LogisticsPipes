@@ -10,8 +10,9 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import net.minecraftforge.common.ForgeDirection;
 
 /**
@@ -43,10 +44,10 @@ public class RouteLayer {
 				item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
 			} else {
 				int destination = item.getDestination();
-				for(SearchNode node:_router.getIRoutersByCost()) {
-					if(node.node instanceof IFilteringRouter) {
-						if(((IFilteringRouter)node.node).idIdforOtherSide(destination)) {
-							item.replaceRelayID(node.node.getSimpleID());
+				for(ExitRoute node:_router.getIRoutersByCost()) {
+					if(node.destination instanceof IFilteringRouter) {
+						if(((IFilteringRouter)node.destination).idIdforOtherSide(destination)) {
+							item.replaceRelayID(node.destination.getSimpleID());
 							break;
 						}
 					}

@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -800,7 +801,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return itemd.getFriendlyNameCC();
 	}
 
-	public List<ItemStack> getSpecificInterests() {
+	public List<ItemIdentifier> getSpecificInterests() {
 		return null;
 	}
 

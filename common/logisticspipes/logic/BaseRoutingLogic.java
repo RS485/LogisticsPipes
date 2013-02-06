@@ -16,8 +16,9 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
@@ -92,15 +93,15 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		}
 		System.out.println();
 		System.out.println("========DISTANCE TABLE==============");
-		for(SearchNode n : r.getIRoutersByCost()) {
-			System.out.println(n.node.getId() + " @ " + n.distance + " -> "+ n.getFlags());
+		for(ExitRoute n : r.getIRoutersByCost()) {
+			System.out.println(n.destination.getId() + " @ " + n.metric + " -> "+ n.connectionDetails);
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		ArrayList<Pair<ForgeDirection, ForgeDirection>> table = r.getRouteTable();
+		ArrayList<ExitRoute> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
 			if(table.get(i)!=null)
-			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).getValue1().toString());
+			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i).metric + " distance)");
 		}
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");

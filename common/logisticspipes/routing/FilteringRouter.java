@@ -53,14 +53,14 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	}
 	*/
 	@Override
-	public List<SearchNode> getRouters() {
+	public List<ExitRoute> getRouters() {
 		if(LogisticsPipes.DEBUG && ForgeDirection.UNKNOWN.equals(side)) {
 			throw new UnsupportedOperationException();
 		}
 		if(this.getPipe() instanceof PipeItemsFirewall) {
 			return ((PipeItemsFirewall)this.getPipe()).getRouters(this);
 		}
-		return new ArrayList<SearchNode>();
+		return new ArrayList<ExitRoute>();
 	}
 
 	@Override

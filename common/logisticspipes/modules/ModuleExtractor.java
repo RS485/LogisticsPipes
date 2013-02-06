@@ -134,16 +134,13 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 		}
 
 		if (targetInventory instanceof ISpecialInventory){
-			ItemStack[] stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation, 1);
+			ItemStack[] stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation,1);
 			if (stack == null) return;
 			if (stack.length < 1) return;
 			if (stack[0] == null) return;
 			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stack[0], true);
 			if (reply == null) return;
 			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
-			if (stack == null) return;
-			if (stack.length < 1) return;
-			if (stack[0] == null) return;
 			_itemSender.sendStack(stack[0], reply);
 			return;
 		}

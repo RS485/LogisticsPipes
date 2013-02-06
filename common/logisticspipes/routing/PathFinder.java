@@ -105,10 +105,11 @@ class PathFinder {
 		
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call
 		if (startPipe.pipe instanceof RoutedPipe && setVisited.size() != 0) {
-			if(((RoutedPipe) startPipe.pipe).stillNeedReplace()) {
+			RoutedPipe rp = (RoutedPipe) startPipe.pipe;
+			if(rp.stillNeedReplace()) {
 				return foundPipes;
 			}
-			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
+			foundPipes.put(rp, new ExitRoute(rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
 			
 			return foundPipes;
 		}

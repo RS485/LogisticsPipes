@@ -15,20 +15,30 @@ import net.minecraftforge.common.ForgeDirection;
 /**
  * Defines direction with a cost
  */
-public class ExitRoute{
+public class ExitRoute implements Comparable<ExitRoute>{
 	public ForgeDirection exitOrientation;
-	public ForgeDirection insertOrientation;
+	public final ForgeDirection insertOrientation;
 	public int metric;
 	public EnumSet<PipeRoutingConnectionType> connectionDetails;
+	public final IRouter destination;
 	
-	public ExitRoute(ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails)
+	public ExitRoute(IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails)
 	{
+		this.destination = destination;
 		this.exitOrientation = exitOrientation;
 		this.insertOrientation = insertOrientation;
 		this.metric = metric;
 		this.connectionDetails = connectionDetails;
 	}
 
+	public ExitRoute( ExitRoute other){
+		this.destination = other.destination;
+		this.exitOrientation = other.exitOrientation;
+		this.insertOrientation = other.insertOrientation;
+		this.metric = other.metric;
+		this.connectionDetails = other.connectionDetails;
+		
+	}
 
 	@Override public boolean equals(Object aThat) {
 	    //check for self-comparison
@@ -44,5 +54,27 @@ public class ExitRoute{
 	
 	public String toString() {
 		return "{" + this.exitOrientation.name() + "," + this.insertOrientation.name() + "," + metric + ", ConnectionDetails: " + connectionDetails + "}";
+	}
+
+	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {
+		connectionDetails.removeAll(flags);		
+	}
+
+	public boolean containsFlag(PipeRoutingConnectionType flag) {
+		return connectionDetails.contains(flag);
+	}
+
+	public boolean hasActivePipe(){
+		return destination!=null && destination.getCachedPipe()!=null;
+	}
+	
+	//copies
+	public EnumSet<PipeRoutingConnectionType> getFlags() {
+		return EnumSet.copyOf(connectionDetails);
+	}
+
+	@Override
+	public int compareTo(ExitRoute o) {
+		return this.metric - o.metric;
 	}
 }

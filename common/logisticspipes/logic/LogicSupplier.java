@@ -110,7 +110,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			//Reduce what I have
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer haveCount = have.get(item.getKey());
+				Integer haveCount = have.get(item);
 				if (haveCount != null){
 					item.setValue(item.getValue() - haveCount);
 				}
@@ -118,7 +118,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			//Reduce what have been requested already
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer requestedCount =  _requestedItems.get(item.getKey());
+				Integer requestedCount =  _requestedItems.get(item);
 				if (requestedCount!=null){
 					item.setValue(item.getValue() - requestedCount);
 				}
@@ -126,7 +126,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			//List<SearchNode> valid = getRouter().getIRoutersByCost();
+			//List<ExitRoute> valid = getRouter().getIRoutersByCost();
 			
 			/*
 			//TODO Double Chests, Simplyfication
@@ -185,7 +185,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 						else
 							_lastSucess_count= neededCount;
 					}
-					Integer currentRequest = _requestedItems.get(need.getKey());
+					Integer currentRequest = _requestedItems.get(need);
 					if (currentRequest == null){
 						_requestedItems.put(need.getKey(), neededCount);
 					}else

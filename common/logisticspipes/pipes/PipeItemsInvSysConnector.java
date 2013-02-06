@@ -196,7 +196,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
 			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
-			if(entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
+			if(entry!=null && entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
 				entry.getKey().stackSize += currentStack.stackSize;
 			} else 
 				list.put(currentStack,null);

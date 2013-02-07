@@ -857,7 +857,10 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 
 	@Override
 	public ExitRoute getDistanceTo(IRouter r) {
-		return this._routeTable.get(r.getSimpleID());
+		ensureRouteTableIsUpToDate(true);
+		int id = r.getSimpleID();
+		if (_routeTable.size()<=id) return null;
+		return _routeTable.get(id);
 	}
 }
 

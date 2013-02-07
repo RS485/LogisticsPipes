@@ -844,9 +844,13 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		Set<IRouter> s = new TreeSet<IRouter>();
 		s.addAll(genericInterests);
 		Set<IRouter> specifics = specificInterests.get(item);
-		specifics.addAll(specificInterests.get(item.toUndamaged()));
-		if(specifics!=null)
+		if(specifics!=null) {
 			s.addAll(specifics);
+		}
+		specifics = specificInterests.get(item.toUndamaged());
+		if(specifics!=null) {
+			s.addAll(specifics);
+		}
 		return s;
 	}
 

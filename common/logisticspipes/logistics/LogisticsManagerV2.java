@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import logisticspipes.interfaces.ILogisticsModule;
@@ -38,6 +39,7 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -55,9 +57,19 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
 	 */
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, int sourceRouter, boolean excludeSource) {
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, boolean excludeSource) {
+		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
+		if (sourceRouter == null) return null;
+		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
+		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
+		for(IRouter r:routers){
+			if(r.getPipe() instanceof IProvideItems){
+				ExitRoute e = sourceRouter.getDistanceTo(r);
+				if (e!=null)
+					validDestinations.add(e);
+			}
+		}
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (search.getValue2() == null) return null;
 
@@ -76,7 +88,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 * @param priority The priority that the stack must have.
 	 */
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 		if (search.getValue2() == null) return null;
@@ -85,9 +97,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 
-	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemStack item, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
+	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(ItemIdentifier.getUndamaged(item)) || filter.blockRouting()) continue;
+			if(filter.isBlocked() == filter.isFilteredItem(stack.toUndamaged()) || filter.blockRouting()) continue;
 		}
 		List<ExitRoute> firewall = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
@@ -120,9 +132,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if (module == null) continue;
 			SinkReply reply = null;
 			if (result.getValue2() == null) {
-				reply = module.sinksItem(item, -1, 0);
+				reply = module.sinksItem(stack, -1, 0);
 			} else {
-				reply = module.sinksItem(item, result.getValue2().fixedPriority.ordinal(), result.getValue2().customPriority);
+				reply = module.sinksItem(stack, result.getValue2().fixedPriority.ordinal(), result.getValue2().customPriority);
 			}
 			if (reply == null) continue;
 			if (result.getValue1() == null){
@@ -155,7 +167,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for(ExitRoute n:firewall) {
 			IFilter filter = ((IFilteringRouter)n.destination).getFilter();
 			filters.add(filter);
-			result = getBestReply(item, sourceRouter, ((IFilteringRouter)n.destination).getRouters(), excludeSource, jamList, used, filters, result);
+			result = getBestReply(stack, sourceRouter, ((IFilteringRouter)n.destination).getRouters(), excludeSource, jamList, used, filters, result);
 			filters.remove(filter);
 		}
 		if(filters.isEmpty() && result.getValue1() != null) {
@@ -185,7 +197,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.clearDestination();
 
-		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getItemStack(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (bestReply.getValue1() != null){
 			item.setBufferCounter(0);

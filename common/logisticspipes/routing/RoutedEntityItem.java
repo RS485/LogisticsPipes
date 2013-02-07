@@ -20,6 +20,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -37,6 +38,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	int destinationint = -1;
 	UUID destinationUUID;
+	ItemIdentifierStack thisItem;
 	
 	boolean _doNotBuffer;
 	
@@ -52,6 +54,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
 		super(world, entityItem.getEntityId());
+		thisItem = ItemIdentifierStack.GetFromStack(entityItem.getItemStack());
 		container = entityItem.getContainer();
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
@@ -162,6 +165,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		}
 	}
 
+	@Override
+	public ItemIdentifierStack getIDStack(){
+		return this.thisItem;
+	}
+	
 	@Override
 	public ItemStack getItemStack() {
 		return this.item;
@@ -293,6 +301,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
 		routed.relays.addAll(relays);
+		routed.thisItem = this.thisItem;
 		return routed;
 	}
 

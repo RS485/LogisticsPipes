@@ -3,6 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDPassiveSupplier;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -65,17 +66,17 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.PassiveSupplier, 0, true, false, 2, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
 		IInventory targetInventory = _invProvider.getSneakyInventory();
 		if (targetInventory == null) return null;
 		
-		if (!_filterInventory.containsItem(ItemIdentifier.get(item))) return null;
+		if (!_filterInventory.containsItem(item)) return null;
 		
-		int targetCount = _filterInventory.itemCount(ItemIdentifier.get(item));
+		int targetCount = _filterInventory.itemCount(item);
 		IInventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		int haveCount = targetUtil.itemCount(ItemIdentifier.get(item));
+		int haveCount = targetUtil.itemCount(item);
 		if (targetCount <= haveCount) return null;
 		
 		if(_power.canUseEnergy(2)) {
@@ -156,5 +157,23 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
 		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), localModeWatchers);	
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		li.addAll(mapIC.keySet());
+		return li;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false; 
 	}
 }

@@ -1,11 +1,15 @@
 package logisticspipes.modules;
 
+import java.util.List;
+
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.item.ItemStack;
@@ -38,9 +42,9 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 5, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		boolean decision = replyCheck(item);
+		boolean decision = replyCheck(item.makeNormalStack(1));
 		if (decision) {
 			if (_power.canUseEnergy(5)) {
 				return _sinkReply;
@@ -56,4 +60,18 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 
 	@Override
 	public void tick() {}
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
 }

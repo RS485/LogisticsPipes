@@ -128,7 +128,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		return null;
 	}
 
@@ -393,5 +393,28 @@ outer:
 	@Override
 	public IRouter getRouter() {
 		return _itemSender.getRouter();
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		if( !(_filterInventory.isEmpty() ||!this.isExcludeFilter)){
+			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+			li.addAll(mapIC.keySet());
+			return li;
+		}
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
+		// when items not included, we can only serve those items in the filter.
 	}
 }

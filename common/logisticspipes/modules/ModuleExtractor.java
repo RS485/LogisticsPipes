@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -23,6 +24,8 @@ import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SneakyOrientation;
@@ -88,7 +91,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		return null;
 	}
 
@@ -138,7 +141,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			if (stack == null) return;
 			if (stack.length < 1) return;
 			if (stack[0] == null) return;
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stack[0], true);
+			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true);
 			if (reply == null) return;
 			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
 			_itemSender.sendStack(stack[0], reply);
@@ -155,7 +158,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			stackToSend = targetInventory.getStackInSlot(i);
 			if (stackToSend == null) continue;
 
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, true);
+			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stackToSend), true);
 			if (reply == null) continue;
 
 			int count = Math.min(itemsToExtract(), stackToSend.stackSize);
@@ -219,5 +222,19 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	@Override
 	public int getZPos() {
 		return zCoord;
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return true;
 	}
 }

@@ -19,6 +19,7 @@ import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
@@ -52,6 +53,7 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -59,6 +61,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -233,7 +236,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	};
 
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault) {
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
 	}
 
@@ -558,17 +561,50 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		return this.getRouterId();
 	}
 
-	/*@Override
+	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(10);
-		for(int i=0; i<9;i++)
-			l1.add(ItemIdentifier.get(this.itemSinkModule.getFilterInventory().getStackInSlot(i)));
+		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>((getChassiSize()+1)*9);
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule module = _module.getSubModule(i);
+			if(module!=null && module.interestedInAttachedInventory()) {
+				// copy from provider code
+				WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+				TileEntity tile = getPointedTileEntity();
+				if (!(tile instanceof IInventory)) continue;
+				if (tile instanceof TileGenericPipe) continue;
+				IInventory inv = (IInventory)tile;
+				if (inv instanceof ISidedInventory) {
+					inv = new SidedInventoryAdapter((ISidedInventory) tile, this.ChassiLogic.orientation);
+				} 
+				for (int currentIndex = 0;currentIndex < inv.getSizeInventory();currentIndex++) {
+					ItemStack currentItem = inv.getStackInSlot(currentIndex);
+					if(currentItem != null){
+						l1.add(ItemIdentifier.get(currentItem));
+					}
+				}
+				break; // break once you've added the inventory
+			}
+			
+		}
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule module = _module.getSubModule(i);
+			if(module!=null) {
+				List<ItemIdentifier> current = module.getSpecificInterests();
+				if(current!=null)
+					l1.addAll(current);
+			}
+		}
 		return l1;
-	}*/
+	}
 
 	@Override
 	public boolean hasGenericInterests() {
-		return true;
-		//return this.itemSinkModule.isDefaultRoute();
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			
+			if(x!=null && x.hasGenericInterests())
+				return true;			
+		}
+		return false;
 	}
 }

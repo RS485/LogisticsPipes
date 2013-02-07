@@ -3,6 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -28,6 +29,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
@@ -108,7 +110,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		return null;
 	}
 
@@ -172,7 +174,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 
 			ItemStack slot = inv.getStackInSlot(k);
 			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot))) {
-				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(slot, true);
+				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true);
 				if (reply == null) continue;
 
 				int count = Math.min(itemsToExtract(), slot.stackSize);
@@ -277,5 +279,29 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	@Override
 	public int getZPos() {
 		return zCoord;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		if(_itemsIncluded){
+			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+			li.addAll(mapIC.keySet());
+			return li;
+		}
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {
+		
+		return !this._itemsIncluded; // when items included this is only interested in items in the filter
+		// when items not included, we can only serve those items in the filter.
 	}
 }

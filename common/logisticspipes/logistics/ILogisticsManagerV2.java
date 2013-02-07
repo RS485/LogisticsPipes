@@ -26,8 +26,8 @@ import net.minecraft.item.ItemStack;
 public interface ILogisticsManagerV2 {
 
 	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
-	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault, int uuid, boolean excludeSource);
-	Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemStack stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int uuid, boolean excludeSource);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
 	LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> list);
 	Map<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> list);
 	String getBetterRouterName(IRouter r);

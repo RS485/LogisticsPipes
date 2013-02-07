@@ -6,10 +6,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
+import logisticspipes.interfaces.routing.ILiquidProvider;
+import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.packets.PacketItems;
@@ -19,6 +22,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.CCHelper;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.IRouter;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -195,7 +201,19 @@ public class RequestHandler {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+		
+		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
+		// get all the routers
+		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
+		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
+		for(IRouter r:routers){
+			if(r.getPipe() instanceof ILiquidProvider){
+				ExitRoute e = requester.getRouter().getDistanceTo(r);
+				if (e!=null)
+					validDestinations.add(e);
+			}
+		}
+		RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, validDestinations, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();

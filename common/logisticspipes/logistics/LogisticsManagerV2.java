@@ -10,6 +10,7 @@ package logisticspipes.logistics;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -69,6 +70,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 					validDestinations.add(e);
 			}
 		}
+		Collections.sort(validDestinations);
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (search.getValue2() == null) return null;

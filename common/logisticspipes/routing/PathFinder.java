@@ -109,7 +109,7 @@ class PathFinder {
 			if(rp.stillNeedReplace()) {
 				return foundPipes;
 			}
-			foundPipes.put(rp, new ExitRoute(rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
+			foundPipes.put(rp, new ExitRoute(null,rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
 			
 			return foundPipes;
 		}
@@ -228,6 +228,11 @@ class PathFinder {
 			}
 		}
 		setVisited.remove(startPipe);
+		if(startPipe.pipe instanceof RoutedPipe){ // ie, has the recursion returned to the pipe it started from?
+			for(ExitRoute e:foundPipes.values())
+				e.root=((CoreRoutedPipe)startPipe.pipe).getRouter();
+		}
+				
 		return foundPipes;
 	}
 }

@@ -17,14 +17,16 @@ import net.minecraftforge.common.ForgeDirection;
  */
 public class ExitRoute implements Comparable<ExitRoute>{
 	public ForgeDirection exitOrientation;
-	public final ForgeDirection insertOrientation;
+	public ForgeDirection insertOrientation;
 	public int metric;
 	public EnumSet<PipeRoutingConnectionType> connectionDetails;
 	public final IRouter destination;
+	public IRouter root;	
 	
-	public ExitRoute(IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails)
+	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails)
 	{
 		this.destination = destination;
+		this.root = source;
 		this.exitOrientation = exitOrientation;
 		this.insertOrientation = insertOrientation;
 		this.metric = metric;
@@ -32,6 +34,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	}
 
 	public ExitRoute( ExitRoute other){
+		this.root = other.root;
 		this.destination = other.destination;
 		this.exitOrientation = other.exitOrientation;
 		this.insertOrientation = other.insertOrientation;
@@ -79,5 +82,10 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		if (c==0)
 			return this.destination.getSimpleID() - o.destination.getSimpleID();
 		return c;
+	}
+
+	
+	public ExitRoute(IRouter source, IRouter destination, int distance, EnumSet<PipeRoutingConnectionType> enumSet) {
+		this(source,destination,ForgeDirection.UNKNOWN,ForgeDirection.UNKNOWN,distance,enumSet);
 	}
 }

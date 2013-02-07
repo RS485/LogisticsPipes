@@ -197,8 +197,11 @@ public class RequestManager {
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			if(r.getPipe() instanceof ICraftItems)
-				validDestinations.add(requester.getRouter().getDistanceTo(r));
+			if(r.getPipe() instanceof ICraftItems) {
+				ExitRoute e = requester.getRouter().getDistanceTo(r);
+				if (e!=null)
+					validDestinations.add(e);
+			}
 		}
 		Collections.sort(validDestinations);
 		
@@ -299,8 +302,11 @@ outer:
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			if(r.getPipe() instanceof IProvideItems)
-				validDestinations.add(requester.getRouter().getDistanceTo(r));
+			if(r.getPipe() instanceof IProvideItems){
+				ExitRoute e = requester.getRouter().getDistanceTo(r);
+				if (e!=null)
+					validDestinations.add(e);
+			}
 		}
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validDestinations, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			

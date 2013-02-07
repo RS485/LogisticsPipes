@@ -75,6 +75,9 @@ public class ExitRoute implements Comparable<ExitRoute>{
 
 	@Override
 	public int compareTo(ExitRoute o) {
-		return this.metric - o.metric;
+		int c = this.metric - o.metric;
+		if (c==0)
+			return this.destination.getSimpleID() - o.destination.getSimpleID();
+		return c;
 	}
 }

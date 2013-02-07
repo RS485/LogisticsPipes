@@ -153,6 +153,8 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
+		if(this.itemSinkModule.isDefaultRoute())
+			return null;
 		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(10);
 		for(int i=0; i<9;i++){
 			ItemStack item = this.itemSinkModule.getFilterInventory().getStackInSlot(i);

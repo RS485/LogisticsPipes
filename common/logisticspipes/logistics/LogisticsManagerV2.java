@@ -64,11 +64,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
 		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			if(r.getPipe() instanceof IProvideItems){
-				ExitRoute e = sourceRouter.getDistanceTo(r);
-				if (e!=null)
-					validDestinations.add(e);
-			}
+			ExitRoute e = sourceRouter.getDistanceTo(r);
+			if (e!=null)
+				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);

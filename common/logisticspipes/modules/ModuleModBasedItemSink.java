@@ -173,4 +173,9 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	public boolean interestedInAttachedInventory() {		
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

@@ -288,20 +288,16 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		if(_itemsIncluded){
-			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
-			li.addAll(mapIC.keySet());
-			return li;
-		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean interestedInAttachedInventory() {
-		
-		return !this._itemsIncluded; // when items included this is only interested in items in the filter
-		// when items not included, we can only serve those items in the filter.
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

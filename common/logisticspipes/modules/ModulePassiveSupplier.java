@@ -169,11 +169,19 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
 		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
+		for(ItemIdentifier id:mapIC.keySet()){
+			li.add(id.toUndamaged());
+		}
 		return li;
 	}
 
 	@Override
 	public boolean interestedInAttachedInventory() {		
 		return false; 
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

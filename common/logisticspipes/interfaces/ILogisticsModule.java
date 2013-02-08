@@ -59,4 +59,9 @@ public interface ILogisticsModule extends ISaveState {
 	public List<ItemIdentifier> getSpecificInterests();
 
 	public boolean interestedInAttachedInventory();
+
+	/**
+	 * is this module interested in recieving any damage varient of items in the attached inventory?
+	 */
+	public boolean interestedInUndamagedID();
 }

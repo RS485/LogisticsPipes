@@ -135,4 +135,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	public boolean interestedInAttachedInventory() {		
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

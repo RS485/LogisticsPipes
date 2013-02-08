@@ -102,4 +102,9 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 	public boolean interestedInAttachedInventory() {
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

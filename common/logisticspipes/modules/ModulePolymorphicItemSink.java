@@ -78,4 +78,9 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	public boolean interestedInAttachedInventory() {		
 		return true; // by definition :)
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return true;
+	}
 }

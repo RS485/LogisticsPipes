@@ -566,23 +566,39 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
 		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>((getChassiSize()+1)*9);
-		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule module = _module.getSubModule(i);
+		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
+			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
 				WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 				TileEntity tile = getPointedTileEntity();
 				if (!(tile instanceof IInventory)) continue;
 				if (tile instanceof TileGenericPipe) continue;
 				
+				// don't need to handle the ISided specials in here, they will be handled next
 				if (tile instanceof ISpecialInventory) {
 					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((ISidedInventory) tile).getItemsAndCount();
 					l1.addAll(items.keySet());
+
+					boolean modulesInterestedInUndamged=false;
+					for (int i = 0; i < this.getChassiSize(); i++) {
+						if( _module.getSubModule(moduleIndex).interestedInUndamagedID()){
+							modulesInterestedInUndamged=true;
+							break;
+						}
+					}
+					if(modulesInterestedInUndamged) {
+						for(ItemIdentifier id:items.keySet()){	
+							l1.add(id.toUndamaged());
+						}
+					}
+
+					
 					break;
 				} 
 
 				IInventory inv = (IInventory)tile;
 				if (inv instanceof ISidedInventory) {
-					inv = new SidedInventoryAdapter((ISidedInventory) tile, this.ChassiLogic.orientation);
+					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
 				} 
 				for (int currentIndex = 0;currentIndex < inv.getSizeInventory();currentIndex++) {
 					ItemStack currentItem = inv.getStackInSlot(currentIndex);

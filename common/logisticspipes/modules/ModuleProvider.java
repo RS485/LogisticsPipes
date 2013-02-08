@@ -417,4 +417,9 @@ outer:
 		return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
 		// when items not included, we can only serve those items in the filter.
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

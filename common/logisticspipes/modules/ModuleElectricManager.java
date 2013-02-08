@@ -240,4 +240,9 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	public boolean interestedInAttachedInventory() {
 		return false; // would be true, but hasGenericInterests means this is interested anyway.
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

@@ -145,4 +145,9 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public boolean interestedInAttachedInventory() {		
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

@@ -139,4 +139,9 @@ public class ChassiModule implements ILogisticsGuiModule{
 	public boolean interestedInAttachedInventory() {		
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

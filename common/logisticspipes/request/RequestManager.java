@@ -195,17 +195,15 @@ public class RequestManager {
 		
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validSources = new ArrayList(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			if(r.getPipe() instanceof ICraftItems) {
-				ExitRoute e = requester.getRouter().getDistanceTo(r);
-				if (e!=null)
-					validDestinations.add(e);
-			}
+			ExitRoute e = r.getDistanceTo(requester.getRouter());
+			if (e!=null)
+				validSources.add(e);
 		}
-		Collections.sort(validDestinations);
+		Collections.sort(validSources);
 		
-		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validDestinations, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
+		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		boolean handled = false;
@@ -300,15 +298,15 @@ outer:
 		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validSources = new ArrayList(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			if(r.getPipe() instanceof IProvideItems){
-				ExitRoute e = requester.getRouter().getDistanceTo(r);
+				ExitRoute e = r.getDistanceTo(requester.getRouter());
 				if (e!=null)
-					validDestinations.add(e);
-			}
+					validSources.add(e);
 		}
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validDestinations, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
+		Collections.sort(validSources);
+		
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			
 			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe()))
 				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());

@@ -172,4 +172,9 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	public boolean interestedInAttachedInventory() {		
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

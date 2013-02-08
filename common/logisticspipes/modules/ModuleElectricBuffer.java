@@ -106,4 +106,9 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	public boolean interestedInAttachedInventory() {		
 		return false;
 	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return true;
+	}
 }

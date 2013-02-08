@@ -235,6 +235,11 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 
 	@Override
 	public boolean interestedInAttachedInventory() {		
-		return true;
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

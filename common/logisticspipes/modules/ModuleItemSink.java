@@ -182,6 +182,9 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
 		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
+		for(ItemIdentifier id:mapIC.keySet()){
+			li.add(id.toUndamaged());
+		}
 		return li;
 	}
 
@@ -189,6 +192,11 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 	public boolean interestedInAttachedInventory() {		
 		return !this._isDefaultRoute; 
 		// when we are default we are interested in everything anyway.
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 
 }

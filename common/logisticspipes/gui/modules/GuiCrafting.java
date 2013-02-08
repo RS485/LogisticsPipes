@@ -7,7 +7,9 @@ import logisticspipes.modules.ModuleCrafting;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.proxy.MainProxy;
@@ -54,7 +56,7 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, _crafting.xCoord, _crafting.yCoord, _crafting.zCoord, _slot).getPacket());
+		//MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, _crafting.xCoord, _crafting.yCoord, _crafting.zCoord, _slot).getPacket());
 		controlList.add(new SmallGuiButton(0, (width-xSize) / 2 + 164, (height - ySize) / 2 + 50, 10,10, ">"));
 		controlList.add(new SmallGuiButton(1, (width-xSize) / 2 + 129, (height - ySize) / 2 + 50, 10,10, "<"));
 		//controlList.add(new SmallGuiButton(2, (width-xSize) / 2 + 138, (height - ySize) / 2 + 75, 30,10, "Paint"));
@@ -76,8 +78,6 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 		}
 		switch(guibutton.id){
 		case 0:
-			int satID = _crafting.getNextConnectSatelliteId(false);
-			_crafting.setSatelliteId(satID);
 			if(_slot != 20) {
 				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_NEXT_SATELLITE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot);
 				MainProxy.sendPacketToServer(packet.getPacket());
@@ -89,8 +89,6 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 			}
 			return;
 		case 1: 
-			satID = _crafting.getNextConnectSatelliteId(true);
-			_crafting.setSatelliteId(satID);
 			if(_slot != 20) {
 				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_PREV_SATELLITE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot);
 				MainProxy.sendPacketToServer(packet.getPacket());
@@ -105,7 +103,6 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 			_crafting.paintPathToSatellite();
 			return;
 		case 3:
-			_crafting.importFromCraftingTable();
 			if(_slot != 20) {
 				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_IMPORT, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot);
 				MainProxy.sendPacketToServer(packet.getPacket());
@@ -117,10 +114,18 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 			}
 			return;
 		case 4:
-			//_crafting.openAttachedGui(_player);
+			if(_slot != 20) {
+				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_OPEN_CONNECTED_GUI, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
+			else
+			{
+				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_OPEN_CONNECTED_GUI, _crafting.xCoord, _crafting.yCoord, _crafting.zCoord, _slot);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 			return;
 		case 20:
-			_crafting.priorityUp();
+			//_crafting.priorityUp();
 			if(_slot != 20) {
 				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY_UP, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot);
 				MainProxy.sendPacketToServer(packet.getPacket());
@@ -132,7 +137,7 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 			}
 			return;
 		case 21:
-			_crafting.priorityDown();
+			//_crafting.priorityDown();
 			if(_slot != 20) {
 				final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY_DOWN, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot);
 				MainProxy.sendPacketToServer(packet.getPacket());
@@ -215,6 +220,17 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 	{
 		_crafting.setSatelliteId(packet.integer);
 	}
+	public void handleInventoryRecieve(PacketInventoryChange packet)
+	{
+		for (int i = 0; i < packet.itemStacks.size(); i++) {
+			_crafting.setDummyInventorySlot(i, packet.itemStacks.get(i));
+		}
+	}
+	public void handlePriorityRecieve(PacketPipeInteger packet)
+	{
+		_crafting.priority = packet.integer;
+	}
+	
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Crafting_ID;

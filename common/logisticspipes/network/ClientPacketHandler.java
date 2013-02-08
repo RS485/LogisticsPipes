@@ -37,6 +37,7 @@ import logisticspipes.logic.LogicSupplier;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
+import logisticspipes.modules.ModuleCrafting;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
@@ -110,7 +111,7 @@ public class ClientPacketHandler {
 					onCraftingPipeSetImport(packetA);
 					break;
 				case NetworkConstants.CRAFTING_MODULE_SATELLITE_ID:
-					final PacketPipeInteger packetA11 = new PacketPipeInteger();
+					final PacketModuleInteger packetA11 = new PacketModuleInteger();
 					packetA11.readData(data);
 					onCraftingModuleSetSatellite(packetA11);
 					break;
@@ -274,6 +275,11 @@ public class ClientPacketHandler {
 					packetAm.readData(data);
 					onPrioritySet(packetAm);
 					break;
+				case NetworkConstants.CRAFTING_MODULE_PRIORITY:
+					final PacketModuleInteger packetAm1 = new PacketModuleInteger();
+					packetAm1.readData(data);
+					onCraftingModulePrioritySet(packetAm1);
+					break;
 				case NetworkConstants.POWER_JUNCTION_POWER_LEVEL:
 					final PacketPipeInteger packetAn = new PacketPipeInteger();
 					packetAn.readData(data);
@@ -378,26 +384,83 @@ public class ClientPacketHandler {
 			craftingPipe.setDummyInventorySlot(i, packet.itemStacks.get(i));
 		}
 	}
-	private static void onCraftingModuleSetSatellite(PacketPipeInteger packet) {
+	private static void onCraftingModuleSetSatellite(PacketModuleInteger packet) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCrafting) {
 			((GuiCrafting) FMLClientHandler.instance().getClient().currentScreen).handleSatelliteRecieve(packet);
+		}
+		else
+		{
+			if(packet.slot == 20) {
+				return;
+			}
+			final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+			if (pipe == null) {
+				return;
+			}
+			
+			if(packet.slot == -1) {
+				if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+					return;
+				}
+				if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleCrafting)) {
+					return;
+				}
+				ModuleCrafting module = (ModuleCrafting) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
+				module.satelliteId = packet.integer;
+				return;
+			}
+			
+			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+				return;
+			}
+			if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
+			if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleCrafting) {
+				ModuleCrafting module = (ModuleCrafting) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+				module.satelliteId = packet.integer;
+			}
 		}
 	}
 	
 
 	private static void onCraftingModuleSetImport(PacketInventoryChange packet) {
-		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCrafting) {
+			((GuiCrafting) FMLClientHandler.instance().getClient().currentScreen).handleInventoryRecieve(packet);
 		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
+	}
+	private static void onCraftingModulePrioritySet(PacketModuleInteger packet){
+		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCrafting) {
+			((GuiCrafting) FMLClientHandler.instance().getClient().currentScreen). handlePriorityRecieve(packet);
 		}
-
-		final BaseLogicCrafting craftingPipe = (BaseLogicCrafting) pipe.pipe.logic;
-		for (int i = 0; i < packet.itemStacks.size(); i++) {
-			craftingPipe.setDummyInventorySlot(i, packet.itemStacks.get(i));
+		else
+		{
+			if(packet.slot == 20) {
+				return;
+			}
+			final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+			if (pipe == null) {
+				return;
+			}
+			
+			if(packet.slot == -1) {
+				if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+					return;
+				}
+				if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleCrafting)) {
+					return;
+				}
+				ModuleCrafting module = (ModuleCrafting) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
+				module.priority = packet.integer;
+				return;
+			}
+			
+			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+				return;
+			}
+			if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
+			if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleCrafting) {
+				ModuleCrafting module = (ModuleCrafting) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+				module.priority = packet.integer;
+			}
 		}
 	}
 	private static void onSatellitePipeSetSatellite(PacketPipeInteger packet) {

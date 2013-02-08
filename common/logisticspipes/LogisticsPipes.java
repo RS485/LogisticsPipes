@@ -144,7 +144,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true") || true;
 	public static String MCVersion = "%MCVERSION%";
 	
 	private boolean certificateError = false;

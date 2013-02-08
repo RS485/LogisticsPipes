@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -20,11 +21,15 @@ import buildcraft.transport.TileGenericPipe;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCrafting;
+import logisticspipes.gui.hud.modules.HUDCraftingModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IHUDModuleHandler;
+import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -42,6 +47,8 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.pipefxhandlers.Particles;
@@ -79,7 +86,7 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 
 public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
-		IClientInformationProvider, IRequireReliableTransport {
+		IClientInformationProvider, IRequireReliableTransport, IHUDModuleHandler, IModuleWatchReciver {
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
 	protected IChassiePowerProvider _power;
@@ -93,7 +100,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	protected int stacksToExtract = 1;
 	protected int neededEnergy = 10;
 	
-	protected SimpleInventory _dummyInventory = new SimpleInventory(10, "Items", 127);
+	public SimpleInventory _dummyInventory = new SimpleInventory(10, "Items", 127);
 
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
@@ -104,7 +111,10 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	
+	private IHUDModuleRenderer HUD = new HUDCraftingModule(this);
+	
+	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
 	protected int _extras;
 	private boolean init = false;
@@ -155,19 +165,22 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 
 	@Override
 	public ILogisticsModule getSubModule(int slot) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void tick() {
-		if(!init) {
-			if(MainProxy.isClient(_world.getWorld())) {
-				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
-					MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, xCoord, yCoord, zCoord).getPacket());
-				}
-			}
+		if(!init && throttleTick == 19) {
 			init = true;
+			if(MainProxy.isClient())
+			{
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, xCoord, yCoord, zCoord, slot).getPacket());
+			}
+			else
+			{
+				MainProxy.sendToAllPlayers(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, xCoord, yCoord, zCoord, slot, satelliteId).getPacket());
+				MainProxy.sendToAllPlayers(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY,  xCoord, yCoord, zCoord, slot, priority).getPacket());
+			}
 		}
 		throttleTick++;
 		if(throttleTick % 20 == 0)
@@ -194,7 +207,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		ItemIdentifier wanteditem = getCraftedItem();
 		if(wanteditem == null) return;
 
-		//MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+		MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
 		
 		int itemsleft = itemsToExtract;
 		int stacksleft = stacksToExtract;
@@ -238,15 +251,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 					_extras = Math.max(_extras - numtosend, 0);
 					itemsleft -= numtosend;
 					stacksleft -= 1;
-					
-					
-					/*Position p = new Position(xCoord, yCoord, zCoord, orientation);
-					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + _extras + " remaining");
- 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
-					entityPos.moveForwards(0.5);
-					EntityPassiveItem entityItem = new EntityPassiveItem(_world.getWorld(), entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-					((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);*/
 					_itemSender.sendStack(stackToSend, new Pair3<Integer, SinkReply, List<IFilter>>(-1, new SinkReply(SinkReply.FixedPriority.DefaultRoute, 0, true, false, 0, 1), null));
 				}
 			}
@@ -296,6 +300,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		}
 		return invUtil.getMultipleItems(wanteditem, Math.min(count, available));
 	}
+
 	
 	private void checkContentUpdate() {
 		doContentUpdate = false;
@@ -303,13 +308,12 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		if(!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord,slot, all).getPacket(), localModeWatchers);
 		}
 	}
 
 	@Override
 	public List<String> getClientInformation() {
-		// TODO Auto-generated method stub
 		List<String> list = new ArrayList<String>();
 		list.add("Satellite: "+ this.satelliteId);
 		list.add("Priority: " + this.priority);
@@ -330,37 +334,24 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		return _dummyInventory;
 	}
 	public int getNextConnectSatelliteId(boolean prev) {
-		//final List<SearchNode> routes = getRouter().getIRoutersByCost();
+		final List<SearchNode> routes = getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			//IRouter satRouter = satellite.getRoutedPipe().getRouter();
-			//for (SearchNode route:routes){
-				//if (route.node == satRouter) {
+			IRouter satRouter = satellite.getRoutedPipe().getRouter();
+			for (SearchNode route:routes){
+				if (route.node == satRouter) {
 					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) { //
 						closestIdFound = satellite.satelliteId;
 					} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound ) { 
 						closestIdFound = satellite.satelliteId;
 					}
-				//}
-			//}
+				}
+			}
 		}
 		if (closestIdFound == Integer.MAX_VALUE) {
 			return satelliteId;
 		}
 		return closestIdFound;
-
-	}
-
-	public void setNextSatellite() {
-		//if (MainProxy.isClient(_world.getWorld())) {
-		//	final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
-		//	MainProxy.sendPacketToServer(packet.getPacket());
-		//	satelliteId = getNextConnectSatelliteId(false);
-		//} else {
-		//	satelliteId = getNextConnectSatelliteId(false);
-		//	final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-		//	MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
-		//}
 
 	}
 	
@@ -369,18 +360,14 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		this.satelliteId = satelliteId;
 	}
 
-	public void setPrevSatellite(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE, xCoord, yCoord, zCoord);
-			MainProxy.sendPacketToServer(packet.getPacket());
-		} else {
-			satelliteId = getNextConnectSatelliteId(true);
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
-		}
-	}
-
 	public boolean isSatelliteConnected() {
+		if(MainProxy.isClient())
+		{
+			if(LogisticsPipes.DEBUG)
+				throw new UnsupportedOperationException("Trying to get routes on Clientside");
+			return true;
+		}
+		
 		final List<SearchNode> routes = getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
@@ -429,16 +416,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	}
 
 	public void openAttachedGui(EntityPlayer player) {
-		if (MainProxy.isClient(player.worldObj)) {
-			if(player instanceof EntityPlayerMP) {
-				((EntityPlayerMP)player).closeScreen();
-			} else if(player instanceof EntityPlayerSP) {
-				((EntityPlayerSP)player).closeScreen();
-			}
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
-			MainProxy.sendPacketToServer(packet.getPacket());
-			return;
-		}
 		final WorldUtil worldUtil = new WorldUtil(_world.getWorld(), xCoord, yCoord, zCoord);
 		boolean found = false;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
@@ -472,18 +449,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 			}
 		}
 		
-		//if(player == null) return;
-		
-		//if (MainProxy.isClient(player.worldObj)) {
-			// Send packet asking for import
-		//	final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord);
-		//	MainProxy.sendPacketToServer(packet.getPacket());
-		//} else{
-		//	// Send inventory as packet
-		//	final PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
-		//	MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
-
-		//}
 	}
 
 	public void handleStackMove(int number) {
@@ -504,25 +469,12 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	
 	public void priorityUp() {
 		priority++;
-		/*if(MainProxy.isClient()) {
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
-		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
-		}*/
 	}
 	
 	public void priorityDown() {
 		priority--;
-		/*if(MainProxy.isClient()) {
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
-		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
-		}*/
 	}
 	
-	public void setPriority(int amount) {
-		priority = amount;
-	}
 	
 	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
@@ -556,10 +508,10 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	@Override
 	public CraftingTemplate addCrafting() {
 		
-		ItemIdentifier stack = getCraftedItem(); 
+		ItemIdentifierStack stack = getCraftedItemStack(); 
 		if ( stack == null) return null;
 		
-		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(_dummyInventory.getStackInSlot(9)), this, priority);
+		CraftingTemplate template = new CraftingTemplate(stack, this, priority);
 
 		//Check all materials
 		boolean hasSatellite = isSatelliteConnected(); 
@@ -618,6 +570,11 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		if(_dummyInventory.getStackInSlot(9) == null) return null;
 		return ItemIdentifier.get(_dummyInventory.getStackInSlot(9));
 	}
+	
+	public ItemIdentifierStack getCraftedItemStack() {
+		if(_dummyInventory.getStackInSlot(9) == null) return null;
+		return ItemIdentifierStack.GetFromStack(_dummyInventory.getStackInSlot(9));
+	}
 
 	public ItemStack getMaterials(int slotnr) {
 		return _dummyInventory.getStackInSlot(slotnr);
@@ -630,6 +587,30 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 
 	public IRouter getRouter() {
 		return _itemSender.getRouter();
+	}
+	
+	public IHUDModuleRenderer getRenderer() {
+		return HUD;
+	}
+	@Override
+	public void startWatching() {
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void stopWatching() {
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+		doContentUpdate = true;
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
 	}
 	
 	/* ** NON NETWORKING ** */

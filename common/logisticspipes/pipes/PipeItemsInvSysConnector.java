@@ -384,7 +384,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		if(!getExpectedItems().equals(oldList)) {
 			oldList.clear();
 			oldList.addAll(getExpectedItems());
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, (List<ItemIdentifierStack>) getExpectedItems()).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, getExpectedItems()).getPacket(), localModeWatchers);
 		}
 	}
 

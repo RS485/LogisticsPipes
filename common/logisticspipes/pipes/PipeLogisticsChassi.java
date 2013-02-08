@@ -10,6 +10,7 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,6 @@ import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
@@ -49,6 +49,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
@@ -71,6 +72,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
+import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.DefaultProps;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -567,11 +569,17 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule module = _module.getSubModule(i);
 			if(module!=null && module.interestedInAttachedInventory()) {
-				// copy from provider code
 				WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 				TileEntity tile = getPointedTileEntity();
 				if (!(tile instanceof IInventory)) continue;
 				if (tile instanceof TileGenericPipe) continue;
+				
+				if (tile instanceof ISpecialInventory) {
+					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((ISidedInventory) tile).getItemsAndCount();
+					l1.addAll(items.keySet());
+					break;
+				} 
+
 				IInventory inv = (IInventory)tile;
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) tile, this.ChassiLogic.orientation);

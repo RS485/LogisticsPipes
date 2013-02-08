@@ -124,24 +124,24 @@ public class RequestManager {
 		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
-				CoreRoutedPipe pipe = r.destination.getPipe();
+			if(r.containsFlag(PipeRoutingConnectionType.canRouteTo) && !used.get(r.root.getSimpleID())) {
+				CoreRoutedPipe pipe = r.root.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();
 					list.addAll(filters);
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
-					used.set(r.destination.getSimpleID());
+					used.set(r.root.getSimpleID());
 				}
-				if(r.destination instanceof IFilteringRouter) {
+				if(r.root instanceof IFilteringRouter) {
 					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
+					used.set(r.root.getSimpleID());
 				}
 			}
 		}
 		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
+			IFilter filter = ((IFilteringRouter)r.root).getFilter();
 			filters.add(filter);
-			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((IFilteringRouter)r.destination).getRouters(), used, filters);
+			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((IFilteringRouter)r.root).getRouters(), used, filters);
 			filters.remove(filter);
 			providers.addAll(list);
 		}

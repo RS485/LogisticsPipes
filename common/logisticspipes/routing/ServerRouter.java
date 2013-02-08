@@ -525,11 +525,11 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			if(!node.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				continue;
 			IRouter firstHop = node.root;
-			node.root=this; // replace the root with this, rather than the first hop.
 			ExitRoute hop=_adjacentRouter.get(firstHop);
 			if (hop == null){
 				continue;
 			}
+			node.root=this.getRouter(hop.exitOrientation); // replace the root with this, rather than the first hop.
 			node.exitOrientation = hop.exitOrientation;
 			node.insertOrientation = hop.insertOrientation;
 			while (node.destination.getSimpleID() >= routeTable.size()) // the array will not expand, as it is init'd to contain enough elements

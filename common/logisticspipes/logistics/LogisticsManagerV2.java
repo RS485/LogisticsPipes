@@ -114,7 +114,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 			if(jamList.contains(candidateRouter.destination.getSimpleID())) continue;
 
-			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
+			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 
 			if(used.get(candidateRouter.destination.getSimpleID())) continue;
 

@@ -187,7 +187,6 @@ public class ServerRouter implements IRouter, IPowerRouter {
 	}
 	
 	public ServerRouter(UUID globalID, int dimension, int xCoord, int yCoord, int zCoord){
-		this.simpleID = claimSimpleID();
 		if(globalID!=null)
 			this.id = globalID;
 		else
@@ -200,22 +199,19 @@ public class ServerRouter implements IRouter, IPowerRouter {
 		_myLsa = new LSA();
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
-		SharedLSADatabasereadLock.lock();
+		SharedLSADatabasewriteLock.lock(); // any time after we claim the SimpleID, the database could be accessed at that index
+		this.simpleID = claimSimpleID();
 		if(SharedLSADatabase.size()<=simpleID){
-			SharedLSADatabasereadLock.unlock(); // promote lock type
-			SharedLSADatabasewriteLock.lock();
 			SharedLSADatabase.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(SharedLSADatabase.size()<=(int)simpleID*1.5)
 				SharedLSADatabase.add(null);
 			_lastLSAVersion.ensureCapacity((int) (simpleID*1.5)); // make structural change
 			while(_lastLSAVersion.size()<=(int)simpleID*1.5)
 				_lastLSAVersion.add(0);
-			SharedLSADatabasewriteLock.unlock(); // demote lock
-			SharedLSADatabasereadLock.lock();
 		}
 		_lastLSAVersion.set(this.simpleID,0);
 		SharedLSADatabase.set(this.simpleID, _myLsa); // make non-structural change (threadsafe)
-		SharedLSADatabasereadLock.unlock();
+		SharedLSADatabasewriteLock.unlock(); 
 	}
 	
 	public int getSimpleID() {

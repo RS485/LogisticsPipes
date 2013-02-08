@@ -41,6 +41,7 @@ import logisticspipes.network.packets.PacketHUDSettings;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleInventoryChange;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
@@ -601,7 +602,7 @@ public class ServerPacketHandler {
 				if(dummy.getModule() instanceof ModuleCrafting) {
 					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
 					module.importFromCraftingTable();
-					MainProxy.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, module._dummyInventory).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -626,7 +627,7 @@ public class ServerPacketHandler {
 				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
 				int satID = module.getNextConnectSatelliteId(true);
 				module.importFromCraftingTable();
-				MainProxy.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, module._dummyInventory).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -634,7 +635,7 @@ public class ServerPacketHandler {
 				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				int satID = module.getNextConnectSatelliteId(true);
 				module.importFromCraftingTable();
-				MainProxy.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, module._dummyInventory).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -687,6 +688,7 @@ public class ServerPacketHandler {
 	
 	private static void onCraftingModuleUpdate(EntityPlayerMP player, PacketPipeInteger packet)
 	{
+		
 		final int slot = packet.integer;
 		if(slot == 20) {
 			if(player.openContainer instanceof DummyModuleContainer) {
@@ -695,6 +697,7 @@ public class ServerPacketHandler {
 					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
 					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
 					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -719,6 +722,7 @@ public class ServerPacketHandler {
 				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -726,6 +730,7 @@ public class ServerPacketHandler {
 				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
 				return;
 			}
 		}

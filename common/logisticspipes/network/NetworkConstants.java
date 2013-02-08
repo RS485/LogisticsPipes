@@ -108,5 +108,6 @@ public class NetworkConstants {
 	public static final int CRAFTING_MODULE_PRIORITY = 103;
 	public static final int CRAFTING_MODULE_PRIORITY_UP = 104;
 	public static final int CRAFTING_MODULE_PRIORITY_DOWN = 105;
+	public static final int MODULE_ORDER_MANAGER_CONTENT = 106;
 	
 }

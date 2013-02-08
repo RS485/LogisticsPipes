@@ -52,6 +52,7 @@ import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketLiquidUpdate;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
+import logisticspipes.network.packets.PacketModuleInventoryChange;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
@@ -116,7 +117,7 @@ public class ClientPacketHandler {
 					onCraftingModuleSetSatellite(packetA11);
 					break;
 				case NetworkConstants.CRAFTING_MODULE_IMPORT_BACK:
-					final PacketInventoryChange packetA2 = new PacketInventoryChange();
+					final PacketModuleInventoryChange packetA2 = new PacketModuleInventoryChange();
 					packetA2.readData(data);
 					onCraftingModuleSetImport(packetA2);
 					break;
@@ -234,6 +235,11 @@ public class ClientPacketHandler {
 					final PacketPipeInvContent packetX = new PacketPipeInvContent();
 					packetX.readData(data);
 					onOrderManagerContent(player, packetX);
+					break;
+				case NetworkConstants.MODULE_ORDER_MANAGER_CONTENT:
+					final PacketModuleInvContent packetX1 = new PacketModuleInvContent();
+					packetX1.readData(data);
+					onModuleOrderManagerContent(player, packetX1);
 					break;
 				case NetworkConstants.BUFFERED_PACKET_TRANSFER:
 					final PacketBufferTransfer packetZ = new PacketBufferTransfer();
@@ -422,9 +428,44 @@ public class ClientPacketHandler {
 	}
 	
 
-	private static void onCraftingModuleSetImport(PacketInventoryChange packet) {
+	private static void onCraftingModuleSetImport(PacketModuleInventoryChange packet) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiCrafting) {
 			((GuiCrafting) FMLClientHandler.instance().getClient().currentScreen).handleInventoryRecieve(packet);
+		}
+		else
+		{
+			if(packet.slot == 20) {
+				return;
+			}
+			final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+			if (pipe == null) {
+				return;
+			}
+			
+			if(packet.slot == -1) {
+				if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+					return;
+				}
+				if(!(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleCrafting)) {
+					return;
+				}
+				ModuleCrafting module = (ModuleCrafting) ((CoreRoutedPipe)pipe.pipe).getLogisticsModule();
+				for (int i = 0; i < packet.itemStacks.size(); i++) {
+					module.setDummyInventorySlot(i, packet.itemStacks.get(i));
+				}
+				return;
+			}
+			
+			if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
+				return;
+			}
+			if(((PipeLogisticsChassi)pipe.pipe).getModules() == null) return;
+			if(((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleCrafting) {
+				ModuleCrafting module = (ModuleCrafting) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+				for (int i = 0; i < packet.itemStacks.size(); i++) {
+					module.setDummyInventorySlot(i, packet.itemStacks.get(i));
+				}
+			}
 		}
 	}
 	private static void onCraftingModulePrioritySet(PacketModuleInteger packet){
@@ -765,6 +806,17 @@ public class ClientPacketHandler {
 		}
 		if(tile.pipe instanceof IOrderManagerContentReceiver) {
 			((IOrderManagerContentReceiver)tile.pipe).setOrderManagerContent(packet._allItems);
+		}
+	}
+	
+	private static void onModuleOrderManagerContent(Player player, PacketModuleInvContent packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) {
+			return;
+		}
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof IOrderManagerContentReceiver) {
+			IOrderManagerContentReceiver module = (IOrderManagerContentReceiver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			module.setOrderManagerContent(packet._allItems);
 		}
 	}
 

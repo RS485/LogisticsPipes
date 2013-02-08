@@ -34,6 +34,7 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 		_crafting = crafting;
 		_pipe = pipe;
 		_slot = slot;
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, _crafting.xCoord, _crafting.yCoord, _crafting.zCoord, _slot).getPacket());
 		
 		DummyContainer dummy = new DummyContainer(playerInventory, _crafting.getDummyInventory());
 		dummy.addNormalSlotsForPlayerInventory(18, 97);
@@ -56,7 +57,6 @@ public class GuiCrafting extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		//MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, _crafting.xCoord, _crafting.yCoord, _crafting.zCoord, _slot).getPacket());
 		controlList.add(new SmallGuiButton(0, (width-xSize) / 2 + 164, (height - ySize) / 2 + 50, 10,10, ">"));
 		controlList.add(new SmallGuiButton(1, (width-xSize) / 2 + 129, (height - ySize) / 2 + 50, 10,10, "<"));
 		//controlList.add(new SmallGuiButton(2, (width-xSize) / 2 + 138, (height - ySize) / 2 + 75, 30,10, "Paint"));

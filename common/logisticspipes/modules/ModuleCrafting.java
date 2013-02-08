@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,6 +31,7 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
+import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -49,6 +51,7 @@ import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
+import logisticspipes.network.packets.PacketModuleInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.pipefxhandlers.Particles;
@@ -86,13 +89,13 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 
 public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
-		IClientInformationProvider, IRequireReliableTransport, IHUDModuleHandler, IModuleWatchReciver {
+		IClientInformationProvider, IRequireReliableTransport, IHUDModuleHandler, IModuleWatchReciver, IOrderManagerContentReceiver {
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
 	protected IChassiePowerProvider _power;
 	protected IWorldProvider _world;
 	
-	private int slot = 0;
+	public int slot = 0;
 	public int xCoord = 0;
 	public int yCoord = 0;
 	public int zCoord = 0;
@@ -117,8 +120,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
 	protected int _extras;
-	private boolean init = false;
-	private boolean doContentUpdate = true;
+	private boolean doContentUpdate = false;
 	private int throttleTick = 0;
 	
 	@Override
@@ -129,7 +131,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		_itemSender = itemSender;
 		_power = powerProvider;
 		_world = world;
-
 	}
 
 	@Override
@@ -138,7 +139,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		this.yCoord = yCoord;
 		this.zCoord = zCoord;
 		this.slot = slot;
-
 	}
 
 	@Override
@@ -170,18 +170,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 
 	@Override
 	public void tick() {
-		if(!init && throttleTick == 19) {
-			init = true;
-			if(MainProxy.isClient())
-			{
-				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, xCoord, yCoord, zCoord, slot).getPacket());
-			}
-			else
-			{
-				MainProxy.sendToAllPlayers(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, xCoord, yCoord, zCoord, slot, satelliteId).getPacket());
-				MainProxy.sendToAllPlayers(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY,  xCoord, yCoord, zCoord, slot, priority).getPacket());
-			}
-		}
 		throttleTick++;
 		if(throttleTick % 20 == 0)
 		{
@@ -303,12 +291,11 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 
 	
 	private void checkContentUpdate() {
-		doContentUpdate = false;
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
 		if(!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);
-			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord,slot, all).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord,slot, all).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -595,6 +582,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	@Override
 	public void startWatching() {
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		
 	}
 
 	@Override
@@ -606,11 +594,14 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
 		doContentUpdate = true;
+		MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, xCoord, yCoord, zCoord, slot, _dummyInventory).getPacket(),(Player) player);
 	}
 
 	@Override
 	public void stopWatching(EntityPlayer player) {
 		localModeWatchers.remove(player);
+		if(localModeWatchers.isEmpty())
+			doContentUpdate = false;
 	}
 	
 	/* ** NON NETWORKING ** */
@@ -622,6 +613,13 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 		}
 
 		getRouter().displayRouteTo(satelliteRouter.getSimpleID());
+	}
+
+	@Override
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> _allItems) {
+		displayList.clear();
+		displayList.addAll(_allItems);
+		
 	}
 
 }

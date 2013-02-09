@@ -87,10 +87,10 @@ public class RequestManager {
 		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
-			CoreRoutedPipe pipe = r.destination.getPipe();
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
+			CoreRoutedPipe pipe = r.root.getPipe();
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.root.getSimpleID())) {
 				if (pipe instanceof ICraftItems){
-					used.set(r.destination.getSimpleID());
+					used.set(r.root.getSimpleID());
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null) {
 						for(IFilter filter: filters) {
@@ -101,16 +101,16 @@ public class RequestManager {
 						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
 					}
 				}
-				if(r.destination instanceof IFilteringRouter) {
+				if(r.root instanceof IFilteringRouter) {
 					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
+					used.set(r.root.getSimpleID());
 				}
 			}		
 		}
 		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
+			IFilter filter = ((IFilteringRouter)r.root).getFilter();
 			filters.add(filter);
-			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.destination).getRouters(), used, filters);
+			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.root).getRouters(), used, filters);
 			filters.remove(filter);
 			crafters.addAll(list);
 		}

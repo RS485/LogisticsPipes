@@ -11,6 +11,10 @@ import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.logisticspipes.PipeTransportLayer;
+import logisticspipes.logisticspipes.RouteLayer;
+import logisticspipes.logisticspipes.RouteLayerFirewall;
+import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBitSet;
@@ -95,6 +99,14 @@ public class PipeItemsFirewall extends RoutedPipe {
 			}
 		}
 		return router;
+	}
+	
+	@Override
+	public RouteLayer getRouteLayer(){
+		if (_routeLayer == null){
+			_routeLayer = new RouteLayerFirewall(getRouter(), getTransportLayer());
+		}
+		return _routeLayer;
 	}
 	
 	public ForgeDirection getRouterSide(IRouter router) {

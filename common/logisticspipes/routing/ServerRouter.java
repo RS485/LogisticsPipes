@@ -420,7 +420,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	/**
 	 * Create a route table from the link state database
 	 */
-	private void CreateRouteTable(int version_to_update_to)	{
+	protected void CreateRouteTable(int version_to_update_to)	{
 		
 		if(_lastLSAVersion.get(simpleID)>=version_to_update_to)
 			return; // this update is already done.

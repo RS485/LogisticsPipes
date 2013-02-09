@@ -94,7 +94,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private boolean enabled = true;
 	
-	private RouteLayer _routeLayer;
+	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);

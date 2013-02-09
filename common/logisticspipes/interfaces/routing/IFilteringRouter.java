@@ -9,4 +9,5 @@ public interface IFilteringRouter {
 	public List<ExitRoute> getRouters();
 	public IFilter getFilter();
 	public boolean idIdforOtherSide(int destination);
+	public int getSimpleID();
 }

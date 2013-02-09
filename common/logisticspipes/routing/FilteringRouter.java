@@ -20,6 +20,14 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 		super(id, dimension, xCoord, yCoord, zCoord);
 		this.side = dir;
 	}
+	
+/*	@Override
+	protected void CreateRouteTable(int version_to_update_to)	{
+		if(ForgeDirection.UNKNOWN.equals(side))
+			return;
+		super.CreateRouteTable(version_to_update_to);
+		
+	}*/
 	/*
 	protected void recheckAdjacent() {
 		if(ForgeDirection.UNKNOWN.equals(side)) {

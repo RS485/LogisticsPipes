@@ -36,8 +36,8 @@ public interface IRouter extends IPowerRouter {
 	public boolean hasRoute(int id);
 	public ForgeDirection getExitFor(int id);
 	
-	public ArrayList<Pair<ForgeDirection, ForgeDirection>> getRouteTable();
-	public List<SearchNode> getIRoutersByCost();
+	public ArrayList<ExitRoute> getRouteTable();
+	public List<ExitRoute> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	public CoreRoutedPipe getCachedPipe();
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
@@ -61,4 +61,5 @@ public interface IRouter extends IPowerRouter {
 	
 	/* Automated Disconnection */
 	public boolean isSideDisconneceted(ForgeDirection dir);
+	public ExitRoute getDistanceTo(IRouter r);
 }

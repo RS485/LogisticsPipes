@@ -10,15 +10,19 @@ package logisticspipes.logic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map.Entry;
+import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
@@ -83,6 +87,22 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		IRouter r = getRoutedPipe().getRouter();
 		if(!(r instanceof ServerRouter)) return;
 		System.out.println("***");
+		System.out.println("---------Interests---------------");
+		for(Entry<ItemIdentifier, Set<IRouter>> i: ServerRouter.getInterestedInSpecifics().entrySet()){
+			System.out.print(i.getKey().getFriendlyName()+":");
+			for(IRouter j:i.getValue())
+				System.out.print(j.getSimpleID()+",");
+			System.out.println();
+		}
+		
+		System.out.print("ALL ITEMS:");
+		for(IRouter j:ServerRouter.getInterestedInGeneral())
+			System.out.print(j.getSimpleID()+",");
+		System.out.println();
+			
+		
+		
+		
 		ServerRouter sr = (ServerRouter) r;
 		
 		System.out.println("ID: " + r.getSimpleID());
@@ -92,15 +112,15 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		}
 		System.out.println();
 		System.out.println("========DISTANCE TABLE==============");
-		for(SearchNode n : r.getIRoutersByCost()) {
-			System.out.println(n.node.getId() + " @ " + n.distance + " -> "+ n.getFlags());
+		for(ExitRoute n : r.getIRoutersByCost()) {
+			System.out.println(n.destination.getSimpleID()+ " @ " + n.distanceToDestination + " -> "+ n.connectionDetails +"("+n.destination.getId() +")");
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		ArrayList<Pair<ForgeDirection, ForgeDirection>> table = r.getRouteTable();
+		ArrayList<ExitRoute> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
 			if(table.get(i)!=null)
-			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).getValue1().toString());
+			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i) + " distance)");
 		}
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");

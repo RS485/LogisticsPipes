@@ -11,6 +11,8 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.inventory.IInventory;
@@ -42,7 +44,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		return null;
 	}
 
@@ -79,7 +81,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if(reinsertBee(stack[0], sinv, direction))
 			return;
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stack[0], true);
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true);
 		if(reply == null) return;
 		_power.useEnergy(20);
 		sinv.extractItem(true, direction, 1);
@@ -117,6 +119,25 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 				}
 			}
 		}
+		return false;
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
 		return false;
 	}
 }

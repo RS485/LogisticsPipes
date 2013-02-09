@@ -3,6 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -77,9 +78,9 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsUndamagedItem(ItemIdentifier.getUndamaged(item))){
+		if (_filterInventory.containsUndamagedItem(item.toUndamaged())){
 			if(_power.canUseEnergy(2)) {
 				return _sinkReply;
 			}
@@ -145,5 +146,30 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	@Override
 	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		li.addAll(mapIC.keySet());
+		for(ItemIdentifier id:mapIC.keySet()){
+			li.add(id.toUndamaged());
+		}
+		return li;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

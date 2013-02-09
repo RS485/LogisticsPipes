@@ -11,6 +11,10 @@ import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.logisticspipes.PipeTransportLayer;
+import logisticspipes.logisticspipes.RouteLayer;
+import logisticspipes.logisticspipes.RouteLayerFirewall;
+import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBitSet;
@@ -18,7 +22,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
@@ -76,8 +80,8 @@ public class PipeItemsFirewall extends RoutedPipe {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
 					UUID routerUUId=UUID.fromString(routerIds[dir.ordinal()]);
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(routerUUId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord,true);
-//					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, dir);
+//					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(routerUUId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord,true);
+					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, dir);
 				}
 			}
 			return routers[dir.ordinal()];
@@ -95,6 +99,14 @@ public class PipeItemsFirewall extends RoutedPipe {
 			}
 		}
 		return router;
+	}
+	
+	@Override
+	public RouteLayer getRouteLayer(){
+		if (_routeLayer == null){
+			_routeLayer = new RouteLayerFirewall(getRouter(), getTransportLayer());
+		}
+		return _routeLayer;
 	}
 	
 	public ForgeDirection getRouterSide(IRouter router) {
@@ -157,11 +169,11 @@ public class PipeItemsFirewall extends RoutedPipe {
 		return null;
 	}
 	
-	public List<SearchNode> getRouters(IRouter from) {
-		List<SearchNode> list = new ArrayList<SearchNode>();
+	public List<ExitRoute> getRouters(IRouter from) {
+		List<ExitRoute> list = new ArrayList<ExitRoute>();
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(getRouter(dir).equals(from)) continue;
-			List<SearchNode> nodes = getRouter(dir).getIRoutersByCost();
+			List<ExitRoute> nodes = getRouter(dir).getIRoutersByCost();
 			list.addAll(nodes);
 		}
 		Collections.sort(list);
@@ -259,4 +271,8 @@ public class PipeItemsFirewall extends RoutedPipe {
 		isBlocking = flags.get(3);
 	}
 
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
 }

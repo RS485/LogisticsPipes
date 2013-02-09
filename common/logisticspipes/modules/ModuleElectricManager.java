@@ -3,6 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDElectricManager;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -26,6 +27,7 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
@@ -84,9 +86,10 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 1);
 	@Override
-	public SinkReply sinksItem(ItemStack stack, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority) {
 		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		if (!_power.canUseEnergy(1)) return null;
+		ItemStack stack = stackID.makeNormalStack(1);
 		if (isOfInterest(stack)) {
 			//If item is full and in discharge mode, sink.
 			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return _sinkReply;
@@ -133,7 +136,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
 				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
-					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
@@ -143,7 +146,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 				}
 				//If item set to charge  and its fully charged, then extract it.
 				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
-					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(stack, _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
@@ -221,5 +224,25 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	@Override
 	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {
+		return false; // would be true, but hasGenericInterests means this is interested anyway.
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

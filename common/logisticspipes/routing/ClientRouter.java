@@ -75,19 +75,19 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ArrayList<Pair<ForgeDirection, ForgeDirection>> getRouteTable() {
+	public ArrayList<ExitRoute> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new  ArrayList<Pair<ForgeDirection,ForgeDirection>>();
+		return new  ArrayList<ExitRoute>();
 	}
 
 	@Override
-	public List<SearchNode> getIRoutersByCost() {
+	public List<ExitRoute> getIRoutersByCost() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new LinkedList<SearchNode>();
+		return new LinkedList<ExitRoute>();
 	}
 
 	@Override
@@ -191,5 +191,11 @@ public class ClientRouter implements IRouter {
 	public void updateInterests() {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public ExitRoute getDistanceTo(IRouter r) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

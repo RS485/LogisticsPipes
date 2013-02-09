@@ -23,6 +23,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.item.ItemStack;
@@ -151,10 +152,15 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	}
 	
 	@Override
-	public List<ItemStack> getSpecificInterests() {
-		List<ItemStack> l1 = new ArrayList<ItemStack>(10);
-		for(int i=0; i<9;i++)
-			l1.add(this.itemSinkModule.getFilterInventory().getStackInSlot(i));
+	public List<ItemIdentifier> getSpecificInterests() {
+		if(this.itemSinkModule.isDefaultRoute())
+			return null;
+		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(10);
+		for(int i=0; i<9;i++){
+			ItemStack item = this.itemSinkModule.getFilterInventory().getStackInSlot(i);
+			if(item != null)
+				l1.add(ItemIdentifier.get(item));
+		}
 		return l1;
 	}
 

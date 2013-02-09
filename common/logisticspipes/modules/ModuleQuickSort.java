@@ -1,6 +1,8 @@
 package logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -10,6 +12,8 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.inventory.IInventory;
@@ -50,7 +54,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		return null;
 	}
 
@@ -98,7 +102,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 			}
 		}
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stackToSend), false);
 		if (reply == null) {
 			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
@@ -126,5 +130,24 @@ public class ModuleQuickSort implements ILogisticsModule {
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.zCoord = zCoord;
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

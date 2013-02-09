@@ -15,6 +15,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
@@ -403,12 +405,18 @@ outer:
 		itemListOrderer.addAll(list);
 	}
 
-	/*@Override work in progress, currently not active code.
-	public List<ItemStack> getSpecificInterests() {
-		List<ItemStack> l1 = new ArrayList<ItemStack>(10);
-		for(int i=0; i<9;i++)
-			l1.add(this.itemSinkModule.getFilterInventory().getStackInSlot(i));
+	@Override //work in progress, currently not active code.
+	public List<ItemIdentifier> getSpecificInterests() {
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		List<ItemIdentifier> l1 = new LinkedList();
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if (!(tile.tile instanceof IInventory)) continue;
+			if (tile.tile instanceof TileGenericPipe) continue;
+			
+			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
+			l1.addAll(inv.getItemsAndCount().keySet());
+		}
 		return l1;
-	}*/
+	}
 
 }

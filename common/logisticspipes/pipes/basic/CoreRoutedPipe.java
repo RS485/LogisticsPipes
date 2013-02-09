@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -93,7 +94,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private boolean enabled = true;
 	
-	private RouteLayer _routeLayer;
+	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
@@ -800,7 +801,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return itemd.getFriendlyNameCC();
 	}
 
-	public List<ItemStack> getSpecificInterests() {
+	public List<ItemIdentifier> getSpecificInterests() {
 		return null;
 	}
 

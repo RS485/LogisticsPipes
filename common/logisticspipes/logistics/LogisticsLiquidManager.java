@@ -12,9 +12,10 @@ import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
@@ -26,19 +27,19 @@ import net.minecraftforge.liquids.LiquidStack;
 public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	
 	public Pair<Integer, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<Integer> jamList) {
-		for (SearchNode candidateRouter : sourceRouter.getIRoutersByCost()){
+		for (ExitRoute candidateRouter : sourceRouter.getIRoutersByCost()){
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
-			if(candidateRouter.node.getSimpleID() == sourceRouter.getSimpleID()) continue;
-			if(jamList.contains(candidateRouter.node.getSimpleID())) continue;
+			if(candidateRouter.destination.getSimpleID() == sourceRouter.getSimpleID()) continue;
+			if(jamList.contains(candidateRouter.destination.getSimpleID())) continue;
 			
-			if (candidateRouter.node.getPipe() == null || !candidateRouter.node.getPipe().isEnabled()) continue;
-			CoreRoutedPipe pipe = candidateRouter.node.getPipe();
+			if (candidateRouter.destination.getPipe() == null || !candidateRouter.destination.getPipe().isEnabled()) continue;
+			CoreRoutedPipe pipe = candidateRouter.destination.getPipe();
 			
 			if(!(pipe instanceof ILiquidSink)) continue;
 			
 			int amount = ((ILiquidSink)pipe).sinkAmount(stack);
 			if(amount > 0) {
-				Pair<Integer, Integer> result = new Pair<Integer, Integer>(candidateRouter.node.getSimpleID(), amount);
+				Pair<Integer, Integer> result = new Pair<Integer, Integer>(candidateRouter.destination.getSimpleID(), amount);
 				return result;
 			}
 		}
@@ -64,14 +65,14 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	}
 	
 	@Override
-	public TreeSet<ItemIdentifierStack> getAvailableLiquid(List<SearchNode> validDestinations) {
+	public TreeSet<ItemIdentifierStack> getAvailableLiquid(List<ExitRoute> validDestinations) {
 		Map<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
-		for(SearchNode r: validDestinations){
+		for(ExitRoute r: validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
-			if (!(r.node.getPipe() instanceof ILiquidProvider)) continue;
+			if (!(r.destination.getPipe() instanceof ILiquidProvider)) continue;
 
-			ILiquidProvider provider = (ILiquidProvider) r.node.getPipe();
+			ILiquidProvider provider = (ILiquidProvider) r.destination.getPipe();
 			Map<LiquidIdentifier, Integer> allItems = provider.getAvailableLiquids();
 			
 			for (Entry<LiquidIdentifier, Integer> liquid : allItems.entrySet()){

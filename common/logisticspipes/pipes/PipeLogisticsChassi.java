@@ -10,6 +10,7 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +49,12 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -59,6 +62,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -68,6 +72,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
+import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.DefaultProps;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -233,7 +238,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	};
 
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault) {
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
 	}
 
@@ -558,4 +563,72 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		return this.getRouterId();
 	}
 
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>((getChassiSize()+1)*9);
+		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
+			ILogisticsModule module = _module.getSubModule(moduleIndex);
+			if(module!=null && module.interestedInAttachedInventory()) {
+				WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+				TileEntity tile = getPointedTileEntity();
+				if (!(tile instanceof IInventory)) continue;
+				if (tile instanceof TileGenericPipe) continue;
+				
+				// don't need to handle the ISided specials in here, they will be handled next
+				if (tile instanceof ISpecialInventory) {
+					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((ISidedInventory) tile).getItemsAndCount();
+					l1.addAll(items.keySet());
+
+					boolean modulesInterestedInUndamged=false;
+					for (int i = 0; i < this.getChassiSize(); i++) {
+						if( _module.getSubModule(moduleIndex).interestedInUndamagedID()){
+							modulesInterestedInUndamged=true;
+							break;
+						}
+					}
+					if(modulesInterestedInUndamged) {
+						for(ItemIdentifier id:items.keySet()){	
+							l1.add(id.toUndamaged());
+						}
+					}
+
+					
+					break;
+				} 
+
+				IInventory inv = (IInventory)tile;
+				if (inv instanceof ISidedInventory) {
+					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
+				} 
+				for (int currentIndex = 0;currentIndex < inv.getSizeInventory();currentIndex++) {
+					ItemStack currentItem = inv.getStackInSlot(currentIndex);
+					if(currentItem != null){
+						l1.add(ItemIdentifier.get(currentItem));
+					}
+				}
+				break; // break once you've added the inventory
+			}
+			
+		}
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule module = _module.getSubModule(i);
+			if(module!=null) {
+				List<ItemIdentifier> current = module.getSpecificInterests();
+				if(current!=null)
+					l1.addAll(current);
+			}
+		}
+		return l1;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			
+			if(x!=null && x.hasGenericInterests())
+				return true;			
+		}
+		return false;
+	}
 }

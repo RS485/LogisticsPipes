@@ -126,7 +126,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			//List<SearchNode> valid = getRouter().getIRoutersByCost();
+			//List<ExitRoute> valid = getRouter().getIRoutersByCost();
 			
 			/*
 			//TODO Double Chests, Simplyfication

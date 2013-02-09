@@ -3,6 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -17,6 +18,8 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.entity.player.EntityPlayer;
@@ -51,15 +54,16 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if(isOfInterest(item)) return _sinkReply;
 		return null;
 	}
 
-	private boolean isOfInterest(ItemStack stack) {
-		if (stack == null || aspectList.size() == 0) return false;
-		List<Integer> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagIDsForStack(stack);
+	private boolean isOfInterest(ItemIdentifier itemID) {
+		if (itemID == null || aspectList.size() == 0) return false;
+		ItemStack item = itemID.makeNormalStack(1);
+		List<Integer> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagIDsForStack(item);
 		if (itemAspectList.size() == 0 || itemAspectList == null) return false;
 		for (int i = 0; i < itemAspectList.size(); i++) {
 			if (aspectList.contains(itemAspectList.get(i))) return true;
@@ -154,5 +158,23 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		readFromNBT(nbt);
 		aspectListChanged();
 	}
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
 
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
 }

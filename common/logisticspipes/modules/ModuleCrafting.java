@@ -145,8 +145,10 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	public SinkReply sinksItem(ItemStack item, int bestPriority,
 			int bestCustomPriority) {
 		ItemIdentifier sink = ItemIdentifier.get(item);
-		for(int i= 0; i<6; i++)
+		for(int i= 0; i<9; i++)
 		{
+			if(i>=6 && isSatelliteConnected())
+				break;
 			if(getMaterials(i) != null)
 			{
 				ItemIdentifier wanted = ItemIdentifier.get(getMaterials(i));
@@ -215,7 +217,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 			} 
 			else if (inv instanceof ISidedInventory) 
 			{
-				IInventory sidedadapter = new SidedInventoryAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN);
+				IInventory sidedadapter = new SidedInventoryAdapter((ISidedInventory) inv, _invProvider.inventoryOrientation());
 				extracted = extractFromIInventory(sidedadapter, wanteditem, maxtosend);
 			}
 			else if (inv instanceof IInventory) 
@@ -249,7 +251,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
 		ItemStack retstack = null;
 		while(count > 0) {
-			ItemStack[] stacks = inv.extractItem(false, ForgeDirection.UNKNOWN, 1);
+			ItemStack[] stacks = inv.extractItem(false, _invProvider.inventoryOrientation(), 1);
 			if(stacks == null || stacks.length < 1 || stacks[0] == null) break;
 			ItemStack stack = stacks[0];
 			if(stack.stackSize == 0) break;
@@ -261,7 +263,7 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 			}
 			if(!_power.useEnergy(neededEnergy * stack.stackSize)) break;
 			
-			stacks = inv.extractItem(true, ForgeDirection.UNKNOWN, 1);
+			stacks = inv.extractItem(true, _invProvider.inventoryOrientation(), 1);
 			if(stacks == null || stacks.length < 1 || stacks[0] == null) {
 				LogisticsPipes.requestLog.info("crafting extractItem(true) got nothing from " + ((TileEntity)inv).toString());
 				break;
@@ -348,13 +350,13 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 	}
 
 	public boolean isSatelliteConnected() {
+		if(satelliteId == 0)
+			return false;
 		if(MainProxy.isClient())
 		{
-			if(LogisticsPipes.DEBUG)
-				throw new UnsupportedOperationException("Trying to get routes on Clientside");
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE, xCoord, yCoord, zCoord, slot).getPacket());
 			return true;
 		}
-		
 		final List<SearchNode> routes = getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {

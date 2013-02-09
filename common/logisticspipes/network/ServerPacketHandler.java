@@ -695,6 +695,8 @@ public class ServerPacketHandler {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleCrafting) {
 					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					if(module.isSatelliteConnected())
+						module.satelliteId = 0;
 					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
 					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
 					MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
@@ -720,6 +722,8 @@ public class ServerPacketHandler {
 		if (slot <= 0) {
 			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
 				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				if(module.isSatelliteConnected())
+					module.satelliteId = 0;
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
@@ -728,6 +732,8 @@ public class ServerPacketHandler {
 		} else {
 			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
 				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				if(module.isSatelliteConnected())
+					module.satelliteId = 0;
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);

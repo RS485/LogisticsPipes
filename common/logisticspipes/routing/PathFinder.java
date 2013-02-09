@@ -133,7 +133,7 @@ class PathFinder {
 				for (Entry<RoutedPipe, ExitRoute> pipe : result.entrySet()) {
 					pipe.getValue().exitOrientation = ForgeDirection.UNKNOWN;
 					ExitRoute foundPipe=foundPipes.get(pipe.getKey());
-					if (foundPipe==null || (pipe.getValue().metric < foundPipe.metric)) {
+					if (foundPipe==null || (pipe.getValue().distanceToDestination < foundPipe.distanceToDestination)) {
 						// New path OR 	If new path is better, replace old path
 						foundPipes.put(pipe.getKey(), pipe.getValue());
 					}
@@ -212,13 +212,13 @@ class PathFinder {
 						// New path
 						foundPipes.put(pipe, result.get(pipe));
 						//Add resistance
-						foundPipes.get(pipe).metric += resistance;
+						foundPipes.get(pipe).distanceToDestination += resistance;
 					}
-					else if (result.get(pipe).metric + resistance < foundPipes.get(pipe).metric) {
+					else if (result.get(pipe).distanceToDestination + resistance < foundPipes.get(pipe).distanceToDestination) {
 						//If new path is better, replace old path, otherwise do nothing
 						foundPipes.put(pipe, result.get(pipe));
 						//Add resistance
-						foundPipes.get(pipe).metric += resistance;
+						foundPipes.get(pipe).distanceToDestination += resistance;
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){

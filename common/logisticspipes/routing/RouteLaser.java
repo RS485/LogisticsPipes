@@ -120,8 +120,8 @@ class RouteLaser implements IPaintPath{
 					if (knownRouters.contains(dicoveredRouter)){
 						knownRouters.remove(dicoveredRouter);
 					}
-					if (dicoveredRouter.getRouteTable().get(targetRouter)!=null)
-					{
+					ExitRoute source =dicoveredRouter.getRouteTable().get(targetRouter);
+					if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
 						ok = true;
 						nextRouter = dicoveredRouter;
 						next = dicoveredRouter.getRouteTable().get(targetRouter).exitOrientation;

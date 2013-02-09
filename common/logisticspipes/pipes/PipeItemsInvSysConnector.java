@@ -60,7 +60,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	private LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
@@ -381,10 +381,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	private void updateContentListener() {
-		if(!getExpectedItems().equals(oldList)) {
-			oldList.clear();
-			oldList.addAll(getExpectedItems());
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, (List<ItemIdentifierStack>) getExpectedItems()).getPacket(), localModeWatchers);
+		Set<ItemIdentifierStack> newList = getExpectedItems();
+		if(!newList.equals(oldList)) {
+			oldList=newList;
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, newList).getPacket(), localModeWatchers);
 		}
 	}
 

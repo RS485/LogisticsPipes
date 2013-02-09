@@ -65,7 +65,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 			ExitRoute e = sourceRouter.getDistanceTo(r);
-			if (e!=null)
+			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);

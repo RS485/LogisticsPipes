@@ -10,10 +10,10 @@ package logisticspipes.pipes.basic;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.main.ActionDisableLogistics;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.transport.PipeTransportLogistics;
 import buildcraft.api.gates.ActionManager;
@@ -30,14 +30,6 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void onNeighborBlockChange(int blockId) {
-		super.onNeighborBlockChange(blockId);
-		if(!stillNeedReplace && MainProxy.isServer(worldObj)) {
-			onNeighborBlockChange_Logistics();
-		}
-	}
-
-	@Override
 	public LinkedList<IAction> getActions() {
 		LinkedList<IAction> actions = super.getActions();
 		actions.add(BuildCraftProxy.LogisticsDisableAction);
@@ -50,9 +42,9 @@ public abstract class RoutedPipe extends CoreRoutedPipe {
 
 		setEnabled(true);
 		// Activate the actions
-		for (Integer i : actions.keySet()) {
-			if (actions.get(i)) {
-				if (ActionManager.actions[i] instanceof ActionDisableLogistics){
+		for (Entry<Integer, Boolean> i : actions.entrySet()) {
+			if (i.getValue()) {
+				if (ActionManager.actions[i.getKey()] instanceof ActionDisableLogistics){
 					setEnabled(false);
 				}
 			}

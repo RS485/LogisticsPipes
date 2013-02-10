@@ -9,11 +9,14 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
@@ -180,10 +183,10 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	private int getCachedAvailableItemCount(ItemIdentifier item) {
-		if(displayMap.containsKey(item)) {
-			return displayMap.get(item);
-		}
-		return 0;
+		Integer i = displayMap.get(item);
+		if(i==null)
+			return 0;
+		return i;
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -227,7 +230,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		}
 		
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		
 		// Check the transaction and see if we have helped already
@@ -261,12 +264,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		LogicProvider providerLogic = (LogicProvider) logic;
-		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>(); 
-		
 		if (!isEnabled()){
 			return;
 		}
+		LogicProvider providerLogic = (LogicProvider) logic;
+		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>();
 		
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
@@ -275,13 +277,14 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
+outer:
 			for (ItemIdentifier currItem : currentInv.keySet()) {
 				if(items.containsKey(currItem)) continue;
 				
-				if(providerLogic.hasFilter()  && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
+				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
 				
 				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.getFilteredItems().contains(currItem) || filter.blockProvider()) continue;
+					if(filter.isBlocked() == filter.isFilteredItem(currItem.getUndamaged()) || filter.blockProvider()) continue outer;
 				}
 				
 				if (!addedItems.containsKey(currItem)) {
@@ -292,24 +295,12 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			}
 		}
 		
-		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = addedItems.keySet().iterator();
-		while(iterator.hasNext()){
-			ItemIdentifier item = iterator.next();
-		
-			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
-			if (remaining < 1){
-				iterator.remove();
-			} else {
-				addedItems.put(item, remaining);	
-			}
-		}
+		//Reduce what has been reserved, add.
 		for(ItemIdentifier item: addedItems.keySet()) {
-			if (!items.containsKey(item)) {
-				items.put(item, addedItems.get(item));
-			} else {
-				items.put(item, addedItems.get(item) + items.get(item));
-			}
+			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+			if (remaining < 1) continue;
+
+			items.put(item, remaining);
 		}
 	}
 
@@ -397,7 +388,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void setReceivedChestContent(List<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.ensureCapacity(list.size());
 		displayList.addAll(list);
@@ -409,8 +400,27 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	}
 
 	@Override
-	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		itemListOrderer.clear();
 		itemListOrderer.addAll(list);
 	}
+
+	@Override //work in progress, currently not active code.
+	public Set<ItemIdentifier> getSpecificInterests() {
+		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		Set<ItemIdentifier> l1 = null;
+		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
+			if (!(tile.tile instanceof IInventory)) continue;
+			if (tile.tile instanceof TileGenericPipe) continue;
+			
+			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
+			Set<ItemIdentifier> items = inv.getItems();
+			if(l1==null)
+				l1=items;
+			else
+				l1.addAll(items);
+		}
+		return l1;
+	}
+
 }

@@ -11,10 +11,13 @@ package logisticspipes.pipes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
+import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.RoutedPipe;
@@ -22,8 +25,10 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -146,5 +151,23 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		itemSinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
+	}
+	
+	@Override
+	public Set<ItemIdentifier> getSpecificInterests() {
+		if(this.itemSinkModule.isDefaultRoute())
+			return null;
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		for(int i=0; i<9;i++){
+			ItemStack item = this.itemSinkModule.getFilterInventory().getStackInSlot(i);
+			if(item != null)
+				l1.add(ItemIdentifier.get(item));
+		}
+		return l1;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return this.itemSinkModule.isDefaultRoute();
 	}
 }

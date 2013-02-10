@@ -8,8 +8,9 @@
 
 package logisticspipes.utils;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	private final String _name;
 	private final int _stackLimit;
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
-	private final ArrayList<ItemIdentifier> _contentsList;
+	private final HashSet<ItemIdentifier> _contentsUndamagedSet;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	
@@ -40,7 +41,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_name = name;
 		_stackLimit = stackLimit;
 		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
-		_contentsList = new ArrayList<ItemIdentifier>((int)(size * 1.5));
+		_contentsUndamagedSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
 	}
 	
 	@Override
@@ -185,14 +186,14 @@ public class SimpleInventory implements IInventory, ISaveState{
 		return stackToTake;
 	}
 
-	public void handleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
+	public void handleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		int i=0;
 		for(ItemIdentifierStack stack:_allItems) {
 			if(_contents.length <= i) break;
 			if(stack == null) {
 				_contents[i] = null;
 			} else {
-				_contents[i] = stack.makeNormalStack();
+				_contents[i] = stack.unsafeMakeNormalStack();
 			}
 			i++;
 		}
@@ -238,27 +239,29 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	private void updateContents() {
 		_contentsMap.clear();
-		_contentsList.clear();
+		_contentsUndamagedSet.clear();
 		for (int i = 0; i < _contents.length; i++) {
 			ItemStack stack = _contents[i];
 			if (stack == null) {
 				continue;
 			}
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
-			if (!_contentsMap.containsKey(itemId)) {
+			Integer count = _contentsMap.get(itemId);
+			if (count == null) {
 				_contentsMap.put(itemId, stack.stackSize);
-				_contentsList.add(itemId);
 			} else {
 				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
 			}
+			ItemIdentifier itemUndamagedId = ItemIdentifier.getUndamaged(stack);
+			_contentsUndamagedSet.add(itemUndamagedId); // add is cheaper than check then add; it just returns false if it is already there
 		}
 	}
 
 	public int itemCount(final ItemIdentifier item) {
-		if(_contentsMap.containsKey(item)) {
-			return _contentsMap.get(item);
-		}
-		return 0;
+		Integer i =  _contentsMap.get(item);
+		if(i == null) 
+			return 0;
+		return i;
 	}
 
 	public Map<ItemIdentifier, Integer> getItemsAndCount() {
@@ -268,12 +271,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public boolean containsItem(final ItemIdentifier item) {
 		return _contentsMap.containsKey(item);
 	}
-	
-	public boolean isEmpty() {
-		return _contentsMap.isEmpty();
+
+	public boolean containsUndamagedItem(final ItemIdentifier item) {
+		return _contentsUndamagedSet.contains(item);
 	}
 
-	public List<ItemIdentifier> getItems() {
-		return _contentsList;
+	public boolean isEmpty() {
+		return _contentsMap.isEmpty();
 	}
 }

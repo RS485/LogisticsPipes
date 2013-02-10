@@ -12,6 +12,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -104,10 +105,11 @@ class PathFinder {
 		
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call
 		if (startPipe.pipe instanceof RoutedPipe && setVisited.size() != 0) {
-			if(((RoutedPipe) startPipe.pipe).stillNeedReplace()) {
+			RoutedPipe rp = (RoutedPipe) startPipe.pipe;
+			if(rp.stillNeedReplace()) {
 				return foundPipes;
 			}
-			foundPipes.put((RoutedPipe) startPipe.pipe, new ExitRoute(ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
+			foundPipes.put(rp, new ExitRoute(null,rp.getRouter(), ForgeDirection.UNKNOWN, side.getOpposite(),  setVisited.size(), connectionFlags));
 			
 			return foundPipes;
 		}
@@ -128,15 +130,12 @@ class PathFinder {
 					continue;
 				}
 				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags, side);
-				for(RoutedPipe pipe : result.keySet()) {
-					result.get(pipe).exitOrientation = ForgeDirection.UNKNOWN;
-					if (!foundPipes.containsKey(pipe)) {
-						// New path
-						foundPipes.put(pipe, result.get(pipe));
-					}
-					else if (result.get(pipe).metric < foundPipes.get(pipe).metric) {
-						//If new path is better, replace old path, otherwise do nothing
-						foundPipes.put(pipe, result.get(pipe));
+				for (Entry<RoutedPipe, ExitRoute> pipe : result.entrySet()) {
+					pipe.getValue().exitOrientation = ForgeDirection.UNKNOWN;
+					ExitRoute foundPipe=foundPipes.get(pipe.getKey());
+					if (foundPipe==null || (pipe.getValue().distanceToDestination < foundPipe.distanceToDestination)) {
+						// New path OR 	If new path is better, replace old path
+						foundPipes.put(pipe.getKey(), pipe.getValue());
 					}
 				}
 			}
@@ -213,13 +212,13 @@ class PathFinder {
 						// New path
 						foundPipes.put(pipe, result.get(pipe));
 						//Add resistance
-						foundPipes.get(pipe).metric += resistance;
+						foundPipes.get(pipe).distanceToDestination += resistance;
 					}
-					else if (result.get(pipe).metric + resistance < foundPipes.get(pipe).metric) {
+					else if (result.get(pipe).distanceToDestination + resistance < foundPipes.get(pipe).distanceToDestination) {
 						//If new path is better, replace old path, otherwise do nothing
 						foundPipes.put(pipe, result.get(pipe));
 						//Add resistance
-						foundPipes.get(pipe).metric += resistance;
+						foundPipes.get(pipe).distanceToDestination += resistance;
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
@@ -229,6 +228,11 @@ class PathFinder {
 			}
 		}
 		setVisited.remove(startPipe);
+		if(startPipe.pipe instanceof RoutedPipe){ // ie, has the recursion returned to the pipe it started from?
+			for(ExitRoute e:foundPipes.values())
+				e.root=((CoreRoutedPipe)startPipe.pipe).getRouter();
+		}
+				
 		return foundPipes;
 	}
 }

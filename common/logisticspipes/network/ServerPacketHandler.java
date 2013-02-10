@@ -2,10 +2,16 @@ package logisticspipes.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.File;
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.gui.PacketStringCoordinates;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -27,6 +33,7 @@ import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
+import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketHUDSettings;
@@ -42,6 +49,7 @@ import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.network.packets.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -332,6 +340,25 @@ public class ServerPacketHandler {
 					final PacketPipeInteger packetAx = new PacketPipeInteger();
 					packetAx.readData(data);
 					onSecurityCardButton(player, packetAx);
+					break;
+				case NetworkConstants.THAUMICASPECTSINKLIST:
+					final PacketModuleNBT packetAy = new PacketModuleNBT();
+					packetAy.readData(data);
+					onThaumicAspectSinkList(player, packetAy);
+					break;
+				case NetworkConstants.CHEATJUNCTIONPOWER:
+					if (!LogisticsPipes.DEBUG) break;
+					final PacketCoordinates packetAz = new PacketCoordinates();
+					packetAz.readData(data);
+					onCheatJunctionPower(player, packetAz);
+					break;
+				case NetworkConstants.PLAYER_LIST:
+					onPlayerListRequest(player);
+					break;
+				case NetworkConstants.OPEN_SECURITY_PLAYER:
+					final PacketStringCoordinates packetBa = new PacketStringCoordinates();
+					packetBa.readData(data);
+					onOpenSecurityPlayer(player, packetBa);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -923,7 +950,7 @@ public class ServerPacketHandler {
 		if(pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
 			if(((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk() != null) {
 				if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
-					((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+					((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound("tag"));
 				}
 			}
 			MainProxy.sendPacketToPlayer(new PacketItem(NetworkConstants.DISK_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk()).getPacket(), (Player)player);
@@ -940,7 +967,7 @@ public class ServerPacketHandler {
 				return;
 			}
 			if(!((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().hasTagCompound()) {
-				((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
+				((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().setTagCompound(new NBTTagCompound("tag"));
 			}
 			NBTTagCompound nbt = ((PipeItemsRequestLogisticsMk2)pipe.pipe).getDisk().getTagCompound();
 			nbt.setString("name", packet.string);
@@ -1065,7 +1092,7 @@ public class ServerPacketHandler {
 		
 		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
 			PipeItemsInvSysConnector connector = (PipeItemsInvSysConnector) pipe.pipe;
-			LinkedList<ItemIdentifierStack> allItems = connector.getExpectedItems();
+			Collection<ItemIdentifierStack> allItems = connector.getExpectedItems();
 			PacketRequestGuiContent packetContent = new PacketRequestGuiContent(allItems, NetworkConstants.INC_SYS_CON_CONTENT);
 			MainProxy.sendPacketToPlayer(packetContent.getPacket(), (Player)player);
 		}
@@ -1314,6 +1341,38 @@ public class ServerPacketHandler {
 		}
 	}
 
+	private static void onThaumicAspectSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
+		if(packet.slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleThaumicAspectSink) {
+					ModuleThaumicAspectSink module = (ModuleThaumicAspectSink) dummy.getModule();
+					module.readFromNBT(packet.tag);
+				}
+			}
+			return;
+		}
+
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) return;
+	
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleThaumicAspectSink) {
+			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}		
+	}
+
+	private static void onCheatJunctionPower(EntityPlayerMP player, PacketCoordinates packet) {
+		World world = player.worldObj;
+		if (!world.blockExists(packet.posX, packet.posY, packet.posZ)) {
+			return;
+		}
+
+		final TileEntity tile = world.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if (tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
+			((LogisticsPowerJuntionTileEntity_BuildCraft) tile).addEnergy(100000);
+		}
+	}
+
 	private static void onFirewallFlags(EntityPlayerMP player, PacketPipeBitSet packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null) {
@@ -1330,6 +1389,28 @@ public class ServerPacketHandler {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer);
+		}
+	}
+
+	private static void onPlayerListRequest(EntityPlayerMP player) {
+		List<String> list = new LinkedList<String>();
+		File root = DimensionManager.getCurrentSaveRootDirectory();
+		if(root == null) return;
+		if(!root.exists()) return;
+		File players = new File(root, "players");
+		if(!players.exists()) return;
+		for(String names:players.list()) {
+			if(names.endsWith(".dat") && new File(players, names).isFile()) {
+				list.add(names.substring(0, names.length() - 4));
+			}
+		}
+		MainProxy.sendPacketToPlayer(new PacketStringList(NetworkConstants.PLAYER_LIST, list).getPacket(), (Player) player);
+	}
+
+	private static void onOpenSecurityPlayer(EntityPlayerMP player, PacketStringCoordinates packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).handleOpenSecurityPlayer(player, packet.string);
 		}
 	}
 	

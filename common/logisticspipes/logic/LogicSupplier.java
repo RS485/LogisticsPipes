@@ -9,6 +9,7 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -32,6 +33,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
 import buildcraft.transport.TileGenericPipe;
@@ -108,22 +110,24 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 			
 			//Reduce what I have
-			for (ItemIdentifier item : needed.keySet()){
-				if (have.containsKey(item)){
-					needed.put(item, needed.get(item) - have.get(item));
+			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+				Integer haveCount = have.get(item.getKey());
+				if (haveCount != null){
+					item.setValue(item.getValue() - haveCount);
 				}
 			}
 			
 			//Reduce what have been requested already
-			for (ItemIdentifier item : needed.keySet()){
-				if (_requestedItems.containsKey(item)){
-					needed.put(item, needed.get(item) - _requestedItems.get(item));
+			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+				Integer requestedCount =  _requestedItems.get(item.getKey());
+				if (requestedCount!=null){
+					item.setValue(item.getValue() - requestedCount);
 				}
 			}
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			//List<SearchNode> valid = getRouter().getIRoutersByCost();
+			//List<ExitRoute> valid = getRouter().getIRoutersByCost();
 			
 			/*
 			//TODO Double Chests, Simplyfication
@@ -151,9 +155,9 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			*/
 
 			//Make request
-			for (ItemIdentifier need : needed.keySet()){
-				if (needed.get(need) < 1) continue;
-				int amountRequested = needed.get(need);
+			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
+				Integer amountRequested = need.getValue();
+				if (amountRequested==null || amountRequested < 1) continue;
 				int neededCount;
 				if(_requestPartials)
 					neededCount = Math.min(amountRequested,this._lastSucess_count);
@@ -166,7 +170,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				boolean success = false;
 					
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
+					success = RequestManager.request(need.getKey().makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}
@@ -182,11 +186,12 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 						else
 							_lastSucess_count= neededCount;
 					}
-					if (!_requestedItems.containsKey(need)){
-						_requestedItems.put(need, neededCount);
+					Integer currentRequest = _requestedItems.get(need.getKey());
+					if (currentRequest == null){
+						_requestedItems.put(need.getKey(), neededCount);
 					}else
 					{
-						_requestedItems.put(need, _requestedItems.get(need) + neededCount);
+						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
 				} else{
 					_lastSucess_count=1;
@@ -211,19 +216,40 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
-	
+	private void decreaseRequested(ItemIdentifierStack item) {
+		int remaining = item.stackSize;
+		//see if we can get an exact match
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null) {
+			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			remaining -= count;
+		}
+		if(remaining <= 0) {
+			return;
+		}
+		//still remaining... was from fuzzyMatch on a crafter
+		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+				int expected = e.getValue();
+				e.setValue(Math.max(0, expected - remaining));
+				remaining -= expected;
+			}
+			if(remaining <= 0) {
+				return;
+			}
+		}
+		//we have no idea what this is, log it.
+		LogisticsPipes.requestLog.info("supplier got unexpected item " + item.toString());
+	}
+
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 	
 	public boolean isRequestingPartials(){

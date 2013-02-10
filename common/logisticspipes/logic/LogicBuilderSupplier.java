@@ -10,7 +10,9 @@ package logisticspipes.logic;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map.Entry;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -57,6 +59,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			
 			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((IInventory) tile.tile);
 			
+			//TODO: don't double get
 			//How many do I want?
 			Collection<ItemStack> neededItems = builder.getNeededItems();
 			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>();
@@ -73,6 +76,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 			
+			//TODO: don't double get
 			//Reduce what I have
 			for (ItemIdentifier item : needed.keySet()){
 				if (have.containsKey(item)){
@@ -80,6 +84,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				}
 			}
 			
+			//TODO: don't double get
 			//Reduce what have been requested already
 			for (ItemIdentifier item : needed.keySet()){
 				if (_requestedItems.containsKey(item)){
@@ -122,19 +127,41 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 		}
 	}
 
-	@Override
-	public void itemLost(ItemIdentifierStack item) {
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
+	private void decreaseRequested(ItemIdentifierStack item) {
+		int remaining = item.stackSize;
+		//see if we can get an exact match
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null) {
+			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			remaining -= count;
 		}
+		if(remaining <= 0) {
+			return;
+		}
+		//still remaining... was from fuzzyMatch on a crafter
+		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+				int expected = e.getValue();
+				e.setValue(Math.max(0, expected - remaining));
+				remaining -= expected;
+			}
+			if(remaining <= 0) {
+				return;
+			}
+		}
+		//we have no idea what this is, log it.
+		LogisticsPipes.requestLog.info("builder supplier got unexpected item " + item.toString());
 	}
 
 	@Override
+	public void itemLost(ItemIdentifierStack item) {
+		decreaseRequested(item);
+	}
+
+	//TODO: don't double get
+	@Override
 	public void itemArrived(ItemIdentifierStack item) {
-		super.resetThrottle();
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 
 	@Override

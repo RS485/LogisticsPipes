@@ -9,10 +9,13 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -302,7 +305,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 		
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.getFilteredItems().contains(tree.getStack().getItem()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		
 		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
@@ -332,11 +335,13 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
 		if ( stack == null) return null;
-		
+
+		boolean hasSatellite = craftingLogic.isSatelliteConnected();
+		if(craftingLogic.satelliteId != 0 && !hasSatellite) return null;
+
 		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
 		//Check all materials
-		boolean hasSatellite = craftingLogic.isSatelliteConnected(); 
 		for (int i = 0; i < 9; i++){
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;
@@ -474,7 +479,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}
@@ -490,4 +495,16 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	public void reimport() {
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
 	}
+
+	@Override
+	public Set<ItemIdentifier> getSpecificInterests() {
+		ItemStack result = ((BaseLogicCrafting) this.logic).getCraftedItem();
+		if(result == null) return null;
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		l1.add(ItemIdentifier.get(result));
+		//for(int i=0; i<9;i++)
+		//	l1.add(((BaseLogicCrafting) this.logic).getMaterials(i));
+		return l1;
+	}
+
 }

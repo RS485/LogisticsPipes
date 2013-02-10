@@ -9,6 +9,8 @@
 package logisticspipes.utils;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import net.minecraft.inventory.IInventory;
@@ -16,7 +18,7 @@ import net.minecraft.item.ItemStack;
 
 public class InventoryUtil implements IInventoryUtil {
 
-	private final IInventory _inventory;
+	protected final IInventory _inventory;
 	private final boolean _hideOnePerStack;
 	private final boolean _hideOne;
 	private final int _cropStart;
@@ -33,10 +35,12 @@ public class InventoryUtil implements IInventoryUtil {
 	@Override
 	public int itemCount(ItemIdentifier item) {
 		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
-		if(map.containsKey(item)) {
-			return map.get(item);
+		Integer count = map.get(item);
+		
+		if(count==null) {
+			return 0;
 		}
-		return 0;
+		return count;
 	}
 	
 	@Override
@@ -47,15 +51,27 @@ public class InventoryUtil implements IInventoryUtil {
 			if (stack == null) continue;
 			ItemIdentifier itemId = ItemIdentifier.get(stack);
 			int stackSize = stack.stackSize - (_hideOnePerStack?1:0);
-			if (!items.containsKey(itemId)){
+			Integer currentSize = items.get(itemId);
+			if (currentSize==null){
 				items.put(itemId, stackSize - (_hideOne?1:0));
 			} else {
-				items.put(itemId, items.get(itemId) + stackSize);
+				items.put(itemId, currentSize + stackSize);
 			}
 		}
 		return items;
 	}
 	
+	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> items = new TreeSet<ItemIdentifier>();
+		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			items.add(ItemIdentifier.get(stack));
+		}
+		return items;
+	}
+
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		//XXX this doesn't handle _hideOne ... does it have to?
@@ -104,17 +120,28 @@ public class InventoryUtil implements IInventoryUtil {
 	
 	//Ignores slot/item hiding
 	@Override
+	public boolean containsUndamagedItem(ItemIdentifier item){
+		for (int i = 0; i < _inventory.getSizeInventory(); i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			if (ItemIdentifier.getUndamaged(stack) == item) return true;
+		}
+		return false;
+	}
+
+	//Ignores slot/item hiding
+	@Override
 	public int roomForItem(ItemIdentifier item){
 		int totalRoom = 0;
 		for (int i = 0; i < _inventory.getSizeInventory(); i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null){
-				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize());
+				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize());
 				continue;
 			}
 			if (ItemIdentifier.get(stack) != item) continue;
 			
-			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.makeNormalStack(1).getMaxStackSize()) - stack.stackSize);
+			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize()) - stack.stackSize);
 		}
 		return totalRoom;
 	}

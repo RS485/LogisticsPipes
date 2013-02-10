@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
@@ -154,17 +155,17 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
 			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
-			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
+			Iterator<Entry<ItemStack, Pair<Integer, Integer>>> iterator = _itemBuffer.entrySet().iterator();
 			while (iterator.hasNext()){
-				ItemStack next = iterator.next();
-				int currentTimeOut = _itemBuffer.get(next).getValue1();
+				Entry<ItemStack, Pair<Integer, Integer>> next = iterator.next();
+				int currentTimeOut = next.getValue().getValue1();
 				if (currentTimeOut > 0){
-					_itemBuffer.get(next).setValue1(currentTimeOut - 1);
+					next.getValue().setValue1(currentTimeOut - 1);
 				} else {
-					EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
-					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
+					EntityPassiveItem item = new EntityPassiveItem(worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next.getKey()) - 0.1, this.zCoord + 0.5, next.getKey());
+					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 					routedItem.setDoNotBuffer(true);
-					routedItem.setBufferCounter(_itemBuffer.get(next).getValue2() + 1);
+					routedItem.setBufferCounter(next.getValue().getValue2() + 1);
 					toAdd.add(routedItem);
 					iterator.remove();
 				}
@@ -179,18 +180,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
 		while (iterator.hasNext()){
 			ItemStack next = iterator.next();
-			SimpleServiceLocator.buildCraftProxy.dropItems(this.container.worldObj, next, this.xCoord, this.yCoord, this.zCoord);
+			SimpleServiceLocator.buildCraftProxy.dropItems(worldObj, next, this.xCoord, this.yCoord, this.zCoord);
 			iterator.remove();
-		}
-	}
-	
-	@Override
-	public void unscheduleRemoval(IPipedItem item) {
-		super.unscheduleRemoval(item);
-		if(item instanceof IRoutedItem) {
-			IRoutedItem routed = (IRoutedItem)item;
-			routed.clearDestination();
-			routed.addToJamList(getPipe().getRouter());
 		}
 	}
 	
@@ -200,8 +191,8 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
-				
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
+		data.item.setWorld(worldObj);
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
 		ForgeDirection value;
 		if(this.getPipe().stillNeedReplace()){
 			routedItem.setDoNotBuffer(false);

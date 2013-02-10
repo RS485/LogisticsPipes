@@ -3,7 +3,9 @@ package logisticspipes.network.packets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.SendNBTTagCompound;
@@ -13,20 +15,21 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class PacketRequestGuiContent extends LogisticsPipesPacket {
 
-	public LinkedList<ItemIdentifierStack> _allItems = new LinkedList<ItemIdentifierStack>();
+	public Collection<ItemIdentifierStack> _allItems;
 	private int id;
 
 	public PacketRequestGuiContent() {
 		super();
+		_allItems = new TreeSet<ItemIdentifierStack>(new ItemIdentifierStack.itemComparitor());
 	}
 
-	public PacketRequestGuiContent(LinkedList<ItemIdentifierStack> allItems) {
+	public PacketRequestGuiContent(TreeSet<ItemIdentifierStack> _allItems2) {
 		super();
-		_allItems = allItems;
+		_allItems = _allItems2;
 		id = NetworkConstants.ORDERER_CONTENT_ANSWER;
 	}
 
-	public PacketRequestGuiContent(LinkedList<ItemIdentifierStack> allItems, int id) {
+	public PacketRequestGuiContent(Collection<ItemIdentifierStack> allItems, int id) {
 		super();
 		_allItems = allItems;
 		this.id = id;

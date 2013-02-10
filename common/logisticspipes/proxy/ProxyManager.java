@@ -1,5 +1,7 @@
 package logisticspipes.proxy;
 
+import java.util.List;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cc.CCTurtleProxy;
@@ -100,6 +102,11 @@ public class ProxyManager {
 		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
+				@Override public void renderAspectAt(Object etag, int x, int y, GuiScreen gui) {}
+				@Override public Object getTagsForStack(ItemStack stack) {return null;}
+				@Override public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {}
+				@Override public List<Integer> getListOfTagIDsForStack(ItemStack stack) {return null;}
+				@Override public String getNameForTagID(int id) {return null;}
 			});
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}

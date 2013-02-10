@@ -1,7 +1,9 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -80,16 +82,16 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
 	private static final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsItem(ItemIdentifier.get(item))){
+		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
 			if(_power.canUseEnergy(1)) {
 				return _sinkReply;
 			}
 			return null;
 		}
-		if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
 		if (_isDefaultRoute){
+			if(bestPriority > _sinkReplyDefault.fixedPriority.ordinal() || (bestPriority == _sinkReplyDefault.fixedPriority.ordinal() && bestCustomPriority >= _sinkReplyDefault.customPriority)) return null;
 			if(_power.canUseEnergy(1)) {
 				return _sinkReplyDefault;
 			}
@@ -164,7 +166,37 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 	}
 
 	@Override
-	public void handleInvContent(List<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
 	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return this._isDefaultRoute;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		if(this._isDefaultRoute)
+			return null;
+		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		li.addAll(mapIC.keySet());
+		for(ItemIdentifier id:mapIC.keySet()){
+			li.add(id.getUndamaged());
+		}
+		return li;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+		// when we are default we are interested in everything anyway, otherwise we're only interested in our filter.
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
 }

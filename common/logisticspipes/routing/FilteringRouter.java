@@ -20,6 +20,14 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 		super(id, dimension, xCoord, yCoord, zCoord);
 		this.side = dir;
 	}
+	
+/*	@Override
+	protected void CreateRouteTable(int version_to_update_to)	{
+		if(ForgeDirection.UNKNOWN.equals(side))
+			return;
+		super.CreateRouteTable(version_to_update_to);
+		
+	}*/
 	/*
 	protected void recheckAdjacent() {
 		if(ForgeDirection.UNKNOWN.equals(side)) {
@@ -53,14 +61,14 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	}
 	*/
 	@Override
-	public List<SearchNode> getRouters() {
+	public List<ExitRoute> getRouters() {
 		if(LogisticsPipes.DEBUG && ForgeDirection.UNKNOWN.equals(side)) {
 			throw new UnsupportedOperationException();
 		}
 		if(this.getPipe() instanceof PipeItemsFirewall) {
 			return ((PipeItemsFirewall)this.getPipe()).getRouters(this);
 		}
-		return new ArrayList<SearchNode>();
+		return new ArrayList<ExitRoute>();
 	}
 
 	@Override
@@ -75,7 +83,7 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			@Override public UUID getUUID() {return UUID.randomUUID();}
 			@Override public int getSimpleID() {return -1;}
 			@Override public boolean isBlocked() {return true;}
-			@Override public List<ItemIdentifier> getFilteredItems() {return new ArrayList<ItemIdentifier>();}
+			@Override public boolean isFilteredItem(ItemIdentifier item) {return false;}
 			@Override public boolean blockProvider() {return false;}
 			@Override public boolean blockCrafting() {return false;}
 			@Override public boolean blockRouting() {return false;}

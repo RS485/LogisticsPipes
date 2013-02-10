@@ -9,9 +9,12 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
@@ -95,6 +98,20 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
 	}
 
+	@Override
+	protected List<IInventory> getConnectedRawInventories()	{
+		if(_cachedAdjacentInventories != null) {
+			return _cachedAdjacentInventories;
+		}
+		List<IInventory> adjacent = new ArrayList<IInventory>(1);
+		IInventory adjinv = getRawInventory();
+		if(adjinv != null) {
+			adjacent.add(adjinv);
+		}
+		_cachedAdjacentInventories = adjacent;
+		return _cachedAdjacentInventories;
+	}	
+	
 	public ForgeDirection getPointedOrientation(){
 		return ChassiLogic.orientation;
 	}
@@ -120,6 +137,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
 		}
 		if(ChassiLogic.orientation != oldOrientation) {
+			clearCache();
 			MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket());
 			refreshRender(true);
 		}
@@ -180,6 +198,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	@Override
 	public IInventory getRawInventory() {
 		TileEntity tile = getPointedTileEntity();
+		if (tile == null ) return null;
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
@@ -216,7 +235,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	};
 
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault) {
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
 	}
 
@@ -501,11 +520,11 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		localModeWatchers.remove(player);
 	}
 
-	public void handleModuleItemIdentifierList(List<ItemIdentifierStack> _allItems) {
+	public void handleModuleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
-	public void handleContentItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+	public void handleContentItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		_moduleInventory.handleItemIdentifierList(_allItems);
 	}
 
@@ -516,7 +535,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		}
 	}
 
-	public void handleSendQueueItemIdentifierList(List<ItemIdentifierStack> _allItems){
+	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems){
 		displayList.clear();
 		displayList.addAll(_allItems);
 	}
@@ -541,4 +560,57 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		return this.getRouterId();
 	}
 
+	@Override
+	public Set<ItemIdentifier> getSpecificInterests() {
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
+			ILogisticsModule module = _module.getSubModule(moduleIndex);
+			if(module!=null && module.interestedInAttachedInventory()) {
+				TileEntity tile = getPointedTileEntity();
+				if (!(tile instanceof IInventory)) continue;
+				if (tile instanceof TileGenericPipe) continue;
+				
+				IInventory inv = (IInventory)tile;
+				if (inv instanceof ISidedInventory) {
+					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
+				} 
+				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
+				l1.addAll(items);
+
+				boolean modulesInterestedInUndamged=false;
+				for (int i = 0; i < this.getChassiSize(); i++) {
+					if( _module.getSubModule(moduleIndex).interestedInUndamagedID()){
+						modulesInterestedInUndamged=true;
+						break;
+					}
+				}
+				if(modulesInterestedInUndamged) {
+					for(ItemIdentifier id:items){	
+						l1.add(id.getUndamaged());
+					}
+				}
+				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
+			} 
+		}
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule module = _module.getSubModule(i);
+			if(module!=null) {
+				List<ItemIdentifier> current = module.getSpecificInterests();
+				if(current!=null)
+					l1.addAll(current);
+			}
+		}
+		return l1;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			
+			if(x!=null && x.hasGenericInterests())
+				return true;			
+		}
+		return false;
+	}
 }

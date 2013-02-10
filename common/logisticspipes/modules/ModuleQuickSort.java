@@ -1,6 +1,8 @@
 package logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -10,6 +12,8 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.inventory.IInventory;
@@ -50,7 +54,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		return null;
 	}
 
@@ -81,31 +85,44 @@ public class ModuleQuickSort implements ILogisticsModule {
 		if(lastSuceededStack >= targetInventory.getSizeInventory())
 			lastSuceededStack = 0;
 		
-		ItemStack stackToSend = null;
+		//incremented at the end of the previous loop.
+		if (lastStackLookedAt >= targetInventory.getSizeInventory())
+			lastStackLookedAt = 0;
+		
+		ItemStack stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+
 		while(stackToSend==null) {
 			lastStackLookedAt++;
 			if (lastStackLookedAt >= targetInventory.getSizeInventory())
 				lastStackLookedAt = 0;
-			if(lastStackLookedAt == lastSuceededStack){
+			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 				return; // then we have been around the list without sending, halt for now
 			}
-			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
 		}
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(stackToSend, false);
-		if (reply == null) 
-			return;
-		if(!_power.useEnergy(500)) {
-			stalled = true;
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stackToSend), false);
+		if (reply == null) {
+			if(lastStackLookedAt == lastSuceededStack) {
+				stalled = true;
+			}
+			lastStackLookedAt++;
 			return;
 		}
-		lastSuceededStack=lastStackLookedAt;
+		if(!_power.useEnergy(500)) {
+			stalled = true;
+			lastStackLookedAt++;
+			return;
+		}
+		
 		stalled = false;
 		_itemSender.sendStack(stackToSend, reply);
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
 		targetInventory.setInventorySlotContents(lastStackLookedAt, null);
 				
+		lastSuceededStack=lastStackLookedAt;
+		lastStackLookedAt++;
 	}
 
 	@Override
@@ -113,5 +130,24 @@ public class ModuleQuickSort implements ILogisticsModule {
 		this.xCoord = xCoord;
 		this.yCoord = yCoord;
 		this.zCoord = zCoord;
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

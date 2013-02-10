@@ -64,9 +64,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		for(int i=0;i<inv.getSizeInventory() - 1;i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item != null) {
-				needUpdate = needUpdate || updateModule(i);
+				needUpdate |= updateModule(i);
 			} else if(item == null && upgrades[i] != null) {
-				needUpdate = needUpdate || removeUpgrade(i);
+				needUpdate |= removeUpgrade(i);
 			}
 		}
 		//update sneaky direction, speed upgrade count and disconnection

@@ -46,6 +46,10 @@ public class RecipeManager {
 			public void addShapelessRecipe(ItemStack stack, Object... objects) {
 				craftingManager.getRecipeList().add(new ShapelessOreRecipe(stack,objects));
 			}
+			@SuppressWarnings("unchecked")
+			public void addShapelessResetRecipe(int itemID, int meta) {
+				craftingManager.getRecipeList().add(new ShapelessResetRecipe(itemID, meta));
+			}
 		};
 		LocalCraftingManager craftingManager = new LocalCraftingManager();
 		
@@ -448,7 +452,7 @@ public class RecipeManager {
 					force = true;
 				}
 				if(!nbt.equals(new NBTTagCompound()) || force) {
-					registerShapelessResetRecipe(LogisticsPipes.ModuleItem, i, LogisticsPipes.ModuleItem, i);
+					craftingManager.addShapelessResetRecipe(LogisticsPipes.ModuleItem.itemID, i);
 				}
 			}
 		}
@@ -575,16 +579,13 @@ public class RecipeManager {
 	        };
 		
 		for(int i=1;i<17;i++) {
-			for(int j=0;j<17;j++) {
-				if(i == j) continue;
-				craftingManager.addOrdererRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, i), 
-					dyes[i - 1], 
-					new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, j)
+			craftingManager.addOrdererRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, i), 
+				dyes[i - 1], 
+				new ItemStack(LogisticsPipes.LogisticsRemoteOrderer, 1, -1)
 				);
-			}
-			registerShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, i, LogisticsPipes.LogisticsRemoteOrderer, i);
+			craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer.itemID, i);
 		}
-		registerShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer, 0, LogisticsPipes.LogisticsRemoteOrderer, 0);
+		craftingManager.addShapelessResetRecipe(LogisticsPipes.LogisticsRemoteOrderer.itemID, 0);
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingSignCreator, 1), new Object[] {
 			"G G", 
@@ -779,15 +780,5 @@ public class RecipeManager {
 			Character.valueOf('P'), Item.paper, 
 			Character.valueOf('s'), Item.ingotIron
 		});
-	}
-	
-	private static void registerShapelessResetRecipe(Item fromItem, int fromData, Item toItem, int toData) {
-		for(int j=1;j < 10; j++) {
-			Object[] obj = new Object[j];
-			for(int k=0;k<j;k++) {
-				obj[k] = new ItemStack(fromItem, 1, toData);
-			}
-			CraftingManager.getInstance().addShapelessRecipe(new ItemStack(toItem, j, fromData), obj);
-		}
 	}
 }

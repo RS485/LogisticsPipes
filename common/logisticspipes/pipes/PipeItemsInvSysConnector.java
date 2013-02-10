@@ -1,8 +1,13 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -55,7 +60,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	private LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
-	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
@@ -185,21 +190,18 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 		inv.setInventorySlotContents(0, null);
 	}
 
-	public LinkedList<ItemIdentifierStack> getExpectedItems() {
-		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
+	public Set<ItemIdentifierStack> getExpectedItems() {
+		// got to be a TreeMap, because a TreeSet doesn't have the ability to retrieve the key.
+		TreeMap<ItemIdentifierStack,?> list = new TreeMap<ItemIdentifierStack,Integer>();
 		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
-			boolean found = false;
-			for(ItemIdentifierStack stack:list) {
-				if(stack.getItem() == pair.getValue1()) {
-					found = true;
-					stack.stackSize += pair.getValue2();
-				}
-			}
-			if(!found) {
-				list.add(new ItemIdentifierStack(pair.getValue1(), 1));
-			}
+			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
+			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
+			if(entry!=null && entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
+				entry.getKey().stackSize += currentStack.stackSize;
+			} else 
+				list.put(currentStack,null);
 		}
-		return list;
+		return list.keySet();
 	}
 	
 	@Override
@@ -379,10 +381,10 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	private void updateContentListener() {
-		if(!getExpectedItems().equals(oldList)) {
-			oldList.clear();
-			oldList.addAll(getExpectedItems());
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, getExpectedItems()).getPacket(), localModeWatchers);
+		Set<ItemIdentifierStack> newList = getExpectedItems();
+		if(!newList.equals(oldList)) {
+			oldList=newList;
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, newList).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -403,7 +405,7 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	@Override
-	public void setOrderManagerContent(List<ItemIdentifierStack> list) {
+	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
 	}

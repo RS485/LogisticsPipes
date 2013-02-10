@@ -20,6 +20,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -37,6 +38,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	int destinationint = -1;
 	UUID destinationUUID;
+	ItemIdentifierStack thisItem;
 	
 	boolean _doNotBuffer;
 	
@@ -52,6 +54,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	public RoutedEntityItem(World world, IPipedItem entityItem) {
 		super(world, entityItem.getEntityId());
+		thisItem = ItemIdentifierStack.GetFromStack(entityItem.getItemStack());
 		container = entityItem.getContainer();
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
@@ -60,8 +63,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
 			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
-			this.destinationUUID=settings.destinationUUID;
-			this.checkIDFromUUID();
+
+			/* clear destination on load for activerouted items
+			 * we'll have to keep this until active requesters are smarter about remebering things over unload/reload
+			 */
+			if(settings.transportMode != TransportMode.Active) {
+				this.destinationUUID=settings.destinationUUID;
+				this.checkIDFromUUID();
+			}
 
 			bufferCounter = settings.bufferCounter;
 			arrived = settings.arrived;
@@ -76,10 +85,22 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			if (getItemStack().stackSize <= 0) {
 				return null;
 			}
-			
+
 			if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 				remove();
 				return null;
+			}
+
+			//detect items spawning in the center of pipes and move them to the exit side
+			if(position.x == container.xCoord + 0.5 && position.y == container.yCoord + 0.25 && position.z == container.zCoord + 0.5) {
+				position.orientation = dir;
+				if(dir == ForgeDirection.DOWN) {
+					position.moveForwards(0.25);
+				} else  if(dir == ForgeDirection.UP) {
+					position.moveForwards(0.75);
+				} else {
+					position.moveForwards(0.5);
+				}
 			}
 
 			Position motion = new Position(0, 0, 0, dir);
@@ -90,7 +111,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			entityitem.lifespan = BuildCraftCore.itemLifespan;
 			entityitem.delayBeforeCanPickup = 10;
 
-			float f3 = 0.00F + worldObj.rand.nextFloat() * 0.01F - 0.02F;
+			float f3 = worldObj.rand.nextFloat() * 0.01F - 0.02F;
 			entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.x;
 			entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.y;
 			entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.z;
@@ -105,11 +126,14 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public void clearDestination() {
-		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
-			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
-			if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
-				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
+		if (destinationint >= 0) {
+			if (SimpleServiceLocator.routerManager.isRouter(destinationint)){
+				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
+				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
+					((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
+				}
 			}
+			jamlist.add(destinationint);
 		}
 		//keep buffercounter and jamlist
 		destinationint = -1;
@@ -141,6 +165,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		}
 	}
 
+	@Override
+	public ItemIdentifierStack getIDStack(){
+		return this.thisItem;
+	}
+	
 	@Override
 	public ItemStack getItemStack() {
 		return this.item;
@@ -272,6 +301,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
 		routed.relays.addAll(relays);
+		routed.thisItem = this.thisItem;
 		return routed;
 	}
 

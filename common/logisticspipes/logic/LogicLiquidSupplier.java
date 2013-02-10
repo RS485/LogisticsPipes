@@ -10,6 +10,7 @@ package logisticspipes.logic;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -66,7 +67,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
 			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
 			for (ItemIdentifier item : wantContainers.keySet()){
-				ItemStack wantItem = item.makeNormalStack(1);
+				ItemStack wantItem = item.unsafeMakeNormalStack(1);
 				LiquidStack liquidstack = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 				if (liquidstack == null) continue;
 				wantLiquids.put(LiquidIdentifier.get(liquidstack), wantContainers.get(item) * liquidstack.amount);
@@ -96,10 +97,10 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			//Reduce what have been requested already
 			for (LiquidIdentifier liquidId : wantLiquids.keySet()){
 				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
-					ItemStack wantItem = requestedItem.makeNormalStack(1);
+					ItemStack wantItem = requestedItem.unsafeMakeNormalStack(1);
 					LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 					if (requestedLiquidId == null) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidContainerRegistry.getLiquidForFilledItem(requestedItem.makeNormalStack(1)).amount);
+					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidContainerRegistry.getLiquidForFilledItem(requestedItem.unsafeMakeNormalStack(1)).amount);
 				}
 			}
 			
@@ -109,10 +110,10 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			Map<ItemIdentifier, Integer> allNeededContainers = dummyInventory.getItemsAndCount();
 			for (ItemIdentifier need : allNeededContainers.keySet()){
-				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1));
+				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1));
 				if (requestedLiquidId == null) continue;
 				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
-				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidContainerRegistry.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
+				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1)).amount;
 				if (countToRequest < 1) continue;
 				
 				if(!_power.useEnergy(11)) {
@@ -156,19 +157,40 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
+	private void decreaseRequested(ItemIdentifierStack item) {
+		int remaining = item.stackSize;
+		//see if we can get an exact match
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null) {
+			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			remaining -= count;
+		}
+		if(remaining <= 0) {
+			return;
+		}
+		//still remaining... was from fuzzyMatch on a crafter
+		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+				int expected = e.getValue();
+				e.setValue(Math.max(0, expected - remaining));
+				remaining -= expected;
+			}
+			if(remaining <= 0) {
+				return;
+			}
+		}
+		//we have no idea what this is, log it.
+		LogisticsPipes.requestLog.info("liquid supplier got unexpected item " + item.toString());
+	}
+
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
-		super.resetThrottle();
-		if (_requestedItems.containsKey(item.getItem())){
-			_requestedItems.put(item.getItem(), Math.max(0, _requestedItems.get(item.getItem()) - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 	
 	public boolean isRequestingPartials(){

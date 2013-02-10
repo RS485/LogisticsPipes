@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -74,20 +75,24 @@ public class ServerPacketBufferHandlerThread extends Thread {
 	public void addPacketToCompressor(Packet250CustomPayload packet, Player player) {
 		if(packet.channel.equals("BCLP")) {
 			synchronized(serverList) {
-				if(!serverList.containsKey(player)) {
-					serverList.put(player, new LinkedList<Packet250CustomPayload>());
+				LinkedList<Packet250CustomPayload> packetList = serverList.get(player);
+				if(packetList == null) {
+					packetList = new LinkedList<Packet250CustomPayload>();
+					serverList.put(player, packetList);
 				}
-				serverList.get(player).add(packet);
+				packetList.add(packet);
 			}
 		}
 	}
 	
 	public void handlePacket(PacketBufferTransfer packet, Player player) {
 		synchronized(queue) {
-			if(!queue.containsKey(player)) {
-				queue.put(player, new LinkedList<byte[]>());
+			LinkedList<byte[]> list=queue.get(player);
+			if(list == null) {
+				list = new LinkedList<byte[]>();
+				queue.put(player, list);
 			}
-			queue.get(player).addLast(packet.content);
+			list.addLast(packet.content);
 		}
 	}
 	
@@ -102,22 +107,23 @@ public class ServerPacketBufferHandlerThread extends Thread {
 					Player player = null;
 					synchronized(queue) {
 						if(queue.size() > 0) {
-							for(Player lPlayer:queue.keySet()) {
-								if(queue.get(lPlayer) != null && queue.get(lPlayer).size() > 0) {
+							for(Entry<Player, LinkedList<byte[]>> lPlayer:queue.entrySet()) {
+								if(lPlayer.getValue() != null && lPlayer.getValue().size() > 0) {
 									flag = true;
-									buffer = queue.get(lPlayer).getFirst();
-									player = lPlayer;
-									queue.get(lPlayer).removeFirst();
+									buffer = lPlayer.getValue().getFirst();
+									player = lPlayer.getKey();
+									lPlayer.getValue().removeFirst();
 									break;
 								}
 							}
 						}
 					}
 					if(flag && buffer != null && player != null) {
-						if(!ByteBuffer.containsKey(player)) {
-							ByteBuffer.put(player, new byte[]{});
-						}
 						byte[] ByteBufferForPlayer = ByteBuffer.get(player);
+						if(ByteBufferForPlayer==null) {
+							ByteBufferForPlayer= new byte[]{};
+							ByteBuffer.put(player,ByteBufferForPlayer);
+						}
 						byte[] packetbytes = decompress(buffer);
 						byte[] newBuffer = new byte[packetbytes.length + ByteBufferForPlayer.length];
 						System.arraycopy(ByteBufferForPlayer, 0, newBuffer, 0, ByteBufferForPlayer.length);
@@ -126,19 +132,19 @@ public class ServerPacketBufferHandlerThread extends Thread {
 					}
 				}
 				while(flag);
-				for(Player player:ByteBuffer.keySet()) {
-					if(ByteBuffer.get(player) != null && ByteBuffer.get(player).length > 0) {
-						if(!ByteBuffer.containsKey(player)) {
+				for(Entry<Player, byte[]> player:ByteBuffer.entrySet()) {
+					if(player.getValue() != null && player.getValue().length > 0) {
+						/*if(!ByteBuffer.containsKey(player)) {
 							ByteBuffer.put(player, new byte[]{});
-						}
-						byte[] ByteBufferForPlayer = ByteBuffer.get(player);
+						} Never true, we are iterating over the keys, and an undifiend operation; modifiying a colleciton while iterating, even if it was.*/
+						byte[] ByteBufferForPlayer = player.getValue();
 						int size = ((ByteBufferForPlayer[0] & 255) << 24) + ((ByteBufferForPlayer[1] & 255) << 16) + ((ByteBufferForPlayer[2] & 255) << 8) + ((ByteBufferForPlayer[3] & 255) << 0);
 						while(size + 4 <= ByteBufferForPlayer.length) {
 							byte[] packet = Arrays.copyOfRange(ByteBufferForPlayer, 4, size + 4);
 							ByteBufferForPlayer = Arrays.copyOfRange(ByteBufferForPlayer, size + 4, ByteBufferForPlayer.length);
-							ByteBuffer.put(player, ByteBufferForPlayer);
+							player.setValue(ByteBufferForPlayer);
 							synchronized (PacketBuffer) {
-								PacketBuffer.add(new Pair<Player,byte[]>(player ,packet));
+								PacketBuffer.add(new Pair<Player,byte[]>(player.getKey() ,packet));
 							}
 							if(ByteBufferForPlayer.length > 4) {
 								size = ((ByteBufferForPlayer[0] & 255) << 24) + ((ByteBufferForPlayer[1] & 255) << 16) + ((ByteBufferForPlayer[2] & 255) << 8) + ((ByteBufferForPlayer[3] & 255) << 0);

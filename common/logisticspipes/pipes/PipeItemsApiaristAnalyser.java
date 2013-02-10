@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
+import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -21,6 +23,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
@@ -72,7 +75,7 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	}
 
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemStack stack, boolean allowDefault) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault) {
 		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
 	}
 
@@ -179,5 +182,10 @@ public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryP
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		analyserModule.registerPosition(xCoord, yCoord, zCoord, 0);
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
 	}
 }

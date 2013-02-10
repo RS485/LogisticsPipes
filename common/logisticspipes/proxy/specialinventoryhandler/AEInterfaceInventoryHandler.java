@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -41,8 +43,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		try {
 			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
 				ItemIdentifier ident = ItemIdentifier.get(items);
-				if(result.containsKey(ident)) {
-					result.put(ident, result.get(ident) + items.stackSize - (_hideOnePerStack ? 1:0));
+				Integer count = result.get(ident);
+				if(count != null) {
+					result.put(ident, count + items.stackSize - (_hideOnePerStack ? 1:0));
 				} else {
 					result.put(ident, items.stackSize - (_hideOnePerStack ? 1:0));
 				}
@@ -59,24 +62,27 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@SuppressWarnings("unchecked")
 	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		try {
+			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
+				ItemIdentifier ident = ItemIdentifier.get(items);
+				result.add(ident);
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		try {
-			ItemStack lookingFor = null;
-			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
-				if(ItemIdentifier.get(items) == item) {
-					lookingFor = items;
-					break;
-				}
-			}
-			if(lookingFor == null) {
-				lookingFor = item.makeNormalStack(1);
-			} else {
-				if(lookingFor.stackSize <= (_hideOnePerStack ? 1:0)) {
-					return null;
-				}
-				lookingFor.stackSize = 1;
-			}
-			return (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{lookingFor, true});
+			return (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{item.makeNormalStack(1), true});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -90,8 +96,28 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public boolean containsItem(ItemIdentifier item) {
 		try {
-			ItemStack result = (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{item.makeNormalStack(1), false});
+			ItemStack result = (ItemStack) apiExtractNetworkItem.invoke(_tile, new Object[]{item.unsafeMakeNormalStack(1), false});
 			return result != null;
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean containsUndamagedItem(ItemIdentifier item) {
+		try {
+			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
+				ItemIdentifier ident = ItemIdentifier.getUndamaged(items);
+				if(ident == item) {
+					return true;
+				}
+			}
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -105,7 +131,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	@Override
 	public int roomForItem(ItemIdentifier item) {
 		try {
-			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.makeNormalStack(1), item.getMaxStackSize()});
+			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.unsafeMakeNormalStack(1), item.getMaxStackSize()});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {

@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -57,6 +59,22 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 
 
 	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack != null) {
+				result.add(ItemIdentifier.get(itemStack));
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} 
+		return result;
+	}
+	
+	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		try {
@@ -106,6 +124,22 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			if(itemStack != null) {
 				return ItemIdentifier.get(itemStack) == itemIdent;
+			}
+			return false;
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	@Override
+	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack != null) {
+				return ItemIdentifier.getUndamaged(itemStack) == itemIdent;
 			}
 			return false;
 		} catch (IllegalArgumentException e) {

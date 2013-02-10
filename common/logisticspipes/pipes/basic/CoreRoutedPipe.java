@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -48,12 +49,15 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -65,6 +69,7 @@ import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Normal")
@@ -89,7 +94,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private boolean enabled = true;
 	
-	private RouteLayer _routeLayer;
+	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
@@ -107,6 +112,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>(); 
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
+
+	protected List<IInventory> _cachedAdjacentInventories;
 	
 	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		this(new PipeTransportLogistics(), logic, itemID);
@@ -196,6 +203,38 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Designed to help protect against routing loops - if both pipes are on the same block, and of ISided overlapps, return true
+	 * @param other
+	 * @return boolean indicating if both pull from the same inventory.
+	 */
+	public boolean sharesInventoryWith(CoreRoutedPipe other){
+		List<IInventory> others = other.getConnectedRawInventories();
+		if(others==null || others.size()==0)
+			return false;
+		for(IInventory i : getConnectedRawInventories()) {
+			if(others.contains(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	protected List<IInventory> getConnectedRawInventories()	{
+		if(_cachedAdjacentInventories != null) {
+			return _cachedAdjacentInventories;
+		}
+		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
+		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
+			if (tile.tile instanceof TileGenericPipe) continue;
+			if (!(tile.tile instanceof IInventory)) continue;
+			adjacent.add(InventoryHelper.getInventory((IInventory)tile.tile));
+		}
+		_cachedAdjacentInventories=adjacent;
+		return _cachedAdjacentInventories;
 	}
 	
 	/*** 
@@ -458,7 +497,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void setEnabled(boolean enabled){
 		this.enabled = enabled; 
 	}
-	
+
+	@Override
+	public void onNeighborBlockChange(int blockId) {
+		super.onNeighborBlockChange(blockId);
+		clearCache();
+		if(!stillNeedReplace && MainProxy.isServer(worldObj)) {
+			onNeighborBlockChange_Logistics();
+		}
+	}
 
 	public void onNeighborBlockChange_Logistics(){}
 	
@@ -494,8 +541,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
+
+	protected void clearCache() {
+		_cachedAdjacentInventories=null;
+	}
 	
 	public void refreshRender(boolean spawnPart) {
+		
 		this.container.scheduleRenderUpdate();
 		if (spawnPart) {
 			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
@@ -503,6 +555,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public void refreshConnectionAndRender(boolean spawnPart) {
+		clearCache();
 		this.container.scheduleNeighborChange();
 		if (spawnPart) {
 			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
@@ -746,5 +799,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
+	}
+
+	public Set<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	public boolean hasGenericInterests() {
+		return false;
 	}
 }

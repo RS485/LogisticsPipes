@@ -1,7 +1,11 @@
 package logisticspipes.interfaces;
 
+import java.util.List;
+
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.item.ItemStack;
 
@@ -21,12 +25,12 @@ public interface ILogisticsModule extends ISaveState {
 	
 	/**
 	 * Gives an sink answer on the given itemstack 
-	 * @param item to sink
+	 * @param stack to sink
 	 * @param bestPriority best priority seen so far
 	 * @param bestCustomPriority best custom subpriority
 	 * @return SinkReply whether the module sinks the item or not
 	 */
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority);
+	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority);
 	
 	/**
 	 * Returns submodules. Normal modules don't have submodules 
@@ -39,4 +43,25 @@ public interface ILogisticsModule extends ISaveState {
 	 * A tick for the Module
 	 */
 	public void tick();
+
+	/**
+	 * Is this module interested in all items, or just some specific ones?
+	 * @return true: this module will be checked against every item request
+	 * 		  false: only requests involving items returned by getSpecificInterestes() will be checked
+	 */
+	public boolean hasGenericInterests();
+
+	/**
+	 * the list of items which this module is capable of providing or supplying (or is otherwise interested in)
+	 * the size of the list here does not influence the ongoing computational cost.
+	 * @return
+	 */
+	public List<ItemIdentifier> getSpecificInterests();
+
+	public boolean interestedInAttachedInventory();
+
+	/**
+	 * is this module interested in recieving any damage varient of items in the attached inventory?
+	 */
+	public boolean interestedInUndamagedID();
 }

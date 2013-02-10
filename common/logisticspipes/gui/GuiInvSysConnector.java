@@ -1,8 +1,10 @@
 package logisticspipes.gui;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
@@ -95,7 +97,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			
 			if (ppi <= 27 * page) continue;
 			if (ppi > 27 * (page+1)) continue;
-			ItemStack st = itemStack.makeNormalStack();
+			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = 9 + 18 * column + guiLeft;
 			int y = 59 + 18 * row + guiTop;
 
@@ -175,9 +177,9 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		return GuiIDs.GUI_Inv_Sys_Connector_ID;
 	}
 
-	public void handleContentAnswer(LinkedList<ItemIdentifierStack> _allItems2) {
+	public void handleContentAnswer(Collection<ItemIdentifierStack> allItems) {
 		_allItems.clear();
-		_allItems.addAll(_allItems2);
+		_allItems.addAll(allItems);
 	}
 
 	public void handleResistanceAnswer(int resistance) {

@@ -1,5 +1,7 @@
 package logisticspipes.logisticspipes;
 
+import java.util.List;
+
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -10,6 +12,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -42,7 +45,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemStack item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		SinkReply bestresult = null;
 		for (ILogisticsModule module : _modules){
 			if (module != null){
@@ -60,14 +63,14 @@ public class ChassiModule implements ILogisticsGuiModule{
 		IInventory inv = _parentPipe.getSneakyInventory();
 		if (inv == null) return null;
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
-		int roomForItem = invUtil.roomForItem(ItemIdentifier.get(item)); 
+		int roomForItem = invUtil.roomForItem(item); 
 		
 		if (roomForItem < 1) return null;
 
-		if(bestresult .maxNumberOfItems == 0) {
-			return new SinkReply(bestresult , roomForItem);
+		if(bestresult.maxNumberOfItems == 0) {
+			return new SinkReply(bestresult, roomForItem);
 		}
-		return new SinkReply(bestresult , Math.min(bestresult .maxNumberOfItems, roomForItem));
+		return new SinkReply(bestresult, Math.min(bestresult.maxNumberOfItems, roomForItem));
 	}
 
 
@@ -121,5 +124,24 @@ public class ChassiModule implements ILogisticsGuiModule{
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
 		//Not used in Chassie Module
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
 	}
 }

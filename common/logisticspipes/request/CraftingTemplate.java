@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
@@ -49,9 +50,9 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 	
 	public List<Pair<ItemIdentifierStack,IRequestItems>> getSource() {
-		List<Pair<ItemIdentifierStack,IRequestItems>> result = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
-		for (ItemIdentifierStack stack : _required.keySet()) {
-			result.add(new Pair<ItemIdentifierStack,IRequestItems>(stack,_required.get(stack)));
+		List<Pair<ItemIdentifierStack,IRequestItems>> result = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(_required.size());
+		for (Entry<ItemIdentifierStack, IRequestItems> stack : _required.entrySet()) {
+			result.add(new Pair<ItemIdentifierStack,IRequestItems>(stack.getKey(),stack.getValue()));
 		}
 		return result;
 	}
@@ -82,7 +83,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 
 		@Override
 		public int compare(Pair<CraftingTemplate,List<IFilter>> o1, Pair<CraftingTemplate,List<IFilter>> o2) {
-			return o1.getValue1().priority-o2.getValue1().priority;
+			return o2.getValue1().priority-o1.getValue1().priority;
 		}
 		
 	}

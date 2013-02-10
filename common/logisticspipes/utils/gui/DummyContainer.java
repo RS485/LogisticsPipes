@@ -162,7 +162,7 @@ public class DummyContainer extends Container{
 			if(ident == null) {
 				slot.putStack(null);
 			} else {
-				slot.putStack(ident.getItemIdentifier().makeNormalStack(1));
+				slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
 			}
 			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());

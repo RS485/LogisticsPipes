@@ -1,6 +1,7 @@
 package logisticspipes.utils;
 
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -97,8 +98,8 @@ public class LiquidIdentifier {
 	public static void initFromForge(boolean flag) {
 		if(init) return;
 		Map<String, LiquidStack> liquids = LiquidDictionary.getLiquids();
-		for(String name: liquids.keySet()) {
-			get(liquids.get(name), name);
+		for(Entry<String, LiquidStack> name: liquids.entrySet()) {
+			get(name.getValue(), name.getKey());
 		}
 		if(flag) {
 			init = true;

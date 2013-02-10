@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -49,7 +51,32 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 		return new QuantumChestHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
-
+	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		ItemStack[] data = new ItemStack[]{};
+		try {
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		ItemStack stack = ((IInventory)_tile).getStackInSlot(1);
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return result;
+		if(stack == null || stack.itemID < 1) return result;
+		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
+		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
+		if(dataIdent != stackIdent) {
+			if(data[0].stackSize != 0) result.add(dataIdent);
+			if(stack.stackSize != 0) result.add(stackIdent);
+		} else {
+			result.add(dataIdent);
+		}
+		return result;
+	}
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
@@ -129,6 +156,23 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 		}
 		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return false;
 		ItemIdentifier dataIdent = ItemIdentifier.get(data[0]);
+		return itemIdent == dataIdent;
+	}
+
+	@Override
+	public boolean containsUndamagedItem(ItemIdentifier itemIdent) {
+		ItemStack[] data = new ItemStack[]{};
+		try {
+			data = (ItemStack[]) getStoredItemData.invoke(_tile, new Object[]{});
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return false;
+		ItemIdentifier dataIdent = ItemIdentifier.getUndamaged(data[0]);
 		return itemIdent == dataIdent;
 	}
 

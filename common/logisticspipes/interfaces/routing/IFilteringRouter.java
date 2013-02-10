@@ -2,10 +2,12 @@ package logisticspipes.interfaces.routing;
 
 import java.util.List;
 
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.ExitRoute;
 
 public interface IFilteringRouter {
-	public List<SearchNode> getRouters();
+	public List<ExitRoute> getRouters();
 	public IFilter getFilter();
 	public boolean idIdforOtherSide(int destination);
+	public int getSimpleID();
 }

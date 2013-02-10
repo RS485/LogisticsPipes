@@ -165,6 +165,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				case 3:
 					return front;
 				}
+				return 16;
 			case 3: //West
 				switch(rotation) {
 				case 0:

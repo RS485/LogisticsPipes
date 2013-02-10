@@ -13,10 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -75,7 +77,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private final static ConcurrentHashMap<Integer, ItemIdentifier> _itemIdentifierIdCache = new ConcurrentHashMap< Integer, ItemIdentifier>(4096, 0.5f, 1);
 
 	// for when things differ by NBT tags, and an itemKey isn't enough to get the full object
-	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<NBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
+	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
 	
@@ -89,7 +91,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private static boolean init = false;
 	
 	//Hide default constructor
-	private ItemIdentifier(int itemID, int itemDamage, NBTTagCompound tag, int uniqueID) {
+	private ItemIdentifier(int itemID, int itemDamage, FinalNBTTagCompound tag, int uniqueID) {
 		this.itemID =  itemID;
 		this.itemDamage = itemDamage;
 		this.tag = tag;
@@ -98,9 +100,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public final int itemID;
 	public final int itemDamage;
-	public final NBTTagCompound tag;
+	public final FinalNBTTagCompound tag;
 	public final int uniqueID;
 	
+	private ItemIdentifier _IDIgnoringNBT=null;
+	private ItemIdentifier _IDIgnoringDamage=null;
+
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
@@ -111,24 +116,27 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				return unknownItem;
 			}
 			int id = getUnusedId();
-			unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, id);
+			unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, null, id);
 			_itemIdentifierCache.put(itemKey, unknownItem);
 			_itemIdentifierIdCache.put(id, unknownItem);
 			return(unknownItem);
 		} else {
-			ConcurrentHashMap<NBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+			ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
 			if(itemNBTList!=null){
 				ItemIdentifier unknownItem = itemNBTList.get(tag);
 				if(unknownItem!=null){
 					return unknownItem;
 				}
 			} else {
-				itemNBTList = new ConcurrentHashMap<NBTTagCompound, ItemIdentifier>();
+				itemNBTList = new ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier>(16, 0.5f, 1);
 				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
-			
-			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, tag, getUnusedId());
-			itemNBTList.put(tag,unknownItem);
+			FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag);
+			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, getUnusedId());
+			if(LogisticsPipes.DEBUG){
+				checkNBTbadness(unknownItem, tag);
+			}
+			itemNBTList.put(finaltag,unknownItem);
 			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
 		}
@@ -138,13 +146,41 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		if (itemStack == null && allowNullsForTesting){
 			return null;
 		}
+		return get(itemStack.itemID, itemStack.getItemDamage(), itemStack.stackTagCompound);
+	}
+	
+	public static ItemIdentifier getUndamaged(ItemStack itemStack) {
+		if (itemStack == null && allowNullsForTesting){
+			return null;
+		}
 		int itemDamage = 0;
 		if (!Item.itemsList[itemStack.itemID].isDamageable()) {
 			itemDamage = itemStack.getItemDamage();
 		}
 		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
 	}
-	
+
+	public ItemIdentifier getUndamaged() {
+		if(_IDIgnoringDamage==null){
+			if (!Item.itemsList[this.itemID].isDamageable()) {
+				_IDIgnoringDamage = this;
+			} else {
+				_IDIgnoringDamage = get(this.itemID, 0, this.tag);
+			}
+		}
+		return _IDIgnoringDamage;
+	}
+
+	public static ItemIdentifier getIgnoringNBT(ItemStack itemStack) {
+		return get(itemStack.itemID, itemStack.getItemDamage(), null);
+	}
+	public ItemIdentifier getIgnoringNBT() {
+		if(this._IDIgnoringNBT==null){
+			_IDIgnoringNBT= get(itemID, itemDamage, null);			
+		}
+		return _IDIgnoringNBT;
+	}
+
 	public static ItemIdentifier getForId(int id) {
 		return _itemIdentifierIdCache.get(id);
 	}
@@ -189,10 +225,8 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 				String modname = data.getModId();
 				if(modname == null)
 					continue;
-				int modid = -1;
-				if(_modNameToModIdMap.containsKey(modname)) {
-					modid = _modNameToModIdMap.get(modname);
-				} else {
+				Integer modid = _modNameToModIdMap.get(modname);
+				if(modid==null){
 					modid = _modNameList.size();
 					_modNameList.add(modname);
 					_modNameToModIdMap.put(modname, modid);
@@ -245,7 +279,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getFriendlyName() {
 		if (Item.itemsList[itemID] != null) {
-			return getName(itemID,this.makeNormalStack(1));
+			return getName(itemID,this.unsafeMakeNormalStack(1));
 		}
 		return "<Item name not found>";
 	}
@@ -266,19 +300,28 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 	
 	public static int getModIdForName(String modname) {
-		if(_modNameToModIdMap.containsKey(modname)) {
-			return _modNameToModIdMap.get(modname);
+		Integer m =  _modNameToModIdMap.get(modname);
+		if(m==null) {
+			return 0;
 		}
-		return 0;
+		return m;
 	}
 
 	public ItemIdentifierStack makeStack(int stackSize){
 		return new ItemIdentifierStack(this, stackSize);
 	}
 	
-	public ItemStack makeNormalStack(int stackSize){
+	public ItemStack unsafeMakeNormalStack(int stackSize){
 		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
 		stack.setTagCompound(this.tag);
+		return stack;
+	}
+
+	public ItemStack makeNormalStack(int stackSize){
+		ItemStack stack = new ItemStack(this.itemID, stackSize, this.itemDamage);
+		if(this.tag != null) {
+			stack.setTagCompound((NBTTagCompound)this.tag.copy());
+		}
 		return stack;
 	}
 	
@@ -292,9 +335,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public boolean fuzzyMatch(ItemStack stack) {
 		if(stack.itemID != this.itemID) return false;
-		if(!Item.itemsList[this.itemID].isDamageable()) {
-			if(this.itemDamage != stack.getItemDamage()) return false;
-		}
+		if(stack.getItemDamage() != this.itemDamage) return false;
 		return true;
 	}
 	
@@ -432,10 +473,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			HashMap<Object, Object> content = new HashMap<Object, Object>();
 			HashMap<Integer, Object> keys = new HashMap<Integer, Object>();
 			int i = 1;
-			for(Object object:internal.keySet()) {
-				if(internal.get(object) instanceof NBTBase) {
-					content.put(object, getNBTBaseAsMap((NBTBase)internal.get(object)));
-					keys.put(i, object);
+			for(Object object:internal.entrySet()) {
+				Entry e = (Entry)object;
+				if(e.getValue() instanceof NBTBase) {
+					content.put(e.getKey(), getNBTBaseAsMap((NBTBase)e.getValue()));
+					keys.put(i, e.getKey());
 				}
 				i++;
 			}
@@ -504,5 +546,57 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public LiquidIdentifier getLiquidIdentifier() {
 		return LiquidIdentifier.get(itemID, itemDamage);
+	}
+
+	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
+		if(nbt.getName() == "") {
+			System.out.println("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
+		}
+		try {
+			String s = checkNBTbadness_recurse(nbt);
+			if(s != null) {
+				System.out.println("Bad item " + item.getDebugName() + " : " + s);
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	private static String checkNBTbadness_recurse(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
+		if(nbt instanceof NBTTagList) {
+			NBTTagList l = (NBTTagList) nbt;
+			for(int i = 0; i < l.tagCount(); i++) {
+				NBTBase b = l.tagAt(i);
+				if(!b.getName().equals("")) {
+					return "NBTTagList containing named tag " + b.getName();
+				}
+				String ret = checkNBTbadness_recurse(b);
+				if(ret != null)
+					return ret;
+			}
+		} else if(nbt instanceof NBTTagCompound) {
+			Field fMap;
+			try {
+				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
+			} catch(Exception e) {
+				fMap = NBTTagCompound.class.getDeclaredField("a");
+			}
+			fMap.setAccessible(true);
+			@SuppressWarnings("unchecked")
+			HashMap<String, NBTBase> internal = (HashMap<String, NBTBase>) fMap.get(nbt);
+			for(Entry<String, NBTBase> e : internal.entrySet()) {
+				String k = e.getKey();
+				NBTBase v = e.getValue();
+				if(k == null || k.equals("")) {
+					return "NBTTagCompound containing empty key";
+				}
+				if(!k.equals(v.getName())) {
+					return "NBTTagCompound key " + k + " doesn't match value name " + v;
+				}
+				String ret = checkNBTbadness_recurse(v);
+				if(ret != null)
+					return ret;
+			}
+		}
+		return null;
 	}
 }

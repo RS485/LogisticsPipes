@@ -13,6 +13,7 @@ import java.util.UUID;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
+import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -77,4 +78,5 @@ public interface IRoutedItem {
 	
 	public IRoutedItem getCopy();
 	public void checkIDFromUUID();
+	ItemIdentifierStack getIDStack();
 }

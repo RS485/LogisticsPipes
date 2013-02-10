@@ -16,9 +16,11 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.RequestManager;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.SearchNode;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
@@ -60,12 +62,15 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	/* ** SATELLITE CODE ** */
 
 	protected int getNextConnectSatelliteId(boolean prev) {
-		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
+		final List<ExitRoute> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			IRouter satRouter = satellite.getRoutedPipe().getRouter();
-			for (SearchNode route:routes){
-				if (route.node == satRouter) {
+			RoutedPipe satPipe = satellite.getRoutedPipe();
+			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+				continue;
+			IRouter satRouter = satPipe.getRouter();
+			for (ExitRoute route:routes){
+				if (route.destination == satRouter) {
 					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
 						closestIdFound = satellite.satelliteId;
 					} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
@@ -111,12 +116,15 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public boolean isSatelliteConnected() {
-		final List<SearchNode> routes = getRoutedPipe().getRouter().getIRoutersByCost();
+		final List<ExitRoute> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				IRouter satRouter = satellite.getRoutedPipe().getRouter();
-				for (SearchNode route:routes) {
-					if (route.node == satRouter) {
+				RoutedPipe satPipe = satellite.getRoutedPipe();
+				if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+					continue;
+				IRouter satRouter = satPipe.getRouter();
+				for (ExitRoute route:routes) {
+					if (route.destination == satRouter) {
 						return true;
 					}
 				}
@@ -128,7 +136,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public IRouter getSatelliteRouter() {
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				return satellite.getRoutedPipe().getRouter();
+				RoutedPipe satPipe = satellite.getRoutedPipe();
+				if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+					continue;
+				return satPipe.getRouter();
 			}
 		}
 		return null;

@@ -112,9 +112,11 @@ public class RequestTreeNode {
 		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>(promises.size());
 		for(LogisticsPromise promise:promises) {
 			if(promise instanceof LogisticsExtraPromise) {
-				if(((LogisticsExtraPromise)promise).extraSource != this) {
-					((LogisticsExtraPromise)promise).extraSource.addExtraPromise((LogisticsExtraPromise)promise);
-					toRemove.add(promise);
+				if(!((LogisticsExtraPromise)promise).provided) {
+					if(((LogisticsExtraPromise)promise).extraSource != this) {
+						((LogisticsExtraPromise)promise).extraSource.addExtraPromise((LogisticsExtraPromise)promise);
+						toRemove.add(promise);
+					}
 				}
 			}
 		}
@@ -126,30 +128,6 @@ public class RequestTreeNode {
 		}
 	}
 	
-	public RequestTreeNode(RequestTreeNode other) {
-		this.parentNode = other.parentNode;
-		this.subRequests = new ArrayList<RequestTreeNode>(other.subRequests.size());
-		for(RequestTreeNode subNode:other.subRequests) {
-			this.subRequests.add(new RequestTreeNode(subNode));
-		}
-		
-		this.promises = new ArrayList<LogisticsPromise>(other.promises.size());
-		for(LogisticsPromise subpromises:other.promises) {
-			this.promises.add(subpromises.copy());
-		}
-
-		this.extrapromises = new ArrayList<LogisticsExtraPromise>(other.extrapromises.size());
-		for(LogisticsExtraPromise subpromises:other.extrapromises) {
-			this.extrapromises.add(subpromises.copy());
-		}
-
-		this.usedCrafters = new TreeSet<CraftingTemplate>(other.usedCrafters);
-		
-		this.request = other.request;
-		this.target = other.target;
-
-	}
-
 	public boolean remove(RequestTreeNode subNode) {
 		return subRequests.remove(subNode);		
 	}

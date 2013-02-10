@@ -574,41 +574,27 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				if (!(tile instanceof IInventory)) continue;
 				if (tile instanceof TileGenericPipe) continue;
 				
-				// don't need to handle the ISided specials in here, they will be handled next
-				if (tile instanceof ISpecialInventory) {
-					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((ISpecialInventory) tile).getItemsAndCount();
-					l1.addAll(items.keySet());
-
-					boolean modulesInterestedInUndamged=false;
-					for (int i = 0; i < this.getChassiSize(); i++) {
-						if( _module.getSubModule(moduleIndex).interestedInUndamagedID()){
-							modulesInterestedInUndamged=true;
-							break;
-						}
-					}
-					if(modulesInterestedInUndamged) {
-						for(ItemIdentifier id:items.keySet()){	
-							l1.add(id.toUndamaged());
-						}
-					}
-
-					
-					break;
-				} 
-
 				IInventory inv = (IInventory)tile;
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
 				} 
-				for (int currentIndex = 0;currentIndex < inv.getSizeInventory();currentIndex++) {
-					ItemStack currentItem = inv.getStackInSlot(currentIndex);
-					if(currentItem != null){
-						l1.add(ItemIdentifier.get(currentItem));
+				HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItemsAndCount();
+				l1.addAll(items.keySet());
+
+				boolean modulesInterestedInUndamged=false;
+				for (int i = 0; i < this.getChassiSize(); i++) {
+					if( _module.getSubModule(moduleIndex).interestedInUndamagedID()){
+						modulesInterestedInUndamged=true;
+						break;
 					}
 				}
-				break; // break once you've added the inventory
-			}
-			
+				if(modulesInterestedInUndamged) {
+					for(ItemIdentifier id:items.keySet()){	
+						l1.add(id.toUndamaged());
+					}
+				}
+				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
+			} 
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule module = _module.getSubModule(i);

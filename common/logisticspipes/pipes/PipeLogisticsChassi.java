@@ -10,11 +10,11 @@ package logisticspipes.pipes;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
@@ -50,12 +50,10 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -63,7 +61,6 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -73,7 +70,6 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
-import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.DefaultProps;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
@@ -566,7 +562,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
-		Set<ItemIdentifier> l1 = null;
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
@@ -579,10 +575,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
 				} 
 				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
-				if(l1==null)
-					l1=items;
-				else
-					l1.addAll(items);
+				l1.addAll(items);
 
 				boolean modulesInterestedInUndamged=false;
 				for (int i = 0; i < this.getChassiSize(); i++) {

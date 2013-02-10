@@ -576,7 +576,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				
 				// don't need to handle the ISided specials in here, they will be handled next
 				if (tile instanceof ISpecialInventory) {
-					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((ISidedInventory) tile).getItemsAndCount();
+					HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil((ISpecialInventory) tile).getItemsAndCount();
 					l1.addAll(items.keySet());
 
 					boolean modulesInterestedInUndamged=false;

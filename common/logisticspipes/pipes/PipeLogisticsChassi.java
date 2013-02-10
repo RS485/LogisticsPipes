@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.GuiChassiPipe;
@@ -564,8 +565,8 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
-		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>((getChassiSize()+1)*9);
+	public Set<ItemIdentifier> getSpecificInterests() {
+		Set<ItemIdentifier> l1 = null;
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
@@ -578,8 +579,11 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
 				} 
-				HashMap<ItemIdentifier, Integer> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItemsAndCount();
-				l1.addAll(items.keySet());
+				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
+				if(l1==null)
+					l1=items;
+				else
+					l1.addAll(items);
 
 				boolean modulesInterestedInUndamged=false;
 				for (int i = 0; i < this.getChassiSize(); i++) {
@@ -589,7 +593,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 					}
 				}
 				if(modulesInterestedInUndamged) {
-					for(ItemIdentifier id:items.keySet()){	
+					for(ItemIdentifier id:items){	
 						l1.add(id.getUndamaged());
 					}
 				}

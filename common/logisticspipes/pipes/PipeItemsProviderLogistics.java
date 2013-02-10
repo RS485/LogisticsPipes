@@ -406,15 +406,19 @@ outer:
 	}
 
 	@Override //work in progress, currently not active code.
-	public List<ItemIdentifier> getSpecificInterests() {
+	public Set<ItemIdentifier> getSpecificInterests() {
 		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		List<ItemIdentifier> l1 = new LinkedList();
+		Set<ItemIdentifier> l1 = null;
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			
 			IInventoryUtil inv = getAdaptedInventoryUtil(tile);
-			l1.addAll(inv.getItemsAndCount().keySet());
+			Set<ItemIdentifier> items = inv.getItems();
+			if(l1==null)
+				l1=items;
+			else
+				l1.addAll(items);
 		}
 		return l1;
 	}

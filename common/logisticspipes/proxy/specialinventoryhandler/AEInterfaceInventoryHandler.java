@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -47,6 +49,25 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 				} else {
 					result.put(ident, items.stackSize - (_hideOnePerStack ? 1:0));
 				}
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		try {
+			for(ItemStack items: ((List<ItemStack>)apiGetNetworkContents.invoke(_tile))) {
+				ItemIdentifier ident = ItemIdentifier.get(items);
+				result.add(ident);
 			}
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();

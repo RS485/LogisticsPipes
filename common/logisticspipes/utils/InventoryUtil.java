@@ -9,6 +9,8 @@
 package logisticspipes.utils;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import net.minecraft.inventory.IInventory;
@@ -16,7 +18,7 @@ import net.minecraft.item.ItemStack;
 
 public class InventoryUtil implements IInventoryUtil {
 
-	private final IInventory _inventory;
+	protected final IInventory _inventory;
 	private final boolean _hideOnePerStack;
 	private final boolean _hideOne;
 	private final int _cropStart;
@@ -59,6 +61,17 @@ public class InventoryUtil implements IInventoryUtil {
 		return items;
 	}
 	
+	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> items = new TreeSet<ItemIdentifier>();
+		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null) continue;
+			items.add(ItemIdentifier.get(stack));
+		}
+		return items;
+	}
+
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
 		//XXX this doesn't handle _hideOne ... does it have to?

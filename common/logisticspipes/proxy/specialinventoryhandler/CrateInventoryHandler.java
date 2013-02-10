@@ -3,6 +3,8 @@ package logisticspipes.proxy.specialinventoryhandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -61,7 +63,26 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		return new CrateInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
-
+	@Override
+	public Set<ItemIdentifier> getItems() {
+		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
+		try {
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
+			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
+			HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(numitems * 1.5));
+			for(int i = 0; i < numitems; i++) {
+				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
+				result.add(ItemIdentifier.get(itemStack));
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
 		try {

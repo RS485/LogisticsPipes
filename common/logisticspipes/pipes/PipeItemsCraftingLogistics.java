@@ -497,10 +497,10 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	}
 
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
+	public Set<ItemIdentifier> getSpecificInterests() {
 		ItemStack result = ((BaseLogicCrafting) this.logic).getCraftedItem();
 		if(result == null) return null;
-		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(1);
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
 		l1.add(ItemIdentifier.get(result));
 		//for(int i=0; i<9;i++)
 		//	l1.add(((BaseLogicCrafting) this.logic).getMaterials(i));

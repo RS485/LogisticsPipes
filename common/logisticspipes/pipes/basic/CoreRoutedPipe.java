@@ -801,7 +801,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return itemd.getFriendlyNameCC();
 	}
 
-	public List<ItemIdentifier> getSpecificInterests() {
+	public Set<ItemIdentifier> getSpecificInterests() {
 		return null;
 	}
 

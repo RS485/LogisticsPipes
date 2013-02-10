@@ -56,7 +56,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
 	
 	// things this pipe is interested in (either providing or sinking)
-	List<ItemIdentifier> _hasInterestIn = new ArrayList<ItemIdentifier>(0);
+	Set<ItemIdentifier> _hasInterestIn = new TreeSet();
 	boolean _hasGenericInterest;
 	
 	static final int REFRESH_TIME=20;
@@ -800,12 +800,12 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			this.declareGenericInterest();
 		else
 			this.removeGenericInterest();
-		List<ItemIdentifier> newInterests = pipe.getSpecificInterests();
+		Set<ItemIdentifier> newInterests = pipe.getSpecificInterests();
 		Iterator<ItemIdentifier> i2 = _hasInterestIn.iterator();
 		
-		List<ItemIdentifier> newInterestPairs = null;
+		Set<ItemIdentifier> newInterestPairs = null;
+		newInterestPairs = new TreeSet<ItemIdentifier>();
 		if(newInterests != null) {
-			newInterestPairs = new ArrayList<ItemIdentifier>(newInterests.size());
 	
 			Iterator<ItemIdentifier> i1 = newInterests.iterator();
 			while(i1.hasNext() && i2.hasNext()){
@@ -822,9 +822,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 				newInterestPairs.add(items);
 				this.addInterest(items);			
 			}
-		} else {
-			newInterestPairs = new ArrayList<ItemIdentifier>(0);
-		}
+		} 
 		while(i2.hasNext()) { // remove extras
 			this.removeInterest(i2.next());			
 		}

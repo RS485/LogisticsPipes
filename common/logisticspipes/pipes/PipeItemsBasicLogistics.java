@@ -11,6 +11,8 @@ package logisticspipes.pipes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -152,10 +154,10 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 	}
 	
 	@Override
-	public List<ItemIdentifier> getSpecificInterests() {
+	public Set<ItemIdentifier> getSpecificInterests() {
 		if(this.itemSinkModule.isDefaultRoute())
 			return null;
-		List<ItemIdentifier> l1 = new ArrayList<ItemIdentifier>(10);
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
 		for(int i=0; i<9;i++){
 			ItemStack item = this.itemSinkModule.getFilterInventory().getStackInSlot(i);
 			if(item != null)

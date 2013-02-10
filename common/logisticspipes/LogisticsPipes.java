@@ -210,6 +210,7 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
+	@SuppressWarnings("unused")
 	@Init
 	public void init(FMLInitializationEvent event) {
 		

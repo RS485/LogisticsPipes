@@ -793,7 +793,6 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		if(iterated++%this.simpleID==0)
 			ticksUntillNextInventoryCheck++; // randomly wait 1 extra tick - just so that every router doesn't tick at the same time
 		CoreRoutedPipe pipe = getPipe();
-		boolean different = false;
 		if(pipe==null)
 			return;
 		if(pipe.hasGenericInterests())

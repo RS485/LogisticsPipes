@@ -51,13 +51,17 @@ import buildcraft.transport.TileGenericPipe;
 public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRouter> {
 	
 	// things with specific interests -- providers (including crafters)
-	static HashMap<ItemIdentifier,Set<IRouter>> specificInterests = new HashMap<ItemIdentifier,Set<IRouter>>();
+	static HashMap<ItemIdentifier,Set<IRouter>> _globalSpecificInterests = new HashMap<ItemIdentifier,Set<IRouter>>();
 	// things potentially interested in every item (chassi with generic sinks)
-	static Set<IRouter> genericInterests = new TreeSet<IRouter>();
+	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
 	
 	// things this pipe is interested in (either providing or sinking)
-	List<ItemIdentifier> hasInterestIn = new ArrayList<ItemIdentifier>(0);
+	List<ItemIdentifier> _hasInterestIn = new ArrayList<ItemIdentifier>(0);
+	boolean _hasGenericInterest;
 	
+	static final int REFRESH_TIME=20;
+	static int iterated=0;// used pseudp-random to spread items over the tick range
+	int ticksUntillNextInventoryCheck=0;
 	@Override 
 	public int hashCode(){
 		return simpleID; // guaranteed to be unique, and uniform distribution over a range.
@@ -700,6 +704,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	
 	@Override
 	public void update(boolean doFullRefresh){	
+		
 		updateInterests();
 		if (doFullRefresh) {
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
@@ -782,6 +787,11 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 
 	@Override
 	public void updateInterests() {
+		if(--ticksUntillNextInventoryCheck>0)
+			return;
+		ticksUntillNextInventoryCheck=REFRESH_TIME;
+		if(iterated++%this.simpleID==0)
+			ticksUntillNextInventoryCheck++; // randomly wait 1 extra tick - just so that every router doesn't tick at the same time
 		CoreRoutedPipe pipe = getPipe();
 		boolean different = false;
 		if(pipe==null)
@@ -791,7 +801,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		else
 			this.removeGenericInterest();
 		List<ItemIdentifier> newInterests = pipe.getSpecificInterests();
-		Iterator<ItemIdentifier> i2 = hasInterestIn.iterator();
+		Iterator<ItemIdentifier> i2 = _hasInterestIn.iterator();
 		
 		List<ItemIdentifier> newInterestPairs = null;
 		if(newInterests != null) {
@@ -818,45 +828,55 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		while(i2.hasNext()) { // remove extras
 			this.removeInterest(i2.next());			
 		}
-		hasInterestIn=newInterestPairs;
+		_hasInterestIn=newInterestPairs;
 	}
 
 	private void removeGenericInterest() {
-		genericInterests.remove(this);
+		this._hasGenericInterest=false;
+		_genericInterests.remove(this);
 	}
 
 	private void declareGenericInterest() {
-		genericInterests.add(this);
+		this._hasGenericInterest=true;
+		_genericInterests.add(this);
 	}
 
 	private void addInterest(ItemIdentifier items) {
-		Set<IRouter> interests = specificInterests.get(items);
+		Set<IRouter> interests = _globalSpecificInterests.get(items);
 		if(interests==null) {
 			interests = new TreeSet<IRouter>();
-			specificInterests.put(items, interests);
+			_globalSpecificInterests.put(items, interests);
 		}
 		interests.add(this);		
 	}
 
 	private void removeInterest(ItemIdentifier p2) {
-		Set<IRouter> interests = specificInterests.get(p2);
+		Set<IRouter> interests = _globalSpecificInterests.get(p2);
 		if(interests==null) {
 			return;
 		}
 		interests.remove(this);
 		if(interests.isEmpty())
-			specificInterests.remove(interests);
+			_globalSpecificInterests.remove(interests);
 		
 	}
 
+	public boolean hasGenericInterest() {
+		return this._hasGenericInterest;
+	}
+	
+	public boolean hasInterestIn(ItemIdentifier item) {
+		return this._hasInterestIn.contains(item);
+	}
+	
 	public static Set<IRouter> getRoutersInterestedIn(ItemIdentifier item) {
 		Set<IRouter> s = new TreeSet<IRouter>();
-		s.addAll(genericInterests);
-		Set<IRouter> specifics = specificInterests.get(item);
+		s.addAll(_genericInterests);
+		Set<IRouter> specifics = _globalSpecificInterests.get(item);
 		if(specifics!=null) {
 			s.addAll(specifics);
 		}
-		specifics = specificInterests.get(item.toUndamaged());
+		specifics = _globalSpecificInterests.get(item.toUndamaged());
 		if(specifics!=null) {
 			s.addAll(specifics);
 		}
@@ -877,11 +897,11 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	}
 
 	public static Map<ItemIdentifier,Set<IRouter>> getInterestedInSpecifics() {
-		return specificInterests;		
+		return _globalSpecificInterests;		
 	}
 
 	public static Set<IRouter> getInterestedInGeneral() {
-		return genericInterests;
+		return _genericInterests;
 	}
 }
 

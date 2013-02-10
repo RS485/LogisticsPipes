@@ -103,6 +103,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	public final FinalNBTTagCompound tag;
 	public final int uniqueID;
 	
+	private ItemIdentifier _IDIgnoringNBT=null;
+	private ItemIdentifier _IDIgnoringDamage=null;
+
 	public static boolean allowNullsForTesting;
 	
 	public static ItemIdentifier get(int itemID, int itemUndamagableDamage, NBTTagCompound tag)	{
@@ -155,6 +158,27 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			itemDamage = itemStack.getItemDamage();
 		}
 		return get(itemStack.itemID, itemDamage, itemStack.stackTagCompound);
+	}
+
+	public ItemIdentifier getUndamaged() {
+		if(_IDIgnoringDamage==null){
+		int itemDamage = 0;
+		if (!Item.itemsList[itemID].isDamageable()) {
+			itemDamage = this.itemDamage;
+		}
+		_IDIgnoringDamage= get(itemID, itemDamage, this.tag);
+		}
+		return _IDIgnoringDamage;
+	}
+
+	public static ItemIdentifier getIgnoringNBT(ItemStack itemStack) {
+		return get(itemStack.itemID, itemStack.getItemDamage(), null);
+	}
+	public ItemIdentifier getIgnoringNBT() {
+		if(this._IDIgnoringNBT==null){
+			_IDIgnoringNBT= get(itemID, itemDamage, null);			
+		}
+		return _IDIgnoringNBT;
 	}
 
 	public static ItemIdentifier getForId(int id) {

@@ -33,6 +33,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
 import buildcraft.transport.TileGenericPipe;
@@ -215,21 +216,40 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
-	
+	private void decreaseRequested(ItemIdentifierStack item) {
+		int remaining = item.stackSize;
+		//see if we can get an exact match
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null) {
+			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			remaining -= count;
+		}
+		if(remaining <= 0) {
+			return;
+		}
+		//still remaining... was from fuzzyMatch on a crafter
+		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+				int expected = e.getValue();
+				e.setValue(Math.max(0, expected - remaining));
+				remaining -= expected;
+			}
+			if(remaining <= 0) {
+				return;
+			}
+		}
+		//we have no idea what this is, log it.
+		LogisticsPipes.requestLog.info("supplier got unexpected item " + item.toString());
+	}
+
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		Integer count = _requestedItems.get(item.getItem());
-		if (count != null){
-			_requestedItems.put(item.getItem(), Math.max(0, count - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
-		Integer count = _requestedItems.get(item.getItem());
-		if (count != null){
-			_requestedItems.put(item.getItem(), Math.max(0, count - item.stackSize));
-		}
+		decreaseRequested(item);
 	}
 	
 	public boolean isRequestingPartials(){

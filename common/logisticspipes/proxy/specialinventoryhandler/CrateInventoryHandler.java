@@ -69,7 +69,6 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
-			HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>((int)(numitems * 1.5));
 			for(int i = 0; i < numitems; i++) {
 				ItemStack itemStack = (ItemStack) getItemStack.invoke(cratePileData, new Object[]{i});
 				result.add(ItemIdentifier.get(itemStack));

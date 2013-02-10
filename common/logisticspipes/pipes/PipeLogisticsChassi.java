@@ -570,7 +570,6 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
-				WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 				TileEntity tile = getPointedTileEntity();
 				if (!(tile instanceof IInventory)) continue;
 				if (tile instanceof TileGenericPipe) continue;

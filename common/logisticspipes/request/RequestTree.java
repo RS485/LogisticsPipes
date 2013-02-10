@@ -19,9 +19,6 @@ public class RequestTree extends RequestTreeNode {
 	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent) {
 		super(item, requester, parent);
 	}
-	public RequestTree(RequestTreeNode other) {
-		super(other);
-	}
 
 	public Map<ItemIdentifier, Integer> getAllPromissesFor(IProvideItems provider) {
 		Map<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();

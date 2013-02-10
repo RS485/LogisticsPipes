@@ -79,7 +79,6 @@ public class PipeItemsFirewall extends RoutedPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-					UUID routerUUId=UUID.fromString(routerIds[dir.ordinal()]);
 //					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(routerUUId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord,true);
 					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, dir);
 				}

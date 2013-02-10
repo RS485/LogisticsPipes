@@ -201,7 +201,6 @@ public class RequestHandler {
 			return;
 		}
 		
-		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
 		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 

@@ -39,7 +39,7 @@ public class RequestManager {
 			messages.add(new ItemMessage(stack));
 			generateRequestTree(tree, node, requester);
 		}
-		if(tree.isAllDone()) {
+		if(tree.isDone()) {
 			handleRequestTree(tree);
 			if(log != null) {
 				log.handleSucessfullRequestOfList(messages);
@@ -60,7 +60,7 @@ public class RequestManager {
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
 		generateRequestTree(tree, tree, requester);
-		if(tree.isAllDone()) {
+		if(tree.isDone()) {
 			handleRequestTree(tree);
 			if(log != null) {
 				log.handleSucessfullRequestOf(new ItemMessage(tree.getStack()));

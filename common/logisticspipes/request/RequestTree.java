@@ -42,19 +42,6 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 	
-	public boolean isAllDone() {
-		return checkSubDone(this);
-	}
-	
-	private boolean checkSubDone(RequestTreeNode node) {
-		boolean done = true;
-		done &= node.isDone();
-		for(RequestTreeNode subNode:node.subRequests) {
-			done &= checkSubDone(subNode);
-		}
-		return done;
-	}
-	
 	public LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> getExtrasFor(ItemIdentifier item) {
 		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras = new LinkedHashMap<LogisticsExtraPromise,RequestTreeNode>();
 		checkForExtras(item,this,extras);

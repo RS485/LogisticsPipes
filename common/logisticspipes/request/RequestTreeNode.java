@@ -112,9 +112,11 @@ public class RequestTreeNode {
 		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>(promises.size());
 		for(LogisticsPromise promise:promises) {
 			if(promise instanceof LogisticsExtraPromise) {
-				if(((LogisticsExtraPromise)promise).extraSource != this) {
-					((LogisticsExtraPromise)promise).extraSource.addExtraPromise((LogisticsExtraPromise)promise);
-					toRemove.add(promise);
+				if(!((LogisticsExtraPromise)promise).provided) {
+					if(((LogisticsExtraPromise)promise).extraSource != this) {
+						((LogisticsExtraPromise)promise).extraSource.addExtraPromise((LogisticsExtraPromise)promise);
+						toRemove.add(promise);
+					}
 				}
 			}
 		}

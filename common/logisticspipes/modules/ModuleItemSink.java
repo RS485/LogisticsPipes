@@ -190,8 +190,8 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 
 	@Override
 	public boolean interestedInAttachedInventory() {		
-		return !this._isDefaultRoute; 
-		// when we are default we are interested in everything anyway.
+		return false;
+		// when we are default we are interested in everything anyway, otherwise we're only interested in our filter.
 	}
 
 	@Override

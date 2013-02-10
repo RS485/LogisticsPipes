@@ -80,7 +80,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		if (_filterInventory.containsUndamagedItem(item.toUndamaged())){
+		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
 			if(_power.canUseEnergy(2)) {
 				return _sinkReply;
 			}
@@ -158,7 +158,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
 		for(ItemIdentifier id:mapIC.keySet()){
-			li.add(id.toUndamaged());
+			li.add(id.getUndamaged());
 		}
 		return li;
 	}

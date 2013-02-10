@@ -40,7 +40,7 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 		if (targetInventory == null) return null;
 		
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
-		if (!invUtil.containsUndamagedItem(item.toUndamaged())) return null;
+		if (!invUtil.containsUndamagedItem(item.getUndamaged())) return null;
 		
 		if(_power.canUseEnergy(3)) {
 			return _sinkReply;

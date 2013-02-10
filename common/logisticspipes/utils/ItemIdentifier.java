@@ -162,11 +162,11 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	public ItemIdentifier getUndamaged() {
 		if(_IDIgnoringDamage==null){
-		int itemDamage = 0;
-		if (!Item.itemsList[itemID].isDamageable()) {
-			itemDamage = this.itemDamage;
-		}
-		_IDIgnoringDamage= get(itemID, itemDamage, this.tag);
+			if (!Item.itemsList[this.itemID].isDamageable()) {
+				_IDIgnoringDamage = this;
+			} else {
+				_IDIgnoringDamage = get(this.itemID, 0, this.tag);
+			}
 		}
 		return _IDIgnoringDamage;
 	}
@@ -248,12 +248,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public boolean isValid() {
 		return Item.itemsList[itemID] != null;
-	}
-
-	public ItemIdentifier toUndamaged() {
-		if (!Item.itemsList[this.itemID].isDamageable())
-			return this;
-		return get(this.itemID, 0, this.tag);
 	}
 
 	private String getName(int id,ItemStack stack) {

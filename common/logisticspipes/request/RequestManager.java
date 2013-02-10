@@ -94,7 +94,7 @@ public class RequestManager {
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null) {
 						for(IFilter filter: filters) {
-							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultStack().getItem().toUndamaged()) || filter.blockCrafting()) continue;
+							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue;
 						}
 						List<IFilter> list = new LinkedList<IFilter>();
 						list.addAll(filters);
@@ -217,7 +217,7 @@ outer:
 			
 			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;		
 			for(IFilter filter:crafter.getValue2()) {
-				if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().toUndamaged()) || filter.blockCrafting()) continue outer;
+				if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
 			}
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
 

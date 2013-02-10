@@ -590,7 +590,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				}
 				if(modulesInterestedInUndamged) {
 					for(ItemIdentifier id:items.keySet()){	
-						l1.add(id.toUndamaged());
+						l1.add(id.getUndamaged());
 					}
 				}
 				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.

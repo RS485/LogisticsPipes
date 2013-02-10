@@ -170,7 +170,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 		li.addAll(mapIC.keySet());
 		for(ItemIdentifier id:mapIC.keySet()){
-			li.add(id.toUndamaged());
+			li.add(id.getUndamaged());
 		}
 		return li;
 	}

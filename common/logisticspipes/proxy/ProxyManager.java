@@ -107,6 +107,7 @@ public class ProxyManager {
 				@Override public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {}
 				@Override public List<Integer> getListOfTagIDsForStack(ItemStack stack) {return null;}
 				@Override public String getNameForTagID(int id) {return null;}
+				@Override public void addCraftingRecipes() {return;}
 			});
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}

@@ -92,6 +92,10 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return false;
 	}
 	
+	public int hashCode() {
+		return _item.hashCode() ^ (1023 * this.stackSize);
+	}
+
 	public String toString() {
 		return new StringBuilder(Integer.toString(stackSize)).append("x").append(_item.toString()).toString();
 	}

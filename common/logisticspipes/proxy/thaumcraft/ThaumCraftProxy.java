@@ -1,13 +1,18 @@
 package logisticspipes.proxy.thaumcraft;
 
+import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
+import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
 
 import org.lwjgl.opengl.GL11;
 
@@ -15,9 +20,31 @@ import thaumcraft.api.EnumTag;
 import thaumcraft.api.ObjectTags;
 import thaumcraft.api.ThaumcraftApiHelper;
 import thaumcraft.client.UtilsFX;
+import buildcraft.BuildCraftSilicon;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class ThaumCraftProxy implements IThaumCraftProxy {
+	
+	public ThaumCraftProxy() {
+		try {
+			Class<?> tcConfig = Class.forName("thaumcraft.common.Config");
+			itemShard = (Item)tcConfig.getField("itemShard").get((Object)null);
+		} catch (Exception e) {
+			if (LogisticsPipes.DEBUG) e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Shard meta:
+	 * 0 = air
+	 * 1 = fire 
+	 * 2 = water 
+	 * 3 = earth
+	 * 4 = vis
+	 * 5 = dull
+	 */
+	private Item itemShard;
+	
 	
 	/**
 	 * Renders the aspect icons for a given stack downwards starting at x, y.
@@ -119,6 +146,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		EnumTag[] tagArray = tags.getAspectsSorted();
 		if (tagArray.length == 0 || tagArray == null) return null;
 		for (int i = 0; i < tagArray.length; i++) {
+			if (tagArray[i] == null) continue;
 			int ID = tagArray[i].id;
 			list.add(ID);
 		}
@@ -133,6 +161,25 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	@Override
 	public String getNameForTagID(int id) {
 		return EnumTag.get(id).name;
+	}
+
+	@Override
+	public void addCraftingRecipes() {
+		
+		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] { 
+			"wGe", 
+			"rBr", 
+			"fra", 
+			Character.valueOf('w'), new ItemStack(itemShard, 1, 2), 
+			Character.valueOf('e'), new ItemStack(itemShard, 1, 3), 
+			Character.valueOf('f'), new ItemStack(itemShard, 1, 1), 
+			Character.valueOf('a'), new ItemStack(itemShard, 1, 0), 
+			
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1), 
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
+		});
+		
 	}
 	
 }

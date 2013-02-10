@@ -357,6 +357,7 @@ public class LogisticsPipes {
 		
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
+		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());

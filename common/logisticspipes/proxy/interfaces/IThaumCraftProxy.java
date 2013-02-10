@@ -12,4 +12,5 @@ public interface IThaumCraftProxy {
 	public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui);
 	public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui);
 	public String getNameForTagID(int id);
+	public abstract void addCraftingRecipes();
 }

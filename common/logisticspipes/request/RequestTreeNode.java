@@ -59,9 +59,9 @@ public class RequestTreeNode {
 		return request.stackSize - getPromiseItemCount();
 	}
 	
-	public boolean addPromise(LogisticsPromise promise) {
-		if(promise.item != request.getItem()) return false;
-		if(getMissingItemCount() == 0) return false;
+	public void addPromise(LogisticsPromise promise) {
+		if(promise.item != request.getItem()) throw new IllegalArgumentException("wrong item");
+		if(getMissingItemCount() == 0) throw new IllegalArgumentException("zero count");
 		if(promise.numberOfItems > getMissingItemCount()) {
 			int more = promise.numberOfItems - getMissingItemCount();
 			promise.numberOfItems = getMissingItemCount();
@@ -74,11 +74,8 @@ public class RequestTreeNode {
 			extra.relayPoints.addAll(promise.relayPoints);
 			extrapromises.add(extra);
 		}
-		if(promise.numberOfItems > 0) {
-			promises.add(promise);
-			return true;
-		}
-		return false;
+		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
+		promises.add(promise);
 	}
 
 	public void addExtraPromise(LogisticsExtraPromise promise) {

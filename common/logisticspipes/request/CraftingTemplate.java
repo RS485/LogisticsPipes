@@ -40,10 +40,10 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		_required.put(stack, crafter);
 	}
 	
-	public LogisticsPromise generatePromise(List<IRelayItem> relays) {
+	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = _result.getItem();
-		promise.numberOfItems = _result.stackSize;
+		promise.numberOfItems = _result.stackSize * nResultSets;
 		promise.sender = _crafter;
 		promise.relayPoints = relays;
 		return promise;

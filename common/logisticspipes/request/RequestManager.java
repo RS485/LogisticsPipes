@@ -3,7 +3,6 @@ package logisticspipes.request;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -194,6 +192,7 @@ public class RequestManager {
 	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
+		int nCraftingSetsNeeded = 0;
 		
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
@@ -221,7 +220,7 @@ outer:
 			}
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
 
-			int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+			nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 			
 			// for each thing needed to satisfy this promise
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
@@ -265,13 +264,13 @@ outer:
 			for(IFilter filter:crafter.getValue2()) {
 				relays.add(filter);
 			}
-			while(treeNode.addPromise(template.generatePromise(relays)));
+			treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, relays));
 			lastNode = null;
 			break;
 		}
 		if(!handled) {
 			if(lastNode != null && lastNodeTemplate != null) {
-				while(treeNode.addPromise(lastNodeTemplate.generatePromise(new ArrayList<IRelayItem>())));
+				treeNode.addPromise(lastNodeTemplate.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
 				treeNode.subRequests.addAll(lastNode);
 			}
 		}

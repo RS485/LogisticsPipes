@@ -2,20 +2,17 @@ package logisticspipes.gui.modules;
 
 import org.lwjgl.opengl.GL11;
 
-import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.modules.ModuleCrafting;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import buildcraft.transport.Pipe;

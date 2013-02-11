@@ -11,7 +11,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.modules.ModuleCrafting;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -55,7 +54,6 @@ public class HUDCraftingModule implements IHUDModuleRenderer {
 
 	@Override
 	public List<IHUDButton> getButtons() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

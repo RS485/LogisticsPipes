@@ -6,22 +6,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
-import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.network.TileNetworkData;
-import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.gui.hud.modules.HUDCraftingModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -39,24 +30,16 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketCoordinates;
-import logisticspipes.network.packets.PacketInventoryChange;
-import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketModuleInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -75,17 +58,12 @@ import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
-import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.block.Block;
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 
 public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
@@ -315,7 +293,6 @@ public class ModuleCrafting implements ILogisticsGuiModule, ICraftItems,
 
 	@Override
 	public int getGuiHandlerID() {
-		// TODO Auto-generated method stub
 		return GuiIDs.GUI_Module_Crafting_ID;
 	}
 	

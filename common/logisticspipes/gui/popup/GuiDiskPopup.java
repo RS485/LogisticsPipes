@@ -2,6 +2,7 @@ package logisticspipes.gui.popup;
 
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.proxy.MainProxy;
@@ -240,6 +241,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 			}
 			selected = -1;
 			nbt.setTag("macroList", listnew);
+			MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
 		} else if (guibutton.id == 4) {
 			if(scroll > 0) {
 				scroll--;

@@ -57,6 +57,20 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
 	
+	@Override
+	protected void mouseClicked(int i, int j, int k) {
+		super.mouseClicked(i, j, k);
+		if ((!clickWasButton && i >= right - 39 && i < right - 19 && j >= bottom - 47 && j < bottom - 27) || editsearch){
+			if(!editsearchb) {
+				editsearch = false;
+			}
+			selectedItem = null;
+			lastClickedx = i;
+			lastClickedy = j;
+			lastClickedk = k;
+		}
+	}
+
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {

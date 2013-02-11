@@ -81,7 +81,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		controlList.clear();
 		controlList.add(new SmallGuiButton(0, xCenter + 16	, bottom - 27, 50, 10, "Request"));
 		controlList.add(new SmallGuiButton(1, xCenter + 16	, bottom - 15, 50, 10, "Exit"));
-		controlList.add(new SmallGuiButton(2, xCenter - 66	, bottom - 27, 50, 10, "Add"));
+		controlList.add(new SmallGuiButton(2, xCenter - 66	, bottom - 27, 50, 10, "Add/Edit"));
 		controlList.add(new SmallGuiButton(3, xCenter - 66	, bottom - 15, 50, 10, "Delete"));
 		controlList.add(new SmallGuiButton(4, xCenter - 12	, bottom - 27, 25, 10, "/\\"));
 		controlList.add(new SmallGuiButton(5, xCenter - 12	, bottom - 15, 25, 10, "\\/"));
@@ -129,12 +129,11 @@ public class GuiDiskPopup extends SubGuiScreen {
 		
 		boolean flag = false;
 		
+		if(guiLeft + 8 < mouseX && mouseX < right - 8 && guiTop + 48 < mouseY && mouseY < guiTop + 59 + (11 * 10)) {
+			selected = scroll + (mouseY - guiTop - 49) / 10;
+		}
+
 		for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
-			if(guiLeft + 8 < mouseX && mouseX < right - 8 && guiTop + 48 + ((i - scroll) * 10) < mouseY && mouseY < guiTop + 59 + ((i - scroll) * 10)) {
-				selected = i;
-				mouseX = 0;
-				mouseY = 0;
-			}
 			if(i == selected) {
 				drawRect(guiLeft + 8, guiTop + 48 + ((i - scroll) * 10), right - 8, guiTop + 59 + ((i - scroll) * 10), BasicGuiHelper.ConvertEnumToColor(Colors.DarkGrey));
 				flag = true;
@@ -175,42 +174,49 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	private void handleRequest() {
-		/*if(!APIProxy.isRemote()) {
-			NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
-			if(nbt == null) {
-				mainGui.getDisk().setTagCompound(new NBTTagCompound());
-				nbt = mainGui.getDisk().getTagCompound();
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.DISK_MACRO_REQUEST, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, selected).getPacket());
+	}
+
+	private void handleDelete() {
+		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
+		if(nbt == null) {
+			mainGui.getDisk().setTagCompound(new NBTTagCompound("tag"));
+			nbt = mainGui.getDisk().getTagCompound();
+		}
+
+		if(!nbt.hasKey("macroList")) {
+			NBTTagList list = new NBTTagList();
+			nbt.setTag("macroList", list);
+		}
+
+		NBTTagList list = nbt.getTagList("macroList");
+		NBTTagList listnew = new NBTTagList();
+
+		for(int i = 0;i < list.tagCount();i++) {
+			if(i != selected) {
+				listnew.appendTag(list.tagAt(i));
 			}
-			
-			if(!nbt.hasKey("macroList")) {
-				NBTTagList list = new NBTTagList();
-				nbt.setTag("macroList", list);
-			}
-			
-			NBTTagList list = nbt.getTagList("macroList");
-			
-			if(scroll + 12 > list.tagCount()) {
-				scroll = list.tagCount() - 12;
-			}
-			if(scroll < 0) {
-				scroll = 0;
-			}
-			
-			boolean flag = false;
-			
-			for(int i = scroll;i < list.tagCount() && (i - scroll) < 12;i++) {
-				if(i == selected) {
-					NBTTagCompound itemlist = (NBTTagCompound) list.tagAt(i);
-					RequestReply reply = RequestHandler.requestMacrolist(itemlist,mainGui.pipe,mainGui._entityPlayer);
-					mainGui.handleRequestAnswer(reply.items, reply.suceed, this, mainGui._entityPlayer);
-					break;
+		}
+		selected = -1;
+		nbt.setTag("macroList", listnew);
+		MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+	}
+
+	private void handleAddEdit() {
+		String macroname = "";
+		NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
+		if(nbt != null) {
+			if(nbt.hasKey("macroList")) {
+				NBTTagList list = nbt.getTagList("macroList");
+				if(selected != -1 && selected < list.tagCount()) {
+					NBTTagCompound entry = (NBTTagCompound) list.tagAt(selected);
+					macroname = entry.getString("name");
 				}
 			}
-		} else {*/
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.DISK_MACRO_REQUEST, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, selected).getPacket());
-		//}
+		}
+		this.setSubGui(new GuiAddMacro(mainGui, macroname));
 	}
-	
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0) {
@@ -218,30 +224,9 @@ public class GuiDiskPopup extends SubGuiScreen {
 		} else if (guibutton.id == 1) {
 			this.exitGui();
 		} else if (guibutton.id == 2) {
-			this.setSubGui(new GuiAddMacro(mainGui));
+			handleAddEdit();
 		} else if (guibutton.id == 3) {
-			NBTTagCompound nbt = mainGui.getDisk().getTagCompound();
-			if(nbt == null) {
-				mainGui.getDisk().setTagCompound(new NBTTagCompound("tag"));
-				nbt = mainGui.getDisk().getTagCompound();
-			}
-			
-			if(!nbt.hasKey("macroList")) {
-				NBTTagList list = new NBTTagList();
-				nbt.setTag("macroList", list);
-			}
-
-			NBTTagList list = nbt.getTagList("macroList");
-			NBTTagList listnew = new NBTTagList();
-			
-			for(int i = 0;i < list.tagCount();i++) {
-				if(i != selected) {
-					listnew.appendTag(list.tagAt(i));
-				}
-			}
-			selected = -1;
-			nbt.setTag("macroList", listnew);
-			MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+			handleDelete();
 		} else if (guibutton.id == 4) {
 			if(scroll > 0) {
 				scroll--;

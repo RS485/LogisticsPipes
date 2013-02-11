@@ -50,9 +50,44 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	private int nameWidth = 122;
 	private int searchWidth = 138;
 	
-	public GuiAddMacro(NormalMk2GuiOrderer mainGui) {
+	public GuiAddMacro(NormalMk2GuiOrderer mainGui, String macroName) {
 		super(200, 200, 0, 0);
 		this.mainGui = mainGui;
+		name1 = macroName;
+		loadMacroItems();
+	}
+
+	private void loadMacroItems() {
+		if((name1 + name2).equals("")) {
+			return;
+		}
+		NBTTagList inventar = null;
+
+		NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
+		for(int i = 0; i < list.tagCount(); i++) {
+			NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
+			String name = tag.getString("name");
+			if(name.equals(name1 + name2)) {
+				inventar = tag.getTagList("inventar");
+				break;
+			}
+		}
+		if(inventar == null) {
+			return;
+		}
+		for(int i = 0; i < inventar.tagCount(); i++) {
+			NBTTagCompound itemNBT = (NBTTagCompound) inventar.tagAt(i);
+			int itemID = itemNBT.getInteger("id");
+			int itemData = itemNBT.getInteger("data");
+			NBTTagCompound tag = null;
+			if(itemNBT.hasKey("nbt")) {
+				tag = itemNBT.getCompoundTag("nbt");
+			}
+			ItemIdentifier item = ItemIdentifier.get(itemID, itemData, tag);
+			int amount = itemNBT.getInteger("amount");
+			ItemIdentifierStack stack = new ItemIdentifierStack(item, amount);
+			macroItems.add(stack);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -402,40 +437,39 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			prevPageMacro();
 		} else if (guibutton.id == 4) {
 			if(!(name1 + name2).equals("") && macroItems.size() != 0) {
+				NBTTagList inventar = new NBTTagList();
+				for(ItemIdentifierStack stack:macroItems) {
+					NBTTagCompound itemNBT = new NBTTagCompound();
+					itemNBT.setInteger("id", stack.getItem().itemID);
+					itemNBT.setInteger("data", stack.getItem().itemDamage);
+					if(stack.getItem().tag != null) {
+						itemNBT.setCompoundTag("nbt", stack.getItem().tag);
+					}
+					itemNBT.setInteger("amount", stack.stackSize);
+					inventar.appendTag(itemNBT);
+				}
+
 				boolean flag = false;
 				NBTTagList list = this.mainGui.getDisk().getTagCompound().getTagList("macroList");
-				
+
 				for(int i = 0; i < list.tagCount(); i++) {
 					NBTTagCompound tag = (NBTTagCompound) list.tagAt(i);
 					String name = tag.getString("name");
 					if(name.equals(name1 + name2)) {
 						flag = true;
+						tag.setTag("inventar", inventar);
+						break;
 					}
 				}
-				if(flag) {
-					this.setSubGui(new GuiMessagePopup("Name '"+name1+name2+"' already exists", "Please chose a different one"));		
-				} else {
+				if(!flag) {
 					NBTTagCompound nbt = new NBTTagCompound();
 					nbt.setString("name", name1 + name2);
-					NBTTagList inventar = new NBTTagList();
-					for(ItemIdentifierStack stack:macroItems) {
-						NBTTagCompound itemNBT = new NBTTagCompound();
-						itemNBT.setInteger("id", stack.getItem().itemID);
-						itemNBT.setInteger("data", stack.getItem().itemDamage);
-						if(stack.getItem().tag != null) {
-							itemNBT.setCompoundTag("nbt", stack.getItem().tag);
-						}
-						itemNBT.setInteger("amount", stack.stackSize);
-						inventar.appendTag(itemNBT);
-					}
 					nbt.setTag("inventar", inventar);
 					list.appendTag(nbt);
-					this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
-					MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
-					//this.controler.resetSubGui();
-					//this.controler.setSubGui(new GuiMessagePopup("Saving will come soon", "Would be saved as: "+name1+name2));
-					this.exitGui();
 				}
+				this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
+				MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+				this.exitGui();
 			} else if(macroItems.size() != 0) {
 				this.setSubGui(new GuiMessagePopup("Please enter a name"));
 			} else {

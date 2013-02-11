@@ -150,7 +150,6 @@ public class RequestManager {
 	
 	private static void handleRequestTree(RequestTree tree) {
 		tree.fullFillAll();
-		tree.registerExtras();
 	}
 	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		checkProvider(tree,treeNode,requester);
@@ -167,15 +166,16 @@ public class RequestManager {
 	}
 
 	private static void checkExtras(RequestTree tree, RequestTreeNode treeNode) {
-		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
-		for (LogisticsExtraPromise extraPromise : map.keySet()){
+		LinkedList<LogisticsExtraPromise> map = tree.getExtrasFor(treeNode.getStack().getItem());
+		for (LogisticsExtraPromise extraPromise : map){
 			if(treeNode.isDone()) {
 				break;
 			}
+			if(extraPromise.numberOfItems == 0)
+				continue;
 			boolean valid = false;
-			ExitRoute source =extraPromise.sender.getRouter().getRouteTable().get(treeNode.target.getRouter().getSimpleID());
+			ExitRoute source = extraPromise.sender.getRouter().getRouteTable().get(treeNode.target.getRouter().getSimpleID());
 			if(source != null && !source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-				
 				for(ExitRoute node:treeNode.target.getRouter().getIRoutersByCost()) {
 					if(node.destination == extraPromise.sender.getRouter()) {
 						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
@@ -185,8 +185,8 @@ public class RequestManager {
 				}
 			}
 			if(valid) {
+				extraPromise.numberOfItems = Math.min(extraPromise.numberOfItems, treeNode.getMissingItemCount());
 				treeNode.addPromise(extraPromise);
-				map.get(extraPromise).usePromise(extraPromise);
 			}
 		}
 	}
@@ -256,7 +256,6 @@ outer:
 			}
 			if(failed) {
 				for(RequestTreeNode subNode:lastNode) {
-					subNode.revertExtraUsage();
 					treeNode.remove(subNode);
 				}
 				continue;

@@ -151,7 +151,6 @@ public class RequestManager {
 	}
 	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		checkProvider(tree,treeNode,requester);
-		
 		if(treeNode.isDone()) {
 			return true;
 		}
@@ -307,9 +306,12 @@ outer:
 		Collections.sort(validSources);
 		
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
-			
-			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe()))
+			if(treeNode.isDone()) {
+				break;
+			}
+			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe())) {
 				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
+			}
 		}
 	}
 

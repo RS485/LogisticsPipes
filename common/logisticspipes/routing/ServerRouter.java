@@ -810,32 +810,22 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		else
 			this.removeGenericInterest();
 		Set<ItemIdentifier> newInterests = pipe.getSpecificInterests();
-		Iterator<ItemIdentifier> i2 = _hasInterestIn.iterator();
-		
-		Set<ItemIdentifier> newInterestPairs = null;
-		newInterestPairs = new TreeSet<ItemIdentifier>();
-		if(newInterests != null) {
-	
-			Iterator<ItemIdentifier> i1 = newInterests.iterator();
-			while(i1.hasNext() && i2.hasNext()){
-				ItemIdentifier p2 = i2.next();
-				ItemIdentifier p = i1.next();
-				newInterestPairs.add(p);
-				if(p.uniqueID != p2.uniqueID){
-					this.addInterest(p);
-					this.removeInterest(p2);
+		if(newInterests == null) {
+			newInterests = new TreeSet<ItemIdentifier>();
+		}
+		if(!newInterests.equals(_hasInterestIn)) {
+			for(ItemIdentifier i : _hasInterestIn) {
+				if(!newInterests.contains(i)) {
+					this.removeInterest(i);
 				}
 			}
-			while(i1.hasNext()) { // remove extras
-				ItemIdentifier items = i1.next();
-				newInterestPairs.add(items);
-				this.addInterest(items);			
+			for(ItemIdentifier i : newInterests) {
+				if(!_hasInterestIn.contains(i)) {
+					this.addInterest(i);
+				}
 			}
-		} 
-		while(i2.hasNext()) { // remove extras
-			this.removeInterest(i2.next());			
 		}
-		_hasInterestIn=newInterestPairs;
+		_hasInterestIn=newInterests;
 	}
 
 	private void removeGenericInterest() {

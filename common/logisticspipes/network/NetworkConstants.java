@@ -97,4 +97,17 @@ public class NetworkConstants {
 	public static final int PLAYER_LIST = 92;
 	public static final int SECURITY_STATION_ID = 93;
 	public static final int OPEN_SECURITY_PLAYER = 94;
+	public static final int CRAFTING_MODULE_NEXT_SATELLITE = 95;
+	public static final int CRAFTING_MODULE_PREV_SATELLITE = 96;
+	public static final int CRAFTING_MODULE_SATELLITE_ID = 97;
+	public static final int CRAFTING_MODULE_IMPORT = 98;
+	public static final int CRAFTING_MODULE_IMPORT_BACK = 99;
+	public static final int REQUEST_CRAFTING_MODULE_UPDATE = 100;
+	public static final int CRAFTING_MODULE_OPEN_CONNECTED_GUI = 101;
+	public static final int CRAFTING_MODULE_STACK_MOVE = 102;
+	public static final int CRAFTING_MODULE_PRIORITY = 103;
+	public static final int CRAFTING_MODULE_PRIORITY_UP = 104;
+	public static final int CRAFTING_MODULE_PRIORITY_DOWN = 105;
+	public static final int MODULE_ORDER_MANAGER_CONTENT = 106;
+	
 }

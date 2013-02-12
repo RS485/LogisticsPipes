@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.ICraftMultipleItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.ILiquidProvider;
@@ -87,16 +88,32 @@ public class RequestManager {
 		for(ExitRoute r : validDestinations) {
 			CoreRoutedPipe pipe = r.root.getPipe();
 			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.root.getSimpleID())) {
-				if (pipe instanceof ICraftItems){
+				if (pipe instanceof ICraftItems || pipe instanceof ICraftMultipleItems){
 					used.set(r.root.getSimpleID());
-					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
-					if(craftable!=null) {
-						for(IFilter filter: filters) {
-							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue;
+					if(pipe instanceof ICraftMultipleItems)	{
+						List<CraftingTemplate> lst = new LinkedList<CraftingTemplate>();
+						((ICraftMultipleItems)pipe).addCraftings(lst);
+						for(CraftingTemplate craftable : lst)
+						{
+							if(craftable!=null) {
+								for(IFilter filter: filters) {
+									if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultStack().getItem()) || filter.blockCrafting()) continue;
+								}
+								List<IFilter> list = new LinkedList<IFilter>();
+								list.addAll(filters);
+								crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
+							}
 						}
-						List<IFilter> list = new LinkedList<IFilter>();
-						list.addAll(filters);
-						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
+					} else {
+						CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
+						if(craftable!=null) {
+							for(IFilter filter: filters) {
+								if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue;
+							}
+							List<IFilter> list = new LinkedList<IFilter>();
+							list.addAll(filters);
+							crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
+						}
 					}
 				}
 				if(r.root instanceof IFilteringRouter) {

@@ -27,6 +27,7 @@ import logisticspipes.logic.LogicSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
+import logisticspipes.modules.ModuleCrafting;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
@@ -39,6 +40,7 @@ import logisticspipes.network.packets.PacketHUDSettings;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleInventoryChange;
 import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
@@ -104,6 +106,27 @@ public class ServerPacketHandler {
 					final PacketCoordinates packetB = new PacketCoordinates();
 					packetB.readData(data);
 					onCraftingPipeImport(player, packetB);
+					break;
+				case NetworkConstants.CRAFTING_MODULE_NEXT_SATELLITE:
+					final PacketPipeInteger packet1 = new PacketPipeInteger();
+					packet1.readData(data);
+					onCraftingModuleNextSatellite(player, packet1);
+					break;
+
+				case NetworkConstants.CRAFTING_MODULE_PREV_SATELLITE:
+					final PacketPipeInteger packetA1 = new PacketPipeInteger();
+					packetA1.readData(data);
+					onCraftingModulePrevSatellite(player, packetA1);
+					break;
+				case NetworkConstants.CRAFTING_MODULE_IMPORT:
+					final PacketPipeInteger packetB1 = new PacketPipeInteger();
+					packetB1.readData(data);
+					onCraftingModuleImport(player, packetB1);
+					break;
+				case NetworkConstants.CRAFTING_MODULE_OPEN_CONNECTED_GUI:
+					final PacketPipeInteger packetB2 = new PacketPipeInteger();
+					packetB2.readData(data);
+					onCraftingModuleOpenConnectedGui(player, packetB2);
 					break;
 				case NetworkConstants.SATELLITE_PIPE_NEXT:
 					final PacketCoordinates packetC = new PacketCoordinates();
@@ -285,6 +308,16 @@ public class ServerPacketHandler {
 					packetAm.readData(data);
 					onPriorityDown(player, packetAm);
 					break;
+				case NetworkConstants.CRAFTING_MODULE_PRIORITY_UP:
+					final PacketPipeInteger packetAl1 = new PacketPipeInteger();
+					packetAl1.readData(data);
+					onCraftingModulePriorityUp(player, packetAl1);
+					break;
+				case NetworkConstants.CRAFTING_MODULE_PRIORITY_DOWN:
+					final PacketPipeInteger packetAm1 = new PacketPipeInteger();
+					packetAm1.readData(data);
+					onCraftingModulePriorityDown(player, packetAm1);
+					break;
 				case NetworkConstants.HUD_START_WATCHING_BLOCK:
 					final PacketCoordinates packetAn = new PacketCoordinates();
 					packetAn.readData(data);
@@ -335,6 +368,11 @@ public class ServerPacketHandler {
 					packetAw.readData(data);
 					onFirewallFlags(player, packetAw);
 					break;
+				case NetworkConstants.REQUEST_CRAFTING_MODULE_UPDATE:
+					final PacketPipeInteger packetAx1 = new PacketPipeInteger();
+					packetAx1.readData(data);
+					onCraftingModuleUpdate(player, packetAx1);
+					break;
 				case NetworkConstants.SECURITY_CARD:
 					final PacketPipeInteger packetAx = new PacketPipeInteger();
 					packetAx.readData(data);
@@ -364,7 +402,344 @@ public class ServerPacketHandler {
 			ex.printStackTrace();
 		}
 	}
+	private static void onCraftingModulePriorityUp(EntityPlayerMP player, PacketPipeInteger packet) {
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					int satID = module.getNextConnectSatelliteId(false);
+					module.priorityUp();
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
 
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				int satID = module.getNextConnectSatelliteId(false);
+				module.priorityUp();
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				int satID = module.getNextConnectSatelliteId(false);
+				module.priorityUp();
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				return;
+			}
+		}
+	}
+
+	private static void onCraftingModulePriorityDown(EntityPlayerMP player, PacketPipeInteger packet) {
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					int satID = module.getNextConnectSatelliteId(false);
+					module.priorityDown();
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				int satID = module.getNextConnectSatelliteId(false);
+				module.priorityDown();
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				int satID = module.getNextConnectSatelliteId(false);
+				module.priorityDown();
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				return;
+			}
+		}
+	}
+	private static void onCraftingModuleNextSatellite(EntityPlayerMP player, PacketPipeInteger packet) {
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					int satID = module.getNextConnectSatelliteId(false);
+					module.setSatelliteId(satID);
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				int satID = module.getNextConnectSatelliteId(false);
+				module.setSatelliteId(satID);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				int satID = module.getNextConnectSatelliteId(false);
+				module.setSatelliteId(satID);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				return;
+			}
+		}
+	}
+
+	private static void onCraftingModulePrevSatellite(EntityPlayerMP player, PacketPipeInteger packet) {
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					int satID = module.getNextConnectSatelliteId(true);
+					module.setSatelliteId(satID);
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				int satID = module.getNextConnectSatelliteId(true);
+				module.setSatelliteId(satID);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				int satID = module.getNextConnectSatelliteId(true);
+				module.setSatelliteId(satID);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				return;
+			}
+		}
+	}
+
+	private static void onCraftingModuleImport(EntityPlayerMP player, PacketPipeInteger packet) {
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					module.importFromCraftingTable();
+					MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				int satID = module.getNextConnectSatelliteId(true);
+				module.importFromCraftingTable();
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				int satID = module.getNextConnectSatelliteId(true);
+				module.importFromCraftingTable();
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
+				return;
+			}
+		}
+	}
+	
+	private static void onCraftingModuleOpenConnectedGui(EntityPlayerMP player, PacketPipeInteger packet) {
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					module.openAttachedGui(player);
+					
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				int satID = module.getNextConnectSatelliteId(true);
+				module.openAttachedGui(player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				int satID = module.getNextConnectSatelliteId(true);
+				module.openAttachedGui(player);
+				return;
+			}
+		}
+	}
+	
+	private static void onCraftingModuleUpdate(EntityPlayerMP player, PacketPipeInteger packet)
+	{
+		
+		final int slot = packet.integer;
+		if(slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleCrafting) {
+					final ModuleCrafting module = (ModuleCrafting)dummy.getModule();
+					if(!module.isSatelliteConnected())
+						module.satelliteId = 0;
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
+				}
+			}
+			return;
+		}
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe instanceof CoreRoutedPipe)) {
+			return;
+		}
+
+		final CoreRoutedPipe piperouted = (CoreRoutedPipe) pipe.pipe;
+
+		if (piperouted.getLogisticsModule() == null) {
+			return;
+		}
+			
+		if (slot <= 0) {
+			if (piperouted.getLogisticsModule() instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule();
+				if(!module.isSatelliteConnected())
+					module.satelliteId = 0;
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
+				return;
+			}
+		} else {
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleCrafting) {
+				final ModuleCrafting module = (ModuleCrafting)piperouted.getLogisticsModule().getSubModule(slot - 1);
+				if(!module.isSatelliteConnected())
+					module.satelliteId = 0;
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_SATELLITE_ID, packet.posX, packet.posY, packet.posZ, slot, module.satelliteId).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_MODULE_PRIORITY, packet.posX, packet.posY, packet.posZ, slot, module.priority).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInventoryChange(NetworkConstants.CRAFTING_MODULE_IMPORT_BACK, packet.posX, packet.posY, packet.posZ, slot, module._dummyInventory).getPacket(), (Player)player);
+				return;
+			}
+		}
+	}
 	private static void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {

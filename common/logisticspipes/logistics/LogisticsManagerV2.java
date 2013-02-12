@@ -20,6 +20,7 @@ import java.util.Set;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.ICraftMultipleItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -339,18 +340,22 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(r.destination.getSimpleID())) continue;
 
-			if (!(r.destination.getPipe() instanceof ICraftItems)) {
+			if (!(r.destination.getPipe() instanceof ICraftItems || r.destination.getPipe() instanceof ICraftMultipleItems)) {
 				if(r.destination instanceof IFilteringRouter) {
 					used.set(r.destination.getSimpleID(), true);
 					filterpipes.add(r);
 				}
 				continue;
 			}
-
-			ICraftItems crafter = (ICraftItems) r.destination.getPipe();
-			ItemIdentifier craftedItem = crafter.getCraftedItem();
-			if (craftedItem != null && !craftableItems.contains(craftedItem)){
-				craftableItems.add(craftedItem);
+			if(r.destination.getPipe() instanceof ICraftMultipleItems){
+				ICraftMultipleItems crafter = (ICraftMultipleItems) r.destination.getPipe();
+				crafter.getCraftedItems(craftableItems);
+			} else {
+				ICraftItems crafter = (ICraftItems) r.destination.getPipe();
+				ItemIdentifier craftedItem = crafter.getCraftedItem();
+				if (craftedItem != null && !craftableItems.contains(craftedItem)){
+					craftableItems.add(craftedItem);
+				}
 			}
 			used.set(r.destination.getSimpleID(), true);
 		}
@@ -372,21 +377,34 @@ outer:
 			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(n.destination.getSimpleID())) continue;
 
-			if (!(n.destination.getPipe() instanceof ICraftItems)) {
+			if (!(n.destination.getPipe() instanceof ICraftItems|| n.destination.getPipe() instanceof ICraftMultipleItems)) {
 				if(n.destination instanceof IFilteringRouter) {
 					used.set(n.destination.getSimpleID(), true);
 					filterpipes.add(n);
 				}
 				continue;
 			}
-
-			ICraftItems crafter = (ICraftItems) n.destination.getPipe();
-			ItemIdentifier craftedItem = crafter.getCraftedItem();
-			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
-			}
-			if (craftedItem != null && !craftableItems.contains(craftedItem)){
-				craftableItems.add(craftedItem);
+			if(n.destination.getPipe() instanceof ICraftMultipleItems) {
+				ICraftMultipleItems crafter = (ICraftMultipleItems) n.destination.getPipe();
+				List<ItemIdentifier> temp = new LinkedList<ItemIdentifier>();
+				crafter.getCraftedItems(temp);
+				block:
+					for(ItemIdentifier item : temp)
+					{
+						for(IFilter filter:filters) {
+							if(filter.isBlocked() == filter.isFilteredItem(item) || filter.blockCrafting()) continue block;
+						}
+						craftableItems.add(item);
+					}
+			} else {
+				ICraftItems crafter = (ICraftItems) n.destination.getPipe();
+				ItemIdentifier craftedItem = crafter.getCraftedItem();
+				for(IFilter filter:filters) {
+					if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
+				}
+				if (craftedItem != null && !craftableItems.contains(craftedItem)){
+					craftableItems.add(craftedItem);
+				}
 			}
 			used.set(n.destination.getSimpleID(), true);
 		}

@@ -3,7 +3,6 @@ package logisticspipes.request;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -21,7 +20,6 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -39,7 +37,7 @@ public class RequestManager {
 			messages.add(new ItemMessage(stack));
 			generateRequestTree(tree, node, requester);
 		}
-		if(tree.isDone()) {
+		if(tree.isAllDone()) {
 			handleRequestTree(tree);
 			if(log != null) {
 				log.handleSucessfullRequestOfList(messages);
@@ -60,7 +58,7 @@ public class RequestManager {
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
 		generateRequestTree(tree, tree, requester);
-		if(tree.isDone()) {
+		if(tree.isAllDone()) {
 			handleRequestTree(tree);
 			if(log != null) {
 				log.handleSucessfullRequestOf(new ItemMessage(tree.getStack()));
@@ -150,11 +148,9 @@ public class RequestManager {
 	
 	private static void handleRequestTree(RequestTree tree) {
 		tree.fullFillAll();
-		tree.registerExtras();
 	}
 	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		checkProvider(tree,treeNode,requester);
-		
 		if(treeNode.isDone()) {
 			return true;
 		}
@@ -163,19 +159,20 @@ public class RequestManager {
 			return true;
 		}
 		checkCrafting(tree,treeNode,requester);
-		return treeNode.isDone();
+		return treeNode.isAllDone();
 	}
 
 	private static void checkExtras(RequestTree tree, RequestTreeNode treeNode) {
-		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> map = tree.getExtrasFor(treeNode.getStack().getItem());
-		for (LogisticsExtraPromise extraPromise : map.keySet()){
+		LinkedList<LogisticsExtraPromise> map = tree.getExtrasFor(treeNode.getStack().getItem());
+		for (LogisticsExtraPromise extraPromise : map){
 			if(treeNode.isDone()) {
 				break;
 			}
+			if(extraPromise.numberOfItems == 0)
+				continue;
 			boolean valid = false;
-			ExitRoute source =extraPromise.sender.getRouter().getRouteTable().get(treeNode.target.getRouter().getSimpleID());
+			ExitRoute source = extraPromise.sender.getRouter().getRouteTable().get(treeNode.target.getRouter().getSimpleID());
 			if(source != null && !source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-				
 				for(ExitRoute node:treeNode.target.getRouter().getIRoutersByCost()) {
 					if(node.destination == extraPromise.sender.getRouter()) {
 						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
@@ -185,8 +182,8 @@ public class RequestManager {
 				}
 			}
 			if(valid) {
+				extraPromise.numberOfItems = Math.min(extraPromise.numberOfItems, treeNode.getMissingItemCount());
 				treeNode.addPromise(extraPromise);
-				map.get(extraPromise).usePromise(extraPromise);
 			}
 		}
 	}
@@ -194,6 +191,7 @@ public class RequestManager {
 	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		List<RequestTreeNode> lastNode = null;
 		CraftingTemplate lastNodeTemplate = null;
+		int nCraftingSetsNeeded = 0;
 		
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
@@ -221,7 +219,7 @@ outer:
 			}
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
 
-			int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+			nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 			
 			// for each thing needed to satisfy this promise
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
@@ -256,7 +254,6 @@ outer:
 			}
 			if(failed) {
 				for(RequestTreeNode subNode:lastNode) {
-					subNode.revertExtraUsage();
 					treeNode.remove(subNode);
 				}
 				continue;
@@ -266,13 +263,13 @@ outer:
 			for(IFilter filter:crafter.getValue2()) {
 				relays.add(filter);
 			}
-			while(treeNode.addPromise(template.generatePromise(relays)));
+			treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, relays));
 			lastNode = null;
 			break;
 		}
 		if(!handled) {
 			if(lastNode != null && lastNodeTemplate != null) {
-				while(treeNode.addPromise(lastNodeTemplate.generatePromise(new ArrayList<IRelayItem>())));
+				treeNode.addPromise(lastNodeTemplate.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
 				treeNode.subRequests.addAll(lastNode);
 			}
 		}
@@ -309,9 +306,12 @@ outer:
 		Collections.sort(validSources);
 		
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
-			
-			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe()))
+			if(treeNode.isDone()) {
+				break;
+			}
+			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe())) {
 				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
+			}
 		}
 	}
 

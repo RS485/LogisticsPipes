@@ -59,37 +59,23 @@ public class RequestTreeNode {
 		return request.stackSize - getPromiseItemCount();
 	}
 	
-	public boolean addPromise(LogisticsPromise promise) {
-		if(promise.item != request.getItem()) return false;
-		if(getMissingItemCount() == 0) return false;
+	public void addPromise(LogisticsPromise promise) {
+		if(promise.item != request.getItem()) throw new IllegalArgumentException("wrong item");
+		if(getMissingItemCount() == 0) throw new IllegalArgumentException("zero count");
 		if(promise.numberOfItems > getMissingItemCount()) {
 			int more = promise.numberOfItems - getMissingItemCount();
 			promise.numberOfItems = getMissingItemCount();
 			//Add Extra
 			LogisticsExtraPromise extra = new LogisticsExtraPromise();
-			extra.extraSource = this;
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
 			extra.relayPoints = new LinkedList<IRelayItem>();
 			extra.relayPoints.addAll(promise.relayPoints);
-			if(promise instanceof LogisticsExtraPromise) {
-				((LogisticsExtraPromise)promise).extraSource.addExtraPromise(extra);
-			} else {
-				extrapromises.add(extra);
-			}
+			extrapromises.add(extra);
 		}
-		if(promise.numberOfItems > 0) {
-			promises.add(promise);
-			return true;
-		}
-		return false;
-	}
-
-	public void usePromise(LogisticsExtraPromise promise) {
-		if (extrapromises.contains(promise)){
-			extrapromises.remove(promise);
-		}
+		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
+		promises.add(promise);
 	}
 
 	public void addExtraPromise(LogisticsExtraPromise promise) {
@@ -97,9 +83,13 @@ public class RequestTreeNode {
 	}
 	
 	public boolean isDone() {
+		return getMissingItemCount() <= 0;
+	}
+
+	public boolean isAllDone() {
 		boolean result = getMissingItemCount() <= 0;
 		for(RequestTreeNode node:subRequests) {
-			result &= node.isDone();
+			result &= node.isAllDone();
 		}
 		return result;
 	}
@@ -108,26 +98,6 @@ public class RequestTreeNode {
 		return request;
 	}
 
-	public void revertExtraUsage() {
-		List<LogisticsPromise> toRemove = new ArrayList<LogisticsPromise>(promises.size());
-		for(LogisticsPromise promise:promises) {
-			if(promise instanceof LogisticsExtraPromise) {
-				if(!((LogisticsExtraPromise)promise).provided) {
-					if(((LogisticsExtraPromise)promise).extraSource != this) {
-						((LogisticsExtraPromise)promise).extraSource.addExtraPromise((LogisticsExtraPromise)promise);
-						toRemove.add(promise);
-					}
-				}
-			}
-		}
-		for(LogisticsPromise promise:toRemove) {
-			promises.remove(promise);
-		}
-		for(RequestTreeNode node:subRequests) {
-			node.revertExtraUsage();
-		}
-	}
-	
 	public boolean remove(RequestTreeNode subNode) {
 		return subRequests.remove(subNode);		
 	}

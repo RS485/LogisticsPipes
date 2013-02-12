@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -25,7 +24,6 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SneakyOrientation;

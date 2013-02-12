@@ -3,7 +3,6 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDElectricManager;
 import logisticspipes.interfaces.IChassiePowerProvider;

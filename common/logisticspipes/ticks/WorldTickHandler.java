@@ -64,6 +64,14 @@ public class WorldTickHandler implements ITickHandler {
 				int y = tile.yCoord;
 				int z = tile.zCoord;
 				World world = tile.worldObj;
+
+				//TE or its chunk might've gone away while we weren't looking
+				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
+				if(tilecheck != tile) {
+					localList.remove(0);
+					continue;
+				}
+
 				TileGenericPipe newTile = BuildCraftProxy.logisticsTileGenericPipe.newInstance();
 				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {

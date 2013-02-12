@@ -1,6 +1,5 @@
 package logisticspipes.utils;
 
-import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 

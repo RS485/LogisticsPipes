@@ -3,7 +3,6 @@ package logisticspipes.network.packets;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.utils.ItemIdentifierStack;

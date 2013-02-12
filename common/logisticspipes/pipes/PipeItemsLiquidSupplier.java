@@ -1,8 +1,5 @@
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;

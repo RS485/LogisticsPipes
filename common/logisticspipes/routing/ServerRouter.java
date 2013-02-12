@@ -617,12 +617,22 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			SharedLSADatabase.set(simpleID, null);
 		}
 		SharedLSADatabasewriteLock.unlock();
+		this.removeAllInterests();
+		
 		clearPipeCache();
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
 		updateAdjacentAndLsa();
 		releaseSimpleID(simpleID);
 	}
 
+
+	private void removeAllInterests() {
+		this.removeGenericInterest();
+		for(ItemIdentifier i : _hasInterestIn) {
+			this.removeInterest(i);
+		}
+		_hasInterestIn.clear();
+	}
 
 	/**
 	 * Floodfill recheckAdjacent, leave _prevAdjacentRouter around for LSA updating

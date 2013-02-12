@@ -119,6 +119,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		EnumTag[] tagArray = tags.getAspectsSorted();
 		if (tagArray.length == 0 || tagArray == null) return null;
 		for (int i = 0; i < tagArray.length; i++) {
+			if (tagArray[i] == null) continue;
 			int ID = tagArray[i].id;
 			list.add(ID);
 		}

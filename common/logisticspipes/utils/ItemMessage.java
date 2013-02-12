@@ -37,12 +37,12 @@ public class ItemMessage {
 	
 	public static void compress(List<ItemMessage> input) {
 		for(int i=0;i<input.size();i++) {
+			ItemMessage one = input.get(i);
 			for(int j=i+1;j<input.size();j++) {
-				ItemMessage one = input.get(i);
 				ItemMessage two = input.get(j);
 				if(one.id == two.id && one.data == two.data && one.tag == two.tag) {
 					one.amount += two.amount;
-					input.remove(j);
+					input.remove(j--);
 				}
 			}
 		}

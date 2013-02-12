@@ -315,7 +315,6 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 		promise.item = providedItem;
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
 		promise.sender = this;
-		promise.extraSource = tree;
 		promise.provided = true;
 		List<IRelayItem> relays = new LinkedList<IRelayItem>();
 		for(IFilter filter:filters) {
@@ -358,7 +357,7 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		if (promise instanceof LogisticsExtraPromise && ((LogisticsExtraPromise)promise).provided) {
+		if (promise instanceof LogisticsExtraPromise) {
 			_extras -= promise.numberOfItems;
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);

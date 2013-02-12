@@ -1,7 +1,6 @@
 package logisticspipes.request;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -42,23 +41,49 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 	
-	public LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> getExtrasFor(ItemIdentifier item) {
-		LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras = new LinkedHashMap<LogisticsExtraPromise,RequestTreeNode>();
+	public LinkedList<LogisticsExtraPromise> getExtrasFor(ItemIdentifier item) {
+		LinkedList<LogisticsExtraPromise> extras = new LinkedList<LogisticsExtraPromise>();
 		checkForExtras(item,this,extras);
+		removeUsedExtras(item,this,extras);
 		return extras;
 	}
 
-	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedHashMap<LogisticsExtraPromise,RequestTreeNode> extras) {
+	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedList<LogisticsExtraPromise> extras) {
 		for(LogisticsExtraPromise extra:node.extrapromises) {
 			if(extra.item == item) {
-				extras.put(extra, node);
+				extras.add(extra.copy());
 			}
 		}
 		for(RequestTreeNode subNode:node.subRequests) {
 			checkForExtras(item,subNode,extras);
 		}
 	}
-	
+
+	private void removeUsedExtras(ItemIdentifier item, RequestTreeNode node, LinkedList<LogisticsExtraPromise> extras) {
+		for(LogisticsPromise promise:node.promises) {
+			if(promise.item != item) continue;
+			if(!(promise instanceof LogisticsExtraPromise)) continue;
+			LogisticsExtraPromise epromise = (LogisticsExtraPromise)promise;
+			if(epromise.provided) continue;
+			int usedcount = epromise.numberOfItems;
+			for(LogisticsExtraPromise extra : extras) {
+				if(extra.sender == epromise.sender) {
+					if(extra.numberOfItems >= usedcount) {
+						extra.numberOfItems -= usedcount;
+						usedcount = 0;
+						break;
+					} else {
+						usedcount -= extra.numberOfItems;
+						extra.numberOfItems = 0;
+					}
+				}
+			}
+		}
+		for(RequestTreeNode subNode:node.subRequests) {
+			removeUsedExtras(item,subNode,extras);
+		}
+	}
+
 	public void fullFillAll() {
 		fullFill(this);
 	}
@@ -66,6 +91,11 @@ public class RequestTree extends RequestTreeNode {
 	private void fullFill(RequestTreeNode node) {
 		for(LogisticsPromise promise:node.promises) {
 			promise.sender.fullFill(promise, node.target);
+		}
+		for(LogisticsPromise promise:node.extrapromises) {
+			if(promise.sender instanceof ICraftItems) {
+				((ICraftItems)promise.sender).registerExtras(promise.numberOfItems);
+			}
 		}
 		for(RequestTreeNode subNode:node.subRequests) {
 			fullFill(subNode);
@@ -119,21 +149,6 @@ public class RequestTree extends RequestTreeNode {
 		}
 		for(RequestTreeNode subNode:node.subRequests) {
 			sendUsedMessage(used, missing, subNode);
-		}
-	}
-
-	public void registerExtras() {
-		registerExtras(this);
-	}
-	
-	private void registerExtras(RequestTreeNode node) {
-		for(LogisticsPromise promise:node.extrapromises) {
-			if(promise.sender instanceof ICraftItems) {
-				((ICraftItems)promise.sender).registerExtras(promise.numberOfItems);
-			}
-		}
-		for(RequestTreeNode subNode:node.subRequests) {
-			registerExtras(subNode);
 		}
 	}
 }

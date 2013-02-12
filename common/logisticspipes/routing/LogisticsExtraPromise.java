@@ -1,7 +1,5 @@
 package logisticspipes.routing;
 
-import logisticspipes.request.RequestTreeNode;
-
 public class LogisticsExtraPromise extends LogisticsPromise {
 	public boolean provided;
 	

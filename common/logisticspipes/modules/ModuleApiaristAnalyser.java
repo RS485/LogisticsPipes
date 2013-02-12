@@ -10,7 +10,6 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;

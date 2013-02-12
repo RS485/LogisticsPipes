@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -23,11 +22,9 @@ import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 

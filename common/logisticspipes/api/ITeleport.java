@@ -1,13 +1,9 @@
 package logisticspipes.api;
  
 import java.util.Collection;
-import java.util.List;
- 
-import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
- 
-import buildcraft.api.transport.IPipedItem;
+
 import buildcraft.api.transport.IPipeConnection;
+import buildcraft.api.transport.IPipedItem;
  
 /**
  * Public interface implemented by TilesEntities which provide Teleport capabilities, and wish

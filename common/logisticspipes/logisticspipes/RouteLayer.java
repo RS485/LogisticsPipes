@@ -8,11 +8,8 @@
 
 package logisticspipes.logisticspipes;
 
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.ExitRoute;
 import net.minecraftforge.common.ForgeDirection;
 
 /**

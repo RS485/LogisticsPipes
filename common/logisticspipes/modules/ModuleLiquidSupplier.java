@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -15,12 +14,10 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInformationProvider {

@@ -3,7 +3,6 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -19,7 +18,6 @@ import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.entity.player.EntityPlayer;

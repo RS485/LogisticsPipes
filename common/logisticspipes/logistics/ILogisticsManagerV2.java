@@ -16,12 +16,10 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
-import net.minecraft.item.ItemStack;
 
 public interface ILogisticsManagerV2 {
 

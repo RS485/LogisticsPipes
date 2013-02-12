@@ -15,7 +15,6 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.Pair;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;

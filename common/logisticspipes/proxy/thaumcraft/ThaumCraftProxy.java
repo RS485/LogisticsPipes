@@ -1,6 +1,5 @@
 package logisticspipes.proxy.thaumcraft;
 
-import java.lang.reflect.Field;
 import java.util.LinkedList;
 import java.util.List;
 

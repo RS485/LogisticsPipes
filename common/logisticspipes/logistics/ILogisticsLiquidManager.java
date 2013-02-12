@@ -1,11 +1,10 @@
 package logisticspipes.logistics;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.TreeSet;
 
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;

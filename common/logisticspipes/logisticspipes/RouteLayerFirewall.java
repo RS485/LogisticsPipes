@@ -1,8 +1,6 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.routing.IFilteringRouter;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.FilteringRouter;
 import logisticspipes.routing.IRouter;
 import net.minecraftforge.common.ForgeDirection;
 

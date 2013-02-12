@@ -628,14 +628,10 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 
 	private void removeAllInterests() {
 		this.removeGenericInterest();
-		Iterator<ItemIdentifier> i2 = _hasInterestIn.iterator();
-		_hasInterestIn=null;
-		
-		Set<ItemIdentifier> newInterestPairs = null;
-		newInterestPairs = new TreeSet<ItemIdentifier>();
-		while(i2.hasNext()) { // remove extras
-			this.removeInterest(i2.next());			
+		for(ItemIdentifier i : _hasInterestIn) {
+			this.removeInterest(i);
 		}
+		_hasInterestIn.clear();
 	}
 
 	/**

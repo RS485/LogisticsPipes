@@ -5,8 +5,8 @@ import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.EntityData;
 

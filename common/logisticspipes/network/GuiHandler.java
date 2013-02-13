@@ -404,7 +404,7 @@ public class GuiHandler implements IGuiHandler {
 
 			case GuiIDs.GUI_Security_Station_ID:
 				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
-				dummy = new DummyContainer(player.inventory, null);
+				dummy = new DummyContainer(player, null, ((LogisticsSecurityTileEntity)tile));
 				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, -1);
 				dummy.addNormalSlotsForPlayerInventory(10, 210);
 				return dummy;

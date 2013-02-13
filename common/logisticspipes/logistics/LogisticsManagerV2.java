@@ -382,11 +382,13 @@ outer:
 
 			ICraftItems crafter = (ICraftItems) n.destination.getPipe();
 			ItemIdentifier craftedItem = crafter.getCraftedItem();
-			for(IFilter filter:filters) {
-				if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
-			}
-			if (craftedItem != null && !craftableItems.contains(craftedItem)){
-				craftableItems.add(craftedItem);
+			if(craftedItem != null) {
+				for(IFilter filter:filters) {
+					if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
+				}
+				if (!craftableItems.contains(craftedItem)){
+					craftableItems.add(craftedItem);
+				}
 			}
 			used.set(n.destination.getSimpleID(), true);
 		}

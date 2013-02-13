@@ -246,6 +246,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	
 	@Override
 	public LogisticsSecurityTileEntity getStation(UUID id) {
+		if(id == null) return null;
 		for(LogisticsSecurityTileEntity tile:_security.keySet()) {
 			if(id.equals(tile.getSecId())) {
 				return tile;

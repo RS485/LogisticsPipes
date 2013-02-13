@@ -53,6 +53,7 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.security.PermissionException;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -490,9 +491,14 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	
 	/* ComputerCraftCommands */
 	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
-	@CCQueued
-	public void reimport() {
+	@CCQueued(prefunction="testImportAccess")
+	public void reimport() throws Exception {
+		checkCCAccess();
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
+	}
+	
+	public void testImportAccess() throws PermissionException {
+		checkCCAccess();
 	}
 
 	@Override

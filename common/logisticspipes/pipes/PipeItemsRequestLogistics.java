@@ -21,7 +21,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
@@ -29,6 +28,7 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
 import logisticspipes.request.RequestManager;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
@@ -58,19 +58,16 @@ public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestIte
 	}
 	
 	public void openGui(EntityPlayer entityplayer) {
-		//ModLoader.getMinecraftInstance().displayGuiScreen(new GuiOrderer(this, entityplayer));
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, this.worldObj, this.xCoord , this.yCoord, this.zCoord);
 	}
 	
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
-			if (MainProxy.isServer(this.worldObj)) {
-				openGui(entityplayer);
-			}
+	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openRequest)) {
+			openGui(entityplayer);
+			return true;
 		}
-		
-		return super.blockActivated(world, i, j, k, entityplayer);
+		return false;
 	}
 	
 	@Override
@@ -184,6 +181,7 @@ outer:
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	@CCQueued(event="request_successfull\n      ---request_failed", realQueue=false)
 	public int makeRequest(Double itemId, Double amount) throws Exception {
+		checkCCAccess();
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
 		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this);

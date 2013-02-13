@@ -17,10 +17,12 @@ import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
@@ -44,6 +46,8 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
+import logisticspipes.security.PermissionException;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
@@ -516,31 +520,59 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public abstract ILogisticsModule getLogisticsModule();
 	
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
+	public final boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
+		SecuritySettings settings = null;
+		if(MainProxy.isServer(world)) {
+			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+			if(station != null) {
+				settings = station.getSecuritySettingsForPlayer(entityplayer);
+			}
+			if(handleClick(world, i, j, k, entityplayer, settings)) return true;
+		}
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule){
-				if(MainProxy.isServer(world)) {
-					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
-					return true;
+			if(MainProxy.isServer(world)) {
+				if(settings == null || settings.openGui) {
+					if(wrenchClicked(world, i, j, k, entityplayer)) {
+						return true;
+					}
 				} else {
-					return false;
+					entityplayer.sendChatToPlayer("Permission denied");
 				}
 			}
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(world)) {
-				return getUpgradeManager().openGui(entityplayer, this);
+				if(settings == null || settings.openUpgrades) {
+					if(upgradeManager(world, i, j, k, entityplayer)) {
+						return true;
+					}
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
 			}
 		}
-
-		
-		if(getUpgradeManager().tryIserting(entityplayer)) {
+		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(entityplayer)) {
 			return true;
 		}
-		
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
-
+	
+	protected boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		return false;
+	}
+	
+	protected boolean wrenchClicked(World world, int i, int j, int k,	EntityPlayer entityplayer) {
+		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule){
+			entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
+			return true;
+		}
+		return false;
+	}
+	
+	protected boolean upgradeManager(World world, int i, int j, int k,	EntityPlayer entityplayer) {
+		return getUpgradeManager().openGui(entityplayer, this);
+	}
+	
 	protected void clearCache() {
 		_cachedAdjacentInventories=null;
 	}
@@ -806,5 +838,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public boolean hasGenericInterests() {
 		return false;
+	}
+	
+	public ISecurityProvider getSecurityProvider() {
+		return SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+	}
+	
+	public void checkCCAccess() throws PermissionException {
+		ISecurityProvider sec = getSecurityProvider();
+		if(sec != null) {
+			if(!sec.getAllowCC()) {
+				throw new PermissionException();
+			}
+		}
 	}
 }

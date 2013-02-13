@@ -205,12 +205,9 @@ public class PipeItemsInvSysConnector extends RoutedPipe implements IDirectRouti
 	}
 	
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, world, i, j, k);
-			return true;
-		}
-		return false;
+	public boolean wrenchClicked(World world, int i, int j, int k,	EntityPlayer entityplayer) {
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, world, i, j, k);
+		return true;
 	}
 
 	@Override

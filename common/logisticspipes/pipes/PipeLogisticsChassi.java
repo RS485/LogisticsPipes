@@ -52,6 +52,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -399,23 +400,21 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	@Override
-	public boolean blockActivated(World world, int x, int y, int z,	EntityPlayer entityplayer) {
-		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, x, y, z, entityplayer);
+	public boolean handleClick(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
+		if (entityplayer.getCurrentEquippedItem() == null) return false;
 
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
 			if (entityplayer.isSneaking()){
-				if(MainProxy.isServer(this.worldObj)) {
-					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
-				}
+				((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				return true;
 			}
 		}
-
-		if(tryInsertingModule(entityplayer)) {
+		
+		if(!entityplayer.isSneaking() && (settings == null || settings.openGui) && tryInsertingModule(entityplayer)) {
 			return true;
 		}
 
-		return super.blockActivated(world, x, y, z, entityplayer);
+		return false;
 	}
 
 	/*** IProvideItems ***/

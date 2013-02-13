@@ -52,14 +52,10 @@ public class PipeItemsFirewall extends RoutedPipe {
 	}
 	
 	@Override
-	public boolean blockActivated(World world, int x, int y, int z, EntityPlayer entityplayer) {
-		if(SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
-			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
-			return true;
-		} else {
-			return super.blockActivated(world, x, y, z, entityplayer);
-		}
+	public boolean wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer) {
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
+		MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
+		return true;
 	}
 
 	public void ignoreDisableUpdateEntity() {

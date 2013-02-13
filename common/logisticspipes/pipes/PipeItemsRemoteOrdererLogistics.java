@@ -6,7 +6,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.proxy.MainProxy;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,14 +25,16 @@ public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequ
 	}
 
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && MainProxy.isServer(entityplayer.worldObj)) {
+	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
 			ItemStack orderer = entityplayer.getCurrentEquippedItem();
 			RemoteOrderer.connectToPipe(orderer, this);
 			entityplayer.sendChatToPlayer("Connected to pipe");
 			return true;
-		} 
-		return super.blockActivated(world, i, j, k, entityplayer);
+		} else if(!(settings == null || settings.openRequest)) {
+			entityplayer.sendChatToPlayer("Permission denied");
+		}
+		return false;
 	}
 
 	@Override

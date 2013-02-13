@@ -13,6 +13,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
+import buildcraft.BuildCraftTransport;
 
 public class SolderingStationRecipes {
 	
@@ -43,6 +44,7 @@ public class SolderingStationRecipes {
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),null,new ItemStack(Item.diamond,1,0),null,new ItemStack(Item.diamond,1,0),null,null,null}, new ItemStack(LogisticsPipes.LogisticsParts,1,2), null));
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),null,new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1),new ItemStack(BuildCraftFactory.hopperBlock,1)}, new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{null,new ItemStack(LogisticsPipes.LogisticsParts,1,3),null,null,new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),null,null,new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK2,1),null}, new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK3,1), null));
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{new ItemStack(Block.netherBrick,1),new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),new ItemStack(Block.netherBrick,1),new ItemStack(BuildCraftTransport.pipeItemsIron,1),new ItemStack(LogisticsPipes.LogisticsBasicPipe,1),new ItemStack(BuildCraftTransport.pipeItemsIron,1),new ItemStack(Block.netherBrick,1),new ItemStack(BuildCraftTransport.pipeItemsIron,1),new ItemStack(Block.netherBrick,1)}, new ItemStack(LogisticsPipes.LogisticsFirewall,1), null));
 	}
 	
 	public static List<SolderingStationRecipe> getRecipes() {

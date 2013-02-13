@@ -24,6 +24,8 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 			return "Soldering Station";
 		case LogisticsSolidBlock.LOGISTICS_POWER_JUNCTION:
 			return "Logistics Power Junction";
+		case LogisticsSolidBlock.LOGISTICS_SECURITY_STATION:
+			return "Logistics Security Station";
 		}
 		return super.getItemDisplayName(stack);
 	}

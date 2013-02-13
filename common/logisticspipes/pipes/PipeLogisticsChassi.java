@@ -26,6 +26,8 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.ICraftItems;
+import logisticspipes.interfaces.routing.ICraftMultipleItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
@@ -50,6 +52,7 @@ import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
@@ -75,7 +78,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
-public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver, ICraftMultipleItems {
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
@@ -612,5 +615,55 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				return true;			
 		}
 		return false;
+	}
+
+	/*** ICraftMultipleItems ***/
+	@Override 
+	public void registerExtras(int count)
+	{
+		if (!isEnabled()){
+			return;
+		}
+		
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			if (x instanceof ICraftItems){
+				((ICraftItems)x).registerExtras(count);
+			}
+		}
+	}
+	
+	@Override
+	public void addCraftings(List<CraftingTemplate> lst)
+	{
+		if (!isEnabled()){
+			return;
+		}
+		
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			if (x instanceof ICraftItems){
+				CraftingTemplate temp = ((ICraftItems)x).addCrafting();
+				if(temp != null && !lst.contains(temp))
+					lst.add(temp);
+			}
+		}
+	}
+	
+	@Override
+	public void getCraftedItems(List<ItemIdentifier> lst)
+	{
+		if (!isEnabled()){
+			return;
+		}
+		
+		for (int i = 0; i < this.getChassiSize(); i++){
+			ILogisticsModule x = _module.getSubModule(i);
+			if (x instanceof ICraftItems){
+				ItemIdentifier temp = ((ICraftItems)x).getCraftedItem();
+				if(temp != null && !lst.contains(temp))
+					lst.add(temp);
+			}
+		}
 	}
 }

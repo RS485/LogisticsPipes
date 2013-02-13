@@ -18,6 +18,7 @@ import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristRefiller;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
+import logisticspipes.modules.ModuleCrafting;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
@@ -100,6 +101,7 @@ public class ItemModule extends LogisticsItem {
 	//ACTIVE MODULES
 	public static final int PROVIDER = 500;
 	public static final int PROVIDER_MK2 = 501;
+	public static final int CRAFTING = 600;
 
 	private List<Module> modules = new ArrayList<Module>();
 
@@ -187,6 +189,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
 		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class, 98);
+		registerModule(CRAFTING					, "Crafting module"				, ModuleCrafting.class, 41);
 	}
 
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {

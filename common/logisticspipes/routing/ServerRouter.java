@@ -877,6 +877,10 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		if(specifics!=null) {
 			s.addAll(specifics);
 		}
+		specifics = _globalSpecificInterests.get(item.getIgnoringNBT());
+		if(specifics!=null) {
+			s.addAll(specifics);
+		}
 		return s;
 	}
 

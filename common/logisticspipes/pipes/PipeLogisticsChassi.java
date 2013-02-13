@@ -574,7 +574,7 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
 				} 
-				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
+				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getFuzzyInventoryUtil(inv).getItems();
 				l1.addAll(items);
 
 				boolean modulesInterestedInUndamged=false;

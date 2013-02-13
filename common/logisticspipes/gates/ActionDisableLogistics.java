@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.main;
+package logisticspipes.gates;
 
 import logisticspipes.textures.Textures;
 import buildcraft.api.gates.Action;

@@ -91,6 +91,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	private boolean init = false;
 	private boolean doContentUpdate = true;
 	
+	public boolean waitingForCraft = false;
+	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new BaseLogicCrafting(), itemID);
 	}
@@ -202,7 +204,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			checkContentUpdate();
 		}
 		
-		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
+		if (worldObj.getWorldTime() % 6 != 0) return;
+
+		waitingForCraft = false;
+		
+		if((!_orderManager.hasOrders() && _extras < 1)) return;
+		
+		waitingForCraft = true;
 		
 		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ) {

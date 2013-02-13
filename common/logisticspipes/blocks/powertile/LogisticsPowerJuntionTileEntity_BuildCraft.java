@@ -30,7 +30,7 @@ import buildcraft.api.power.PowerFramework;
 public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	
 	// true if it needs more power, turns off at full, turns on at 50%.
-	boolean needMorePowerTriggerCheck=true;
+	public boolean needMorePowerTriggerCheck = true;
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int MAX_STORAGE = 2000000;

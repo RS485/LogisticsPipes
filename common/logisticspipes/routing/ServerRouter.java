@@ -40,12 +40,10 @@ import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRouter> {
@@ -56,7 +54,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
 	
 	// things this pipe is interested in (either providing or sinking)
-	Set<ItemIdentifier> _hasInterestIn = new TreeSet();
+	Set<ItemIdentifier> _hasInterestIn = new TreeSet<ItemIdentifier>();
 	boolean _hasGenericInterest;
 	
 	static final int REFRESH_TIME=20;
@@ -734,13 +732,6 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	}
 
 	/************* IROUTER *******************/
-	
-	
-	@Override
-	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	@Override
 	public boolean isRoutedExit(ForgeDirection o){

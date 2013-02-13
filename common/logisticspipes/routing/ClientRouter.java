@@ -11,11 +11,9 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
 public class ClientRouter implements IRouter {
@@ -38,15 +36,9 @@ public class ClientRouter implements IRouter {
 		return -420;
 	}
 
-
 	@Override
 	public void update(boolean fullRefresh) {
 		
-	}
-
-	@Override
-	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin) {
-		//Not On Client Side
 	}
 
 	@Override

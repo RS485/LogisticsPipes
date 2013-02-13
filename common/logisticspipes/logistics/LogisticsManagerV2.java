@@ -59,7 +59,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
 		if (sourceRouter == null) return null;
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
-		List<ExitRoute> validDestinations = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))

@@ -195,7 +195,7 @@ public class RequestManager {
 		
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 			ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)
@@ -297,7 +297,7 @@ outer:
 		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 				ExitRoute e = r.getDistanceTo(requester.getRouter());
 				if (e!=null)

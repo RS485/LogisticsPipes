@@ -16,9 +16,7 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
 
 public interface IRouter extends IPowerRouter {
 	public interface IRAction {
@@ -28,7 +26,6 @@ public interface IRouter extends IPowerRouter {
 	}
 	public void destroy();
 	public void update(boolean fullRefresh);
-	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
 	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 	
 	public boolean isRoutedExit(ForgeDirection connection);

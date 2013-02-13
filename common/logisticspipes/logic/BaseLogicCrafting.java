@@ -11,7 +11,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -63,7 +63,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final List<ExitRoute> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			RoutedPipe satPipe = satellite.getRoutedPipe();
+			CoreRoutedPipe satPipe = satellite.getRoutedPipe();
 			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
 				continue;
 			IRouter satRouter = satPipe.getRouter();
@@ -117,7 +117,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final List<ExitRoute> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				RoutedPipe satPipe = satellite.getRoutedPipe();
+				CoreRoutedPipe satPipe = satellite.getRoutedPipe();
 				if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
 					continue;
 				IRouter satRouter = satPipe.getRouter();
@@ -134,7 +134,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public IRouter getSatelliteRouter() {
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
 			if (satellite.satelliteId == satelliteId) {
-				RoutedPipe satPipe = satellite.getRoutedPipe();
+				CoreRoutedPipe satPipe = satellite.getRoutedPipe();
 				if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
 					continue;
 				return satPipe.getRouter();
@@ -194,7 +194,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			// FIXME try partial requests
-			if (RequestManager.request(iterator.next(), ((RoutedPipe) container.pipe), null)) {
+			if (RequestManager.request(iterator.next(), ((CoreRoutedPipe) container.pipe), null)) {
 				iterator.remove();
 			}
 		}

@@ -16,7 +16,7 @@ import logisticspipes.logisticspipes.RouteLayerFirewall;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBitSet;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
 
-public class PipeItemsFirewall extends RoutedPipe {
+public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	private IRouter[] routers = new IRouter[ForgeDirection.VALID_DIRECTIONS.length];
 	private String[] routerIds = new String[ForgeDirection.VALID_DIRECTIONS.length];

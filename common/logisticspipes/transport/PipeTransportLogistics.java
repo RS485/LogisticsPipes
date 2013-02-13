@@ -23,7 +23,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -50,7 +50,7 @@ import buildcraft.transport.TileGenericPipe;
 public class PipeTransportLogistics extends PipeTransportItems {
 
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
-	private RoutedPipe _pipe = null;
+	private CoreRoutedPipe _pipe = null;
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
 	private Method reverseItem = null;
 	private Field toRemove = null;
@@ -143,9 +143,9 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		super.performRemoval();
 	}
 
-	private RoutedPipe getPipe() {
+	private CoreRoutedPipe getPipe() {
 		if (_pipe == null){
-			_pipe = (RoutedPipe) container.pipe;
+			_pipe = (CoreRoutedPipe) container.pipe;
 		}
 		return _pipe;
 	}

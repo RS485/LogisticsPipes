@@ -34,7 +34,6 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
@@ -112,7 +111,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		}		
 	}
 
-	public HashMap<RoutedPipe, ExitRoute> _adjacent = new HashMap<RoutedPipe, ExitRoute>();
+	public HashMap<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
 	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 	
@@ -284,7 +283,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		boolean adjacentChanged = false;
 		CoreRoutedPipe thisPipe = getPipe();
 		if (thisPipe == null) return false;
-		HashMap<RoutedPipe, ExitRoute> adjacent;
+		HashMap<CoreRoutedPipe, ExitRoute> adjacent;
 		List<ILogisticsPowerProvider> power;
 		if(thisPipe instanceof PipeItemsFirewall) {
 			adjacent = PathFinder.getConnectedRoutingPipes(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, ((PipeItemsFirewall)thisPipe).getRouterSide(this));
@@ -294,7 +293,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			power = this.getConnectedPowerProvider();
 		}
 		
-		for(RoutedPipe pipe : adjacent.keySet()) {
+		for(CoreRoutedPipe pipe : adjacent.keySet()) {
 			if(pipe.stillNeedReplace()) {
 				return false;
 			}
@@ -319,7 +318,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			}
 		}
 		
-		for (RoutedPipe pipe : _adjacent.keySet()) {
+		for (CoreRoutedPipe pipe : _adjacent.keySet()) {
 			if(!adjacent.containsKey(pipe)) {
 				adjacentChanged = true;
 			}
@@ -330,7 +329,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 				adjacentChanged = true;
 		}
 		
-		for (Entry<RoutedPipe, ExitRoute> pipe : adjacent.entrySet())	{
+		for (Entry<CoreRoutedPipe, ExitRoute> pipe : adjacent.entrySet())	{
 			ExitRoute oldExit = _adjacent.get(pipe.getKey());
 			if (oldExit==null){
 				adjacentChanged = true;
@@ -352,7 +351,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		if (adjacentChanged) {
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
 			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
-			for(Entry<RoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
+			for(Entry<CoreRoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
 				adjacentRouter.put(((CoreRoutedPipe) pipe.getKey()).getRouter(pipe.getValue().insertOrientation), pipe.getValue());
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 					routedexits.add(pipe.getValue().exitOrientation);
@@ -367,13 +366,13 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		return adjacentChanged;
 	}
 	
-	private void checkSecurity(HashMap<RoutedPipe, ExitRoute> adjacent) {
+	private void checkSecurity(HashMap<CoreRoutedPipe, ExitRoute> adjacent) {
 		CoreRoutedPipe pipe = getPipe();
 		if(pipe == null) return;
 		UUID id = pipe.getSecurityID();
-		List<RoutedPipe> toRemove = new ArrayList<RoutedPipe>();
+		List<CoreRoutedPipe> toRemove = new ArrayList<CoreRoutedPipe>();
 		if(id != null) {
-			for(Entry<RoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
+			for(Entry<CoreRoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
 				if(!entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) && !entry.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom)) continue;
 				UUID thatId = entry.getKey().getSecurityID();
 				if(!(pipe instanceof PipeItemsFirewall)) {
@@ -390,12 +389,12 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 					}
 				}
 			}
-			for(Entry<RoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
+			for(Entry<CoreRoutedPipe, ExitRoute> entry:adjacent.entrySet()) {
 				if(sideDisconnected[entry.getValue().exitOrientation.ordinal()]) {
 					toRemove.add(entry.getKey());
 				}
 			}
-			for(RoutedPipe remove:toRemove) {
+			for(CoreRoutedPipe remove:toRemove) {
 				adjacent.remove(remove);
 			}
 		}

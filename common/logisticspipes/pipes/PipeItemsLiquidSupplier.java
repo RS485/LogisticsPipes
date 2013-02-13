@@ -4,7 +4,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -21,7 +21,7 @@ import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public class PipeItemsLiquidSupplier extends RoutedPipe implements IRequestItems, IItemTravelingHook{
+public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestItems, IItemTravelingHook{
 
 	
 	public PipeItemsLiquidSupplier(int itemID) {

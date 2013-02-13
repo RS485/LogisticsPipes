@@ -9,7 +9,7 @@ import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -28,7 +28,7 @@ import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public abstract class LiquidRoutedPipe extends RoutedPipe implements IItemTravelingHook {
+public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTravelingHook {
 
 	private WorldUtil worldUtil;
 	

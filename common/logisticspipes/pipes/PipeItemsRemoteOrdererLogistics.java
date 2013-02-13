@@ -5,7 +5,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logic.TemporaryLogic;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -13,7 +13,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
-public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequestItems {
+public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
 	public PipeItemsRemoteOrdererLogistics(int itemID) {
 		super(new TemporaryLogic(), itemID);

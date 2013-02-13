@@ -20,7 +20,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
@@ -39,7 +39,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
 @CCType(name = "LogisticsPipes:Request")
-public class PipeItemsRequestLogistics extends RoutedPipe implements IRequestItems, IRequestAPI {
+public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IRequestItems, IRequestAPI {
 	
 	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<Map<ItemIdentifier,Integer>>(); 
 

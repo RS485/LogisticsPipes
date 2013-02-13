@@ -24,7 +24,7 @@ import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -39,7 +39,7 @@ import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
-public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 	
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();

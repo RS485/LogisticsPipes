@@ -14,7 +14,7 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.ModuleApiaristAnalyser;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -33,7 +33,7 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
-public class PipeItemsApiaristAnalyser extends RoutedPipe implements IInventoryProvider, ISendRoutedItem {
+public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInventoryProvider, ISendRoutedItem {
 
 	private ModuleApiaristAnalyser analyserModule;
 

@@ -19,7 +19,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -31,7 +31,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 
-public class PipeItemsBasicLogistics extends RoutedPipe {
+public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private ModuleItemSink itemSinkModule;
 

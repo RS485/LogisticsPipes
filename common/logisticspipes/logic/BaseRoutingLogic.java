@@ -16,7 +16,7 @@ import java.util.Set;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
@@ -30,8 +30,8 @@ import buildcraft.transport.pipes.PipeLogic;
 
 public abstract class BaseRoutingLogic extends PipeLogic{
 	
-	public RoutedPipe getRoutedPipe(){
-		return (RoutedPipe) this.container.pipe;
+	public CoreRoutedPipe getRoutedPipe(){
+		return (CoreRoutedPipe) this.container.pipe;
 	}
 	
 	public abstract void onWrenchClicked(EntityPlayer entityplayer);
@@ -124,7 +124,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		
 		System.out.println("ID: " + r.getSimpleID());
 		System.out.println("---------CONNECTED TO---------------");
-		for (RoutedPipe adj : sr._adjacent.keySet()) {
+		for (CoreRoutedPipe adj : sr._adjacent.keySet()) {
 			System.out.println(adj.getRouter().getSimpleID());
 		}
 		System.out.println();

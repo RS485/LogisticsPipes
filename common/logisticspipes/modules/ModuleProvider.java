@@ -340,6 +340,8 @@ outer:
 	}
 	
 	private void checkUpdate(EntityPlayer player) {
+		if(localModeWatchers.size() == 0 && player == null)
+			return;
 		displayList.clear();
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));

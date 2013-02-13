@@ -122,18 +122,19 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			return(unknownItem);
 		} else {
 			ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier> itemNBTList = _itemIdentifierTagCache.get(itemKey);
+			FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
 			if(itemNBTList!=null){
-				ItemIdentifier unknownItem = itemNBTList.get(tag);
-				if(unknownItem!=null){
+				ItemIdentifier unknownItem = itemNBTList.get(tagwithfixedname);
+				if(unknownItem!=null) {
 					return unknownItem;
 				}
 			} else {
 				itemNBTList = new ConcurrentHashMap<FinalNBTTagCompound, ItemIdentifier>(16, 0.5f, 1);
 				_itemIdentifierTagCache.put(itemKey, itemNBTList);
 			}
-			FinalNBTTagCompound finaltag = new FinalNBTTagCompound(tag);
+			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
 			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, getUnusedId());
-			if(LogisticsPipes.DEBUG){
+			if(LogisticsPipes.DEBUG) {
 				checkNBTbadness(unknownItem, tag);
 			}
 			itemNBTList.put(finaltag,unknownItem);
@@ -576,9 +577,9 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		} else if(nbt instanceof NBTTagCompound) {
 			Field fMap;
 			try {
-				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
-			} catch(Exception e) {
 				fMap = NBTTagCompound.class.getDeclaredField("a");
+			} catch(Exception e) {
+				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
 			}
 			fMap.setAccessible(true);
 			@SuppressWarnings("unchecked")

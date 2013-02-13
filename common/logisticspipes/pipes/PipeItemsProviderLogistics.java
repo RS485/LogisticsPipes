@@ -180,13 +180,6 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return Textures.LOGISTICSPIPE_PROVIDER_TEXTURE;
 	}
 
-	private int getCachedAvailableItemCount(ItemIdentifier item) {
-		Integer i = displayMap.get(item);
-		if(i==null)
-			return 0;
-		return i;
-	}
-
 	private int getAvailableItemCount(ItemIdentifier item) {
 		if (!isEnabled()){
 			return 0;
@@ -198,11 +191,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	public void enabledUpdateEntity() {
 		
 		if(worldObj.getWorldTime() % 6 == 0) {
-			updateInv();
+			updateInv(null);
 		}
 		
 		if (doContentUpdate) {
-			checkContentUpdate();
+			checkContentUpdate(null);
 		}
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
@@ -232,12 +225,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		}
 		
 		// Check the transaction and see if we have helped already
-		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
-		if (donePromisses.containsKey(tree.getStack().getItem())){
-			canProvide -= donePromisses.get(tree.getStack().getItem());
-		}
-		if (canProvide < 1) return;
-		canProvide = getAvailableItemCount(tree.getStack().getItem());
+		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())){
 			canProvide -= donePromisses.get(tree.getStack().getItem());
 		}
@@ -337,7 +325,7 @@ outer:
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
 	}
 	
-	private void updateInv() {
+	private void updateInv(EntityPlayer player) {
 		displayList.clear();
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));
@@ -350,6 +338,8 @@ outer:
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, displayList).getPacket(), localModeWatchers);
+		} else if(player != null) {
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, displayList).getPacket(), (Player)player);
 		}
 	}
 
@@ -358,13 +348,15 @@ outer:
 		doContentUpdate = true;
 	}
 
-	private void checkContentUpdate() {
+	private void checkContentUpdate(EntityPlayer player) {
 		doContentUpdate = false;
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
 		if(!oldManagerList.equals(all)) {
 			oldManagerList.clear();
 			oldManagerList.addAll(all);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
+		} else if(player != null) {
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), (Player)player);
 		}
 	}
 	
@@ -372,8 +364,8 @@ outer:
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, oldList).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, oldManagerList).getPacket(), (Player)player);
+			updateInv(player);
+			checkContentUpdate(player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -381,7 +373,7 @@ outer:
 
 	@Override
 	public void playerStopWatching(EntityPlayer player, int mode) {
-		super.playerStartWatching(player, mode);
+		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
 	}
 

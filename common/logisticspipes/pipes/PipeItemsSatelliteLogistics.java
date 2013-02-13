@@ -154,7 +154,7 @@ public class PipeItemsSatelliteLogistics extends RoutedPipe implements IRequestI
 
 	@Override
 	public void playerStopWatching(EntityPlayer player, int mode) {
-		super.playerStartWatching(player, mode);
+		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
 	}
 

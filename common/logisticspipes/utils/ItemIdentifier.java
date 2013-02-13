@@ -134,9 +134,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			}
 			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
 			ItemIdentifier unknownItem = new ItemIdentifier(itemID, itemUndamagableDamage, finaltag, getUnusedId());
-			if(LogisticsPipes.DEBUG) {
-				checkNBTbadness(unknownItem, tag);
-			}
+			checkNBTbadness(unknownItem, tag);
 			itemNBTList.put(finaltag,unknownItem);
 			_itemIdentifierIdCache.put(unknownItem.uniqueID, unknownItem);
 			return(unknownItem);
@@ -551,12 +549,12 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
 		if(nbt.getName() == "") {
-			System.out.println("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
+			LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
 		}
 		try {
 			String s = checkNBTbadness_recurse(nbt);
 			if(s != null) {
-				System.out.println("Bad item " + item.getDebugName() + " : " + s);
+				LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : " + s);
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

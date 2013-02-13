@@ -110,7 +110,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		return ForgeDirection.UNKNOWN;
 	}
 
-	public boolean idIdforOtherSide(int id) {
+	public boolean isIdforOtherSide(int id) {
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(getRouter(dir).getSimpleID() == id) {
 				return true;

@@ -95,16 +95,17 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 
 	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
-		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(stack.getUndamaged()) || filter.blockRouting()) continue;
-		}
 		List<ExitRoute> firewall = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 
 		if(result == null) {
 			result = new Pair3<Integer, SinkReply, List<IFilter>>(null, null, null);
 		}
-
+		
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.isFilteredItem(stack.getUndamaged()) || filter.blockRouting()) return result;
+		}
+		
 		for (ExitRoute candidateRouter : validDestinations){
 			if (excludeSource) {
 				if(candidateRouter.destination.getId().equals(sourceRouter.getId())) continue;

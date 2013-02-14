@@ -565,13 +565,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
-				TileEntity tile = getPointedTileEntity();
-				if (!(tile instanceof IInventory)) continue;
-				if (tile instanceof TileGenericPipe) continue;
-				
-				IInventory inv = (IInventory)tile;
+				IInventory inv = getRawInventory();
+				if (inv == null) continue;
 				if (inv instanceof ISidedInventory) {
-					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
+					inv = new SidedInventoryAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN);
 				} 
 				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getFuzzyInventoryUtil(inv).getItems();
 				l1.addAll(items);

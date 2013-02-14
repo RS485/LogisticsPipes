@@ -27,6 +27,7 @@ import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.pipes.PipeItemsDiamond;
 import buildcraft.transport.pipes.PipeItemsIron;
 import buildcraft.transport.pipes.PipeItemsObsidian;
+import buildcraft.transport.pipes.PipeStructureCobblestone;
 
 
 /**
@@ -181,6 +182,9 @@ class PathFinder {
 					nextConnectionFlags.remove(PipeRoutingConnectionType.canPowerFrom);
 				}
 				if(currentPipe.pipe instanceof PipeItemsObsidian){	//Obsidian seperates networks
+					continue;
+				}
+				if(currentPipe.pipe instanceof PipeStructureCobblestone){	//don't recurse onto structure pipes.
 					continue;
 				}
 				if(currentPipe.pipe instanceof PipeItemsDiamond){	//Diamond only allows power through

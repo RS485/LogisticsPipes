@@ -54,9 +54,7 @@ public class PacketLiquidUpdate extends PacketCoordinates {
 
 		renderCache = transLiq.renderCache;
 
-		byte[] dBytes = new byte[3];
-		data.read(dBytes);
-		delta = fromByteArray(dBytes);
+		delta = BitSetHelper.read(data);
 
 		// System.out.printf("read %d, %d, %d = %s, %s%n", posX, posY, posZ, Arrays.toString(dBytes), delta);
 
@@ -85,9 +83,8 @@ public class PacketLiquidUpdate extends PacketCoordinates {
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
 
-		byte[] dBytes = toByteArray(delta);
 		// System.out.printf("write %d, %d, %d = %s, %s%n", posX, posY, posZ, Arrays.toString(dBytes), delta);
-		data.write(dBytes);
+		BitSetHelper.write(data, delta);
 
 		for (ForgeDirection dir : ForgeDirection.values()) {
 			LiquidStack liquid = renderCache[dir.ordinal()];
@@ -114,25 +111,5 @@ public class PacketLiquidUpdate extends PacketCoordinates {
 				}
 			}
 		}
-	}
-
-	public static BitSet fromByteArray(byte[] bytes) {
-		BitSet bits = new BitSet();
-		for (int i = 0; i < bytes.length * 8; i++) {
-			if ((bytes[bytes.length - i / 8 - 1] & (1 << (i % 8))) > 0) {
-				bits.set(i);
-			}
-		}
-		return bits;
-	}
-
-	public static byte[] toByteArray(BitSet bits) {
-		byte[] bytes = new byte[3];
-		for (int i = 0; i < bits.length(); i++) {
-			if (bits.get(i)) {
-				bytes[bytes.length - i / 8 - 1] |= 1 << (i % 8);
-			}
-		}
-		return bytes;
 	}
 }

@@ -145,9 +145,9 @@ class PathFinder {
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if(root && !ForgeDirection.UNKNOWN.equals(side) && !direction.equals(side)) continue;
 			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
-			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
-			p.moveForwards(1);
-			TileEntity tile = startPipe.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+
+			// tile may be up to 1 second old, but any neighbour pipe change will cause an immidiate update here, so we know that if it has changed, it isn't a pipe that has done so.
+			TileEntity tile = startPipe.tileBuffer[direction.ordinal()].getTile();
 			
 			if (tile == null) continue;
 			boolean isDirectConnection = false;
@@ -221,7 +221,7 @@ class PathFinder {
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
-					p.moveBackwards(1);
+					Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
 					pathPainter.addLaser(startPipe.worldObj, p, direction);
 				}
 			}

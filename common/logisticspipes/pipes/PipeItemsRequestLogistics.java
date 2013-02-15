@@ -192,9 +192,9 @@ outer:
 	public List<Pair<ItemIdentifier, Integer>> getAvailableItems() {
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
 		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<Pair<ItemIdentifier, Integer>>();
-		for(ItemIdentifier item:items.keySet()) {
-			int amount = items.get(item);
-			list.add(new Pair<ItemIdentifier,Integer>(item, amount));
+		for(Entry<ItemIdentifier, Integer> item:items.entrySet()) {
+			int amount = item.getValue();
+			list.add(new Pair<ItemIdentifier,Integer>(item.getKey(), amount));
 		}
 		return list;
 	}

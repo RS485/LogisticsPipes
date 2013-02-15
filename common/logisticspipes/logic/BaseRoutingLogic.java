@@ -11,10 +11,12 @@ package logisticspipes.logic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -39,7 +41,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	public abstract void destroy();
 	
 	protected int throttleTime = 20;
-	private int throttleTimeLeft = 0;
+	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
 	
 	@Override

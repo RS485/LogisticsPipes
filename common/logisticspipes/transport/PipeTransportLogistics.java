@@ -27,6 +27,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.item.EntityItem;
@@ -47,7 +48,7 @@ import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public class PipeTransportLogistics extends PipeTransportItems {
+public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
 
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
 	private CoreRoutedPipe _pipe = null;
@@ -71,36 +72,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 		}
-		travelHook = new IItemTravelingHook() {
-			@SuppressWarnings("unchecked")
-			@Override
-			public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
-				((PipeTransportLogistics)pipe).markChunkModified(tile);
-				try {
-					Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
-					toRemoveList.add(data.item.getEntityId());
-					handleTileReached(data, tile);
-					if(!toRemoveList.contains(data.item.getEntityId())) {
-						notToRemove.add(data.item.getEntityId());
-						toRemoveList.add(data.item.getEntityId());
-					}
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
-			}
-
-			@Override
-			public void drop(PipeTransportItems pipe, EntityData data) {
-				//Reduce Drop Speed
-				data.item.setSpeed(0.0F);
-			}
-
-			@Override
-			public void centerReached(PipeTransportItems pipe, EntityData data) {
-			}
-		};
+		travelHook = this;
 	}
 
 	@Override
@@ -192,6 +164,19 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
 		data.item.setWorld(worldObj);
+		
+		if(!(data.item instanceof IRoutedItem) && data.item != null) {
+			IPipedItem result = getPipe().getQueuedForItemStack(data.item.getItemStack());
+			if(result != null) {
+				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
+				if(routedItem instanceof RoutedEntityItem && result instanceof RoutedEntityItem) {
+					((RoutedEntityItem)routedItem).useInformationFrom((RoutedEntityItem)result);
+				} else {
+					LogisticsPipes.log.warning("Unable to transfer information from ont Item to another. (" + routedItem.getClass().getName() + ", " + result.getClass().getName() + ")");
+				}
+			}
+		}
+		
 		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
 		ForgeDirection value;
 		if(this.getPipe().stillNeedReplace()){
@@ -296,6 +281,9 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	
 	//BC copy
 	private void handleTileReached(EntityData data, TileEntity tile) {
+		if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
+			SimpleServiceLocator.specialtileconnection.transmit(tile, data);
+		}
 		if (tile instanceof IPipeEntry)
 			((IPipeEntry) tile).entityEntering(data.item, data.output);
 		else if (tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportItems) {
@@ -378,4 +366,32 @@ public class PipeTransportLogistics extends PipeTransportItems {
 	}
 
 	protected void insertedItemStack(EntityData data, TileEntity tile) {}
+	
+	/* --- IItemTravelHook --- */
+	@SuppressWarnings("unchecked")
+	@Override
+	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+		((PipeTransportLogistics)pipe).markChunkModified(tile);
+		try {
+			Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+			toRemoveList.add(data.item.getEntityId());
+			handleTileReached(data, tile);
+			if(!toRemoveList.contains(data.item.getEntityId())) {
+				notToRemove.add(data.item.getEntityId());
+				toRemoveList.add(data.item.getEntityId());
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void drop(PipeTransportItems pipe, EntityData data) {
+		data.item.setSpeed(0.0F);
+	}
+
+	@Override
+	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 }

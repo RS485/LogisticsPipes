@@ -342,4 +342,15 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			destinationint=rm.getIDforUUID(destinationUUID);
 		}		
 	}
+	
+	public void useInformationFrom(RoutedEntityItem result) {
+		destinationint = result.destinationint;
+		destinationUUID = result.destinationUUID;
+		thisItem = result.thisItem;
+		_doNotBuffer = result._doNotBuffer;
+		arrived = result.arrived;
+		relays = result.relays;
+		_transportMode = result._transportMode;
+		jamlist = result.jamlist;
+	}
 }

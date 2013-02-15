@@ -64,6 +64,7 @@ import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
@@ -75,6 +76,7 @@ import buildcraft.api.gates.IAction;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
+import buildcraft.transport.EntityData;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
@@ -117,7 +119,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public int server_routing_table_size = 0;
 	
-	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>(); 
+	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>();
+	
+	protected final ArrayList<IPipedItem> queuedDataForUnroutedItems = new ArrayList<IPipedItem>();
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 
@@ -796,6 +800,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				throw new PermissionException();
 			}
 		}
+	}
+
+	public void queueUnroutedItemInformation(EntityData data) {
+		if(data.item != null && data.item.getItemStack() != null) {
+			data.item.setItemStack(data.item.getItemStack().copy());
+			queuedDataForUnroutedItems.add(data.item);
+		}
+	}
+	
+	public IPipedItem getQueuedForItemStack(ItemStack stack) {
+		for(IPipedItem item:queuedDataForUnroutedItems) {
+			if(ItemIdentifierStack.GetFromStack(item.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
+				queuedDataForUnroutedItems.remove(item);
+				return item;
+			}
+		}
+		return null;
 	}
 	
 	/* --- Trigger --- */

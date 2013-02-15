@@ -8,6 +8,7 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayDeque;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,6 +19,7 @@ import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -123,7 +125,7 @@ class PathFinder {
 		setVisited.add(startPipe);
 		
 		if(startPipe.pipe != null) {
-			List<TileGenericPipe> pipez = SimpleServiceLocator.specialconnection.getConnectedPipes(startPipe);
+			List<TileGenericPipe> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe);
 			for (TileGenericPipe specialpipe : pipez){
 				if (setVisited.contains(specialpipe)) {
 					//Don't go where we have been before
@@ -141,19 +143,37 @@ class PathFinder {
 			}
 		}
 		
+		ArrayDeque<Pair<TileEntity,ForgeDirection>> connections = new ArrayDeque<Pair<TileEntity,ForgeDirection>>();
 		
 		//Recurse in all directions
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if(root && !ForgeDirection.UNKNOWN.equals(side) && !direction.equals(side)) continue;
-			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
 
 			// tile may be up to 1 second old, but any neighbour pipe change will cause an immidiate update here, so we know that if it has changed, it isn't a pipe that has done so.
 			TileEntity tile = startPipe.tileBuffer[direction.ordinal()].getTile();
 			
 			if (tile == null) continue;
+			connections.add(new Pair<TileEntity, ForgeDirection>(tile, direction));
+		}
+		
+		while(!connections.isEmpty()) {
+			Pair<TileEntity,ForgeDirection> pair = connections.pollFirst();
+			TileEntity tile = pair.getValue1();
+			ForgeDirection direction = pair.getValue2();
+			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
 			boolean isDirectConnection = false;
 			int resistance = 0;
-						
+			
+			if(root) {
+				List<TileGenericPipe> list = SimpleServiceLocator.specialtileconnection.getConnectedPipes(tile);
+				if(!list.isEmpty()) {
+					for(TileGenericPipe pipe:list) {
+						connections.add(new Pair<TileEntity,ForgeDirection>(pipe, direction));
+					}
+					continue;
+				}
+			}
+			
 			if(tile instanceof IInventory) {
 				if(startPipe.pipe instanceof IDirectRoutingConnection) {
 					if(SimpleServiceLocator.connectionManager.hasDirectConnection(((CoreRoutedPipe)startPipe.pipe).getRouter())) {

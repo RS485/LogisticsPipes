@@ -535,8 +535,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		if(handleClick(world, i, j, k, entityplayer, settings)) return true;
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			wrenchClicked(world, i, j, k, entityplayer, settings);
-			return true;
+			return wrenchClicked(world, i, j, k, entityplayer, settings);
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(world)) {
@@ -558,7 +557,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
-	protected void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+	protected boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
 		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule) {
 			if(MainProxy.isServer(world)) {
 				if (settings == null || settings.openGui) {
@@ -567,7 +566,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					entityplayer.sendChatToPlayer("Permission denied");
 				}
 			}
+			return true;
 		}
+		return false;
 	}
 	
 	protected void clearCache() {

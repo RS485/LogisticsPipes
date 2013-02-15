@@ -40,7 +40,7 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	}
 
 	@Override
-	public void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
 		if(MainProxy.isServer(world)) {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Basic_ID, world, xCoord, yCoord, zCoord);
@@ -48,6 +48,7 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 				entityplayer.sendChatToPlayer("Permission denied");
 			}
 		}
+		return true;
 	}
 
 	@Override

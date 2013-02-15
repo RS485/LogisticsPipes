@@ -53,7 +53,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	@Override
-	public void wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
+	public boolean wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
 		if(MainProxy.isServer(world)) {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
@@ -62,6 +62,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				entityplayer.sendChatToPlayer("Permission denied");
 			}
 		}
+		return true;
 	}
 
 	public void ignoreDisableUpdateEntity() {

@@ -205,7 +205,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 	
 	@Override
-	public void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
 		if(MainProxy.isServer(world)) {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, world, i, j, k);
@@ -213,6 +213,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 				entityplayer.sendChatToPlayer("Permission denied");
 			}
 		}
+		return true;
 	}
 
 	@Override

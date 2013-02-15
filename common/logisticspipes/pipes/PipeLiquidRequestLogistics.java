@@ -23,7 +23,7 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 	}
 	
 	@Override
-	public void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
 		if(MainProxy.isServer(world)) {
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
@@ -31,6 +31,7 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 				entityplayer.sendChatToPlayer("Permission denied");
 			}
 		}
+		return true;
 	}
 
 	@Override

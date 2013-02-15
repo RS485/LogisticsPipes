@@ -66,11 +66,11 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			//How much do I want?
 			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
 			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
-			for (ItemIdentifier item : wantContainers.keySet()){
-				ItemStack wantItem = item.unsafeMakeNormalStack(1);
+			for (Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()){
+				ItemStack wantItem = item.getKey().unsafeMakeNormalStack(1);
 				LiquidStack liquidstack = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 				if (liquidstack == null) continue;
-				wantLiquids.put(LiquidIdentifier.get(liquidstack), wantContainers.get(item) * liquidstack.amount);
+				wantLiquids.put(LiquidIdentifier.get(liquidstack), item.getValue() * liquidstack.amount);
 			}
 
 			//How much do I have?
@@ -79,28 +79,26 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			ILiquidTank[] result = container.getTanks(ForgeDirection.UNKNOWN);
 			for (ILiquidTank slot : result){
 				if (slot.getLiquid() == null || !wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
-				if (!haveLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))){
+				Integer liquidWant = haveLiquids.get(LiquidIdentifier.get(slot.getLiquid()));
+				if (liquidWant==null){
 					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), slot.getLiquid().amount);
 				} else {
-					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), haveLiquids.get(LiquidIdentifier.get(slot.getLiquid())) +  slot.getLiquid().amount);
+					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), liquidWant +  slot.getLiquid().amount);
 				}
 			}
 			
 			//HashMap<Integer, Integer> needLiquids = new HashMap<Integer, Integer>();
-			//Reduce what I have
-			for (LiquidIdentifier liquidId: wantLiquids.keySet()){
-				if (haveLiquids.containsKey(liquidId)){
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - haveLiquids.get(liquidId));
+			//Reduce what I have and what have been requested already
+			for (Entry<LiquidIdentifier, Integer> liquidId: wantLiquids.entrySet()){
+				Integer haveCount = haveLiquids.get(liquidId.getKey());
+				if (haveCount != null){
+					liquidId.setValue(liquidId.getValue() - haveCount);
 				}
-			}
-			
-			//Reduce what have been requested already
-			for (LiquidIdentifier liquidId : wantLiquids.keySet()){
-				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
-					ItemStack wantItem = requestedItem.unsafeMakeNormalStack(1);
+				for (Entry<ItemIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
+					ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
 					LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 					if (requestedLiquidId == null) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidContainerRegistry.getLiquidForFilledItem(requestedItem.unsafeMakeNormalStack(1)).amount);
+					liquidId.setValue(liquidId.getValue() - requestedItem.getValue() * requestedLiquidId.amount);
 				}
 			}
 			
@@ -108,12 +106,11 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			
 			//Make request
 			
-			Map<ItemIdentifier, Integer> allNeededContainers = dummyInventory.getItemsAndCount();
-			for (ItemIdentifier need : allNeededContainers.keySet()){
+			for (ItemIdentifier need : wantContainers.keySet()){
 				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1));
 				if (requestedLiquidId == null) continue;
 				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
-				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1)).amount;
+				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / requestedLiquidId.amount;
 				if (countToRequest < 1) continue;
 				
 				if(!_power.useEnergy(11)) {
@@ -130,11 +127,12 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				} while (_requestPartials && !success);
 				
 				if (success){
-					if (!_requestedItems.containsKey(need)){
+					Integer currentRequest = _requestedItems.get(need);
+					if (currentRequest==null){
 						_requestedItems.put(need, countToRequest);
 					}else
 					{
-						_requestedItems.put(need, _requestedItems.get(need) + countToRequest);
+						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else{
 					//((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(true);

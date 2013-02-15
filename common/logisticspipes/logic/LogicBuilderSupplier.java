@@ -66,38 +66,36 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 			if (neededItems == null) return;
 			for(ItemStack stack : neededItems){
 				ItemIdentifier item = ItemIdentifier.get(stack);
-				if (!needed.containsKey(item)){
+				Integer neededCount = needed.get(item);
+				if (neededCount == null){
 					needed.put(item, stack.stackSize);
 				} else {
-					needed.put(item, needed.get(item) + stack.stackSize);
+					needed.put(item, neededCount + stack.stackSize);
 				}
 			}
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 			
-			//TODO: don't double get
-			//Reduce what I have
-			for (ItemIdentifier item : needed.keySet()){
-				if (have.containsKey(item)){
-					needed.put(item, needed.get(item) - have.get(item));
+			//Reduce what I have and what have been requested already
+			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+				Integer haveCount = have.get(item.getKey());
+				if (haveCount != null){
+					item.setValue(item.getValue() - haveCount);
 				}
-			}
-			
-			//TODO: don't double get
-			//Reduce what have been requested already
-			for (ItemIdentifier item : needed.keySet()){
-				if (_requestedItems.containsKey(item)){
-					needed.put(item, needed.get(item) - _requestedItems.get(item));
+				Integer requestedCount =  _requestedItems.get(item.getKey());
+				if (requestedCount!=null){
+					item.setValue(item.getValue() - requestedCount);
 				}
 			}
 			
 			((PipeItemsBuilderSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
 			//Make request
-			for (ItemIdentifier need : needed.keySet()){
-				if (needed.get(need) < 1) continue;
-				int neededCount = needed.get(need);
+			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
+				Integer amountRequested = need.getValue();
+				if (amountRequested==null || amountRequested < 1) continue;
+				int neededCount = amountRequested;
 				
 				if(!_power.useEnergy(15)) {
 					break;
@@ -105,7 +103,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				
 				boolean success = false;
 				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, null);
+					success = RequestManager.request(need.getKey().makeStack(neededCount),  (IRequestItems) container.pipe, null);
 					if (success || neededCount == 1){
 						break;
 					}
@@ -113,11 +111,12 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				} while (_requestPartials && !success);
 				
 				if (success){
-					if (!_requestedItems.containsKey(need)){
-						_requestedItems.put(need, neededCount);
+					Integer currentRequest = _requestedItems.get(need.getKey());
+					if (currentRequest == null){
+						_requestedItems.put(need.getKey(), neededCount);
 					}else
 					{
-						_requestedItems.put(need, _requestedItems.get(need) + neededCount);
+						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
 				} else{
 					((PipeItemsBuilderSupplierLogistics)this.container.pipe).setRequestFailed(true);

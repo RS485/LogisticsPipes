@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import logisticspipes.gui.hud.HUDProvider;
@@ -264,29 +265,30 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 outer:
-			for (ItemIdentifier currItem : currentInv.keySet()) {
-				if(items.containsKey(currItem)) continue;
+			for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
+				if(items.containsKey(currItem.getKey())) continue;
 				
-				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
+				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem.getKey()))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem.getKey())))) continue;
 				
 				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.isFilteredItem(currItem.getUndamaged()) || filter.blockProvider()) continue outer;
+					if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 				}
 				
-				if (!addedItems.containsKey(currItem)) {
-					addedItems.put(currItem, currentInv.get(currItem));
+				Integer addedAmount = addedItems.get(currItem.getKey());
+				if (addedAmount==null) {
+					addedItems.put(currItem.getKey(), currItem.getValue());
 				} else {
-					addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
+					addedItems.put(currItem.getKey(), addedAmount + currItem.getValue());
 				}
 			}
 		}
 		
 		//Reduce what has been reserved, add.
-		for(ItemIdentifier item: addedItems.keySet()) {
-			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+		for(Entry<ItemIdentifier, Integer> item: addedItems.entrySet()) {
+			int remaining = item.getValue() - _orderManager.totalItemsCountInOrders(item.getKey());
 			if (remaining < 1) continue;
 
-			items.put(item, remaining);
+			items.put(item.getKey(), remaining);
 		}
 	}
 
@@ -332,8 +334,8 @@ outer:
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));
 		displayList.ensureCapacity(displayMap.size());
-		for(ItemIdentifier item :displayMap.keySet()) {
-			displayList.add(new ItemIdentifierStack(item, displayMap.get(item)));
+		for(Entry <ItemIdentifier, Integer> item :displayMap.entrySet()) {
+			displayList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
 		}
 		if(!oldList.equals(displayList)) {
 			oldList.clear();

@@ -155,19 +155,20 @@ public class ServerPacketBufferHandlerThread extends Thread {
 					}
 				}
 				synchronized(serverList) {
-					for(Player player:serverList.keySet()) {
+					for(Entry<Player, LinkedList<Packet250CustomPayload>> player:serverList.entrySet()) {
 						ByteArrayOutputStream out = new ByteArrayOutputStream();
 						DataOutputStream data = new DataOutputStream(out);
-						if(serverBuffer.containsKey(player)) {
-							data.write(serverBuffer.get(player));
+						byte[] towrite = serverBuffer.get(player.getKey());
+						if(towrite != null) {
+							data.write(towrite);
 						}
-						LinkedList<Packet250CustomPayload> packets = serverList.get(player);
+						LinkedList<Packet250CustomPayload> packets = player.getValue();
 						for(Packet250CustomPayload packet:packets) {
 							data.writeInt(packet.data.length);
 							data.write(packet.data);
 						}
 						packets.clear();
-						serverBuffer.put(player, out.toByteArray());
+						serverBuffer.put(player.getKey(), out.toByteArray());
 					}
 					//Send Content
 					for(Player player:serverList.keySet()) {
@@ -187,15 +188,15 @@ public class ServerPacketBufferHandlerThread extends Thread {
 			}
 			try {
 				boolean toDo = false;
-				for(Player lPlayer:queue.keySet()) {
-					if(queue.get(lPlayer) != null && queue.get(lPlayer).size() > 0) {
+				for(LinkedList<byte[]> lPlayer:queue.values()) {
+					if(lPlayer != null && lPlayer.size() > 0) {
 						toDo = true;
 						break;
 					}
 				}
 				if(!toDo) {
-					for(Player player:ByteBuffer.keySet()) {
-						if(ByteBuffer.get(player).length > 0) {
+					for(byte[] ByteBufferForPlayer:ByteBuffer.values()) {
+						if(ByteBufferForPlayer != null && ByteBufferForPlayer.length > 0) {
 							toDo = true;
 							break;
 						}
@@ -204,11 +205,10 @@ public class ServerPacketBufferHandlerThread extends Thread {
 				if(!toDo) {
 					synchronized(serverList) {
 						for(Player player:serverList.keySet()) {
-							if(serverBuffer.containsKey(player)) {
-								if(serverBuffer.get(player).length > 0) {
-									toDo = true;
-									break;
-								}
+							byte[] towrite = serverBuffer.get(player);
+							if(towrite != null && towrite.length > 0) {
+								toDo = true;
+								break;
 							}
 						}
 					}

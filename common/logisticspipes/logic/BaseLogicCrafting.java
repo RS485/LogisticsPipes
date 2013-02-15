@@ -27,6 +27,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.network.TileNetworkData;
@@ -220,6 +221,34 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			MainProxy.sendPacketToServer(packet.getPacket());
 			return;
 		}
+
+		//hack to avoid wrenching blocks
+		int savedEquipped = player.inventory.currentItem;
+		boolean foundSlot = false;
+		//try to find a empty slot
+		for(int i = 0; i < 9; i++) {
+			if(player.inventory.getStackInSlot(i) == null) {
+				foundSlot = true;
+				player.inventory.currentItem = i;
+				break;
+			}
+		}
+		//okay, anything that's a block?
+		if(!foundSlot) {
+			for(int i = 0; i < 9; i++) {
+				ItemStack is = player.inventory.getStackInSlot(i);
+				if(is.getItem() instanceof ItemBlock) {
+					foundSlot = true;
+					player.inventory.currentItem = i;
+					break;
+				}
+			}
+		}
+		//give up and select whatever is right of the current slot
+		if(!foundSlot) {
+			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
+		}
+
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		boolean found = false;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
@@ -242,6 +271,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				}
 			}
 		}
+
+		player.inventory.currentItem = savedEquipped;
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {

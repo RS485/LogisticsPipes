@@ -4,7 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -23,12 +23,14 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 	}
 	
 	@Override
-	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openRequest)) {
-			openGui(entityplayer);
-			return true;
+	public void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(world)) {
+			if (settings == null || settings.openRequest) {
+				openGui(entityplayer);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
 		}
-		return false;
 	}
 
 	@Override

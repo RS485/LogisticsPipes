@@ -532,31 +532,23 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer);
 			}
-			if(handleClick(world, i, j, k, entityplayer, settings)) return true;
 		}
+		if(handleClick(world, i, j, k, entityplayer, settings)) return true;
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if(MainProxy.isServer(world)) {
-				if(settings == null || settings.openGui) {
-					if(wrenchClicked(world, i, j, k, entityplayer)) {
-						return true;
-					}
-				} else {
-					entityplayer.sendChatToPlayer("Permission denied");
-				}
-			}
+			wrenchClicked(world, i, j, k, entityplayer, settings);
+			return true;
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(world)) {
-				if(settings == null || settings.openUpgrades) {
-					if(upgradeManager(world, i, j, k, entityplayer)) {
-						return true;
-					}
+				if (settings == null || settings.openUpgrades) {
+					getUpgradeManager().openGui(entityplayer, this);
 				} else {
 					entityplayer.sendChatToPlayer("Permission denied");
 				}
 			}
+			return true;
 		}
-		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(entityplayer)) {
+		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(world, entityplayer)) {
 			return true;
 		}
 		return super.blockActivated(world, i, j, k, entityplayer);
@@ -566,16 +558,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
-	protected boolean wrenchClicked(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule){
-			entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
-			return true;
+	protected void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openGui) {
+					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
+			}
 		}
-		return false;
-	}
-	
-	protected boolean upgradeManager(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		return getUpgradeManager().openGui(entityplayer, this);
 	}
 	
 	protected void clearCache() {

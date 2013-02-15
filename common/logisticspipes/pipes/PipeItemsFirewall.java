@@ -21,6 +21,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
@@ -52,10 +53,15 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	@Override
-	public boolean wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
-		MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
-		return true;
+	public void wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(world)) {
+			if (settings == null || settings.openGui) {
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
+				MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
+		}
 	}
 
 	public void ignoreDisableUpdateEntity() {

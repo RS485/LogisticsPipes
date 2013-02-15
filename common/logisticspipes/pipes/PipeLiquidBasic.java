@@ -5,6 +5,8 @@ import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
@@ -38,9 +40,14 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	}
 
 	@Override
-	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Basic_ID, world, xCoord, yCoord, zCoord);
-		return true;
+	public void wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(world)) {
+			if (settings == null || settings.openGui) {
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Basic_ID, world, xCoord, yCoord, zCoord);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
+		}
 	}
 
 	@Override

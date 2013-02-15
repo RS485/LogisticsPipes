@@ -22,13 +22,14 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
 	@Override
 	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if(settings == null || settings.openGui) {
-			openGui(entityplayer);
-			return true;
-		} else {
-			entityplayer.sendChatToPlayer("Permission denied");
-			return false;
+		if(MainProxy.isServer(world)) {
+			if(settings == null || settings.openGui) {
+				openGui(entityplayer);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
 		}
+		return true;
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -26,13 +27,17 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 
 	@Override
 	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
-			ItemStack orderer = entityplayer.getCurrentEquippedItem();
-			RemoteOrderer.connectToPipe(orderer, this);
-			entityplayer.sendChatToPlayer("Connected to pipe");
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openRequest) {
+					ItemStack orderer = entityplayer.getCurrentEquippedItem();
+					RemoteOrderer.connectToPipe(orderer, this);
+					entityplayer.sendChatToPlayer("Connected to pipe");
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
+			}
 			return true;
-		} else if(!(settings == null || settings.openRequest)) {
-			entityplayer.sendChatToPlayer("Permission denied");
 		}
 		return false;
 	}

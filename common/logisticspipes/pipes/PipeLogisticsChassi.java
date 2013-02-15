@@ -383,17 +383,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
-		if(MainProxy.isClient()) return false;
-		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID) {
-			if(entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
-				for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
-					ItemStack item = _moduleInventory.getStackInSlot(i);
-					if(item == null) {
-						_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
-						InventoryChanged(_moduleInventory);
-						return true;
-					}
-				}
+		for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
+			ItemStack item = _moduleInventory.getStackInSlot(i);
+			if(item == null) {
+				_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+				InventoryChanged(_moduleInventory);
+				return true;
 			}
 		}
 		return false;
@@ -403,14 +398,25 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public boolean handleClick(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
 		if (entityplayer.getCurrentEquippedItem() == null) return false;
 
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
-			if (entityplayer.isSneaking()){
-				((PipeLogisticsChassi)this.container.pipe).nextOrientation();
-				return true;
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && entityplayer.isSneaking()) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openGui) {
+					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
 			}
+			return true;
 		}
 		
-		if(!entityplayer.isSneaking() && (settings == null || settings.openGui) && tryInsertingModule(entityplayer)) {
+		if(!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openGui) {
+					return tryInsertingModule(entityplayer);
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
+			}
 			return true;
 		}
 

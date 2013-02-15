@@ -245,6 +245,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
 		decreaseRequested(item);
+		delayThrottle();
 	}
 	
 	public boolean isRequestingPartials(){

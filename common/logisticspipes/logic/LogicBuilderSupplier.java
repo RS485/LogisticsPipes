@@ -157,10 +157,10 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 		decreaseRequested(item);
 	}
 
-	//TODO: don't double get
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
 		decreaseRequested(item);
+		delayThrottle();
 	}
 
 	@Override

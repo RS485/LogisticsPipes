@@ -189,6 +189,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	@Override
 	public void itemArrived(ItemIdentifierStack item) {
 		decreaseRequested(item);
+		delayThrottle();
 	}
 	
 	public boolean isRequestingPartials(){

@@ -47,13 +47,15 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		super.updateEntity();
 		if (--throttleTimeLeft > 0) return;
 		throttledUpdateEntity();
-		resetThrottle();
+		throttleTimeLeft = throttleTime;
 	}
 	
 	public void throttledUpdateEntity(){}
 	
-	protected void resetThrottle(){
-		throttleTimeLeft = throttleTime;
+	protected void delayThrottle() {
+		//delay 6(+1) ticks to prevent suppliers from ticking between a item arriving at them and the item hitting their adj. inv
+		if(throttleTimeLeft < 7)
+			throttleTimeLeft = 7;
 	}
 	
 	@Override

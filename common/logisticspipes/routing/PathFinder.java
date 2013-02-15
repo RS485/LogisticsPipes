@@ -152,9 +152,7 @@ class PathFinder {
 			if (tile == null) continue;
 			boolean isDirectConnection = false;
 			int resistance = 0;
-			
-
-			
+						
 			if(tile instanceof IInventory) {
 				if(startPipe.pipe instanceof IDirectRoutingConnection) {
 					if(SimpleServiceLocator.connectionManager.hasDirectConnection(((CoreRoutedPipe)startPipe.pipe).getRouter())) {
@@ -204,20 +202,21 @@ class PathFinder {
 
 				int beforeRecurseCount = foundPipes.size();
 				HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), nextConnectionFlags, direction);
-				for(CoreRoutedPipe pipe : result.keySet()) {
+				for(Entry<CoreRoutedPipe, ExitRoute> pipeEntry : result.entrySet()) {
 					//Update Result with the direction we took
-					result.get(pipe).exitOrientation = direction;
-					if (!foundPipes.containsKey(pipe)) {
+					pipeEntry.getValue().exitOrientation = direction;
+					ExitRoute foundPipe = foundPipes.get(pipeEntry.getKey());
+					if (foundPipe==null) {
 						// New path
-						foundPipes.put(pipe, result.get(pipe));
+						foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
 						//Add resistance
-						foundPipes.get(pipe).distanceToDestination += resistance;
+						pipeEntry.getValue().distanceToDestination += resistance;
 					}
-					else if (result.get(pipe).distanceToDestination + resistance < foundPipes.get(pipe).distanceToDestination) {
+					else if (pipeEntry.getValue().distanceToDestination + resistance < foundPipe.distanceToDestination) {
 						//If new path is better, replace old path, otherwise do nothing
-						foundPipes.put(pipe, result.get(pipe));
+						foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
 						//Add resistance
-						foundPipes.get(pipe).distanceToDestination += resistance;
+						pipeEntry.getValue().distanceToDestination += resistance;
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){

@@ -9,18 +9,23 @@
 package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
+import logisticspipes.gates.ActionDisableLogistics;
 import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
@@ -44,6 +49,8 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
+import logisticspipes.security.PermissionException;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.WorldTickHandler;
@@ -63,9 +70,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
+import buildcraft.api.gates.ActionManager;
+import buildcraft.api.gates.IAction;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Utils;
+import buildcraft.transport.EntityData;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
@@ -108,7 +118,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public int server_routing_table_size = 0;
 	
-	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>(); 
+	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>();
+	
+	protected final ArrayList<IPipedItem> queuedDataForUnroutedItems = new ArrayList<IPipedItem>();
 	
 	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
 
@@ -516,31 +528,54 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public abstract ILogisticsModule getLogisticsModule();
 	
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
+	public final boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
+		SecuritySettings settings = null;
+		if(MainProxy.isServer(world)) {
+			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+			if(station != null) {
+				settings = station.getSecuritySettingsForPlayer(entityplayer);
+			}
+		}
+		if(handleClick(world, i, j, k, entityplayer, settings)) return true;
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
-			if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule){
-				if(MainProxy.isServer(world)) {
-					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
-					return true;
-				} else {
-					return false;
-				}
+			if(wrenchClicked(world, i, j, k, entityplayer, settings)) {
+				return true;
 			}
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(world)) {
-				return getUpgradeManager().openGui(entityplayer, this);
+				if (settings == null || settings.openUpgrades) {
+					getUpgradeManager().openGui(entityplayer, this);
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
 			}
-		}
-
-		
-		if(getUpgradeManager().tryIserting(entityplayer)) {
 			return true;
 		}
-		
+		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(world, entityplayer)) {
+			return true;
+		}
 		return super.blockActivated(world, i, j, k, entityplayer);
 	}
-
+	
+	protected boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		return false;
+	}
+	
+	protected boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openGui) {
+					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
 	protected void clearCache() {
 		_cachedAdjacentInventories=null;
 	}
@@ -744,7 +779,67 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public int getID(){
 		return this.itemID;
 	}
+
+	public Set<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	public boolean hasGenericInterests() {
+		return false;
+	}
 	
+	public ISecurityProvider getSecurityProvider() {
+		return SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+	}
+	
+	public void checkCCAccess() throws PermissionException {
+		ISecurityProvider sec = getSecurityProvider();
+		if(sec != null) {
+			if(!sec.getAllowCC()) {
+				throw new PermissionException();
+			}
+		}
+	}
+
+	public void queueUnroutedItemInformation(EntityData data) {
+		if(data.item != null && data.item.getItemStack() != null) {
+			data.item.setItemStack(data.item.getItemStack().copy());
+			queuedDataForUnroutedItems.add(data.item);
+		}
+	}
+	
+	public IPipedItem getQueuedForItemStack(ItemStack stack) {
+		for(IPipedItem item:queuedDataForUnroutedItems) {
+			if(ItemIdentifierStack.GetFromStack(item.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
+				queuedDataForUnroutedItems.remove(item);
+				return item;
+			}
+		}
+		return null;
+	}
+	
+	/* --- Trigger --- */
+	@Override
+	public LinkedList<IAction> getActions() {
+		LinkedList<IAction> actions = super.getActions();
+		actions.add(BuildCraftProxy.LogisticsDisableAction);
+		return actions;
+	}
+	
+	@Override
+	protected void actionsActivated(HashMap<Integer, Boolean> actions) {
+		super.actionsActivated(actions);
+
+		setEnabled(true);
+		// Activate the actions
+		for (Entry<Integer, Boolean> i : actions.entrySet()) {
+			if (i.getValue()) {
+				if (ActionManager.actions[i.getKey()] instanceof ActionDisableLogistics){
+					setEnabled(false);
+				}
+			}
+		}
+	}
 	
 	/* --- CCCommands --- */
 	@CCCommand(description="Returns the Router UUID as an integer; all pipes have a unique ID")
@@ -798,13 +893,5 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
-	}
-
-	public Set<ItemIdentifier> getSpecificInterests() {
-		return null;
-	}
-
-	public boolean hasGenericInterests() {
-		return false;
 	}
 }

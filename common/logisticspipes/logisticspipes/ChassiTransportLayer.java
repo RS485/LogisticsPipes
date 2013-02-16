@@ -14,7 +14,7 @@ public class ChassiTransportLayer extends TransportLayer{
 	}
 
 	@Override
-	public ForgeDirection itemArrived(IRoutedItem item) {
+	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
 		item.setArrived(true);
 		return _chassiPipe.getPointedOrientation();
 	}

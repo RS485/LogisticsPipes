@@ -51,4 +51,8 @@ public class GuiCheckBox extends GuiButton {
 	public boolean getState() {
 		return state;
 	}
+	
+	public void setState(boolean flag) {
+		state = flag;
+	}
 }

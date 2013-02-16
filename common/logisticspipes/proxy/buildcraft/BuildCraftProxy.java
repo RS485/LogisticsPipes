@@ -12,12 +12,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.powertile.NeedsPowerTrigger;
 import logisticspipes.config.Configs;
+import logisticspipes.gates.ActionDisableLogistics;
+import logisticspipes.gates.CraftingTrigger;
+import logisticspipes.gates.LogisticsTriggerProvider;
+import logisticspipes.gates.NeedsPowerTrigger;
+import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.ActionDisableLogistics;
-import logisticspipes.main.LogisticsTriggerProvider;
-import logisticspipes.main.TriggerSupplierFailed;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
@@ -81,8 +82,9 @@ public class BuildCraftProxy {
 	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
 
 	public static List<Item> pipelist = new ArrayList<Item>();
-	
+
 	public static Trigger LogisticsFailedTrigger;
+	public static Trigger LogisticsCraftingTrigger;
 	public static Trigger LogisticsNeedPowerTrigger;	
 	public static Action LogisticsDisableAction;
 	
@@ -155,6 +157,7 @@ public class BuildCraftProxy {
 	public void registerTrigger() {
 		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
 		LogisticsNeedPowerTrigger = new NeedsPowerTrigger(701);
+		LogisticsCraftingTrigger = new CraftingTrigger(702);
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
 		LogisticsDisableAction = new ActionDisableLogistics(700);
 	}
@@ -185,10 +188,7 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsEntrance = createPipe(Configs.LOGISTICSPIPE_ENTRANCE_ID, PipeItemsSystemEntranceLogistics.class, "Logistics System Entrance Pipe", side);
 		LogisticsPipes.LogisticsDestination = createPipe(Configs.LOGISTICSPIPE_DESTINATION_ID, PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
 		LogisticsPipes.LogisticsCraftingPipeMK3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
-		
-		if(LogisticsPipes.DEBUG) {
-			LogisticsPipes.LogisticsFirewall = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
-		}
+		LogisticsPipes.LogisticsFirewall = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
 		
 		LogisticsPipes.LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);

@@ -7,34 +7,33 @@ import java.io.IOException;
 import logisticspipes.network.SendNBTTagCompound;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class PacketNBT extends LogisticsPipesPacket {
+public class PacketNBT extends PacketCoordinates {
 
-	private final int id;
 	public NBTTagCompound tag;
 	
-	@Override
-	public int getID() {
-		return id;
-	}
-
 	public PacketNBT() {
 		super();
-		id = 0;
 	}
 
 	public PacketNBT(int id, NBTTagCompound tag) {
-		super();
-		this.id = id;
+		super(id, 0, 0, 0);
+		this.tag = tag;
+	}
+	
+	public PacketNBT(int id, int x, int y, int z, NBTTagCompound tag) {
+		super(id, x, y, z);
 		this.tag = tag;
 	}
 
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
+		super.writeData(data);
 		SendNBTTagCompound.writeNBTTagCompound(tag, data);
 	}
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
+		super.readData(data);
 		tag = SendNBTTagCompound.readNBTTagCompound(data);
 	}
 }

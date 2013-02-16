@@ -404,7 +404,7 @@ public class GuiHandler implements IGuiHandler {
 
 			case GuiIDs.GUI_Security_Station_ID:
 				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
-				dummy = new DummyContainer(player.inventory, null);
+				dummy = new DummyContainer(player, null, ((LogisticsSecurityTileEntity)tile));
 				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, -1);
 				dummy.addNormalSlotsForPlayerInventory(10, 210);
 				return dummy;
@@ -696,7 +696,7 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_RoutingStats_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
-				return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe().getRouter());
+				return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe().getRouter(), player);
 
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);

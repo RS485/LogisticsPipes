@@ -23,6 +23,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
@@ -88,6 +89,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			dimension = dimensioncache;
 		}
 		_entityPlayer = entityPlayer;
+		this.inventorySlots = new DummyContainer(entityPlayer.inventory, null);
 	}
 
 	public abstract void refreshItems();

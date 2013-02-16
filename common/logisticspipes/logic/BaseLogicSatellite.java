@@ -18,7 +18,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -144,7 +144,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			// FIXME try partial requests
-			if (RequestManager.request(iterator.next(), ((RoutedPipe) container.pipe), null)) {
+			if (RequestManager.request(iterator.next(), ((CoreRoutedPipe) container.pipe), null)) {
 				iterator.remove();
 			}
 		}

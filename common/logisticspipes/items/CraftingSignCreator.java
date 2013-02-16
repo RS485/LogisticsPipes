@@ -5,7 +5,7 @@ import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -39,7 +39,7 @@ public class CraftingSignCreator extends LogisticsItem {
 		if(pipe == null) {
 			return false;
 		}
-		if(!(pipe instanceof RoutedPipe)) {
+		if(!(pipe instanceof CoreRoutedPipe)) {
 			itemStack.damageItem(10, player);
 			return true;
 		}

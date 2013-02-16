@@ -160,13 +160,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		for(IFilter filter:filters) {
 			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
 		}
-		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
+		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		Integer donePromise = donePromisses.get(tree.getStack().getItem());
-		if (donePromise!=null) {
-			canProvide -= donePromise;
-		}
-		if (canProvide < 1) return;
-		canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromise!=null) {
 			canProvide -= donePromise;
 		}
@@ -186,14 +181,6 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
-	}
-
-	private int getCachedAvailableItemCount(ItemIdentifier item) {
-		Integer count = displayMap.get(item);
-		if(count==null) {
-			return 0;
-		}
-		return count;
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -340,6 +327,8 @@ outer:
 	}
 	
 	private void checkUpdate(EntityPlayer player) {
+		if(localModeWatchers.size() == 0 && player == null)
+			return;
 		displayList.clear();
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));
@@ -352,8 +341,7 @@ outer:
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
 			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
-		}
-		if(player != null) {
+		} else if(player != null) {
 			MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
 		}
 	}
@@ -408,7 +396,6 @@ outer:
 			li.addAll(mapIC.keySet());
 			return li;
 		}
-		// TODO Auto-generated method stub
 		return null;
 	}
 

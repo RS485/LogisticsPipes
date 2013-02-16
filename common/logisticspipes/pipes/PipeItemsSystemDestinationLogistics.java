@@ -5,7 +5,7 @@ import java.util.UUID;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.DestinationLogic;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -13,7 +13,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.utils.SimpleInventory;
 
-public class PipeItemsSystemDestinationLogistics extends RoutedPipe {
+public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	public SimpleInventory inv = new SimpleInventory(1, "Freq Slot", 1);
 	

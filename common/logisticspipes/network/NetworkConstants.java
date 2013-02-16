@@ -97,4 +97,6 @@ public class NetworkConstants {
 	public static final int PLAYER_LIST = 92;
 	public static final int SECURITY_STATION_ID = 93;
 	public static final int OPEN_SECURITY_PLAYER = 94;
+	public static final int SAVE_SECURITY_PLAYER = 95;
+	public static final int SET_SECURITY_CC = 96;
 }

@@ -333,6 +333,11 @@ public class ClientPacketHandler {
 					packetBa.readData(data);
 					onThaumicAspectList(packetBa);
 					break;
+				case NetworkConstants.SET_SECURITY_CC:
+					final PacketPipeInteger packetBb = new PacketPipeInteger();
+					packetBb.readData(data);
+					onSetSecurityCC(packetBb);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -908,6 +913,16 @@ public class ClientPacketHandler {
 			SecuritySettings setting = new SecuritySettings(null);
 			setting.readFromNBT(packet.tag);
 			((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).handlePlayerSecurityOpen(setting);
+		}
+	}
+
+	private static void onSetSecurityCC(PacketPipeInteger packet) {
+		TileEntity tile = MainProxy.getClientMainWorld().getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).setClientCC(packet.integer == 1);
+			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSecurityStation) {
+				((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
+			}
 		}
 	}
 	

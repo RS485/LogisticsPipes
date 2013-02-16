@@ -11,11 +11,11 @@ package logisticspipes.pipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicSupplier;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
-public class PipeItemsSupplierLogistics extends RoutedPipe implements IRequestItems{
+public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems{
 
 	private boolean _lastRequestFailed = false;
 		

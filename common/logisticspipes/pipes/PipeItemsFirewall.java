@@ -16,10 +16,11 @@ import logisticspipes.logisticspipes.RouteLayerFirewall;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBitSet;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.routing.IRouter;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -31,7 +32,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
 
-public class PipeItemsFirewall extends RoutedPipe {
+public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	private IRouter[] routers = new IRouter[ForgeDirection.VALID_DIRECTIONS.length];
 	private String[] routerIds = new String[ForgeDirection.VALID_DIRECTIONS.length];
@@ -52,14 +53,16 @@ public class PipeItemsFirewall extends RoutedPipe {
 	}
 	
 	@Override
-	public boolean blockActivated(World world, int x, int y, int z, EntityPlayer entityplayer) {
-		if(SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
-			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
-			return true;
-		} else {
-			return super.blockActivated(world, x, y, z, entityplayer);
+	public boolean wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(world)) {
+			if (settings == null || settings.openGui) {
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
+				MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
 		}
+		return true;
 	}
 
 	public void ignoreDisableUpdateEntity() {
@@ -114,7 +117,7 @@ public class PipeItemsFirewall extends RoutedPipe {
 		return ForgeDirection.UNKNOWN;
 	}
 
-	public boolean idIdforOtherSide(int id) {
+	public boolean isIdforOtherSide(int id) {
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
 			if(getRouter(dir).getSimpleID() == id) {
 				return true;

@@ -102,9 +102,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		return speedUpgradeCount;
 	}
 
-	public boolean openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
+	public void openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
-		return true;
 	}
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {
@@ -135,9 +134,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		return disconnectedSides.contains(side);
 	}
 
-	public boolean tryIserting(EntityPlayer entityplayer) {
-		if(MainProxy.isClient()) return false;
+	public boolean tryIserting(World world, EntityPlayer entityplayer) {
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID) {
+			if(MainProxy.isClient(world)) return true;
 			for(int i=0;i<inv.getSizeInventory() - 1;i++) {
 				ItemStack item = inv.getStackInSlot(i);
 				if(item == null) {
@@ -154,6 +153,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 			}
 		}
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsItemCard.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
+			if(MainProxy.isClient(world)) return true;
 			if(inv.getStackInSlot(8) == null) {
 				inv.setInventorySlotContents(8, entityplayer.getCurrentEquippedItem().copy());
 				inv.getStackInSlot(8).stackSize = 1;

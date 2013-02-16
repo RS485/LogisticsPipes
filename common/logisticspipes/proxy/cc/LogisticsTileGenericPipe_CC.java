@@ -1,5 +1,6 @@
 package logisticspipes.proxy.cc;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,6 +14,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.OrientationsUtil;
@@ -301,16 +303,55 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		
 		if(match.getAnnotation(CCQueued.class) != null && match.getAnnotation(CCQueued.class).realQueue()) {
 			final Method m = match;
+			String prefunction = null;
+			if(!(prefunction = match.getAnnotation(CCQueued.class).prefunction()).equals("")) {
+				//CoreRoutedPipe pipe = getCPipe();
+				if(pipe != null) {
+					Class<?> clazz = pipe.getClass();
+					while(true) {
+						for(Method method:clazz.getDeclaredMethods()) {
+							if(method.getName().equals(prefunction)) {
+								if(method.getParameterTypes().length > 0) {
+									throw new InternalError("Internal Excption (Code: 3)");
+								}
+								try {
+									method.invoke(pipe, new Object[]{});
+								} catch(InvocationTargetException e) {
+									if(e.getTargetException() instanceof Exception) {
+										throw (Exception) e.getTargetException();
+									}
+									throw e;
+								}
+								break;
+							}
+						}
+						if(clazz.getSuperclass() == Object.class) break;
+						clazz = clazz.getSuperclass();
+					}
+				}
+			}
 			final Object[] a = arguments;
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
-					Object result = m.invoke(pipe, a);
-					if(result != null) {
-						CCQueued method = m.getAnnotation(CCQueued.class);
-						String event = method.event();
-						if(event != null && !event.equals("")) {
-							queueEvent(event, CCHelper.createArray(CCHelper.getAnswer(result)));
+					try {
+						Object result = m.invoke(pipe, a);
+						if(result != null) {
+							CCQueued method = m.getAnnotation(CCQueued.class);
+							String event = method.event();
+							if(event != null && !event.equals("")) {
+								queueEvent(event, CCHelper.createArray(CCHelper.getAnswer(result)));
+							}
+						}
+					} catch (InvocationTargetException e) {
+						if(e.getTargetException() instanceof PermissionException) {
+							CCQueued method = m.getAnnotation(CCQueued.class);
+							String event = method.event();
+							if(event != null && !event.equals("")) {
+								queueEvent(event, new Object[]{"Permission denied"});
+							}
+						} else {
+							throw e;
 						}
 					}
 					return null;
@@ -318,8 +359,15 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			});
 			return null;
 		}
-
-		Object result = match.invoke(pipe, arguments);
+		Object result;
+		try {
+			result = match.invoke(pipe, arguments);
+		} catch(InvocationTargetException e) {
+			if(e.getTargetException() instanceof Exception) {
+				throw (Exception) e.getTargetException();
+			}
+			throw e;
+		}
 		return CCHelper.createArray(CCHelper.getAnswer(result));
 	}
 

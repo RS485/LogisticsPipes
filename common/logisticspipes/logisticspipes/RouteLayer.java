@@ -27,7 +27,7 @@ public class RouteLayer {
 		_transport = transport;
 	}
 	
-	public ForgeDirection getOrientationForItem(IRoutedItem item){
+	public ForgeDirection getOrientationForItem(IRoutedItem item, ForgeDirection blocked){
 		
 		item.checkIDFromUUID();
 		//If a item has no destination, find one
@@ -37,7 +37,19 @@ public class RouteLayer {
 		
 		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back		
 		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination()) || item.getArrived())){
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
+			if(!item.isItemRelayed()) {
+				item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
+			} else {
+				int destination = item.getDestination();
+				for(ExitRoute node:_router.getIRoutersByCost()) {
+					if(node.destination instanceof IFilteringRouter) {
+						if(((IFilteringRouter)node.destination).isIdforOtherSide(destination)) {
+							item.replaceRelayID(node.destination.getSimpleID());
+							break;
+						}
+					}
+				}
+			}
 		}
 		
 		//If we still have no destination or client side unroutable, drop it
@@ -49,11 +61,11 @@ public class RouteLayer {
 		if (item.getDestinationUUID().equals(_router.getId())){
 			
 			if (!_transport.stillWantItem(item)){
-				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true));
+				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
 			}
 			
 			item.setDoNotBuffer(true);
-			ForgeDirection o =_transport.itemArrived(item);
+			ForgeDirection o =_transport.itemArrived(item, blocked);
 			return o != null?o:ForgeDirection.UNKNOWN;
 		}
 		

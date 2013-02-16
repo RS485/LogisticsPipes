@@ -1,7 +1,8 @@
-package logisticspipes.blocks.powertile;
+package logisticspipes.gates;
 
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.textures.Textures;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITriggerParameter;
@@ -15,13 +16,11 @@ public class NeedsPowerTrigger extends Trigger{
 
 	@Override
 	public int getIndexInTexture() {
-		// TODO Auto-generated method stub
 		return 1 * 16 + 1 ;
 	}
 	
 	@Override
 	public String getTextureFile() {
-		// TODO Auto-generated method stub
 		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
 	}
 

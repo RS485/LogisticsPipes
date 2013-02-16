@@ -3,7 +3,7 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.item.EntityItem;
@@ -21,15 +21,15 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	}
 
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if(!SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer)) {
-			if (MainProxy.isServer(this.worldObj)) {
+	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(world)) {
+			if(settings == null || settings.openGui) {
 				openGui(entityplayer);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
 			}
-			return true;
-		} else {
-			return super.blockActivated(world, i, j, k, entityplayer);
 		}
+		return true;
 	}
 
 	@Override

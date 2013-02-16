@@ -46,12 +46,13 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -75,7 +76,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
-public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
@@ -382,40 +383,44 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 	}
 
 	private boolean tryInsertingModule(EntityPlayer entityplayer) {
-		if(MainProxy.isClient()) return false;
-		if(entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID) {
-			if(entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
-				for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
-					ItemStack item = _moduleInventory.getStackInSlot(i);
-					if(item == null) {
-						_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
-						InventoryChanged(_moduleInventory);
-						return true;
-					}
-				}
+		for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
+			ItemStack item = _moduleInventory.getStackInSlot(i);
+			if(item == null) {
+				_moduleInventory.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+				InventoryChanged(_moduleInventory);
+				return true;
 			}
 		}
 		return false;
 	}
 
 	@Override
-	public boolean blockActivated(World world, int x, int y, int z,	EntityPlayer entityplayer) {
-		if (entityplayer.getCurrentEquippedItem() == null) return super.blockActivated(world, x, y, z, entityplayer);
+	public boolean handleClick(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
+		if (entityplayer.getCurrentEquippedItem() == null) return false;
 
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
-			if (entityplayer.isSneaking()){
-				if(MainProxy.isServer(this.worldObj)) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && entityplayer.isSneaking()) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
 				}
-				return true;
 			}
+			return true;
 		}
-
-		if(tryInsertingModule(entityplayer)) {
+		
+		if(!entityplayer.isSneaking() && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.ModuleItem.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() != ItemModule.BLANK) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openGui) {
+					return tryInsertingModule(entityplayer);
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
+			}
 			return true;
 		}
 
-		return super.blockActivated(world, x, y, z, entityplayer);
+		return false;
 	}
 
 	/*** IProvideItems ***/
@@ -566,15 +571,12 @@ public abstract class PipeLogisticsChassi extends RoutedPipe implements ISimpleI
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
-				TileEntity tile = getPointedTileEntity();
-				if (!(tile instanceof IInventory)) continue;
-				if (tile instanceof TileGenericPipe) continue;
-				
-				IInventory inv = (IInventory)tile;
+				IInventory inv = getRawInventory();
+				if (inv == null) continue;
 				if (inv instanceof ISidedInventory) {
-					inv = new SidedInventoryAdapter((ISidedInventory) tile, ForgeDirection.UNKNOWN);
+					inv = new SidedInventoryAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN);
 				} 
-				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
+				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getFuzzyInventoryUtil(inv).getItems();
 				l1.addAll(items);
 
 				boolean modulesInterestedInUndamged=false;

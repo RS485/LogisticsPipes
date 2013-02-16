@@ -132,7 +132,7 @@ import cpw.mods.fml.relauncher.Side;
 				"after:ComputerCraft;" +
 				"after:factorization;" +
 				"after:GregTech_Addon;" +
-//				"after:ThermalExpansion|Transport;" +
+				"after:ThermalExpansion|Transport;" +
 				"after:BetterStorage")
 @NetworkMod(
 		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},

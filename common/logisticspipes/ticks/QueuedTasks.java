@@ -26,15 +26,18 @@ public class QueuedTasks implements ITickHandler {
 	@SuppressWarnings({"rawtypes" })
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-		synchronized (queue) {
-			for(Callable call:queue) {
+		Callable call = null;
+		while(!queue.isEmpty()) {
+			synchronized (queue) {
+				call = queue.removeFirst();
+			}
+			if(call != null) {
 				try {
 					call.call();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			queue.clear();
 		}
 		MainProxy.proxy.tick();
 	}

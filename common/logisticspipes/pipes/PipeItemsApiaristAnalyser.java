@@ -52,7 +52,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public TransportLayer getTransportLayer() {
 		if (this._transportLayer == null){
 			_transportLayer = new TransportLayer() {
-				@Override public ForgeDirection itemArrived(IRoutedItem item) {return getPointedOrientation();}
+				@Override public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {return getPointedOrientation();}
 				@Override public boolean stillWantItem(IRoutedItem item) {return true;}
 			};
 		}

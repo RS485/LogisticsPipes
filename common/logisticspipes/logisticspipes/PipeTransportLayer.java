@@ -28,7 +28,7 @@ public class PipeTransportLayer extends TransportLayer{
 	
 	
 	@Override
-	public ForgeDirection itemArrived(IRoutedItem item) {
+	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
 		if (item.getItemStack() != null){
 			_trackStatistics.recievedItem(item.getItemStack().stackSize);
 		}
@@ -43,6 +43,7 @@ public class PipeTransportLayer extends TransportLayer{
 		
 		for (AdjacentTile tile : adjacentEntities){
 			if (tile.tile instanceof TileGenericPipe) continue;
+			if(denyed != null && denyed.equals(tile.orientation)) continue;
 			
 			CoreRoutedPipe pipe = _router.getPipe();
 			if(pipe != null) {

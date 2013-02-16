@@ -165,12 +165,15 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		}
 		data.item.setWorld(worldObj);
 		
+		ForgeDirection blocked = null;
+		
 		if(!(data.item instanceof IRoutedItem) && data.item != null) {
 			IPipedItem result = getPipe().getQueuedForItemStack(data.item.getItemStack());
 			if(result != null) {
 				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
 				if(routedItem instanceof RoutedEntityItem && result instanceof RoutedEntityItem) {
 					((RoutedEntityItem)routedItem).useInformationFrom((RoutedEntityItem)result);
+					blocked = data.input.getOpposite();
 				} else {
 					LogisticsPipes.log.warning("Unable to transfer information from ont Item to another. (" + routedItem.getClass().getName() + ", " + result.getClass().getName() + ")");
 				}
@@ -183,7 +186,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			routedItem.setDoNotBuffer(false);
 			value = ForgeDirection.UNKNOWN;
 		} else
-			value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
+			value = getPipe().getRouteLayer().getOrientationForItem(routedItem, blocked);
 		if (value == null && MainProxy.isClient()) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);

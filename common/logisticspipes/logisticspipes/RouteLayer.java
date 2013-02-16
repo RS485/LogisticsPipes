@@ -29,7 +29,7 @@ public class RouteLayer {
 		_transport = transport;
 	}
 	
-	public ForgeDirection getOrientationForItem(IRoutedItem item){
+	public ForgeDirection getOrientationForItem(IRoutedItem item, ForgeDirection blocked){
 		
 		item.checkIDFromUUID();
 		//If a item has no destination, find one
@@ -63,11 +63,11 @@ public class RouteLayer {
 		if (item.getDestinationUUID().equals(_router.getId())){
 			
 			if (!_transport.stillWantItem(item)){
-				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true));
+				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
 			}
 			
 			item.setDoNotBuffer(true);
-			ForgeDirection o =_transport.itemArrived(item);
+			ForgeDirection o =_transport.itemArrived(item, blocked);
 			return o != null?o:ForgeDirection.UNKNOWN;
 		}
 		

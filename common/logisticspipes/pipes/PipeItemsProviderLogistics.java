@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import logisticspipes.gui.hud.HUDProvider;
@@ -37,7 +38,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
@@ -57,7 +58,7 @@ import net.minecraftforge.common.ISidedInventory;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
-public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
+public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 
@@ -180,13 +181,6 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		return Textures.LOGISTICSPIPE_PROVIDER_TEXTURE;
 	}
 
-	private int getCachedAvailableItemCount(ItemIdentifier item) {
-		Integer i = displayMap.get(item);
-		if(i==null)
-			return 0;
-		return i;
-	}
-
 	private int getAvailableItemCount(ItemIdentifier item) {
 		if (!isEnabled()){
 			return 0;
@@ -198,11 +192,11 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 	public void enabledUpdateEntity() {
 		
 		if(worldObj.getWorldTime() % 6 == 0) {
-			updateInv();
+			updateInv(null);
 		}
 		
 		if (doContentUpdate) {
-			checkContentUpdate();
+			checkContentUpdate(null);
 		}
 		
 		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
@@ -232,12 +226,7 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 		}
 		
 		// Check the transaction and see if we have helped already
-		int canProvide = getCachedAvailableItemCount(tree.getStack().getItem());
-		if (donePromisses.containsKey(tree.getStack().getItem())){
-			canProvide -= donePromisses.get(tree.getStack().getItem());
-		}
-		if (canProvide < 1) return;
-		canProvide = getAvailableItemCount(tree.getStack().getItem());
+		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		if (donePromisses.containsKey(tree.getStack().getItem())){
 			canProvide -= donePromisses.get(tree.getStack().getItem());
 		}
@@ -276,29 +265,30 @@ public class PipeItemsProviderLogistics extends RoutedPipe implements IProvideIt
 			
 			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 outer:
-			for (ItemIdentifier currItem : currentInv.keySet()) {
-				if(items.containsKey(currItem)) continue;
+			for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
+				if(items.containsKey(currItem.getKey())) continue;
 				
-				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem)))) continue;
+				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem.getKey()))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem.getKey())))) continue;
 				
 				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.isFilteredItem(currItem.getUndamaged()) || filter.blockProvider()) continue outer;
+					if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 				}
 				
-				if (!addedItems.containsKey(currItem)) {
-					addedItems.put(currItem, currentInv.get(currItem));
+				Integer addedAmount = addedItems.get(currItem.getKey());
+				if (addedAmount==null) {
+					addedItems.put(currItem.getKey(), currItem.getValue());
 				} else {
-					addedItems.put(currItem, addedItems.get(currItem) + currentInv.get(currItem));
+					addedItems.put(currItem.getKey(), addedAmount + currItem.getValue());
 				}
 			}
 		}
 		
 		//Reduce what has been reserved, add.
-		for(ItemIdentifier item: addedItems.keySet()) {
-			int remaining = addedItems.get(item) - _orderManager.totalItemsCountInOrders(item);
+		for(Entry<ItemIdentifier, Integer> item: addedItems.entrySet()) {
+			int remaining = item.getValue() - _orderManager.totalItemsCountInOrders(item.getKey());
 			if (remaining < 1) continue;
 
-			items.put(item, remaining);
+			items.put(item.getKey(), remaining);
 		}
 	}
 
@@ -337,19 +327,23 @@ outer:
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1 /*TODO*/).getPacket());
 	}
 	
-	private void updateInv() {
+	private void updateInv(EntityPlayer player) {
+		if(localModeWatchers.size() == 0 && player == null)
+			return;
 		displayList.clear();
 		displayMap.clear();
 		getAllItems(displayMap, new ArrayList<IFilter>(0));
 		displayList.ensureCapacity(displayMap.size());
-		for(ItemIdentifier item :displayMap.keySet()) {
-			displayList.add(new ItemIdentifierStack(item, displayMap.get(item)));
+		for(Entry <ItemIdentifier, Integer> item :displayMap.entrySet()) {
+			displayList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
 		}
 		if(!oldList.equals(displayList)) {
 			oldList.clear();
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, displayList).getPacket(), localModeWatchers);
+		} else if(player != null) {
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, displayList).getPacket(), (Player)player);
 		}
 	}
 
@@ -358,13 +352,15 @@ outer:
 		doContentUpdate = true;
 	}
 
-	private void checkContentUpdate() {
+	private void checkContentUpdate(EntityPlayer player) {
 		doContentUpdate = false;
 		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
 		if(!oldManagerList.equals(all)) {
 			oldManagerList.clear();
 			oldManagerList.addAll(all);
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), localModeWatchers);
+		} else if(player != null) {
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, all).getPacket(), (Player)player);
 		}
 	}
 	
@@ -372,8 +368,8 @@ outer:
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, oldList).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, oldManagerList).getPacket(), (Player)player);
+			updateInv(player);
+			checkContentUpdate(player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}
@@ -381,7 +377,7 @@ outer:
 
 	@Override
 	public void playerStopWatching(EntityPlayer player, int mode) {
-		super.playerStartWatching(player, mode);
+		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
 	}
 

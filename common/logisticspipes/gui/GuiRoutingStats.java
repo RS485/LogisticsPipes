@@ -13,14 +13,17 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiRoutingStats extends KraphtBaseGuiScreen {
 	
 	private IRouter _router;
-	public GuiRoutingStats(IRouter router) {
+	public GuiRoutingStats(IRouter router, EntityPlayer entityPlayer) {
 		super(170, 200, 0, 0);
 		_router = router;
+		this.inventorySlots = new DummyContainer(entityPlayer.inventory, null);
 	}
 
 	@Override

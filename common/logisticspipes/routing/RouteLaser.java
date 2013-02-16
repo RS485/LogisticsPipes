@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.world.World;
@@ -103,9 +103,9 @@ class RouteLaser implements IPaintPath{
 				LinkedList<IRouter> discovered = new LinkedList<IRouter>();
 				Position firstPos = new Position(nextRouter.getPipe().container.xCoord, nextRouter.getPipe().container.yCoord, nextRouter.getPipe().zCoord, next);
 				addLeg(r.getPipe().worldObj, firstPos, next);
-				HashMap<RoutedPipe, ExitRoute> result = PathFinder.paintAndgetConnectedRoutingPipes(nextRouter.getPipe().container, next, 50, 100, this);
+				HashMap<CoreRoutedPipe, ExitRoute> result = PathFinder.paintAndgetConnectedRoutingPipes(nextRouter.getPipe().container, next, 50, 100, this);
 				
-				for(RoutedPipe pipe : result.keySet()){
+				for(CoreRoutedPipe pipe : result.keySet()){
 					discovered.add(pipe.getRouter());
 				}
 				//OLD PAINT PATH LOGIC

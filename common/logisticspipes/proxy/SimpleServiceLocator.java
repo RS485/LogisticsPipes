@@ -20,7 +20,9 @@ import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
-import logisticspipes.proxy.specialconnection.SpecialConnection;
+import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
+import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
@@ -86,15 +88,25 @@ public final class SimpleServiceLocator {
 			craftingRecipeProviders.add(provider);
 		}
 	}
+
+	public static SpecialPipeConnection specialpipeconnection;
+	public static void setSpecialConnectionHandler(final SpecialPipeConnection special){
+		specialpipeconnection = special;
+	}
 	
-	public static SpecialConnection specialconnection;
-	public static void setSpecialConnectionHandler(final SpecialConnection special){
-		specialconnection = special;
+	public static SpecialTileConnection specialtileconnection;
+	public static void setSpecialConnectionHandler(final SpecialTileConnection special){
+		specialtileconnection = special;
 	}
 	
 	public static IThaumCraftProxy thaumCraftProxy;
 	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
 		thaumCraftProxy = proxy;
+	}
+	
+	public static IThermalExpansionProxy thermalExpansionProxy;
+	public static void setThermalExpansionProxy(IThermalExpansionProxy proxy) {
+		thermalExpansionProxy = proxy;
 	}
 
 	public static ClientPacketBufferHandlerThread clientBufferHandler;

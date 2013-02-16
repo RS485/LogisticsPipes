@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.interfaces.routing.ISpecialPipedConnection;
 import buildcraft.transport.TileGenericPipe;
 
-public class SpecialConnection {
+public class SpecialPipeConnection {
 	
 	private List<ISpecialPipedConnection> handler = new ArrayList<ISpecialPipedConnection>();
 	

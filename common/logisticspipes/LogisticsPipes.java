@@ -70,8 +70,10 @@ import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
-import logisticspipes.proxy.specialconnection.SpecialConnection;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
+import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
+import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -130,6 +132,7 @@ import cpw.mods.fml.relauncher.Side;
 				"after:ComputerCraft;" +
 				"after:factorization;" +
 				"after:GregTech_Addon;" +
+				"after:ThermalExpansion|Transport;" +
 				"after:BetterStorage")
 @NetworkMod(
 		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},
@@ -210,7 +213,6 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
-	@SuppressWarnings("unused")
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
@@ -221,7 +223,8 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSecurityStationManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
-		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialConnection());
+		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
+		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
 		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
 		
 		textures.load(event);
@@ -277,7 +280,8 @@ public class LogisticsPipes {
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 
-		SimpleServiceLocator.specialconnection.registerHandler(new TeleportPipes());
+		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
+		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
@@ -357,6 +361,7 @@ public class LogisticsPipes {
 		
 		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
+		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());

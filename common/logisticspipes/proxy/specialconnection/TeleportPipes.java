@@ -46,7 +46,7 @@ public class TeleportPipes implements ISpecialPipedConnection {
 
 	@Override
 	public boolean isType(TileGenericPipe tile) {
-		if(PipeItemTeleport.isAssignableFrom(((TileGenericPipe)tile).pipe.getClass())) return true;
+		if(PipeItemTeleport.isAssignableFrom(tile.pipe.getClass())) return true;
 		return false;
 	}
 

@@ -11,16 +11,20 @@ package logisticspipes.logic;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.config.Configs;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
@@ -28,8 +32,8 @@ import buildcraft.transport.pipes.PipeLogic;
 
 public abstract class BaseRoutingLogic extends PipeLogic{
 	
-	public RoutedPipe getRoutedPipe(){
-		return (RoutedPipe) this.container.pipe;
+	public CoreRoutedPipe getRoutedPipe(){
+		return (CoreRoutedPipe) this.container.pipe;
 	}
 	
 	public abstract void onWrenchClicked(EntityPlayer entityplayer);
@@ -37,7 +41,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 	public abstract void destroy();
 	
 	protected int throttleTime = 20;
-	private int throttleTimeLeft = 0;
+	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
 	
 	@Override
@@ -45,17 +49,26 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		super.updateEntity();
 		if (--throttleTimeLeft > 0) return;
 		throttledUpdateEntity();
-		resetThrottle();
+		throttleTimeLeft = throttleTime;
 	}
 	
 	public void throttledUpdateEntity(){}
 	
-	protected void resetThrottle(){
-		throttleTimeLeft = throttleTime;
+	protected void delayThrottle() {
+		//delay 6(+1) ticks to prevent suppliers from ticking between a item arriving at them and the item hitting their adj. inv
+		if(throttleTimeLeft < 7)
+			throttleTimeLeft = 7;
 	}
 	
 	@Override
 	public boolean blockActivated(EntityPlayer entityplayer) {
+		SecuritySettings settings = null;
+		if(MainProxy.isServer(entityplayer.worldObj)) {
+			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getRoutedPipe().getUpgradeManager().getSecurityID());
+			if(station != null) {
+				settings = station.getSecuritySettingsForPlayer(entityplayer);
+			}
+		}
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
 			//getRoutedPipe().getRouter().displayRoutes();
@@ -63,17 +76,27 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 				doDebugStuff(entityplayer);
 			}
 			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
+		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior && (settings == null || settings.openNetworkMonitor)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, worldObj, xCoord, yCoord, zCoord);
 			}
 			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer)) {
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
 			onWrenchClicked(entityplayer);
 			return true;
-		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, worldObj, xCoord, yCoord, zCoord);
+			}
+			return true;
+		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
+			return true;
+		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				entityplayer.sendChatToPlayer("Permission denied");
 			}
 			return true;
 		}
@@ -105,7 +128,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		
 		System.out.println("ID: " + r.getSimpleID());
 		System.out.println("---------CONNECTED TO---------------");
-		for (RoutedPipe adj : sr._adjacent.keySet()) {
+		for (CoreRoutedPipe adj : sr._adjacent.keySet()) {
 			System.out.println(adj.getRouter().getSimpleID());
 		}
 		System.out.println();

@@ -40,6 +40,7 @@ import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketItem;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleNBT;
+import logisticspipes.network.packets.PacketNBT;
 import logisticspipes.network.packets.PacketNameUpdatePacket;
 import logisticspipes.network.packets.PacketPipeBeePacket;
 import logisticspipes.network.packets.PacketPipeBitSet;
@@ -359,6 +360,17 @@ public class ServerPacketHandler {
 					packetBa.readData(data);
 					onOpenSecurityPlayer(player, packetBa);
 					break;
+				case NetworkConstants.SAVE_SECURITY_PLAYER:
+					final PacketNBT packetBb = new PacketNBT();
+					packetBb.readData(data);
+					onSaveSecurityPlayer(player, packetBb);
+					break;
+				case NetworkConstants.SET_SECURITY_CC:
+					final PacketPipeInteger packetBc = new PacketPipeInteger();
+					packetBc.readData(data);
+					onSetSecurityCC(player, packetBc);
+					break;
+					
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1410,6 +1422,20 @@ public class ServerPacketHandler {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).handleOpenSecurityPlayer(player, packet.string);
+		}
+	}
+
+	private static void onSaveSecurityPlayer(EntityPlayerMP player, PacketNBT packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).saveNewSecuritySettings(packet.tag);
+		}
+	}
+
+	private static void onSetSecurityCC(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).changeCC();
 		}
 	}
 	

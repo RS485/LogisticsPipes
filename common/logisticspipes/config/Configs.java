@@ -258,12 +258,8 @@ public class Configs {
 		Property logisticPipeCraftingMK3IdProperty = configuration.getItem("logisticsPipeCraftingMK3.id", LOGISTICSPIPE_CRAFTING_MK3_ID);
 		logisticPipeCraftingMK3IdProperty.comment = "The item id for the crafting logistics pipe MK3";
 
-		//DEBUG (TEST) ONLY (FIREWALL)
-		Property logisticPipeFirewallIdProperty = null;
-		if(LogisticsPipes.DEBUG) {
-			logisticPipeFirewallIdProperty = configuration.getItem("logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID);
-			logisticPipeFirewallIdProperty.comment = "The item id for the firewall logistics pipe";
-		}
+		Property logisticPipeFirewallIdProperty = configuration.getItem("logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID);
+		logisticPipeFirewallIdProperty.comment = "The item id for the firewall logistics pipe";
 		
 		//DEBUG (TEST) ONLY (LIQUID)
 		Property logisticPipeLiquidConnectorIdProperty = null;
@@ -439,11 +435,7 @@ public class Configs {
 		LOGISTICSPIPE_INVSYSCON_ID			= Integer.parseInt(logisticInvSysConIdProperty.value);
 		LOGISTICS_SIGN_ID 					= Integer.parseInt(logisticsSignId.value);
 		LOGISTICS_SOLID_BLOCK_ID 			= Integer.parseInt(logisticsSolidBlockId.value);
-		
-		//DEBUG (TEST) ONLY (FIREWALL)
-		if(LogisticsPipes.DEBUG) {
-			LOGISTICSPIPE_FIREWALL_ID	= logisticPipeFirewallIdProperty.getInt();
-		}
+		LOGISTICSPIPE_FIREWALL_ID			= logisticPipeFirewallIdProperty.getInt();
 
 		//DEBUG (TEST) ONLY (LIQUID)
 		if(LogisticsPipes.DEBUG) {

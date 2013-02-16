@@ -42,7 +42,7 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
@@ -53,6 +53,7 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.security.PermissionException;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -77,7 +78,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Crafting")
-public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver {
+public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver {
 
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 
@@ -89,6 +90,8 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	protected int _extras;
 	private boolean init = false;
 	private boolean doContentUpdate = true;
+	
+	public boolean waitingForCraft = false;
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new BaseLogicCrafting(), itemID);
@@ -201,7 +204,13 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 			checkContentUpdate();
 		}
 		
-		if ((!_orderManager.hasOrders() && _extras < 1) || worldObj.getWorldTime() % 6 != 0) return;
+		if (worldObj.getWorldTime() % 6 != 0) return;
+
+		waitingForCraft = false;
+		
+		if((!_orderManager.hasOrders() && _extras < 1)) return;
+		
+		waitingForCraft = true;
 		
 		List<AdjacentTile> crafters = locateCrafters();
 		if (crafters.size() < 1 ) {
@@ -490,9 +499,14 @@ public class PipeItemsCraftingLogistics extends RoutedPipe implements ICraftItem
 	
 	/* ComputerCraftCommands */
 	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
-	@CCQueued
-	public void reimport() {
+	@CCQueued(prefunction="testImportAccess")
+	public void reimport() throws Exception {
+		checkCCAccess();
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
+	}
+	
+	public void testImportAccess() throws PermissionException {
+		checkCCAccess();
 	}
 
 	@Override

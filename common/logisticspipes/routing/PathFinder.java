@@ -8,6 +8,7 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayDeque;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -16,9 +17,9 @@ import java.util.Map.Entry;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.RoutedPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -44,24 +45,24 @@ class PathFinder {
 	 * @return
 	 */
 	
-	public static HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength) {
+	public static HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
 		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
 	}
 	
-	public static HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength, ForgeDirection side) {
+	public static HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength, ForgeDirection side) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
 		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), side);
 	}
 	
-	public static HashMap<RoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
+	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, pathPainter);
 		newSearch.setVisited.add(startPipe);
 		Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, startOrientation);
 		p.moveForwards(1);
 		TileEntity entity = startPipe.worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
 		if (!(entity instanceof TileGenericPipe && ((TileGenericPipe)entity).pipe.isPipeConnected(startPipe, startOrientation))){
-			return new HashMap<RoutedPipe, ExitRoute>();
+			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}
 		
 		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
@@ -80,8 +81,8 @@ class PathFinder {
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
 	
-	private HashMap<RoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
-		HashMap<RoutedPipe, ExitRoute> foundPipes = new HashMap<RoutedPipe, ExitRoute>();
+	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
+		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<CoreRoutedPipe, ExitRoute>();
 		
 		boolean root = setVisited.size() == 0;
 		
@@ -105,8 +106,8 @@ class PathFinder {
 		}
 		
 		//Break recursion if we end up on a routing pipe, unless its the first one. Will break if matches the first call
-		if (startPipe.pipe instanceof RoutedPipe && setVisited.size() != 0) {
-			RoutedPipe rp = (RoutedPipe) startPipe.pipe;
+		if (startPipe.pipe instanceof CoreRoutedPipe && setVisited.size() != 0) {
+			CoreRoutedPipe rp = (CoreRoutedPipe) startPipe.pipe;
 			if(rp.stillNeedReplace()) {
 				return foundPipes;
 			}
@@ -124,14 +125,14 @@ class PathFinder {
 		setVisited.add(startPipe);
 		
 		if(startPipe.pipe != null) {
-			List<TileGenericPipe> pipez = SimpleServiceLocator.specialconnection.getConnectedPipes(startPipe);
+			List<TileGenericPipe> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe);
 			for (TileGenericPipe specialpipe : pipez){
 				if (setVisited.contains(specialpipe)) {
 					//Don't go where we have been before
 					continue;
 				}
-				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags, side);
-				for (Entry<RoutedPipe, ExitRoute> pipe : result.entrySet()) {
+				HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(specialpipe,connectionFlags, side);
+				for (Entry<CoreRoutedPipe, ExitRoute> pipe : result.entrySet()) {
 					pipe.getValue().exitOrientation = ForgeDirection.UNKNOWN;
 					ExitRoute foundPipe=foundPipes.get(pipe.getKey());
 					if (foundPipe==null || (pipe.getValue().distanceToDestination < foundPipe.distanceToDestination)) {
@@ -142,25 +143,41 @@ class PathFinder {
 			}
 		}
 		
+		ArrayDeque<Pair<TileEntity,ForgeDirection>> connections = new ArrayDeque<Pair<TileEntity,ForgeDirection>>();
 		
 		//Recurse in all directions
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			if(root && !ForgeDirection.UNKNOWN.equals(side) && !direction.equals(side)) continue;
-			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
-			Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
-			p.moveForwards(1);
-			TileEntity tile = startPipe.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+
+			// tile may be up to 1 second old, but any neighbour pipe change will cause an immidiate update here, so we know that if it has changed, it isn't a pipe that has done so.
+			TileEntity tile = startPipe.tileBuffer[direction.ordinal()].getTile();
 			
 			if (tile == null) continue;
+			connections.add(new Pair<TileEntity, ForgeDirection>(tile, direction));
+		}
+		
+		while(!connections.isEmpty()) {
+			Pair<TileEntity,ForgeDirection> pair = connections.pollFirst();
+			TileEntity tile = pair.getValue1();
+			ForgeDirection direction = pair.getValue2();
+			EnumSet<PipeRoutingConnectionType> nextConnectionFlags = EnumSet.copyOf(connectionFlags);
 			boolean isDirectConnection = false;
 			int resistance = 0;
 			
-
+			if(root) {
+				List<TileGenericPipe> list = SimpleServiceLocator.specialtileconnection.getConnectedPipes(tile);
+				if(!list.isEmpty()) {
+					for(TileGenericPipe pipe:list) {
+						connections.add(new Pair<TileEntity,ForgeDirection>(pipe, direction));
+					}
+					continue;
+				}
+			}
 			
 			if(tile instanceof IInventory) {
 				if(startPipe.pipe instanceof IDirectRoutingConnection) {
-					if(SimpleServiceLocator.connectionManager.hasDirectConnection(((RoutedPipe)startPipe.pipe).getRouter())) {
-						CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(((RoutedPipe)startPipe.pipe).getRouter());
+					if(SimpleServiceLocator.connectionManager.hasDirectConnection(((CoreRoutedPipe)startPipe.pipe).getRouter())) {
+						CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(((CoreRoutedPipe)startPipe.pipe).getRouter());
 						if(CRP != null) {
 							tile = CRP.container;
 							isDirectConnection = true;
@@ -208,31 +225,32 @@ class PathFinder {
 				}
 
 				int beforeRecurseCount = foundPipes.size();
-				HashMap<RoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), nextConnectionFlags, direction);
-				for(RoutedPipe pipe : result.keySet()) {
+				HashMap<CoreRoutedPipe, ExitRoute> result = getConnectedRoutingPipes(((TileGenericPipe)tile), nextConnectionFlags, direction);
+				for(Entry<CoreRoutedPipe, ExitRoute> pipeEntry : result.entrySet()) {
 					//Update Result with the direction we took
-					result.get(pipe).exitOrientation = direction;
-					if (!foundPipes.containsKey(pipe)) {
+					pipeEntry.getValue().exitOrientation = direction;
+					ExitRoute foundPipe = foundPipes.get(pipeEntry.getKey());
+					if (foundPipe==null) {
 						// New path
-						foundPipes.put(pipe, result.get(pipe));
+						foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
 						//Add resistance
-						foundPipes.get(pipe).distanceToDestination += resistance;
+						pipeEntry.getValue().distanceToDestination += resistance;
 					}
-					else if (result.get(pipe).distanceToDestination + resistance < foundPipes.get(pipe).distanceToDestination) {
+					else if (pipeEntry.getValue().distanceToDestination + resistance < foundPipe.distanceToDestination) {
 						//If new path is better, replace old path, otherwise do nothing
-						foundPipes.put(pipe, result.get(pipe));
+						foundPipes.put(pipeEntry.getKey(), pipeEntry.getValue());
 						//Add resistance
-						foundPipes.get(pipe).distanceToDestination += resistance;
+						pipeEntry.getValue().distanceToDestination += resistance;
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
-					p.moveBackwards(1);
+					Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
 					pathPainter.addLaser(startPipe.worldObj, p, direction);
 				}
 			}
 		}
 		setVisited.remove(startPipe);
-		if(startPipe.pipe instanceof RoutedPipe){ // ie, has the recursion returned to the pipe it started from?
+		if(startPipe.pipe instanceof CoreRoutedPipe){ // ie, has the recursion returned to the pipe it started from?
 			for(ExitRoute e:foundPipes.values())
 				e.root=((CoreRoutedPipe)startPipe.pipe).getRouter();
 		}

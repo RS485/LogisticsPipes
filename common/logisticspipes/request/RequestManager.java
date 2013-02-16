@@ -85,10 +85,10 @@ public class RequestManager {
 		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
-			CoreRoutedPipe pipe = r.root.getPipe();
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.root.getSimpleID())) {
+			CoreRoutedPipe pipe = r.destination.getPipe();
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
 				if (pipe instanceof ICraftItems){
-					used.set(r.root.getSimpleID());
+					used.set(r.destination.getSimpleID());
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
 					if(craftable!=null) {
 						for(IFilter filter: filters) {
@@ -99,16 +99,16 @@ public class RequestManager {
 						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
 					}
 				}
-				if(r.root instanceof IFilteringRouter) {
+				if(r.destination instanceof IFilteringRouter) {
 					firewalls.add(r);
-					used.set(r.root.getSimpleID());
+					used.set(r.destination.getSimpleID());
 				}
-			}		
+			}
 		}
 		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.root).getFilter();
+			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
 			filters.add(filter);
-			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.root).getRouters(), used, filters);
+			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.destination).getRouters(), used, filters);
 			filters.remove(filter);
 			crafters.addAll(list);
 		}
@@ -122,24 +122,24 @@ public class RequestManager {
 		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRouteTo) && !used.get(r.root.getSimpleID())) {
-				CoreRoutedPipe pipe = r.root.getPipe();
+			if(r.containsFlag(PipeRoutingConnectionType.canRouteTo) && !used.get(r.destination.getSimpleID())) {
+				CoreRoutedPipe pipe = r.destination.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();
 					list.addAll(filters);
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
 					used.set(r.root.getSimpleID());
 				}
-				if(r.root instanceof IFilteringRouter) {
+				if(r.destination instanceof IFilteringRouter) {
 					firewalls.add(r);
-					used.set(r.root.getSimpleID());
+					used.set(r.destination.getSimpleID());
 				}
 			}
 		}
 		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.root).getFilter();
+			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
 			filters.add(filter);
-			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((IFilteringRouter)r.root).getRouters(), used, filters);
+			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(((IFilteringRouter)r.destination).getRouters(), used, filters);
 			filters.remove(filter);
 			providers.addAll(list);
 		}
@@ -195,9 +195,10 @@ public class RequestManager {
 		
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			ExitRoute e = r.getDistanceTo(requester.getRouter());
+			ExitRoute e = requester.getRouter().getDistanceTo(r);
+			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)
 				validSources.add(e);
 		}
@@ -297,11 +298,12 @@ outer:
 		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList(routers.size()); // get the routing table 
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-				ExitRoute e = r.getDistanceTo(requester.getRouter());
-				if (e!=null)
-					validSources.add(e);
+			ExitRoute e = requester.getRouter().getDistanceTo(r);
+			//ExitRoute e = r.getDistanceTo(requester.getRouter());
+			if (e!=null)
+				validSources.add(e);
 		}
 		Collections.sort(validSources);
 		

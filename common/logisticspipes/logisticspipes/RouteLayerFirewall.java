@@ -8,13 +8,14 @@ public class RouteLayerFirewall extends RouteLayer{
 	public RouteLayerFirewall(IRouter iRouter, TransportLayer transport) {
 		super(iRouter, transport);
 	}
-
-	public ForgeDirection getOrientationForItem(IRoutedItem item){
+	
+	@Override
+	public ForgeDirection getOrientationForItem(IRoutedItem item, ForgeDirection blocked){
 		
 		item.checkIDFromUUID();
 		//If a item has no destination, find one
 		if (item.getDestination() < 0) {
-			return super.getOrientationForItem(item);
+			return super.getOrientationForItem(item, blocked);
 		}
 		int destination = item.getDestination();
 		// if the item isRelayed and has arrived at us, flip the destination to ourselves, so it can continue on its way.
@@ -28,6 +29,6 @@ public class RouteLayerFirewall extends RouteLayer{
 				}
 			}
 		}
-		return super.getOrientationForItem(item);
+		return super.getOrientationForItem(item, blocked);
 	}	
 }

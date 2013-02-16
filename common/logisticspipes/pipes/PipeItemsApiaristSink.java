@@ -3,12 +3,12 @@ package logisticspipes.pipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleApiaristSink;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.tileentity.TileEntity;
 
-public class PipeItemsApiaristSink extends RoutedPipe {
+public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	
 	private ModuleApiaristSink sinkModule;
 

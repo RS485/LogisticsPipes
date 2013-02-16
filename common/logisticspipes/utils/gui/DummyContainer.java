@@ -246,4 +246,30 @@ public class DummyContainer extends Container{
         	addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset));
         }
 	}
+
+	//Hacky overrides to handle client/server player inv sync with 0-slot containers
+	@Override
+	public Slot getSlotFromInventory(IInventory par1IInventory, int par2)
+	{
+		Slot s = super.getSlotFromInventory(par1IInventory, par2);
+		if(s != null)
+			return s;
+		if(inventorySlots.isEmpty() && par1IInventory == _playerInventory) {
+			s = new Slot(_playerInventory, par2, 0, 0);
+			s.slotNumber = par2;
+			return s;
+		}
+        return null;
+    }
+
+	@Override
+	public void putStackInSlot(int par1, ItemStack par2ItemStack)
+	{
+		if(inventorySlots.isEmpty()) {
+			_playerInventory.setInventorySlotContents(par1, par2ItemStack);
+			_playerInventory.onInventoryChanged();
+			return;
+		}
+		super.putStackInSlot(par1, par2ItemStack);
+	}
 }

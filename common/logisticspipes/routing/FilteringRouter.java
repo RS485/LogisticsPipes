@@ -14,52 +14,12 @@ import net.minecraftforge.common.ForgeDirection;
 public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	
 	private ForgeDirection side;
-	//private boolean init = false;
 	
 	public FilteringRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir) {
 		super(id, dimension, xCoord, yCoord, zCoord);
 		this.side = dir;
 	}
 	
-/*	@Override
-	protected void CreateRouteTable(int version_to_update_to)	{
-		if(ForgeDirection.UNKNOWN.equals(side))
-			return;
-		super.CreateRouteTable(version_to_update_to);
-		
-	}*/
-	/*
-	protected void recheckAdjacent() {
-		if(ForgeDirection.UNKNOWN.equals(side)) {
-			if (!init) {
-				HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
-				for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-					adjacentRouter.put(getPipe().getRouter(dir), new ExitRoute(dir, dir.getOpposite(), 0, EnumSet.allOf(PipeRoutingConnectionType.class)));
-				}
-				_adjacentRouter = adjacentRouter;
-				_adjacent = new HashMap<RoutedPipe, ExitRoute>(0);
-				_powerAdjacent = new ArrayList<ILogisticsPowerProvider>(0);
-				init = true;
-				_blockNeedsUpdate = true;
-				SendNewLSA();
-			}
-		} else {
-			super.recheckAdjacent();
-		}
-	}
-	
-	protected void SendNewLSA() {
-		HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
-		for (RoutedPipe adjacent : _adjacent.keySet()){
-			neighboursWithMetric.put(adjacent.getRouter(_adjacent.get(adjacent).insertOrientation), new Pair<Integer, EnumSet<PipeRoutingConnectionType>>(_adjacent.get(adjacent).metric, _adjacent.get(adjacent).connectionDetails));
-		}
-		SharedLSADatabasewriteLock.lock();
-		_myLsa.neighboursWithMetric = neighboursWithMetric;
-		_myLsa.power = new ArrayList<ILogisticsPowerProvider>(0);
-		_LSDVersion++;
-		SharedLSADatabasewriteLock.unlock();
-	}
-	*/
 	@Override
 	public List<ExitRoute> getRouters() {
 		if(LogisticsPipes.DEBUG && ForgeDirection.UNKNOWN.equals(side)) {
@@ -91,9 +51,9 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	}
 
 	@Override
-	public boolean idIdforOtherSide(int id) {
+	public boolean isIdforOtherSide(int id) {
 		if(this.getPipe() instanceof PipeItemsFirewall) {
-			return ((PipeItemsFirewall)this.getPipe()).idIdforOtherSide(id);
+			return ((PipeItemsFirewall)this.getPipe()).isIdforOtherSide(id);
 		}
 		return false;
 	}

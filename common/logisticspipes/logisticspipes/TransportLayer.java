@@ -19,7 +19,7 @@ import net.minecraftforge.common.ForgeDirection;
 public abstract class TransportLayer {
 	
 	public abstract boolean stillWantItem(IRoutedItem item);
-	public abstract ForgeDirection itemArrived(IRoutedItem item);
+	public abstract ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed);
 	
 //	public void SendItem(EntityData data){
 //		

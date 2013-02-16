@@ -59,4 +59,8 @@ public class InventoryUtilFactory {
 		}
 		return util;
 	}
+
+	public IInventoryUtil getFuzzyInventoryUtil(IInventory inv) {
+		return new FuzzyInventoryUtil(inv);
+	}
 }

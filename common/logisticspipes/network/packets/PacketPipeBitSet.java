@@ -21,18 +21,12 @@ public class PacketPipeBitSet extends PacketCoordinates {
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
-		byte[] array = flags.toByteArray();
-		data.writeByte(array.length);
-		data.write(array);
+		BitSetHelper.write(data, flags);
 	}
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
-		byte size = data.readByte();
-		byte[] array = new byte[size];
-		data.read(array, 0, size);
-		flags = BitSet.valueOf(array);
+		flags = BitSetHelper.read(data);
 	}
-	
 }

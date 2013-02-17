@@ -24,4 +24,5 @@ public interface IRouterManager {
 	public List<IRouter> getRouters();
 	public void serverStopClean();
 	public void clearClientRouters();
+	boolean isRouterUnsafe(int id, boolean side);
 }

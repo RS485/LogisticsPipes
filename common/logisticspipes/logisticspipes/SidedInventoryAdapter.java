@@ -8,8 +8,10 @@
 
 package logisticspipes.logisticspipes;
 
+import java.util.Random;
 import java.util.TreeSet;
 
+import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -21,28 +23,15 @@ import net.minecraftforge.common.ISidedInventory;
  * @author Krapht
  *
  */
-public class SidedInventoryAdapter implements IInventory {
+public final class SidedInventoryAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
 	private final int _slotMap[];
 	
-	public SidedInventoryAdapter(ISidedInventory sidedInventory, ForgeDirection side){
+	public SidedInventoryAdapter(ISidedInventory sidedInventory, ForgeDirection side) {
 		_sidedInventory = sidedInventory;
 		if(side == ForgeDirection.UNKNOWN) {
-			TreeSet<Integer> slotset = new TreeSet<Integer>();
-			for(ForgeDirection tside : ForgeDirection.VALID_DIRECTIONS) {
-				int nslots = _sidedInventory.getSizeInventorySide(tside);
-				int offset = _sidedInventory.getStartInventorySide(tside);
-				for(int i = 0; i < nslots; i++) {
-					slotset.add(i + offset);
-				}
-			}
-			_slotMap = new int[slotset.size()];
-			int j = 0;
-			for(int i : slotset) {
-				_slotMap[j] = i;
-				j++;
-			}
+			_slotMap = buildAllSidedMap(sidedInventory);
 		} else {
 			int nslots = _sidedInventory.getSizeInventorySide(side);
 			int offset = _sidedInventory.getStartInventorySide(side);
@@ -53,6 +42,89 @@ public class SidedInventoryAdapter implements IInventory {
 		}
 	}
 
+	private int[] buildAllSidedMap(ISidedInventory sidedInventory) {
+		int[] invSizes = new int[6];
+		int[] invStarts = new int[6];
+		int nUnique = 0;
+
+		//get start and size for sides, skip empty and duplicates
+outer:
+		for(int i = 0; i < 6; i++) {
+			ForgeDirection tside = ForgeDirection.VALID_DIRECTIONS[i];
+			int size = sidedInventory.getSizeInventorySide(tside);
+			if(size == 0)
+				continue;
+			int start = sidedInventory.getStartInventorySide(tside);
+			for(int j = 0; j < nUnique; j++) {
+				if(invStarts[j] == start && invSizes[j] == size)
+					continue outer;
+			}
+			invStarts[nUnique] = start;
+			invSizes[nUnique] = size;
+			nUnique++;
+		}
+
+		//selection sort by start ascending, at equal start by size descending
+		for(int i = 0; i < nUnique; i++) {
+			int best = i;
+			for(int j = i + 1; j < nUnique; j++) {
+				if(invStarts[j] < invStarts[best]) {
+					best = j;
+					continue;
+				}
+				if(invStarts[j] == invStarts[best] && invSizes[j] > invSizes[best]) {
+					best = j;
+					continue;
+				}
+			}
+			//swap
+			if(best != i) {
+				int tstart = invStarts[i];
+				int tsize = invSizes[i];
+				invStarts[i] = invStarts[best];
+				invSizes[i] = invSizes[best];
+				invStarts[best] = tstart;
+				invSizes[best] = tsize;
+			}
+		}
+
+		//remove overlaps, maintaining the start ascending invariant
+		for(int i = 0; i < nUnique; i++) {
+			if(invSizes[i] == 0)
+				continue;
+			for(int j = i + 1; j < nUnique; j++) {
+				if(invSizes[j] == 0)
+					continue;
+				//identical or j contained within i
+				if(invStarts[j] + invSizes[j] <= invStarts[i] + invSizes[i]) {
+					invSizes[j] = 0;
+					continue;
+				}
+				//j overlapping or directly adjacent to end of i
+				if(invStarts[j] <= invStarts[i] + invSizes[i] && invStarts[j] + invSizes[j] >= invStarts[i] + invSizes[i]) {
+					invSizes[i] = invStarts[j] - invStarts[i] + invSizes[j];
+					invSizes[j] = 0;
+					continue;
+				}
+			}
+		}
+
+		//count total
+		int totalslots = 0;
+		for(int i = 0; i < nUnique; i++) {
+			totalslots += invSizes[i];
+		}
+
+		//and finally fill the map
+		int[] slotmap = new int[totalslots];
+		for(int i = 0, curidx = 0; i < nUnique; i++) {
+			for(int j = invStarts[i]; j < invStarts[i] + invSizes[i]; j++) {
+				slotmap[curidx++] = j;
+			}
+		}
+
+		return slotmap;
+	}
 
 	@Override
 	public int getSizeInventory() {

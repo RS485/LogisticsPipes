@@ -744,7 +744,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	
 	@Override
 	public boolean hasRoute(int id) {
-		if (!SimpleServiceLocator.routerManager.isRouter(id)) return false;
+		if (!SimpleServiceLocator.routerManager.isRouterUnsafe(id,false)) return false;
 		if(getRouteTable().size()<=id)
 			return false;
 		ExitRoute source = this.getRouteTable().get(id);

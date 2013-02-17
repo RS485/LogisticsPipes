@@ -133,6 +133,21 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 		}
 	}
 	
+	/**
+	 * This assumes you know what you are doing. expect exceptions to be thrown if you pass the wrong side.
+	 * @param id
+	 * @param side false for server, true for client. 
+	 * @return is this a router for the side.
+	 */
+	@Override
+	public boolean isRouterUnsafe(int id,boolean side) {
+		if(side) {
+			return true;
+		} else {
+			return _routersServer.get(id)!=null;
+		}
+	}
+	
 	@Override
 	public List<IRouter> getRouters() {
 		if(MainProxy.isClient()) {

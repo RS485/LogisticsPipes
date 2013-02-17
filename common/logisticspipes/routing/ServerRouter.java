@@ -450,15 +450,19 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		//Init candidates
 		// the shortest way to go to an adjacent item is the adjacent item.
 		for (Entry<IRouter, ExitRoute> pipe :  _adjacentRouter.entrySet()){
-			ExitRoute currentE = pipe.getValue();
 			//currentE.connectionDetails.retainAll(blocksPower);
-			candidatesCost.add(new ExitRoute(pipe.getKey().getRouter(currentE.insertOrientation), pipe.getKey().getRouter(currentE.insertOrientation), currentE.distanceToDestination, pipe.getValue().connectionDetails));
+			ExitRoute currentE = pipe.getValue();
+			IRouter newRouter= pipe.getKey().getRouter(currentE.insertOrientation);
+			if(newRouter != null){
+				ExitRoute newER = new ExitRoute(newRouter,newRouter, currentE.distanceToDestination, pipe.getValue().connectionDetails);
+			candidatesCost.add(newER);
+			}
 			//objectMapped.set(pipe.getKey().getSimpleID(),true);
 		}
 
 		SharedLSADatabasereadLock.lock(); // readlock, not inside the while - too costly to aquire, then release. 
 		ExitRoute lowestCostNode;
-		while ((lowestCostNode=candidatesCost.poll()) != null){
+		while ((lowestCostNode = candidatesCost.poll()) != null){
 			if(!lowestCostNode.hasActivePipe())
 				continue;
 			//if the node does not have any flags not in the closed set, check it
@@ -526,11 +530,11 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 //			if(!node.containsFlag(PipeRoutingConnectionType.canRouteTo))
 //				continue;
 			IRouter firstHop = node.root;
-			ExitRoute hop=_adjacentRouter.get(firstHop);
+			ExitRoute hop = _adjacentRouter.get(firstHop);
 			if (hop == null){
 				continue;
 			}
-			node.root=this.getRouter(hop.exitOrientation); // replace the root with this, rather than the first hop.
+			node.root = this.getRouter(hop.exitOrientation); // replace the root with this, rather than the first hop.
 			node.exitOrientation = hop.exitOrientation;
 			node.insertOrientation = hop.insertOrientation;
 			while (node.destination.getSimpleID() >= routeTable.size()) // the array will not expand, as it is init'd to contain enough elements

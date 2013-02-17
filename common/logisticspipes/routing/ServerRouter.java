@@ -454,8 +454,8 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			ExitRoute currentE = pipe.getValue();
 			IRouter newRouter= pipe.getKey().getRouter(currentE.insertOrientation);
 			if(newRouter != null){
-				ExitRoute newER = new ExitRoute(newRouter,newRouter, currentE.distanceToDestination, pipe.getValue().connectionDetails);
-			candidatesCost.add(newER);
+				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails);
+				candidatesCost.add(newER);
 			}
 			//objectMapped.set(pipe.getKey().getSimpleID(),true);
 		}

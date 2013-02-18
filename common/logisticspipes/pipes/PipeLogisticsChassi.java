@@ -537,6 +537,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	@Override
 	protected void sendQueueChanged() {
 		if(MainProxy.isServer()) {
+			if(localModeWatchers != null && localModeWatchers.size()>0)
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListSendQueue(_sendQueue)).getPacket(), localModeWatchers);
 		}
 	}

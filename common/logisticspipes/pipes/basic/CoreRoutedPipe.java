@@ -100,8 +100,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		private int lastRouter = 0;
 		private static int inventorySlotsToUpdatePerTick = 90;
 		private static ManualResetEvent lock = new ManualResetEvent(false);
-		public HudUpdateThread(int i) {
-			super("LogisticsPipes HudUpdateThread" + i);
+		private static HudUpdateThread instance = new HudUpdateThread();
+		public HudUpdateThread() {
+			super("LogisticsPipes HudUpdateThread");
 			this.setDaemon(true);
 			this.setPriority(Configs.multiThreadPriority);
 			this.start();

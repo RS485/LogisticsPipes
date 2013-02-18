@@ -353,10 +353,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for (int i = 0; i < 9; i++){
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;
-			if (i < 6 || !hasSatellite){
+			if (i < 6 || !hasSatellite) {
 				template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), this);
-			}
-			else{
+			} else {
 				template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), (IRequestItems)craftingLogic.getSatelliteRouter().getPipe());
 			}
 				

@@ -27,7 +27,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	private ItemIdentifierStack _result;
 	private ICraftItems _crafter;
-	private HashMap<ItemIdentifierStack, IRequestItems> _required = new HashMap<ItemIdentifierStack, IRequestItems>();
+	private ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
 	private final int priority;
 	
 	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
@@ -36,8 +36,14 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		this.priority = priority;
 	}
 	
-	public void addRequirement(ItemIdentifierStack stack, IRequestItems crafter){
-		_required.put(stack, crafter);
+	public void addRequirement(ItemIdentifierStack stack, IRequestItems crafter) {
+		for(Pair<ItemIdentifierStack, IRequestItems> i : _required) {
+			if(i.getValue1().getItem() == stack.getItem() && i.getValue2() == crafter) {
+				i.getValue1().stackSize += stack.stackSize;
+				return;
+			}
+		}
+		_required.add(new Pair<ItemIdentifierStack, IRequestItems>(stack, crafter));
 	}
 	
 	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
@@ -50,11 +56,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 	
 	public List<Pair<ItemIdentifierStack,IRequestItems>> getSource() {
-		List<Pair<ItemIdentifierStack,IRequestItems>> result = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(_required.size());
-		for (Entry<ItemIdentifierStack, IRequestItems> stack : _required.entrySet()) {
-			result.add(new Pair<ItemIdentifierStack,IRequestItems>(stack.getKey(),stack.getValue()));
-		}
-		return result;
+		return _required;
 	}
 
 	public ItemIdentifierStack getResultStack() {

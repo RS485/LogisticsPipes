@@ -218,27 +218,15 @@ outer:
 			for(IFilter filter:crafter.getValue2()) {
 				if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
 			}
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>();
+			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(9);
 
 			nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 			
 			// for each thing needed to satisfy this promise
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
-				boolean done = false;
-				//search for an existing requests from here and it to stacks <requester,item>
-				for(Pair<ItemIdentifierStack,IRequestItems> part:stacks) {
-					if(part.getValue1().getItem() == stack.getValue1().getItem() && part.getValue2() == stack.getValue2()) {
-						part.getValue1().stackSize += stack.getValue1().stackSize * nCraftingSetsNeeded;
-						done = true;
-						break;
-					}
-				}
-				if(!done) {
-					//if its a new request, add it to the end.
-					Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2() );
-					pair.getValue1().stackSize *= nCraftingSetsNeeded;
-					stacks.add(pair);
-				}
+				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+				pair.getValue1().stackSize *= nCraftingSetsNeeded;
+				stacks.add(pair);
 			}
 			
 			boolean failed = false;

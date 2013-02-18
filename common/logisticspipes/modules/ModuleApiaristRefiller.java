@@ -9,6 +9,7 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
@@ -84,7 +85,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if(reply == null) return;
 		_power.useEnergy(20);
 		sinv.extractItem(true, direction, 1);
-		_itemSender.sendStack(stack[0], reply);
+		_itemSender.sendStack(stack[0], reply, ItemSendMode.Normal);
 	}
 
 	private boolean reinsertBee(ItemStack stack, ISpecialInventory inv, ForgeDirection direction) {

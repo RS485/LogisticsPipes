@@ -22,6 +22,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
@@ -77,6 +78,10 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 
 	protected int neededEnergy() {
 		return 5;
+	}
+
+	protected ItemSendMode itemSendMode() {
+		return ItemSendMode.Normal;
 	}
 
 	public SneakyOrientation getSneakyOrientation(){
@@ -142,7 +147,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true);
 			if (reply == null) return;
 			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
-			_itemSender.sendStack(stack[0], reply);
+			_itemSender.sendStack(stack[0], reply, itemSendMode());
 			return;
 		}
 
@@ -171,7 +176,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			}
 
 			stackToSend = targetInventory.decrStackSize(i, count);
-			_itemSender.sendStack(stackToSend, reply);
+			_itemSender.sendStack(stackToSend, reply, itemSendMode());
 			break;
 		}
 	}

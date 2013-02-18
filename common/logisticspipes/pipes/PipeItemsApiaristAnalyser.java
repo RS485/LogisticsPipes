@@ -15,6 +15,7 @@ import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -78,7 +79,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply) {
+	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
@@ -95,7 +96,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 			}
 		}
 		itemToSend.addRelayPoints(list);
-		super.queueRoutedItem(itemToSend, getPointedOrientation());
+		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
 	@Override

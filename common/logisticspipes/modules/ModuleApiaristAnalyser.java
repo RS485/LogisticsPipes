@@ -8,6 +8,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
@@ -81,7 +82,7 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 					Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true);
 					if(reply == null) continue;
 					if(_power.useEnergy(6)) {
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 					}
 				}
 			}

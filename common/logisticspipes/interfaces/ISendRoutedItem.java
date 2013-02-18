@@ -15,6 +15,6 @@ public interface ISendRoutedItem {
 	int getSourceID();
 	IRouter getRouter();
 	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault);
-	void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply);
+	void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode);
 	void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays);
 }

@@ -25,6 +25,7 @@ import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
@@ -130,6 +131,10 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 		return 6;
 	}
 
+	protected ItemSendMode itemSendMode() {
+		return ItemSendMode.Normal;
+	}
+
 	public boolean connectedToSidedInventory() {
 		if(_invProvider == null) return false;
 		return _invProvider.getRawInventory() instanceof ISidedInventory;
@@ -188,7 +193,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 				}
 
 				ItemStack stackToSend = inv.decrStackSize(k, count);
-				_itemSender.sendStack(stackToSend, reply);
+				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 			}
 		}
 	}

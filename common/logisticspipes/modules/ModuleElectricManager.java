@@ -23,6 +23,7 @@ import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
@@ -139,7 +140,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
 				}
@@ -149,7 +150,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 						return;
 					}
 				}

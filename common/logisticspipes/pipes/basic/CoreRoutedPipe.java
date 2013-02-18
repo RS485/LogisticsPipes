@@ -143,9 +143,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 							}
 							routersNeedingUpdate.clear(firstRouter);
 							IRouter currentRouter = rm.getRouter(firstRouter);
-							CoreRoutedPipe pipe = currentRouter.getCachedPipe();
-							if(pipe!=null)
-								slotSentCount += pipe.sendQueueChanged(true);
+							if(currentRouter != null) {
+								CoreRoutedPipe pipe = currentRouter.getCachedPipe();
+								if(pipe!=null)
+									slotSentCount += pipe.sendQueueChanged(true);
+							}
 						}
 						this.sleep(20);
 					}

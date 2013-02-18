@@ -32,6 +32,10 @@ public class WorldUtil {
 
 	public LinkedList<AdjacentTile> getAdjacentTileEntities(boolean flag) {
 		LinkedList<AdjacentTile> foundTiles = new LinkedList<AdjacentTile>();
+		TileEntity tilePipe = null;
+		if(flag) {
+			tilePipe = _worldObj.getBlockTileEntity(_x, _y, _z);
+		}
 		for (ForgeDirection o : ForgeDirection.values()) {
 			if (o == ForgeDirection.UNKNOWN) continue;
 			
@@ -40,7 +44,6 @@ public class WorldUtil {
 			if (tile == null) continue;
 			
 			if(flag) {
-				TileEntity tilePipe = _worldObj.getBlockTileEntity(_x, _y, _z);
 				if(tilePipe instanceof TileGenericPipe) {
 					if(((TileGenericPipe)tilePipe).pipe != null) {
 						if(!((TileGenericPipe)tilePipe).pipe.isPipeConnected(tile, o)) {

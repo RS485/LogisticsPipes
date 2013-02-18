@@ -9,6 +9,7 @@
 package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -49,6 +50,7 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.IRouterManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -59,6 +61,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.ManualResetEvent;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
@@ -90,6 +93,68 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		Fast
 	}
 	
+	protected static class HudUpdateThread extends Thread {
+		
+		// WARNING: promote to a threadsafe, or use an atomic replace on the bitset if multiple threads are goign to be used to process this.
+		private static BitSet routersNeedingUpdate = new BitSet(4096);
+		private int lastRouter = 0;
+		private static int inventorySlotsToUpdatePerTick = 90;
+		private static ManualResetEvent lock = new ManualResetEvent(false);
+		public HudUpdateThread(int i) {
+			super("LogisticsPipes HudUpdateThread" + i);
+			this.setDaemon(true);
+			this.setPriority(Configs.multiThreadPriority);
+			this.start();
+		}
+
+		public static void add(IRouter run) {
+			int index = run.getSimpleID();
+			if(index <0)
+				return;
+			routersNeedingUpdate.set(index); //expands the bit-set when out of bounds.
+			lock.set();// release the hounds, er, thread(s).
+		}
+
+		public static int queueLength() {
+			return routersNeedingUpdate.cardinality();
+		}
+		
+		@Override
+		public void run() {
+			Runnable item = null;
+			IRouterManager rm = SimpleServiceLocator.routerManager;
+			try {
+				int firstRouter = 0;
+				while(true) {
+					lock.waitOne(); // wait until work is to be done.
+					lock.reset(); // we'll clear the work before waiting.
+					boolean done = false;
+					while(!done){
+						if(firstRouter < 0)
+							firstRouter = 0;
+						for(int slotSentCount=0;slotSentCount<inventorySlotsToUpdatePerTick;){
+							firstRouter = this.routersNeedingUpdate.nextSetBit(firstRouter);
+							if(firstRouter == -1) // wrap around
+								firstRouter = this.routersNeedingUpdate.nextSetBit(0);
+							if(firstRouter == -1) { // no bits to be done.
+								done = true;
+								break; // all done
+							}
+							routersNeedingUpdate.clear(firstRouter);
+							IRouter currentRouter = rm.getRouter(firstRouter);
+							CoreRoutedPipe pipe = currentRouter.getCachedPipe();
+							if(pipe!=null)
+								slotSentCount += pipe.sendQueueChanged(true);
+						}
+						this.sleep(20);
+					}
+				} 
+			}
+			catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		}
+	}
 	protected boolean stillNeedReplace = true;
 	
 	protected IRouter router;
@@ -168,15 +233,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
 		_sendQueue.addLast(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
-		sendQueueChanged();
+		sendQueueChanged(false);
 	}
 
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
 		_sendQueue.addLast(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
-		sendQueueChanged();
+		sendQueueChanged(false);
 	}
-	
-	protected void sendQueueChanged() {}
+	/** 
+	 * @param force  == true never delegates to a thread
+	 * @return number of things sent.
+	 */
+	protected int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
 		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()), this.zCoord + 0.5F, from);
@@ -299,7 +367,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 						}
 					}
 				}
-				sendQueueChanged();
+				sendQueueChanged(false);
 			} else if(getItemSendMode() == ItemSendMode.Fast) {
 				for(int i=0;i < 16;i++) {
 					if (!_sendQueue.isEmpty()){
@@ -308,7 +376,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 						_sendQueue.removeFirst();
 					}
 				}
-				sendQueueChanged();
+				sendQueueChanged(false);
 			} else if(getItemSendMode() == null) {
 				throw new UnsupportedOperationException("getItemSendMode() can't return null. "+this.getClass().getName());
 			} else {

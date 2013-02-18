@@ -358,6 +358,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
 			ChassiLogic.orientation = ForgeDirection.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord) % 6];
 			worldObj.setBlockMetadata(xCoord, yCoord, zCoord, 0);
+			convertFromMeta=false;
 		}
 		if(!init) {
 			init = true;

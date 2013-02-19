@@ -181,12 +181,12 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				
 				if (success){
 					Integer currentRequest = _requestedItems.get(need.getKey());
-					if (currentRequest == null){
+					if(currentRequest == null) {
 						_requestedItems.put(need.getKey(), neededCount);
 					} else {
 						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
-				} else{
+				} else {
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 				}
 				

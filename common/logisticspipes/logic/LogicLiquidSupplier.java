@@ -118,20 +118,21 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				}
 				
 				boolean success = false;
-				do{ 
-					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, null);
-					if (success || countToRequest == 1){
-						break;
+
+				if(_requestPartials) {
+					countToRequest = RequestManager.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
+					if(countToRequest > 0) {
+						success = true;
 					}
-					countToRequest = countToRequest / 2;
-				} while (_requestPartials && !success);
+				} else {
+					success = RequestManager.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
+				}
 				
 				if (success){
 					Integer currentRequest = _requestedItems.get(need);
-					if (currentRequest==null){
+					if(currentRequest==null) {
 						_requestedItems.put(need, countToRequest);
-					}else
-					{
+					} else {
 						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else{

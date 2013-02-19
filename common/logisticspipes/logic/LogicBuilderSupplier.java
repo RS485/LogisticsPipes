@@ -102,23 +102,24 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				}
 				
 				boolean success = false;
-				do{ 
-					success = RequestManager.request(need.getKey().makeStack(neededCount),  (IRequestItems) container.pipe, null);
-					if (success || neededCount == 1){
-						break;
+
+				if(_requestPartials) {
+					neededCount = RequestManager.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+					if(neededCount > 0) {
+						success = true;
 					}
-					neededCount = neededCount / 2;
-				} while (_requestPartials && !success);
+				} else {
+					success = RequestManager.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
+				}
 				
 				if (success){
 					Integer currentRequest = _requestedItems.get(need.getKey());
-					if (currentRequest == null){
+					if(currentRequest == null) {
 						_requestedItems.put(need.getKey(), neededCount);
-					}else
-					{
+					} else {
 						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
-				} else{
+				} else {
 					((PipeItemsBuilderSupplierLogistics)this.container.pipe).setRequestFailed(true);
 				}
 				

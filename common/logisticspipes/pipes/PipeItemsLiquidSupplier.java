@@ -23,6 +23,7 @@ import buildcraft.transport.TileGenericPipe;
 
 public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestItems, IItemTravelingHook{
 
+	private boolean _lastRequestFailed = false;
 	
 	public PipeItemsLiquidSupplier(int itemID) {
 		super(new PipeTransportLogistics() {
@@ -47,6 +48,15 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE;
 	} 
+
+	/* TRIGGER INTERFACE */
+	public boolean isRequestFailed(){
+		return _lastRequestFailed;
+	}
+	 
+	public void setRequestFailed(boolean value){
+		_lastRequestFailed = value;
+	}
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {

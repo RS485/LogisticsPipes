@@ -17,6 +17,7 @@ import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
@@ -102,7 +103,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				}
 			}
 			
-			//((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(false);
+			((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(false);
 			
 			//Make request
 			
@@ -136,7 +137,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else{
-					//((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(true);
+					((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(true);
 				}
 			}
 		}

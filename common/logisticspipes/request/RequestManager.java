@@ -259,6 +259,8 @@ outer:
 				}			
 			}
 			if(failed) {
+				//save last tried template for filling out the tree
+				treeNode.lastCrafterTried = template;
 				//figure out how many we can actually get
 				for(int i = 0; i < components.size(); i++) {
 					nCraftingSetsAvailable = Math.min(nCraftingSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
@@ -306,98 +308,33 @@ outer:
 	private static void recurseFailedRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
 		if(treeNode.isDone())
 			return;
-		for(RequestTreeNode subnode : treeNode.subRequests) {
-			recurseFailedRequestTree(tree, subnode, subnode.target);
-		}
-		fillFailedRequestTree(tree, treeNode, requester);
-	}
+		if(treeNode.lastCrafterTried == null)
+			return;
 
-	private static boolean fillFailedRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		checkProvider(tree,treeNode,requester);
-		if(treeNode.isDone()) {
-			return true;
-		}
-		checkExtras(tree, treeNode);
-		if(treeNode.isDone()) {
-			return true;
-		}
-		checkCraftingFillFailed(tree, treeNode, requester);
-		return treeNode.isAllDone();
-	}
+		CraftingTemplate template = treeNode.lastCrafterTried;
 
-	private static void checkCraftingFillFailed(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		List<RequestTreeNode> lastNode = null;
-		CraftingTemplate lastNodeTemplate = null;
-		int nCraftingSetsNeeded = 0;
-		
-		// get all the routers
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
-			ExitRoute e = requester.getRouter().getDistanceTo(r);
-			//ExitRoute e = r.getDistanceTo(requester.getRouter());
-			if (e!=null)
-				validSources.add(e);
-		}
-		Collections.sort(validSources);
-		
-		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
-		
-		// if you have a crafter which can make the top treeNode.getStack().getItem()
-		boolean handled = false;
-outer:
-		for(Pair<CraftingTemplate, List<IFilter>> crafter:crafters) {
-			CraftingTemplate template = crafter.getValue1();
-			if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
-				continue;
-			
-			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;		
-			for(IFilter filter:crafter.getValue2()) {
-				if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
-			}
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(9);
+		List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
+		List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
 
-			nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
-			
-			// for each thing needed to satisfy this promise
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:template.getSource()) {
-				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-				pair.getValue1().stackSize *= nCraftingSetsNeeded;
-				stacks.add(pair);
-			}
-			
-			boolean failed = false;
-			
-			lastNode = new ArrayList<RequestTreeNode>();
-			lastNodeTemplate = template;
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
-				lastNode.add(node);
-				node.declareCrafterUsed(template);
-				if(!fillFailedRequestTree(tree,node,template.getCrafter())) {
-					failed = true;
-				}			
-			}
-			if(failed) {
-				for(RequestTreeNode subNode:lastNode) {
-					treeNode.remove(subNode);
-				}
-				continue;
-			}
-			handled = true;
-			List<IRelayItem> relays = new LinkedList<IRelayItem>();
-			for(IFilter filter:crafter.getValue2()) {
-				relays.add(filter);
-			}
-			treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, relays));
-			lastNode = null;
-			break;
+		int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+
+		// for each thing needed to satisfy this promise
+		for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
+			Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+			pair.getValue1().stackSize *= nCraftingSetsNeeded;
+			stacks.add(pair);
 		}
-		if(!handled) {
-			if(lastNode != null && lastNodeTemplate != null) {
-				treeNode.addPromise(lastNodeTemplate.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
-				treeNode.subRequests.addAll(lastNode);
-			}
+
+		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
+			node.declareCrafterUsed(template);
+			generateRequestTree(tree,node,template.getCrafter());
+		}
+
+		treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
+
+		for(RequestTreeNode subNode : treeNode.subRequests) {
+			recurseFailedRequestTree(tree, subNode, subNode.target);
 		}
 	}
 

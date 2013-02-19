@@ -30,6 +30,7 @@ public class RequestTreeNode {
 	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
 	protected SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
+	protected CraftingTemplate lastCrafterTried = null;
 	
 	public boolean isCrafterUsed(CraftingTemplate test) {
 		if(!usedCrafters.isEmpty() && usedCrafters.contains(test))

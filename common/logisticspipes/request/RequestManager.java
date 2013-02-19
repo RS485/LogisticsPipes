@@ -29,7 +29,7 @@ import logisticspipes.utils.Pair;
 
 public class RequestManager {
 
-	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, List<ExitRoute> validDestinations, RequestLog log) {
+	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log) {
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
 		boolean isDone = true;

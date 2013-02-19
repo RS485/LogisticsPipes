@@ -139,7 +139,7 @@ public class RequestHandler {
 			transaction.add(stack);
 			items.add(new ItemMessage(stack));
 		}
-		RequestManager.request(transaction, requester, requester.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.request(transaction, requester, new RequestLog() {
 			
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {

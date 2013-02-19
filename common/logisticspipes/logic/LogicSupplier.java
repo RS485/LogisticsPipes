@@ -122,6 +122,8 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
 				if (haveCount != null){
 					item.setValue(item.getValue() - haveCount);
+					// so that 1 damaged item can't satisfy a request for 2 other damage values.
+					haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
 				}
 				Integer requestedCount =  _requestedItems.get(item.getKey());
 				if (requestedCount!=null){

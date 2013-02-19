@@ -254,7 +254,7 @@ outer:
 				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
 				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree,node,template.getCrafter())) {
+				if(!generateRequestTree(tree,node,stack.getValue2())) {
 					failed = true;
 				}			
 			}
@@ -282,7 +282,7 @@ outer:
 					RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 					lastNode.add(node);
 					node.declareCrafterUsed(template);
-					if(!generateRequestTree(tree,node,template.getCrafter())) {
+					if(!generateRequestTree(tree,node,stack.getValue2())) {
 						failed = true;
 					}			
 				}
@@ -328,7 +328,7 @@ outer:
 		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
 			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 			node.declareCrafterUsed(template);
-			generateRequestTree(tree,node,template.getCrafter());
+			generateRequestTree(tree,node,stack.getValue2());
 		}
 
 		treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));

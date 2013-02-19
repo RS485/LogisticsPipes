@@ -46,10 +46,10 @@ public class RequestManager {
 			}
 			return true;
 		} else {
-			for(RequestTreeNode node:tree.subRequests) {
-				recurseFailedRequestTree(tree, node, requester);
-			}
 			if(log != null) {
+				for(RequestTreeNode node:tree.subRequests) {
+					recurseFailedRequestTree(tree, node, requester);
+				}
 				for(RequestTreeNode node:tree.subRequests) {
 					if(node instanceof RequestTree) {
 						((RequestTree)node).sendMissingMessage(log);
@@ -70,8 +70,8 @@ public class RequestManager {
 			}
 			return true;
 		} else {
-			recurseFailedRequestTree(tree, tree, requester);
 			if(log != null) {
+				recurseFailedRequestTree(tree, tree, requester);
 				tree.sendMissingMessage(log);
 			}
 			return false;
@@ -91,10 +91,10 @@ public class RequestManager {
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
 		generateRequestTree(tree, tree, requester);
-		if(!tree.isDone()) {
-			recurseFailedRequestTree(tree, tree, requester);
-		}
 		if(log != null) {
+			if(!tree.isDone()) {
+				recurseFailedRequestTree(tree, tree, requester);
+			}
 			tree.sendUsedMessage(log);
 		}
 	}

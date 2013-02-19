@@ -195,7 +195,15 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.clearDestination();
 
-		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
+		for(IRouter r:routers){
+			ExitRoute e = sourceRouter.getDistanceTo(r);
+			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+				validDestinations.add(e);
+		}
+		Collections.sort(validDestinations);
+		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (bestReply.getValue1() != null){
 			item.setBufferCounter(0);

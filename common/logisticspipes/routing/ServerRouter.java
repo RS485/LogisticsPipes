@@ -111,13 +111,14 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		}		
 	}
 
-	public HashMap<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
-	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
+	// these are maps, not hashMaps because they are unmodifiable Collections to avoid concurrentModification exceptions.
+	public Map<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
+	public Map<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 	
 	public boolean[] sideDisconnected = new boolean[6];
 	
-	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
+	private Map<IRouter, ExitRoute> _prevAdjacentRouter = new HashMap<IRouter, ExitRoute>();
 
 	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
 	protected int _LSAVersion = 0;
@@ -356,10 +357,13 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 					routedexits.add(pipe.getValue().exitOrientation);
 			}
-			_prevAdjacentRouter = _adjacentRouter;
-			_adjacentRouter = adjacentRouter;
-			_adjacent = adjacent;
-			_powerAdjacent = power;
+			HashMap<IRouter, ExitRoute> oldRouters = new HashMap(_adjacentRouter);
+			for(IRouter key:adjacentRouter.keySet())
+				oldRouters.remove(key);
+			_prevAdjacentRouter = Collections.unmodifiableMap(oldRouters);
+			_adjacentRouter = Collections.unmodifiableMap(adjacentRouter);
+			_adjacent = Collections.unmodifiableMap(adjacent);
+			_powerAdjacent = Collections.unmodifiableList(power);
 			_routedExits = routedexits;
 			SendNewLSA();
 		}
@@ -596,15 +600,13 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			// don't need to worry about resetting the recursion, as we are the neighbour of our neighbour, and are no longer flaged as processed.
 			hasBeenReset=true;
 		}
+		Set<IRouter> adjacent =  _adjacentRouter.keySet();
 		for(IRouter r : _adjacentRouter.keySet()) {
 			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}
-		if(_prevAdjacentRouter != null) {
-			for(IRouter r : _prevAdjacentRouter.keySet()) {
-				hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
-			}
+		for(IRouter r : _prevAdjacentRouter.keySet()) {
+			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}
-		actor.doneWith(this);
 		return hasBeenReset;
 	}
 	

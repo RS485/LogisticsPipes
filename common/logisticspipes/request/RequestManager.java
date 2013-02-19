@@ -78,6 +78,16 @@ public class RequestManager {
 		}
 	}
 	
+	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
+		RequestTree tree = new RequestTree(item, requester, null);
+		generateRequestTree(tree, tree, requester);
+		int r = tree.getPromiseItemCount();
+		if(r > 0) {
+			handleRequestTree(tree);
+		}
+		return r;
+	}
+
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
 		generateRequestTree(tree, tree, requester);

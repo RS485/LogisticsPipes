@@ -107,10 +107,19 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
+			//How many do I have?
+			HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
+			for (Entry<ItemIdentifier, Integer> item : have.entrySet()){
+				Integer n=haveUndamaged.get(item.getKey().getUndamaged());
+				if(n==null)
+					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue());
+				else
+					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue()+n);
+			}
 			
 			//Reduce what I have and what have been requested already
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer haveCount = have.get(item.getKey());
+				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
 				if (haveCount != null){
 					item.setValue(item.getValue() - haveCount);
 				}

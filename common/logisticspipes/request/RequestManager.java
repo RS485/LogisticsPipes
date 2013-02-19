@@ -36,7 +36,7 @@ public class RequestManager {
 		for(ItemIdentifierStack stack:items) {
 			RequestTree node = new RequestTree(stack, requester, tree);
 			messages.add(new ItemMessage(stack));
-			generateRequestTree(tree, node, requester);
+			generateRequestTree(tree, node);
 			isDone = isDone && node.isDone();
 		}
 		if(isDone) {
@@ -48,7 +48,7 @@ public class RequestManager {
 		} else {
 			if(log != null) {
 				for(RequestTreeNode node:tree.subRequests) {
-					recurseFailedRequestTree(tree, node, requester);
+					recurseFailedRequestTree(tree, node);
 				}
 				for(RequestTreeNode node:tree.subRequests) {
 					if(node instanceof RequestTree) {
@@ -62,7 +62,7 @@ public class RequestManager {
 	
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		generateRequestTree(tree, tree, requester);
+		generateRequestTree(tree, tree);
 		if(tree.isDone()) {
 			handleRequestTree(tree);
 			if(log != null) {
@@ -71,7 +71,7 @@ public class RequestManager {
 			return true;
 		} else {
 			if(log != null) {
-				recurseFailedRequestTree(tree, tree, requester);
+				recurseFailedRequestTree(tree, tree);
 				tree.sendMissingMessage(log);
 			}
 			return false;
@@ -80,7 +80,7 @@ public class RequestManager {
 	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		generateRequestTree(tree, tree, requester);
+		generateRequestTree(tree, tree);
 		int r = tree.getPromiseItemCount();
 		if(r > 0) {
 			handleRequestTree(tree);
@@ -90,10 +90,10 @@ public class RequestManager {
 
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		generateRequestTree(tree, tree, requester);
+		generateRequestTree(tree, tree);
 		if(log != null) {
 			if(!tree.isDone()) {
-				recurseFailedRequestTree(tree, tree, requester);
+				recurseFailedRequestTree(tree, tree);
 			}
 			tree.sendUsedMessage(log);
 		}
@@ -168,8 +168,8 @@ public class RequestManager {
 	private static void handleRequestTree(RequestTree tree) {
 		tree.fullFillAll();
 	}
-	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		checkProvider(tree,treeNode,requester);
+	private static boolean generateRequestTree(RequestTree tree, RequestTreeNode treeNode) {
+		checkProvider(tree, treeNode);
 		if(treeNode.isDone()) {
 			return true;
 		}
@@ -177,7 +177,7 @@ public class RequestManager {
 		if(treeNode.isDone()) {
 			return true;
 		}
-		checkCrafting(tree,treeNode,requester);
+		checkCrafting(tree, treeNode);
 		return treeNode.isDone();
 	}
 
@@ -207,13 +207,13 @@ public class RequestManager {
 		}
 	}
 
-	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
+	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode) {
 		
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
 		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			ExitRoute e = requester.getRouter().getDistanceTo(r);
+			ExitRoute e = treeNode.target.getRouter().getDistanceTo(r);
 			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)
 				validSources.add(e);
@@ -254,7 +254,7 @@ outer:
 				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 				lastNode.add(node);
 				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree,node,stack.getValue2())) {
+				if(!generateRequestTree(tree, node)) {
 					failed = true;
 				}			
 			}
@@ -282,7 +282,7 @@ outer:
 					RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 					lastNode.add(node);
 					node.declareCrafterUsed(template);
-					if(!generateRequestTree(tree,node,stack.getValue2())) {
+					if(!generateRequestTree(tree, node)) {
 						failed = true;
 					}			
 				}
@@ -305,7 +305,7 @@ outer:
 		}
 	}
 
-	private static void recurseFailedRequestTree(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
+	private static void recurseFailedRequestTree(RequestTree tree, RequestTreeNode treeNode) {
 		if(treeNode.isDone())
 			return;
 		if(treeNode.lastCrafterTried == null)
@@ -328,13 +328,13 @@ outer:
 		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
 			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 			node.declareCrafterUsed(template);
-			generateRequestTree(tree,node,stack.getValue2());
+			generateRequestTree(tree, node);
 		}
 
 		treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
 
 		for(RequestTreeNode subNode : treeNode.subRequests) {
-			recurseFailedRequestTree(tree, subNode, subNode.target);
+			recurseFailedRequestTree(tree, subNode);
 		}
 	}
 
@@ -356,13 +356,13 @@ outer:
 	
 	*/
 	
-	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode, IRequestItems requester) {
-		CoreRoutedPipe thisPipe = requester.getRouter().getPipe();
+	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode) {
+		CoreRoutedPipe thisPipe = treeNode.target.getRouter().getPipe();
 		// get all the routers
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
 		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
-			ExitRoute e = requester.getRouter().getDistanceTo(r);
+			ExitRoute e = treeNode.target.getRouter().getDistanceTo(r);
 			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)
 				validSources.add(e);

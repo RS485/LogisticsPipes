@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.hud.HUDChassiePipe;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -358,6 +359,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if(convertFromMeta && worldObj.getBlockMetadata(xCoord, yCoord, zCoord) != 0) {
 			ChassiLogic.orientation = ForgeDirection.values()[worldObj.getBlockMetadata(xCoord, yCoord, zCoord) % 6];
 			worldObj.setBlockMetadata(xCoord, yCoord, zCoord, 0);
+			convertFromMeta=false;
 		}
 		if(!init) {
 			init = true;
@@ -534,10 +536,19 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	protected void sendQueueChanged() {
+	protected int sendQueueChanged(boolean force) {
 		if(MainProxy.isServer()) {
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListSendQueue(_sendQueue)).getPacket(), localModeWatchers);
+			if(Configs.multiThreadEnabled && !force) {
+				HudUpdateThread.add(getRouter());
+			} else {
+				if(localModeWatchers != null && localModeWatchers.size()>0) {
+					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);				
+					MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, items).getPacket(), localModeWatchers);
+					return items.size();
+				}
+			}
 		}
+		return 0;
 	}
 
 	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems){

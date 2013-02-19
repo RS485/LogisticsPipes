@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import buildcraft.transport.TileGenericPipe;
+
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
@@ -82,23 +84,24 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 	
 	private boolean isPowerProvider(ForgeDirection ori) {
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
-		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof ILogisticsPowerProvider && ori == tile.orientation) {
-				return true;
-			}
+		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		if(tilePipe == null || !this.container.isPipeConnected(tilePipe, ori)) {
+			return false;
+		}
+
+		if(tilePipe instanceof ILogisticsPowerProvider) {
+			return true;
 		}
 		return false;
 	}
 	
 	private boolean isSecurityProvider(ForgeDirection ori) {
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
-		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof LogisticsSecurityTileEntity && ori == tile.orientation) {
-				return true;
-			}
+		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		if(tilePipe == null || !this.container.isPipeConnected(tilePipe, ori)) {
+			return false;
+		}
+		if(tilePipe instanceof LogisticsSecurityTileEntity) {
+			return true;
 		}
 		return false;
 	}

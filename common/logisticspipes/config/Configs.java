@@ -84,7 +84,7 @@ public class Configs {
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
 	
 	//MultiThread
-	public static boolean multiThreadEnabled = false;
+	public static boolean multiThreadEnabled = true;
 	public static int multiThreadNumber = 4;
 	public static int multiThreadPriority = Thread.NORM_PRIORITY;
 	

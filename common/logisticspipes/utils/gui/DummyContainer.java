@@ -173,7 +173,7 @@ public class DummyContainer extends Container{
 		if (currentlyEquippedStack == null){
 			if (slot.getStack() != null && mouseButton == 1){
 				if (isShift == 1){
-					slot.getStack().stackSize = Math.min(127, slot.getStack().stackSize * 2);
+					slot.getStack().stackSize = Math.min(slot.getSlotStackLimit(), slot.getStack().stackSize * 2);
 					slot.inventory.onInventoryChanged();
 				} else {
 					slot.getStack().stackSize/=2;
@@ -203,8 +203,12 @@ public class DummyContainer extends Container{
 		if (currentItem == slotItem){
 			//Do manual shift-checking to play nice with NEI
 			int counter = isShift == 1?10:1;
-			if (mouseButton == 1 && slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
-				slot.getStack().stackSize += counter;
+			if (mouseButton == 1)  {
+				if (slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
+					slot.getStack().stackSize += counter;
+				} else {
+					slot.getStack().stackSize = slot.getSlotStackLimit();
+				}
 				slot.inventory.onInventoryChanged();
 				return currentlyEquippedStack;
 			}
@@ -219,6 +223,10 @@ public class DummyContainer extends Container{
 			} 
 		} else {
 			slot.putStack(currentlyEquippedStack.copy());
+			if (slot.getStack().stackSize > slot.getSlotStackLimit()){
+				slot.getStack().stackSize = slot.getSlotStackLimit();
+				slot.inventory.onInventoryChanged();
+			}
 		}
 		return currentlyEquippedStack;
 	}

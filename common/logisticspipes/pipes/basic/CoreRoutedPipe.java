@@ -122,7 +122,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		@Override
 		public void run() {
-			Runnable item = null;
 			IRouterManager rm = SimpleServiceLocator.routerManager;
 			try {
 				int firstRouter = 0;

@@ -600,7 +600,6 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 			// don't need to worry about resetting the recursion, as we are the neighbour of our neighbour, and are no longer flaged as processed.
 			hasBeenReset=true;
 		}
-		Set<IRouter> adjacent =  _adjacentRouter.keySet();
 		for(IRouter r : _adjacentRouter.keySet()) {
 			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}

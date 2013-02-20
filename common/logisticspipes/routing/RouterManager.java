@@ -43,6 +43,15 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 		}
 	}
 	@Override
+	public
+	IRouter getRouterUnsafe(Integer id, boolean side) {
+		if(side || id<=0) {
+			return null;
+		} else {
+			return _routersServer.get(id);
+		}
+	}
+	@Override
 	public int getIDforUUID(UUID id){
 		if(id==null)
 			return -1;

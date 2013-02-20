@@ -169,6 +169,13 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
+	public void onBlockRemoval() {
+		while(_orderManager.hasOrders()) {
+			_orderManager.sendFailed();
+		}
+	}
+
+	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		Integer donePromise = donePromisses.get(tree.getStack().getItem());

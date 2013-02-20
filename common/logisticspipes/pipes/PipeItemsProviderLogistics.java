@@ -82,6 +82,13 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		_orderManager = logisticsOrderManager;
 	}
 	
+	@Override
+	public void onBlockRemoval() {
+		super.onBlockRemoval();
+		while(_orderManager.hasOrders()) {
+			_orderManager.sendFailed();
+		}
+	}
 
 	public int getTotalItemCount(ItemIdentifier item) {
 		

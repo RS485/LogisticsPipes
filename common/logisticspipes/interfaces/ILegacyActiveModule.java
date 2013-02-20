@@ -12,6 +12,7 @@ import logisticspipes.utils.ItemIdentifier;
 public interface ILegacyActiveModule {
 	void registerPreviousLegacyModules(List<ILegacyActiveModule> previousModules);
 	boolean filterAllowsItem(ItemIdentifier item);
+	void onBlockRemoval();
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filter);
 	public void fullFill(LogisticsPromise promise, IRequestItems destination);
 	public void getAllItems(Map<ItemIdentifier, Integer> list, List<IFilter> filter);

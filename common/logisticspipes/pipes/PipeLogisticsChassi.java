@@ -301,6 +301,13 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		super.onBlockRemoval();
 		_moduleInventory.removeListener(this);
 		if(MainProxy.isServer(this.worldObj)) {
+			for (int i = 0; i < this.getChassiSize(); i++){
+				ILogisticsModule x = _module.getSubModule(i);
+				if (x instanceof ILegacyActiveModule) {
+					ILegacyActiveModule y = (ILegacyActiveModule)x;
+					y.onBlockRemoval();
+				}
+			}
 			for(int i=0;i<_moduleInventory.getSizeInventory();i++) {
 				if(_moduleInventory.getStackInSlot(i) != null) {
 					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i));

@@ -138,6 +138,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		super.onNeighborBlockChange(blockId);
 	}
 	
+	@Override
+	public void onBlockRemoval() {
+		super.onBlockRemoval();
+		while(_orderManager.hasOrders()) {
+			_orderManager.sendFailed();
+		}
+	}
 
 	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
 		ItemStack retstack = null;

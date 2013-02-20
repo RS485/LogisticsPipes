@@ -169,7 +169,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			filters.remove(filter);
 		}
 		if(filters.isEmpty() && result.getValue1() != null) {
-			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouter(result.getValue1()).getPipe();
+			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(),false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
 			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj, 10);
 		}

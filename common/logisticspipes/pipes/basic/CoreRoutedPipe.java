@@ -98,7 +98,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		// WARNING: promote to a threadsafe, or use an atomic replace on the bitset if multiple threads are goign to be used to process this.
 		private static BitSet routersNeedingUpdate = new BitSet(4096);
 		private int lastRouter = 0;
-		private static int inventorySlotsToUpdatePerTick = 90;
+		private static int inventorySlotsToUpdatePerTick = 240;
 		private static ManualResetEvent lock = new ManualResetEvent(false);
 		private static HudUpdateThread instance = new HudUpdateThread();
 		public HudUpdateThread() {
@@ -113,7 +113,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(index <0)
 				return;
 			routersNeedingUpdate.set(index); //expands the bit-set when out of bounds.
-			lock.set();// release the hounds, er, thread(s).
+			lock.quickSet();// release the hounds, er, thread(s).
 		}
 
 		public static int queueLength() {

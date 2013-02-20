@@ -32,6 +32,14 @@ public class ManualResetEvent {
 	      monitor.notifyAll();
 	    }
 	  }
+	  public void quickSet() {//open start
+	      if(!open) {
+		    synchronized (monitor) {
+		      open = true;
+		      monitor.notifyAll();
+		    }
+		  }
+	  }
 
 	  public void reset() {//close stop
 	    open = false;

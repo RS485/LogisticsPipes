@@ -2,10 +2,9 @@ package logisticspipes.proxy.te;
 
 import java.util.List;
 
-import thermalexpansion.transport.tileentity.TileTeleportItem;
-
-import net.minecraft.tileentity.TileEntity;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import net.minecraft.tileentity.TileEntity;
+import thermalexpansion.transport.tileentity.TileTeleportItem;
 
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
 

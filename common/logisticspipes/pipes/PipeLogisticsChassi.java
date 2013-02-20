@@ -345,6 +345,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		}
 		if(MainProxy.isServer()) {
 			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_MODULE_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), localModeWatchers);
+			//register earlier provider modules with later ones, needed for the "who is the first whose filter allows that item" check
+			List<ILegacyActiveModule> prevModules = new LinkedList<ILegacyActiveModule>();
+			for (int i = 0; i < this.getChassiSize(); i++){
+				ILogisticsModule x = _module.getSubModule(i);
+				if (x instanceof ILegacyActiveModule) {
+					ILegacyActiveModule y = (ILegacyActiveModule)x;
+					y.registerPreviousLegacyModules(new ArrayList(prevModules));
+					prevModules.add(y);
+				}
+			}
 		}
 	}
 
@@ -428,17 +438,20 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	/*** IProvideItems ***/
 	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
-
 		if (!isEnabled()){
 			return;
 		}
-
+		for(IFilter filter:filters) {
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
+		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				((ILegacyActiveModule)x).canProvide(tree, donePromisses, filters);
-				if(tree.isDone())
-					break;
+				ILegacyActiveModule y = (ILegacyActiveModule)x;
+				if(y.filterAllowsItem(tree.getStack().getItem())) {
+					y.canProvide(tree, donePromisses, filters);
+					return;
+				}
 			}
 		}
 	}
@@ -451,8 +464,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
-				((ILegacyActiveModule)x).fullFill(promise, destination);
-				MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
+				ILegacyActiveModule y = (ILegacyActiveModule)x;
+				if(y.filterAllowsItem(promise.item)) {
+					y.fullFill(promise, destination);
+					MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
+					return;
+				}
 			}
 		}
 	}
@@ -465,8 +482,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
-				((ILegacyActiveModule)x).getAllItems(list, filter);
-				return;
+				ILegacyActiveModule y = (ILegacyActiveModule)x;
+				y.getAllItems(list, filter);
 			}
 		}
 	}

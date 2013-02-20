@@ -58,6 +58,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
+	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
+
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
 	
 	protected final int ticksToAction = 6;
@@ -156,10 +158,19 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
+	public void registerPreviousLegacyModules(List<ILegacyActiveModule> previousModules) {
+		_previousLegacyModules = previousModules;
+	}
+
+	@Override
+	public boolean filterAllowsItem(ItemIdentifier item) {
+		if(!hasFilter()) return true;
+		boolean isFiltered = itemIsFiltered(item);
+		return isExcludeFilter ^ isFiltered;
+	}
+
+	@Override
 	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
-		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
-		}
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
 		Integer donePromise = donePromisses.get(tree.getStack().getItem());
 		if (donePromise!=null) {
@@ -170,11 +181,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
 		promise.sender = (IProvideItems) _itemSender;
-		List<IRelayItem> relays = new LinkedList<IRelayItem>();
-		for(IFilter filter:filters) {
-			relays.add(filter);
-		}
-		promise.relayPoints = relays;
+		promise.relayPoints = new LinkedList<IRelayItem>(filters);
 		tree.addPromise(promise);
 	}
 
@@ -199,7 +206,11 @@ outer:
 		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
 			if(items.containsKey(currItem.getKey())) continue;
 			
-			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem.getKey())) || (!isExcludeFilter && !itemIsFiltered(currItem.getKey())))) continue;
+			if(!filterAllowsItem(currItem.getKey())) continue;
+
+			for(ILegacyActiveModule m:_previousLegacyModules) {
+				if(m.filterAllowsItem(currItem.getKey())) continue outer;
+			}
 			
 			for(IFilter filter:filters) {
 				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
@@ -212,15 +223,6 @@ outer:
 		}
 	}
 
-/*	@Override
-	public IRouter getRouter() {
-		if(LogisticsPipes.DEBUG) {
-			throw new UnsupportedOperationException();
-		}
-		//THIS IS NEVER SUPPOSED TO HAPPEN
-		return null;
-	}*/
-	
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getPointedInventory() == null) {
@@ -247,13 +249,11 @@ outer:
 		return sent;
 	}
 	
-	public int getTotalItemCount(ItemIdentifier item) {
+	private int getTotalItemCount(ItemIdentifier item) {
 		
 		if (_invProvider.getPointedInventory() == null) return 0;
 		
-		if (!_filterInventory.isEmpty()
-				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
-						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
+		if(!filterAllowsItem(item)) return 0;
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		return inv.itemCount(item);
@@ -263,11 +263,11 @@ outer:
 		return !_filterInventory.isEmpty();
 	}
 	
-	public boolean itemIsFiltered(ItemIdentifier item){
+	private boolean itemIsFiltered(ItemIdentifier item){
 		return _filterInventory.containsItem(item);
 	}
 	
-	public IInventoryUtil getAdaptedUtil(IInventory base){
+	private IInventoryUtil getAdaptedUtil(IInventory base){
 		switch(_extractionMode){
 			case LeaveFirst:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
@@ -376,11 +376,6 @@ outer:
 	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
-	}
-
-	@Override
-	public IRouter getRouter() {
-		return _itemSender.getRouter();
 	}
 
 	@Override

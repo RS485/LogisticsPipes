@@ -437,6 +437,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				((ILegacyActiveModule)x).canProvide(tree, donePromisses, filters);
+				if(tree.isDone())
+					break;
 			}
 		}
 	}

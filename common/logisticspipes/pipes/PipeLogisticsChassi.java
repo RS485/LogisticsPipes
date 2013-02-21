@@ -120,9 +120,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	public TileEntity getPointedTileEntity(){
 		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
-		Position pos = new Position(xCoord, yCoord, zCoord, ChassiLogic.orientation);
-		pos.moveForwards(1.0);
-		return worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		return this.container.tileBuffer[ChassiLogic.orientation.ordinal()].getTile();
 	}
 
 	public void nextOrientation() {

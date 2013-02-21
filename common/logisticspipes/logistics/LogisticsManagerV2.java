@@ -186,10 +186,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterID, boolean excludeSource) {
 
-		//If the source router does not exist we can't do anything with this
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterID)) return item;
+		//Assert: only called server side.
+		
 		//If we for some reason can't get the router we can't do anything either
-		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterID);
+		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouterUnsafe(sourceRouterID,false);
 		if (sourceRouter == null) return item;
 
 		//Wipe current destination

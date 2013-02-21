@@ -37,9 +37,6 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public boolean allowCC = false;
 	
 	public LogisticsSecurityTileEntity() {
-		if(MainProxy.isServer(this.worldObj)) {
-			SimpleServiceLocator.securityStationManager.add(this);
-		}
 	}
 	
 	@Override

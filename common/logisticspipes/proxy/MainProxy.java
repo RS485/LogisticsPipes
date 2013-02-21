@@ -59,9 +59,13 @@ public class MainProxy {
     }
 	
 	public static boolean isClient(World world) {
-		if(world == null)
-			return isClient();
-		return world.isRemote;
+		try{
+			return world.isRemote;
+		} catch(NullPointerException n) {
+			LogisticsPipes.log.severe("isClient called with a null world - using slow thread based fallback");
+			n.printStackTrace();
+		}
+		return isClient();
 	}
 	
 	@Deprecated 
@@ -74,9 +78,13 @@ public class MainProxy {
 	}
 	
 	public static boolean isServer(World world) {
-		if(world == null)
-			return isServer();
-		return !world.isRemote;
+		try{
+			return !world.isRemote;
+		} catch(NullPointerException n) {
+			LogisticsPipes.log.severe("isServer called with a null world - using slow thread based fallback");
+			n.printStackTrace();
+		}
+		return isServer();
 	}
 
 	

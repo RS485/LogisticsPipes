@@ -504,7 +504,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	@Override
 	public int getLoadFactor() {
-		return _orderManager.totalItemsCountInAllOrders()/64;
+		return (_orderManager.totalItemsCountInAllOrders()+63)/64;
 	}
 	
 	/* ComputerCraftCommands */

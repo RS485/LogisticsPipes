@@ -424,7 +424,7 @@ outer:
 
 	@Override
 	public int getLoadFactor() {
-		return _orderManager.totalItemsCountInAllOrders()/64;
+		return (_orderManager.totalItemsCountInAllOrders()+63)/64;
 	}
 
 }

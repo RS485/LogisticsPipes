@@ -59,6 +59,8 @@ public class MainProxy {
     }
 	
 	public static boolean isClient(World world) {
+		if(world == null)
+			return isClient();
 		return world.isRemote;
 	}
 	
@@ -72,6 +74,8 @@ public class MainProxy {
 	}
 	
 	public static boolean isServer(World world) {
+		if(world == null)
+			return isServer();
 		return !world.isRemote;
 	}
 

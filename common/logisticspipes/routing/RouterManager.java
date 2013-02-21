@@ -36,6 +36,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 
 	@Override
 	public IRouter getRouter(int id){
+		//TODO: isClient without a world is expensive
 		if(MainProxy.isClient() || id<=0) {
 			return null;
 		} else {
@@ -62,6 +63,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	}
 	@Override
 	public void removeRouter(int id) {
+		//TODO: isClient without a world is expensive
 		if(!MainProxy.isClient()) {
 			_routersServer.set(id,null);
 		}

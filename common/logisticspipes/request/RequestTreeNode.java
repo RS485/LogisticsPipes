@@ -32,6 +32,8 @@ public class RequestTreeNode {
 	protected SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
 	protected CraftingTemplate lastCrafterTried = null;
 	
+	private int promiseItemCount = 0;
+
 	public boolean isCrafterUsed(CraftingTemplate test) {
 		if(!usedCrafters.isEmpty() && usedCrafters.contains(test))
 			return true;
@@ -49,15 +51,11 @@ public class RequestTreeNode {
 	}
 	
 	public int getPromiseItemCount() {
-		int count = 0;
-		for(LogisticsPromise promise:promises) {
-			count += promise.numberOfItems;
-		}
-		return count;
+		return promiseItemCount;
 	}
 	
 	public int getMissingItemCount() {
-		return request.stackSize - getPromiseItemCount();
+		return request.stackSize - promiseItemCount;
 	}
 	
 	public void addPromise(LogisticsPromise promise) {
@@ -77,12 +75,9 @@ public class RequestTreeNode {
 		}
 		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
 		promises.add(promise);
+		promiseItemCount += promise.numberOfItems;
 	}
 
-	public void addExtraPromise(LogisticsExtraPromise promise) {
-		extrapromises.add(promise);
-	}
-	
 	public boolean isDone() {
 		return getMissingItemCount() <= 0;
 	}
@@ -100,6 +95,6 @@ public class RequestTreeNode {
 	}
 
 	public boolean remove(RequestTreeNode subNode) {
-		return subRequests.remove(subNode);		
+		return subRequests.remove(subNode);	
 	}
 }

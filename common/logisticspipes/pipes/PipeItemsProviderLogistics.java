@@ -222,7 +222,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -234,9 +234,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		
 		// Check the transaction and see if we have helped already
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
-		if (donePromisses.containsKey(tree.getStack().getItem())){
-			canProvide -= donePromisses.get(tree.getStack().getItem());
-		}
+		canProvide -= donePromisses;
 		if (canProvide < 1) return;
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();

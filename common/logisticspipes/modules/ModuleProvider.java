@@ -176,12 +176,9 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
-		Integer donePromise = donePromisses.get(tree.getStack().getItem());
-		if (donePromise!=null) {
-			canProvide -= donePromise;
-		}
+		canProvide -= donePromisses;
 		if (canProvide < 1) return;
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();

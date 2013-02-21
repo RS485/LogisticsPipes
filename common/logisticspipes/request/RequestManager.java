@@ -388,7 +388,7 @@ outer:
 				break;
 			}
 			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe())) {
-				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1()), provider.getValue2());
+				provider.getValue1().canProvide(treeNode, tree.getAllPromissesFor(provider.getValue1(), treeNode.getStack().getItem()), provider.getValue2());
 			}
 		}
 	}

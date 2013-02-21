@@ -19,26 +19,21 @@ public class RequestTree extends RequestTreeNode {
 		super(item, requester, parent);
 	}
 
-	public Map<ItemIdentifier, Integer> getAllPromissesFor(IProvideItems provider) {
-		Map<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
-		checkSubPromisses(provider,this,result);
-		return result;
+	public int getAllPromissesFor(IProvideItems provider, ItemIdentifier item) {
+		return checkSubPromisses(provider, this, item);
 	}
 	
-	private void checkSubPromisses(IProvideItems provider, RequestTreeNode node, Map<ItemIdentifier, Integer> result) {
+	private static int checkSubPromisses(IProvideItems provider, RequestTreeNode node, ItemIdentifier item) {
+		int total = 0;
 		for(LogisticsPromise promise: node.promises) {
-			if(promise.sender == provider) {
-				Integer count=result.get(promise.item);
-				if(count == null) {
-					result.put(promise.item, promise.numberOfItems);
-				} else {
-					result.put(promise.item, promise.numberOfItems + count);
-				}
+			if(promise.sender == provider && promise.item == item) {
+				total += promise.numberOfItems;
 			}
 		}
 		for(RequestTreeNode subNode:node.subRequests) {
-			checkSubPromisses(provider,subNode,result);
+			total += checkSubPromisses(provider, subNode, item);
 		}
+		return total;
 	}
 	
 	public LinkedList<LogisticsExtraPromise> getExtrasFor(ItemIdentifier item) {
@@ -48,7 +43,7 @@ public class RequestTree extends RequestTreeNode {
 		return extras;
 	}
 
-	private void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedList<LogisticsExtraPromise> extras) {
+	private static void checkForExtras(ItemIdentifier item, RequestTreeNode node, LinkedList<LogisticsExtraPromise> extras) {
 		for(LogisticsExtraPromise extra:node.extrapromises) {
 			if(extra.item == item) {
 				extras.add(extra.copy());
@@ -59,7 +54,7 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	private void removeUsedExtras(ItemIdentifier item, RequestTreeNode node, LinkedList<LogisticsExtraPromise> extras) {
+	private static void removeUsedExtras(ItemIdentifier item, RequestTreeNode node, LinkedList<LogisticsExtraPromise> extras) {
 		for(LogisticsPromise promise:node.promises) {
 			if(promise.item != item) continue;
 			if(!(promise instanceof LogisticsExtraPromise)) continue;
@@ -88,7 +83,7 @@ public class RequestTree extends RequestTreeNode {
 		fullFill(this);
 	}
 	
-	private void fullFill(RequestTreeNode node) {
+	private static void fullFill(RequestTreeNode node) {
 		for(LogisticsPromise promise:node.promises) {
 			promise.sender.fullFill(promise, node.target);
 		}

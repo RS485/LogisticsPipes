@@ -309,7 +309,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -324,9 +324,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		
-		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
-		if (alreadyPromised >= _extras) return;
-		int remaining = _extras - alreadyPromised;
+		int remaining = _extras - donePromisses;
+		if (remaining < 1) return;
 		LogisticsExtraPromise promise = new LogisticsExtraPromise();
 		promise.item = providedItem;
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());

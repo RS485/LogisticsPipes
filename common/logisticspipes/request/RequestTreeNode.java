@@ -95,6 +95,6 @@ public class RequestTreeNode {
 	}
 
 	public boolean remove(RequestTreeNode subNode) {
-		return subRequests.remove(subNode);	
+		return subRequests.remove(subNode);
 	}
 }

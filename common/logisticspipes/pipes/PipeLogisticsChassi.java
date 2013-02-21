@@ -444,7 +444,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	/*** IProvideItems ***/
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
 		if (!isEnabled()){
 			return;
 		}

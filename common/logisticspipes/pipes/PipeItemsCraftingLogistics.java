@@ -503,6 +503,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return HUD;
 	}
 	
+	@Override
+	public int getLoadFactor() {
+		return _orderManager.totalItemsCountInAllOrders()/64;
+	}
+	
 	/* ComputerCraftCommands */
 	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
 	@CCQueued(prefunction="testImportAccess")

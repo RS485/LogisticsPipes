@@ -424,4 +424,9 @@ outer:
 		return l1;
 	}
 
+	@Override
+	public int getLoadFactor() {
+		return _orderManager.totalItemsCountInAllOrders()/64;
+	}
+
 }

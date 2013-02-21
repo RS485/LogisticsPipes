@@ -3,6 +3,8 @@ package logisticspipes.request;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -29,6 +31,18 @@ import logisticspipes.utils.Pair;
 
 public class RequestManager {
 
+	public static class workWeightedSorter implements Comparator<ExitRoute> {
+
+		public workWeightedSorter(){}
+		@Override
+		public int compare(ExitRoute o1, ExitRoute o2) {
+			int c = o1.distanceToDestination + o1.destination.getPipe().getLoadFactor()- (o2.distanceToDestination +o2.destination.getPipe().getLoadFactor());
+			if (c==0)
+				return o1.destination.getSimpleID() - o2.destination.getSimpleID();
+			return c;
+		}
+		
+	}
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log) {
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
@@ -218,7 +232,7 @@ public class RequestManager {
 			if (e!=null)
 				validSources.add(e);
 		}
-		Collections.sort(validSources);
+		Collections.sort(validSources, new workWeightedSorter());
 		
 		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
 		
@@ -367,7 +381,7 @@ outer:
 			if (e!=null)
 				validSources.add(e);
 		}
-		Collections.sort(validSources);
+		Collections.sort(validSources, new workWeightedSorter());
 		
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			if(treeNode.isDone()) {

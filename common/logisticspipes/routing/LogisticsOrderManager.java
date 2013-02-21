@@ -48,7 +48,7 @@ public class LogisticsOrderManager {
 		return list;
 	}
 
-	private void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
+	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
 		for(ItemIdentifierStack ident:list) {
 			if(ident.getItem().equals(stack.getItem())) {
 				ident.stackSize += stack.stackSize;
@@ -98,6 +98,14 @@ public class LogisticsOrderManager {
 		int itemCount = 0;
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			if (request.getValue1().getItem() != item) continue;
+			itemCount += request.getValue1().stackSize;
+		}
+		return itemCount;
+	}
+
+	public int totalItemsCountInAllOrders(){
+		int itemCount = 0;
+		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			itemCount += request.getValue1().stackSize;
 		}
 		return itemCount;

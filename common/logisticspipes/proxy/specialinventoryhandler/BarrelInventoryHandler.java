@@ -59,6 +59,49 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 
 
 	@Override
+	public int itemCount(ItemIdentifier itemIdent) {
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack != null) {
+				if(ItemIdentifier.get(itemStack) == itemIdent) {
+					int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+					return value - (_hideOnePerStack?1:0);
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
+	@Override
+	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack != null) {
+				if(ItemIdentifier.get(itemStack) != itemIdent) return null;
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				if(value - (_hideOnePerStack?1:0) < count) return null;
+				setItemCount.invoke(_tile, new Object[]{value - count});
+				ItemStack ret = itemStack.copy();
+				ret.stackSize = count;
+				return ret;
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
 	public Set<ItemIdentifier> getItems() {
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
 		try {

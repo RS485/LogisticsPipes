@@ -187,7 +187,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			value = ForgeDirection.UNKNOWN;
 		} else
 			value = getPipe().getRouteLayer().getOrientationForItem(routedItem, blocked);
-		if (value == null && MainProxy.isClient()) {
+		if (value == null && MainProxy.isClient(worldObj)) {
 			routedItem.getItemStack().stackSize = 0;
 			scheduleRemoval(data.item);
 			return ForgeDirection.UNKNOWN;

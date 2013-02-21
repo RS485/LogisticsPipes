@@ -145,7 +145,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public void remove() {
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient(this.worldObj)) return;
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){

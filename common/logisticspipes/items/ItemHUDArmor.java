@@ -53,7 +53,7 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		if(MainProxy.isClient()) return stack;
+		if(MainProxy.isClient(world)) return stack;
 		useItem(player, world);
 		return stack.copy();
 	}
@@ -61,7 +61,7 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 		useItem(player, world);
-		if(MainProxy.isClient()) return false;
+		if(MainProxy.isClient(world)) return false;
 		return true;
 	}
 	

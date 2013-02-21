@@ -62,6 +62,11 @@ public class MainProxy {
 		return world.isRemote;
 	}
 	
+	@Deprecated 
+	/**
+	 * isClient is slow, find a world and check isServer(world)
+	 * @return
+	 */
 	public static boolean isClient() {
 		return getEffectiveSide() == Side.CLIENT;
 	}
@@ -69,7 +74,13 @@ public class MainProxy {
 	public static boolean isServer(World world) {
 		return !world.isRemote;
 	}
+
 	
+	@Deprecated 
+	/**
+	 * isServer is slow, find a world and check isServer(world)
+	 * @return
+	 */
 	public static boolean isServer() {
 		return getEffectiveSide() == Side.SERVER;
 	}

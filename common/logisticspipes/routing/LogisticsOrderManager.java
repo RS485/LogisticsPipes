@@ -40,7 +40,7 @@ public class LogisticsOrderManager {
 	}
 	
 	public LinkedList<ItemIdentifierStack> getContentList() {
-		if(MainProxy.isClient()) return new LinkedList<ItemIdentifierStack>();
+		if(MainProxy.isClient() || _orders.size()==0) return new LinkedList<ItemIdentifierStack>();
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			addToList(request.getValue1(),list);

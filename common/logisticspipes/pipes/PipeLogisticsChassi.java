@@ -563,7 +563,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	protected int sendQueueChanged(boolean force) {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(this.worldObj)) {
 			if(Configs.multiThreadEnabled && !force) {
 				HudUpdateThread.add(getRouter());
 			} else {

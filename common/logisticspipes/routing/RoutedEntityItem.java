@@ -18,6 +18,7 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -229,9 +230,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		if (this.container instanceof TileGenericPipe && ((TileGenericPipe)this.container).pipe.transport instanceof PipeTransportItems){
 			if (((TileGenericPipe)this.container).pipe instanceof PipeLogisticsChassi){
 				PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((TileGenericPipe)this.container).pipe;
-				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation);
+				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation, ItemSendMode.Fast);
 			} else {
-				((PipeTransportItems)((TileGenericPipe)this.container).pipe.transport).entityEntering(newItem, orientation.getOpposite());
+				//this should never happen
+				newItem.toEntityItem(orientation);
 			}
 		}
 	}

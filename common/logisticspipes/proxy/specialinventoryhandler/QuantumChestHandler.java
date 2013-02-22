@@ -177,7 +177,12 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier itemIdent) {
+	public int roomForItem(ItemIdentifier item) {
+		return roomForItem(item, 0);
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier itemIdent, int count) {
 		int result = Integer.MAX_VALUE - 128;
 		ItemStack[] data = new ItemStack[]{};
 		try {

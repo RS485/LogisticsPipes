@@ -35,9 +35,4 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil {
 		}
 		return stack;
 	}
-
-	@Override
-	public boolean hasRoomForItem(ItemIdentifier itemIdent) {
-		return roomForItem(itemIdent) > 0;
-	}
 }

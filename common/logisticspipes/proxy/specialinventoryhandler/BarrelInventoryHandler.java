@@ -194,7 +194,11 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier itemIdent) {
+	public int roomForItem(ItemIdentifier item) {
+		return roomForItem(item, 0);
+	}
+	@Override
+	public int roomForItem(ItemIdentifier itemIdent, int count) {
 		try {
 			ItemStack itemStack = (ItemStack) item.get(_tile);
 			int max = (Integer) getMaxSize.invoke(_tile, new Object[]{});
@@ -213,4 +217,5 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		}
 		return 0;
 	}
+
 }

@@ -137,23 +137,23 @@ public class InventoryUtil implements IInventoryUtil {
 	//Ignores slot/item hiding
 	@Override
 	public int roomForItem(ItemIdentifier item){
+		return roomForItem(item, Integer.MAX_VALUE);
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier item, int count){
 		int totalRoom = 0;
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
+		int stackLimit = _inventory.getInventoryStackLimit();
+		for (int i = 0; i < _inventory.getSizeInventory() && count > totalRoom; i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null){
-				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize());
+				totalRoom += Math.min(stackLimit, item.getMaxStackSize());
 				continue;
 			}
 			if (ItemIdentifier.get(stack) != item) continue;
 			
-			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize()) - stack.stackSize);
+			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.stackSize);
 		}
 		return totalRoom;
-	}
-
-	//Ignores slot/item hiding
-	@Override
-	public boolean hasRoomForItem(ItemIdentifier item) {
-		return roomForItem(item) > 0;
 	}
 }

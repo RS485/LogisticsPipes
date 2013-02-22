@@ -56,6 +56,7 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -560,10 +561,10 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	protected int sendQueueChanged(boolean force) {
+	public int sendQueueChanged(boolean force) {
 		if(MainProxy.isServer(this.worldObj)) {
 			if(Configs.multiThreadEnabled && !force) {
-				HudUpdateThread.add(getRouter());
+				HudUpdateTick.add(getRouter());
 			} else {
 				if(localModeWatchers != null && localModeWatchers.size()>0) {
 					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);				

@@ -246,9 +246,9 @@ public class LogisticsPipes {
 			SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());
 		} else {
 			SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
-			for(int i=0;i<Configs.multiThreadNumber && Configs.multiThreadEnabled;i++) {
-				new RoutingTableUpdateThread(i);
-			}
+		}
+		for(int i=0;i<Configs.multiThreadNumber && Configs.multiThreadEnabled;i++) {
+			new RoutingTableUpdateThread(i);
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());

@@ -51,7 +51,6 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
-import logisticspipes.routing.RouterManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -927,7 +926,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	public int countOnRoute(ItemIdentifier it) {
-		RoutedEntityItem routedEntityItem;
 		int count = 0;
 		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
 			IRoutedItem next = iter.next();

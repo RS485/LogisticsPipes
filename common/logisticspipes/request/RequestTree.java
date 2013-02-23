@@ -1,8 +1,6 @@
 package logisticspipes.request;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IProvideItems;

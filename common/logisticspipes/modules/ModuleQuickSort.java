@@ -120,7 +120,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 		//don't directly modify the stack in the inv
 		slot = slot.copy();
-
+		boolean partialSend=false;
 		while(reply != null) {
 			int count = slot.stackSize;
 			if(reply.getValue2().maxNumberOfItems > 0) {
@@ -137,13 +137,26 @@ public class ModuleQuickSort implements ILogisticsModule {
 			reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
 		}
 		if(slot.stackSize > 0) {
+			partialSend = true;
 			targetInventory.setInventorySlotContents(lastStackLookedAt, slot);
 		} else {
 			targetInventory.setInventorySlotContents(lastStackLookedAt, null);
 		}
 
 		lastSuceededStack=lastStackLookedAt;
-		lastStackLookedAt++;
+		if(partialSend){
+			lastStackLookedAt++;
+			if (lastStackLookedAt >= targetInventory.getSizeInventory())
+				lastStackLookedAt = 0;
+			while(slot.isItemEqual(targetInventory.getStackInSlot(lastStackLookedAt)) && lastStackLookedAt != lastSuceededStack) {
+				lastStackLookedAt++;
+				if (lastStackLookedAt >= targetInventory.getSizeInventory())
+					lastStackLookedAt = 0;
+				
+			}
+		}
+		else
+			lastStackLookedAt++;
 	}
 
 	@Override

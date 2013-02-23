@@ -2,6 +2,7 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.SinkReply;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -16,6 +17,7 @@ public class ChassiTransportLayer extends TransportLayer{
 	@Override
 	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
 		item.setArrived(true);
+		this._chassiPipe.getRouter().inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
 		return _chassiPipe.getPointedOrientation();
 	}
 

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -49,6 +50,8 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.routing.RouterManager;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -89,7 +92,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		Normal,
 		Fast
 	}
-	
+
 	protected boolean stillNeedReplace = true;
 	
 	protected IRouter router;
@@ -106,6 +109,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
+	private DelayQueue<IRoutedItem> _inTransitToMe = new DelayQueue<IRoutedItem>();
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
@@ -193,6 +197,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		routedItem.SetPosition(p.x, p.y, p.z);
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
+		//assert: sending to an existing router which contains a pipe.
+		SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false).getCachedPipe().notifyOfSend(routedItem);
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 2);
 		stat_lifetime_sent++;
@@ -200,6 +206,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		updateStats();
 	}
 	
+	private void notifyOfSend(IRoutedItem routedItem) {
+		this._inTransitToMe.add(routedItem);
+		
+	}
+
 	public abstract ItemSendMode getItemSendMode();
 	
 	private boolean checkTileEntity(boolean force) {
@@ -905,5 +916,20 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	 */
 	public int getLoadFactor() {
 		return 0;
+	}
+
+	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
+		this._inTransitToMe.remove(routedEntityItem);		
+	}
+
+	public int countOnRoute(ItemIdentifier it) {
+		RoutedEntityItem routedEntityItem;
+		int count = 0;
+		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			IRoutedItem next = iter.next();
+			if(next.getIDStack().getItem() == it)
+				count += next.getIDStack().stackSize;
+		}
+		return count;
 	}
 }

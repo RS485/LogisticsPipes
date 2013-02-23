@@ -582,6 +582,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem){
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
+		pipe.notifyOfItemArival(routedEntityItem);
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
 			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
 		}

@@ -15,6 +15,8 @@ import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.common.ISidedInventory;
 
 public class QuantumChestHandler extends SpecialInventoryHandler {
 
@@ -61,7 +63,7 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
-		return ((IInventory)_tile).decrStackSize(1, 1);
+		return getMultipleItems(itemIdent,1);
 	}
 
 	@Override
@@ -89,10 +91,12 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) return null;
-		ItemStack stack = ((IInventory)_tile).decrStackSize(1, Math.min(itemIdent.getMaxStackSize(),count));
-
+		int slot = ((ISidedInventory)_tile).getStartInventorySide(ForgeDirection.UP);
+		System.out.print(slot);
+		ItemStack stack = ((IInventory)_tile).decrStackSize(slot, Math.min(itemIdent.getMaxStackSize(),count));
+		count -= stack.stackSize;
 		while (count>0) {
-			ItemStack newStack = ((IInventory)_tile).decrStackSize(1, Math.min(itemIdent.getMaxStackSize(),count));
+			ItemStack newStack = ((IInventory)_tile).decrStackSize(slot, Math.min(itemIdent.getMaxStackSize(),count));
 			if(newStack == null || newStack.stackSize == 0) {
 				break;
 			} else {

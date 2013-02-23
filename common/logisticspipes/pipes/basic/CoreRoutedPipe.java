@@ -198,7 +198,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
 		//assert: sending to an existing router which contains a pipe. something (possibly getPipeUnsafe) possibly npe's here.
-		SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false).getPipe().notifyOfSend(routedItem);
+		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
+		if(r != null) {
+			CoreRoutedPipe pipe = r.getCachedPipe();
+			pipe.notifyOfSend(routedItem);
+		}
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 2);
 		stat_lifetime_sent++;

@@ -148,7 +148,10 @@ public class ModuleQuickSort implements ILogisticsModule {
 			lastStackLookedAt++;
 			if (lastStackLookedAt >= targetInventory.getSizeInventory())
 				lastStackLookedAt = 0;
-			while(slot.isItemEqual(targetInventory.getStackInSlot(lastStackLookedAt)) && lastStackLookedAt != lastSuceededStack) {
+			while(lastStackLookedAt != lastSuceededStack) {
+				ItemStack tstack = targetInventory.getStackInSlot(lastStackLookedAt);
+				if(tstack != null && !slot.isItemEqual(tstack))
+					break;
 				lastStackLookedAt++;
 				if (lastStackLookedAt >= targetInventory.getSizeInventory())
 					lastStackLookedAt = 0;

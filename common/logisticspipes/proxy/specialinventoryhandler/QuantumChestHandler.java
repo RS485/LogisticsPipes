@@ -92,7 +92,6 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 	public ItemStack getMultipleItems(ItemIdentifier itemIdent, int count) {
 		if (itemCount(itemIdent) < count) return null;
 		int slot = ((ISidedInventory)_tile).getStartInventorySide(ForgeDirection.UP);
-		System.out.print(slot);
 		ItemStack stack = ((IInventory)_tile).decrStackSize(slot, Math.min(itemIdent.getMaxStackSize(),count));
 		count -= stack.stackSize;
 		while (count>0) {
@@ -109,7 +108,8 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 	private ItemIdentifierStack getContents(){
 		ItemStack[] data = _tile.getStoredItemData();
 		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return null;
-		ItemStack stack = ((IInventory)_tile).getStackInSlot(1);
+		int slot = ((ISidedInventory)_tile).getStartInventorySide(ForgeDirection.UP);
+		ItemStack stack = ((IInventory)_tile).getStackInSlot(slot);
 		if(stack == null || stack.itemID < 1) return null;
 		ItemIdentifierStack dataIdent = ItemIdentifierStack.GetFromStack(data[0]);
 		dataIdent.stackSize+=stack.stackSize;

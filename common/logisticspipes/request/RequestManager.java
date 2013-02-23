@@ -44,7 +44,7 @@ public class RequestManager {
 	}
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log) {
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester,null);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester, null);
 		boolean isDone = true;
 		for(ItemIdentifierStack stack:items) {
 			RequestTree node = new RequestTree(stack, requester, tree);
@@ -278,9 +278,7 @@ outer:
 				for(int i = 0; i < components.size(); i++) {
 					nCraftingSetsAvailable = Math.min(nCraftingSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
 				}
-				for(RequestTreeNode subNode:lastNode) {
-					treeNode.remove(subNode);
-				}
+				treeNode.remove(lastNode);
 				if(nCraftingSetsAvailable == 0) {
 					continue;
 				}
@@ -301,9 +299,7 @@ outer:
 				}
 				//this should never happen...
 				if(failed) {
-					for(RequestTreeNode subNode:lastNode) {
-						treeNode.remove(subNode);
-					}
+					treeNode.remove(lastNode);
 					continue;
 				}
 			}

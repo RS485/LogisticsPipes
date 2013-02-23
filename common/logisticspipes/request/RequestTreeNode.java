@@ -14,6 +14,7 @@ import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -24,14 +25,19 @@ public class RequestTreeNode {
 		this.request = item;
 		this.target = requester;
 		this.parentNode=parentNode;
-		if(parentNode!=null)
+		if(parentNode!=null) {
 			parentNode.subRequests.add(this);
+			this.root = parentNode.root;
+		} else {
+			this.root = (RequestTree)this;
+		}
 	}
 
 	
 	protected final IRequestItems target;
 	protected final ItemIdentifierStack request;
 	protected final RequestTreeNode parentNode;
+	protected final RequestTree root;
 	protected List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
 	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
@@ -82,6 +88,7 @@ public class RequestTreeNode {
 		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
 		promises.add(promise);
 		promiseItemCount += promise.numberOfItems;
+		root.promiseAdded(promise);
 	}
 
 	public boolean isDone() {
@@ -100,23 +107,22 @@ public class RequestTreeNode {
 		return request;
 	}
 
-	public boolean remove(RequestTreeNode subNode) {
-		return subRequests.remove(subNode);
+	public void remove(List<RequestTreeNode> subNodes) {
+		subRequests.removeAll(subNodes);
+		for(RequestTreeNode subnode:subNodes) {
+			subnode.removeSubPromisses();
+		}
 	}
 
 
 	/* RequestTree helpers */
-	protected int checkSubPromisses(IProvideItems provider, ItemIdentifier item) {
-		int total = 0;
-		for(LogisticsPromise promise: promises) {
-			if(promise.sender == provider && promise.item == item) {
-				total += promise.numberOfItems;
-			}
+	protected void removeSubPromisses() {
+		for(LogisticsPromise promise:promises) {
+			root.promiseRemoved(promise);
 		}
 		for(RequestTreeNode subNode:subRequests) {
-			total += subNode.checkSubPromisses(provider, item);
+			subNode.removeSubPromisses();
 		}
-		return total;
 	}
 
 	protected void checkForExtras(ItemIdentifier item, HashMap<IProvideItems,List<LogisticsExtraPromise>> extraMap) {

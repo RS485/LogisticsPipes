@@ -1,6 +1,7 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDExtractor;
@@ -144,7 +145,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			if (stack == null) return;
 			if (stack.length < 1) return;
 			if (stack[0] == null) return;
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true);
+			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 			if (reply == null) return;
 			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
 			_itemSender.sendStack(stack[0], reply, itemSendMode());
@@ -155,28 +156,39 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 			targetInventory = new SidedInventoryAdapter((ISidedInventory) targetInventory, extractOrientation);
 		}
 
-		ItemStack stackToSend;
-
 		for (int i = 0; i < targetInventory.getSizeInventory(); i++){
-			stackToSend = targetInventory.getStackInSlot(i);
-			if (stackToSend == null) continue;
+			ItemStack slot = targetInventory.getStackInSlot(i);
+			if (slot == null) continue;
 
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stackToSend), true);
+			List<Integer> jamList = new LinkedList<Integer>();
+			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			if (reply == null) continue;
 
-			int count = Math.min(itemsToExtract(), stackToSend.stackSize);
+			int itemsleft = itemsToExtract();
+			while(reply != null) {
+				int count = Math.min(itemsleft, slot.stackSize);
+				if(reply.getValue2().maxNumberOfItems > 0) {
+					count = Math.min(count, reply.getValue2().maxNumberOfItems);
+				}
 
-			while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
-				count--;
+				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+					count--;
+				}
+
+				if(count <= 0) {
+					break;
+				}
+
+				ItemStack stackToSend = targetInventory.decrStackSize(i, count);
+				_itemSender.sendStack(stackToSend, reply, itemSendMode());
+				itemsleft -= count;
+				if(itemsleft <= 0) break;
+				slot = targetInventory.getStackInSlot(i);
+				if (slot == null) break;
+				jamList.add(reply.getValue1());
+				reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
 			}
-
-			if(count <= 0) {
-				break;
-			}
-
-			stackToSend = targetInventory.decrStackSize(i, count);
-			_itemSender.sendStack(stackToSend, reply, itemSendMode());
 			break;
 		}
 	}

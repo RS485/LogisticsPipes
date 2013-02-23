@@ -1,5 +1,6 @@
 package logisticspipes.modules;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -87,20 +88,21 @@ public class ModuleQuickSort implements ILogisticsModule {
 		if (lastStackLookedAt >= targetInventory.getSizeInventory())
 			lastStackLookedAt = 0;
 		
-		ItemStack stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+		ItemStack slot = targetInventory.getStackInSlot(lastStackLookedAt);
 
-		while(stackToSend==null) {
+		while(slot==null) {
 			lastStackLookedAt++;
 			if (lastStackLookedAt >= targetInventory.getSizeInventory())
 				lastStackLookedAt = 0;
-			stackToSend = targetInventory.getStackInSlot(lastStackLookedAt);
+			slot = targetInventory.getStackInSlot(lastStackLookedAt);
 			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
 				return; // then we have been around the list without sending, halt for now
 			}
 		}
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stackToSend), false);
+		List<Integer> jamList = new LinkedList<Integer>();
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
 		if (reply == null) {
 			if(lastStackLookedAt == lastSuceededStack) {
 				stalled = true;
@@ -115,10 +117,31 @@ public class ModuleQuickSort implements ILogisticsModule {
 		}
 		
 		stalled = false;
-		_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
-		targetInventory.setInventorySlotContents(lastStackLookedAt, null);
-				
+
+		//don't directly modify the stack in the inv
+		slot = slot.copy();
+
+		while(reply != null) {
+			int count = slot.stackSize;
+			if(reply.getValue2().maxNumberOfItems > 0) {
+				count = Math.min(count, reply.getValue2().maxNumberOfItems);
+			}
+			ItemStack stackToSend = slot.splitStack(count);
+
+			_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
+			MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
+
+			if(slot.stackSize == 0) break;
+
+			jamList.add(reply.getValue1());
+			reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
+		}
+		if(slot.stackSize > 0) {
+			targetInventory.setInventorySlotContents(lastStackLookedAt, slot);
+		} else {
+			targetInventory.setInventorySlotContents(lastStackLookedAt, null);
+		}
+
 		lastSuceededStack=lastStackLookedAt;
 		lastStackLookedAt++;
 	}

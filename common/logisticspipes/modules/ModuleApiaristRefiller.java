@@ -1,5 +1,6 @@
 package logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -81,7 +82,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if(reinsertBee(stack[0], sinv, direction))
 			return;
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true);
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 		if(reply == null) return;
 		_power.useEnergy(20);
 		sinv.extractItem(true, direction, 1);

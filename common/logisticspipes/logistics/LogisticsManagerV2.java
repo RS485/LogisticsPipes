@@ -55,7 +55,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
 	 */
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, boolean excludeSource) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
 		if (sourceRouter == null) return null;
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
@@ -66,7 +66,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (search.getValue2() == null) return null;
 

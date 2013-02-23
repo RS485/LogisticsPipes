@@ -2,6 +2,7 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor;
@@ -178,22 +179,36 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 
 			ItemStack slot = inv.getStackInSlot(k);
 			if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot))) {
-				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true);
+				List<Integer> jamList = new LinkedList<Integer>();
+				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
 				if (reply == null) continue;
 
-				int count = Math.min(itemsToExtract(), slot.stackSize);
+				int itemsleft = itemsToExtract();
+				while(reply != null) {
+					int count = Math.min(itemsleft, slot.stackSize);
+					if(reply.getValue2().maxNumberOfItems > 0) {
+						count = Math.min(count, reply.getValue2().maxNumberOfItems);
+					}
 
-				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
-					count--;
+					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+						count--;
+					}
+
+					if(count <= 0) {
+						break;
+					}
+
+					ItemStack stackToSend = inv.decrStackSize(k, count);
+					_itemSender.sendStack(stackToSend, reply, itemSendMode());
+					itemsleft -= count;
+					if(itemsleft <= 0) break;
+					slot = inv.getStackInSlot(k);
+					if (slot == null) break;
+					jamList.add(reply.getValue1());
+					reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
 				}
-
-				if(count <= 0) {
-					return;
-				}
-
-				ItemStack stackToSend = inv.decrStackSize(k, count);
-				_itemSender.sendStack(stackToSend, reply, itemSendMode());
+				return;
 			}
 		}
 	}

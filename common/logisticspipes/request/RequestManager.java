@@ -154,7 +154,7 @@ public class RequestManager {
 		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRouteTo) && !used.get(r.destination.getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
 				CoreRoutedPipe pipe = r.destination.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();

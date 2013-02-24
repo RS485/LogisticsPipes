@@ -370,7 +370,16 @@ public class ServerPacketHandler {
 					packetBc.readData(data);
 					onSetSecurityCC(player, packetBc);
 					break;
-					
+				case NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED:
+					final PacketPipeInteger packetBd = new PacketPipeInteger();
+					packetBd.readData(data);
+					onCraftingPipeNextSatelliteAdvanced(player, packetBd);
+					break;
+				case NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE_ADVANCED:
+					final PacketPipeInteger packetBe = new PacketPipeInteger();
+					packetBe.readData(data);
+					onCraftingPipePrevSatelliteAdvanced(player, packetBe);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1437,6 +1446,32 @@ public class ServerPacketHandler {
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).changeCC();
 		}
+	}
+
+	private static void onCraftingPipeNextSatelliteAdvanced(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).setNextSatellite(player, packet.integer);
+	}
+
+	private static void onCraftingPipePrevSatelliteAdvanced(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).setPrevSatellite(player, packet.integer);
 	}
 	
 	// BuildCraft method

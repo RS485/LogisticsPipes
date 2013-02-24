@@ -348,10 +348,29 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
-		if ( stack == null) return null;
+		if (stack == null) return null;
+		
+		IRequestItems[] target = new IRequestItems[9];
+		for(int i=0;i<9;i++) {
+			target[i] = this;
+		}
 
 		boolean hasSatellite = craftingLogic.isSatelliteConnected();
-		if(craftingLogic.satelliteId != 0 && !hasSatellite) return null;
+		if(!hasSatellite) return null;
+		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
+			if(craftingLogic.satelliteId != 0) {
+				IRequestItems sat = (IRequestItems)craftingLogic.getSatelliteRouter(-1, -1).getPipe();
+				for(int i=6;i<9;i++) {
+					target[i] = sat;
+				}
+			}
+		} else {
+			for(int i=0;i<9;i++) {
+				if(craftingLogic.advancedSatelliteIdArray[i] != 0) {
+					target[i] = (IRequestItems)craftingLogic.getSatelliteRouter(i, -1).getPipe();
+				}
+			}
+		}
 
 		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
@@ -359,11 +378,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for (int i = 0; i < 9; i++){
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;
-			if (i < 6 || !hasSatellite) {
-				template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), this);
-			} else {
-				template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), (IRequestItems)craftingLogic.getSatelliteRouter().getPipe());
-			}
+			template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), target[i]);
 				
 		}
 		return template;

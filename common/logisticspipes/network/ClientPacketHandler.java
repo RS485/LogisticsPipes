@@ -41,6 +41,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
+import logisticspipes.network.packets.GuiArgumentPacket;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinatesUUID;
 import logisticspipes.network.packets.PacketCraftingLoop;
@@ -338,6 +339,17 @@ public class ClientPacketHandler {
 					packetBb.readData(data);
 					onSetSecurityCC(packetBb);
 					break;
+				case NetworkConstants.GUI_ARGUMENT_PACKET:
+					final GuiArgumentPacket packetBc = new GuiArgumentPacket();
+					packetBc.readData(data);
+					GuiHandler.argumentQueue.put(packetBc.guiID, packetBc.args);
+					break;
+				case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED:
+					final PacketModuleInteger packetBd = new PacketModuleInteger();
+					packetBd.readData(data);
+					onCraftingPipeSetSatelliteAdvanced(packetBd);
+					break;
+					
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -354,7 +366,7 @@ public class ClientPacketHandler {
 			return;
 		}
 
-		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer);
+		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, -1, -1);
 	}
 
 	private static void onCraftingPipeSetImport(PacketInventoryChange packet) {
@@ -924,6 +936,19 @@ public class ClientPacketHandler {
 				((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
 			}
 		}
+	}
+
+	private static void onCraftingPipeSetSatelliteAdvanced(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, packet.slot, -1);
 	}
 	
 	// BuildCraft method

@@ -1,18 +1,17 @@
 package logisticspipes.pipes.upgrades;
 
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import net.minecraftforge.common.ForgeDirection;
 
-public abstract class ConnectionUpgrade implements IPipeUpgrade {
-	public abstract ForgeDirection getSide();
+public class AdvancedSatelliteUpgrade implements IPipeUpgrade {
 
 	@Override
 	public boolean needsUpdate() {
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean isAllowed(CoreRoutedPipe pipe) {
-		return true;
+		return pipe instanceof PipeItemsCraftingLogistics;
 	}
 }

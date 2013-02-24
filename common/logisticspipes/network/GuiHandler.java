@@ -1,5 +1,8 @@
 package logisticspipes.network;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
@@ -87,6 +90,8 @@ import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.Player;
 
 public class GuiHandler implements IGuiHandler {
+	
+	public final static Map<Integer, Object[]> argumentQueue = new HashMap<Integer, Object[]>();
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world, final int x, final int y, final int z) {
@@ -634,12 +639,18 @@ public class GuiHandler implements IGuiHandler {
 			}
 		}
 		
+		Object[] args = argumentQueue.get(GuiIDs.GUI_CRAFTINGPIPE_ID);
+		
 		if(ID < 120) {
 			switch(ID) {
 			
 			case GuiIDs.GUI_CRAFTINGPIPE_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseLogicCrafting)) return null;
-				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic);
+				if(args == null) {
+					new UnsupportedOperationException("Arguments missing").printStackTrace();
+					return null;
+				}
+				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0], (Boolean) args[1]);
 			
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;

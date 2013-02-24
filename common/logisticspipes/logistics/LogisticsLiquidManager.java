@@ -41,7 +41,7 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 				return result;
 			}
 		}
-		Pair<Integer, Integer> result = new Pair<Integer, Integer>(null, 0);
+		Pair<Integer, Integer> result = new Pair<Integer, Integer>(0, 0);
 		return result;
 	}
 

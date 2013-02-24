@@ -62,7 +62,7 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 		nbttagcompound.setInteger("transportMode", transportMode.ordinal());
 		nbttagcompound.setInteger("relaysSize", relays.size());
 		for(int i=0;i<relays.size();i++) {
-			nbttagcompound.setString("relays" + i, SimpleServiceLocator.routerManager.getRouter(relays.get(i)).toString());
+			nbttagcompound.setString("relays" + i, SimpleServiceLocator.routerManager.getRouter(relays.get(i)).getId().toString());
 		}
 	}
 }

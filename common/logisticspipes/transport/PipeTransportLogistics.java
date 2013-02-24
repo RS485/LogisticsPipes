@@ -53,7 +53,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
 	private CoreRoutedPipe _pipe = null;
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
-	private Method reverseItem = null;
+	private Method _reverseItem = null;
 	private Field toRemove = null;
 	private Set<Integer> notToRemove = new HashSet<Integer>();
 	private Chunk chunk;
@@ -61,8 +61,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	public PipeTransportLogistics() {
 		allowBouncing = true;
 		try {
-			reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
-			reverseItem.setAccessible(true);
+			_reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
+			_reverseItem.setAccessible(true);
 			toRemove = PipeTransportItems.class.getDeclaredField("toRemove");
 			toRemove.setAccessible(true);
 		} catch (NoSuchMethodException e) {
@@ -300,7 +300,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				if(data.item instanceof IRoutedItem) {
 					IRoutedItem routed = (IRoutedItem) data.item;
 					if (!getPipe().getTransportLayer().stillWantItem(routed)) {
-						reverseItem(data);
+						logisticsReverseItem(data);
 						return;
 					}
 				}
@@ -325,7 +325,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				//LogisticsPipes end
 
 				if(data.item.getItemStack().stackSize > 0) {
-					reverseItem(data);
+					logisticsReverseItem(data);
 				}
 			}
 		} else {
@@ -349,19 +349,19 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		return true;
 	}
 	
-	protected void reverseItem(EntityData data) {
-		if(reverseItem != null) {
+	protected void logisticsReverseItem(EntityData data) {
+		if(_reverseItem != null) {
 			try {
-				reverseItem.invoke(this, data);
+				_reverseItem.invoke(this, data);
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
-				reverseItem = null;
+				_reverseItem = null;
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
-				reverseItem = null;
+				_reverseItem = null;
 			} catch (InvocationTargetException e) {
 				e.printStackTrace();
-				reverseItem = null;
+				_reverseItem = null;
 			}
 		} else {
 			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");

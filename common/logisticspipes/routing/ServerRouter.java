@@ -357,7 +357,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 					routedexits.add(pipe.getValue().exitOrientation);
 			}
-			HashMap<IRouter, ExitRoute> oldRouters = new HashMap(_adjacentRouter);
+			HashMap<IRouter, ExitRoute> oldRouters = new HashMap<IRouter, ExitRoute>(_adjacentRouter);
 			for(IRouter key:adjacentRouter.keySet())
 				oldRouters.remove(key);
 			_prevAdjacentRouter = Collections.unmodifiableMap(oldRouters);

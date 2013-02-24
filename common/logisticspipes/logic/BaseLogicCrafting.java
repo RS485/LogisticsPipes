@@ -221,6 +221,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		signEntityZ = nbttagcompound.getInteger("CraftingSignEntityZ");
 		
 		priority = nbttagcompound.getInteger("priority");
+		for(int i=0;i<9;i++) {
+			advancedSatelliteIdArray[i] = nbttagcompound.getInteger("advancedSatelliteId" + i);
+		}
 	}
 
 	@Override
@@ -234,6 +237,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		nbttagcompound.setInteger("CraftingSignEntityZ", signEntityZ);
 		
 		nbttagcompound.setInteger("priority", priority);
+		for(int i=0;i<9;i++) {
+			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
+		}
 	}
 
 	@Override
@@ -372,7 +378,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void handleStackMove(int number) {
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(this.worldObj)) {
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
 		}
 		ItemStack stack = _dummyInventory.getStackInSlot(number);

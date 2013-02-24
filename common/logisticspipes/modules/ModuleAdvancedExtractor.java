@@ -28,6 +28,7 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
@@ -203,6 +204,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 					_itemSender.sendStack(stackToSend, reply, itemSendMode());
 					itemsleft -= count;
 					if(itemsleft <= 0) break;
+					if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
 					slot = inv.getStackInSlot(k);
 					if (slot == null) break;
 					jamList.add(reply.getValue1());

@@ -12,6 +12,7 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
@@ -132,6 +133,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 			MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
 
 			if(slot.stackSize == 0) break;
+			if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
 
 			jamList.add(reply.getValue1());
 			reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);

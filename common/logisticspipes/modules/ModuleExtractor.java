@@ -25,6 +25,7 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
@@ -184,6 +185,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;
+				if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
 				slot = targetInventory.getStackInSlot(i);
 				if (slot == null) break;
 				jamList.add(reply.getValue1());

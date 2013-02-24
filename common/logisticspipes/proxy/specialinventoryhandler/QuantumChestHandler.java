@@ -104,7 +104,7 @@ public class QuantumChestHandler extends SpecialInventoryHandler {
 	}	
 	private ItemIdentifierStack getContents(){
 		ItemStack[] data = _tile.getStoredItemData();
-		if(data.length < 1 || data[0] == null || data[0].itemID < 1) return null;
+		if(data == null || data.length < 1 || data[0] == null || data[0].itemID < 1) return null;
 		int slot = ((ISidedInventory)_tile).getStartInventorySide(ForgeDirection.UP);
 		ItemStack stack = ((IInventory)_tile).getStackInSlot(slot);
 		if(stack == null || stack.itemID < 1) return null;

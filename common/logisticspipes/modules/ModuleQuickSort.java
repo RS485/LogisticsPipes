@@ -74,7 +74,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 		//Extract Item
 		IInventory targetInventory = _invProvider.getPointedInventory();
 		if (targetInventory == null) return;
-		if (targetInventory.getSizeInventory() < 27) return;
+//		if (targetInventory.getSizeInventory() < 27) return;
 
 		if(!_power.canUseEnergy(500)) {
 			stalled = true;

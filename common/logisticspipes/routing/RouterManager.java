@@ -85,22 +85,24 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 					_routersClient.add(r);
 				}
 			} else {
-				if(!forceCreateDuplicate)
-					for (IRouter r2:_routersServer)
-						if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord))
-							return r2;
-				r = new ServerRouter(UUid, dimension, xCoord, yCoord, zCoord);
-				
-				int rId= r.getSimpleID();
-				if(_routersServer.size()>rId)
-					_routersServer.set(rId, r);
-				else {
-					_routersServer.ensureCapacity(rId+1);
-					while(_routersServer.size()<=rId)
-						_routersServer.add(null);
-					_routersServer.set(rId, r);
+				synchronized (_routersServer) {
+					if(!forceCreateDuplicate)
+						for (IRouter r2:_routersServer)
+							if (r2 != null && r2.isAt(dimension, xCoord, yCoord, zCoord))
+								return r2;
+					r = new ServerRouter(UUid, dimension, xCoord, yCoord, zCoord);
+					
+					int rId= r.getSimpleID();
+					if(_routersServer.size()>rId)
+						_routersServer.set(rId, r);
+					else {
+						_routersServer.ensureCapacity(rId+1);
+						while(_routersServer.size()<=rId)
+							_routersServer.add(null);
+						_routersServer.set(rId, r);
+					}
+					this._uuidMap.put(r.getId(), r.getSimpleID());
 				}
-				this._uuidMap.put(r.getId(), r.getSimpleID());
 			}
 		}
 		return r;
@@ -119,17 +121,19 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 					_routersClient.add(r);
 				}
 			} else {
-				r = new FilteringRouter(UUid, dimension, xCoord, yCoord, zCoord, dir);
-				int rId= r.getSimpleID();
-				if(_routersServer.size()>rId)
-					_routersServer.set(rId, r);
-				else {
-					_routersServer.ensureCapacity(rId+1);
-					while(_routersServer.size()<=rId)
-						_routersServer.add(null);
-					_routersServer.set(rId, r);
+				synchronized (_routersServer) {
+					r = new FilteringRouter(UUid, dimension, xCoord, yCoord, zCoord, dir);
+					int rId= r.getSimpleID();
+					if(_routersServer.size()>rId)
+						_routersServer.set(rId, r);
+					else {
+						_routersServer.ensureCapacity(rId+1);
+						while(_routersServer.size()<=rId)
+							_routersServer.add(null);
+						_routersServer.set(rId, r);
+					}
+					this._uuidMap.put(r.getId(), r.getSimpleID());
 				}
-				this._uuidMap.put(r.getId(), r.getSimpleID());
 			}
 		}
 		return r;

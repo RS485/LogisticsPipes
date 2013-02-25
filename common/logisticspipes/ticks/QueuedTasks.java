@@ -13,6 +13,10 @@ public class QueuedTasks implements ITickHandler {
 	@SuppressWarnings("rawtypes")
 	private static LinkedList<Callable> queue = new LinkedList<Callable>();
 	
+	// called on server shutdown only.
+	public static void clearAllTasks() {
+		queue.clear();
+	}
 	@SuppressWarnings("rawtypes")
 	public static void queueTask(Callable task) {
 		synchronized (queue) {

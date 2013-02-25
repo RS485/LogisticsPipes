@@ -52,6 +52,24 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	// things potentially interested in every item (chassi with generic sinks)
 	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
 	
+	// called on server shutdown only
+	static void ClearAllInterests(){
+		_globalSpecificInterests.clear();
+		_genericInterests.clear();
+		_lastLSAVersion.clear();
+	}
+
+	// called on server shutdown only
+	public static void cleanup(){
+		ClearAllInterests();
+		SharedLSADatabasewriteLock.lock();
+		_lastLSAVersion.clear();
+		_lastLsa.clear();
+		SharedLSADatabasewriteLock.unlock();
+		firstFreeId=1;
+		simpleIdUsedSet.clear();
+	}
+
 	// things this pipe is interested in (either providing or sinking)
 	Set<ItemIdentifier> _hasInterestIn = new TreeSet<ItemIdentifier>();
 	boolean _hasGenericInterest;

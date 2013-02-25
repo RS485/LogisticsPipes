@@ -31,6 +31,10 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	public static HashSet<BaseLogicSatellite> AllSatellites = new HashSet<BaseLogicSatellite>();
 
+	// called only on server shutdown
+	public static void cleanup() {
+		AllSatellites.clear();
+	}
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
 	@TileNetworkData

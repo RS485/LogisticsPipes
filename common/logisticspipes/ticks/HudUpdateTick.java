@@ -2,6 +2,7 @@ package logisticspipes.ticks;
 
 import java.util.BitSet;
 
+import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
@@ -14,6 +15,9 @@ public class HudUpdateTick {
 	private static int inventorySlotsToUpdatePerTick = 90;
 
 	public HudUpdateTick() {
+	}
+	public static void clearUpdateFlags(){
+		routersNeedingUpdate.clear();
 	}
 
 	public static void add(IRouter run) {

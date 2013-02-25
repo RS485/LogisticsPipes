@@ -95,7 +95,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return 0;
 		if(content.getItem() != itemIdent) return 0;
-		return _tile.getMaxItemCount() + 192 - content.stackSize;
+		return _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.stackSize;
 	}
 
 	@Override

@@ -82,7 +82,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			controlList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 50, 37,10, "Import"));
 			controlList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, "Open"));
 			for(int i = 0; i < 6; i++) {
-				controlList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 12 + 18 * i, (height - ySize) / 2 + 30, 10,10, ">"));
+				controlList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10,10, ">"));
 				buttonarray[i].drawButton = false;
 			}
 			controlList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 85, 10,10, ">"));
@@ -184,7 +184,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, zLevel, true, true, true, true, true);
 
 		if(!isAdvancedSat) {
-			drawRect(guiLeft + 116, guiTop + 4, guiLeft + 170, guiTop + 70, 0xff8B8B8B);
+			drawRect(guiLeft + 115, guiTop + 4, guiLeft + 170, guiTop + 70, 0xff8B8B8B);
 		}
 		
 		for(int i=0; i<9;i++) {
@@ -201,7 +201,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			for(int count=36; count<42;count++) {
 				Slot slot = inventorySlots.getSlot(count);
 				if(slot != null && slot.getStack() != null && slot.getStack().getMaxStackSize() < 2) {
-					drawRect(guiLeft + 18 + (18 * (count-36)), guiTop + 18, guiLeft + 18 + (18 * (count-36)) + 16, guiTop + 18 + 16, 0xFFFF0000);
+					drawRect(guiLeft + 8 + (18 * (count-36)), guiTop + 18, guiLeft + 8 + (18 * (count-36)) + 16, guiTop + 18 + 16, 0xFFFF0000);
 					buttonarray[count - 36].drawButton = true;
 				} else {
 					buttonarray[count - 36].drawButton = false;

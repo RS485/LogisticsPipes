@@ -838,8 +838,8 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 					this.addInterest(i);
 				}
 			}
+			_hasInterestIn=newInterests;
 		}
-		_hasInterestIn=newInterests;
 	}
 
 	private void removeGenericInterest() {
@@ -917,6 +917,11 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 
 	public static Set<IRouter> getInterestedInGeneral() {
 		return _genericInterests;
+	}
+
+	@Override
+	public void clearInterests() {
+		this.removeAllInterests();		
 	}
 }
 

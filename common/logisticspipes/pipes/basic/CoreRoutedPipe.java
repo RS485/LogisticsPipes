@@ -374,6 +374,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		super.onChunkUnload();
 		if(router != null){
 			router.clearPipeCache();
+			router.clearInterests();
 		}
 	}
 	

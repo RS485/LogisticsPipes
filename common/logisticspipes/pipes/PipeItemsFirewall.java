@@ -277,6 +277,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	private void updateAllRouters() {
+		this.router.flagForRoutingUpdate();
 		for(IRouter r:routers){
 			if(r!=null)
 				r.flagForRoutingUpdate();

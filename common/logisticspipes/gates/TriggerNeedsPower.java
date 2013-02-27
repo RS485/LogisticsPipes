@@ -8,9 +8,9 @@ import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.Trigger;
 
-public class NeedsPowerTrigger extends Trigger{
+public class TriggerNeedsPower extends Trigger{
 
-	public NeedsPowerTrigger(int id) {
+	public TriggerNeedsPower(int id) {
 		super(id);
 	}
 

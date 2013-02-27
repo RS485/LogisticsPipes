@@ -7,9 +7,9 @@ import buildcraft.api.gates.Trigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class CraftingTrigger extends Trigger implements ITriggerPipe {
+public class TriggerCrafting extends Trigger implements ITriggerPipe {
 
-	public CraftingTrigger(int id) {
+	public TriggerCrafting(int id) {
 		super(id);
 	}
 

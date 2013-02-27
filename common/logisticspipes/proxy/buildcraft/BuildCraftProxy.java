@@ -14,9 +14,10 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gates.ActionDisableLogistics;
-import logisticspipes.gates.CraftingTrigger;
+import logisticspipes.gates.TriggerCrafting;
 import logisticspipes.gates.LogisticsTriggerProvider;
-import logisticspipes.gates.NeedsPowerTrigger;
+import logisticspipes.gates.TriggerNeedsPower;
+import logisticspipes.gates.TriggerHasDestination;
 import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
@@ -85,7 +86,8 @@ public class BuildCraftProxy {
 
 	public static Trigger LogisticsFailedTrigger;
 	public static Trigger LogisticsCraftingTrigger;
-	public static Trigger LogisticsNeedPowerTrigger;	
+	public static Trigger LogisticsNeedPowerTrigger;
+	public static Trigger LogisticsHasDestinationTrigger;
 	public static Action LogisticsDisableAction;
 	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
@@ -155,10 +157,15 @@ public class BuildCraftProxy {
 	}
 
 	public void registerTrigger() {
-		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
-		LogisticsNeedPowerTrigger = new NeedsPowerTrigger(701);
-		LogisticsCraftingTrigger = new CraftingTrigger(702);
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
+		
+		/* Triggers */
+		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
+		LogisticsNeedPowerTrigger = new TriggerNeedsPower(701);
+		LogisticsCraftingTrigger = new TriggerCrafting(702);
+		LogisticsHasDestinationTrigger = new TriggerHasDestination(703);
+		
+		/* Actions */
 		LogisticsDisableAction = new ActionDisableLogistics(700);
 	}
 

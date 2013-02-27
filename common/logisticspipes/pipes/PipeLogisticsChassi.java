@@ -121,6 +121,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	public TileEntity getPointedTileEntity(){
 		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
+		if(this.container.tileBuffer == null)
+			return null;
 		return this.container.tileBuffer[ChassiLogic.orientation.ordinal()].getTile();
 	}
 

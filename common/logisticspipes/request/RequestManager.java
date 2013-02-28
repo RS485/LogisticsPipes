@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -32,13 +34,28 @@ public class RequestManager {
 
 	public static class workWeightedSorter implements Comparator<ExitRoute> {
 
-		public workWeightedSorter(){}
+		public final double distanceWeight;
+		public workWeightedSorter(double distanceWeight){this.distanceWeight=distanceWeight;}
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
-			int c = o1.distanceToDestination + o1.destination.getPipe().getLoadFactor()- (o2.distanceToDestination +o2.destination.getPipe().getLoadFactor());
+			double c=0;
+			if(o1.destination instanceof IHavePriority){
+				if(!(o2.destination instanceof IHavePriority))
+					return -1;
+				else
+					c=((IHavePriority)o1.destination).getPriority()-((IHavePriority)o2.destination).getPriority();
+				
+			} else
+				if(!(o2.destination instanceof IHavePriority))
+					return 1;
+			if(c!=0)
+				return (int)c;
+			c = o1.destination.getPipe().getLoadFactor()- o2.destination.getPipe().getLoadFactor();
+			if(distanceWeight!=0)
+				c+= (o1.distanceToDestination - o2.distanceToDestination)*distanceWeight;
 			if (c==0)
 				return o1.destination.getSimpleID() - o2.destination.getSimpleID();
-			return c;
+			return (int)(c+0.5); // round up
 		}
 		
 	}
@@ -144,7 +161,8 @@ public class RequestManager {
 			filters.remove(filter);
 			crafters.addAll(list);
 		}
-		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
+		// don't need to sort, as a sorted list is passed in and List guarantees order preservation
+//		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
 		return crafters;
 	}
 
@@ -231,86 +249,126 @@ public class RequestManager {
 			if (e!=null)
 				validSources.add(e);
 		}
-		Collections.sort(validSources, new workWeightedSorter());
+		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
+		Collections.sort(validSources, wSorter);
 		
 		List<Pair<CraftingTemplate, List<IFilter>>> crafters = getCrafters(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
+		Iterator<Pair<CraftingTemplate, List<IFilter>>> iter = crafters.iterator();
+		List<Pair<CraftingTemplate, List<IFilter>>> craftersSamePriority= new LinkedList<Pair<CraftingTemplate, List<IFilter>>>();
+		boolean done=false;
+		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 outer:
-		for(Pair<CraftingTemplate, List<IFilter>> crafter:crafters) {
-			CraftingTemplate template = crafter.getValue1();
-			if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
+		while(!done) {
+			// Create a list of all crafters with the same priority.	
+			if(iter.hasNext()) {
+				if(lastCrafter == null)
+					lastCrafter = iter.next();
+			}else {
+				done=true;				
+			}
+			
+			if(lastCrafter!=null && (craftersSamePriority.isEmpty() || (craftersSamePriority.get(0).getValue1().getPriority() == lastCrafter.getValue1().getPriority()))) {
+				Pair<CraftingTemplate, List<IFilter>> crafter = lastCrafter;
+				lastCrafter = null;
+				CraftingTemplate template = crafter.getValue1();
+				if(treeNode.isCrafterUsed(template)) // then somewhere in the tree we have already used this
+					continue;
+				if(template.getResultStack().getItem() != treeNode.getStack().getItem()) 
+					continue; // we are crafting something else		
+				for(IFilter filter:crafter.getValue2()) { // is this filtered for some reason.
+					if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
+				}
+				craftersSamePriority.add(crafter);
 				continue;
-			
-			if(template.getResultStack().getItem() != treeNode.getStack().getItem()) continue;		
-			for(IFilter filter:crafter.getValue2()) {
-				if(filter.isBlocked() == filter.isFilteredItem(template.getResultStack().getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
 			}
+			
+			
+			int samePriorityCount = craftersSamePriority.size();
+			int itemsNeeded = treeNode.getMissingItemCount();
 
-			List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
-
-			int nCraftingSetsNeeded = (treeNode.getMissingItemCount() + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
-			
-			// for each thing needed to satisfy this promise
-			for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
-				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-				pair.getValue1().stackSize *= nCraftingSetsNeeded;
-				stacks.add(pair);
+			// having gathered all the items of the same
+			// end selection of crafters, now to try to split the request evenly over the N crafters we have.
+			for(boolean getAll:new boolean[]{false,true}) {
+				// first try an even 1/N, rounded up split request for each crafter
+				// then just try to get everything left from each of them.
+				for(Pair<CraftingTemplate, List<IFilter>> crafter : craftersSamePriority) {
+					// do the normal crafting request over those items.
+					CraftingTemplate template = crafter.getValue1();
+					List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
+					List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
+					int nCraftingSetsNeeded;
+					if(getAll)
+						nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+					else{
+						itemsNeeded = Math.min(itemsNeeded, treeNode.getMissingItemCount());
+						nCraftingSetsNeeded = (Math.min(itemsNeeded/samePriorityCount, treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+					}
+					
+					// for each thing needed to satisfy this promise
+					for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
+						Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+						pair.getValue1().stackSize *= nCraftingSetsNeeded;
+						stacks.add(pair);
+					}
+					
+					boolean failed = false;
+					
+					int nCraftingSetsAvailable = nCraftingSetsNeeded;
+					List<RequestTreeNode> lastNode = new ArrayList<RequestTreeNode>(components.size());
+					for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+						RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
+						lastNode.add(node);
+						node.declareCrafterUsed(template);
+						if(!generateRequestTree(tree, node)) {
+							failed = true;
+						}			
+					}
+					if(failed) {
+						//save last tried template for filling out the tree
+						treeNode.lastCrafterTried = template;
+						//figure out how many we can actually get
+						for(int i = 0; i < components.size(); i++) {
+							nCraftingSetsAvailable = Math.min(nCraftingSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
+						}
+						treeNode.remove(lastNode);
+						if(nCraftingSetsAvailable == 0) {
+							continue; // try the next crafter at the same priority
+						}
+						//now set the amounts
+						for(int i = 0; i < components.size(); i++) {
+							stacks.get(i).getValue1().stackSize = components.get(i).getValue1().stackSize * nCraftingSetsAvailable;
+						}
+						//and try it
+						lastNode.clear();
+						failed = false;
+						for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+							RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
+							lastNode.add(node);
+							node.declareCrafterUsed(template);
+							if(!generateRequestTree(tree, node)) {
+								failed = true;
+							}			
+						}
+						//this should never happen...
+						if(failed) {
+							treeNode.remove(lastNode);
+							continue;
+						}
+					}
+					//if we got here, we can at least some of the remaining amount
+					List<IRelayItem> relays = new LinkedList<IRelayItem>();
+					for(IFilter filter:crafter.getValue2()) {
+						relays.add(filter);
+					}
+					treeNode.addPromise(template.generatePromise(nCraftingSetsAvailable, relays));
+					itemsNeeded -= nCraftingSetsAvailable *template.getResultStack().stackSize;
+					if(itemsNeeded <= 0)
+						break outer; // we have everything we need for this crafting request
+				}
 			}
-			
-			boolean failed = false;
-			
-			int nCraftingSetsAvailable = nCraftingSetsNeeded;
-			List<RequestTreeNode> lastNode = new ArrayList<RequestTreeNode>(components.size());
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
-				lastNode.add(node);
-				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree, node)) {
-					failed = true;
-				}			
-			}
-			if(failed) {
-				//save last tried template for filling out the tree
-				treeNode.lastCrafterTried = template;
-				//figure out how many we can actually get
-				for(int i = 0; i < components.size(); i++) {
-					nCraftingSetsAvailable = Math.min(nCraftingSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
-				}
-				treeNode.remove(lastNode);
-				if(nCraftingSetsAvailable == 0) {
-					continue;
-				}
-				//now set the amounts
-				for(int i = 0; i < components.size(); i++) {
-					stacks.get(i).getValue1().stackSize = components.get(i).getValue1().stackSize * nCraftingSetsAvailable;
-				}
-				//and try it
-				lastNode.clear();
-				failed = false;
-				for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-					RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
-					lastNode.add(node);
-					node.declareCrafterUsed(template);
-					if(!generateRequestTree(tree, node)) {
-						failed = true;
-					}			
-				}
-				//this should never happen...
-				if(failed) {
-					treeNode.remove(lastNode);
-					continue;
-				}
-			}
-			//if we got here, we can at least some of the remaining amount
-			List<IRelayItem> relays = new LinkedList<IRelayItem>();
-			for(IFilter filter:crafter.getValue2()) {
-				relays.add(filter);
-			}
-			treeNode.addPromise(template.generatePromise(nCraftingSetsAvailable, relays));
-			if(nCraftingSetsAvailable == nCraftingSetsNeeded)
-				break;
+			craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
 	}
 
@@ -376,7 +434,8 @@ outer:
 			if (e!=null)
 				validSources.add(e);
 		}
-		Collections.sort(validSources, new workWeightedSorter());
+		// closer providers are good
+		Collections.sort(validSources, new workWeightedSorter(1.0));
 		
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			if(treeNode.isDone()) {

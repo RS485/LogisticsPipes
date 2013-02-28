@@ -58,6 +58,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
@@ -78,7 +79,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Crafting")
-public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver {
+public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
 
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 
@@ -518,8 +519,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	@Override
-	public int getLoadFactor() {
-		return (_orderManager.totalItemsCountInAllOrders()+63)/64;
+	public double getLoadFactor() {
+		return (_orderManager.totalItemsCountInAllOrders()+63.0)/64.0;
 	}
 	
 	/* ComputerCraftCommands */
@@ -543,6 +544,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		//for(int i=0; i<9;i++)
 		//	l1.add(((BaseLogicCrafting) this.logic).getMaterials(i));
 		return l1;
+	}
+
+	@Override
+	public int getPriority() {
+		return ((BaseLogicCrafting)this.logic).priority;
 	}
 
 }

@@ -918,8 +918,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	 * NOTE: called very regularly, returning a pre-calculated int is probably appropriate.
 	 * @return
 	 */
-	public int getLoadFactor() {
-		return 0;
+	public double getLoadFactor() {
+		return 0.0;
 	}
 
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {

@@ -10,6 +10,7 @@ package logisticspipes.logisticspipes;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Delayed;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
@@ -25,7 +26,7 @@ import buildcraft.core.EntityPassiveItem;
  * @author Krapht
  *
  */
-public interface IRoutedItem {
+public interface IRoutedItem extends Delayed{
 	
 	public enum TransportMode {
 		Unknown,

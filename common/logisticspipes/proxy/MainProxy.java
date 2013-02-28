@@ -59,17 +59,40 @@ public class MainProxy {
     }
 	
 	public static boolean isClient(World world) {
-		return world.isRemote;
+		try{
+			return world.isRemote;
+		} catch(NullPointerException n) {
+			LogisticsPipes.log.severe("isClient called with a null world - using slow thread based fallback");
+			n.printStackTrace();
+		}
+		return isClient();
 	}
 	
+	@Deprecated 
+	/**
+	 * isClient is slow, find a world and check isServer(world)
+	 * @return
+	 */
 	public static boolean isClient() {
 		return getEffectiveSide() == Side.CLIENT;
 	}
 	
 	public static boolean isServer(World world) {
-		return !world.isRemote;
+		try{
+			return !world.isRemote;
+		} catch(NullPointerException n) {
+			LogisticsPipes.log.severe("isServer called with a null world - using slow thread based fallback");
+			n.printStackTrace();
+		}
+		return isServer();
 	}
+
 	
+	@Deprecated 
+	/**
+	 * isServer is slow, find a world and check isServer(world)
+	 * @return
+	 */
 	public static boolean isServer() {
 		return getEffectiveSide() == Side.SERVER;
 	}

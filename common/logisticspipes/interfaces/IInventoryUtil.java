@@ -14,6 +14,14 @@ public interface IInventoryUtil {
 	public boolean containsItem(ItemIdentifier item);
 	public boolean containsUndamagedItem(ItemIdentifier item);
 	public int roomForItem(ItemIdentifier item);
-	public boolean hasRoomForItem(ItemIdentifier item);
+	/**
+	 * Inventory space count which terminates when space for max items are found.
+	 * @param item
+	 * @param max
+	 * @return spaces found. 
+	 * If this is less than max, then there are only spaces for that amount.
+	 */
+	public int roomForItem(ItemIdentifier item, int count);
+
 	Set<ItemIdentifier> getItems();
 }

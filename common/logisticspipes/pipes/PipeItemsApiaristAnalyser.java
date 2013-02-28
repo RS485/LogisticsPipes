@@ -73,12 +73,12 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault) {
-		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), true);
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, List<Integer> routerIDsToExclude) {
+		return SimpleServiceLocator.logisticsManager.hasDestination(stack, allowDefault, getRouter().getSimpleID(), routerIDsToExclude);
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply) {
+	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
@@ -95,7 +95,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 			}
 		}
 		itemToSend.addRelayPoints(list);
-		super.queueRoutedItem(itemToSend, getPointedOrientation());
+		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
 	@Override

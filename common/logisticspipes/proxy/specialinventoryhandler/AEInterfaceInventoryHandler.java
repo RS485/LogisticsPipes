@@ -130,8 +130,13 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item) {
+		return roomForItem(item, item.getMaxStackSize());
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier item, int count) {
 		try {
-			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.unsafeMakeNormalStack(1), item.getMaxStackSize()});
+			return (Integer) apiCurrentAvailableSpace.invoke(_tile, new Object[]{item.unsafeMakeNormalStack(1), count});
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
@@ -164,4 +169,5 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new AEInterfaceInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
+
 }

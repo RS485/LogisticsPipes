@@ -12,12 +12,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -58,6 +61,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
+		delay = 62*20; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
 		if(entityItem.getContribution("routingInformation") == null) {
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
@@ -145,7 +149,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public void remove() {
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient(this.worldObj)) return;
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
@@ -229,9 +233,10 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		if (this.container instanceof TileGenericPipe && ((TileGenericPipe)this.container).pipe.transport instanceof PipeTransportItems){
 			if (((TileGenericPipe)this.container).pipe instanceof PipeLogisticsChassi){
 				PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((TileGenericPipe)this.container).pipe;
-				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation);
+				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation, ItemSendMode.Fast);
 			} else {
-				((PipeTransportItems)((TileGenericPipe)this.container).pipe.transport).entityEntering(newItem, orientation.getOpposite());
+				//this should never happen
+				newItem.toEntityItem(orientation);
 			}
 		}
 	}
@@ -353,4 +358,30 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		_transportMode = result._transportMode;
 		jamlist = result.jamlist;
 	}
+
+	// Delayed
+    private final long origin = System.currentTimeMillis();
+    private final long delay;
+
+    @Override
+    public long getDelay( TimeUnit unit ) {
+        return unit.convert( delay - ( System.currentTimeMillis() - origin ),
+                TimeUnit.MILLISECONDS );
+    }
+ 
+    @Override
+    public int compareTo( Delayed delayed ) {
+        if( delayed == this ) {
+            return 0;
+        }
+ 
+        if( delayed instanceof RoutedEntityItem ) {
+            long diff = delay - ( ( RoutedEntityItem )delayed ).delay;
+            return ( ( diff == 0 ) ? 0 : ( ( diff < 0 ) ? -1 : 1 ) );
+        }
+ 
+        long d = ( getDelay( TimeUnit.MILLISECONDS ) - delayed.getDelay( TimeUnit.MILLISECONDS ) );
+        return ( ( d == 0 ) ? 0 : ( ( d < 0 ) ? -1 : 1 ) );
+    }
+
 }

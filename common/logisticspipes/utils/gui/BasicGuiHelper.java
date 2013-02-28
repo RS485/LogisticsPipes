@@ -433,6 +433,20 @@ public class BasicGuiHelper {
         var9.draw();
     }
     
+    public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-big.png");
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(i);
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 26	, (double)zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 26	, y + 26	, (double)zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 26	, y			, (double)zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
+        var9.draw();
+    }
+    
 
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-small.png");

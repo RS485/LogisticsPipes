@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -36,7 +37,6 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
@@ -58,6 +58,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
+	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
+
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
 	
 	protected final int ticksToAction = 6;
@@ -156,25 +158,34 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
-		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
+	public void registerPreviousLegacyModules(List<ILegacyActiveModule> previousModules) {
+		_previousLegacyModules = previousModules;
+	}
+
+	@Override
+	public boolean filterAllowsItem(ItemIdentifier item) {
+		if(!hasFilter()) return true;
+		boolean isFiltered = itemIsFiltered(item);
+		return isExcludeFilter ^ isFiltered;
+	}
+
+	@Override
+	public void onBlockRemoval() {
+		while(_orderManager.hasOrders()) {
+			_orderManager.sendFailed();
 		}
+	}
+
+	@Override
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
 		int canProvide = getAvailableItemCount(tree.getStack().getItem());
-		Integer donePromise = donePromisses.get(tree.getStack().getItem());
-		if (donePromise!=null) {
-			canProvide -= donePromise;
-		}
+		canProvide -= donePromisses;
 		if (canProvide < 1) return;
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
 		promise.sender = (IProvideItems) _itemSender;
-		List<IRelayItem> relays = new LinkedList<IRelayItem>();
-		for(IFilter filter:filters) {
-			relays.add(filter);
-		}
-		promise.relayPoints = relays;
+		promise.relayPoints = new LinkedList<IRelayItem>(filters);
 		tree.addPromise(promise);
 	}
 
@@ -199,7 +210,11 @@ outer:
 		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
 			if(items.containsKey(currItem.getKey())) continue;
 			
-			if(hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem.getKey())) || (!isExcludeFilter && !itemIsFiltered(currItem.getKey())))) continue;
+			if(!filterAllowsItem(currItem.getKey())) continue;
+
+			for(ILegacyActiveModule m:_previousLegacyModules) {
+				if(m.filterAllowsItem(currItem.getKey())) continue outer;
+			}
 			
 			for(IFilter filter:filters) {
 				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
@@ -212,15 +227,6 @@ outer:
 		}
 	}
 
-/*	@Override
-	public IRouter getRouter() {
-		if(LogisticsPipes.DEBUG) {
-			throw new UnsupportedOperationException();
-		}
-		//THIS IS NEVER SUPPOSED TO HAPPEN
-		return null;
-	}*/
-	
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getPointedInventory() == null) {
@@ -247,13 +253,11 @@ outer:
 		return sent;
 	}
 	
-	public int getTotalItemCount(ItemIdentifier item) {
+	private int getTotalItemCount(ItemIdentifier item) {
 		
 		if (_invProvider.getPointedInventory() == null) return 0;
 		
-		if (!_filterInventory.isEmpty()
-				&& ((this.isExcludeFilter && _filterInventory.containsItem(item)) 
-						|| ((!this.isExcludeFilter) && !_filterInventory.containsItem(item)))) return 0;
+		if(!filterAllowsItem(item)) return 0;
 		
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		return inv.itemCount(item);
@@ -263,11 +267,11 @@ outer:
 		return !_filterInventory.isEmpty();
 	}
 	
-	public boolean itemIsFiltered(ItemIdentifier item){
+	private boolean itemIsFiltered(ItemIdentifier item){
 		return _filterInventory.containsItem(item);
 	}
 	
-	public IInventoryUtil getAdaptedUtil(IInventory base){
+	private IInventoryUtil getAdaptedUtil(IInventory base){
 		switch(_extractionMode){
 			case LeaveFirst:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
@@ -379,29 +383,39 @@ outer:
 	}
 
 	@Override
-	public IRouter getRouter() {
-		return _itemSender.getRouter();
-	}
-
-	@Override
 	public boolean hasGenericInterests() {
 		return false;
 	}
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		if( !(_filterInventory.isEmpty() ||!this.isExcludeFilter)){
+		if(!this.isExcludeFilter && !_filterInventory.isEmpty()){
 			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
 			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 			li.addAll(mapIC.keySet());
 			return li;
+		} else {
+			IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
+			Set<ItemIdentifier> setI = inv.getItems();
+			List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(setI.size());
+outer:
+			for (ItemIdentifier currItem : setI) {
+				if(!filterAllowsItem(currItem)) continue;
+
+				for(ILegacyActiveModule m:_previousLegacyModules) {
+					if(m.filterAllowsItem(currItem)) continue outer;
+				}
+				li.add(currItem);
+			}
+			return li;
 		}
-		return null;
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
-		return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
+	public boolean interestedInAttachedInventory() {
+		//do it the dumb way for now and use invutil in getSpecificInterests
+		return false;
+		//return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
 		// when items not included, we can only serve those items in the filter.
 	}
 

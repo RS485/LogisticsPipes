@@ -126,7 +126,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(this.worldObj)) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
@@ -134,7 +134,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(this.worldObj)) {
 			init = false;
 		}
 	}
@@ -142,7 +142,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(this.worldObj)) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
@@ -192,7 +192,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	}
 
 	public void handlePowerPacket(PacketPipeInteger packet) {
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(this.worldObj)) {
 			internalStorage = packet.integer;
 		}
 	}

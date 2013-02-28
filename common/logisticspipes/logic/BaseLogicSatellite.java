@@ -31,6 +31,10 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	public static HashSet<BaseLogicSatellite> AllSatellites = new HashSet<BaseLogicSatellite>();
 
+	// called only on server shutdown
+	public static void cleanup() {
+		AllSatellites.clear();
+	}
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
 	@TileNetworkData
@@ -143,9 +147,14 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		}
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			// FIXME try partial requests
-			if (RequestManager.request(iterator.next(), ((CoreRoutedPipe) container.pipe), null)) {
-				iterator.remove();
+			ItemIdentifierStack stack = iterator.next();
+			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			if(received > 0) {
+				if(received == stack.stackSize) {
+					iterator.remove();
+				} else {
+					stack.stackSize -= received;
+				}
 			}
 		}
 	}

@@ -1,5 +1,6 @@
 package logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -8,6 +9,7 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
@@ -78,10 +80,10 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 			ItemStack item = inv.getStackInSlot(i);
 			if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 				if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-					Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true);
+					Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
 					if(reply == null) continue;
 					if(_power.useEnergy(6)) {
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply);
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
 					}
 				}
 			}

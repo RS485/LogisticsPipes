@@ -37,15 +37,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public boolean allowCC = false;
 	
 	public LogisticsSecurityTileEntity() {
-		if(MainProxy.isServer()) {
-			SimpleServiceLocator.securityStationManager.add(this);
-		}
 	}
 	
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(this.worldObj)) {
 			SimpleServiceLocator.securityStationManager.remove(this);
 		}
 	}
@@ -53,7 +50,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(this.worldObj)) {
 			SimpleServiceLocator.securityStationManager.add(this);
 		}
 	}
@@ -61,7 +58,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(this.worldObj)) {
 			SimpleServiceLocator.securityStationManager.remove(this);
 		}
 	}

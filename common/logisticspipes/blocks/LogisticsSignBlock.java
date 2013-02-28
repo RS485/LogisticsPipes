@@ -1,5 +1,7 @@
 package logisticspipes.blocks;
 
+import java.util.Random;
+
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -112,4 +114,10 @@ public class LogisticsSignBlock extends BlockContainer {
 		}
 		super.breakBlock(par1World, par2, par3, par4, par5, par6);
     }
+
+	@Override
+	public int quantityDropped(Random par1Random)
+	{
+		return 0;
+	}
 }

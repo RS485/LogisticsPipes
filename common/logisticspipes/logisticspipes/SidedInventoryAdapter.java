@@ -8,10 +8,6 @@
 
 package logisticspipes.logisticspipes;
 
-import java.util.Random;
-import java.util.TreeSet;
-
-import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;

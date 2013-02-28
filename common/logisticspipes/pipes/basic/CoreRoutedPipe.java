@@ -9,7 +9,6 @@
 package logisticspipes.pipes.basic;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -50,7 +50,7 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.IRouterManager;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -61,7 +61,6 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.ManualResetEvent;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
@@ -92,72 +91,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		Normal,
 		Fast
 	}
-	
-	protected static class HudUpdateThread extends Thread {
-		
-		// WARNING: promote to a threadsafe, or use an atomic replace on the bitset if multiple threads are goign to be used to process this.
-		private static BitSet routersNeedingUpdate = new BitSet(4096);
-		private int lastRouter = 0;
-		private static int inventorySlotsToUpdatePerTick = 90;
-		private static ManualResetEvent lock = new ManualResetEvent(false);
-		private static HudUpdateThread instance = new HudUpdateThread();
-		public HudUpdateThread() {
-			super("LogisticsPipes HudUpdateThread");
-			this.setDaemon(true);
-			this.setPriority(Configs.multiThreadPriority);
-			this.start();
-		}
 
-		public static void add(IRouter run) {
-			int index = run.getSimpleID();
-			if(index <0)
-				return;
-			routersNeedingUpdate.set(index); //expands the bit-set when out of bounds.
-			lock.set();// release the hounds, er, thread(s).
-		}
-
-		public static int queueLength() {
-			return routersNeedingUpdate.cardinality();
-		}
-		
-		@Override
-		public void run() {
-			Runnable item = null;
-			IRouterManager rm = SimpleServiceLocator.routerManager;
-			try {
-				int firstRouter = 0;
-				while(true) {
-					lock.waitOne(); // wait until work is to be done.
-					lock.reset(); // we'll clear the work before waiting.
-					boolean done = false;
-					while(!done){
-						if(firstRouter < 0)
-							firstRouter = 0;
-						for(int slotSentCount=0;slotSentCount<inventorySlotsToUpdatePerTick;){
-							firstRouter = this.routersNeedingUpdate.nextSetBit(firstRouter);
-							if(firstRouter == -1) // wrap around
-								firstRouter = this.routersNeedingUpdate.nextSetBit(0);
-							if(firstRouter == -1) { // no bits to be done.
-								done = true;
-								break; // all done
-							}
-							routersNeedingUpdate.clear(firstRouter);
-							IRouter currentRouter = rm.getRouter(firstRouter);
-							if(currentRouter != null) {
-								CoreRoutedPipe pipe = currentRouter.getCachedPipe();
-								if(pipe!=null)
-									slotSentCount += pipe.sendQueueChanged(true);
-							}
-						}
-						this.sleep(20);
-					}
-				} 
-			}
-			catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		}
-	}
 	protected boolean stillNeedReplace = true;
 	
 	protected IRouter router;
@@ -174,6 +108,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
+	private DelayQueue<IRoutedItem> _inTransitToMe = new DelayQueue<IRoutedItem>();
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
@@ -247,7 +182,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	 * @param force  == true never delegates to a thread
 	 * @return number of things sent.
 	 */
-	protected int sendQueueChanged(boolean force) {return 0;}
+	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
 		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()), this.zCoord + 0.5F, from);
@@ -261,6 +196,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		routedItem.SetPosition(p.x, p.y, p.z);
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
+		//assert: sending to an existing router which contains a pipe. something (possibly getPipeUnsafe) possibly npe's here.
+		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
+		if(r != null) {
+			CoreRoutedPipe pipe = r.getCachedPipe();
+			pipe.notifyOfSend(routedItem);
+		}
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 2);
 		stat_lifetime_sent++;
@@ -268,6 +209,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		updateStats();
 	}
 	
+	private void notifyOfSend(IRoutedItem routedItem) {
+		this._inTransitToMe.add(routedItem);
+		
+	}
+
 	public abstract ItemSendMode getItemSendMode();
 	
 	private boolean checkTileEntity(boolean force) {
@@ -428,6 +374,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		super.onChunkUnload();
 		if(router != null){
 			router.clearPipeCache();
+			router.clearInterests();
 		}
 	}
 	
@@ -965,5 +912,27 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
+	}
+
+	/** used as a distance offset when deciding which pipe to use
+	 * NOTE: called very regularly, returning a pre-calculated int is probably appropriate.
+	 * @return
+	 */
+	public double getLoadFactor() {
+		return 0.0;
+	}
+
+	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
+		this._inTransitToMe.remove(routedEntityItem);		
+	}
+
+	public int countOnRoute(ItemIdentifier it) {
+		int count = 0;
+		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			IRoutedItem next = iter.next();
+			if(next.getIDStack().getItem() == it)
+				count += next.getIDStack().stackSize;
+		}
+		return count;
 	}
 }

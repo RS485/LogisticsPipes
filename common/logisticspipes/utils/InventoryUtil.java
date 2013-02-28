@@ -34,11 +34,17 @@ public class InventoryUtil implements IInventoryUtil {
 	
 	@Override
 	public int itemCount(ItemIdentifier item) {
-		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
-		Integer count = map.get(item);
-		
-		if(count==null) {
-			return 0;
+		int count = 0;
+		boolean first = true;
+		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null || ItemIdentifier.get(stack) != item) continue;
+			if(first){
+				count = stack.stackSize - ((_hideOne||_hideOnePerStack)?1:0);
+				first = false;
+			}
+			else
+				count +=stack.stackSize - (_hideOnePerStack?1:0);
 		}
 		return count;
 	}
@@ -74,37 +80,36 @@ public class InventoryUtil implements IInventoryUtil {
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		//XXX this doesn't handle _hideOne ... does it have to?
-		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
-			ItemStack stack = _inventory.getStackInSlot(i);
-			if (stack == null) continue;
-			if (stack.stackSize <= (_hideOnePerStack?1:0)) continue;
-			if (ItemIdentifier.get(stack) == item) {
-				ItemStack removed = stack.splitStack(1);
-				if (stack.stackSize == 0) {
-					_inventory.setInventorySlotContents(i,  null);
-				} else {
-					_inventory.setInventorySlotContents(i,  stack);
-				}
-				return removed;
-			}
-		}
-		return null;
+		return getMultipleItems(item,1);
 	}
 	
 	@Override
 	public ItemStack getMultipleItems(ItemIdentifier item, int count){
 		if (itemCount(item) < count) return null;
-		ItemStack stack = null;
-		for (int i = 0; i < count; i++){
-			if(stack == null){
-				stack = getSingleItem(item);
+		ItemStack outputStack = null;
+		boolean first=true;
+		
+		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd && count>0; i++) {
+			ItemStack stack = _inventory.getStackInSlot(i);
+			if (stack == null || (stack.stackSize == 1 && _hideOnePerStack) || ItemIdentifier.get(stack) != item) continue;
+			int itemsToSplit = Math.min(count,stack.stackSize-((first && _hideOne || _hideOnePerStack)?1:0));
+			first = false;
+			if(itemsToSplit ==0 ) continue;
+			ItemStack removed = null;
+			if (stack.stackSize > itemsToSplit){ // then we only want part of the stack
+				removed = stack.splitStack(itemsToSplit);
+				_inventory.setInventorySlotContents(i,  stack);				
+			} else {
+				removed = stack;
+				_inventory.setInventorySlotContents(i,  null);				
 			}
-			else{
-				stack.stackSize += getSingleItem(item).stackSize;
-			}
+			if(outputStack == null)
+				outputStack = removed;
+			else
+				outputStack.stackSize += removed.stackSize;
+			count-=removed.stackSize;
 		}
-		return stack;
+		return outputStack;		
 	}
 	
 	//Ignores slot/item hiding
@@ -132,23 +137,23 @@ public class InventoryUtil implements IInventoryUtil {
 	//Ignores slot/item hiding
 	@Override
 	public int roomForItem(ItemIdentifier item){
+		return roomForItem(item, Integer.MAX_VALUE);
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier item, int count){
 		int totalRoom = 0;
-		for (int i = 0; i < _inventory.getSizeInventory(); i++){
+		int stackLimit = _inventory.getInventoryStackLimit();
+		for (int i = 0; i < _inventory.getSizeInventory() && count > totalRoom; i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null){
-				totalRoom += Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize());
+				totalRoom += Math.min(stackLimit, item.getMaxStackSize());
 				continue;
 			}
 			if (ItemIdentifier.get(stack) != item) continue;
 			
-			totalRoom += (Math.min(_inventory.getInventoryStackLimit(), item.unsafeMakeNormalStack(1).getMaxStackSize()) - stack.stackSize);
+			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.stackSize);
 		}
 		return totalRoom;
-	}
-
-	//Ignores slot/item hiding
-	@Override
-	public boolean hasRoomForItem(ItemIdentifier item) {
-		return roomForItem(item) > 0;
 	}
 }

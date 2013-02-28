@@ -170,7 +170,12 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public int roomForItem(ItemIdentifier itemIdent) {
+	public int roomForItem(ItemIdentifier item) {
+		return roomForItem(item, 0);
+	}
+
+	@Override
+	public int roomForItem(ItemIdentifier itemIdent, int count) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			int space = (Integer) spaceForItem.invoke(cratePileData, new Object[]{itemIdent.unsafeMakeNormalStack(1)});

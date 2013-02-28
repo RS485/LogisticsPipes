@@ -14,8 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import buildcraft.transport.TileGenericPipe;
-
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ILogisticsPowerProvider;

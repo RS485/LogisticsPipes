@@ -45,7 +45,6 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
-	private int _lastSucess_count = 1024;
 
 	public boolean pause = false;
 	
@@ -107,12 +106,23 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
+			//How many do I have?
+			HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
+			for (Entry<ItemIdentifier, Integer> item : have.entrySet()){
+				Integer n=haveUndamaged.get(item.getKey().getUndamaged());
+				if(n==null)
+					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue());
+				else
+					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue()+n);
+			}
 			
 			//Reduce what I have and what have been requested already
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer haveCount = have.get(item.getKey());
+				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
 				if (haveCount != null){
 					item.setValue(item.getValue() - haveCount);
+					// so that 1 damaged item can't satisfy a request for 2 other damage values.
+					haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
 				}
 				Integer requestedCount =  _requestedItems.get(item.getKey());
 				if (requestedCount!=null){
@@ -153,43 +163,30 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
 				Integer amountRequested = need.getValue();
 				if (amountRequested==null || amountRequested < 1) continue;
-				int neededCount;
-				if(_requestPartials)
-					neededCount = Math.min(amountRequested,this._lastSucess_count);
-				else
-					neededCount=amountRequested;
+				int neededCount = amountRequested;
 				if(!_power.useEnergy(10)) {
 					break;
 				}
 				
 				boolean success = false;
-					
-				do{ 
-					success = RequestManager.request(need.getKey().makeStack(neededCount),  (IRequestItems) container.pipe, null);
-					if (success || neededCount == 1){
-						break;
+
+				if(_requestPartials) {
+					neededCount = RequestManager.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+					if(neededCount > 0) {
+						success = true;
 					}
-					neededCount = neededCount / 2;
-				} while (_requestPartials && !success);
+				} else {
+					success = RequestManager.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
+				}
 				
 				if (success){
-					if(neededCount == amountRequested)
-						_lastSucess_count=1024;
-					else {
-						if(neededCount == _lastSucess_count)
-							_lastSucess_count *= 2;
-						else
-							_lastSucess_count= neededCount;
-					}
 					Integer currentRequest = _requestedItems.get(need.getKey());
-					if (currentRequest == null){
+					if(currentRequest == null) {
 						_requestedItems.put(need.getKey(), neededCount);
-					}else
-					{
+					} else {
 						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
-				} else{
-					_lastSucess_count=1;
+				} else {
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 				}
 				

@@ -24,7 +24,7 @@ import logisticspipes.utils.SinkReply.FixedPriority;
 public interface ILogisticsManagerV2 {
 
 	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
-	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int uuid, boolean excludeSource);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude);
 	Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
 	LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> list);
 	Map<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> list);

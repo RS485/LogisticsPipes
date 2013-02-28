@@ -52,6 +52,24 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	// things potentially interested in every item (chassi with generic sinks)
 	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
 	
+	// called on server shutdown only
+	static void ClearAllInterests(){
+		_globalSpecificInterests.clear();
+		_genericInterests.clear();
+		_lastLSAVersion.clear();
+	}
+
+	// called on server shutdown only
+	public static void cleanup(){
+		ClearAllInterests();
+		SharedLSADatabasewriteLock.lock();
+		_lastLSAVersion.clear();
+		_lastLsa.clear();
+		SharedLSADatabasewriteLock.unlock();
+		firstFreeId=1;
+		simpleIdUsedSet.clear();
+	}
+
 	// things this pipe is interested in (either providing or sinking)
 	Set<ItemIdentifier> _hasInterestIn = new TreeSet<ItemIdentifier>();
 	boolean _hasGenericInterest;
@@ -111,13 +129,14 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		}		
 	}
 
-	public HashMap<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
-	public HashMap<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
+	// these are maps, not hashMaps because they are unmodifiable Collections to avoid concurrentModification exceptions.
+	public Map<CoreRoutedPipe, ExitRoute> _adjacent = new HashMap<CoreRoutedPipe, ExitRoute>();
+	public Map<IRouter, ExitRoute> _adjacentRouter = new HashMap<IRouter, ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerAdjacent = new ArrayList<ILogisticsPowerProvider>();
 	
 	public boolean[] sideDisconnected = new boolean[6];
 	
-	private HashMap<IRouter, ExitRoute> _prevAdjacentRouter;
+	private Map<IRouter, ExitRoute> _prevAdjacentRouter = new HashMap<IRouter, ExitRoute>();
 
 	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
 	protected int _LSAVersion = 0;
@@ -356,10 +375,13 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 					routedexits.add(pipe.getValue().exitOrientation);
 			}
-			_prevAdjacentRouter = _adjacentRouter;
-			_adjacentRouter = adjacentRouter;
-			_adjacent = adjacent;
-			_powerAdjacent = power;
+			HashMap<IRouter, ExitRoute> oldRouters = new HashMap<IRouter, ExitRoute>(_adjacentRouter);
+			for(IRouter key:adjacentRouter.keySet())
+				oldRouters.remove(key);
+			_prevAdjacentRouter = Collections.unmodifiableMap(oldRouters);
+			_adjacentRouter = Collections.unmodifiableMap(adjacentRouter);
+			_adjacent = Collections.unmodifiableMap(adjacent);
+			_powerAdjacent = Collections.unmodifiableList(power);
 			_routedExits = routedexits;
 			SendNewLSA();
 		}
@@ -578,6 +600,7 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem){
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
+		pipe.notifyOfItemArival(routedEntityItem);
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
 			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
 		}
@@ -599,12 +622,9 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 		for(IRouter r : _adjacentRouter.keySet()) {
 			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}
-		if(_prevAdjacentRouter != null) {
-			for(IRouter r : _prevAdjacentRouter.keySet()) {
-				hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
-			}
+		for(IRouter r : _prevAdjacentRouter.keySet()) {
+			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}
-		actor.doneWith(this);
 		return hasBeenReset;
 	}
 	
@@ -818,8 +838,8 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 					this.addInterest(i);
 				}
 			}
+			_hasInterestIn=newInterests;
 		}
-		_hasInterestIn=newInterests;
 	}
 
 	private void removeGenericInterest() {
@@ -897,6 +917,11 @@ public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRou
 
 	public static Set<IRouter> getInterestedInGeneral() {
 		return _genericInterests;
+	}
+
+	@Override
+	public void clearInterests() {
+		this.removeAllInterests();		
 	}
 }
 

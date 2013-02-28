@@ -99,4 +99,8 @@ public class NetworkConstants {
 	public static final int OPEN_SECURITY_PLAYER = 94;
 	public static final int SAVE_SECURITY_PLAYER = 95;
 	public static final int SET_SECURITY_CC = 96;
+	public static final int GUI_ARGUMENT_PACKET = 97;
+	public static final int CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED = 98;
+	public static final int CRAFTING_PIPE_PREV_SATELLITE_ADVANCED = 99;
+	public static final int CRAFTING_PIPE_SATELLITE_ID_ADVANCED = 100;
 }

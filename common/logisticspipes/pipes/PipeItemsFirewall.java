@@ -268,10 +268,19 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		blockCrafer = flags.get(1);
 		blockSorting = flags.get(2);
 		isBlocking = flags.get(3);
+		updateAllRouters();
 	}
 
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
+	}
+	
+	private void updateAllRouters() {
+		this.router.flagForRoutingUpdate();
+		for(IRouter r:routers){
+			if(r!=null)
+				r.flagForRoutingUpdate();
+		}
 	}
 }

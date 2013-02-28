@@ -55,7 +55,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	 * @param excludeSource Boolean, true means it will not consider the pipe itself as a valid destination.
 	 */
 	@Override
-	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, boolean excludeSource) {
+	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
 		if (sourceRouter == null) return null;
 		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
@@ -66,7 +66,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (search.getValue2() == null) return null;
 
@@ -169,7 +169,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			filters.remove(filter);
 		}
 		if(filters.isEmpty() && result.getValue1() != null) {
-			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouter(result.getValue1()).getPipe();
+			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(),false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
 			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj, 10);
 		}
@@ -186,16 +186,24 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterID, boolean excludeSource) {
 
-		//If the source router does not exist we can't do anything with this
-		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouterID)) return item;
+		//Assert: only called server side.
+		
 		//If we for some reason can't get the router we can't do anything either
-		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceRouterID);
+		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouterUnsafe(sourceRouterID,false);
 		if (sourceRouter == null) return item;
 
 		//Wipe current destination
 		item.clearDestination();
 
-		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, sourceRouter.getIRoutersByCost(), excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
+		for(IRouter r:routers){
+			ExitRoute e = sourceRouter.getDistanceTo(r);
+			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+				validDestinations.add(e);
+		}
+		Collections.sort(validDestinations);
+		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
 
 		if (bestReply.getValue1() != null){
 			item.setBufferCounter(0);

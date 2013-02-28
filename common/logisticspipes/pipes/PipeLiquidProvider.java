@@ -2,6 +2,8 @@ package logisticspipes.pipes;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
@@ -14,6 +16,7 @@ import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.LogisticsLiquidOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
@@ -143,5 +146,22 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	@Override
 	public boolean canInsertFromSideToTanks() {
 		return true;
+	}
+
+
+	@Override //work in progress, currently not active code.
+	public Set<ItemIdentifier> getSpecificInterests() {
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();;
+		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
+			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			for(ILiquidTank tank:tanks) {
+				LiquidStack liquid;
+				if((liquid = tank.getLiquid()) != null && liquid.itemID != 0) {
+					LiquidIdentifier ident = LiquidIdentifier.get(liquid);
+					l1.add(ident.getItemIdentifier());
+				}
+			}
+		}
+		return l1;
 	}
 }

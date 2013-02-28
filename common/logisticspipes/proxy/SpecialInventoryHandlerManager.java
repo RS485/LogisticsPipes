@@ -3,7 +3,7 @@ package logisticspipes.proxy;
 import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
-import logisticspipes.proxy.specialinventoryhandler.QuantumChestHandler;
+import logisticspipes.proxy.specialinventoryhandler.DigitalChestHandler;
 import cpw.mods.fml.common.Loader;
 
 public class SpecialInventoryHandlerManager {
@@ -14,7 +14,7 @@ public class SpecialInventoryHandlerManager {
 		}
 		
 		if(Loader.isModLoaded("GregTech_Addon")) {
-			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new QuantumChestHandler());
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DigitalChestHandler());
 		}
 
 		if(Loader.isModLoaded("BetterStorage")) {

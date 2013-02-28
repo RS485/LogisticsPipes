@@ -58,6 +58,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
@@ -78,7 +79,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Crafting")
-public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver {
+public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
 
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager(this);
 
@@ -138,6 +139,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		super.onNeighborBlockChange(blockId);
 	}
 	
+	@Override
+	public void onBlockRemoval() {
+		super.onBlockRemoval();
+		while(_orderManager.hasOrders()) {
+			_orderManager.sendFailed();
+		}
+	}
 
 	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
 		ItemStack retstack = null;
@@ -302,7 +310,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses, List<IFilter> filters) {
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
 		
 		if (!isEnabled()){
 			return;
@@ -317,9 +325,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		
-		int alreadyPromised = donePromisses.containsKey(providedItem) ? donePromisses.get(providedItem) : 0; 
-		if (alreadyPromised >= _extras) return;
-		int remaining = _extras - alreadyPromised;
+		int remaining = _extras - donePromisses;
+		if (remaining < 1) return;
 		LogisticsExtraPromise promise = new LogisticsExtraPromise();
 		promise.item = providedItem;
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
@@ -342,10 +349,29 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
 		ItemStack stack = craftingLogic.getCraftedItem(); 
-		if ( stack == null) return null;
+		if (stack == null) return null;
+		
+		IRequestItems[] target = new IRequestItems[9];
+		for(int i=0;i<9;i++) {
+			target[i] = this;
+		}
 
 		boolean hasSatellite = craftingLogic.isSatelliteConnected();
-		if(craftingLogic.satelliteId != 0 && !hasSatellite) return null;
+		if(!hasSatellite) return null;
+		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
+			if(craftingLogic.satelliteId != 0) {
+				IRequestItems sat = (IRequestItems)craftingLogic.getSatelliteRouter(-1, -1).getPipe();
+				for(int i=6;i<9;i++) {
+					target[i] = sat;
+				}
+			}
+		} else {
+			for(int i=0;i<9;i++) {
+				if(craftingLogic.advancedSatelliteIdArray[i] != 0) {
+					target[i] = (IRequestItems)craftingLogic.getSatelliteRouter(i, -1).getPipe();
+				}
+			}
+		}
 
 		CraftingTemplate template = new CraftingTemplate(ItemIdentifierStack.GetFromStack(stack), this, craftingLogic.priority);
 
@@ -353,12 +379,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		for (int i = 0; i < 9; i++){
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;
-			if (i < 6 || !hasSatellite){
-				template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), this);
-			}
-			else{
-				template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), (IRequestItems)craftingLogic.getSatelliteRouter().getPipe());
-			}
+			template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), target[i]);
 				
 		}
 		return template;
@@ -497,6 +518,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return HUD;
 	}
 	
+	@Override
+	public double getLoadFactor() {
+		return (_orderManager.totalItemsCountInAllOrders()+63.0)/64.0;
+	}
+	
 	/* ComputerCraftCommands */
 	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
 	@CCQueued(prefunction="testImportAccess")
@@ -518,6 +544,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		//for(int i=0; i<9;i++)
 		//	l1.add(((BaseLogicCrafting) this.logic).getMaterials(i));
 		return l1;
+	}
+
+	@Override
+	public int getPriority() {
+		return ((BaseLogicCrafting)this.logic).priority;
 	}
 
 }

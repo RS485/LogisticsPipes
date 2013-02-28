@@ -125,6 +125,9 @@ public class WorldTickHandler implements ITickHandler {
 		}
 		ItemIdentifier.tick();
 		LiquidIdentifier.initFromForge(true);
+		if(type.contains(TickType.SERVER)) {
+			HudUpdateTick.tick();
+		}
 	}
 
 	@Override

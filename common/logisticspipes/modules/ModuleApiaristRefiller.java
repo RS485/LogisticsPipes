@@ -1,5 +1,6 @@
 package logisticspipes.modules;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -9,6 +10,7 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
@@ -80,11 +82,11 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 		if(reinsertBee(stack[0], sinv, direction))
 			return;
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true);
+		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 		if(reply == null) return;
 		_power.useEnergy(20);
 		sinv.extractItem(true, direction, 1);
-		_itemSender.sendStack(stack[0], reply);
+		_itemSender.sendStack(stack[0], reply, ItemSendMode.Normal);
 	}
 
 	private boolean reinsertBee(ItemStack stack, ISpecialInventory inv, ForgeDirection direction) {

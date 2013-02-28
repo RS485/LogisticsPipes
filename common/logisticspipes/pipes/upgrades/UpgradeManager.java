@@ -31,6 +31,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
 	private int speedUpgradeCount = 0;
 	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
+	private boolean isAdvancedCrafter = false;
+	private boolean isSatelliteCraftingSatellite = false;
+	private boolean isSatelliteCraftingCrafter = false;
 	
 	public UpgradeManager(CoreRoutedPipe pipe) {
 		this.pipe = pipe;
@@ -72,6 +75,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		//update sneaky direction, speed upgrade count and disconnection
 		sneakyOrientation = ForgeDirection.UNKNOWN;
 		speedUpgradeCount = 0;
+		isAdvancedCrafter = false;
+		isSatelliteCraftingSatellite = false;
+		isSatelliteCraftingCrafter = false;
 		disconnectedSides.clear();
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
@@ -81,6 +87,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				speedUpgradeCount += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof ConnectionUpgrade) {
 				disconnectedSides.add(((ConnectionUpgrade)upgrade).getSide());
+			} else if(upgrade instanceof SplitCraftingCrafterUpgrade) {
+				isSatelliteCraftingCrafter = true;
+			} else if(upgrade instanceof SplitCraftingSatelliteUpgrade) {
+				isSatelliteCraftingSatellite = true;
+			} else if(upgrade instanceof AdvancedSatelliteUpgrade) {
+				isAdvancedCrafter = true;
 			}
 		}
 		if(needUpdate) {
@@ -112,7 +124,18 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 		//Pipe slots
 	    for(int pipeSlot = 0; pipeSlot < 8; pipeSlot++){
-	    	dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, LogisticsPipes.UpgradeItem.itemID);
+	    	dummy.addRestrictedSlot(pipeSlot, inv, 8 + pipeSlot * 18, 18, new ISlotCheck() {
+				@Override
+				public boolean isStackAllowed(ItemStack itemStack) {
+					if(itemStack == null) return false;
+					if(itemStack.itemID == LogisticsPipes.UpgradeItem.itemID) {
+						if(!LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null).isAllowed(pipe)) return false;
+					} else {
+						return false;
+					}
+					return true;
+				}
+	    	});
 	    }
     	dummy.addRestrictedSlot(8, inv, 8 + 8 * 18, 18, new ISlotCheck() {
 			@Override
@@ -135,7 +158,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public boolean tryIserting(World world, EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID && LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null).isAllowed(pipe)) {
 			if(MainProxy.isClient(world)) return true;
 			for(int i=0;i<inv.getSizeInventory() - 1;i++) {
 				ItemStack item = inv.getStackInSlot(i);
@@ -193,5 +216,17 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				inv.setInventorySlotContents(8, null);
 			}
 		}
+	}
+	
+	public boolean isAdvancedSatelliteCrafter() {
+		return isAdvancedCrafter;
+	}
+	
+	public boolean isSatelliteCraftingSatellite() {
+		return isSatelliteCraftingSatellite;
+	}
+	
+	public boolean isSatelliteCraftingCrafter() {
+		return isSatelliteCraftingCrafter;
 	}
 }

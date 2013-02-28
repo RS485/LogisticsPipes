@@ -189,4 +189,10 @@ public class ClientRouter implements IRouter {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	@Override
+	public void clearInterests() {
+		// TODO Auto-generated method stub
+		
+	}
 }

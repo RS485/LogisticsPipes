@@ -395,6 +395,7 @@ outer:
 			li.addAll(mapIC.keySet());
 			return li;
 		} else {
+			if (_invProvider.getPointedInventory() == null) return null;
 			IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 			Set<ItemIdentifier> setI = inv.getItems();
 			List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(setI.size());

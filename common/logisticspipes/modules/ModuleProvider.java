@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
 import logisticspipes.interfaces.IChassiePowerProvider;
@@ -388,18 +389,33 @@ outer:
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		if( !(_filterInventory.isEmpty() ||!this.isExcludeFilter)){
+		if(!this.isExcludeFilter && !_filterInventory.isEmpty()){
 			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
 			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
 			li.addAll(mapIC.keySet());
 			return li;
+		} else {
+			IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
+			Set<ItemIdentifier> setI = inv.getItems();
+			List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(setI.size());
+outer:
+			for (ItemIdentifier currItem : setI) {
+				if(!filterAllowsItem(currItem)) continue;
+
+				for(ILegacyActiveModule m:_previousLegacyModules) {
+					if(m.filterAllowsItem(currItem)) continue outer;
+				}
+				li.add(currItem);
+			}
+			return li;
 		}
-		return null;
 	}
 
 	@Override
-	public boolean interestedInAttachedInventory() {		
-		return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
+	public boolean interestedInAttachedInventory() {
+		//do it the dumb way for now and use invutil in getSpecificInterests
+		return false;
+		//return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
 		// when items not included, we can only serve those items in the filter.
 	}
 

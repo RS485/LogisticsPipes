@@ -121,8 +121,9 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	public TileEntity getPointedTileEntity(){
 		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
-		if(this.container.tileBuffer == null)
+		if(this.container.tileBuffer == null) {
 			return null;
+		}
 		return this.container.tileBuffer[ChassiLogic.orientation.ordinal()].getTile();
 	}
 
@@ -606,11 +607,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	@Override
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		//if we don't have a pointed inventory we can't be interested in anything
+		if(getRawInventory() == null) return l1;
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
 			ILogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
 				IInventory inv = getRawInventory();
-				if (inv == null) continue;
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN);
 				} 
@@ -645,6 +647,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public boolean hasGenericInterests() {
+		if(getRawInventory() == null) return false;
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			

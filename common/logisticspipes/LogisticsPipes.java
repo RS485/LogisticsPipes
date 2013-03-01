@@ -416,7 +416,6 @@ public class LogisticsPipes {
 	@ServerStopping
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
-		ServerRouter.resetStatics();
 		QueuedTasks.clearAllTasks();
 		HudUpdateTick.clearUpdateFlags();
 		BaseLogicSatellite.cleanup();

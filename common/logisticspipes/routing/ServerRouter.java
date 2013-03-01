@@ -51,24 +51,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	// things potentially interested in every item (chassi with generic sinks)
 	static Set<IRouter> _genericInterests = new TreeSet<IRouter>();
 	
-	// called on server shutdown only
-	static void ClearAllInterests(){
-		_globalSpecificInterests.clear();
-		_genericInterests.clear();
-		_lastLSAVersion.clear();
-	}
-
-	// called on server shutdown only
-	public static void cleanup(){
-		ClearAllInterests();
-		SharedLSADatabasewriteLock.lock();
-		_lastLSAVersion.clear();
-		_lastLsa.clear();
-		SharedLSADatabasewriteLock.unlock();
-		firstFreeId=1;
-		simpleIdUsedSet.clear();
-	}
-
 	// things this pipe is interested in (either providing or sinking)
 	Set<ItemIdentifier> _hasInterestIn = new TreeSet<ItemIdentifier>();
 	boolean _hasGenericInterest;
@@ -137,10 +119,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
 	private Map<IRouter, ExitRoute> _prevAdjacentRouter = new HashMap<IRouter, ExitRoute>();
 
-	protected static ArrayList<Integer> _lastLSAVersion = new  ArrayList<Integer>();
+	protected static int[] _lastLSAVersion = new int[0];
 	protected int _LSAVersion = 0;
 	protected LSA _myLsa = new LSA();
-	
+
 	protected UpdateRouterRunnable updateThread = null;
 	
 	protected static RouteLaser _laser = new RouteLaser();
@@ -153,9 +135,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected final Lock routingTableUpdateWriteLock = routingTableUpdateLock.writeLock();
 	public Object _externalRoutersByCostLock = new Object();
 	
-	protected static final ArrayList<LSA> SharedLSADatabase = new ArrayList<LSA>();
-	protected static ArrayList<Integer> _lastLsa = new ArrayList<Integer>();
-		
+	protected static LSA[] SharedLSADatabase = new LSA[0];
+
 	/** Map of router -> orientation for all known destinations **/
 	public ArrayList<ExitRoute> _routeTable = new ArrayList<ExitRoute>();
 	public List<ExitRoute> _routeCosts = new ArrayList<ExitRoute>();
@@ -177,11 +158,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private WeakReference<CoreRoutedPipe> _myPipeCache=null;
 	public void clearPipeCache(){_myPipeCache=null;}
 	
-	public static void resetStatics() {
+	// called on server shutdown only
+	public static void cleanup() {
+		_globalSpecificInterests.clear();
+		_genericInterests.clear();
 		SharedLSADatabasewriteLock.lock();
-		SharedLSADatabase.clear();
+		SharedLSADatabase = new LSA[0];
+		_lastLSAVersion = new int[0];
 		SharedLSADatabasewriteLock.unlock();
-		Collections.fill(_lastLSAVersion, 0);
 		_laser = new RouteLaser();
 		simpleIdUsedSet.clear();
 		firstFreeId = 1;
@@ -218,17 +202,18 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>();
 		_myLsa.power = new ArrayList<ILogisticsPowerProvider>();
 		SharedLSADatabasewriteLock.lock(); // any time after we claim the SimpleID, the database could be accessed at that index
-		this.simpleID = claimSimpleID();
-		if(SharedLSADatabase.size()<=simpleID){
-			SharedLSADatabase.ensureCapacity((int) (simpleID*1.5)); // make structural change
-			while(SharedLSADatabase.size()<=(int)simpleID*1.5)
-				SharedLSADatabase.add(null);
-			_lastLSAVersion.ensureCapacity((int) (simpleID*1.5)); // make structural change
-			while(_lastLSAVersion.size()<=(int)simpleID*1.5)
-				_lastLSAVersion.add(0);
+		simpleID = claimSimpleID();
+		if(SharedLSADatabase.length<=simpleID){
+			int newlength = ((int) (simpleID*1.5))+1;
+			LSA[] new_SharedLSADatabase = new LSA[newlength];
+			System.arraycopy(SharedLSADatabase, 0, new_SharedLSADatabase, 0, SharedLSADatabase.length);
+			SharedLSADatabase = new_SharedLSADatabase;
+			int[] new_lastLSAVersion = new int[newlength];
+			System.arraycopy(_lastLSAVersion, 0, new_lastLSAVersion, 0, _lastLSAVersion.length);
+			_lastLSAVersion = new_lastLSAVersion;
 		}
-		_lastLSAVersion.set(this.simpleID,0);
-		SharedLSADatabase.set(this.simpleID, _myLsa); // make non-structural change (threadsafe)
+		_lastLSAVersion[simpleID] = 0;
+		SharedLSADatabase[simpleID] = _myLsa; // make non-structural change (threadsafe)
 		SharedLSADatabasewriteLock.unlock(); 
 	}
 	
@@ -266,7 +251,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private void ensureRouteTableIsUpToDate(boolean force){
-		if (_LSAVersion > _lastLSAVersion.get(this.getSimpleID())) {
+		if (_LSAVersion > _lastLSAVersion[simpleID]) {
 			if(Configs.multiThreadEnabled && !force) {
 				RoutingTableUpdateThread.add(new UpdateRouterRunnable(this));
 			} else {
@@ -441,7 +426,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	 */
 	protected void CreateRouteTable(int version_to_update_to)	{
 		
-		if(_lastLSAVersion.get(simpleID)>=version_to_update_to)
+		if(_lastLSAVersion[simpleID] >= version_to_update_to)
 			return; // this update is already done.
 
 		//Dijkstra!
@@ -450,7 +435,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		int routingTableSize =ServerRouter.getBiggestSimpleID();
 		if(routingTableSize == 0) {
 //			routingTableSize=SimpleServiceLocator.routerManager.getRouterCount();
-			routingTableSize=SharedLSADatabase.size(); // deliberatly ignoring concurrent access, either the old or the version of the size will work, this is just an approximate number.
+			routingTableSize=SharedLSADatabase.length; // deliberatly ignoring concurrent access, either the old or the version of the size will work, this is just an approximate number.
 		}
 
 		/** same info as above, but sorted by distance -- sorting is implicit, because Dijkstra finds the closest routes first.**/
@@ -463,7 +448,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		for(int i=0;i<getBiggestSimpleID();i++)
 			closedSet.add(null);
 		BitSet objectMapped = new BitSet(routingTableSize);
-		objectMapped.set(this.getSimpleID(),true);
+		objectMapped.set(simpleID, true);
 
 		/** The total cost for the candidate route **/
 		PriorityQueue<ExitRoute> candidatesCost = new PriorityQueue<ExitRoute>((int) Math.sqrt(routingTableSize)); // sqrt nodes is a good guess for the total number of candidate nodes at once.
@@ -494,7 +479,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				continue;
 			 
 			//Add new candidates from the newly approved route 
-			LSA lsa = SharedLSADatabase.get(lowestCostNode.destination.getSimpleID());
+			LSA lsa = null;
+			if(lowestCostNode.destination.getSimpleID() < SharedLSADatabase.length) {
+				lsa = SharedLSADatabase[lowestCostNode.destination.getSimpleID()];
+			}
 			if(lsa == null) {
 				lowestCostNode.removeFlags(lowestCostClosedFlags);
 				lowestCostClosedFlags.addAll(lowestCostNode.getFlags());
@@ -539,9 +527,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		
 		//Build route table
 		ArrayList<ExitRoute> routeTable = new ArrayList<ExitRoute>(ServerRouter.getBiggestSimpleID()+1);
-		while (this.getSimpleID() >= routeTable.size())
+		while (simpleID >= routeTable.size())
 			routeTable.add(null);
-		routeTable.set(this.getSimpleID(), new ExitRoute(this,this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.noneOf(PipeRoutingConnectionType.class)));
+		routeTable.set(simpleID, new ExitRoute(this,this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.noneOf(PipeRoutingConnectionType.class)));
 
 //		List<ExitRoute> noDuplicateRouteCosts = new ArrayList<ExitRoute>(routeCosts.size());
 		Iterator<ExitRoute> itr = routeCosts.iterator();
@@ -574,8 +562,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if(version_to_update_to==this._LSAVersion){
 			SharedLSADatabasereadLock.lock();
 
-			if(_lastLSAVersion.get(simpleID)<version_to_update_to){
-				_lastLSAVersion.set(simpleID,version_to_update_to);
+			if(_lastLSAVersion[simpleID] < version_to_update_to){
+				_lastLSAVersion[simpleID] = version_to_update_to;
 				_powerTable = powerTable;
 				_routeTable = routeTable;
 				_routeCosts = routeCosts; 
@@ -633,8 +621,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	@Override
 	public void destroy() {
 		SharedLSADatabasewriteLock.lock(); // take a write lock so that we don't overlap with any ongoing route updates
-		if (SharedLSADatabase.get(simpleID)!=null) {
-			SharedLSADatabase.set(simpleID, null);
+		if (simpleID < SharedLSADatabase.length) {
+			SharedLSADatabase[simpleID] = null;
 		}
 		SharedLSADatabasewriteLock.unlock();
 		this.removeAllInterests();

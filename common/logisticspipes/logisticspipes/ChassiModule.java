@@ -2,7 +2,7 @@ package logisticspipes.logisticspipes;
 
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -115,7 +115,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		//Not used in Chassie Module
 	}
 

@@ -2,7 +2,7 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -16,7 +16,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleApiaristTerminus implements ILogisticsModule {
 
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}
@@ -25,7 +25,7 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
 	}
 

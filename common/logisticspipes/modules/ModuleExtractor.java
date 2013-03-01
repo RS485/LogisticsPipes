@@ -5,7 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDExtractor;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -45,7 +45,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	private SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
 	private IWorldProvider _world;
 
@@ -63,7 +63,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;

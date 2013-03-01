@@ -6,9 +6,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.tileentity.TileEntity;

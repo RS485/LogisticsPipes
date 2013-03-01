@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -33,7 +33,7 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_world = world;
 	}
 

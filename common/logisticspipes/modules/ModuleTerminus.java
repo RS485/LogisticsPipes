@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -41,7 +41,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	private int zCoord;
 	private int slot;
 	
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	
 	private IHUDModuleRenderer HUD = new HUDTerminatorModule(this);
 
@@ -56,7 +56,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	}
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
 	}
 

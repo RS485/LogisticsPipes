@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
@@ -44,7 +44,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	
 	private boolean _requestPartials = false;
 	
-	public IChassiePowerProvider _power;
+	public IRoutedPowerProvider _power;
 
 	public LogicLiquidSupplier(){
 		throttleTime = 100;

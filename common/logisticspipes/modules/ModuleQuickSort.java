@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -31,7 +31,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	private int xCoord;
 	private int yCoord;
 	private int zCoord;
@@ -40,7 +40,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public ModuleQuickSort() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;

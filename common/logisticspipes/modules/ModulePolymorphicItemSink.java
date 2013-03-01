@@ -2,7 +2,7 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -18,12 +18,12 @@ import net.minecraft.nbt.NBTTagCompound;
 public class ModulePolymorphicItemSink implements ILogisticsModule {
 	
 	private IInventoryProvider _invProvider;
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	
 	public ModulePolymorphicItemSink() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_power = powerprovider;
 	}

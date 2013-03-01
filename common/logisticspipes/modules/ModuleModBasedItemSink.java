@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -39,12 +39,12 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
 	}
 

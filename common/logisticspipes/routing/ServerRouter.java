@@ -25,11 +25,10 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
-import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -45,7 +44,7 @@ import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 
-public class ServerRouter implements IRouter, IPowerRouter, Comparable<ServerRouter> {
+public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
 	// things with specific interests -- providers (including crafters)
 	static HashMap<ItemIdentifier,Set<IRouter>> _globalSpecificInterests = new HashMap<ItemIdentifier,Set<IRouter>>();

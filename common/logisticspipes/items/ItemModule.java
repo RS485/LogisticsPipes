@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -275,7 +275,7 @@ public class ItemModule extends LogisticsItem {
 		return true;
 	}
 
-	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider power){
+	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider power){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.itemID) return null;
 		for(Module module:modules) {

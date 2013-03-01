@@ -10,7 +10,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import logisticspipes.gui.hud.modules.HUDProviderModule;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -54,7 +54,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
-	protected IChassiePowerProvider _power;
+	protected IRoutedPowerProvider _power;
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
@@ -85,7 +85,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;

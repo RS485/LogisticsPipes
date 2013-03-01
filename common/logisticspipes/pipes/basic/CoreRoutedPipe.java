@@ -20,16 +20,16 @@ import java.util.UUID;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gates.ActionDisableLogistics;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logic.BaseRoutingLogic;
@@ -85,7 +85,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IChassiePowerProvider {
+public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
 
 	public enum ItemSendMode {
 		Normal,
@@ -745,29 +745,40 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return this.getRouter().getPowerProvider();
 	}
 	
-	public boolean canUseEnergy(int amount) {
+	public boolean useEnergy(int amount){
+		return useEnergy(amount, null);
+	}
+	public boolean canUseEnergy(int amount){
+		return canUseEnergy(amount,null);
+	}
+
+	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		if(amount == 0) return true;
+		if(providersToIgnore !=null && providersToIgnore.contains(this))
+			return false;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		if(amount == 0) return true;
 		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount)) {
+			if(provider.canUseEnergy(amount, providersToIgnore)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public boolean useEnergy(int amount) {
+	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		if(amount == 0) return true;
+		if(providersToIgnore !=null && providersToIgnore.contains(this))
+			return false;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		if(amount == 0) return true;
 		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount)) {
-				provider.useEnergy(amount);
+			if(provider.canUseEnergy(amount, providersToIgnore)) {
+				provider.useEnergy(amount, providersToIgnore);
 				int particlecount = amount;
 				if (particlecount > 10) {
 					particlecount = 10;

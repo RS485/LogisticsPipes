@@ -48,7 +48,7 @@ import net.minecraftforge.common.ISidedInventory;
 import cpw.mods.fml.common.network.Player;
 
 //IHUDModuleHandler, 
-public class ModuleCrafter implements ILogisticsGuiModule{
+public class ModuleCrafter implements ILogisticsModule{
 	
 	//private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 1);
 	/*private boolean _isDefaultRoute;
@@ -100,11 +100,6 @@ public class ModuleCrafter implements ILogisticsGuiModule{
 			count += inv.roomForItem(item, 9999);
 		}
 		return count;
-	}
-	
-	@Override
-	public int getGuiHandlerID() {
-		return GuiIDs.GUI_Module_ItemSink_ID;
 	}
 	
 	@Override

@@ -78,4 +78,9 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

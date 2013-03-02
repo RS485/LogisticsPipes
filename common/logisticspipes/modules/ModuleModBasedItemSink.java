@@ -175,4 +175,9 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

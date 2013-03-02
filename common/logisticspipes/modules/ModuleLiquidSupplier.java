@@ -104,4 +104,9 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

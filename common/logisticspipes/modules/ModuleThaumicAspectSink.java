@@ -175,4 +175,9 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

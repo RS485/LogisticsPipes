@@ -64,4 +64,9 @@ public interface ILogisticsModule extends ISaveState {
 	 * is this module interested in recieving any damage varient of items in the attached inventory?
 	 */
 	public boolean interestedInUndamagedID();
+
+	/**
+	 * is this module a valid destination for bounced items.
+	 */
+	public boolean recievePassive();
 }

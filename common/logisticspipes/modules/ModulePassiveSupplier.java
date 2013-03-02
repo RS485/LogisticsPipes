@@ -180,4 +180,9 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

@@ -198,4 +198,9 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		return false;
 	}
 
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

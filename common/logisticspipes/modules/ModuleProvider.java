@@ -247,7 +247,7 @@ outer:
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
-		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null);
+		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
 		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			wanted = Math.min(wanted, reply.maxNumberOfItems);		
 			if(wanted<=0){
@@ -432,6 +432,11 @@ outer:
 
 	@Override
 	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
 		return false;
 	}
 }

@@ -76,7 +76,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	/**
-	 * Method used to check if a given stack has a destination at a priority.
+	 * Method used to check if a given stack has a passive sink destination at a priority.
 	 * 
 	 * @return Pair3 of destinationSimpleID, sinkreply, relays; null if nothing found
 	 * @param stack The stack to check if it has destination.
@@ -122,7 +122,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				firewall.add(candidateRouter);
 			}
 			
-			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2());
+			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false);
 					
 			if (reply == null) continue;
 			if (result.getValue1() == null){
@@ -167,16 +167,18 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 	
 		
-	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result) {
+	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result, boolean activeRequest) {
 
 		SinkReply reply = null;
 		ILogisticsModule module = destination.getLogisticsModule();
 		CoreRoutedPipe crp = destination.getPipe();
+		if (module == null) return null;
+		if (!(module.recievePassive() || activeRequest))
+			return null;
 		if (crp == null || !crp.isEnabled()) return null;
 		if (excludeSource && sourceRouter !=null) {
 			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
 		}
-		if (module == null) return null;
 		if (result== null) {
 			reply = module.sinksItem(stack, -1, 0);
 		} else {

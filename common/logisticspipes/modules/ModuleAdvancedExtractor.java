@@ -321,4 +321,9 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyOrie
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return false;
+	}
 }

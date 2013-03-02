@@ -259,4 +259,9 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return false;
+	}
 }

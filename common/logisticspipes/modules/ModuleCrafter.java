@@ -179,4 +179,8 @@ public class ModuleCrafter implements ILogisticsModule{
 		return false;
 	}
 
+	@Override
+	public boolean recievePassive() {
+		return false;
+	}
 }

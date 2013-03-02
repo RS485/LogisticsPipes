@@ -171,4 +171,9 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

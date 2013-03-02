@@ -111,4 +111,9 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	public boolean interestedInUndamagedID() {
 		return true;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

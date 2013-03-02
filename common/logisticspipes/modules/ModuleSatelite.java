@@ -180,4 +180,9 @@ public class ModuleSatelite implements ILogisticsModule{
 		return false;
 	}
 
+	@Override
+	public boolean recievePassive() {
+		return false;
+	}
+
 }

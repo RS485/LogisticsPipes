@@ -79,4 +79,9 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	public boolean interestedInUndamagedID() {
 		return true;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

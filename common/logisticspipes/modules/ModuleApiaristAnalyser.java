@@ -112,4 +112,9 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

@@ -318,4 +318,9 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

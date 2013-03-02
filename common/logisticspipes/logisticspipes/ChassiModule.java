@@ -142,4 +142,13 @@ public class ChassiModule implements ILogisticsGuiModule{
 	public boolean interestedInUndamagedID() {
 		return false;
 	}
+
+	@Override
+	public boolean recievePassive() {
+		for (ILogisticsModule module : _modules){
+			if(module.recievePassive())
+				return true;
+		}
+		return false;
+	}
 }

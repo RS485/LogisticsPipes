@@ -287,7 +287,26 @@ outer:
 			
 			
 			int samePriorityCount = craftersSamePriority.size();
-			int itemsNeeded = treeNode.getMissingItemCount();
+			int oritinalItemsNeeded = treeNode.getMissingItemCount();
+			int itemsNeeded = oritinalItemsNeeded;
+
+			int min = Integer.MAX_VALUE;
+			int max = 0;
+			for(Pair<CraftingTemplate, List<IFilter>> crafter : craftersSamePriority) {
+				int count = crafter.getValue1().getCrafter().getTodo();
+				min = Math.min(min, count);
+				max = Math.max(max, count);
+			}
+
+			int todo = 0;
+			for(Pair<CraftingTemplate, List<IFilter>> crafter : craftersSamePriority) {
+				int count = crafter.getValue1().getCrafter().getTodo();
+				if(count > (min + itemsNeeded / 2)) {
+					samePriorityCount --;
+					continue;
+				}
+				todo += count - min;
+			}
 
 			// having gathered all the items of the same
 			// end selection of crafters, now to try to split the request evenly over the N crafters we have.
@@ -295,6 +314,16 @@ outer:
 				// first try an even 1/N, rounded up split request for each crafter
 				// then just try to get everything left from each of them.
 				for(Pair<CraftingTemplate, List<IFilter>> crafter : craftersSamePriority) {
+					
+					// skip crafters with high load
+					int count = crafter.getValue1().getCrafter().getTodo() - min;
+					if(getAll) {
+						if(count > oritinalItemsNeeded)
+							continue;
+					} else {
+						if(count > oritinalItemsNeeded / 2)
+							continue;
+					}
 					// do the normal crafting request over those items.
 					CraftingTemplate template = crafter.getValue1();
 					List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
@@ -304,7 +333,7 @@ outer:
 						nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 					else{
 						itemsNeeded = Math.min(itemsNeeded, treeNode.getMissingItemCount());
-						nCraftingSetsNeeded = (Math.min((itemsNeeded+samePriorityCount-1)/samePriorityCount, treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+						nCraftingSetsNeeded = (Math.min((itemsNeeded + samePriorityCount-1)/samePriorityCount, treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 					}
 					if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
 						continue;

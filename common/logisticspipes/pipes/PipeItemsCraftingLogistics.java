@@ -454,6 +454,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return _orderManager.hasOrders();
 	}
 	
+	public int getTodo() {
+		return _orderManager.totalItemsCountInAllOrders();
+	}
+	
 	@Override
 	public int getX() {
 		return xCoord;

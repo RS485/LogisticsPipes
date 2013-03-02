@@ -273,18 +273,18 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			ItemIdentifierStack stack = iterator.next();
-			SinkReply reply = new SinkReply(null, 0, false, false, 0, 1);
 			if(_pipe != null && ! _pipe.hasOrder()) { 
-				reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
+				SinkReply reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
+				if(reply == null || reply.maxNumberOfItems <1) {
+					iterator.remove(); // if we have no space and nothing to do, don't bother re-requesting the item.
+				}
 			}
-			if(reply !=null && reply.maxNumberOfItems > 0) {
-				int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
-				if(received > 0) {
-					if(received == stack.stackSize) {
-						iterator.remove();
-					} else {
-						stack.stackSize -= received;
-					}
+			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			if(received > 0) {
+				if(received == stack.stackSize) {
+					iterator.remove();
+				} else {
+					stack.stackSize -= received;
 				}
 			}
 		}

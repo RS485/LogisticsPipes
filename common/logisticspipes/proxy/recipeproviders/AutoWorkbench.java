@@ -30,6 +30,7 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 				break;
 			}
 			final ItemStack newStack = bench.getStackInSlot(i) == null ? null : bench.getStackInSlot(i).copy();
+			if(newStack!=null && newStack.stackSize>1) // just incase size == 0 somehow.
 			newStack.stackSize=1;
 			inventory.setInventorySlotContents(i, newStack);
 		}

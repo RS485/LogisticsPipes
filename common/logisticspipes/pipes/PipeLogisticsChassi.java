@@ -222,6 +222,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if(manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
 		}
+		return getSneakyInventory(insertion);
+	}
+	
+	@Override
+	public IInventory getSneakyInventory(ForgeDirection insertion) {
 		IInventory rawInventory = getRawInventory();
 		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, insertion);
 		return rawInventory;
@@ -637,7 +642,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule module = _module.getSubModule(i);
 			if(module!=null) {
-				List<ItemIdentifier> current = module.getSpecificInterests();
+				Collection<ItemIdentifier> current = module.getSpecificInterests();
 				if(current!=null)
 					l1.addAll(current);
 			}

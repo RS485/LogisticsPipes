@@ -30,6 +30,7 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicProvider;
+import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -42,6 +43,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
@@ -50,6 +52,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -141,7 +144,15 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			int wanted = Math.min(available, stack.stackSize);
 			wanted = Math.min(wanted, maxCount);
 			wanted = Math.min(wanted, item.getMaxStackSize());
-			
+			IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
+			SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null);
+			if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
+				wanted = Math.min(wanted, reply.maxNumberOfItems);		
+				if(wanted<=0){
+					_orderManager.deferSend();
+					return 0;
+				}
+			}
 			if(!useEnergy(wanted * neededEnergy())) {
 				return 0;
 			}

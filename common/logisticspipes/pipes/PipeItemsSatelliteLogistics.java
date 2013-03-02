@@ -21,6 +21,8 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
+import logisticspipes.modules.ModuleCrafter;
+import logisticspipes.modules.ModuleSatelite;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
@@ -64,7 +66,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {
-		return null;
+		return new ModuleSatelite(this);
 	}
 
 	@Override

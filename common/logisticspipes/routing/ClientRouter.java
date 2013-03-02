@@ -99,7 +99,13 @@ public class ClientRouter implements IRouter {
 	public CoreRoutedPipe getCachedPipe(){
 		return getPipe();
 	}
-	
+
+	@Override
+	public boolean isInDim(int dimension) {
+		return true;
+	}
+
+	@Override
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}

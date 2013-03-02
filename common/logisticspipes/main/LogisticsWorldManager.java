@@ -25,4 +25,12 @@ public class LogisticsWorldManager {
 			LogisticsHUDRenderer.instance().clear();
 		}
 	}
+
+	@ForgeSubscribe
+	public void WorldUnload(WorldEvent.Unload event) {
+		if(MainProxy.isServer(event.world)) {
+			int dim = MainProxy.getDimensionForWorld(event.world);
+			SimpleServiceLocator.routerManager.dimensionUnloaded(dim);
+		}
+	}
 }

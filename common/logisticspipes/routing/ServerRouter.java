@@ -221,6 +221,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return this.simpleID;
 	}
 
+	@Override
+	public boolean isInDim(int dimension) {
+		return _dimension == dimension;
+	}
+
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return _dimension == dimension && _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}

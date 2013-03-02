@@ -289,4 +289,16 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	public void remove(LogisticsSecurityTileEntity tile) {
 		_security.remove(tile);
 	}
+
+	@Override
+	public void dimensionUnloaded(int dim) {
+		synchronized (_routersServer) {
+			for (IRouter r:_routersServer) {
+				if(r != null && r.isInDim(dim)) {
+					r.clearPipeCache();
+					r.clearInterests();
+				}
+			}
+		}
+	}
 }

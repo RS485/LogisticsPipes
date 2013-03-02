@@ -36,6 +36,7 @@ public interface IRouter {
 	public List<ExitRoute> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	public CoreRoutedPipe getCachedPipe();
+	public boolean isInDim(int dimension);
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
 	public UUID getId();
 	@Deprecated

@@ -24,6 +24,7 @@ public interface IRouterManager {
 	public List<IRouter> getRouters();
 	public void serverStopClean();
 	public void clearClientRouters();
+	public void dimensionUnloaded(int dim);
 
 	boolean isRouterUnsafe(int id, boolean isClientSide);
 	IRouter getRouterUnsafe(Integer value1, boolean isClientSide);

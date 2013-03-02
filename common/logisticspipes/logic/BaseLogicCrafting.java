@@ -277,6 +277,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				SinkReply reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
 				if(reply == null || reply.maxNumberOfItems <1) {
 					iterator.remove(); // if we have no space and nothing to do, don't bother re-requesting the item.
+					continue;
 				}
 			}
 			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);

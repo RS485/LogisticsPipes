@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
@@ -305,7 +306,8 @@ outer:
 						itemsNeeded = Math.min(itemsNeeded, treeNode.getMissingItemCount());
 						nCraftingSetsNeeded = (Math.min(itemsNeeded/samePriorityCount, treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 					}
-					
+					if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
+						continue;
 					// for each thing needed to satisfy this promise
 					for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
 						Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
@@ -357,13 +359,17 @@ outer:
 							continue;
 						}
 					}
-					//if we got here, we can at least some of the remaining amount
-					List<IRelayItem> relays = new LinkedList<IRelayItem>();
-					for(IFilter filter:crafter.getValue2()) {
-						relays.add(filter);
+					if(nCraftingSetsAvailable>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
+						//if we got here, we can at least some of the remaining amount
+						List<IRelayItem> relays = new LinkedList<IRelayItem>();
+						for(IFilter filter:crafter.getValue2()) {
+							relays.add(filter);
+						}
+						treeNode.addPromise(template.generatePromise(nCraftingSetsAvailable, relays));
+						itemsNeeded -= nCraftingSetsAvailable *template.getResultStack().stackSize;
+					} else {
+						LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName()+"; getAll "+getAll);
 					}
-					treeNode.addPromise(template.generatePromise(nCraftingSetsAvailable, relays));
-					itemsNeeded -= nCraftingSetsAvailable *template.getResultStack().stackSize;
 					if(itemsNeeded <= 0)
 						break outer; // we have everything we need for this crafting request
 				}

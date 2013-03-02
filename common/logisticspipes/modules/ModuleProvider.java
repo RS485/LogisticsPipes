@@ -246,6 +246,8 @@ outer:
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
+		if(dRtr == null)
+			_orderManager.sendFailed();
 		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
 		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			wanted = Math.min(wanted, reply.maxNumberOfItems);		

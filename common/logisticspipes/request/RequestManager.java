@@ -304,7 +304,7 @@ outer:
 						nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 					else{
 						itemsNeeded = Math.min(itemsNeeded, treeNode.getMissingItemCount());
-						nCraftingSetsNeeded = (Math.min(itemsNeeded/samePriorityCount, treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
+						nCraftingSetsNeeded = (Math.min((itemsNeeded+samePriorityCount-1)/samePriorityCount, treeNode.getMissingItemCount()) + template.getResultStack().stackSize - 1) / template.getResultStack().stackSize;
 					}
 					if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
 						continue;

@@ -26,6 +26,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
@@ -33,10 +34,12 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
@@ -243,7 +246,15 @@ outer:
 		int wanted = Math.min(available, stack.stackSize);
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
-		
+		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
+		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null);
+		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
+			wanted = Math.min(wanted, reply.maxNumberOfItems);		
+			if(wanted<=0){
+				_orderManager.deferSend();
+				return 0;
+			}
+		}
 		if(!_power.useEnergy(wanted * neededEnergy())) return 0;
 		
 		ItemStack removed = inv.getMultipleItems(item, wanted);

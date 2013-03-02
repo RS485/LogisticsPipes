@@ -1,5 +1,6 @@
 package logisticspipes.interfaces;
 
+import java.util.Collection;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
@@ -55,7 +56,7 @@ public interface ILogisticsModule extends ISaveState {
 	 * the size of the list here does not influence the ongoing computational cost.
 	 * @return
 	 */
-	public List<ItemIdentifier> getSpecificInterests();
+	public Collection<ItemIdentifier> getSpecificInterests();
 
 	public boolean interestedInAttachedInventory();
 

@@ -156,8 +156,13 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		if(manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
 		}
+		return getSneakyInventory(insertion);
+	}
+
+	@Override
+	public IInventory getSneakyInventory(ForgeDirection sneakyOrientation) {
 		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, insertion);
+		if (rawInventory instanceof ISidedInventory) return new SidedInventoryAdapter((ISidedInventory) rawInventory, sneakyOrientation);
 		return rawInventory;
 	}
 

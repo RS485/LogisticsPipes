@@ -35,6 +35,7 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
@@ -413,7 +414,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {
-		return null;
+		return new ModuleCrafter(this);
 	}
 	
 	public boolean isAttachedSign(TileEntity entity) {

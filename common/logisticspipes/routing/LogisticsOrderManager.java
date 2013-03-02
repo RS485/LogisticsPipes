@@ -82,6 +82,11 @@ public class LogisticsOrderManager {
 		listen();
 	}
 
+	public void deferSend() {
+		_orders.add(_orders.removeFirst());
+		listen();
+	}
+
 	public void addOrder(ItemIdentifierStack stack, IRequestItems requester, List<IRelayItem> relays) {
 		for (Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> request : _orders){
 			if (request.getValue1().getItem() == stack.getItem() && request.getValue2() == requester) {

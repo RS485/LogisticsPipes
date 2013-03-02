@@ -121,19 +121,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(candidateRouter.destination instanceof IFilteringRouter) {
 				firewall.add(candidateRouter);
 			}
-
-			ILogisticsModule module = candidateRouter.destination.getLogisticsModule();
-			if (candidateRouter.destination.getPipe() == null || !candidateRouter.destination.getPipe().isEnabled()) continue;
-			if (excludeSource) {
-				if(candidateRouter.destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) continue;
-			}
-			if (module == null) continue;
-			SinkReply reply = null;
-			if (result.getValue2() == null) {
-				reply = module.sinksItem(stack, -1, 0);
-			} else {
-				reply = module.sinksItem(stack, result.getValue2().fixedPriority.ordinal(), result.getValue2().customPriority);
-			}
+			
+			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2());
+					
 			if (reply == null) continue;
 			if (result.getValue1() == null){
 				result.setValue1(candidateRouter.destination.getSimpleID());
@@ -175,7 +165,26 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return result;
 	}
+	
+		
+	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result) {
 
+		SinkReply reply = null;
+		ILogisticsModule module = destination.getLogisticsModule();
+		CoreRoutedPipe crp = destination.getPipe();
+		if (crp == null || !crp.isEnabled()) return null;
+		if (excludeSource && sourceRouter !=null) {
+			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
+		}
+		if (module == null) return null;
+		if (result== null) {
+			reply = module.sinksItem(stack, -1, 0);
+		} else {
+			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority);
+		}
+		return reply;
+	}
+	
 	/**
 	 * Will assign a destination for a IRoutedItem based on a best sink reply recieved from other pipes.
 	 * @param item The item that needs to be routed.

@@ -6,6 +6,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.GuiArgumentPacket;
@@ -13,6 +14,7 @@ import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -23,6 +25,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -59,6 +62,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@TileNetworkData
 	public int priority = 0;
 
+	private PipeItemsCraftingLogistics _pipe=null;
 	public BaseLogicCrafting() {
 		throttleTime = 40;
 	}
@@ -269,12 +273,18 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			ItemIdentifierStack stack = iterator.next();
-			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
-			if(received > 0) {
-				if(received == stack.stackSize) {
-					iterator.remove();
-				} else {
-					stack.stackSize -= received;
+			SinkReply reply = new SinkReply(null, 0, false, false, 0, 1);
+			if(_pipe != null && ! _pipe.hasOrder()) { 
+				reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
+			}
+			if(reply !=null && reply.maxNumberOfItems > 0) {
+				int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+				if(received > 0) {
+					if(received == stack.stackSize) {
+						iterator.remove();
+					} else {
+						stack.stackSize -= received;
+					}
 				}
 			}
 		}
@@ -457,5 +467,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
+	}
+
+	public void setParentPipe(
+			PipeItemsCraftingLogistics pipeItemsCraftingLogistics) {
+		_pipe=pipeItemsCraftingLogistics;
+		
 	}
 }

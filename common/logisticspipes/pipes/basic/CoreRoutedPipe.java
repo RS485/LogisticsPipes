@@ -202,7 +202,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(pipe !=null) // pipes can unload at inconvenient times ...
 				pipe.notifyOfSend(routedItem);
 			else {
-				// handle sending items to known chunk-unloaded destination?
+				//TODO: handle sending items to known chunk-unloaded destination?
 			}
 		} // should not be able to send to a non-existing router
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());

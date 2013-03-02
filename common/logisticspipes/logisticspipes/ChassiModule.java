@@ -145,8 +145,6 @@ public class ChassiModule implements ILogisticsGuiModule{
 
 	@Override
 	public boolean recievePassive() {
-		if(_modules == null)
-			return false;
 		for (ILogisticsModule module : _modules){
 			if(module != null && module.recievePassive())
 				return true;

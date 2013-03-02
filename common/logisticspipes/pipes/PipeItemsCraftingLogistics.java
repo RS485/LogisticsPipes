@@ -97,10 +97,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new BaseLogicCrafting(), itemID);
+		((BaseLogicCrafting)logic).setParentPipe(this);
 	}
 	
 	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, int itemID) {
 		super(transport, new BaseLogicCrafting(), itemID);
+		((BaseLogicCrafting)logic).setParentPipe(this);
 	}
 
 	protected int neededEnergy() {

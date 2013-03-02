@@ -1,6 +1,5 @@
 package logisticspipes.logisticspipes;
 
-import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.inventory.IInventory;
 import net.minecraftforge.common.ForgeDirection;
 

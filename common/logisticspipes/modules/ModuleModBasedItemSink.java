@@ -5,8 +5,8 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;

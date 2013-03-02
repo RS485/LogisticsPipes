@@ -134,6 +134,7 @@ import cpw.mods.fml.relauncher.Side;
 				"after:ComputerCraft;" +
 				"after:factorization;" +
 				"after:GregTech_Addon;" +
+				"after:AppliedEnergistics;" +
 				"after:ThermalExpansion|Transport;" +
 				"after:BetterStorage")
 @NetworkMod(

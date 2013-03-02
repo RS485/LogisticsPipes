@@ -9,7 +9,6 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.api.gates.Trigger;
-import buildcraft.transport.Gate;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 

@@ -6,11 +6,12 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.core.inventory.ITransactor;
 
-public abstract class SpecialInventoryHandler implements IInventoryUtil {
+public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransactor {
 	public abstract boolean init();
 	public abstract boolean isType(TileEntity tile);
-	public abstract IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
+	public abstract SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd);
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {

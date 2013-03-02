@@ -21,7 +21,6 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.modules.ModuleSatelite;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;

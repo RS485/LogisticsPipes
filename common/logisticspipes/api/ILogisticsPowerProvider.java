@@ -1,6 +1,5 @@
 package logisticspipes.api;
 
-import java.util.List;
 
 /** things which directly provide power to the logsitics network implement this.
  * lists of these objects available to a network will be cached, and the closest one with power preferentially pulled from.

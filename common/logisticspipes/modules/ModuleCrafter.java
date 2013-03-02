@@ -3,49 +3,26 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
-import buildcraft.transport.TileGenericPipe;
-
-import logisticspipes.gui.hud.modules.HUDItemSink;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.IModuleInventoryReceive;
-import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
-import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketModuleInteger;
-import logisticspipes.network.packets.PacketModuleInvContent;
-import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ISidedInventory;
-import cpw.mods.fml.common.network.Player;
+import buildcraft.transport.TileGenericPipe;
 
 //IHUDModuleHandler, 
 public class ModuleCrafter implements ILogisticsModule{

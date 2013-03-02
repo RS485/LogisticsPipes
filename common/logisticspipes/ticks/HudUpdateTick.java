@@ -2,7 +2,6 @@ package logisticspipes.ticks;
 
 import java.util.BitSet;
 
-import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;

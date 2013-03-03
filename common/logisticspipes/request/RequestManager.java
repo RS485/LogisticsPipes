@@ -415,7 +415,6 @@ public class RequestManager {
 		boolean done=false;
 		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 		int currentPriority=0;
-		int itemsNeeded = treeNode.getMissingItemCount();
 outer:
 		while(!done) {
 			
@@ -427,6 +426,8 @@ outer:
 			}else {
 				done=true;				
 			}
+			
+			int itemsNeeded = treeNode.getMissingItemCount();
 			
 			if(lastCrafter!=null && (craftersSamePriority.isEmpty() || (currentPriority == lastCrafter.getValue1().getPriority()))) {
 				currentPriority=lastCrafter.getValue1().getPriority();
@@ -471,10 +472,10 @@ outer:
 				//split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
 				int floor = craftersToBalance.get(0).currentToDo();
 				cap = Math.min(cap,floor + (itemsNeeded + craftersToBalance.size()-1)/craftersToBalance.size());
-				for(CraftingSorterNode crafter:craftersToBalance){
-					if(itemsNeeded>0){
+				for(CraftingSorterNode crafter:craftersToBalance) {
+					if(itemsNeeded>0) {
 						int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
-						itemsNeeded-=craftingDone;	
+						itemsNeeded -= craftingDone;	
 					} else {
 						crafter.clearWorkRequest();
 					}
@@ -484,7 +485,7 @@ outer:
 				Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
 				while(iter.hasNext()){
 					CraftingSorterNode c = iter.next();
-					if(c.getWorkSetsAvailableForCrafting()==0){						
+					if(c.getWorkSetsAvailableForCrafting() == 0) {						
 						c.addWorkToTree();
 						iter.remove();
 					}

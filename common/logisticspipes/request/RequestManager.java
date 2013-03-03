@@ -358,7 +358,7 @@ public class RequestManager {
 			int setsToCraft = Math.min(this.stacksOfWorkRequested,this.maxWorkSetsAvailable);
 			generateRequestTreeFor(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
 			if(setsToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
-//				LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
+				LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
 				List<IRelayItem> relays = new LinkedList<IRelayItem>();
 				for(IFilter filter:crafter.getValue2()) {
@@ -369,8 +369,10 @@ public class RequestManager {
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				treeNode.addPromise(job);
 			} else {
-//				LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
+				LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
+				LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 			}
+			stacksOfWorkRequested=0; // just incase we call it twice.
 			return setsToCraft *setSize;
 		}
 		
@@ -478,8 +480,6 @@ outer:
 				for(CraftingSorterNode crafter:craftersToBalance) {
 						int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
 						itemsNeeded -= craftingDone;
-						if(treeNode.getMissingItemCount() != itemsNeeded)
-							throw new IllegalStateException("Removing items did not remove expected amount");
 						if(itemsNeeded>0) {
 							break; // don't clear others, because they might of had work added last iteration.
 						}

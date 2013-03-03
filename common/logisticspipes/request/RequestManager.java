@@ -379,6 +379,13 @@ public class RequestManager {
 		public int currentToDo() {
 			return this.originalToDo+this.stacksOfWorkRequested*setSize;
 		}
+
+		public void clearWorkRequest() {
+			treeNode.remove(lastNode);
+			lastNode.clear();
+			stacksOfWorkRequested = 0;
+			
+		}
 	}
 	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode) {
 		
@@ -460,14 +467,15 @@ outer:
 				//split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
 				int floor = craftersToBalance.get(0).currentToDo();
 				cap = Math.min(cap,floor + (itemsNeeded + craftersToBalance.size()-1)/craftersToBalance.size());
-				int delta = 0;
 				for(CraftingSorterNode crafter:craftersToBalance){
-					int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
-					itemsNeeded-=craftingDone;	
-					if(itemsNeeded<=0)
-						break;
+					if(itemsNeeded>0){
+						int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
+						itemsNeeded-=craftingDone;	
+					} else {
+						crafter.clearWorkRequest();
+					}
 				}
-				
+
 				// finally remove all crafters that can not do any more work.
 				Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
 				while(iter.hasNext()){

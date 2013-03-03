@@ -342,7 +342,7 @@ public class RequestManager {
 			CraftingTemplate template = crafter.getValue1();
 			int setsToCraft = Math.min(this.stacksOfWorkRequested,this.maxWorkSetsAvailable);
 			if(setsToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
-				LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
+//				LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
 				List<IRelayItem> relays = new LinkedList<IRelayItem>();
 				for(IFilter filter:crafter.getValue2()) {
@@ -424,13 +424,14 @@ outer:
 			// go through this list, pull the crafter(s) with least work, add work until either they can not do more work,
 			//   or the amount of work they have is equal to the next-least busy crafter. then pull the next crafter and repeat.
 			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
-			
+			if(!craftersSamePriority.isEmpty())
+				craftersToBalance.add(craftersSamePriority.poll());
 			// while we have more crafters to consider, or we have more crafters that can work and we have work to do.
-			while((!craftersSamePriority.isEmpty() || !craftersToBalance.isEmpty()) && itemsNeeded>0) {
+			while(!craftersToBalance.isEmpty() && itemsNeeded>0) {
 				//while there is more, and the next crafter has the same toDo as the current one, add it to craftersToBalance.
 				//  typically pulls 1 at a time, but may pull multiple, if they have the exact same todo.
-				while(!craftersSamePriority.isEmpty() && (craftersToBalance.isEmpty() || 
-						craftersSamePriority.peek().currentToDo() == craftersToBalance.get(0).currentToDo())) {
+				while(!craftersSamePriority.isEmpty() &&  
+						craftersSamePriority.peek().currentToDo() <= craftersToBalance.get(0).currentToDo()) {
 					craftersToBalance.add(craftersSamePriority.poll());
 				}
 				
@@ -473,7 +474,7 @@ outer:
 				break outer; // we have everything we need for this crafting request
 			craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
-		LogisticsPipes.log.info("done");
+//		LogisticsPipes.log.info("done");
 	}
 
 	private static void recurseFailedRequestTree(RequestTree tree, RequestTreeNode treeNode) {

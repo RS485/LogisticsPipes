@@ -463,7 +463,9 @@ outer:
 				int delta = 0;
 				for(CraftingSorterNode crafter:craftersToBalance){
 					int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
-					itemsNeeded-=craftingDone;				
+					itemsNeeded-=craftingDone;	
+					if(itemsNeeded<=0)
+						break;
 				}
 				
 				// finally remove all crafters that can not do any more work.

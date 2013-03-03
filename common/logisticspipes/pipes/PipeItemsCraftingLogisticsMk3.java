@@ -112,6 +112,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
 			entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 			((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
+			inv.setInventorySlotContents(i, null);
 			break;
 		}
 		// TODO Auto-generated method stub

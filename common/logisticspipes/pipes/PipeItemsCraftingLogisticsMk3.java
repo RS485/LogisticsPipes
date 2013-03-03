@@ -95,6 +95,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 				}
 			}
 		}
+		if(!_orderManager.hasOrders()){
+			sendBuffer();
+		}
 		if(change) {
 			inv.onInventoryChanged();
 		}

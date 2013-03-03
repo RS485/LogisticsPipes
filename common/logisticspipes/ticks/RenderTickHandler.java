@@ -28,7 +28,7 @@ public class RenderTickHandler implements ITickHandler {
 	private Method getSetupCameraTransformMethod() throws NoSuchMethodException {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		Class<?> start = mc.entityRenderer.getClass();
-		do {
+		while(!start.equals(Object.class)) {
 			try {
 				return start.getDeclaredMethod("a", new Class[]{float.class, int.class});
 			} catch(Exception e) {
@@ -36,7 +36,8 @@ public class RenderTickHandler implements ITickHandler {
 				return start.getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
 				} catch(Exception e1) {}
 			}
-		} while(!start.getSuperclass().equals(Object.class));
+			start = start.getSuperclass();
+		}
 		throw new NoSuchMethodException("Can't find setupCameraTransform or a to display HUD");
 	}
 

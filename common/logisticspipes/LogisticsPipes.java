@@ -262,6 +262,7 @@ public class LogisticsPipes {
 		Configs.load();
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
+		requestLog.setUseParentHandlers(false);
 		try {
 			File logPath = new File((File) FMLInjectionData.data()[6], "LogisticsPipes-Request.log");
 			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);

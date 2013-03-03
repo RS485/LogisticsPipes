@@ -358,7 +358,7 @@ public class RequestManager {
 			int setsToCraft = Math.min(this.stacksOfWorkRequested,this.maxWorkSetsAvailable);
 			generateRequestTreeFor(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
 			if(setsToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
-				LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
+				//LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
 				List<IRelayItem> relays = new LinkedList<IRelayItem>();
 				for(IFilter filter:crafter.getValue2()) {
@@ -369,8 +369,8 @@ public class RequestManager {
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				treeNode.addPromise(job);
 			} else {
-				LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
-				LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
+				//LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
+				//LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 			}
 			stacksOfWorkRequested=0; // just incase we call it twice.
 			return setsToCraft *setSize;
@@ -508,7 +508,7 @@ outer:
 				break outer; // we have everything we need for this crafting request
 			craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
-		LogisticsPipes.log.info("done");
+		//LogisticsPipes.log.info("done");
 	}
 
 	private static void recurseFailedRequestTree(RequestTree tree, RequestTreeNode treeNode) {

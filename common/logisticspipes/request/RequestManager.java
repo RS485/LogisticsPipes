@@ -299,12 +299,12 @@ public class RequestManager {
 				if(workSetsAvailable == 0) {
 					return 0; // try the next crafter at the same priority
 				}
-				return generatePromisesFor(workSetsAvailable);
+				return generateRequestTreeFor(workSetsAvailable);
 			}
 			return workSetsAvailable;
 		}
 		
-		private int generatePromisesFor(int workSetsAvailable) {
+		private int generateRequestTreeFor(int workSetsAvailable) {
 			treeNode.remove(lastNode);
 			//and try it
 			lastNode.clear();
@@ -353,10 +353,10 @@ public class RequestManager {
 		/**
 		 * Add promises for the requested work to the tree.
 		 */
-		int addWorkToTree(){
+		int addWorkPromisesToTree(){
 			CraftingTemplate template = crafter.getValue1();
 			int setsToCraft = Math.min(this.stacksOfWorkRequested,this.maxWorkSetsAvailable);
-			generatePromisesFor(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
+			generateRequestTreeFor(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
 			if(setsToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
 //				LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
@@ -418,7 +418,7 @@ public class RequestManager {
 outer:
 		while(!done) {
 			
-			// First: Create a list of all crafters with the same priority (craftersSamePriority).	
+			/// First: Create a list of all crafters with the same priority (craftersSamePriority).	
 			if(iterAllCrafters.hasNext()) {
 				if(lastCrafter == null){
 					lastCrafter = iterAllCrafters.next();
@@ -446,6 +446,7 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
+			/// end of crafter prioriy selection.
 			for(CraftingSorterNode c:craftersSamePriority)
 				c.clearWorkRequest(); // so the max request isn't in there; nothing is reserved, balancing can work correctly.
 			
@@ -454,7 +455,7 @@ outer:
 			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 			if(!craftersSamePriority.isEmpty())
 				craftersToBalance.add(craftersSamePriority.poll());
-			// while we have more crafters to consider, or we have more crafters that can work and we have work to do.
+			// while we crafters that can work and we have work to do.
 			while(!craftersToBalance.isEmpty() && itemsNeeded>0) {
 				//while there is more, and the next crafter has the same toDo as the current one, add it to craftersToBalance.
 				//  typically pulls 1 at a time, but may pull multiple, if they have the exact same todo.
@@ -473,13 +474,15 @@ outer:
 				//split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
 				int floor = craftersToBalance.get(0).currentToDo();
 				cap = Math.min(cap,floor + (itemsNeeded + craftersToBalance.size()-1)/craftersToBalance.size());
+				
 				for(CraftingSorterNode crafter:craftersToBalance) {
-					if(itemsNeeded>0) {
 						int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
-						itemsNeeded -= craftingDone;	
-					} else {
-						crafter.clearWorkRequest();
-					}
+						itemsNeeded -= craftingDone;
+						if(treeNode.getMissingItemCount() != itemsNeeded)
+							throw new IllegalStateException("Removing items did not remove expected amount");
+						if(itemsNeeded>0) {
+							break; // don't clear others, because they might of had work added last iteration.
+						}
 				}
 
 				// finally remove all crafters that can not do any more work.
@@ -487,7 +490,7 @@ outer:
 				while(iter.hasNext()){
 					CraftingSorterNode c = iter.next();
 					if(c.getWorkSetsAvailableForCrafting() == 0) {						
-						c.addWorkToTree();
+						c.addWorkPromisesToTree();
 						iter.remove();
 					}
 				}
@@ -498,14 +501,14 @@ outer:
 			Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
 			while(iter.hasNext()){
 				CraftingSorterNode c = iter.next();
-				c.addWorkToTree();
+				c.addWorkPromisesToTree();
 			}
 			
 			if(itemsNeeded <= 0)
 				break outer; // we have everything we need for this crafting request
 			craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
-//		LogisticsPipes.log.info("done");
+		LogisticsPipes.log.info("done");
 	}
 
 	private static void recurseFailedRequestTree(RequestTree tree, RequestTreeNode treeNode) {

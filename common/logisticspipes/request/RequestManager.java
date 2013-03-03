@@ -350,7 +350,7 @@ public class RequestManager {
 				}
 				treeNode.addPromise(template.generatePromise(setsToCraft, relays));
 			} else {
-				LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
+//				LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
 			}
 			return setsToCraft *template.getResultStack().stackSize;
 		}

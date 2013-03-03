@@ -4,6 +4,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import buildcraft.api.core.Position;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.core.utils.Utils;
+import buildcraft.transport.PipeTransportItems;
+
+import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -64,7 +70,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		if(worldObj.getWorldTime() % 6 != 0) return;
 		//Add from internal buffer
 		List<AdjacentTile> crafters = locateCrafters();
-		if(crafters.size() < 1) return;
+		if(crafters.size() < 1) {sendBuffer();return;}
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
@@ -92,6 +98,21 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		if(change) {
 			inv.onInventoryChanged();
 		}
+	}
+
+	private void sendBuffer() {
+		for(int i=0;i<inv.getSizeInventory();i++) {
+			ItemStack stackToSend = inv.getStackInSlot(i);
+			if(stackToSend==null) continue;
+			Position p = new Position(container.xCoord, container.yCoord, container.zCoord, null);
+			Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, ForgeDirection.UNKNOWN);
+			EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
+			entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+			((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
+			break;
+		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override

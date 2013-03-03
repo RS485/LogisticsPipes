@@ -304,34 +304,35 @@ public class RequestManager {
 		}
 		
 		private int generatePromisesFor(int workSetsAvailable) {
-			//now set the amounts
-			CraftingTemplate template = crafter.getValue1();
-			List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
-			// for each thing needed to satisfy this promise
-			for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
-				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-				pair.getValue1().stackSize *= workSetsAvailable;
-				stacks.add(pair);
-			}
-
 			treeNode.remove(lastNode);
-
 			//and try it
 			lastNode.clear();
-			boolean failed = false;
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
-				lastNode.add(node);
-				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree, node)) {
-					failed = true;
-				}			
-			}
-			//this should never happen...
-			if(failed) {
-				treeNode.remove(lastNode);
-				return 0;
+			if(workSetsAvailable >0) {
+				//now set the amounts
+				CraftingTemplate template = crafter.getValue1();
+				List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
+				List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
+				// for each thing needed to satisfy this promise
+				for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
+					Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+					pair.getValue1().stackSize *= workSetsAvailable;
+					stacks.add(pair);
+				}
+	
+				boolean failed = false;
+				for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+					RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
+					lastNode.add(node);
+					node.declareCrafterUsed(template);
+					if(!generateRequestTree(tree, node)) {
+						failed = true;
+					}			
+				}
+				//this should never happen...
+				if(failed) {
+					treeNode.remove(lastNode);
+					return 0;
+				}
 			}
 			return workSetsAvailable;
 		}

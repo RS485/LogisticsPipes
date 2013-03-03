@@ -446,7 +446,8 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
-			
+			for(CraftingSorterNode c:craftersSamePriority)
+				c.clearWorkRequest(); // so the max request isn't in there; nothing is reserved, balancing can work correctly.
 			
 			// go through this list, pull the crafter(s) with least work, add work until either they can not do more work,
 			//   or the amount of work they have is equal to the next-least busy crafter. then pull the next crafter and repeat.

@@ -296,9 +296,6 @@ public class RequestManager {
 				for(int i = 0; i < components.size(); i++) {
 					workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
 				}
-				if(workSetsAvailable == 0) {
-					return 0; // try the next crafter at the same priority
-				}
 				return generateRequestTreeFor(workSetsAvailable);
 			}
 			return workSetsAvailable;

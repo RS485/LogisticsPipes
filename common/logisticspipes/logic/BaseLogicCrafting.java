@@ -259,7 +259,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-			MainProxy.sendPacketToPlayer(new GuiArgumentPacket(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isSatelliteCraftingCrafter()}).getPacket(),  (Player) entityplayer);
+			MainProxy.sendPacketToPlayer(new GuiArgumentPacket(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter()}).getPacket(),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}

@@ -28,15 +28,13 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	private final GuiButton[] normalButtonArray;
 	private final GuiButton[][] advancedSatButtonArray;
 	private final boolean isAdvancedSat;
-	private final boolean isSplitedCrafting;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat, boolean isSplitedCrafting) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
-		this.isSplitedCrafting = isSplitedCrafting;
 		
-		if(!isAdvancedSat && !isSplitedCrafting) {
+		if(!isAdvancedSat) {
 			xSize = 177;
 			ySize = 187;
 		} else {

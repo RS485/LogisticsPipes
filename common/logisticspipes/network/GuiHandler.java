@@ -650,7 +650,7 @@ public class GuiHandler implements IGuiHandler {
 					new UnsupportedOperationException("Arguments missing").printStackTrace();
 					return null;
 				}
-				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0], (Boolean) args[1]);
+				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0]);
 			
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;

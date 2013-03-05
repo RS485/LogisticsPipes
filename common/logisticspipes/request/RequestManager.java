@@ -42,23 +42,28 @@ public class RequestManager {
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
 			double c=0;
-			if(o1.destination instanceof IHavePriority){
-				if(!(o2.destination instanceof IHavePriority))
+			if(o1.destination.getPipe() instanceof IHavePriority) {
+				if(o2.destination.getPipe() instanceof IHavePriority) {
+					c = ((IHavePriority)o2.destination.getCachedPipe()).getPriority() - ((IHavePriority)o1.destination.getCachedPipe()).getPriority();
+				} else {
 					return -1;
-				else
-					c=((IHavePriority)o1.destination).getPriority()-((IHavePriority)o2.destination).getPriority();
-				
-			} else
-				if(!(o2.destination instanceof IHavePriority))
+				}
+			} else {
+				if(o2.destination.getPipe() instanceof IHavePriority) {
 					return 1;
-			if(c!=0)
+				}
+			}
+			if(c != 0) {
 				return (int)c;
-			c = o1.destination.getPipe().getLoadFactor()- o2.destination.getPipe().getLoadFactor();
-			if(distanceWeight!=0)
-				c+= (o1.distanceToDestination - o2.distanceToDestination)*distanceWeight;
-			if (c==0)
+			}
+			c = o1.destination.getCachedPipe().getLoadFactor() - o2.destination.getCachedPipe().getLoadFactor();
+			if(distanceWeight != 0) {
+				c += (o1.distanceToDestination - o2.distanceToDestination) * distanceWeight;
+			}
+			if(c==0) {
 				return o1.destination.getSimpleID() - o2.destination.getSimpleID();
-			return (int)(c+0.5); // round up
+			}
+			return (int)(c+0.5); //round
 		}
 		
 	}
@@ -477,7 +482,7 @@ outer:
 				for(CraftingSorterNode crafter:craftersToBalance) {
 						int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
 						itemsNeeded -= craftingDone;
-						if(itemsNeeded>0) {
+						if(itemsNeeded <= 0) {
 							break; // don't clear others, because they might of had work added last iteration.
 						}
 				}

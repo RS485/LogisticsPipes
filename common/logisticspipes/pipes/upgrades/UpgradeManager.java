@@ -50,7 +50,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	private boolean updateModule(int slot) {
 		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
-		return upgrades[slot].needsUpdate();
+		if(upgrades[slot] == null) {
+			inv.setInventorySlotContents(slot, null);
+			return false;
+		} else {
+			return upgrades[slot].needsUpdate();
+		}
 	}
 	
 	private boolean removeUpgrade(int slot) {

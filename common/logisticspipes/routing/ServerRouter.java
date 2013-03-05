@@ -117,7 +117,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
 	public boolean[] sideDisconnected = new boolean[6];
 	
-	private Map<IRouter, ExitRoute> _prevAdjacentRouter = new HashMap<IRouter, ExitRoute>();
+	protected Map<IRouter, ExitRoute> _prevAdjacentRouter = new HashMap<IRouter, ExitRoute>();
 
 	protected static int[] _lastLSAVersion = new int[0];
 	protected int _LSAVersion = 0;
@@ -148,7 +148,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private static int firstFreeId = 1;
 	private static BitSet simpleIdUsedSet = new BitSet();
 
-	private final int simpleID;
+	protected final int simpleID;
 	public final UUID id;
 	private int _dimension;
 	private final int _xCoord;

@@ -112,7 +112,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	}
 	@Override
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		if(itemIdent.tag != null || !itemIdent.tag.hasNoTags()) {
+		if(itemIdent.tag != null && !itemIdent.tag.hasNoTags()) {
 			return 0;
 		}
 		ItemStack items = _tile.getStoredItemType();
@@ -127,7 +127,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
-		if(stack.getTagCompound() != null || !stack.getTagCompound().hasNoTags()) {
+		if(stack.getTagCompound() != null && !stack.getTagCompound().hasNoTags()) {
 			return null;
 		}
 		ItemStack items = _tile.getStoredItemType();

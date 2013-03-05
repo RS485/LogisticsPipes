@@ -20,6 +20,7 @@ import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristTerminus;
 import logisticspipes.modules.ModuleElectricBuffer;
 import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.modules.ModuleExpressionSink;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
@@ -84,6 +85,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int APIARISTTERMINUS = 11;
 	public static final int MODBASEDITEMSINK = 12;
 	public static final int THAUMICASPECTSINK = 30;
+	public static final int EXPRESSIONSINK = 31;
 
 	//PASSIVE MK 2
 	public static final int EXTRACTOR_MK2 = 100 + EXTRACTOR;
@@ -187,6 +189,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
 		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class, 98);
+		registerModule(EXPRESSIONSINK			, "ExpressionSink module"		, ModuleExpressionSink.class, 98);
 	}
 
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {

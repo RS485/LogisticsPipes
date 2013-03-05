@@ -57,6 +57,11 @@ public interface ILogisticsModule extends ISaveState {
 	 */
 	public Collection<ItemIdentifier> getSpecificInterests();
 
+	/**
+	 * Is this module interested in what the attached inventory contains? Besides if there is enough space or not, 
+	 * does the attached inventory influence the sink reply?
+	 * @return
+	 */
 	public boolean interestedInAttachedInventory();
 
 	/**

@@ -28,6 +28,7 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.modules.ModuleExpressionSink;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
@@ -345,6 +346,11 @@ public class ServerPacketHandler {
 					final PacketModuleNBT packetAy = new PacketModuleNBT();
 					packetAy.readData(data);
 					onThaumicAspectSinkList(player, packetAy);
+					break;
+				case NetworkConstants.EXPRESSIONSINKNBT:
+					final PacketModuleNBT packetBf = new PacketModuleNBT();
+					packetBf.readData(data);
+					onExpressionNBT(player, packetBf);
 					break;
 				case NetworkConstants.CHEATJUNCTIONPOWER:
 					if (!LogisticsPipes.DEBUG) break;
@@ -1379,6 +1385,26 @@ public class ServerPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleThaumicAspectSink) {
 			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
 		}		
+	}
+
+	private static void onExpressionNBT(EntityPlayerMP player, PacketModuleNBT packet) {
+		if(packet.slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleExpressionSink) {
+					ModuleExpressionSink module = (ModuleExpressionSink) dummy.getModule();
+					module.readFromNBT(packet.tag);
+				}
+			}
+			return;
+		}
+
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) return;
+	
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleExpressionSink) {
+			((ModuleExpressionSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+		}				
 	}
 
 	private static void onCheatJunctionPower(EntityPlayerMP player, PacketCoordinates packet) {

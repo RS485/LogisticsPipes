@@ -26,6 +26,7 @@ import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
 import logisticspipes.gui.modules.GuiApiaristSink;
 import logisticspipes.gui.modules.GuiElectricManager;
+import logisticspipes.gui.modules.GuiExpressionSink;
 import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiLiquidSupplier;
@@ -54,6 +55,7 @@ import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.modules.ModuleExpressionSink;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleLiquidSupplier;
 import logisticspipes.modules.ModuleModBasedItemSink;
@@ -606,6 +608,20 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				}
+			case GuiIDs.GUI_Module_ExpressionSink_ID:
+				if (slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleExpressionSink)) return null;
+					NBTTagCompound nbt = new NBTTagCompound();
+					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+					MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.EXPRESSIONSINKNBT, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					dummy = new DummyContainer(player.inventory, null);
+					return dummy;
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleExpressionSink)) return null;
+					((DummyModuleContainer)dummy).setInventory(null);
+					return dummy;
+				}
 
 				
 			default:break;
@@ -930,7 +946,24 @@ public class GuiHandler implements IGuiHandler {
 					if(!(module instanceof ModuleThaumicAspectSink)) return null;
 					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, null, slot);
 				}
-
+			
+			case GuiIDs.GUI_Module_ExpressionSink_ID:
+				if (slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleExpressionSink)) return null;
+					return new GuiExpressionSink((ModuleExpressionSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, slot + 1);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerPosition(0, -1, z, 20);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleExpressionSink)) return null;
+					return new GuiExpressionSink((ModuleExpressionSink) module, player, null, null, slot);
+				}
 				
 				
 			default:break;

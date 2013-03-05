@@ -37,6 +37,7 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
+import logisticspipes.modules.ModuleExpressionSink;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
@@ -349,7 +350,11 @@ public class ClientPacketHandler {
 					packetBd.readData(data);
 					onCraftingPipeSetSatelliteAdvanced(packetBd);
 					break;
-					
+				case NetworkConstants.EXPRESSIONSINKNBT:
+					final PacketModuleNBT packetBe = new PacketModuleNBT();
+					packetBe.readData(data);
+					onExpressionNBT(packetBe);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -892,6 +897,15 @@ public class ClientPacketHandler {
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleThaumicAspectSink) {
 			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
 			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).aspectListChanged();
+		}
+	}
+
+	private static void onExpressionNBT(PacketModuleNBT packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getClientMainWorld(), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) return;
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleExpressionSink) {
+			((ModuleExpressionSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).readFromNBT(packet.tag);
+			((ModuleExpressionSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).expressionListChanged();
 		}
 	}
 

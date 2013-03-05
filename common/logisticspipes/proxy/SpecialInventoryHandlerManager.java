@@ -24,5 +24,9 @@ public class SpecialInventoryHandlerManager {
 		if(Loader.isModLoaded("AppliedEnergistics")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
+
+		if(Loader.isModLoaded("MFReloaded")) {
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
+		}
 	}
 }

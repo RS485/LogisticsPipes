@@ -3,6 +3,7 @@ package logisticspipes.proxy;
 import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DigitalChestHandler;
 import cpw.mods.fml.common.Loader;
 

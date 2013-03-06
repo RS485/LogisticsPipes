@@ -27,7 +27,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean init() {
-		return _tile != null;
+		return true;
 	}
 
 	@Override

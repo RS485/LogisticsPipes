@@ -151,6 +151,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
 		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+			if(firstOrder == null)
+				firstOrder = order;
 			order = _orderManager.getNextRequest();
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
 			if(sent<0) break;

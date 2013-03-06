@@ -450,55 +450,62 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
-			/// end of crafter prioriy selection.
-			for(CraftingSorterNode c:craftersSamePriority)
-				c.clearWorkRequest(); // so the max request isn't in there; nothing is reserved, balancing can work correctly.
-			
-			// go through this list, pull the crafter(s) with least work, add work until either they can not do more work,
-			//   or the amount of work they have is equal to the next-least busy crafter. then pull the next crafter and repeat.
+			if(craftersSamePriority == null || craftersSamePriority.isEmpty()) {
+				continue; //nothing at this priority was available for crafting
+			}
 			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
-			if(!craftersSamePriority.isEmpty())
+			if(craftersSamePriority.size() == 1){
 				craftersToBalance.add(craftersSamePriority.poll());
-			// while we crafters that can work and we have work to do.
-			while(!craftersToBalance.isEmpty() && itemsNeeded>0) {
-				//while there is more, and the next crafter has the same toDo as the current one, add it to craftersToBalance.
-				//  typically pulls 1 at a time, but may pull multiple, if they have the exact same todo.
-				while(!craftersSamePriority.isEmpty() &&  
-						craftersSamePriority.peek().currentToDo() <= craftersToBalance.get(0).currentToDo()) {
-					craftersToBalance.add(craftersSamePriority.poll());
-				}
+			} else {
+				/// end of crafter prioriy selection.
+				for(CraftingSorterNode c:craftersSamePriority)
+					c.clearWorkRequest(); // so the max request isn't in there; nothing is reserved, balancing can work correctly.
 				
-				// find the most we can add this iteration
-				int cap;
+				// go through this list, pull the crafter(s) with least work, add work until either they can not do more work,
+				//   or the amount of work they have is equal to the next-least busy crafter. then pull the next crafter and repeat.
 				if(!craftersSamePriority.isEmpty())
-					cap = craftersSamePriority.peek().currentToDo();
-				else
-					cap = Integer.MAX_VALUE;
-				
-				//split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
-				int floor = craftersToBalance.get(0).currentToDo();
-				cap = Math.min(cap,floor + (itemsNeeded + craftersToBalance.size()-1)/craftersToBalance.size());
-				
-				for(CraftingSorterNode crafter:craftersToBalance) {
-						int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
-						itemsNeeded -= craftingDone;
-						if(itemsNeeded <= 0) {
-							break; // don't clear others, because they might of had work added last iteration.
-						}
-				}
-
-				// finally remove all crafters that can not do any more work.
-				Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
-				while(iter.hasNext()){
-					CraftingSorterNode c = iter.next();
-					if(c.getWorkSetsAvailableForCrafting() == 0) {						
-						c.addWorkPromisesToTree();
-						iter.remove();
+					craftersToBalance.add(craftersSamePriority.poll());
+				// while we crafters that can work and we have work to do.
+				while(!craftersToBalance.isEmpty() && itemsNeeded>0) {
+					//while there is more, and the next crafter has the same toDo as the current one, add it to craftersToBalance.
+					//  typically pulls 1 at a time, but may pull multiple, if they have the exact same todo.
+					while(!craftersSamePriority.isEmpty() &&  
+							craftersSamePriority.peek().currentToDo() <= craftersToBalance.get(0).currentToDo()) {
+						craftersToBalance.add(craftersSamePriority.poll());
 					}
-				}
+					
+					// find the most we can add this iteration
+					int cap;
+					if(!craftersSamePriority.isEmpty())
+						cap = craftersSamePriority.peek().currentToDo();
+					else
+						cap = Integer.MAX_VALUE;
+					
+					//split the work between N crafters, up to "cap" (at which point we would be dividing the work between N+1 crafters.
+					int floor = craftersToBalance.get(0).currentToDo();
+					cap = Math.min(cap,floor + (itemsNeeded + craftersToBalance.size()-1)/craftersToBalance.size());
+					
+					for(CraftingSorterNode crafter:craftersToBalance) {
+							int craftingDone = crafter.addToWorkRequest(Math.min(itemsNeeded,cap-floor));
+							itemsNeeded -= craftingDone;
+							if(itemsNeeded <= 0) {
+								break; // don't clear others, because they might of had work added last iteration.
+							}
+					}
+	
+					// finally remove all crafters that can not do any more work.
+					Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
+					while(iter.hasNext()){
+						CraftingSorterNode c = iter.next();
+						if(c.getWorkSetsAvailableForCrafting() == 0) {						
+							c.addWorkPromisesToTree();
+							iter.remove();
+						}
+					}
+					
+				} // all craftersToBalance exhausted, or work completed.
 				
-			} // all craftersToBalance exhausted, or work completed.
-			
+			}// end of else more than 1 crafter at this priority
 			// commit this work set.
 			Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
 			while(iter.hasNext()){

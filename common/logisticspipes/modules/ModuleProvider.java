@@ -148,11 +148,12 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		checkUpdate(null);
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
-			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+			order = _orderManager.getNextRequest();
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
-			if (sent == 0)
-				break;
+			if(sent<0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
@@ -229,11 +230,14 @@ outer:
 		}
 	}
 
+	
+	// returns -1 on perminatly failed, don't try another stack this tick
+	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getPointedInventory() == null) {
 			_orderManager.sendFailed();
-			return 0;
+			return -1;
 		}
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		
@@ -246,17 +250,19 @@ outer:
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
-		if(dRtr == null)
+		if(dRtr == null) {
 			_orderManager.sendFailed();
+			return 0;
+		}
 		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
 		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			wanted = Math.min(wanted, reply.maxNumberOfItems);		
-			if(wanted<=0){
+			if(wanted <= 0) {
 				_orderManager.deferSend();
 				return 0;
 			}
 		}
-		if(!_power.useEnergy(wanted * neededEnergy())) return 0;
+		if(!_power.useEnergy(wanted * neededEnergy())) return -1;
 		
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		int sent = removed.stackSize;

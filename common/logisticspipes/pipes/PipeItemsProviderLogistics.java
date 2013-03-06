@@ -145,20 +145,29 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			wanted = Math.min(wanted, maxCount);
 			wanted = Math.min(wanted, item.getMaxStackSize());
 			IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
+			if(dRtr == null) {
+				_orderManager.sendFailed();
+				return 0;
+			}
 			SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
+			boolean defersend = false;
 			if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
-				wanted = Math.min(wanted, reply.maxNumberOfItems);		
-				if(wanted<=0){
-					_orderManager.deferSend();
-					return 0;
+				if(reply.maxNumberOfItems < wanted) {
+					wanted = reply.maxNumberOfItems;
+					if(wanted <= 0) {
+						_orderManager.deferSend();
+						return 0;
+					}
+					defersend = true;
 				}
 			}
-			if(!useEnergy(wanted * neededEnergy())) {
-				return 0;
+			if(!canUseEnergy(wanted * neededEnergy())) {
+				return -1;
 			}
 			ItemStack removed = inv.getMultipleItems(item, wanted);
 			if(removed == null) continue;
 			int sent = removed.stackSize;
+			useEnergy(sent * neededEnergy());
 
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(removed, this.worldObj);
 			routedItem.setDestination(destination);
@@ -166,7 +175,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			routedItem.addRelayPoints(relays);
 			super.queueRoutedItem(routedItem, tile.orientation);
 			
-			_orderManager.sendSuccessfull(sent);
+			_orderManager.sendSuccessfull(sent, defersend);
 			return sent;
 		}
 		_orderManager.sendFailed();
@@ -221,11 +230,15 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
-			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+			if(firstOrder == null)
+				firstOrder = order;
+			order = _orderManager.getNextRequest();
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
-			if (sent == 0)
-				break;
+			if(sent == 0) continue;
+			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 3);
 			stacksleft -= 1;
 			itemsleft -= sent;

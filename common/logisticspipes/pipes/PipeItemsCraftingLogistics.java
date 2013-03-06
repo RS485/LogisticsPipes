@@ -280,7 +280,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					item.setTransportMode(TransportMode.Active);
 					item.addRelayPoints(order.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
-					_orderManager.sendSuccessfull(stackToSend.stackSize);
+					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
 				} else {
 					ItemStack stackToSend = extracted.splitStack(numtosend);
 					_extras = Math.max(_extras - numtosend, 0);

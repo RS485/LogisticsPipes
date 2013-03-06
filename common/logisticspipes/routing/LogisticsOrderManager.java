@@ -66,10 +66,12 @@ public class LogisticsOrderManager {
 		return _orders.getFirst();
 	}
 	
-	public void sendSuccessfull(int number) {
+	public void sendSuccessfull(int number, boolean defersend) {
 		_orders.getFirst().getValue1().stackSize -= number;
 		if (_orders.getFirst().getValue1().stackSize <= 0){
 			_orders.removeFirst();
+		} else if(defersend) {
+			_orders.add(_orders.removeFirst());
 		}
 		listen();
 	}

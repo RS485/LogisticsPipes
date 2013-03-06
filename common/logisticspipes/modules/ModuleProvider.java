@@ -155,7 +155,8 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 				firstOrder = order;
 			order = _orderManager.getNextRequest();
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
-			if(sent<0) break;
+			if(sent == 0) continue;
+			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
@@ -239,7 +240,7 @@ outer:
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getPointedInventory() == null) {
 			_orderManager.sendFailed();
-			return -1;
+			return 0;
 		}
 		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		
@@ -257,19 +258,25 @@ outer:
 			return 0;
 		}
 		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
+		boolean defersend = false;
 		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
-			wanted = Math.min(wanted, reply.maxNumberOfItems);		
-			if(wanted <= 0) {
-				_orderManager.deferSend();
-				return 0;
+			if(reply.maxNumberOfItems < wanted) {
+				wanted = reply.maxNumberOfItems;
+				if(wanted <= 0) {
+					_orderManager.deferSend();
+					return 0;
+				}
+				defersend = true;
 			}
 		}
-		if(!_power.useEnergy(wanted * neededEnergy())) return -1;
-		
+		if(!_power.canUseEnergy(wanted * neededEnergy())) return -1;
+
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		int sent = removed.stackSize;
+		_power.useEnergy(sent * neededEnergy());
+
 		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
-		_orderManager.sendSuccessfull(sent);
+		_orderManager.sendSuccessfull(sent, defersend);
 		return sent;
 	}
 	

@@ -456,6 +456,8 @@ outer:
 			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 			if(craftersSamePriority.size() == 1){
 				craftersToBalance.add(craftersSamePriority.poll());
+				// automatically capped at the real amount of extra work.
+				craftersToBalance.get(0).addToWorkRequest(itemsNeeded);
 			} else {
 				/// end of crafter prioriy selection.
 				for(CraftingSorterNode c:craftersSamePriority)

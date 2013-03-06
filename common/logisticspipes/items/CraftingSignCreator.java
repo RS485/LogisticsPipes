@@ -29,8 +29,6 @@ public class CraftingSignCreator extends LogisticsItem {
 		if(itemStack.getItemDamage() > this.getMaxDamage() || itemStack.stackSize == 0) {
 			return false;
 		}
-		int side = sideinput % 10;
-		boolean selfcalled = sideinput > 10;
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
 		if(!(tile instanceof TileGenericPipe)) {
 			return false;
@@ -44,160 +42,33 @@ public class CraftingSignCreator extends LogisticsItem {
 			return true;
 		}
 		if(pipe.logic instanceof BaseLogicCrafting) {
-			if(side > 1 && side < 6) {
+			if(sideinput > 1 && sideinput < 6) {
 				int signX = x;
 				int signY = y;
 				int signZ = z;
-				int pipechecksignX = x;
-				int pipechecksignY = y;
-				int pipechecksignZ = z;
-				switch(side) {
+				switch(sideinput) {
 				case 2:
 					signZ--;
-					pipechecksignZ++;
 					break;
 				case 3:
 					signZ++;
-					pipechecksignZ--;
 					break;
 				case 4:
 					signX--;
-					pipechecksignX++;
 					break;
 				case 5:
 					signX++;
-					pipechecksignX--;
 					break;
 				}
-				if(!(world.getBlockTileEntity(pipechecksignX, pipechecksignY, pipechecksignZ) instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof PipeItemsCraftingLogistics) && !selfcalled) {
-					if(world.getBlockId(signX, signY, signZ) == 0) {
-						if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-							world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
-							TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
-							if(tilesign instanceof LogisticsSignTileEntity) {
-								((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
-								itemStack.damageItem(1, player); 
-							} else {
-								world.setBlockAndMetadataWithNotify(signX, signY, signZ, 0, 0);
-							}
-						}
-					}
-				} else {
-					TileEntity secondTile = world.getBlockTileEntity(pipechecksignX, pipechecksignY, pipechecksignZ);
-					if(secondTile instanceof TileGenericPipe) {
-						Pipe secondpipe = ((TileGenericPipe)secondTile).pipe;
-						if(secondpipe != null) {
-							if(secondpipe instanceof PipeItemsCraftingLogistics) {
-								double disX = x + 0.5 - player.posX;
-								double disZ = z + 0.5 - player.posZ;
-								int secondSignX = x;
-								int secondSignY = y;
-								int secondSignZ = z;
-								switch(side) {
-								case 2:
-									if(disX > 0) {
-										secondSignX--;
-									} else {
-										secondSignX++;
-									}
-									break;
-								case 3:
-									if(disX > 0) {
-										secondSignX--;
-									} else {
-										secondSignX++;
-									}
-									break;
-								case 4:
-									if(disZ > 0) {
-										secondSignZ--;
-									} else {
-										secondSignZ++;
-									}
-									break;
-								case 5:
-									if(disZ > 0) {
-										secondSignZ--;
-									} else {
-										secondSignZ++;
-									}
-									break;
-								}
-								if(world.getBlockId(secondSignX, secondSignY, secondSignZ) == 0) {
-									if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-										world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
-										TileEntity tilesign = world.getBlockTileEntity(secondSignX, secondSignY, secondSignZ);
-										if(tilesign instanceof LogisticsSignTileEntity) {
-											((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
-											itemStack.damageItem(1, player);
-										} else {
-											world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, 0, 0);
-										}
-									}
-								}
-								this.onItemUseFirst(itemStack, player ,world, pipechecksignX, pipechecksignY, pipechecksignZ, side + 10, hitX, hitY, hitZ);
-							} else {
-								if(world.getBlockId(signX, signY, signZ) == 0) {
-									if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-										world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
-										TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
-										if(tilesign instanceof LogisticsSignTileEntity) {
-											((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
-											itemStack.damageItem(1, player); 
-										} else {
-											world.setBlockAndMetadataWithNotify(signX, signY, signZ, 0, 0);
-										}
-									}
-								}
-							}
-						}	
-					} else if(selfcalled) {
-						double disX = x + 0.5 - player.posX;
-						double disZ = z + 0.5 - player.posZ;
-						int secondSignX = x;
-						int secondSignY = y;
-						int secondSignZ = z;
-						switch(side) {
-						case 2:
-							if(disX > 0) {
-								secondSignX--;
-							} else {
-								secondSignX++;
-							}
-							break;
-						case 3:
-							if(disX > 0) {
-								secondSignX--;
-							} else {
-								secondSignX++;
-							}
-							break;
-						case 4:
-							if(disZ > 0) {
-								secondSignZ--;
-							} else {
-								secondSignZ++;
-							}
-							break;
-						case 5:
-							if(disZ > 0) {
-								secondSignZ--;
-							} else {
-								secondSignZ++;
-							}
-							break;
-						}
-						if(world.getBlockId(secondSignX, secondSignY, secondSignZ) == 0) {
-							if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-								world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
-								TileEntity tilesign = world.getBlockTileEntity(secondSignX, secondSignY, secondSignZ);
-								if(tilesign instanceof LogisticsSignTileEntity) {
-									((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
-									itemStack.damageItem(1, player);
-								} else {
-									world.setBlockAndMetadataWithNotify(secondSignX, secondSignY, secondSignZ, 0, 0);
-								}
-							}
+				if(world.getBlockId(signX, signY, signZ) == 0) {
+					if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
+						world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
+						TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
+						if(tilesign instanceof LogisticsSignTileEntity) {
+							((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
+							itemStack.damageItem(1, player);
+						} else {
+							world.setBlockAndMetadataWithNotify(signX, signY, signZ, 0, 0);
 						}
 					}
 				}

@@ -31,7 +31,9 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
-	IRoutedPowerProvider _power;
+	
+	private IRoutedPowerProvider _power;
+	private IWorldProvider _world;
 	
 	public final List<Integer> aspectList = new LinkedList<Integer>();
 	
@@ -40,6 +42,7 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
+		_world = world;
 	}
 
 	@Override
@@ -110,7 +113,7 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	}
 
 	public void aspectListChanged() {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), localModeWatchers);

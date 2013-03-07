@@ -40,12 +40,14 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
 	private IRoutedPowerProvider _power;
+	private IWorldProvider _world;
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -141,7 +143,7 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	}
 	
 	public void ModListChanged() {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), localModeWatchers);

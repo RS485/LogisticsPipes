@@ -35,7 +35,7 @@ public class FinalPair<T1, T2> {
 	@Override
 	public boolean equals(Object o) {
 		if(!(o instanceof FinalPair)) return false;
-		FinalPair p = (FinalPair)o;
+		FinalPair<?, ?> p = (FinalPair<?, ?>)o;
 		return _value1.equals(p._value1) && _value2.equals(p._value2);
 	}
 }

@@ -5,7 +5,6 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
-import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
@@ -54,7 +53,6 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 */
 	@Override
 	public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {
-		if(!MainProxy.isClient()) return;
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		ObjectTags tags = getTagsForStack(item);
@@ -93,7 +91,6 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	@Override
 	public void renderAspectAt(Object etag, int x, int y, GuiScreen gui) {
 		if (!(etag instanceof EnumTag)) return;
-		if (!MainProxy.isClient()) return;
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		UtilsFX.drawTag(mc, x, y, (EnumTag)etag, 1, gui, true, false);
@@ -114,7 +111,6 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 */
 	@Override
 	public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {
-		if(!MainProxy.isClient()) return;
 		if (etagIDs.size() == 0) return;
 		int xshift = x;
 		int yshift = y;

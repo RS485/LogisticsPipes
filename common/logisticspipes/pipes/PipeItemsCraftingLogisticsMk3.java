@@ -4,11 +4,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import buildcraft.api.core.Position;
-import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransportItems;
-
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -30,6 +25,10 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.Position;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.core.utils.Utils;
+import buildcraft.transport.PipeTransportItems;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {

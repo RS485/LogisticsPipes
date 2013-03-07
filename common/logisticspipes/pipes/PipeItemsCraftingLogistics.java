@@ -506,7 +506,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	private void checkContentUpdate() {
 		doContentUpdate = false;
-		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
+		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList(this.worldObj);
 		if(!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);

@@ -279,6 +279,7 @@ public class LogisticsPipes {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
 		ProxyManager.load();

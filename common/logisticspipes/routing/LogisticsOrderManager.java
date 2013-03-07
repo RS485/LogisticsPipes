@@ -19,6 +19,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
+import net.minecraft.world.World;
 
 
 public class LogisticsOrderManager {
@@ -39,8 +40,8 @@ public class LogisticsOrderManager {
 		}
 	}
 	
-	public LinkedList<ItemIdentifierStack> getContentList() {
-		if(MainProxy.isClient() || _orders.size()==0) return new LinkedList<ItemIdentifierStack>();
+	public LinkedList<ItemIdentifierStack> getContentList(World world) {
+		if(MainProxy.isClient(world) || _orders.size()==0) return new LinkedList<ItemIdentifierStack>();
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			addToList(request.getValue1(),list);

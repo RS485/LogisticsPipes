@@ -382,7 +382,7 @@ outer:
 
 	private void checkContentUpdate(EntityPlayer player) {
 		doContentUpdate = false;
-		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
+		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList(this.worldObj);
 		if(!oldManagerList.equals(all)) {
 			oldManagerList.clear();
 			oldManagerList.addAll(all);

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;

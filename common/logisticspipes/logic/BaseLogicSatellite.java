@@ -58,7 +58,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	}
 
 	protected int findId(int increment) {
-		if(MainProxy.isClient()) return satelliteId;
+		if(MainProxy.isClient(this.worldObj)) return satelliteId;
 		int potentialId = satelliteId;
 		boolean conflict = true;
 		while (conflict) {
@@ -122,7 +122,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	@Override
 	public void destroy() {
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient(this.worldObj)) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}

@@ -267,16 +267,21 @@ public class RequestManager {
 			this.sizeOfLastNodeRequest = 0;
 			this.setSize = crafter.getValue1().getResultStack().stackSize;
 			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
-		int calculateMaxWork(){
+		}
+		int calculateMaxWork(int maxSetsToCraft){
 			
 			int nCraftingSetsNeeded;
 			if(maxSetsToCraft == 0)
-			int nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
+				nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
 			else
 				nCraftingSetsNeeded = maxSetsToCraft;
 			
 			if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
 				return 0;
+			
+			CraftingTemplate template = crafter.getValue1();
+			List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
+			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
 			// for each thing needed to satisfy this promise
 			for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
 				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
@@ -305,7 +310,6 @@ public class RequestManager {
 				}
 				return generateRequestTreeFor(workSetsAvailable);
 			}
-			sizeOfLastNodeRequst = workSetsAvailable;
 			return workSetsAvailable;
 		}
 

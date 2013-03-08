@@ -267,6 +267,46 @@ public class RequestManager {
 			this.sizeOfLastNodeRequest = 0;
 			this.setSize = crafter.getValue1().getResultStack().stackSize;
 			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
+		int calculateMaxWork(){
+			
+			int nCraftingSetsNeeded;
+			if(maxSetsToCraft == 0)
+			int nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
+			else
+				nCraftingSetsNeeded = maxSetsToCraft;
+			
+			if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
+				return 0;
+			// for each thing needed to satisfy this promise
+			for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
+				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+				pair.getValue1().stackSize *= nCraftingSetsNeeded;
+				stacks.add(pair);
+			}
+			
+			boolean failed = false;
+			
+			int workSetsAvailable = nCraftingSetsNeeded;
+			lastNode = new ArrayList<RequestTreeNode>(components.size());
+			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
+				lastNode.add(node);
+				node.declareCrafterUsed(template);
+				if(!generateRequestTree(tree, node)) {
+					failed = true;
+				}			
+			}
+			if(failed) {
+				//save last tried template for filling out the tree
+				treeNode.lastCrafterTried = template;
+				//figure out how many we can actually get
+				for(int i = 0; i < components.size(); i++) {
+					workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
+				}
+				return generateRequestTreeFor(workSetsAvailable);
+			}
+			sizeOfLastNodeRequst = workSetsAvailable;
+			return workSetsAvailable;
 		}
 
 		private int generateRequestTreeFor(int workSetsAvailable) {
@@ -317,19 +357,20 @@ public class RequestManager {
 		/**
 		 * Add promises for the requested work to the tree.
 		 */
-		int addWorkPromisesToTree(){
+		boolean addWorkPromisesToTree(){
 			CraftingTemplate template = crafter.getValue1();
 			int setsToCraft = Math.min(this.stacksOfWorkRequested,this.maxWorkSetsAvailable);
-			generateRequestTreeFor(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
-			if(setsToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
+			int setsAbleToCraft = calculateMaxWork(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
+			
+			if(setsAbleToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
 				//LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
 				List<IRelayItem> relays = new LinkedList<IRelayItem>();
 				for(IFilter filter:crafter.getValue2()) {
 					relays.add(filter);
 				}
-				LogisticsPromise job = template.generatePromise(setsToCraft, relays);
-				if(job.numberOfItems!=setsToCraft*this.setSize)
+				LogisticsPromise job = template.generatePromise(setsAbleToCraft, relays);
+				if(job.numberOfItems!=setsAbleToCraft*this.setSize)
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				treeNode.addPromise(job);
 			} else {
@@ -337,7 +378,9 @@ public class RequestManager {
 				//LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 			}
 			stacksOfWorkRequested=0; // just incase we call it twice.
-			return setsToCraft *setSize;
+			if(setsToCraft == 0) // so that we remove this node as failed when there is no work to do.
+				return false;
+			return setsToCraft == setsAbleToCraft;
 		}
 
 		@Override
@@ -458,11 +501,7 @@ outer:
 						int request = Math.min(itemsNeeded,cap-floor);
 						if(request > 0) {
 							int craftingDone = crafter.addToWorkRequest(request);
-							itemsNeeded -= craftingDone;
-							if(craftingDone<request) { // then we're out of ingredents for this crafter
-								crafter.addWorkPromisesToTree();
-								iter.remove();								
-							}
+							itemsNeeded -= craftingDone; // ignored under-crafting
 						}
 					}
 	
@@ -473,12 +512,19 @@ outer:
 			Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
 			while(iter.hasNext()){
 				CraftingSorterNode c = iter.next();
-				c.addWorkPromisesToTree();
+				if(!c.addWorkPromisesToTree()) { // then it ran out of resources
+					iter.remove();								
+				}
+
 			}
+			itemsNeeded = treeNode.getMissingItemCount();
 			
 			if(itemsNeeded <= 0)
 				break outer; // we have everything we need for this crafting request
-			craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
+
+			// don't clear, because we might have under-requested, and need to consider these again
+			
+			//craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
 		//LogisticsPipes.log.info("done");
 	}

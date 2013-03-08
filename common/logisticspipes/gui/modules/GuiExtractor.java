@@ -8,16 +8,16 @@
 
 package logisticspipes.gui.modules;
 
-import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.SneakyOrientation;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,10 +27,10 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 
 	//private final SneakyPipe _pipe;
 	
-	private final ISneakyOrientationreceiver _orientationReceiver;
+	private final ISneakyDirectionReceiver _orientationReceiver;
 	private int slot;
 	
-	public GuiExtractor(IInventory playerInventory, Pipe pipe, ISneakyOrientationreceiver orientationReceiver, GuiScreen previousGui, int slot) {
+	public GuiExtractor(IInventory playerInventory, Pipe pipe, ISneakyDirectionReceiver orientationReceiver, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(playerInventory, null),pipe,previousGui);
 		_orientationReceiver = orientationReceiver;
 		xSize = 160;
@@ -48,7 +48,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		  
 		controlList.add(new GuiButton(0, left + 73, top + 23, 20, 20, ""));	//YNEG
 		controlList.add(new GuiButton(1, left + 73, top + 43, 20, 20, ""));	//YPOS
-		controlList.add(new GuiButton(2, left + 73, top + 63, 20, 20, "")); 	//ZNEG
+		controlList.add(new GuiButton(2, left + 73, top + 63, 20, 20, "")); //ZNEG
 		controlList.add(new GuiButton(3, left+10, top + 43, 20, 20, ""));	//DEFAULT
 
 		refreshButtons();
@@ -58,10 +58,10 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		for (Object p : controlList){
 			GuiButton button = (GuiButton) p;
 			switch (button.id){
-				case 0: button.displayString =  isExtract(SneakyOrientation.Top); break;
-				case 1: button.displayString =  isExtract(SneakyOrientation.Side); break;
-				case 2: button.displayString =  isExtract(SneakyOrientation.Bottom); break;
-				case 3: button.displayString =  isExtract(SneakyOrientation.Default); break;
+				case 0: button.displayString =  isExtract(ForgeDirection.UP); break;
+				case 1: button.displayString =  isExtract(ForgeDirection.SOUTH); break;
+				case 2: button.displayString =  isExtract(ForgeDirection.DOWN); break;
+				case 3: button.displayString =  isExtract(ForgeDirection.UNKNOWN); break;
 			}
 		}
 	}
@@ -70,26 +70,26 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton guibutton) {
 		switch (guibutton.id){
 		case 0:
-			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Top);
+			_orientationReceiver.setSneakyDirection(ForgeDirection.UP);
 			break;
 		
 		case 1:
-			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Side);
+			_orientationReceiver.setSneakyDirection(ForgeDirection.SOUTH);
 			break;
 		
 		case 2:
-			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Bottom);
+			_orientationReceiver.setSneakyDirection(ForgeDirection.DOWN);
 			break;
 			
 		case 3:
-			_orientationReceiver.setSneakyOrientation(SneakyOrientation.Default);
+			_orientationReceiver.setSneakyDirection(ForgeDirection.UNKNOWN);
 			break;
 		}
 		
 		if(slot != 20) {
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, guibutton.id + (slot * 10)).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, _orientationReceiver.getSneakyDirection().ordinal() + (slot * 10)).getPacket());
 		} else {
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, 0, -1, _orientationReceiver.getZPos(), guibutton.id + (slot * 10)).getPacket());	
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, 0, -1, _orientationReceiver.getZPos(), _orientationReceiver.getSneakyDirection().ordinal() + (slot * 10)).getPacket());	
 		}
 		
 		refreshButtons();
@@ -126,8 +126,8 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		return checked ? "[X]" : "[ ]";
 	}
 
-	private String isExtract(SneakyOrientation o){
-		return getButtonText(o == _orientationReceiver.getSneakyOrientation());
+	private String isExtract(ForgeDirection o){
+		return getButtonText(o == _orientationReceiver.getSneakyDirection());
 	}
 
 	@Override
@@ -135,8 +135,8 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		return GuiIDs.GUI_Module_Extractor_ID;
 	}
 	
-	public void setMode(SneakyOrientation o) {
-		_orientationReceiver.setSneakyOrientation(o);
+	public void setMode(ForgeDirection o) {
+		_orientationReceiver.setSneakyDirection(o);
 		refreshButtons();
 	}
 }

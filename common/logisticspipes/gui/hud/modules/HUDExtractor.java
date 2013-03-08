@@ -24,17 +24,17 @@ public class HUDExtractor implements IHUDModuleRenderer {
 		mc.fontRenderer.drawString("Side" , -12, 5, 0);
 		mc.fontRenderer.drawString("Bottom" , -12, 18, 0);
 		
-		switch(module.getSneakyOrientation()) {
-		case Default:
+		switch(module.getSneakyDirection()) {
+		case UNKNOWN:
 			mc.fontRenderer.drawString("X" , -22, -22, 0);
 			break;
-		case Top:
+		case UP:
 			mc.fontRenderer.drawString("X" , -22, -9, 0);
 			break;
-		case Side:
+		case SOUTH:
 			mc.fontRenderer.drawString("X" , -22, 5, 0);
 			break;
-		case Bottom:
+		case DOWN:
 			mc.fontRenderer.drawString("X" , -22, 18, 0);
 			break;
 		default:

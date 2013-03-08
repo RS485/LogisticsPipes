@@ -13,7 +13,7 @@ import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
-import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -29,7 +29,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
-import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -38,7 +37,7 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.inventory.ISpecialInventory;
 
-public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationreceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
+public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionReceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
 	//protected final int ticksToAction = 100;
 	private int currentTick = 0;
@@ -46,7 +45,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private IRoutedPowerProvider _power;
-	private SneakyOrientation _sneakyOrientation = SneakyOrientation.Default;
+	private ForgeDirection _sneakyDirection = ForgeDirection.UNKNOWN;
 	private IWorldProvider _world;
 
 	private int slot = 0;
@@ -86,13 +85,13 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 		return ItemSendMode.Normal;
 	}
 
-	public SneakyOrientation getSneakyOrientation(){
-		return _sneakyOrientation;
+	public ForgeDirection getSneakyDirection(){
+		return _sneakyDirection;
 	}
 
-	public void setSneakyOrientation(SneakyOrientation sneakyOrientation){
-		_sneakyOrientation = sneakyOrientation;
-		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyOrientation.ordinal()).getPacket(), localModeWatchers);
+	public void setSneakyDirection(ForgeDirection sneakyDirection){
+		_sneakyDirection = sneakyDirection;
+		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);
 	}
 
 	@Override
@@ -110,12 +109,33 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		_sneakyOrientation = SneakyOrientation.values()[nbttagcompound.getInteger("sneakyorientation")];
+		//convert sneakyorientation to sneakydirection
+		if(nbttagcompound.hasKey("sneakyorientation")) {
+			int t = nbttagcompound.getInteger("sneakyorientation");
+			switch(t) {
+				case 0:
+					_sneakyDirection = ForgeDirection.UNKNOWN;
+					break;
+				case 1:
+					_sneakyDirection = ForgeDirection.UP;
+					break;
+				case 2:
+					_sneakyDirection = ForgeDirection.SOUTH;
+					break;
+				case 3:
+					_sneakyDirection = ForgeDirection.DOWN;
+					break;
+				default:
+					_sneakyDirection = ForgeDirection.UNKNOWN;
+			}
+			return;
+		}
+		_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("sneakyorientation", _sneakyOrientation.ordinal());
+		nbttagcompound.setInteger("sneakydirection", _sneakyDirection.ordinal());
 	}
 
 	@Override
@@ -126,18 +146,8 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 		//Extract Item
 		IInventory targetInventory = _invProvider.getRawInventory();
 		if (targetInventory == null) return;
-		ForgeDirection extractOrientation;
-		switch (_sneakyOrientation){
-		case Bottom:
-			extractOrientation = ForgeDirection.DOWN;
-			break;
-		case Top:
-			extractOrientation = ForgeDirection.UP;
-			break;
-		case Side:
-			extractOrientation = ForgeDirection.SOUTH;
-			break;
-		default:
+		ForgeDirection extractOrientation = _sneakyDirection;
+		if(extractOrientation == ForgeDirection.UNKNOWN) {
 			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
 
@@ -198,7 +208,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
-		list.add("Extraction: " + _sneakyOrientation.name());
+		list.add("Extraction: " + _sneakyDirection.name());
 		return list;
 	}
 
@@ -223,7 +233,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyOrientationr
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyOrientation.ordinal()).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);
 	}
 
 	@Override

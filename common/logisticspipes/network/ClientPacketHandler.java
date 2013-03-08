@@ -25,7 +25,7 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
-import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.items.PacketInteger;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -75,7 +75,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
-import logisticspipes.utils.SneakyOrientation;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -83,6 +82,7 @@ import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -513,7 +513,7 @@ public class ClientPacketHandler {
 	private static void onModulePipeRecive(PacketModuleInteger packet) {
 		if(packet.slot == 20) {
 			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
-				((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).setMode(SneakyOrientation.values()[packet.integer]);
+				((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).setMode(ForgeDirection.getOrientation(packet.integer));
 			}
 			return;
 		}
@@ -523,15 +523,15 @@ public class ClientPacketHandler {
 		}
 		
 		if(packet.slot == -1) {
-			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyOrientationreceiver) {
-				((ISneakyOrientationreceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
+			if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyDirectionReceiver) {
+				((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setSneakyDirection(ForgeDirection.getOrientation(packet.integer));
 			}
 			return;
 		}
 		
-		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ISneakyOrientationreceiver) {
-			ISneakyOrientationreceiver recieiver = (ISneakyOrientationreceiver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
-			recieiver.setSneakyOrientation(SneakyOrientation.values()[packet.integer]);
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ISneakyDirectionReceiver) {
+			ISneakyDirectionReceiver recieiver = (ISneakyDirectionReceiver) ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot);
+			recieiver.setSneakyDirection(ForgeDirection.getOrientation(packet.integer));
 		}
 	}
 

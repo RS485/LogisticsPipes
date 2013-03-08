@@ -873,32 +873,29 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return this._hasInterestIn.contains(item);
 	}
 	
-	public static Collection<IRouter> getRoutersInterestedIn(ItemIdentifier item) {
-		ArrayList<IRouter> s = new ArrayList(getBiggestSimpleID());
-		while(s.size()<getBiggestSimpleID())
-			s.add(null);
+	public static BitSet getRoutersInterestedIn(ItemIdentifier item) {
+		BitSet s = new BitSet(getBiggestSimpleID()+1);
 		if(_genericInterests != null){
 			for(IRouter r:_genericInterests){
-				s.set(r.getSimpleID(), r);
+				s.set(r.getSimpleID());
 			}
 		}
-		s.addAll(_genericInterests);
 		Set<IRouter> specifics = _globalSpecificInterests.get(item);
 		if(specifics != null){
 			for(IRouter r:specifics){
-				s.set(r.getSimpleID(), r);
+				s.set(r.getSimpleID());
 			}
 		}
 		specifics = _globalSpecificInterests.get(item.getUndamaged());
 		if(specifics != null){
 			for(IRouter r:specifics){
-				s.set(r.getSimpleID(), r);
+				s.set(r.getSimpleID());
 			}
 		}
 		specifics = _globalSpecificInterests.get(item.getIgnoringNBT());
 		if(specifics != null){
 			for(IRouter r:specifics){
-				s.set(r.getSimpleID(), r);
+				s.set(r.getSimpleID());
 			}
 		}
 		return s;

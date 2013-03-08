@@ -59,10 +59,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
 		if (sourceRouter == null) return null;
-		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
-			if(r == null) continue;
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(stack);
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);
@@ -208,10 +208,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.clearDestination();
 
-		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
-			if(r == null) continue;
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);

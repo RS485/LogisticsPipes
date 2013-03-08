@@ -20,6 +20,7 @@ import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
@@ -408,10 +409,11 @@ public class RequestManager {
 	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode) {
 		
 		// get all the routers
-		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
-			if(r == null) continue;
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
+
 			ExitRoute e = treeNode.target.getRouter().getDistanceTo(r);
 			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)
@@ -584,10 +586,11 @@ outer:
 	private static void checkProvider(RequestTree tree, RequestTreeNode treeNode) {
 		CoreRoutedPipe thisPipe = treeNode.target.getRouter().getPipe();
 		// get all the routers
-		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
-		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
-			if(r == null) continue;
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
+
 			ExitRoute e = treeNode.target.getRouter().getDistanceTo(r);
 			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)

@@ -62,6 +62,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
+			if(r == null) continue;
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);
@@ -210,6 +211,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
+			if(r == null) continue;
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);

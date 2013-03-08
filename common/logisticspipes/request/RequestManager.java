@@ -411,6 +411,7 @@ public class RequestManager {
 		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
 		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
+			if(r == null) continue;
 			ExitRoute e = treeNode.target.getRouter().getDistanceTo(r);
 			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)
@@ -586,6 +587,7 @@ outer:
 		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(treeNode.getStack().getItem());
 		List<ExitRoute> validSources = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
+			if(r == null) continue;
 			ExitRoute e = treeNode.target.getRouter().getDistanceTo(r);
 			//ExitRoute e = r.getDistanceTo(requester.getRouter());
 			if (e!=null)

@@ -204,6 +204,7 @@ public class RequestHandler {
 		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
+			if(r == null) continue;
 			if(r.getPipe() instanceof ILiquidProvider){
 				ExitRoute e = requester.getRouter().getDistanceTo(r);
 				if (e!=null)

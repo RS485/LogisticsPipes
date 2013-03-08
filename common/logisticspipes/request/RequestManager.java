@@ -268,10 +268,8 @@ public class RequestManager {
 			this.sizeOfLastNodeRequst = 0;
 			this.setSize = crafter.getValue1().getResultStack().stackSize;
 //			this.maxWorkSetsAvailable = calculateMaxWork();
-			CraftingTemplate template = crafter.getValue1();
-			List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
-			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;		}
+			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
+		}
 		
 		int calculateMaxWork(){
 			CraftingTemplate template = crafter.getValue1();

@@ -10,6 +10,7 @@ package logisticspipes.logistics;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -58,7 +59,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
 		if (sourceRouter == null) return null;
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
+		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 			ExitRoute e = sourceRouter.getDistanceTo(r);
@@ -206,7 +207,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.clearDestination();
 
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
+		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 			ExitRoute e = sourceRouter.getDistanceTo(r);

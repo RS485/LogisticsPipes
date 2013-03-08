@@ -11,6 +11,7 @@ package logisticspipes.routing;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -872,7 +873,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return this._hasInterestIn.contains(item);
 	}
 	
-	public static Set<IRouter> getRoutersInterestedIn(ItemIdentifier item) {
+	public static Collection<IRouter> getRoutersInterestedIn(ItemIdentifier item) {
 		Set<IRouter> s = new TreeSet<IRouter>();
 		s.addAll(_genericInterests);
 		Set<IRouter> specifics = _globalSpecificInterests.get(item);

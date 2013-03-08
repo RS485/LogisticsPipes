@@ -1,6 +1,7 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -200,7 +201,7 @@ public class RequestHandler {
 		}
 		
 		// get all the routers
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
+		Collection<IRouter> routers = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
 		for(IRouter r:routers){
 			if(r.getPipe() instanceof ILiquidProvider){

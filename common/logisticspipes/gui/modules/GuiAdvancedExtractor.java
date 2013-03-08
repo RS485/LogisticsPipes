@@ -32,17 +32,15 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-       //Default item toggle:
-       controlList.clear();
-       controlList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20, new GuiStringHandlerButton.StringHandler(){
-   		@Override
-   		public String getContent() {
-   			return _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
-   		}}));
-       
-       if(_advancedExtractor.connectedToSidedInventory() || slot == 20) {
-    	   controlList.add(new GuiButton(1, width / 2 - 25, height / 2 - 34, 40, 20, "Sneaky"));
-       }
+		//Default item toggle:
+		controlList.clear();
+		controlList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20, new GuiStringHandlerButton.StringHandler(){
+			@Override
+			public String getContent() {
+				return _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
+			}}));
+
+		controlList.add(new GuiButton(1, width / 2 - 25, height / 2 - 34, 40, 20, "Sneaky"));
 	}
 	
 	@Override
@@ -58,9 +56,6 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 				}
 				break;
 			case 1:
-				if(!_advancedExtractor.connectedToSidedInventory() && slot != 20) {
-					controlList.remove(1);
-				}
 				if(slot != 20) {
 					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
 				} else {
@@ -79,11 +74,11 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-	    }
-	    
-	    this.inventorySlots = dummy;
+		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+		}
+
+		this.inventorySlots = dummy;
 		xSize = 175;
 		ySize = 142;
 	}

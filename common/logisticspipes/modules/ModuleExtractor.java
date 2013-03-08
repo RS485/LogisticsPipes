@@ -109,28 +109,27 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		//convert sneakyorientation to sneakydirection
-		if(nbttagcompound.hasKey("sneakyorientation")) {
+		if(nbttagcompound.hasKey("sneakydirection")) {
+			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
+		} else if(nbttagcompound.hasKey("sneakyorientation")) {
+			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch(t) {
-				case 0:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
-					break;
-				case 1:
-					_sneakyDirection = ForgeDirection.UP;
-					break;
-				case 2:
-					_sneakyDirection = ForgeDirection.SOUTH;
-					break;
-				case 3:
-					_sneakyDirection = ForgeDirection.DOWN;
-					break;
-				default:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
+			default:
+			case 0:
+				_sneakyDirection = ForgeDirection.UNKNOWN;
+				break;
+			case 1:
+				_sneakyDirection = ForgeDirection.UP;
+				break;
+			case 2:
+				_sneakyDirection = ForgeDirection.SOUTH;
+				break;
+			case 3:
+				_sneakyDirection = ForgeDirection.DOWN;
+				break;
 			}
-			return;
 		}
-		_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
 	}
 
 	@Override
@@ -207,8 +206,8 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
-		list.add("Extraction: " + _sneakyDirection.name());
+		List<String> list = new ArrayList<String>(1);
+		list.add("Extraction: " + ((_sneakyDirection == ForgeDirection.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
 		return list;
 	}
 

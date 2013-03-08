@@ -10,6 +10,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
@@ -32,26 +33,10 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 	public void renderContent() {
 		if(selected == 0) {
 			Minecraft mc = FMLClientHandler.instance().getClient();
-			mc.fontRenderer.drawString("Default" , -12, -22, 0);
-			mc.fontRenderer.drawString("Top" , -12, -9, 0);
-			mc.fontRenderer.drawString("Side" , -12, 5, 0);
-			mc.fontRenderer.drawString("Bottom" , -12, 18, 0);
-			
-			switch(module.getSneakyDirection()) {
-			case UNKNOWN:
-				mc.fontRenderer.drawString("X" , -22, -22, 0);
-				break;
-			case UP:
-				mc.fontRenderer.drawString("X" , -22, -9, 0);
-				break;
-			case SOUTH:
-				mc.fontRenderer.drawString("X" , -22, 5, 0);
-				break;
-			case DOWN:
-				mc.fontRenderer.drawString("X" , -22, 18, 0);
-				break;
-			default:
-			}
+			ForgeDirection d = module.getSneakyDirection();
+			mc.fontRenderer.drawString("Extract" , -22, -22, 0);
+			mc.fontRenderer.drawString("from:" , -22, -9, 0);
+			mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()) , -22, 18, 0);
 		} else {
 			Minecraft mc = FMLClientHandler.instance().getClient();
 			GL11.glScalef(1.0F, 1.0F, -0.00001F);

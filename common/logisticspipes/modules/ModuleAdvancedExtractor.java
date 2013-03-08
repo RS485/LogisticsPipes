@@ -95,28 +95,27 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound);
 		setItemsIncluded(nbttagcompound.getBoolean("itemsIncluded"));
-		//convert sneakyorientation to sneakydirection
-		if(nbttagcompound.hasKey("sneakyorientation")) {
+		if(nbttagcompound.hasKey("sneakydirection")) {
+			_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
+		} else if(nbttagcompound.hasKey("sneakyorientation")) {
+			//convert sneakyorientation to sneakydirection
 			int t = nbttagcompound.getInteger("sneakyorientation");
 			switch(t) {
-				case 0:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
-					break;
-				case 1:
-					_sneakyDirection = ForgeDirection.UP;
-					break;
-				case 2:
-					_sneakyDirection = ForgeDirection.SOUTH;
-					break;
-				case 3:
-					_sneakyDirection = ForgeDirection.DOWN;
-					break;
-				default:
-					_sneakyDirection = ForgeDirection.UNKNOWN;
+			default:
+			case 0:
+				_sneakyDirection = ForgeDirection.UNKNOWN;
+				break;
+			case 1:
+				_sneakyDirection = ForgeDirection.UP;
+				break;
+			case 2:
+				_sneakyDirection = ForgeDirection.SOUTH;
+				break;
+			case 3:
+				_sneakyDirection = ForgeDirection.DOWN;
+				break;
 			}
-			return;
 		}
-		_sneakyDirection = ForgeDirection.values()[nbttagcompound.getInteger("sneakydirection")];
 	}
 
 	@Override
@@ -155,11 +154,6 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 
 	protected ItemSendMode itemSendMode() {
 		return ItemSendMode.Normal;
-	}
-
-	public boolean connectedToSidedInventory() {
-		if(_invProvider == null) return false;
-		return _invProvider.getRawInventory() instanceof ISidedInventory;
 	}
 
 	@Override
@@ -252,9 +246,9 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 
 	@Override
 	public List<String> getClientInformation() {
-		List<String> list = new ArrayList<String>();
+		List<String> list = new ArrayList<String>(5);
 		list.add(areItemsIncluded() ? "Included" : "Excluded");
-		list.add("Extraction: " + _sneakyDirection.name());
+		list.add("Extraction: " + ((_sneakyDirection == ForgeDirection.UNKNOWN) ? "DEFAULT" : _sneakyDirection.name()));
 		list.add("Filter: ");
 		list.add("<inventory>");
 		list.add("<that>");

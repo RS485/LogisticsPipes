@@ -255,65 +255,26 @@ public class RequestManager {
 		private final RequestTree tree; // root tree
 		private final RequestTreeNode treeNode; // current node we are calculating
 		private List<RequestTreeNode> lastNode; // proposed children.
-		private int sizeOfLastNodeRequst; // to avoid recalc'ing when we request promises for the tree we already have .
+		private int sizeOfLastNodeRequest; // to avoid recalc'ing when we request promises for the tree we already have .
 
 		public final Pair<CraftingTemplate, List<IFilter>> crafter;
 		public final int originalToDo;
-		CraftingSorterNode(Pair<CraftingTemplate, List<IFilter>> crafter, int maxCount, RequestTree tree, RequestTreeNode treeNode){
+
+		CraftingSorterNode(Pair<CraftingTemplate, List<IFilter>> crafter, int maxCount, RequestTree tree, RequestTreeNode treeNode) {
 			this.crafter = crafter;
 			this.tree = tree;
 			this.treeNode = treeNode;
 			this.originalToDo = crafter.getValue1().getCrafter().getTodo();
 			this.stacksOfWorkRequested = 0;
-			this.sizeOfLastNodeRequst = 0;
+			this.sizeOfLastNodeRequest = 0;
 			this.setSize = crafter.getValue1().getResultStack().stackSize;
-//			this.maxWorkSetsAvailable = calculateMaxWork();
 			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
 		}
-		
-		int calculateMaxWork(){
-			CraftingTemplate template = crafter.getValue1();
-			List<Pair<ItemIdentifierStack,IRequestItems>> components = template.getSource();
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(components.size());
-			int nCraftingSetsNeeded = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
-			if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
-				return 0;
-			// for each thing needed to satisfy this promise
-			for(Pair<ItemIdentifierStack,IRequestItems> stack : components) {
-				Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-				pair.getValue1().stackSize *= nCraftingSetsNeeded;
-				stacks.add(pair);
-			}
-			
-			boolean failed = false;
-			
-			int workSetsAvailable = nCraftingSetsNeeded;
-			lastNode = new ArrayList<RequestTreeNode>(components.size());
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
-				lastNode.add(node);
-				node.declareCrafterUsed(template);
-				if(!generateRequestTree(tree, node)) {
-					failed = true;
-				}			
-			}
-			if(failed) {
-				//save last tried template for filling out the tree
-				treeNode.lastCrafterTried = template;
-				//figure out how many we can actually get
-				for(int i = 0; i < components.size(); i++) {
-					workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / components.get(i).getValue1().stackSize);
-				}
-				return generateRequestTreeFor(workSetsAvailable);
-			}
-			sizeOfLastNodeRequst = workSetsAvailable;
-			return workSetsAvailable;
-		}
-		
+
 		private int generateRequestTreeFor(int workSetsAvailable) {
-			if(workSetsAvailable == this.sizeOfLastNodeRequst)
+			if(workSetsAvailable == this.sizeOfLastNodeRequest)
 				return workSetsAvailable;
-			sizeOfLastNodeRequst = workSetsAvailable;
+			sizeOfLastNodeRequest = workSetsAvailable;
 			if(lastNode!=null)
 				treeNode.remove(lastNode);
 			
@@ -349,18 +310,12 @@ public class RequestManager {
 			return workSetsAvailable;
 		}
 
-/*		int getWorkSetsAvailableForCrafting() {
-			return this.maxWorkSetsAvailable-this.stacksOfWorkRequested;
-		}*/
-		
 		int addToWorkRequest(int extraWork) {
 			int stacksRequested = (extraWork+setSize-1)/setSize;
-//			stacksRequested = Math.min(getWorkSetsAvailableForCrafting(), stacksRequested);
 			stacksOfWorkRequested += stacksRequested;
 			return stacksRequested*setSize;
 		}
-		
-		
+
 		/**
 		 * Add promises for the requested work to the tree.
 		 */
@@ -386,7 +341,6 @@ public class RequestManager {
 			stacksOfWorkRequested=0; // just incase we call it twice.
 			return setsToCraft *setSize;
 		}
-		
 
 		@Override
 		public int compareTo(CraftingSorterNode o) {
@@ -401,9 +355,10 @@ public class RequestManager {
 			treeNode.remove(lastNode);
 			lastNode.clear();
 			stacksOfWorkRequested = 0;
-			sizeOfLastNodeRequst = 0;		
+			sizeOfLastNodeRequest = 0;
 		}
 	}
+
 	private static void checkCrafting(RequestTree tree, RequestTreeNode treeNode) {
 		
 		// get all the routers

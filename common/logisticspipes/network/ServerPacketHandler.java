@@ -1360,7 +1360,7 @@ public class ServerPacketHandler {
 	private static void onSecurityCardButton(EntityPlayerMP player, PacketPipeInteger packet) {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
-			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer);
+			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer, player);
 		}
 	}
 

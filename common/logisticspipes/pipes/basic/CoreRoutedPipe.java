@@ -555,7 +555,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(MainProxy.isServer(world)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
 			if(station != null) {
-				settings = station.getSecuritySettingsForPlayer(entityplayer);
+				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
 		}
 		if(handleClick(world, i, j, k, entityplayer, settings)) return true;
@@ -708,13 +708,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return isPipeConnected(tile, dir, false);
 	}
 	
+	public boolean globalIgnoreConnectionDisconnection = false;
+	
 	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
 		if(!stillNeedReplace) {
-			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection) {
+			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
 				return false;
 			}
 		}

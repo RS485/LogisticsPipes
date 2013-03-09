@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.items.LogisticsItemCard;
@@ -26,6 +27,9 @@ import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.Position;
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider {
@@ -134,7 +138,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		par1nbtTagCompound.setTag("settings", list);
 	}
 
-	public void buttonFreqCard(int integer) {
+	public void buttonFreqCard(int integer, EntityPlayer player) {
 		switch(integer) {
 		case 0: //--
 			inv.setInventorySlotContents(0, null);
@@ -147,6 +151,10 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			}
 			break;
 		case 2: //+
+			if(!useEnergy(10)) {
+				player.sendChatToPlayer("No Energy");
+				return;
+			}
 			if(inv.getStackInSlot(0) == null) {
 				ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 1, LogisticsItemCard.SEC_CARD);
 				stack.setTagCompound(new NBTTagCompound("tag"));
@@ -161,6 +169,10 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			}
 			break;
 		case 3: //++
+			if(!useEnergy(640)) {
+				player.sendChatToPlayer("No Energy");
+				return;
+			}
 			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
 			stack.setTagCompound(new NBTTagCompound("tag"));
 			stack.getTagCompound().setString("UUID", getSecId().toString());
@@ -189,7 +201,11 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		setting.readFromNBT(tag);
 	}
 
-	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer) {
+	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer, boolean usePower) {
+		if(usePower && !useEnergy(10)) {
+			entityplayer.sendChatToPlayer("No Energy");
+			return new SecuritySettings("No Energy");
+		}
 		SecuritySettings setting = settingsList.get(entityplayer.username);
 		if(setting == null) {
 			setting = new SecuritySettings(entityplayer.username);
@@ -205,6 +221,29 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	@Override
 	public boolean getAllowCC() {
+		if(!useEnergy(10)) return false;
 		return allowCC;
+	}
+	
+	private boolean useEnergy(int amount) {
+		for(int i=0;i<4;i++) {
+			Position pos = new Position(this);
+			pos.orientation = ForgeDirection.VALID_DIRECTIONS[i + 2];
+			pos.moveForwards(1);
+			TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			if(tile instanceof IRoutedPowerProvider) {
+				if(((IRoutedPowerProvider)tile).useEnergy(amount)) {
+					return true;
+				}
+			}
+			if(tile instanceof TileGenericPipe) {
+				if(((TileGenericPipe)tile).pipe instanceof IRoutedPowerProvider) {
+					if(((IRoutedPowerProvider)((TileGenericPipe)tile).pipe).useEnergy(amount)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }

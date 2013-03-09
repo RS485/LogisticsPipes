@@ -2,6 +2,7 @@ package appeng.api.me.tiles;
 
 import java.util.List;
 
+import appeng.api.InterfaceCraftingRequest;
 import appeng.api.me.util.IMEInventory;
 
 import net.minecraft.item.ItemStack;
@@ -17,5 +18,9 @@ public interface ITileInterfaceApi {
 	List<ItemStack> apiGetNetworkContents();
 
 	IMEInventory getApiArray();
+	
+	List<ItemStack> getCraftingOptions();
+	
+	InterfaceCraftingRequest requestCrafting( ItemStack req, boolean calculateOnly );
 	
 }

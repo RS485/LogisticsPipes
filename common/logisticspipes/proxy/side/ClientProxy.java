@@ -1,5 +1,6 @@
 package logisticspipes.proxy.side;
 
+import buildcraft.transport.TileGenericPipe;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.CraftingSignRenderer;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
@@ -20,9 +21,13 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.LogisticsPipesTextureStatic;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldServer;
+import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.TextureFXManager;
 import cpw.mods.fml.client.registry.ClientRegistry;
@@ -124,4 +129,47 @@ public class ClientProxy implements IProxy {
 	public void sendNameUpdateRequest(Player player) {
 		//Not Client Side
 	}
+
+	@Override
+	public int getDimensionForWorld(World world) {
+		if(world instanceof WorldServer) {
+			return ((WorldServer)world).provider.dimensionId;
+		}
+		if(world instanceof WorldClient) {
+			return ((WorldClient)world).provider.dimensionId;
+		}
+		return world.getWorldInfo().getDimension();
+	}
+
+	@Override
+	public TileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
+		return getPipe(DimensionManager.getWorld(dimension), x, y, z);
+	}
+
+	// BuildCraft method
+	/**
+	 * Retrieves pipe at specified coordinates if any.
+	 * 
+	 * @param world
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
+	private static TileGenericPipe getPipe(World world, int x, int y, int z) {
+		if(world == null) {
+			return null;
+		}
+		if (!world.blockExists(x, y, z)) {
+			return null;
+		}
+
+		final TileEntity tile = world.getBlockTileEntity(x, y, z);
+		if (!(tile instanceof TileGenericPipe)) {
+			return null;
+		}
+
+		return (TileGenericPipe) tile;
+	}
+	// BuildCraft method end
 }

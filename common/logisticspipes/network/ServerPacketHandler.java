@@ -498,7 +498,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(packet.dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -511,7 +511,7 @@ public class ServerPacketHandler {
 	}
 	
 	private static void onRequestComponents(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(packet.dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -525,7 +525,7 @@ public class ServerPacketHandler {
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
 		int dimension = (packet.integer - (packet.integer % 10)) / 10;
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -1264,7 +1264,7 @@ public class ServerPacketHandler {
 
 	private static void onLiquidRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
 		int dimension = packet.integer;
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -1277,7 +1277,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onLiquidRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(packet.dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}

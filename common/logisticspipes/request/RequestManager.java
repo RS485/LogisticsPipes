@@ -55,17 +55,26 @@ public class RequestManager {
 			if(c != 0) {
 				return (int)c;
 			}
+			int flip = 1; // for enforcing consistancy of a<b vs b>a;
+			if((o1.destination.getSimpleID() - o2.destination.getSimpleID()) < 0) {
+				flip = -1;
+				ExitRoute o_temp = o1;
+				o1 = o2;
+				o2 = o_temp;
+				
+			}
+				
 			c = o1.destination.getCachedPipe().getLoadFactor() - o2.destination.getCachedPipe().getLoadFactor();
 			if(distanceWeight != 0) {
 				c += (o1.distanceToDestination - o2.distanceToDestination) * distanceWeight;
 			}
 			if(c==0) {
-				return o1.destination.getSimpleID() - o2.destination.getSimpleID();
+				return -flip; // lowest ID first, of same distance.
 			}
 			if(c>0)
-				return (int)(c+0.5); //round up
+				return (int)(c+0.5)*flip; //round up
 			else
-				return (int)(c-0.5); //round down
+				return (int)(c-0.5)*flip; //round down
 		}
 		
 	}

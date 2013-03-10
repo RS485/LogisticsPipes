@@ -62,7 +62,10 @@ public class RequestManager {
 			if(c==0) {
 				return o1.destination.getSimpleID() - o2.destination.getSimpleID();
 			}
-			return (int)(c+0.5); //round
+			if(c>0)
+				return (int)(c+0.5); //round up
+			else
+				return (int)(c-0.5); //round down
 		}
 		
 	}

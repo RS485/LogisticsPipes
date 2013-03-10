@@ -54,7 +54,7 @@ public class RequestTreeNode {
 	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
 	protected SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
-	protected CraftingTemplate lastCrafterTried = null;
+	public CraftingTemplate lastCrafterTried = null;
 	
 	private int promiseItemCount = 0;
 
@@ -240,8 +240,8 @@ public class RequestTreeNode {
 
 	private boolean checkProvider(RequestTree root) {
 		
-		CoreRoutedPipe thisPipe = this.target.getPipe();
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target, this.getStack().getItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
+		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStack().getItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			if(this.isDone()) {
 				break;
 			}
@@ -489,11 +489,11 @@ outer:
 			sizeOfLastNodeRequest = nCraftingSetsNeeded;  
 			
 			CraftingTemplate template = crafter.getValue1();
-			List<RequestTreeNode> stacks= template.getSubRequests(nCraftingSetsNeeded, tree,treeNode);
+			int stacks= template.getSubRequests(nCraftingSetsNeeded, tree,treeNode);
 			
 			
 			
-			return treeNode.getPromiseItemCount()/setSize;
+			return stacks/setSize;
 		}
 
 

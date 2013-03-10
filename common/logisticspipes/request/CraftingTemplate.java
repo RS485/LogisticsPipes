@@ -43,9 +43,9 @@ import logisticspipes.utils.Pair;
 
 public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
-	private ItemIdentifierStack _result;
-	private ICraftItems _crafter;
-	private ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
+	protected ItemIdentifierStack _result;
+	protected ICraftItems _crafter;
+	protected ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
 	private final int priority;
 	
 	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
@@ -105,7 +105,71 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		return _result.getItem();
 	}
 
+	protected List<Pair<ItemIdentifierStack, IRequestItems>> getComponentItems(
+			int nCraftingSetsNeeded) {
+		List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(_required.size());
 
+
+		// for each thing needed to satisfy this promise
+		for(Pair<ItemIdentifierStack,IRequestItems> stack : _required) {
+			Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+			pair.getValue1().stackSize *= nCraftingSetsNeeded;
+			stacks.add(pair);
+		}
+		return stacks;
+	}
+	
+	public int getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode){
+		boolean failed = false;
+		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = this.getComponentItems(nCraftingSetsNeeded);
+		int workSetsAvailable = nCraftingSetsNeeded;
+		ArrayList<RequestTreeNode>lastNode = new ArrayList<RequestTreeNode>(stacks.size());
+		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), currentNode);
+			lastNode.add(node);
+			node.declareCrafterUsed(this);
+			if(!node.generateSubRequests(root)) {
+				failed = true;
+			}			
+		}
+		if(failed) {
+			//save last tried template for filling out the tree
+			currentNode.lastCrafterTried = this;
+			//figure out how many we can actually get
+			for(int i = 0; i < stacks.size(); i++) {
+				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() /_required.get(i).getValue1().stackSize);
+			}
+			return generateRequestTreeFor(workSetsAvailable, root, currentNode);
+		}
+		return workSetsAvailable;
+	}
+	
+
+	protected int generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {
+		
+		//and try it
+		ArrayList<RequestTreeNode> newChildren = new ArrayList<RequestTreeNode>();
+		if(workSetsAvailable >0) {
+			//now set the amounts
+			
+			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = this.getComponentItems(workSetsAvailable);
+
+			boolean failed = false;
+			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), currentNode);
+				newChildren.add(node);
+				node.declareCrafterUsed(this);
+				if(!node.generateSubRequests(root)) {
+					failed = true;
+				}			
+			}
+			if(failed) {
+				currentNode.remove(newChildren);
+				return 0;
+			}
+		}
+		return workSetsAvailable;
+	}
 
 	public static class workWeightedSorter implements Comparator<ExitRoute> {
 
@@ -244,72 +308,6 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		for(RequestTreeNode subNode : treeNode.subRequests) {
 			recurseFailedRequestTree(tree, subNode);
 		}
-	}
-
-	public List<Pair<ItemIdentifierStack, IRequestItems>> getComponentItems(
-			int nCraftingSetsNeeded) {
-		List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(_required.size());
-
-
-		// for each thing needed to satisfy this promise
-		for(Pair<ItemIdentifierStack,IRequestItems> stack : _required) {
-			Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-			pair.getValue1().stackSize *= nCraftingSetsNeeded;
-			stacks.add(pair);
-		}
-		return stacks;
-	}
-	
-	public List<RequestTreeNode> getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode){
-		boolean failed = false;
-		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = this.getComponentItems(nCraftingSetsNeeded);
-		int workSetsAvailable = nCraftingSetsNeeded;
-		ArrayList<RequestTreeNode>lastNode = new ArrayList<RequestTreeNode>(stacks.size());
-		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), currentNode);
-			lastNode.add(node);
-			node.declareCrafterUsed(this);
-			if(!node.generateSubRequests(root)) {
-				failed = true;
-			}			
-		}
-		if(failed) {
-			//save last tried template for filling out the tree
-			currentNode.lastCrafterTried = this;
-			//figure out how many we can actually get
-			for(int i = 0; i < stacks.size(); i++) {
-				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() /_required.get(i).getValue1().stackSize);
-			}
-			return generateRequestTreeFor(workSetsAvailable, root, currentNode);
-		}
-		return lastNode;
-	}
-	
-
-	private ArrayList<RequestTreeNode> generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {
-		
-		//and try it
-		ArrayList<RequestTreeNode> newChildren = new ArrayList<RequestTreeNode>();
-		if(workSetsAvailable >0) {
-			//now set the amounts
-			
-			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = this.getComponentItems(workSetsAvailable);
-
-			boolean failed = false;
-			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), currentNode);
-				newChildren.add(node);
-				node.declareCrafterUsed(this);
-				if(!node.generateSubRequests(root)) {
-					failed = true;
-				}			
-			}
-			if(failed) {
-				currentNode.remove(newChildren);
-				return null;
-			}
-		}
-		return newChildren;
 	}
 
 	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<ExitRoute> list, RequestLog log) {

@@ -19,7 +19,7 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.RequestManager;
+import logisticspipes.request.CraftingTemplate;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -121,12 +121,12 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				boolean success = false;
 
 				if(_requestPartials) {
-					countToRequest = RequestManager.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
+					countToRequest = CraftingTemplate.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
 					if(countToRequest > 0) {
 						success = true;
 					}
 				} else {
-					success = RequestManager.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
+					success = CraftingTemplate.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
 				}
 				
 				if (success){

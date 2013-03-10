@@ -299,11 +299,15 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		}
 	}
 	
-	private ItemIdentifier providedItem(){
+	private List<ItemIdentifier> providedItem(){
 		BaseLogicCrafting craftingLogic = (BaseLogicCrafting) this.logic;
-		ItemStack stack = craftingLogic.getCraftedItem(); 
-		if (stack == null) return null;
-		return ItemIdentifier.get(stack);
+		List<ItemStack> stacks = craftingLogic.getCraftedItem(); 
+		if (stacks == null) return null;
+		List<ItemIdentifier> l = new ArrayList<ItemIdentifier>(stacks.size());
+		for(ItemStack stack:stacks){
+			l.add(ItemIdentifier.get(stack));
+		}
+		return l;
 	}
 	
 
@@ -407,7 +411,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void getAllItems(Map<ItemIdentifier, Integer> list,List<IFilter> filters) {}
 
 	@Override
-	public ItemIdentifier getCraftedItem() {
+	public List<ItemIdentifier> getCraftedItems() {
 		if (!isEnabled()){
 			return null;
 		}

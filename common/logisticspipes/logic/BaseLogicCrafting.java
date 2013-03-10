@@ -1,5 +1,6 @@
 package logisticspipes.logic;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,7 +22,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.request.RequestManager;
+import logisticspipes.request.CraftingTemplate;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
@@ -285,7 +286,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 					continue;
 				}
 			}
-			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			int received = CraftingTemplate.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received < stack.stackSize) {
 				stack.stackSize -= received;
 				_lostItems.add(new DelayedGeneric(stack,5000));
@@ -430,8 +431,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 	
 	/* ** INTERFACE TO PIPE ** */
-	public ItemStack getCraftedItem() {
-		return _dummyInventory.getStackInSlot(9);
+	public List<ItemStack> getCraftedItem() {
+		//TODO: AECrafting check.
+		List<ItemStack> list = new ArrayList<ItemStack>(1);
+		list.add(_dummyInventory.getStackInSlot(9));
+		return list;
 	}
 
 	public ItemStack getMaterials(int slotnr) {

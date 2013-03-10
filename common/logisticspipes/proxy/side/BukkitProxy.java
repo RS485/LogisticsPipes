@@ -32,7 +32,7 @@ public class BukkitProxy extends ServerProxy {
 		for(Integer dim:DimensionManager.getIDs()) {
 			World world = DimensionManager.getWorld(dim);
 			if(world.getWorldInfo().getDimension() != dimension) continue;
-			pipe = getPipe(player.worldObj, x, y, z);
+			pipe = getPipe(world, x, y, z);
 			if(pipe != null) return pipe;
 		}
 		return null;

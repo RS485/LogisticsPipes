@@ -49,7 +49,7 @@ public class RequestHandler {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe
+		CraftingTemplate.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe
 				, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
@@ -73,7 +73,7 @@ public class RequestHandler {
 	public static void simulate(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
 		final LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
 		final LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
-		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, new RequestLog() {
+		CraftingTemplate.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				//Not needed
@@ -139,7 +139,7 @@ public class RequestHandler {
 			transaction.add(stack);
 			items.add(new ItemMessage(stack));
 		}
-		RequestManager.request(transaction, requester, new RequestLog() {
+		CraftingTemplate.request(transaction, requester, new RequestLog() {
 			
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
@@ -166,7 +166,7 @@ public class RequestHandler {
 		QueuedTasks.queueTask(new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				RequestManager.request(makeStack, pipe, new RequestLog() {
+				CraftingTemplate.request(makeStack, pipe, new RequestLog() {
 					@Override
 					public void handleSucessfullRequestOf(ItemMessage item) {
 						pipe.queueEvent("request_successfull", new Object[]{request_id});
@@ -210,7 +210,7 @@ public class RequestHandler {
 					validDestinations.add(e);
 			}
 		}
-		RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, validDestinations, new RequestLog() {
+		CraftingTemplate.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, validDestinations, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();

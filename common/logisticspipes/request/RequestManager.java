@@ -289,6 +289,9 @@ public class RequestManager {
 				stacks.add(pair);
 			}
 			
+			// update how many things are currently hanging in the tree.
+			sizeOfLastNodeRequest = nCraftingSetsNeeded;  
+			
 			boolean failed = false;
 			
 			int workSetsAvailable = nCraftingSetsNeeded;

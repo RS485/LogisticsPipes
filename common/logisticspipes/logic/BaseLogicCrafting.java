@@ -27,6 +27,7 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.DelayedGeneric;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
@@ -431,7 +432,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 	
 	/* ** INTERFACE TO PIPE ** */
-	public List<ItemStack> getCraftedItem() {
+	public List<ItemStack> getCraftedItems() {
 		//TODO: AECrafting check.
 		List<ItemStack> list = new ArrayList<ItemStack>(1);
 		list.add(_dummyInventory.getStackInSlot(9));

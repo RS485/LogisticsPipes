@@ -188,7 +188,7 @@ public class RequestTreeNode {
 		}
 		for(LogisticsPromise promise:extrapromises) {
 			if(promise.sender instanceof ICraftItems) {
-				((ICraftItems)promise.sender).registerExtras(promise.numberOfItems);
+				((ICraftItems)promise.sender).registerExtras(promise);
 			}
 		}
 	}
@@ -339,7 +339,7 @@ public class RequestTreeNode {
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);
 		
-		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
+		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStack().getItem(),validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		Iterator<Pair<CraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
@@ -549,7 +549,7 @@ outer:
 		}
 	}
 
-	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(List<ExitRoute> validDestinations, BitSet layer, List<IFilter> filters) {
+	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations, BitSet layer, List<IFilter> filters) {
 		List<Pair<CraftingTemplate,List<IFilter>>> crafters = new ArrayList<Pair<CraftingTemplate,List<IFilter>>>(validDestinations.size());
 		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
@@ -558,7 +558,7 @@ outer:
 			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
 				if (pipe instanceof ICraftItems){
 					used.set(r.destination.getSimpleID());
-					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting();
+					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting(itemToCraft);
 					if(craftable!=null) {
 						for(IFilter filter: filters) {
 							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultItem().getUndamaged()) || filter.blockCrafting()) continue;
@@ -577,7 +577,7 @@ outer:
 		for(ExitRoute r:firewalls) {
 			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
 			filters.add(filter);
-			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(((IFilteringRouter)r.destination).getRouters(), used, filters);
+			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(itemToCraft,((IFilteringRouter)r.destination).getRouters(), used, filters);
 			filters.remove(filter);
 			crafters.addAll(list);
 		}

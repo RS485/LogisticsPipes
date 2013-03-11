@@ -1,7 +1,10 @@
 package logisticspipes.blocks;
 
+import java.util.List;
+
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
@@ -91,10 +94,13 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 
         if(pipe != null) {
         	BaseLogicCrafting craftingLogic = (BaseLogicCrafting) pipe.logic;
-    		ItemStack itemstack = craftingLogic.getCraftedItem();
+    		List<ItemStack> craftables = ((BaseLogicCrafting)pipe.logic).getCraftedItems();
+
     		String name = "";
-    		if(itemstack != null) {
-	        	Item item = itemstack.getItem();
+    		if(craftables != null && craftables.size() > 0) {
+    			ItemStack itemstack = craftables.get(0);
+    			//TODO: handle multiple crafables.
+	        	Item item = craftables.get(0).getItem();
 	        	
 	        	if(item == null) return; //Only happens on false configuration
 		        
@@ -102,7 +108,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		        
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
-		        this.bindTextureByName(itemstack.getItem().getTextureFile());
+		        this.bindTextureByName(item.getTextureFile());
 				//ForgeHooksClient.overrideTexture(itemstack.getItem());
 		        
 				if(customRenderer != null) {

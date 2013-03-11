@@ -119,7 +119,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		return stacks;
 	}
 	
-	public int getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode){
+	public int getSubRequests(int nCraftingSetsNeeded, RequestTreeNode currentNode){
 		boolean failed = false;
 		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = this.getComponentItems(nCraftingSetsNeeded);
 		int workSetsAvailable = nCraftingSetsNeeded;
@@ -128,24 +128,27 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), currentNode);
 			lastNode.add(node);
 			node.declareCrafterUsed(this);
-			if(!node.generateSubRequests(root)) {
+			if(!node.generateSubRequests()) {
 				failed = true;
 			}			
 		}
 		if(failed) {
+			for (RequestTreeNode n:lastNode) {
+				n.destroy(); // drop the failed requests.
+			}
 			//save last tried template for filling out the tree
 			currentNode.lastCrafterTried = this;
 			//figure out how many we can actually get
 			for(int i = 0; i < stacks.size(); i++) {
 				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() /_required.get(i).getValue1().stackSize);
 			}
-			return generateRequestTreeFor(workSetsAvailable, root, currentNode);
+			return generateRequestTreeFor(workSetsAvailable, currentNode);
 		}
 		return workSetsAvailable;
 	}
 	
 
-	protected int generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {
+	protected int generateRequestTreeFor(int workSetsAvailable, RequestTreeNode currentNode) {
 		
 		//and try it
 		ArrayList<RequestTreeNode> newChildren = new ArrayList<RequestTreeNode>();
@@ -159,12 +162,14 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 				RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), currentNode);
 				newChildren.add(node);
 				node.declareCrafterUsed(this);
-				if(!node.generateSubRequests(root)) {
+				if(!node.generateSubRequests()) {
 					failed = true;
 				}			
 			}
 			if(failed) {
-				currentNode.remove(newChildren);
+				for(RequestTreeNode c:newChildren) {
+					c.destroy();
+				}
 				return 0;
 			}
 		}
@@ -222,7 +227,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		for(ItemIdentifierStack stack:items) {
 			RequestTree node = new RequestTree(stack, requester, tree);
 			messages.add(new ItemMessage(stack));
-			node.generateSubRequests(tree);
+			node.generateSubRequests();
 			isDone = isDone && node.isDone();
 		}
 		if(isDone) {
@@ -248,7 +253,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		tree.generateSubRequests(tree);
+		tree.generateSubRequests();
 		if(tree.isDone()) {
 			tree.fullFillAll();
 			if(log != null) {
@@ -266,7 +271,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		tree.generateSubRequests(tree);
+		tree.generateSubRequests();
 		int r = tree.getPromiseItemCount();
 		if(r > 0) {
 			tree.fullFillAll();
@@ -276,7 +281,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 
 	public static void simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		RequestTree tree = new RequestTree(item, requester, null);
-		tree.generateSubRequests(tree);
+		tree.generateSubRequests();
 		if(log != null) {
 			if(!tree.isDone()) {
 				recurseFailedRequestTree(tree, tree);
@@ -300,7 +305,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
 			RequestTreeNode node = new RequestTreeNode(stack.getValue1(), stack.getValue2(), treeNode);
 			node.declareCrafterUsed(template);
-			node.generateSubRequests(tree);
+			node.generateSubRequests();
 		}
 
 		treeNode.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));

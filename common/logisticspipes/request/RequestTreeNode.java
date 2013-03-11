@@ -119,13 +119,17 @@ public class RequestTreeNode {
 		return request;
 	}
 
-	public void remove(List<RequestTreeNode> subNodes) {
+	private void remove(List<RequestTreeNode> subNodes) {
 		subRequests.removeAll(subNodes);
 		for(RequestTreeNode subnode:subNodes) {
 			subnode.removeSubPromisses();
 		}
 	}
-
+	
+	protected void remove(RequestTreeNode subNode) {
+		subRequests.remove(subNode);
+		subNode.removeSubPromisses();
+	}
 
 	/* RequestTree helpers */
 	protected void removeSubPromisses() {
@@ -226,19 +230,19 @@ public class RequestTreeNode {
 		}
 	}
 	
-	public boolean generateSubRequests(RequestTree root) {
-		if(checkProvider(root)){
+	public boolean generateSubRequests() {
+		if(checkProvider()){
 			return true;
 		}
 		
-		if(checkExtras(root)) {
+		if(checkExtras()) {
 			return true;
 		}
-		checkCrafting(root);
+		checkCrafting();
 		return this.isDone();
-	}		
+	}
 
-	private boolean checkProvider(RequestTree root) {
+	private boolean checkProvider() {
 		
 		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStack().getItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
@@ -296,7 +300,7 @@ public class RequestTreeNode {
 		return providers;
 	}
 	
-	private boolean checkExtras(RequestTree root) {
+	private boolean checkExtras() {
 		LinkedList<LogisticsExtraPromise> map = root.getExtrasFor(this.getStack().getItem());
 		for (LogisticsExtraPromise extraPromise : map){
 			if(this.isDone()) {
@@ -321,9 +325,9 @@ public class RequestTreeNode {
 			}
 		}
 		return isDone();
-	}	
+	}
 	
-	private boolean checkCrafting(RequestTree root) {
+	private boolean checkCrafting() {
 		
 		// get all the routers
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(this.getStack().getItem());
@@ -453,11 +457,10 @@ outer:
 		return isDone();
 	}
 
-	private class CraftingSorterNode implements Comparable<CraftingSorterNode>{
+	private class CraftingSorterNode implements Comparable<CraftingSorterNode> {
 		private int stacksOfWorkRequested;
 		private final int setSize;
 		private final int maxWorkSetsAvailable;
-		private final RequestTree tree; // root tree
 		private final RequestTreeNode treeNode; // current node we are calculating
 		private List<RequestTreeNode> lastNode; // proposed children.
 		private int sizeOfLastNodeRequest; // to avoid recalc'ing when we request promises for the tree we already have .
@@ -467,7 +470,6 @@ outer:
 
 		CraftingSorterNode(Pair<CraftingTemplate, List<IFilter>> crafter, int maxCount, RequestTree tree, RequestTreeNode treeNode) {
 			this.crafter = crafter;
-			this.tree = tree;
 			this.treeNode = treeNode;
 			this.originalToDo = crafter.getValue1().getCrafter().getTodo();
 			this.stacksOfWorkRequested = 0;
@@ -475,6 +477,7 @@ outer:
 			this.setSize = crafter.getValue1().getResultStackSize();
 			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
 		}
+		
 		int calculateMaxWork(int maxSetsToCraft){
 			
 			int nCraftingSetsNeeded;
@@ -489,11 +492,11 @@ outer:
 			sizeOfLastNodeRequest = nCraftingSetsNeeded;  
 			
 			CraftingTemplate template = crafter.getValue1();
-			int stacks= template.getSubRequests(nCraftingSetsNeeded, tree,treeNode);
+			int stacks= template.getSubRequests(nCraftingSetsNeeded, treeNode);
 			
 			
 			
-			return stacks/setSize;
+			return stacks;
 		}
 
 
@@ -506,7 +509,7 @@ outer:
 		/**
 		 * Add promises for the requested work to the tree.
 		 */
-		boolean addWorkPromisesToTree(){
+		boolean addWorkPromisesToTree() {
 			CraftingTemplate template = crafter.getValue1();
 			int setsToCraft = Math.min(this.stacksOfWorkRequested,this.maxWorkSetsAvailable);
 			int setsAbleToCraft = calculateMaxWork(setsToCraft); // Deliberately outside the 0 check, because calling generatePromies(0) here clears the old ones.
@@ -585,5 +588,8 @@ outer:
 //		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
 		return crafters;
 	}
-	
+
+	public void destroy() {
+		root.remove(this);		
+	}
 }

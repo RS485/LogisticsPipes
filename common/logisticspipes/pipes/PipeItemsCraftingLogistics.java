@@ -312,7 +312,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if (stacks == null) return null;
 		List<ItemIdentifier> l = new ArrayList<ItemIdentifier>(stacks.size());
 		for(ItemStack stack:stacks){
-			l.add(ItemIdentifier.get(stack));
+			if(stacks != null)
+				l.add(ItemIdentifier.get(stack));
 		}
 		return l;
 	}

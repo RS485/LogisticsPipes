@@ -435,7 +435,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public List<ItemStack> getCraftedItems() {
 		//TODO: AECrafting check.
 		List<ItemStack> list = new ArrayList<ItemStack>(1);
-		list.add(_dummyInventory.getStackInSlot(9));
+		if(_dummyInventory.getStackInSlot(9)!=null)
+			list.add(_dummyInventory.getStackInSlot(9));
 		return list;
 	}
 

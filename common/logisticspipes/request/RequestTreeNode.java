@@ -19,7 +19,7 @@ import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.request.CraftingTemplate.workWeightedSorter;
+import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
@@ -33,7 +33,10 @@ import logisticspipes.utils.Pair;
 
 public class RequestTreeNode {
 
-	public RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
+	protected RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
+		this(null,item,requester,parentNode);
+	}
+	protected RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
 		this.request = item;
 		this.target = requester;
 		this.parentNode=parentNode;
@@ -43,22 +46,35 @@ public class RequestTreeNode {
 		} else {
 			this.root = (RequestTree)this;
 		}
+		if(template!=null) {
+			this.declareCrafterUsed(template);
+		}
+		
+		if(checkProvider()){
+			return;
+		}
+		
+		if(checkExtras()) {
+			return;
+		}
+		checkCrafting();
+		
 	}
 
 	
-	protected final IRequestItems target;
-	protected final ItemIdentifierStack request;
-	protected final RequestTreeNode parentNode;
+	private final IRequestItems target;
+	private final ItemIdentifierStack request;
+	private final RequestTreeNode parentNode;
 	protected final RequestTree root;
-	protected List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
-	protected List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
-	protected List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
-	protected SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
-	public CraftingTemplate lastCrafterTried = null;
+	private List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
+	private List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
+	private List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
+	private SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
+	private CraftingTemplate lastCrafterTried = null;
 	
 	private int promiseItemCount = 0;
 
-	public boolean isCrafterUsed(CraftingTemplate test) {
+	private boolean isCrafterUsed(CraftingTemplate test) {
 		if(!usedCrafters.isEmpty() && usedCrafters.contains(test))
 			return true;
 		if(parentNode==null)
@@ -67,7 +83,7 @@ public class RequestTreeNode {
 	}
 	
 	// returns false if the crafter was already on the list.
-	public boolean declareCrafterUsed(CraftingTemplate test) {
+	private boolean declareCrafterUsed(CraftingTemplate test) {
 		if(isCrafterUsed(test))
 			return false;
 		usedCrafters.add(test);
@@ -115,8 +131,8 @@ public class RequestTreeNode {
 		return result;
 	}
 
-	public ItemIdentifierStack getStack() {
-		return request;
+	public ItemIdentifier getStackItem() {
+		return request.getItem();
 	}
 
 	private void remove(List<RequestTreeNode> subNodes) {
@@ -199,7 +215,7 @@ public class RequestTreeNode {
 
 	protected void sendMissingMessage(LinkedList<ItemMessage> missing) {
 		if(getMissingItemCount() != 0) {
-			ItemIdentifierStack stack = getStack().clone();
+			ItemIdentifierStack stack = request.clone();
 			stack.stackSize = getMissingItemCount();
 			missing.add(new ItemMessage(stack));
 		}
@@ -216,12 +232,12 @@ public class RequestTreeNode {
 			}
 		}
 		if(usedcount != 0) {
-			ItemIdentifierStack stack = getStack().clone();
+			ItemIdentifierStack stack = request.clone();
 			stack.stackSize = usedcount;
 			used.add(new ItemMessage(stack));
 		}
 		if(getMissingItemCount() != 0) {
-			ItemIdentifierStack stack = getStack().clone();
+			ItemIdentifierStack stack = request.clone();
 			stack.stackSize = getMissingItemCount();
 			missing.add(new ItemMessage(stack));
 		}
@@ -230,27 +246,15 @@ public class RequestTreeNode {
 		}
 	}
 	
-	public boolean generateSubRequests() {
-		if(checkProvider()){
-			return true;
-		}
-		
-		if(checkExtras()) {
-			return true;
-		}
-		checkCrafting();
-		return this.isDone();
-	}
-
 	private boolean checkProvider() {
 		
 		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStack().getItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			if(this.isDone()) {
 				break;
 			}
 			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe())) {
-				provider.getValue1().canProvide(this, root.getAllPromissesFor(provider.getValue1(), this.getStack().getItem()), provider.getValue2());
+				provider.getValue1().canProvide(this, root.getAllPromissesFor(provider.getValue1(), this.getStackItem()), provider.getValue2());
 			}
 		}
 		return this.isDone();
@@ -301,7 +305,7 @@ public class RequestTreeNode {
 	}
 	
 	private boolean checkExtras() {
-		LinkedList<LogisticsExtraPromise> map = root.getExtrasFor(this.getStack().getItem());
+		LinkedList<LogisticsExtraPromise> map = root.getExtrasFor(this.getStackItem());
 		for (LogisticsExtraPromise extraPromise : map){
 			if(this.isDone()) {
 				break;
@@ -330,7 +334,7 @@ public class RequestTreeNode {
 	private boolean checkCrafting() {
 		
 		// get all the routers
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(this.getStack().getItem());
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(this.getStackItem());
 		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
@@ -343,7 +347,7 @@ public class RequestTreeNode {
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);
 		
-		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStack().getItem(),validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
+		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStackItem(),validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		Iterator<Pair<CraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
@@ -374,7 +378,7 @@ outer:
 				CraftingTemplate template = crafter.getValue1();
 				if(this.isCrafterUsed(template)) // then somewhere in the tree we have already used this
 					continue;
-				if(template.canCraft(this.getStack().getItem())) 
+				if(template.canCraft(this.getStackItem())) 
 					continue; // we this is crafting something else		
 				for(IFilter filter:crafter.getValue2()) { // is this filtered for some reason.
 					if(filter.isBlocked() == filter.isFilteredItem(template.getResultItem().getUndamaged()) || filter.blockCrafting()) continue outer;
@@ -492,7 +496,7 @@ outer:
 			sizeOfLastNodeRequest = nCraftingSetsNeeded;  
 			
 			CraftingTemplate template = crafter.getValue1();
-			int stacks= template.getSubRequests(nCraftingSetsNeeded, treeNode);
+			int stacks= getSubRequests(nCraftingSetsNeeded, template);
 			
 			
 			
@@ -589,7 +593,97 @@ outer:
 		return crafters;
 	}
 
-	public void destroy() {
+	private int getSubRequests(int nCraftingSets, CraftingTemplate template){
+		boolean failed = false;
+		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = template.getComponentItems(nCraftingSets);
+		int workSetsAvailable = nCraftingSets;
+		ArrayList<RequestTreeNode>lastNode = new ArrayList<RequestTreeNode>(stacks.size());
+		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+			RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this);
+			lastNode.add(node);
+			if(!node.isDone()) {
+				failed = true;
+			}			
+		}
+		if(failed) {
+			for (RequestTreeNode n:lastNode) {
+				n.destroy(); // drop the failed requests.
+			}
+			//save last tried template for filling out the tree
+			this.lastCrafterTried = template;
+			//figure out how many we can actually get
+			for(int i = 0; i < stacks.size(); i++) {
+				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() /stacks.get(i).getValue1().stackSize/nCraftingSets);
+			}
+			return generateRequestTreeFor(workSetsAvailable, template);
+		}
+		return workSetsAvailable;
+	}
+	
+
+	private int generateRequestTreeFor(int workSets, CraftingTemplate template) {
+		
+		//and try it
+		ArrayList<RequestTreeNode> newChildren = new ArrayList<RequestTreeNode>();
+		if(workSets>0) {
+			//now set the amounts
+			
+			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = template.getComponentItems(workSets);
+
+			boolean failed = false;
+			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this);
+				newChildren.add(node);
+				if(!node.isDone()) {
+					failed = true;
+				}			
+			}
+			if(failed) {
+				for(RequestTreeNode c:newChildren) {
+					c.destroy();
+				}
+				return 0;
+			}
+		}
+		return workSets;
+	}
+
+	void recurseFailedRequestTree() {
+		if(this.isDone())
+			return;
+		if(this.lastCrafterTried == null)
+			return;
+
+		CraftingTemplate template = this.lastCrafterTried;
+
+		int nCraftingSetsNeeded = (this.getMissingItemCount() + template.getResultStackSize() - 1) / template.getResultStackSize();
+
+		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = template.getComponentItems(nCraftingSetsNeeded);
+
+		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
+			RequestTreeNode node = new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this);
+		}
+
+		this.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
+
+		for(RequestTreeNode subNode : this.subRequests) {
+			subNode.recurseFailedRequestTree();
+		}
+	}
+
+
+	protected void logFailedRequestTree(RequestLog log) {
+		for(RequestTreeNode node:this.subRequests) {
+			node.recurseFailedRequestTree();
+		}
+		for(RequestTreeNode node:this.subRequests) {
+			if(node instanceof RequestTree) {
+				((RequestTree)node).sendMissingMessage(log);
+			}
+		}
+	}
+	
+	private void destroy() {
 		root.remove(this);		
 	}
 }

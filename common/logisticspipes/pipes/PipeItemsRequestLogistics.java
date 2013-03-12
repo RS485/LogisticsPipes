@@ -26,10 +26,9 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
-import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.request.RequestLog;
-import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTree;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
@@ -123,7 +122,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	public SimulationResult simulateRequest(ItemStack wanted) {
 		final List<ItemStack> used = new LinkedList<ItemStack>();
 		final List<ItemStack> missing = new LinkedList<ItemStack>();
-		CraftingTemplate.simulate(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
+		RequestTree.simulate(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
 				for(ItemMessage msg:list) {
@@ -154,7 +153,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
 		final List<ItemStack> missing = new LinkedList<ItemStack>();
-		CraftingTemplate.request(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
+		RequestTree.request(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
 outer:

@@ -456,13 +456,13 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			return;
 		}
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStackItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
 			ILogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				ILegacyActiveModule y = (ILegacyActiveModule)x;
-				if(y.filterAllowsItem(tree.getStack().getItem())) {
+				if(y.filterAllowsItem(tree.getStackItem())) {
 					y.canProvide(tree, donePromisses, filters);
 					return;
 				}

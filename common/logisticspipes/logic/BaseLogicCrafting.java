@@ -23,6 +23,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTree;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
@@ -287,7 +288,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 					continue;
 				}
 			}
-			int received = CraftingTemplate.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received < stack.stackSize) {
 				stack.stackSize -= received;
 				_lostItems.add(new DelayedGeneric(stack,5000));

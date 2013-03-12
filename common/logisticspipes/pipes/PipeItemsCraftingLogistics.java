@@ -333,7 +333,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		
 		if (_extras.isEmpty()) return;
 		
-		ItemIdentifier requestedItem = tree.getStack().getItem();
+		ItemIdentifier requestedItem = tree.getStackItem();
 		List<ItemIdentifier> providedItem = providedItem();
 		if (!providedItem.contains(requestedItem)) return;
 

@@ -20,6 +20,7 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTree;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -103,13 +104,14 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 				
 				boolean success = false;
 
+				ItemIdentifierStack wanted = need.getKey().makeStack(neededCount);
 				if(_requestPartials) {
-					neededCount = CraftingTemplate.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+					neededCount = RequestTree.requestPartial(wanted, (IRequestItems) container.pipe);
 					if(neededCount > 0) {
 						success = true;
 					}
 				} else {
-					success = CraftingTemplate.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
+					success = RequestTree.request(wanted, (IRequestItems) container.pipe, null)>0;
 				}
 				
 				if (success){

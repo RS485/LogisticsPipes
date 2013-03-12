@@ -21,6 +21,7 @@ import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTree;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -148,7 +149,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
 			ItemIdentifierStack stack = iterator.next();
-			int received = CraftingTemplate.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received > 0) {
 				if(received == stack.stackSize) {
 					iterator.remove();

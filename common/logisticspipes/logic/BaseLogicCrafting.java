@@ -291,6 +291,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 					_lostItems.add(new DelayedGeneric(stack,5000));
 				}
 			}
+			lostItem = _lostItems.poll();
 		}
 	}
 

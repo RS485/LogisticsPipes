@@ -395,7 +395,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!hasSatellite) return null;
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(craftingLogic.satelliteId != 0) {
-				IRequestItems sat = (IRequestItems)craftingLogic.getSatelliteRouter(-1, -1).getPipe();
+				IRequestItems sat = craftingLogic.getSatelliteRouter(-1, -1).getPipe();
 				for(int i=6;i<9;i++) {
 					target[i] = sat;
 				}
@@ -403,7 +403,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		} else {
 			for(int i=0;i<9;i++) {
 				if(craftingLogic.advancedSatelliteIdArray[i] != 0) {
-					target[i] = (IRequestItems)craftingLogic.getSatelliteRouter(i, -1).getPipe();
+					target[i] = craftingLogic.getSatelliteRouter(i, -1).getPipe();
 				}
 			}
 		}
@@ -501,6 +501,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return _orderManager.hasOrders();
 	}
 	
+	@Override
 	public int getTodo() {
 		return _orderManager.totalItemsCountInAllOrders();
 	}

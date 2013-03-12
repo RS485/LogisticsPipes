@@ -3,6 +3,7 @@ package logisticspipes.routing;
 public class LogisticsExtraPromise extends LogisticsPromise {
 	public boolean provided;
 	
+	@Override
 	public LogisticsExtraPromise copy() {
 		LogisticsExtraPromise result = new LogisticsExtraPromise();
 		result.item = item;

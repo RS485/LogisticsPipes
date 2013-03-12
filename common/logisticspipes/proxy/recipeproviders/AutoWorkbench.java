@@ -8,10 +8,12 @@ import net.minecraft.tileentity.TileEntity;
 import buildcraft.factory.TileAutoWorkbench;
 
 public class AutoWorkbench implements ICraftingRecipeProvider {
+	@Override
 	public boolean canOpenGui(TileEntity tile) {
 		return (tile instanceof TileAutoWorkbench);
 	}
 
+	@Override
 	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
 		if (!(tile instanceof TileAutoWorkbench))
 			return false;

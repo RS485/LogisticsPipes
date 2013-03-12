@@ -36,7 +36,7 @@ public class RequestTreeNode {
 	protected RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
 		this(null,item,requester,parentNode);
 	}
-	protected RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
+	private RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
 		this.request = item;
 		this.target = requester;
 		this.parentNode=parentNode;

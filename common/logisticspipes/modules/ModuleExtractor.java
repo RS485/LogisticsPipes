@@ -85,10 +85,12 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 		return ItemSendMode.Normal;
 	}
 
+	@Override
 	public ForgeDirection getSneakyDirection(){
 		return _sneakyDirection;
 	}
 
+	@Override
 	public void setSneakyDirection(ForgeDirection sneakyDirection){
 		_sneakyDirection = sneakyDirection;
 		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);

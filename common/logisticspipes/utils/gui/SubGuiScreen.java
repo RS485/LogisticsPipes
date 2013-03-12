@@ -49,6 +49,7 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 		controler.resetSubGui();
 	}
 	
+	@Override
 	protected void keyTyped(char par1, int par2)
     {
         if (par2 == 1)

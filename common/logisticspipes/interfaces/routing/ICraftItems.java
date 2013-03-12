@@ -13,7 +13,6 @@ import java.util.List;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 
 public interface ICraftItems extends IProvideItems, IRequestItems{
 	void registerExtras(LogisticsPromise promise);

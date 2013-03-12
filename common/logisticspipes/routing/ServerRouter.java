@@ -156,6 +156,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private final int _zCoord;
 	
 	private WeakReference<CoreRoutedPipe> _myPipeCache=null;
+	@Override
 	public void clearPipeCache(){_myPipeCache=null;}
 	
 	// called on server shutdown only
@@ -217,6 +218,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		SharedLSADatabasewriteLock.unlock(); 
 	}
 	
+	@Override
 	public int getSimpleID() {
 		return this.simpleID;
 	}
@@ -226,6 +228,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return _dimension == dimension;
 	}
 
+	@Override
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return _dimension == dimension && _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}
@@ -360,7 +363,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
 			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
 			for(Entry<CoreRoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
-				adjacentRouter.put(((CoreRoutedPipe) pipe.getKey()).getRouter(pipe.getValue().insertOrientation), pipe.getValue());
+				adjacentRouter.put(pipe.getKey().getRouter(pipe.getValue().insertOrientation), pipe.getValue());
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 					routedexits.add(pipe.getValue().exitOrientation);
 			}
@@ -507,7 +510,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			
 		    Iterator<Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>> it = lsa.neighboursWithMetric.entrySet().iterator();
 		    while (it.hasNext()) {
-		    	Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> newCandidate = (Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>>)it.next();
+		    	Entry<IRouter, Pair<Integer, EnumSet<PipeRoutingConnectionType>>> newCandidate = it.next();
 				EnumSet<PipeRoutingConnectionType> newCandidateClosedFlags = closedSet.get(newCandidate.getKey().getSimpleID());
 				if(newCandidateClosedFlags == null)
 					newCandidateClosedFlags = EnumSet.noneOf(PipeRoutingConnectionType.class);

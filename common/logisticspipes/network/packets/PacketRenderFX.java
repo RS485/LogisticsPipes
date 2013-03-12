@@ -26,6 +26,7 @@ public class PacketRenderFX extends PacketCoordinates {
 		data.writeInt(amount);
 	}
 	
+	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
 		particle = data.readInt();

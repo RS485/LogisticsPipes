@@ -20,7 +20,6 @@ import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;

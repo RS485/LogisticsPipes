@@ -279,6 +279,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 
+	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		try {
 			super.readFromNBT(nbttagcompound);
@@ -584,6 +585,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		return 0;
 	}
 
+	@Override
 	public void handleSendQueueItemIdentifierList(Collection<ItemIdentifierStack> _allItems){
 		displayList.clear();
 		displayList.addAll(_allItems);

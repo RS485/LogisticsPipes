@@ -4,7 +4,6 @@ import java.util.List;
 
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
@@ -309,10 +308,10 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 	
 	private void renderItem(int par1) {
 		Tessellator var3 = Tessellator.instance;
-		float var4 = (float)(par1 % 16 * 16 + 0) / 256.0F;
-        float var5 = (float)(par1 % 16 * 16 + 16) / 256.0F;
-        float var6 = (float)(par1 / 16 * 16 + 0) / 256.0F;
-        float var7 = (float)(par1 / 16 * 16 + 16) / 256.0F;
+		float var4 = (par1 % 16 * 16 + 0) / 256.0F;
+        float var5 = (par1 % 16 * 16 + 16) / 256.0F;
+        float var6 = (par1 / 16 * 16 + 0) / 256.0F;
+        float var7 = (par1 / 16 * 16 + 16) / 256.0F;
         float var8 = 1.0F;
         float var9 = 0.5F;
         float var10 = 0.25F;
@@ -320,10 +319,10 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		GL11.glPushMatrix();
         var3.startDrawingQuads();
         var3.setNormal(0.0F, 1.0F, 0.0F);
-        var3.addVertexWithUV((double)(0.0F - var9), (double)(0.0F - var10), 0.0D, (double)var4, (double)var7);
-        var3.addVertexWithUV((double)(var8 - var9), (double)(0.0F - var10), 0.0D, (double)var5, (double)var7);
-        var3.addVertexWithUV((double)(var8 - var9), (double)(1.0F - var10), 0.0D, (double)var5, (double)var6);
-        var3.addVertexWithUV((double)(0.0F - var9), (double)(1.0F - var10), 0.0D, (double)var4, (double)var6);
+        var3.addVertexWithUV(0.0F - var9, 0.0F - var10, 0.0D, var4, var7);
+        var3.addVertexWithUV(var8 - var9, 0.0F - var10, 0.0D, var5, var7);
+        var3.addVertexWithUV(var8 - var9, 1.0F - var10, 0.0D, var5, var6);
+        var3.addVertexWithUV(0.0F - var9, 1.0F - var10, 0.0D, var4, var6);
         var3.draw();
         GL11.glPopMatrix();
 	}

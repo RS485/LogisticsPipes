@@ -83,10 +83,12 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 		return _filterInventory;
 	}
 
+	@Override
 	public ForgeDirection getSneakyDirection(){
 		return _sneakyDirection;
 	}
 
+	@Override
 	public void setSneakyDirection(ForgeDirection sneakyDirection){
 		_sneakyDirection = sneakyDirection;
 	}

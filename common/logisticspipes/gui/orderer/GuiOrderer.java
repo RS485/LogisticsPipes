@@ -228,10 +228,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
             var9.startDrawingQuads();
             int xPosition = xCenter - 50;
             int yPosition = guiTop + 40;
-            var9.addVertexWithUV(xPosition			, yPosition + 100		, (double)zLevel, 0.04	, 0.72 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition + 100	, yPosition + 100		, (double)zLevel, 0.08	, 0.72 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition + 100	, yPosition				, (double)zLevel, 0.08	, 0.69 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition			, yPosition + 100		, zLevel, 0.04	, 0.72 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition + 100	, yPosition + 100		, zLevel, 0.08	, 0.72 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition + 100	, yPosition				, zLevel, 0.08	, 0.69 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition			, yPosition				, zLevel, 0.04	, 0.69 + (graphic * 0.03125));
             var9.draw();
 		} else {
 			for(ItemIdentifierStack itemStack : _allItems) {
@@ -281,6 +281,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
+	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if(searchinput1 == "" && searchinput2 == "") return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;

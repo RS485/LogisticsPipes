@@ -31,7 +31,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean init() {
-		this.init=true;
+		AEInterfaceInventoryHandler.init=true;
 		return true;
 	}
 

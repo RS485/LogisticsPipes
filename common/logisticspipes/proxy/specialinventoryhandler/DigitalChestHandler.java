@@ -19,7 +19,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	private final boolean _hideOnePerStack;
 
 	private DigitalChestHandler(IDigitalChest tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = (IDigitalChest)tile;
+		_tile = tile;
 		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 

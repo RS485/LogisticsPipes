@@ -144,7 +144,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 			return stack;
 		}
 		
-		ItemStack itemsToAdd = (ItemStack) stack.copy().splitStack(toAdd);
+		ItemStack itemsToAdd = stack.copy().splitStack(toAdd);
 		_tile.setStoredItemCount(_tile.getMaxStoredCount());
 		return itemsToAdd;
 	}

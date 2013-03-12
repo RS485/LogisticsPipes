@@ -3,6 +3,8 @@ package logisticspipes.logic;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.TimeUnit;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -23,6 +25,7 @@ import logisticspipes.request.RequestManager;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
@@ -51,8 +54,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public int signEntityZ = 0;
 	//public LogisticsTileEntiy signEntity;
 
-	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
-
+	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
+	
 	@TileNetworkData
 	public int satelliteId = 0;
 
@@ -270,22 +273,22 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
-		while (iterator.hasNext()) {
-			ItemIdentifierStack stack = iterator.next();
+		DelayedGeneric<ItemIdentifierStack> lostItem = _lostItems.poll();
+		while (lostItem != null) {
+			
+			ItemIdentifierStack stack = lostItem.get();
 			if(_pipe != null && ! _pipe.hasOrder()) { 
 				SinkReply reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
 				if(reply == null || reply.maxNumberOfItems <1) {
-					iterator.remove(); // if we have no space and nothing to do, don't bother re-requesting the item.
+					//iterator.remove(); // if we have no space and nothing to do, don't bother re-requesting the item.
 					continue;
 				}
 			}
 			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received > 0) {
-				if(received == stack.stackSize) {
-					iterator.remove();
-				} else {
+				if(received < stack.stackSize) {
 					stack.stackSize -= received;
+					_lostItems.add(new DelayedGeneric(stack,5000));
 				}
 			}
 		}
@@ -297,7 +300,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		_lostItems.add(item);
+		_lostItems.add(new DelayedGeneric(item,5000));
 	}
 
 	public void openAttachedGui(EntityPlayer player) {

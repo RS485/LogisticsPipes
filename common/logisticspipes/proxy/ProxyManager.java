@@ -93,7 +93,7 @@ public class ProxyManager {
 				@Override public boolean isTurtle(TileEntity tile) {return false;}
 				@Override public boolean isComputer(TileEntity tile) {return false;}
 				@Override public boolean isCC() {return false;}
-				@Override public ForgeDirection getOrientation(Object computer, int side, TileEntity tile) {return ForgeDirection.UNKNOWN;}
+				@Override public ForgeDirection getOrientation(Object computer, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 			});
 			LogisticsPipes.log.info("Loaded CC DummyProxy");

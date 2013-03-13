@@ -38,8 +38,6 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	
 	private IComputerAccess lastPC = null;
 	
-	private int lastCheckedSide = 0;
-	
 	private CCType getType(Class<?> clazz) {
 		while(true) {
 			CCType type = (CCType) clazz.getAnnotation(CCType.class);
@@ -392,13 +390,12 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	@Override
 	public boolean canAttachToSide(int side) {
 		//All Sides are valid
-		lastCheckedSide = side;
 		return true;
 	}
 
 	@Override
 	public void attach(IComputerAccess computer) {
-		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, lastCheckedSide, this);
+		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, this);
 		connections.put(computer, ori);
 	}
 

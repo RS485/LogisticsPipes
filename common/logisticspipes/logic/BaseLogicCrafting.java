@@ -286,11 +286,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				}
 			}
 			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
-			if(received > 0) {
-				if(received < stack.stackSize) {
-					stack.stackSize -= received;
-					_lostItems.add(new DelayedGeneric(stack,5000));
-				}
+			if(received < stack.stackSize) {
+				stack.stackSize -= received;
+				_lostItems.add(new DelayedGeneric(stack,5000));
 			}
 			lostItem = _lostItems.poll();
 		}

@@ -246,10 +246,8 @@ public class LogisticsPipes {
 		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
 		if(event.getSide() == Side.CLIENT) {
 			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
-			SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());
-		} else {
-			SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
 		}
+		SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
 		for(int i=0;i<Configs.multiThreadNumber && Configs.multiThreadEnabled;i++) {
 			new RoutingTableUpdateThread(i);
 		}

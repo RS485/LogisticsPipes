@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
@@ -28,9 +29,9 @@ public class ServerPacketBufferHandlerThread {
 
 	private class ServerCompressorThread extends Thread {
 		//Map of Players to lists of S->C packets to be serialized and compressed
-		private HashMap<Player, LinkedList<Packet250CustomPayload>> serverList = new HashMap<Player,LinkedList<Packet250CustomPayload>>();
+		private final HashMap<Player, LinkedList<Packet250CustomPayload>> serverList = new HashMap<Player,LinkedList<Packet250CustomPayload>>();
 		//Map of Players to serialized but still uncompressed S->C data
-		private HashMap<Player, byte[]> serverBuffer = new HashMap<Player, byte[]>();
+		private final HashMap<Player, byte[]> serverBuffer = new HashMap<Player, byte[]>();
 
 		public ServerCompressorThread() {
 			super("LogisticsPipes Packet Compressor Server");
@@ -55,39 +56,39 @@ public class ServerPacketBufferHandlerThread {
 								data.writeInt(packet.data.length);
 								data.write(packet.data);
 							}
-							packets.clear();
 							serverBuffer.put(player.getKey(), out.toByteArray());
 						}
+						serverList.clear();
 					}
 					//Send Content
-					for(Entry<Player, byte[]> player:serverBuffer.entrySet()) {
-						if(player.getValue().length > 0) {
+					for(Iterator<Entry<Player, byte[]>> it = serverBuffer.entrySet().iterator(); it.hasNext(); ) {
+						Entry<Player, byte[]> player = it.next();
+						if(player.getValue().length > 32 * 1024) {
 							byte[] sendbuffer = Arrays.copyOf(player.getValue(), Math.min(1024 * 32, player.getValue().length));
 							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), Math.min(1024 * 32, player.getValue().length), player.getValue().length);
 							player.setValue(newbuffer);
 							byte[] compressed = compress(sendbuffer);
 							MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
+						} else {
+							byte[] sendbuffer = player.getValue();
+							it.remove();
+							byte[] compressed = compress(sendbuffer);
+							MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
 						}
 					}
 				} catch (IOException e) {
-						e.printStackTrace();
+					e.printStackTrace();
 				}
 				try {
 					boolean toDo = false;
 					synchronized(serverList) {
-						for(LinkedList<Packet250CustomPayload> tocompress:serverList.values()) {
-							if(tocompress.size() > 0) {
-								toDo = true;
-								break;
-							}
+						if(serverList.size() > 0) {
+							toDo = true;
 						}
 					}
 					if(!toDo) {
-						for(byte[] towrite:serverBuffer.values()) {
-							if(towrite.length > 0) {
-								toDo = true;
-								break;
-							}
+						if(serverBuffer.size() > 0) {
+							toDo = true;
 						}
 					}
 					if(!toDo) {
@@ -114,11 +115,11 @@ public class ServerPacketBufferHandlerThread {
 
 	private class ServerDecompressorThread extends Thread {
 		//Map of Player to received compressed C->S data
-		private HashMap<Player, LinkedList<byte[]>> queue = new HashMap<Player, LinkedList<byte[]>>();
+		private final HashMap<Player, LinkedList<byte[]>> queue = new HashMap<Player, LinkedList<byte[]>>();
 		//Map of Player to decompressed serialized C->S data
-		private HashMap<Player, byte[]> ByteBuffer = new HashMap<Player, byte[]>();
+		private final HashMap<Player, byte[]> ByteBuffer = new HashMap<Player, byte[]>();
 		//FIFO for deserialized C->S packets, decompressor adds, tickEnd removes
-		private LinkedList<Pair<Player,byte[]>> PacketBuffer = new LinkedList<Pair<Player,byte[]>>();
+		private final LinkedList<Pair<Player,byte[]>> PacketBuffer = new LinkedList<Pair<Player,byte[]>>();
 
 		public ServerDecompressorThread() {
 			super("LogisticsPipes Packet Decompressor Server");
@@ -168,13 +169,20 @@ public class ServerPacketBufferHandlerThread {
 					Player player = null;
 					synchronized(queue) {
 						if(queue.size() > 0) {
-							for(Entry<Player, LinkedList<byte[]>> lPlayer:queue.entrySet()) {
-								if(lPlayer.getValue() != null && lPlayer.getValue().size() > 0) {
+							for(Iterator<Entry<Player, LinkedList<byte[]>>> it = queue.entrySet().iterator(); it.hasNext(); ) {
+								Entry<Player, LinkedList<byte[]>> lPlayer = it.next();
+								if(lPlayer.getValue().size() > 0) {
 									flag = true;
 									buffer = lPlayer.getValue().getFirst();
 									player = lPlayer.getKey();
-									lPlayer.getValue().removeFirst();
+									if(lPlayer.getValue().size() > 1) {
+										lPlayer.getValue().removeFirst();
+									} else {
+										it.remove();
+									}
 									break;
+								} else {
+									it.remove();
 								}
 							}
 						}
@@ -193,42 +201,34 @@ public class ServerPacketBufferHandlerThread {
 					}
 				}
 				while(flag);
+
 				for(Entry<Player, byte[]> player:ByteBuffer.entrySet()) {
-					if(player.getValue() != null && player.getValue().length > 0) {
-						/*if(!ByteBuffer.containsKey(player)) {
-							ByteBuffer.put(player, new byte[]{});
-						} Never true, we are iterating over the keys, and an undifiend operation; modifiying a colleciton while iterating, even if it was.*/
+					while(player.getValue().length >= 4) {
 						byte[] ByteBufferForPlayer = player.getValue();
 						int size = ((ByteBufferForPlayer[0] & 255) << 24) + ((ByteBufferForPlayer[1] & 255) << 16) + ((ByteBufferForPlayer[2] & 255) << 8) + ((ByteBufferForPlayer[3] & 255) << 0);
-						while(size + 4 <= ByteBufferForPlayer.length) {
-							byte[] packet = Arrays.copyOfRange(ByteBufferForPlayer, 4, size + 4);
-							ByteBufferForPlayer = Arrays.copyOfRange(ByteBufferForPlayer, size + 4, ByteBufferForPlayer.length);
-							player.setValue(ByteBufferForPlayer);
-							synchronized (PacketBuffer) {
-								PacketBuffer.add(new Pair<Player,byte[]>(player.getKey() ,packet));
-							}
-							if(ByteBufferForPlayer.length > 4) {
-								size = ((ByteBufferForPlayer[0] & 255) << 24) + ((ByteBufferForPlayer[1] & 255) << 16) + ((ByteBufferForPlayer[2] & 255) << 8) + ((ByteBufferForPlayer[3] & 255) << 0);
-							} else {
-								size = 0;
-							}
+						if(size + 4 > ByteBufferForPlayer.length) {
+							break;
+						}
+						byte[] packet = Arrays.copyOfRange(ByteBufferForPlayer, 4, size + 4);
+						ByteBufferForPlayer = Arrays.copyOfRange(ByteBufferForPlayer, size + 4, ByteBufferForPlayer.length);
+						player.setValue(ByteBufferForPlayer);
+						synchronized (PacketBuffer) {
+							PacketBuffer.add(new Pair<Player,byte[]>(player.getKey() ,packet));
 						}
 					}
 				}
+				for(Iterator<Entry<Player, byte[]>> it = ByteBuffer.entrySet().iterator(); it.hasNext();) {
+					Entry<Player, byte[]> player = it.next();
+					if(player.getValue().length == 0) {
+						it.remove();
+					}
+				}
+
 				try {
 					boolean toDo = false;
-					for(LinkedList<byte[]> lPlayer:queue.values()) {
-						if(lPlayer != null && lPlayer.size() > 0) {
+					synchronized(queue) {
+						if(queue.size() > 0) {
 							toDo = true;
-							break;
-						}
-					}
-					if(!toDo) {
-						for(byte[] ByteBufferForPlayer:ByteBuffer.values()) {
-							if(ByteBufferForPlayer != null && ByteBufferForPlayer.length > 0) {
-								toDo = true;
-								break;
-							}
 						}
 					}
 					if(!toDo) {

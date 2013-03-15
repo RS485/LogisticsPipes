@@ -26,7 +26,7 @@ public class ClientPacketBufferHandlerThread {
 
 	private class ClientCompressorThread extends Thread {
 		//list of C->S packets to be serialized and compressed
-		private LinkedList<Packet250CustomPayload> clientList = new LinkedList<Packet250CustomPayload>();
+		private final LinkedList<Packet250CustomPayload> clientList = new LinkedList<Packet250CustomPayload>();
 		//serialized but still uncompressed C->S data
 		private byte[] clientBuffer = new byte[]{};
 		//used to cork the compressor so we can queue up a whole bunch of packets at once
@@ -106,7 +106,7 @@ public class ClientPacketBufferHandlerThread {
 
 	private class ClientDecompressorThread extends Thread {
 		//Received compressed S->C data
-		private LinkedList<byte[]> queue = new LinkedList<byte[]>();
+		private final LinkedList<byte[]> queue = new LinkedList<byte[]>();
 		//decompressed serialized S->C data
 		private byte[] ByteBuffer = new byte[]{};
 		//FIFO for deserialized S->C packets, decompressor adds, tickEnd removes

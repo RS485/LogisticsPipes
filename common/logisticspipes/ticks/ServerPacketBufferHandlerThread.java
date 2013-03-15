@@ -61,40 +61,29 @@ public class ServerPacketBufferHandlerThread {
 						serverList.clear();
 					}
 					//Send Content
-					for(Iterator<Entry<Player, byte[]>> it = serverBuffer.entrySet().iterator(); it.hasNext(); ) {
-						Entry<Player, byte[]> player = it.next();
-						if(player.getValue().length > 32 * 1024) {
-							byte[] sendbuffer = Arrays.copyOf(player.getValue(), Math.min(1024 * 32, player.getValue().length));
-							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), Math.min(1024 * 32, player.getValue().length), player.getValue().length);
+					for(Entry<Player, byte[]> player:serverBuffer.entrySet()) {
+						while(player.getValue().length > 32 * 1024) {
+							byte[] sendbuffer = Arrays.copyOf(player.getValue(), 1024 * 32);
+							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), 1024 * 32, player.getValue().length);
 							player.setValue(newbuffer);
 							byte[] compressed = compress(sendbuffer);
 							MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
-						} else {
-							byte[] sendbuffer = player.getValue();
-							it.remove();
-							byte[] compressed = compress(sendbuffer);
-							MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
 						}
+						byte[] sendbuffer = player.getValue();
+						byte[] compressed = compress(sendbuffer);
+						MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				try {
-					boolean toDo = false;
-					synchronized(serverList) {
-						if(serverList.size() > 0) {
-							toDo = true;
-						}
+				serverBuffer.clear();
+				synchronized(serverList) {
+					while(serverList.size() == 0) {
+						try {
+							serverList.wait();
+						} catch (InterruptedException e) {}
 					}
-					if(!toDo) {
-						if(serverBuffer.size() > 0) {
-							toDo = true;
-						}
-					}
-					if(!toDo) {
-						Thread.sleep(100);
-					}
-				} catch(Exception e) {}
+				}
 			}
 		}
 
@@ -107,6 +96,7 @@ public class ServerPacketBufferHandlerThread {
 						serverList.put(player, packetList);
 					}
 					packetList.add(packet);
+					serverList.notify();
 				}
 			}
 		}
@@ -217,24 +207,20 @@ public class ServerPacketBufferHandlerThread {
 						}
 					}
 				}
-				for(Iterator<Entry<Player, byte[]>> it = ByteBuffer.entrySet().iterator(); it.hasNext();) {
-					Entry<Player, byte[]> player = it.next();
-					if(player.getValue().length == 0) {
+				for(Iterator<byte[]> it = ByteBuffer.values().iterator(); it.hasNext();) {
+					byte[] ByteBufferForPlayer = it.next();
+					if(ByteBufferForPlayer.length == 0) {
 						it.remove();
 					}
 				}
 
-				try {
-					boolean toDo = false;
-					synchronized(queue) {
-						if(queue.size() > 0) {
-							toDo = true;
-						}
+				synchronized(queue) {
+					while(queue.size() == 0) {
+						try {
+							queue.wait();
+						} catch (InterruptedException e) {}
 					}
-					if(!toDo) {
-						Thread.sleep(100);
-					}
-				} catch(Exception e) {}
+				}
 			}
 		}
 
@@ -246,6 +232,7 @@ public class ServerPacketBufferHandlerThread {
 					queue.put(player, list);
 				}
 				list.addLast(packet.content);
+				queue.notify();
 			}
 		}
 	}

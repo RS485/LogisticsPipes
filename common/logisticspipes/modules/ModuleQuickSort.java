@@ -77,7 +77,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 		if (targetInventory == null) return;
 //		if (targetInventory.getSizeInventory() < 27) return;
 
-		if(!_power.canUseEnergy(500)) {
+		if((targetInventory.getSizeInventory() == 0) || !_power.canUseEnergy(500)) {
 			stalled = true;
 			return;
 		}

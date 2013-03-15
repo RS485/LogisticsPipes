@@ -864,14 +864,14 @@ public class ClientPacketHandler {
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(true);
 		for(ItemIdentifier item:identList) {
-			MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);
 		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Names in send Queue");
 	}
 
 	private static void onItemNameRequest(PacketNameUpdatePacket packetAt) {
-		MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
+		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
 	}
 
 	private static void onModBasedItemSinkList(PacketModuleNBT packet) {

@@ -576,7 +576,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			} else {
 				if(localModeWatchers != null && localModeWatchers.size()>0) {
 					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);				
-					MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, items).getPacket(), localModeWatchers);
+					MainProxy.sendCompressedToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, items).getPacket(), localModeWatchers);
 					return items.size();
 				}
 			}

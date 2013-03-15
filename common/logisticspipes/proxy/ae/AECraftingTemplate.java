@@ -62,7 +62,7 @@ public class AECraftingTemplate extends CraftingTemplate {
 		promise.relayPoints = relays;
 		return promise;
 	}
-	
+/*	
 	@Override
 	public int getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode){
 		InterfaceCraftingRequest response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
@@ -73,5 +73,5 @@ public class AECraftingTemplate extends CraftingTemplate {
 	protected int generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {		
 		InterfaceCraftingRequest response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		return response.Request.stackSize;
-	}
+	}*/
 }

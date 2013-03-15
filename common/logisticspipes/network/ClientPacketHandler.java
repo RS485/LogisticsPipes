@@ -862,11 +862,11 @@ public class ClientPacketHandler {
 				}
 			}
 		}
-		SimpleServiceLocator.clientBufferHandler.pause = true;
+		SimpleServiceLocator.clientBufferHandler.setPause(true);
 		for(ItemIdentifier item:identList) {
 			MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
 		}
-		SimpleServiceLocator.clientBufferHandler.pause = false;
+		SimpleServiceLocator.clientBufferHandler.setPause(false);
 		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Names in send Queue");
 	}
 

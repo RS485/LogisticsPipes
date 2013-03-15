@@ -88,6 +88,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 		}
 		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
 		if(invUtil instanceof SpecialInventoryHandler){
+			int maxItemsToSend = 128;
 			HashMap<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
 			if(lastStackLookedAt>items.size())
 				lastStackLookedAt=0;
@@ -121,7 +122,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 				stalled = false;
 		
 				boolean partialSend=false;
-				int availableItems = item.getValue();
+				int availableItems = Math.min(maxItemsToSend, item.getValue());
 				while(reply != null) {
 					int count = Math.min(availableItems, reply.getValue2().maxNumberOfItems);
 					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), availableItems);

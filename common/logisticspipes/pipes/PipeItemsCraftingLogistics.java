@@ -274,12 +274,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
+				numtosend = Math.min(numtosend, nextOrder.getValue1().stackSize); 
+				stacksleft -= 1;
+				itemsleft -= numtosend;
+				ItemStack stackToSend = extracted.splitStack(numtosend);
 				if (processingOrder) {
-					numtosend = Math.min(numtosend, nextOrder.getValue1().stackSize);
-					ItemStack stackToSend = extracted.splitStack(numtosend);
-					itemsleft -= numtosend;
-					stacksleft -= 1;
-					
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
 					item.setDestination(nextOrder.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
@@ -293,15 +292,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					}
 					
 				} else {
-					ItemStack stackToSend = extracted.splitStack(numtosend);
-					if(numtosend >= nextOrder.getValue1().stackSize) {
-						_extras.removeFirst();
-					} else {
-						nextOrder.getValue1().stackSize-=numtosend;
-					}
-					itemsleft -= numtosend;
-					stacksleft -= 1;
-					
+					removeExtras(numtosend,nextOrder.getValue1().getItem());
+
 					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
 					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
  					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
@@ -313,6 +305,26 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			}
 		}
 	}
+	
+	private void removeExtras(int numToSend, ItemIdentifier item) {
+		Iterator<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> i = _extras.iterator();
+		while(i.hasNext()){
+			ItemIdentifierStack e = i.next().getValue1();
+			if(e.getItem()== item) {
+				if(numToSend >= e.stackSize) {
+					numToSend -= e.stackSize;
+					i.remove();
+					if(numToSend == 0) {
+						return;
+					}
+				} else {
+					e.stackSize -= numToSend;
+					break;
+				}
+			}
+		}
+	}
+
 	private int countExtras(){
 		if(_extras == null)
 			return 0;

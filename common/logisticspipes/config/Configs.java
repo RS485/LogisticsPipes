@@ -320,68 +320,68 @@ public class Configs {
 		}
 
 		Property logisticRemoteOrdererIdProperty = CONFIGURATION.getItem(
-				"logisticsRemoteOrderer.id", LOGISTICSREMOTEORDERER_ID);
-		logisticRemoteOrdererIdProperty.comment = "The item id for the remote orderer";
+				"logisticsRemoteOrderer.id", LOGISTICSREMOTEORDERER_ID,
+				"The item id for the remote orderer");
 
 		Property logisticNetworkMonitorIdProperty = CONFIGURATION.getItem(
-				"logisticsNetworkMonitor.id", LOGISTICSNETWORKMONITOR_ID);
-		logisticNetworkMonitorIdProperty.comment = "The item id for the network monitor";
+				"logisticsNetworkMonitor.id", LOGISTICSNETWORKMONITOR_ID,
+				"The item id for the network monitor");
 
 		Property logisticPipeIdProperty = CONFIGURATION.getItem(
-				"logisticsPipe.id", LOGISTICSPIPE_BASIC_ID);
-		logisticPipeIdProperty.comment = "The item id for the basic logistics pipe";
+				"logisticsPipe.id", LOGISTICSPIPE_BASIC_ID,
+				"The item id for the basic logistics pipe");
 
 		Property logisticPipeRequesterIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeRequester.id", LOGISTICSPIPE_REQUEST_ID);
-		logisticPipeRequesterIdProperty.comment = "The item id for the requesting logistics pipe";
+				"logisticsPipeRequester.id", LOGISTICSPIPE_REQUEST_ID,
+				"The item id for the requesting logistics pipe");
 
 		Property logisticPipeProviderIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeProvider.id", LOGISTICSPIPE_PROVIDER_ID);
-		logisticPipeProviderIdProperty.comment = "The item id for the providing logistics pipe";
+				"logisticsPipeProvider.id", LOGISTICSPIPE_PROVIDER_ID,
+				"The item id for the providing logistics pipe");
 
 		Property logisticPipeCraftingIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeCrafting.id", LOGISTICSPIPE_CRAFTING_ID);
-		logisticPipeCraftingIdProperty.comment = "The item id for the crafting logistics pipe";
+				"logisticsPipeCrafting.id", LOGISTICSPIPE_CRAFTING_ID,
+				"The item id for the crafting logistics pipe");
 
 		Property logisticPipeSatelliteIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeSatellite.id", LOGISTICSPIPE_SATELLITE_ID);
-		logisticPipeSatelliteIdProperty.comment = "The item id for the crafting satellite pipe";
+				"logisticsPipeSatellite.id", LOGISTICSPIPE_SATELLITE_ID,
+				"The item id for the crafting satellite pipe");
 
 		Property logisticPipeSupplierIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeSupplier.id", LOGISTICSPIPE_SUPPLIER_ID);
-		logisticPipeSupplierIdProperty.comment = "The item id for the supplier pipe";
+				"logisticsPipeSupplier.id", LOGISTICSPIPE_SUPPLIER_ID,
+				"The item id for the supplier pipe");
 
 		Property logisticPipeChassi1IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeChassi1.id", LOGISTICSPIPE_CHASSI1_ID);
-		logisticPipeChassi1IdProperty.comment = "The item id for the chassi1";
+				"logisticsPipeChassi1.id", LOGISTICSPIPE_CHASSI1_ID,
+				"The item id for the chassi1");
 
 		Property logisticPipeChassi2IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeChassi2.id", LOGISTICSPIPE_CHASSI2_ID);
-		logisticPipeChassi2IdProperty.comment = "The item id for the chassi2";
+				"logisticsPipeChassi2.id", LOGISTICSPIPE_CHASSI2_ID,
+				"The item id for the chassi2");
 
 		Property logisticPipeChassi3IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeChassi3.id", LOGISTICSPIPE_CHASSI3_ID);
-		logisticPipeChassi3IdProperty.comment = "The item id for the chassi3";
+				"logisticsPipeChassi3.id", LOGISTICSPIPE_CHASSI3_ID,
+				"The item id for the chassi3");
 
 		Property logisticPipeChassi4IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeChassi4.id", LOGISTICSPIPE_CHASSI4_ID);
-		logisticPipeChassi4IdProperty.comment = "The item id for the chassi4";
+				"logisticsPipeChassi4.id", LOGISTICSPIPE_CHASSI4_ID,
+				"The item id for the chassi4");
 
 		Property logisticPipeChassi5IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeChassi5.id", LOGISTICSPIPE_CHASSI5_ID);
-		logisticPipeChassi5IdProperty.comment = "The item id for the chassi5";
+				"logisticsPipeChassi5.id", LOGISTICSPIPE_CHASSI5_ID,
+				"The item id for the chassi5");
 
 		Property logisticPipeCraftingMK2IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeCraftingMK2.id", LOGISTICSPIPE_CRAFTING_MK2_ID);
-		logisticPipeCraftingMK2IdProperty.comment = "The item id for the crafting logistics pipe MK2";
+				"logisticsPipeCraftingMK2.id", LOGISTICSPIPE_CRAFTING_MK2_ID,
+				"The item id for the crafting logistics pipe MK2");
 
 		Property logisticPipeCraftingMK3IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeCraftingMK3.id", LOGISTICSPIPE_CRAFTING_MK3_ID);
-		logisticPipeCraftingMK3IdProperty.comment = "The item id for the crafting logistics pipe MK3";
+				"logisticsPipeCraftingMK3.id", LOGISTICSPIPE_CRAFTING_MK3_ID,
+				"The item id for the crafting logistics pipe MK3");
 
 		Property logisticPipeFirewallIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID);
-		logisticPipeFirewallIdProperty.comment = "The item id for the firewall logistics pipe";
+				"logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID,
+				"The item id for the firewall logistics pipe");
 
 		// DEBUG (TEST) ONLY (LIQUID)
 		Property logisticPipeLiquidConnectorIdProperty = null;
@@ -393,192 +393,195 @@ public class Configs {
 
 			logisticPipeLiquidConnectorIdProperty = CONFIGURATION.getItem(
 					"logisticPipeLiquidConnector.id",
-					LOGISTICSPIPE_LIQUID_CONNECTOR);
-			logisticPipeLiquidConnectorIdProperty.comment = "The item id for the liquid connector pipe.";
+					LOGISTICSPIPE_LIQUID_CONNECTOR,
+					"The item id for the liquid connector pipe.");
 
 			logisticPipeLiquidBasicIdProperty = CONFIGURATION.getItem(
-					"logisticPipeLiquidBasic.id", LOGISTICSPIPE_LIQUID_BASIC);
-			logisticPipeLiquidBasicIdProperty.comment = "The item id for the liquid basic pipe.";
+					"logisticPipeLiquidBasic.id", LOGISTICSPIPE_LIQUID_BASIC,
+					"The item id for the liquid basic pipe.");
 
 			logisticPipeLiquidInsertionIdProperty = CONFIGURATION.getItem(
 					"logisticPipeLiquidInsertion.id",
-					LOGISTICSPIPE_LIQUID_INSERTION);
-			logisticPipeLiquidInsertionIdProperty.comment = "The item id for the liquid insertion pipe.";
+					LOGISTICSPIPE_LIQUID_INSERTION,
+					"The item id for the liquid insertion pipe.");
 
 			logisticPipeLiquidProviderIdProperty = CONFIGURATION.getItem(
 					"logisticPipeLiquidProvider.id",
-					LOGISTICSPIPE_LIQUID_PROVIDER);
-			logisticPipeLiquidProviderIdProperty.comment = "The item id for the liquid provider pipe.";
+					LOGISTICSPIPE_LIQUID_PROVIDER,
+					"The item id for the liquid provider pipe.");
 
 			logisticPipeLiquidRequestIdProperty = CONFIGURATION.getItem(
 					"logisticPipeLiquidRequest.id",
-					LOGISTICSPIPE_LIQUID_REQUEST);
-			logisticPipeLiquidRequestIdProperty.comment = "The item id for the liquid requestor pipe.";
+					LOGISTICSPIPE_LIQUID_REQUEST,
+					"The item id for the liquid requestor pipe.");
 		}
 
 		Property logisticPipeRequesterMK2IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeRequesterMK2.id", LOGISTICSPIPE_REQUEST_MK2_ID);
-		logisticPipeRequesterMK2IdProperty.comment = "The item id for the requesting logistics pipe MK2";
+				"logisticsPipeRequesterMK2.id", LOGISTICSPIPE_REQUEST_MK2_ID,
+				"The item id for the requesting logistics pipe MK2");
 
 		Property logisticPipeProviderMK2IdProperty = CONFIGURATION.getItem(
-				"logisticsPipeProviderMK2.id", LOGISTICSPIPE_PROVIDER_MK2_ID);
-		logisticPipeProviderMK2IdProperty.comment = "The item id for the provider logistics pipe MK2";
+				"logisticsPipeProviderMK2.id", LOGISTICSPIPE_PROVIDER_MK2_ID,
+				"The item id for the provider logistics pipe MK2");
 
 		Property logisticPipeApiaristAnalyserIdProperty = CONFIGURATION
 				.getItem("logisticsPipeApiaristAnalyser.id",
-						LOGISTICSPIPE_APIARIST_ANALYSER_ID);
-		logisticPipeApiaristAnalyserIdProperty.comment = "The item id for the apiarist logistics analyser pipe";
+						LOGISTICSPIPE_APIARIST_ANALYSER_ID,
+						"The item id for the apiarist logistics analyser pipe");
 
 		Property logisticPipeRemoteOrdererIdProperty = CONFIGURATION.getItem(
 				"logisticsPipeRemoteOrderer.id",
-				LOGISTICSPIPE_REMOTE_ORDERER_ID);
-		logisticPipeRemoteOrdererIdProperty.comment = "The item id for the remote orderer logistics pipe";
+				LOGISTICSPIPE_REMOTE_ORDERER_ID,
+				"The item id for the remote orderer logistics pipe");
 
 		Property logisticPipeApiaristSinkIdProperty = CONFIGURATION.getItem(
-				"logisticsPipeApiaristSink.id", LOGISTICSPIPE_APIARIST_SINK_ID);
-		logisticPipeApiaristSinkIdProperty.comment = "The item id for the apiarist logistics sink pipe";
+				"logisticsPipeApiaristSink.id", LOGISTICSPIPE_APIARIST_SINK_ID,
+				"The item id for the apiarist logistics sink pipe");
 
 		Property logisticModuleIdProperty = CONFIGURATION.getItem(
-				"logisticsModules.id", ITEM_MODULE_ID);
-		logisticModuleIdProperty.comment = "The item id for the modules";
+				"logisticsModules.id", ITEM_MODULE_ID,
+				"The item id for the modules");
 
 		Property logisticUpgradeIdProperty = CONFIGURATION.getItem(
-				"logisticsUpgrades.id", ITEM_UPGRADE_ID);
-		logisticUpgradeIdProperty.comment = "The item id for the upgrades";
+				"logisticsUpgrades.id", ITEM_UPGRADE_ID,
+				"The item id for the upgrades");
 
 		Property logisticUpgradeManagerIdProperty = CONFIGURATION.getItem(
-				"logisticsUpgradeManager.id", ITEM_UPGRADE_MANAGER_ID);
-		logisticUpgradeManagerIdProperty.comment = "The item id for the upgrade manager";
+				"logisticsUpgradeManager.id", ITEM_UPGRADE_MANAGER_ID,
+				"The item id for the upgrade manager");
 
 		Property logisticItemDiskIdProperty = CONFIGURATION.getItem(
-				"logisticsDisk.id", ITEM_DISK_ID);
-		logisticItemDiskIdProperty.comment = "The item id for the disk";
+				"logisticsDisk.id", ITEM_DISK_ID, "The item id for the disk");
 
 		Property logisticItemHUDIdProperty = CONFIGURATION.getItem(
-				"logisticsHUD.id", ITEM_HUD_ID);
-		logisticItemHUDIdProperty.comment = "The item id for the Logistics HUD glasses";
+				"logisticsHUD.id", ITEM_HUD_ID,
+				"The item id for the Logistics HUD glasses");
 
 		Property logisticItemPartsIdProperty = CONFIGURATION.getItem(
-				"logisticsHUDParts.id", ITEM_PARTS_ID);
-		logisticItemPartsIdProperty.comment = "The item id for the Logistics item parts";
+				"logisticsHUDParts.id", ITEM_PARTS_ID,
+				"The item id for the Logistics item parts");
 
 		Property logisticCraftingSignCreatorIdProperty = CONFIGURATION.getItem(
 				"logisticsCraftingSignCreator.id",
-				LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		logisticCraftingSignCreatorIdProperty.comment = "The item id for the crafting sign creator";
+				LOGISTICSCRAFTINGSIGNCREATOR_ID,
+				"The item id for the crafting sign creator");
 
 		Property logisticPipeBuilderSupplierIdProperty = CONFIGURATION.getItem(
 				"logisticsPipeBuilderSupplier.id",
-				LOGISTICSPIPE_BUILDERSUPPLIER_ID);
-		logisticPipeBuilderSupplierIdProperty.comment = "The item id for the builder supplier pipe";
+				LOGISTICSPIPE_BUILDERSUPPLIER_ID,
+				"The item id for the builder supplier pipe");
 
 		Property logisticPipeLiquidSupplierIdProperty = CONFIGURATION.getItem(
 				"logisticsPipeLiquidSupplier.id",
-				LOGISTICSPIPE_LIQUIDSUPPLIER_ID);
-		logisticPipeLiquidSupplierIdProperty.comment = "The item id for the liquid supplier pipe";
+				LOGISTICSPIPE_LIQUIDSUPPLIER_ID,
+				"The item id for the liquid supplier pipe");
 
 		Property logisticInvSysConIdProperty = CONFIGURATION.getItem(
-				"logisticInvSysCon.id", LOGISTICSPIPE_INVSYSCON_ID);
-		logisticInvSysConIdProperty.comment = "The item id for the inventory system connector pipe";
+				"logisticInvSysCon.id", LOGISTICSPIPE_INVSYSCON_ID,
+				"The item id for the inventory system connector pipe");
 
 		Property logisticEntranceIdProperty = CONFIGURATION.getItem(
-				"logisticEntrance.id", LOGISTICSPIPE_ENTRANCE_ID);
-		logisticEntranceIdProperty.comment = "The item id for the logistics system entrance pipe";
+				"logisticEntrance.id", LOGISTICSPIPE_ENTRANCE_ID,
+				"The item id for the logistics system entrance pipe");
 
 		Property logisticDestinationIdProperty = CONFIGURATION.getItem(
-				"logisticDestination.id", LOGISTICSPIPE_DESTINATION_ID);
-		logisticDestinationIdProperty.comment = "The item id for the logistics system destination pipe";
+				"logisticDestination.id", LOGISTICSPIPE_DESTINATION_ID,
+				"The item id for the logistics system destination pipe");
 
 		Property logisticItemCardIdProperty = CONFIGURATION.getItem(
-				"logisticItemCard.id", ITEM_CARD_ID);
-		logisticItemCardIdProperty.comment = "The item id for the logistics item card";
+				"logisticItemCard.id", ITEM_CARD_ID,
+				"The item id for the logistics item card");
 
 		// DEBUG (TEST) ONLY
 		Property logisticsLiquidContainerIdProperty = null;
 		if (LogisticsPipes.DEBUG) {
 			logisticsLiquidContainerIdProperty = CONFIGURATION.getItem(
-					"LogisticsLiquidContainer.id", ITEM_LIQUID_CONTAINER_ID);
-			logisticsLiquidContainerIdProperty.comment = "The item id for the logistics liquid container";
+					"LogisticsLiquidContainer.id", ITEM_LIQUID_CONTAINER_ID,
+					"The item id for the logistics liquid container");
 		}
 
-		Property detectionLength = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "detectionLength",
-				LOGISTICS_DETECTION_LENGTH);
-		detectionLength.comment = "The maximum shortest length between logistics pipes. This is an indicator on the maxim depth of the recursion algorithm to discover logistics neighbours. A low value might use less CPU, a high value will allow longer pipe sections";
+		Property detectionLength = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"detectionLength",
+						LOGISTICS_DETECTION_LENGTH,
+						"The maximum shortest length between logistics pipes. This is an indicator on the maxim depth of the recursion algorithm to discover logistics neighbours. A low value might use less CPU, a high value will allow longer pipe sections");
 
-		Property detectionCount = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "detectionCount",
-				LOGISTICS_DETECTION_COUNT);
-		detectionCount.comment = "The maximum number of buildcraft pipes (including forks) between logistics pipes. This is an indicator of the maximum amount of nodes the recursion algorithm will visit before giving up. As it is possible to fork a pipe connection using standard BC pipes the algorithm will attempt to discover all available destinations through that pipe. Do note that the logistics system will not interfere with the operation of non-logistics pipes. So a forked pipe will usually be sup-optimal, but it is possible. A low value might reduce CPU usage, a high value will be able to handle more complex pipe setups. If you never fork your connection between the logistics pipes this has the same meaning as detectionLength and the lower of the two will be used";
+		Property detectionCount = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"detectionCount",
+						LOGISTICS_DETECTION_COUNT,
+						"The maximum number of buildcraft pipes (including forks) between logistics pipes. This is an indicator of the maximum amount of nodes the recursion algorithm will visit before giving up. As it is possible to fork a pipe connection using standard BC pipes the algorithm will attempt to discover all available destinations through that pipe. Do note that the logistics system will not interfere with the operation of non-logistics pipes. So a forked pipe will usually be sup-optimal, but it is possible. A low value might reduce CPU usage, a high value will be able to handle more complex pipe setups. If you never fork your connection between the logistics pipes this has the same meaning as detectionLength and the lower of the two will be used");
 
-		Property detectionFrequency = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "detectionFrequency",
-				LOGISTICS_DETECTION_FREQUENCY);
-		detectionFrequency.comment = "The amount of time that passes between checks to see if it is still connected to its neighbours. A low value will mean that it will detect changes faster but use more CPU. A high value means detection takes longer, but CPU consumption is reduced. A value of 20 will check about every second";
+		Property detectionFrequency = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"detectionFrequency",
+						LOGISTICS_DETECTION_FREQUENCY,
+						"The amount of time that passes between checks to see if it is still connected to its neighbours. A low value will mean that it will detect changes faster but use more CPU. A high value means detection takes longer, but CPU consumption is reduced. A value of 20 will check about every second");
 
-		Property countInvertWheelProperty = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "ordererCountInvertWheel",
-				LOGISTICS_ORDERER_COUNT_INVERTWHEEL);
-		countInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order number of items";
+		Property countInvertWheelProperty = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL, "ordererCountInvertWheel",
+						LOGISTICS_ORDERER_COUNT_INVERTWHEEL,
+						"Inverts the the mouse wheel scrolling for remote order number of items");
 
 		Property pageInvertWheelProperty = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "ordererPageInvertWheel",
-				LOGISTICS_ORDERER_PAGE_INVERTWHEEL);
-		pageInvertWheelProperty.comment = "Inverts the the mouse wheel scrolling for remote order pages";
+				LOGISTICS_ORDERER_PAGE_INVERTWHEEL,
+				"Inverts the the mouse wheel scrolling for remote order pages");
 
-		Property pageDisplayPopupProperty = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "displayPopup", DISPLAY_POPUP);
-		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
+		Property pageDisplayPopupProperty = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"displayPopup",
+						DISPLAY_POPUP,
+						"Set the default configuration for the popup of the Orderer Gui. Should it be used?");
 
 		Property logisticsSignId = CONFIGURATION.getBlock("logisticsSignId",
-				LOGISTICS_SIGN_ID);
-		logisticsSignId.comment = "The ID of the LogisticsPipes Sign";
+				LOGISTICS_SIGN_ID, "The ID of the LogisticsPipes Sign");
 
 		Property logisticsSolidBlockId = CONFIGURATION.getBlock(
-				"logisticsSolidBlockId", LOGISTICS_SOLID_BLOCK_ID);
-		logisticsSolidBlockId.comment = "The ID of the LogisticsPipes Solid Block";
+				"logisticsSolidBlockId", LOGISTICS_SOLID_BLOCK_ID,
+				"The ID of the LogisticsPipes Solid Block");
 
 		Property logisticsPowerUsageDisable = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "powerUsageDisabled",
-				LOGISTICS_POWER_USAGE_DISABLED);
-		logisticsPowerUsageDisable.comment = "Diable the power usage trough LogisticsPipes";
+				LOGISTICS_POWER_USAGE_DISABLED,
+				"Diable the power usage trough LogisticsPipes");
 
-		Property logisticsTileGenericReplacementDisable = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "TileReplaceDisabled",
-				LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED);
-		logisticsTileGenericReplacementDisable.comment = "Diable the Replacement of the TileGenericPipe trough the LogisticsTileGenericPipe";
+		Property logisticsTileGenericReplacementDisable = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"TileReplaceDisabled",
+						LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED,
+						"Diable the Replacement of the TileGenericPipe trough the LogisticsTileGenericPipe");
 
-		Property logisticsHUDRenderDistance = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "HUDRenderDistance",
-				LOGISTICS_HUD_RENDER_DISTANCE);
-		logisticsHUDRenderDistance.comment = "The max. distance between a player and the HUD that get's shown in blocks.";
+		Property logisticsHUDRenderDistance = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL, "HUDRenderDistance",
+						LOGISTICS_HUD_RENDER_DISTANCE,
+						"The max. distance between a player and the HUD that get's shown in blocks.");
 
-		Property mandatoryCarpenterRecipes = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "mandatoryCarpenterRecipes",
-				MANDATORY_CARPENTER_RECIPES);
-		mandatoryCarpenterRecipes.comment = "Whether or not the Carpenter is required to craft Forestry related pipes/modules.";
+		Property mandatoryCarpenterRecipes = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"mandatoryCarpenterRecipes",
+						MANDATORY_CARPENTER_RECIPES,
+						"Whether or not the Carpenter is required to craft Forestry related pipes/modules.");
 
 		Property enableParticleFX = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "enableParticleFX",
-				ENABLE_PARTICLE_FX);
-		enableParticleFX.comment = "Whether or not special particles will spawn.";
+				ENABLE_PARTICLE_FX,
+				"Whether or not special particles will spawn.");
 
 		Property powerUsageMultiplyerPref = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer",
-				POWER_USAGE_MULTIPLIER);
-		powerUsageMultiplyerPref.comment = "A Multiplyer for the power usage.";
+				POWER_USAGE_MULTIPLIER, "A Multiplyer for the power usage.");
 
-		Property multiThread = CONFIGURATION.get(CATEGORY_MULTITHREAD,
-				"enabled", MULTI_THREAD_ENABLED);
-		multiThread.comment = "Enabled the Logistics Pipes multiThread function to allow the network.";
+		Property multiThread = CONFIGURATION
+				.get(CATEGORY_MULTITHREAD, "enabled", MULTI_THREAD_ENABLED,
+						"Enabled the Logistics Pipes multiThread function to allow the network.");
 
 		Property multiThreadCount = CONFIGURATION.get(CATEGORY_MULTITHREAD,
-				"count", MULIT_THREAD_NUMBER);
-		multiThreadCount.comment = "Number of running Threads.";
+				"count", MULIT_THREAD_NUMBER, "Number of running Threads.");
 
-		Property multiThreadPrio = CONFIGURATION.get(CATEGORY_MULTITHREAD,
-				"priority", MULTI_THREAD_PRIORITY);
-		multiThreadPrio.comment = "Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest";
+		Property multiThreadPrio = CONFIGURATION
+				.get(CATEGORY_MULTITHREAD, "priority", MULTI_THREAD_PRIORITY,
+						"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest");
 
 		LOGISTICSNETWORKMONITOR_ID = Integer
 				.parseInt(logisticNetworkMonitorIdProperty.value);
@@ -712,9 +715,11 @@ public class Configs {
 	}
 
 	public static void savePopupState() {
-		Property pageDisplayPopupProperty = CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "displayPopup", DISPLAY_POPUP);
-		pageDisplayPopupProperty.comment = "Set the default configuration for the popup of the Orderer Gui. Should it be used?";
+		Property pageDisplayPopupProperty = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"displayPopup",
+						DISPLAY_POPUP,
+						"Set the default configuration for the popup of the Orderer Gui. Should it be used?");
 		pageDisplayPopupProperty.value = Boolean.toString(DISPLAY_POPUP);
 		CONFIGURATION.save();
 	}

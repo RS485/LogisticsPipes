@@ -248,7 +248,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				nextOrder = _extras.getFirst(); // fetch but not remove.
 			}
 			int maxtosend = Math.min(itemsleft, nextOrder.getValue1().stackSize);
-			
+			maxtosend = Math.min(nextOrder.getValue1().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
 			ItemStack extracted = null;
 			AdjacentTile tile = null;
@@ -262,7 +262,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				} else if (tile.tile instanceof IInventory) {
 					extracted = extractFromIInventory((IInventory)tile.tile, nextOrder.getValue1().getItem(), maxtosend);
 				}
-				if (extracted != null) {
+				if (extracted != null && extracted.stackSize > 0) {
 					break;
 				}
 			}

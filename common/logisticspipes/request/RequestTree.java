@@ -27,7 +27,7 @@ public class RequestTree extends RequestTreeNode {
 		super(item, requester, parent);
 	}
 	
-	private int getPromise(FinalPair key) {
+	private int getExistingPromisesFor(FinalPair key) {
 		if(_promisetotals == null)
 			_promisetotals = new HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer>();
 		Integer n = _promisetotals.get(key);
@@ -38,7 +38,7 @@ public class RequestTree extends RequestTreeNode {
 
 	protected int getAllPromissesFor(IProvideItems provider, ItemIdentifier item) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(provider, item);
-		return getPromise(key);
+		return getExistingPromisesFor(key);
 	}
 	
 	protected LinkedList<LogisticsExtraPromise> getExtrasFor(ItemIdentifier item) {
@@ -75,17 +75,12 @@ public class RequestTree extends RequestTreeNode {
 
 	protected void promiseAdded(LogisticsPromise promise) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(promise.sender, promise.item);
-		int n = getPromise(key);
-		if(n == 0) {
-			_promisetotals.put(key, promise.numberOfItems);
-		} else {
-			_promisetotals.put(key, n + promise.numberOfItems);
-		}
+		_promisetotals.put(key, getExistingPromisesFor(key) + promise.numberOfItems);
 	}
 
 	protected void promiseRemoved(LogisticsPromise promise) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(promise.sender, promise.item);
-		int r = getPromise(key) - promise.numberOfItems;
+		int r = getExistingPromisesFor(key) - promise.numberOfItems;
 		if(r == 0) {
 			_promisetotals.remove(key);
 		} else {

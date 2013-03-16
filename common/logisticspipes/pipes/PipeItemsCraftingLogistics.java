@@ -242,8 +242,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && (_orderManager.hasOrders() || !_extras.isEmpty())) {
 			Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> nextOrder;
+			boolean processingOrder=false;
 			if(_orderManager.hasOrders()){
-				nextOrder = _orderManager.getNextRequest(); // fetch but not remove.
+				nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
+				processingOrder=true;
 			} else {
 				nextOrder = _extras.getFirst(); // fetch but not remove.
 			}
@@ -272,7 +274,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
-				if (_orderManager.hasOrders()) {
+				if (processingOrder) {
 					numtosend = Math.min(numtosend, nextOrder.getValue1().stackSize);
 					ItemStack stackToSend = extracted.splitStack(numtosend);
 					itemsleft -= numtosend;
@@ -284,6 +286,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					item.addRelayPoints(nextOrder.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
+					if(_orderManager.hasOrders()){
+						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
+					} else {
+						processingOrder = false;
+					}
 					
 				} else {
 					ItemStack stackToSend = extracted.splitStack(numtosend);
@@ -296,7 +303,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					stacksleft -= 1;
 					
 					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
-					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + _extras + " remaining");
+					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
  					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
 					entityPos.moveForwards(0.5);
 					EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
@@ -305,6 +312,15 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				}
 			}
 		}
+	}
+	private int countExtras(){
+		if(_extras == null)
+			return 0;
+		int count = 0;
+		for(Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> e : _extras){
+			count += e.getValue1().stackSize;
+		}
+		return count;
 	}
 	
 	private List<ItemIdentifier> providedItem(){

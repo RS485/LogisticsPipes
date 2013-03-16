@@ -466,16 +466,7 @@ public class ClientPacketHandler {
 			return;
 		}
 		
-		ExtractionMode mode = ((LogicProvider) pipe.pipe.logic).getExtractionMode();
-		int modeint = mode.ordinal();
-		while(modeint != packet.integer) {
-			((LogicProvider) pipe.pipe.logic).nextExtractionMode();
-			modeint = ((LogicProvider) pipe.pipe.logic).getExtractionMode().ordinal();
-			if(mode.ordinal() == modeint) {
-				//loop break
-				break;
-			}
-		}
+		((LogicProvider) pipe.pipe.logic).setExtractionMode(packet.integer);
 	}
 
 	private static void onProviderPipeIncludeRecive(PacketPipeInteger packet) {

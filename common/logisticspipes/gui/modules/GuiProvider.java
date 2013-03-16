@@ -83,23 +83,6 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		super.actionPerformed(guibutton);
 	}
 	
-	private String getExtractionModeString(){
-		switch(_provider.getExtractionMode()){
-			case Normal:
-				return "Normal";
-			case LeaveFirst:
-				return "Leave 1st stack";
-			case LeaveLast: 
-				return "Leave last stack";
-			case LeaveFirstAndLast:
-				return "Leave first & last stack";
-			case Leave1PerStack:
-				return "Leave 1 item per stack";
-			default:
-				return "Unknown!";
-		}
-	}
-
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
@@ -116,7 +99,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		fontRenderer.drawString(_provider.getFilterInventory().getInvName(), xSize / 2 - fontRenderer.getStringWidth(_provider.getFilterInventory().getInvName())/2, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Mode: " + getExtractionModeString(), 9, ySize - 112, 0x404040);
+		fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 
 	@Override
@@ -125,16 +108,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	}
 
 	public void handleModuleModeRecive(PacketPipeInteger packet) {
-		ExtractionMode mode = _provider.getExtractionMode();
-		int modeint = mode.ordinal();
-		while(modeint != packet.integer) {
-			_provider.nextExtractionMode();
-			modeint = _provider.getExtractionMode().ordinal();
-			if(mode.ordinal() == modeint) {
-				//loop break
-				break;
-			}
-		}
+		_provider.setExtractionMode(packet.integer);
 	}
 
 	public void refreshInclude() {

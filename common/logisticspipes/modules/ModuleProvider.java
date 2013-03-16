@@ -98,7 +98,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
-		_extractionMode = ExtractionMode.values()[nbttagcompound.getInteger("extractionMode")];
+		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		
 	}
 
@@ -307,6 +307,8 @@ outer:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
+			case Leave1PerType:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, true, 0, 0);
 			default:
 				break;
 		}
@@ -331,6 +333,10 @@ outer:
 
 	public ExtractionMode getExtractionMode(){
 		return _extractionMode;
+	}
+
+	public void setExtractionMode(int id) {
+		_extractionMode = ExtractionMode.getMode(id);
 	}
 
 	public void nextExtractionMode() {

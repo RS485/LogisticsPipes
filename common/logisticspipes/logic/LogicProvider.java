@@ -49,7 +49,7 @@ public class LogicProvider extends BaseRoutingLogic{
 		super.readFromNBT(nbttagcompound);
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		_filterIsExclude = nbttagcompound.getBoolean("filterisexclude");
-		_extractionMode = ExtractionMode.values()[nbttagcompound.getInteger("extractionMode")];
+		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
     }
 
 	@Override
@@ -79,6 +79,10 @@ public class LogicProvider extends BaseRoutingLogic{
 	
 	public ExtractionMode getExtractionMode(){
 		return _extractionMode;
+	}
+
+	public void setExtractionMode(int id) {
+		_extractionMode = ExtractionMode.getMode(id);
 	}
 
 	public void nextExtractionMode() {

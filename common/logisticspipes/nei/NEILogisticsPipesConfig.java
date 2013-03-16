@@ -23,7 +23,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 	@Override
 	public void loadConfig() {
 		
-		if(Configs.ToolTipInfo && !added) {
+		if(Configs.TOOLTIP_INFO && !added) {
 			GuiContainerManager.addTooltipHandler(new DebugHelper());
 			added = true;
 		}

@@ -248,7 +248,7 @@ public class LogisticsPipes {
 			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
 		}
 		SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
-		for(int i=0;i<Configs.multiThreadNumber && Configs.multiThreadEnabled;i++) {
+		for(int i=0;i<Configs.MULIT_THREAD_NUMBER && Configs.MULTI_THREAD_ENABLED;i++) {
 			new RoutingTableUpdateThread(i);
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
@@ -257,7 +257,7 @@ public class LogisticsPipes {
 	
 	@PreInit
 	public void LoadConfig(FMLPreInitializationEvent evt) {
-		Configs.load();
+		Configs.load(evt);
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
 		requestLog.setUseParentHandlers(false);
@@ -290,7 +290,7 @@ public class LogisticsPipes {
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		LogisticsItemCard = new LogisticsItemCard(Configs.ItemCardId);
+		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
 		LogisticsItemCard.setItemName("logisticsItemCard");
 		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
@@ -309,34 +309,34 @@ public class LogisticsPipes {
 		} else {
 			renderIndex = 0;
 		}
-		LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId, renderIndex);
+		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
 		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
 		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
 		
-		LogisticsParts = new ItemParts(Configs.ItemPartsId);
+		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
 		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
 		LogisticsParts.setItemName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
-		ModuleItem = new ItemModule(Configs.ItemModuleId);
+		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
 		ModuleItem.setItemName("itemModule");
 		ModuleItem.loadModules();
 		
-		LogisticsItemDisk = new ItemDisk(Configs.ItemDiskId);
+		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
 		LogisticsItemDisk.setItemName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
 		
-		UpgradeItem = new ItemUpgrade(Configs.ItemUpgradeId);
+		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
 		UpgradeItem.setItemName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
-		LogisticsUpgradeManager = new LogisticsItem(Configs.ItemUpgradeManagerId);
+		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
 		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
 		
 		if(DEBUG) {
-			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ItemLiquidContainerId);
+			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
 			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
 		}

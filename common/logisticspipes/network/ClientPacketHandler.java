@@ -801,7 +801,7 @@ public class ClientPacketHandler {
 	private static void enableNBTDEBUG() {
 		try {
 			Class.forName("codechicken.nei.forge.GuiContainerManager");
-			Configs.ToolTipInfo = true;
+			Configs.TOOLTIP_INFO = true;
 			LoadingHelper.LoadNeiNBTDebugHelper();
 		} catch(ClassNotFoundException e) {
 			

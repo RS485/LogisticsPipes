@@ -11,7 +11,7 @@ public class RoutingTableUpdateThread extends Thread {
 	public RoutingTableUpdateThread(int i) {
 		super("LogisticsPipes RoutingTableUpdateThread #" + i);
 		this.setDaemon(true);
-		this.setPriority(Configs.multiThreadPriority);
+		this.setPriority(Configs.MULTI_THREAD_PRIORITY);
 		this.start();
 	}
 

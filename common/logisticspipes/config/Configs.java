@@ -1,10 +1,8 @@
 package logisticspipes.config;
 
-import java.io.File;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.ModLoader;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 
@@ -195,18 +193,8 @@ public class Configs {
 		ENABLE_PARTICLE_FX 					= Boolean.parseBoolean(enableParticleFX.value);
 	}
 	
-	@SuppressWarnings("deprecation")
-	public static void load() {
-		File configFile = null;
-		if(MainProxy.isClient()) {
-			configFile = new File(net.minecraft.client.Minecraft.getMinecraftDir(), "config/LogisticsPipes.cfg");
-		} else if(MainProxy.isServer()) {
-			configFile = net.minecraft.server.MinecraftServer.getServer().getFile("config/LogisticsPipes.cfg");
-		} else {
-			ModLoader.getLogger().severe("No server, no client? Where am I running?");
-			return;
-		}
-		CONFIGURATION = new Configuration(configFile);
+	public static void load(FMLPreInitializationEvent event) {
+		CONFIGURATION=new Configuration(event.getSuggestedConfigurationFile());
 		CONFIGURATION.load();
 		
 		if(CONFIGURATION.hasCategory("logisticspipe.id") || CONFIGURATION.hasCategory("logisticsPipe.id")) {

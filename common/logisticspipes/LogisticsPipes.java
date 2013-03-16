@@ -257,7 +257,7 @@ public class LogisticsPipes {
 	
 	@PreInit
 	public void LoadConfig(FMLPreInitializationEvent evt) {
-		Configs.load();
+		Configs.load(evt);
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
 		requestLog.setUseParentHandlers(false);

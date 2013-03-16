@@ -21,17 +21,24 @@ import logisticspipes.utils.LiquidIdentifier;
 
 public class RequestTree extends RequestTreeNode {
 	
-	private final HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer> _promisetotals = new HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer>();
+	private HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer> _promisetotals;
 
 	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent) {
 		super(item, requester, parent);
 	}
-
-	protected int getAllPromissesFor(IProvideItems provider, ItemIdentifier item) {
-		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(provider, item);
+	
+	private int getPromise(FinalPair key) {
+		if(_promisetotals == null)
+			_promisetotals = new HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer>();
 		Integer n = _promisetotals.get(key);
 		if(n == null) return 0;
 		return n;
+	}
+
+
+	protected int getAllPromissesFor(IProvideItems provider, ItemIdentifier item) {
+		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(provider, item);
+		return getPromise(key);
 	}
 	
 	protected LinkedList<LogisticsExtraPromise> getExtrasFor(ItemIdentifier item) {
@@ -68,8 +75,8 @@ public class RequestTree extends RequestTreeNode {
 
 	protected void promiseAdded(LogisticsPromise promise) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(promise.sender, promise.item);
-		Integer n = _promisetotals.get(key);
-		if(n == null) {
+		int n = getPromise(key);
+		if(n == 0) {
 			_promisetotals.put(key, promise.numberOfItems);
 		} else {
 			_promisetotals.put(key, n + promise.numberOfItems);

@@ -266,7 +266,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					break;
 				}
 			}
-			if(extracted == null) break;
+			if(extracted == null || extracted.stackSize == 0) break;
 			
 			// send the new crafted items to the destination
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
@@ -284,6 +284,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					item.addRelayPoints(nextOrder.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
+					
 				} else {
 					ItemStack stackToSend = extracted.splitStack(numtosend);
 					if(numtosend >= nextOrder.getValue1().stackSize) {

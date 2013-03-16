@@ -257,7 +257,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	private void ensureRouteTableIsUpToDate(boolean force){
 		if (_LSAVersion > _lastLSAVersion[simpleID]) {
-			if(Configs.multiThreadEnabled && !force) {
+			if(Configs.MULTI_THREAD_ENABLED && !force) {
 				RoutingTableUpdateThread.add(new UpdateRouterRunnable(this));
 			} else {
 				CreateRouteTable(_LSAVersion);
@@ -741,7 +741,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 			return;
 		}
-		if (Configs.multiThreadEnabled) {
+		if (Configs.MULTI_THREAD_ENABLED) {
 			ensureRouteTableIsUpToDate(false);
 		}
 	}

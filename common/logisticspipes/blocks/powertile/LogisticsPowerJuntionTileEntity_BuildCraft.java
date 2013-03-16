@@ -56,7 +56,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		if(providersToIgnore!=null && providersToIgnore.contains(this))
 			return false;
 		if(canUseEnergy(amount,null)) {
-			internalStorage -= (amount * Configs.powerUsageMultiplyer);
+			internalStorage -= (amount * Configs.POWER_USAGE_MULTIPLIER);
 			if(internalStorage<MAX_STORAGE/2)
 				needMorePowerTriggerCheck=true;
 			return true;
@@ -67,7 +67,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
 		if(providersToIgnore!=null && providersToIgnore.contains(this))
 			return false;
-		return internalStorage >= (amount * Configs.powerUsageMultiplyer);
+		return internalStorage >= (amount * Configs.POWER_USAGE_MULTIPLIER);
 	}	
 	@Override
 	public boolean useEnergy(int amount) {

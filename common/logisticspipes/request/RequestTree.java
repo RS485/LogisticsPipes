@@ -85,7 +85,7 @@ public class RequestTree extends RequestTreeNode {
 
 	protected void promiseRemoved(LogisticsPromise promise) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(promise.sender, promise.item);
-		int r = _promisetotals.get(key) - promise.numberOfItems;
+		int r = getPromise(key) - promise.numberOfItems;
 		if(r == 0) {
 			_promisetotals.remove(key);
 		} else {

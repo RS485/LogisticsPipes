@@ -125,7 +125,13 @@ public class ModuleQuickSort implements ILogisticsModule {
 				int availableItems = Math.min(maxItemsToSend, item.getValue());
 				while(reply != null) {
 					int count = Math.min(availableItems, reply.getValue2().maxNumberOfItems);
-					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), availableItems);
+					if(count == 0) {
+						count = Math.min(availableItems, item.getKey().getMaxStackSize());
+					} else {
+						count = Math.min(count, item.getKey().getMaxStackSize());
+					} 
+					ItemStack stackToSend = 
+					invUtil.getMultipleItems(item.getKey(), availableItems);
 		
 					_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					availableItems-=stackToSend.stackSize;

@@ -186,6 +186,8 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 		if(invUtil instanceof SpecialInventoryHandler){
 			HashMap<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
 			for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
+				if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
+					continue;
 				List<Integer> jamList = new LinkedList<Integer>();
 				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
 				if (reply == null) continue;

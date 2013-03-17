@@ -5,8 +5,8 @@ import java.util.BitSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDModBasedItemSink;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -39,13 +39,15 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
+	private IWorldProvider _world;
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
@@ -141,7 +143,7 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	}
 	
 	public void ModListChanged() {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), localModeWatchers);
@@ -174,5 +176,10 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

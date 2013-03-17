@@ -3,13 +3,13 @@ package logisticspipes.blocks.powertile;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerJunction;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -51,16 +51,27 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		powerFramework.configure(0, 1, 250, 1, 750);
 		HUD = new HUDPowerJunction(this);
 	}
-	
 	@Override
-	public boolean useEnergy(int amount) {
-		if(canUseEnergy(amount)) {
+	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
+		if(providersToIgnore!=null && providersToIgnore.contains(this))
+			return false;
+		if(canUseEnergy(amount,null)) {
 			internalStorage -= (amount * Configs.powerUsageMultiplyer);
 			if(internalStorage<MAX_STORAGE/2)
 				needMorePowerTriggerCheck=true;
 			return true;
 		}
-		return false;
+		return false;	}
+
+	@Override
+	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
+		if(providersToIgnore!=null && providersToIgnore.contains(this))
+			return false;
+		return internalStorage >= (amount * Configs.powerUsageMultiplyer);
+	}	
+	@Override
+	public boolean useEnergy(int amount) {
+		return useEnergy(amount,null);
 	}
 	
 	public int freeSpace() {
@@ -75,7 +86,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return internalStorage >= (amount * Configs.powerUsageMultiplyer);
+		return canUseEnergy(amount,null);
 	}
 	
 	public void addEnergy(float amount) {

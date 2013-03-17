@@ -66,7 +66,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getRoutedPipe().getUpgradeManager().getSecurityID());
 			if(station != null) {
-				settings = station.getSecuritySettingsForPlayer(entityplayer);
+				settings = station.getSecuritySettingsForPlayer(entityplayer, false);
 			}
 		}
 		if (entityplayer.getCurrentEquippedItem() == null) {

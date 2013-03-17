@@ -12,14 +12,12 @@ import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.ServerListenThread;
 import net.minecraft.server.ThreadMinecraftServer;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import buildcraft.core.DefaultProps;
 import cpw.mods.fml.common.SidedProxy;
@@ -29,7 +27,7 @@ import cpw.mods.fml.relauncher.Side;
 
 public class MainProxy {
 	
-	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
+	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy", bukkitSide="logisticspipes.proxy.side.BukkitProxy")
 	public static IProxy proxy;
 	
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();
@@ -102,6 +100,7 @@ public class MainProxy {
 	}
 	
 	public static int getDimensionForWorld(World world) {
+		/*
 		if(world instanceof WorldServer) {
 			return ((WorldServer)world).provider.dimensionId;
 		}
@@ -109,6 +108,8 @@ public class MainProxy {
 			return ((WorldClient)world).provider.dimensionId;
 		}
 		return world.getWorldInfo().getDimension();
+		*/
+		return proxy.getDimensionForWorld(world);
 	}
 
 	public static void sendPacketToPlayer(Packet packet, Player player) {

@@ -35,6 +35,7 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.SidedInventoryAdapter;
+import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
@@ -96,10 +97,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	public PipeItemsCraftingLogistics(int itemID) {
 		super(new BaseLogicCrafting(), itemID);
+		((BaseLogicCrafting)logic).setParentPipe(this);
 	}
 	
 	public PipeItemsCraftingLogistics(PipeTransportLogistics transport, int itemID) {
 		super(transport, new BaseLogicCrafting(), itemID);
+		((BaseLogicCrafting)logic).setParentPipe(this);
 	}
 
 	protected int neededEnergy() {
@@ -277,7 +280,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					item.setTransportMode(TransportMode.Active);
 					item.addRelayPoints(order.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
-					_orderManager.sendSuccessfull(stackToSend.stackSize);
+					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
 				} else {
 					ItemStack stackToSend = extracted.splitStack(numtosend);
 					_extras = Math.max(_extras - numtosend, 0);
@@ -413,7 +416,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public ILogisticsModule getLogisticsModule() {
-		return null;
+		return new ModuleCrafter(this);
 	}
 	
 	public boolean isAttachedSign(TileEntity entity) {
@@ -449,6 +452,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	public boolean hasOrder() {
 		return _orderManager.hasOrders();
+	}
+	
+	public int getTodo() {
+		return _orderManager.totalItemsCountInAllOrders();
 	}
 	
 	@Override
@@ -499,7 +506,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	private void checkContentUpdate() {
 		doContentUpdate = false;
-		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList();
+		LinkedList<ItemIdentifierStack> all = _orderManager.getContentList(this.worldObj);
 		if(!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);

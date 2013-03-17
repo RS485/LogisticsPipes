@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -31,15 +31,18 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	private int xCoord = 0;
 	private int yCoord = 0;
 	private int zCoord = 0;
-	IChassiePowerProvider _power;
+	
+	private IRoutedPowerProvider _power;
+	private IWorldProvider _world;
 	
 	public final List<Integer> aspectList = new LinkedList<Integer>();
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_power = powerProvider;
+		_world = world;
 	}
 
 	@Override
@@ -110,7 +113,7 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	}
 
 	public void aspectListChanged() {
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
 			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), localModeWatchers);
@@ -174,5 +177,10 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

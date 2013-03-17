@@ -16,4 +16,5 @@ public interface ICraftItems extends IProvideItems, IRequestItems{
 	CraftingTemplate addCrafting();
 	//void canCraft(LogisticsTransaction transaction);
 	ItemIdentifier getCraftedItem();
+	int getTodo();
 }

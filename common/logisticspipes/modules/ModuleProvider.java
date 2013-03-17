@@ -9,8 +9,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDProviderModule;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -26,6 +26,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
@@ -37,6 +38,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
@@ -54,7 +56,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
-	protected IChassiePowerProvider _power;
+	protected IRoutedPowerProvider _power;
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
@@ -85,7 +87,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
@@ -146,11 +148,14 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 		checkUpdate(null);
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders()) {
-			Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = _orderManager.getNextRequest();
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+			if(firstOrder == null)
+				firstOrder = order;
+			order = _orderManager.getNextRequest();
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
-			if (sent == 0)
-				break;
+			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 3);
 			stacksleft -= 1;
 			itemsleft -= sent;
@@ -227,6 +232,9 @@ outer:
 		}
 	}
 
+	
+	// returns -1 on perminatly failed, don't try another stack this tick
+	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
 		if (_invProvider.getPointedInventory() == null) {
@@ -243,13 +251,31 @@ outer:
 		int wanted = Math.min(available, stack.stackSize);
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
-		
-		if(!_power.useEnergy(wanted * neededEnergy())) return 0;
-		
+		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
+		if(dRtr == null) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
+		boolean defersend = false;
+		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
+			if(reply.maxNumberOfItems < wanted) {
+				wanted = reply.maxNumberOfItems;
+				if(wanted <= 0) {
+					_orderManager.deferSend();
+					return 0;
+				}
+				defersend = true;
+			}
+		}
+		if(!_power.canUseEnergy(wanted * neededEnergy())) return -1;
+
 		ItemStack removed = inv.getMultipleItems(item, wanted);
 		int sent = removed.stackSize;
+		_power.useEnergy(sent * neededEnergy());
+
 		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
-		_orderManager.sendSuccessfull(sent);
+		_orderManager.sendSuccessfull(sent, defersend);
 		return sent;
 	}
 	
@@ -421,6 +447,11 @@ outer:
 
 	@Override
 	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
 		return false;
 	}
 }

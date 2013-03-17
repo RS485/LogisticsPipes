@@ -3,6 +3,7 @@ package logisticspipes.proxy;
 import logisticspipes.proxy.specialinventoryhandler.AEInterfaceInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.BarrelInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.CrateInventoryHandler;
+import logisticspipes.proxy.specialinventoryhandler.DSUInventoryHandler;
 import logisticspipes.proxy.specialinventoryhandler.DigitalChestHandler;
 import cpw.mods.fml.common.Loader;
 
@@ -23,6 +24,10 @@ public class SpecialInventoryHandlerManager {
 
 		if(Loader.isModLoaded("AppliedEnergistics")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
+		}
+
+		if(Loader.isModLoaded("MFReloaded")) {
+			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
 		}
 	}
 }

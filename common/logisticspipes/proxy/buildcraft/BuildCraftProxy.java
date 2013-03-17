@@ -14,10 +14,10 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gates.ActionDisableLogistics;
-import logisticspipes.gates.TriggerCrafting;
 import logisticspipes.gates.LogisticsTriggerProvider;
-import logisticspipes.gates.TriggerNeedsPower;
+import logisticspipes.gates.TriggerCrafting;
 import logisticspipes.gates.TriggerHasDestination;
+import logisticspipes.gates.TriggerNeedsPower;
 import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
@@ -102,18 +102,24 @@ public class BuildCraftProxy {
 					return false;
 				}
 			} else {
+				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
 				if (!((TileGenericPipe) from).isPipeConnected(to, way.getOpposite())) {
+					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
+				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 			}
 			if(((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
 				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).isPipeConnected(from, way.getOpposite(), ignoreSystemDisconnection)) {
 					return false;
 				}
 			} else {
+				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
 				if (!((TileGenericPipe) to).isPipeConnected(from, way)) {
+					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
+				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 			}
 			return true;
 		} else {

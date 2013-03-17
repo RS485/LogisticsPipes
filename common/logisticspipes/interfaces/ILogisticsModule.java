@@ -1,7 +1,8 @@
 package logisticspipes.interfaces;
 
-import java.util.List;
+import java.util.Collection;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.utils.ItemIdentifier;
@@ -14,7 +15,7 @@ public interface ILogisticsModule extends ISaveState {
 	 * @param itemSender the handler to send items into the logistics system
 	 * @param world that the module is in.
 	 */
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider);
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider);
 	
 	/**
 	 * Registers the position to the module
@@ -54,7 +55,7 @@ public interface ILogisticsModule extends ISaveState {
 	 * the size of the list here does not influence the ongoing computational cost.
 	 * @return
 	 */
-	public List<ItemIdentifier> getSpecificInterests();
+	public Collection<ItemIdentifier> getSpecificInterests();
 
 	public boolean interestedInAttachedInventory();
 
@@ -62,4 +63,9 @@ public interface ILogisticsModule extends ISaveState {
 	 * is this module interested in recieving any damage varient of items in the attached inventory?
 	 */
 	public boolean interestedInUndamagedID();
+
+	/**
+	 * is this module a valid destination for bounced items.
+	 */
+	public boolean recievePassive();
 }

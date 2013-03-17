@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -26,14 +26,14 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 
 	public ModuleApiaristAnalyser() {
 
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
@@ -111,5 +111,10 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

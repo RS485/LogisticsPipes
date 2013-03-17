@@ -79,7 +79,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-//					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateRouter(routerUUId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord,true);
 					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, dir);
 				}
 			}
@@ -268,14 +267,14 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		blockCrafer = flags.get(1);
 		blockSorting = flags.get(2);
 		isBlocking = flags.get(3);
-		updateAllRouters();
+		//updateAllRouters();
 	}
 
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
 	}
-	
+	/*
 	private void updateAllRouters() {
 		this.router.flagForRoutingUpdate();
 		for(IRouter r:routers){
@@ -283,4 +282,5 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				r.flagForRoutingUpdate();
 		}
 	}
+	*/
 }

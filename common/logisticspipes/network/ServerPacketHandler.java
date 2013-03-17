@@ -16,7 +16,7 @@ import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
-import logisticspipes.interfaces.ISneakyOrientationreceiver;
+import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logic.BaseLogicCrafting;
@@ -63,7 +63,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestHandler;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SneakyOrientation;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -73,6 +72,7 @@ import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -473,7 +473,7 @@ public class ServerPacketHandler {
 		}
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleExtractor) {
 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, packet.integer,
-					(((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getSneakyOrientation().ordinal())).getPacket(), (Player)player);
+					(((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getSneakyDirection().ordinal())).getPacket(), (Player)player);
 		}
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleProvider) {
 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, (((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isExcludeFilter() ? 1 : 0)).getPacket(), (Player)player);
@@ -498,7 +498,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(packet.dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -511,7 +511,7 @@ public class ServerPacketHandler {
 	}
 	
 	private static void onRequestComponents(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(packet.dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -525,7 +525,7 @@ public class ServerPacketHandler {
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
 		int dimension = (packet.integer - (packet.integer % 10)) / 10;
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -647,26 +647,10 @@ public class ServerPacketHandler {
 		if(slot == 20) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-				if(dummy.getModule() instanceof ISneakyOrientationreceiver) {
-					final ISneakyOrientationreceiver module = (ISneakyOrientationreceiver) dummy.getModule();
-					switch (value){
-					case 0:
-						module.setSneakyOrientation(SneakyOrientation.Top);
-						break;
-					
-					case 1:
-						module.setSneakyOrientation(SneakyOrientation.Side);
-						break;
-					
-					case 2:
-						module.setSneakyOrientation(SneakyOrientation.Bottom);
-						break;
-						
-					case 3:
-						module.setSneakyOrientation(SneakyOrientation.Default);
-						break;
-					}
-					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyOrientation().ordinal()).getPacket(), (Player)player);
+				if(dummy.getModule() instanceof ISneakyDirectionReceiver) {
+					final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) dummy.getModule();
+					module.setSneakyDirection(ForgeDirection.getOrientation(value));
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
 					
 				}
 			}
@@ -690,49 +674,17 @@ public class ServerPacketHandler {
 		}
 
 		if (slot <= 0) {
-			if (piperouted.getLogisticsModule() instanceof ISneakyOrientationreceiver) {
-				final ISneakyOrientationreceiver module = (ISneakyOrientationreceiver) piperouted.getLogisticsModule();
-				switch (value){
-				case 0:
-					module.setSneakyOrientation(SneakyOrientation.Top);
-					break;
-				
-				case 1:
-					module.setSneakyOrientation(SneakyOrientation.Side);
-					break;
-				
-				case 2:
-					module.setSneakyOrientation(SneakyOrientation.Bottom);
-					break;
-					
-				case 3:
-					module.setSneakyOrientation(SneakyOrientation.Default);
-					break;
-				}
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyOrientation().ordinal()).getPacket(), (Player)player);
+			if (piperouted.getLogisticsModule() instanceof ISneakyDirectionReceiver) {
+				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule();
+				module.setSneakyDirection(ForgeDirection.getOrientation(value));
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
 				return;
 			}
 		} else {
-			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ISneakyOrientationreceiver) {
-				final ISneakyOrientationreceiver module = (ISneakyOrientationreceiver) piperouted.getLogisticsModule().getSubModule(slot - 1);
-				switch (value){
-				case 0:
-					module.setSneakyOrientation(SneakyOrientation.Top);
-					break;
-				
-				case 1:
-					module.setSneakyOrientation(SneakyOrientation.Side);
-					break;
-				
-				case 2:
-					module.setSneakyOrientation(SneakyOrientation.Bottom);
-					break;
-					
-				case 3:
-					module.setSneakyOrientation(SneakyOrientation.Default);
-					break;
-				}
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, module.getSneakyOrientation().ordinal()).getPacket(), (Player)player);
+			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ISneakyDirectionReceiver) {
+				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule().getSubModule(slot - 1);
+				module.setSneakyDirection(ForgeDirection.getOrientation(value));
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -886,7 +838,7 @@ public class ServerPacketHandler {
 				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
 					player.closeScreen();
 					player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * packet.integer), player.worldObj, packet.posX, packet.posY, packet.posZ);
-					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, ((ModuleAdvancedExtractor)dummy.getModule()).getSneakyOrientation().ordinal()).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, ((ModuleAdvancedExtractor)dummy.getModule()).getSneakyDirection().ordinal()).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -913,14 +865,14 @@ public class ServerPacketHandler {
 			if (piperouted.getLogisticsModule() instanceof ModuleAdvancedExtractor) {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor)piperouted.getLogisticsModule();
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * packet.integer), player.worldObj, packet.posX, packet.posY, packet.posZ);
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyOrientation().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
 				return;
 			}
 		} else {
 			if (piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleAdvancedExtractor) {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * packet.integer), player.worldObj, packet.posX, packet.posY, packet.posZ);
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, module.getSneakyOrientation().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -1312,7 +1264,7 @@ public class ServerPacketHandler {
 
 	private static void onLiquidRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
 		int dimension = packet.integer;
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -1325,7 +1277,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onLiquidRequestSubmit(EntityPlayerMP player, PacketRequestSubmit packet) {
-		final TileGenericPipe pipe = getPipe(DimensionManager.getWorld(packet.dimension), packet.posX, packet.posY, packet.posZ);
+		final TileGenericPipe pipe = MainProxy.proxy.getPipeInDimensionAt(packet.dimension, packet.posX, packet.posY, packet.posZ, player);
 		if (pipe == null) {
 			return;
 		}
@@ -1408,7 +1360,7 @@ public class ServerPacketHandler {
 	private static void onSecurityCardButton(EntityPlayerMP player, PacketPipeInteger packet) {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
-			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer);
+			((LogisticsSecurityTileEntity)tile).buttonFreqCard(packet.integer, player);
 		}
 	}
 

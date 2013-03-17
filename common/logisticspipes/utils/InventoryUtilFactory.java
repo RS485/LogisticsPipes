@@ -37,7 +37,7 @@ public class InventoryUtilFactory {
 		return null;
 	}
 
-	private IInventoryUtil getUtilForInv(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForInv(IInventory inv, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		TileEntity tile = getTileEntityFromInventory(inv);
 		if(tile == null) return null;
 		for(SpecialInventoryHandler invHandler:handler) {

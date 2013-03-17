@@ -16,7 +16,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -58,9 +57,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	public Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude) {
 		IRouter sourceRouter = SimpleServiceLocator.routerManager.getRouter(sourceID);
 		if (sourceRouter == null) return null;
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(stack);
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(stack);
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);
@@ -76,7 +76,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 
 	/**
-	 * Method used to check if a given stack has a destination at a priority.
+	 * Method used to check if a given stack has a passive sink destination at a priority.
 	 * 
 	 * @return Pair3 of destinationSimpleID, sinkreply, relays; null if nothing found
 	 * @param stack The stack to check if it has destination.
@@ -121,19 +121,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(candidateRouter.destination instanceof IFilteringRouter) {
 				firewall.add(candidateRouter);
 			}
-
-			ILogisticsModule module = candidateRouter.destination.getLogisticsModule();
-			if (candidateRouter.destination.getPipe() == null || !candidateRouter.destination.getPipe().isEnabled()) continue;
-			if (excludeSource) {
-				if(candidateRouter.destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) continue;
-			}
-			if (module == null) continue;
-			SinkReply reply = null;
-			if (result.getValue2() == null) {
-				reply = module.sinksItem(stack, -1, 0);
-			} else {
-				reply = module.sinksItem(stack, result.getValue2().fixedPriority.ordinal(), result.getValue2().customPriority);
-			}
+			
+			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false);
+					
 			if (reply == null) continue;
 			if (result.getValue1() == null){
 				result.setValue1(candidateRouter.destination.getSimpleID());
@@ -175,7 +165,28 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		}
 		return result;
 	}
+	
+		
+	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result, boolean activeRequest) {
 
+		SinkReply reply = null;
+		ILogisticsModule module = destination.getLogisticsModule();
+		CoreRoutedPipe crp = destination.getPipe();
+		if (module == null) return null;
+		if (!(module.recievePassive() || activeRequest))
+			return null;
+		if (crp == null || !crp.isEnabled()) return null;
+		if (excludeSource && sourceRouter !=null) {
+			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
+		}
+		if (result== null) {
+			reply = module.sinksItem(stack, -1, 0);
+		} else {
+			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority);
+		}
+		return reply;
+	}
+	
 	/**
 	 * Will assign a destination for a IRoutedItem based on a best sink reply recieved from other pipes.
 	 * @param item The item that needs to be routed.
@@ -195,9 +206,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		//Wipe current destination
 		item.clearDestination();
 
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item.getIDStack().getItem());
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 			ExitRoute e = sourceRouter.getDistanceTo(r);
 			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
 				validDestinations.add(e);

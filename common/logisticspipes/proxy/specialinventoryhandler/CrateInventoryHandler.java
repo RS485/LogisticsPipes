@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 
 public class CrateInventoryHandler extends SpecialInventoryHandler {
 
@@ -22,6 +22,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	private static Method getItemStack;
 	private static Method getItemCount;
 	private static Method spaceForItem;
+	private static Method addItems;
 
 	private final TileEntity _tile;
 	private final boolean _hideOnePerStack;
@@ -47,6 +48,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 			getItemStack = cratePileDataClass.getDeclaredMethod("getItemStack", new Class[]{int.class});
 			getItemCount = cratePileDataClass.getDeclaredMethod("getItemCount", new Class[]{ItemStack.class});
 			spaceForItem = cratePileDataClass.getDeclaredMethod("spaceForItem", new Class[]{ItemStack.class});
+			addItems = cratePileDataClass.getDeclaredMethod("addItems", new Class[]{ItemStack.class});
 			return true;
 		} catch(Exception e) {
 			return false;
@@ -59,7 +61,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new CrateInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
@@ -188,5 +190,35 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+
+	@Override
+	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
+		ItemStack st = stack.copy();
+		st.stackSize = 0;
+		if(doAdd) {
+			ItemStack tst = stack.copy();
+			if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
+				tst.stackTagCompound.setName("tag");
+			}
+			try {
+				Object cratePileData = getPileData.invoke(_tile, new Object[]{});
+				ItemStack overflow = (ItemStack) addItems.invoke(cratePileData, new Object[]{tst});
+				st.stackSize = stack.stackSize;
+				if(overflow != null) {
+					st.stackSize -= overflow.stackSize;
+				}
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
+		} else {
+			int space = roomForItem(ItemIdentifier.get(stack), 0);
+			st.stackSize = Math.max(Math.min(space, stack.stackSize), 0);
+		}
+		return st;
 	}
 }

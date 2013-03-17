@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -35,7 +35,7 @@ public class LogicBuilderSupplier extends BaseRoutingLogic implements IRequireRe
 	
 	private boolean _requestPartials = false;
 
-	public IChassiePowerProvider _power;
+	public IRoutedPowerProvider _power;
 	
 	public boolean pause = false;
 	

@@ -3,7 +3,7 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -25,7 +25,7 @@ import buildcraft.api.inventory.ISpecialInventory;
 public class ModuleApiaristRefiller implements ILogisticsModule {
 
 	private IInventoryProvider _invProvider;
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	private ISendRoutedItem _itemSender;
 	private int xCoord;
 	private int yCoord;
@@ -37,7 +37,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	public ModuleApiaristRefiller() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerProvider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {
 		_invProvider = invProvider;
 		_power = powerProvider;
 		_world = world;
@@ -140,5 +140,10 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

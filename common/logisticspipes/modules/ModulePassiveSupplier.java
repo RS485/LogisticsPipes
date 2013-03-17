@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDPassiveSupplier;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -39,7 +39,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 64);
 	private IInventoryProvider _invProvider;
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	private int slot = 0;
 	private int xCoord = 0;
 	private int yCoord = 0;
@@ -54,7 +54,7 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_power = powerprovider;
 	}
@@ -179,5 +179,10 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

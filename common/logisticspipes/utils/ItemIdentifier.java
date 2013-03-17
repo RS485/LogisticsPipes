@@ -548,7 +548,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	}
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
-		if(nbt.getName() == "") {
+		if((item.getMaxStackSize() > 1 || LogisticsPipes.DEBUG) && nbt.getName() == "") {
 			LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
 		}
 		try {

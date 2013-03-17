@@ -32,8 +32,6 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private int speedUpgradeCount = 0;
 	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
 	private boolean isAdvancedCrafter = false;
-	private boolean isSatelliteCraftingSatellite = false;
-	private boolean isSatelliteCraftingCrafter = false;
 	
 	public UpgradeManager(CoreRoutedPipe pipe) {
 		this.pipe = pipe;
@@ -52,7 +50,12 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	private boolean updateModule(int slot) {
 		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
-		return upgrades[slot].needsUpdate();
+		if(upgrades[slot] == null) {
+			inv.setInventorySlotContents(slot, null);
+			return false;
+		} else {
+			return upgrades[slot].needsUpdate();
+		}
 	}
 	
 	private boolean removeUpgrade(int slot) {
@@ -76,8 +79,6 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		sneakyOrientation = ForgeDirection.UNKNOWN;
 		speedUpgradeCount = 0;
 		isAdvancedCrafter = false;
-		isSatelliteCraftingSatellite = false;
-		isSatelliteCraftingCrafter = false;
 		disconnectedSides.clear();
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
@@ -87,10 +88,6 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				speedUpgradeCount += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof ConnectionUpgrade) {
 				disconnectedSides.add(((ConnectionUpgrade)upgrade).getSide());
-			} else if(upgrade instanceof SplitCraftingCrafterUpgrade) {
-				isSatelliteCraftingCrafter = true;
-			} else if(upgrade instanceof SplitCraftingSatelliteUpgrade) {
-				isSatelliteCraftingSatellite = true;
 			} else if(upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
 			}
@@ -220,13 +217,5 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public boolean isAdvancedSatelliteCrafter() {
 		return isAdvancedCrafter;
-	}
-	
-	public boolean isSatelliteCraftingSatellite() {
-		return isSatelliteCraftingSatellite;
-	}
-	
-	public boolean isSatelliteCraftingCrafter() {
-		return isSatelliteCraftingCrafter;
 	}
 }

@@ -2,7 +2,7 @@ package logisticspipes.modules;
 
 import java.util.List;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
@@ -189,7 +189,7 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);
@@ -222,7 +222,7 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		this.worldProvider = world;
 		_power = powerprovider;
 	}
@@ -317,5 +317,10 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

@@ -7,8 +7,6 @@ import java.util.List;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
-import logisticspipes.pipes.upgrades.SplitCraftingCrafterUpgrade;
-import logisticspipes.pipes.upgrades.SplitCraftingSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeNORTH;
@@ -47,8 +45,6 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	//Crafting Upgrades
 	public static final int ADVANCED_SAT_CRAFTINGPIPE = 21;
-	public static final int SAT_DISTRIBUTING_CRAFTER = 22;
-	public static final int SAT_DISTRIBUTING_SATELITE = 23;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
 	
@@ -128,8 +124,6 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 9 * 16 + 12);
 		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 9 * 16 + 6);
 		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 9 * 16 + 13);
-		registerUpgrade(SAT_DISTRIBUTING_CRAFTER, "Split Crafting Upgrade (Crafter)", SplitCraftingCrafterUpgrade.class, 9 * 16 + 14);
-		registerUpgrade(SAT_DISTRIBUTING_SATELITE, "Split Crafting Upgrade (Satellite)", SplitCraftingSatelliteUpgrade.class, 9 * 16 + 15);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {

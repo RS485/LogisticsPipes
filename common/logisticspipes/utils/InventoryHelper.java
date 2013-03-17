@@ -1,5 +1,6 @@
 package logisticspipes.utils;
 
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
@@ -44,6 +45,12 @@ public class InventoryHelper {
 
 	//BC getTransactorFor using our getInventory
 	public static ITransactor getTransactorFor(Object object) {
+		if(object instanceof IInventory) {
+			ITransactor t = SimpleServiceLocator.inventoryUtilFactory.getUtilForInv((IInventory)object, false, false, 0, 0);
+			if(t != null) {
+				return t;
+			}
+		}
 
 		if (object instanceof ISpecialInventory)
 			return new TransactorSpecial((ISpecialInventory) object);

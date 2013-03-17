@@ -7,10 +7,11 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 
 public class BarrelInventoryHandler extends SpecialInventoryHandler {
 
@@ -53,7 +54,7 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new BarrelInventoryHandler(tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
@@ -218,4 +219,39 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		return 0;
 	}
 
+	@Override
+	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
+		ItemStack st = stack.copy();
+		st.stackSize = 0;
+		if(from != ForgeDirection.UP) return st;
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			if(itemStack == null) {
+				st.stackSize = stack.stackSize;
+				if(doAdd) {
+					ItemStack tst = stack.copy();
+					if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
+						tst.stackTagCompound.setName("tag");
+					}
+					((IInventory)_tile).setInventorySlotContents(0, tst);
+				}
+			} else {
+				if(ItemIdentifier.get(itemStack) != ItemIdentifier.get(stack)) return st;
+				int max = (Integer) getMaxSize.invoke(_tile, new Object[]{});
+				int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+				int room = max - value;
+				st.stackSize = Math.max(Math.min(room, stack.stackSize), 0);
+				if(doAdd && st.stackSize > 0) {
+					setItemCount.invoke(_tile, new Object[]{value + st.stackSize});
+				}
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return st;
+	}
 }

@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -48,7 +48,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 
 	public boolean pause = false;
 	
-	public IChassiePowerProvider _power;
+	public IRoutedPowerProvider _power;
 	
 	public LogicSupplier() {
 		throttleTime = 100;

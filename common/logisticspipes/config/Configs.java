@@ -195,6 +195,7 @@ public class Configs {
 		ENABLE_PARTICLE_FX 					= Boolean.parseBoolean(enableParticleFX.value);
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void load() {
 		File configFile = null;
 		if(MainProxy.isClient()) {

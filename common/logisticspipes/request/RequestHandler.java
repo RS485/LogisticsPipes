@@ -1,12 +1,12 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
@@ -200,9 +200,10 @@ public class RequestHandler {
 		}
 		
 		// get all the routers
-		Set<IRouter> routers = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(routers.size()); // get the routing table 
-		for(IRouter r:routers){
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 			if(r.getPipe() instanceof ILiquidProvider){
 				ExitRoute e = requester.getRouter().getDistanceTo(r);
 				if (e!=null)

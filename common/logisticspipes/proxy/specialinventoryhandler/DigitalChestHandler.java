@@ -6,24 +6,28 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 
 public class DigitalChestHandler extends SpecialInventoryHandler {
 
 	private final IDigitalChest _tile;
+	private final boolean _hideOnePerStack;
 
 	private DigitalChestHandler(IDigitalChest tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		_tile = (IDigitalChest)tile;
+		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 
 	public DigitalChestHandler() {
 		_tile = null;
+		_hideOnePerStack = false;
 	}
+
 	@Override
 	public boolean init() {
 		return true;
@@ -35,7 +39,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public IInventoryUtil getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
+	public SpecialInventoryHandler getUtilForTile(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		return new DigitalChestHandler((IDigitalChest)tile, hideOnePerStack, hideOne, cropStart, cropEnd);
 	}
 
@@ -44,7 +48,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return 0;
 		if(content.getItem() != itemIdent) return 0;
-		return content.stackSize;
+		return content.stackSize - (_hideOnePerStack?1:0);
 	}
 
 	@Override
@@ -61,7 +65,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		ItemIdentifierStack content = getContents();
 		if(content != null) {
-			map.put(content.getItem(), content.stackSize);
+			map.put(content.getItem(), content.stackSize - (_hideOnePerStack?1:0));
 		}
 		return map;
 	}
@@ -131,7 +135,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		//and finally use the output slot
 		ItemStack stack = ((IInventory)_tile).getStackInSlot(0);
 		if(stack != null && ItemIdentifier.get(stack) == itemIdent) {
-			wanted = Math.min(count, stack.stackSize);
+			wanted = Math.min(count, stack.stackSize - (_hideOnePerStack?1:0));
 			stack.stackSize -= wanted;
 			count -= wanted;
 		}
@@ -149,5 +153,66 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 			}
 		}
 		return dataIdent;
+	}
+
+	@Override
+	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
+		ItemIdentifier itemIdent = ItemIdentifier.get(stack);
+		ItemStack st = stack.copy();
+		st.stackSize = 0;
+		ItemIdentifierStack content = getContents();
+		if(content == null) return st;
+		if(content.getItem() != itemIdent) return st;
+
+		if(!doAdd) {
+			int space = _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.stackSize;
+			st.stackSize = Math.max(Math.min(space, stack.stackSize), 0);
+			return st;
+		}
+
+		//add to output slot first
+		ItemStack slot = ((IInventory)_tile).getStackInSlot(0);
+		if(slot == null) {
+			slot = st.copy();
+			slot.stackSize = 0;
+		}
+		if(ItemIdentifier.get(slot) == itemIdent) {
+			int toadd = Math.min(slot.getMaxStackSize() - slot.stackSize, stack.stackSize - st.stackSize);
+			if(toadd > 0) {
+				st.stackSize += toadd;
+				slot.stackSize += toadd;
+				((IInventory)_tile).setInventorySlotContents(0, slot);
+			}
+		}
+		if(stack.stackSize - st.stackSize == 0) return st;
+
+		//now internal storage
+		ItemStack[] data = _tile.getStoredItemData();
+		int toadd = Math.min(_tile.getMaxItemCount() - data[0].stackSize, stack.stackSize - st.stackSize);
+		if(toadd > 0) {
+			st.stackSize += toadd;
+			_tile.setItemCount(data[0].stackSize + toadd);
+		}
+		if(stack.stackSize - st.stackSize == 0) return st;
+
+		//and finally the input slots
+		for(int i = 1; i < 3; i++) {
+			slot = ((IInventory)_tile).getStackInSlot(i);
+			if(slot == null) {
+				slot = st.copy();
+				slot.stackSize = 0;
+			}
+			if(ItemIdentifier.get(slot) == itemIdent) {
+				toadd = Math.min(slot.getMaxStackSize() - slot.stackSize, stack.stackSize - st.stackSize);
+				if(toadd > 0) {
+					st.stackSize += toadd;
+					slot.stackSize += toadd;
+					((IInventory)_tile).setInventorySlotContents(i, slot);
+				}
+			}
+			if(stack.stackSize - st.stackSize == 0) return st;
+		}
+
+		return st;
 	}
 }

@@ -134,6 +134,7 @@ import cpw.mods.fml.relauncher.Side;
 				"after:ComputerCraft;" +
 				"after:factorization;" +
 				"after:GregTech_Addon;" +
+				"after:AppliedEnergistics;" +
 				"after:ThermalExpansion|Transport;" +
 				"after:BetterStorage")
 @NetworkMod(
@@ -261,6 +262,7 @@ public class LogisticsPipes {
 		Configs.load();
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
+		requestLog.setUseParentHandlers(false);
 		try {
 			File logPath = new File((File) FMLInjectionData.data()[6], "LogisticsPipes-Request.log");
 			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
@@ -277,6 +279,7 @@ public class LogisticsPipes {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
 		ProxyManager.load();
@@ -416,7 +419,6 @@ public class LogisticsPipes {
 	@ServerStopping
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
-		ServerRouter.resetStatics();
 		QueuedTasks.clearAllTasks();
 		HudUpdateTick.clearUpdateFlags();
 		BaseLogicSatellite.cleanup();

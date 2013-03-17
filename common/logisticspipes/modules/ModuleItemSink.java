@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDItemSink;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -45,7 +45,7 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 	
 	private IHUDModuleRenderer HUD = new HUDItemSink(this);
 	
-	private IChassiePowerProvider _power;
+	private IRoutedPowerProvider _power;
 	
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	
@@ -66,7 +66,7 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_power = powerprovider;
 	}
 
@@ -198,4 +198,9 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 		return false;
 	}
 
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

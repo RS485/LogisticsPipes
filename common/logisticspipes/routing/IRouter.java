@@ -13,12 +13,12 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.IPowerRouter;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraftforge.common.ForgeDirection;
 
-public interface IRouter extends IPowerRouter {
+public interface IRouter {
 	public interface IRAction {
 		public boolean isInteresting(IRouter that);
 		public boolean doTo(IRouter that);
@@ -36,6 +36,7 @@ public interface IRouter extends IPowerRouter {
 	public List<ExitRoute> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	public CoreRoutedPipe getCachedPipe();
+	public boolean isInDim(int dimension);
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
 	public UUID getId();
 	@Deprecated
@@ -60,4 +61,5 @@ public interface IRouter extends IPowerRouter {
 	public ExitRoute getDistanceTo(IRouter r);
 	
 	public void clearInterests();
+	public List<ILogisticsPowerProvider> getPowerProvider();
 }

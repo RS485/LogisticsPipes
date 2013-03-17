@@ -6,6 +6,7 @@ import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleExtractor;
 import net.minecraft.client.Minecraft;
+import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class HUDExtractor implements IHUDModuleRenderer {
@@ -19,26 +20,11 @@ public class HUDExtractor implements IHUDModuleRenderer {
 	@Override
 	public void renderContent() {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		mc.fontRenderer.drawString("Default" , -12, -22, 0);
-		mc.fontRenderer.drawString("Top" , -12, -9, 0);
-		mc.fontRenderer.drawString("Side" , -12, 5, 0);
-		mc.fontRenderer.drawString("Bottom" , -12, 18, 0);
-		
-		switch(module.getSneakyOrientation()) {
-		case Default:
-			mc.fontRenderer.drawString("X" , -22, -22, 0);
-			break;
-		case Top:
-			mc.fontRenderer.drawString("X" , -22, -9, 0);
-			break;
-		case Side:
-			mc.fontRenderer.drawString("X" , -22, 5, 0);
-			break;
-		case Bottom:
-			mc.fontRenderer.drawString("X" , -22, 18, 0);
-			break;
-		default:
-		}
+
+		ForgeDirection d = module.getSneakyDirection();
+		mc.fontRenderer.drawString("Extract" , -22, -22, 0);
+		mc.fontRenderer.drawString("from:" , -22, -9, 0);
+		mc.fontRenderer.drawString(((d == ForgeDirection.UNKNOWN) ? "DEFAULT" : d.name()) , -22, 18, 0);
 	}
 
 	@Override

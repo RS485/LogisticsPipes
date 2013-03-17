@@ -7,8 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.tileentity.TileEntity;
@@ -99,7 +99,13 @@ public class ClientRouter implements IRouter {
 	public CoreRoutedPipe getCachedPipe(){
 		return getPipe();
 	}
-	
+
+	@Override
+	public boolean isInDim(int dimension) {
+		return true;
+	}
+
+	@Override
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord){
 		return  _xCoord == xCoord && _yCoord == yCoord && _zCoord == zCoord;
 	}

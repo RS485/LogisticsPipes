@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDElectricManager;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
@@ -45,7 +45,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	private boolean _dischargeMode;
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
-	protected IChassiePowerProvider _power;
+	protected IRoutedPowerProvider _power;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 
@@ -76,7 +76,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
@@ -244,5 +244,10 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 	@Override
 	public boolean interestedInUndamagedID() {
 		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

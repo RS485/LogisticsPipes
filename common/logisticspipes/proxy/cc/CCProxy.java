@@ -72,7 +72,7 @@ public class CCProxy implements ICCProxy {
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public ForgeDirection getOrientation(Object cObject, int side, TileEntity pipe) {
+	public ForgeDirection getOrientation(Object cObject, TileEntity pipe) {
 		if(!valid) return ForgeDirection.UNKNOWN;
 		if(!(cObject instanceof IComputerAccess)) return ForgeDirection.UNKNOWN;
 		IComputerAccess computer = (IComputerAccess) cObject;
@@ -87,8 +87,10 @@ public class CCProxy implements ICCProxy {
 					for(Object api: local_m_apis) {
 						if(peripheralAPIClass.isAssignableFrom(api.getClass())) {
 							Object[] local_m_peripherals = (Object[]) m_peripherals.get(api);
-							if(local_m_peripherals[side] == computer) {
-								return aTile.orientation;
+							for(Object computeraccess : local_m_peripherals) {
+								if(computeraccess == computer) {
+									return aTile.orientation;
+								}
 							}
 						}
 					}

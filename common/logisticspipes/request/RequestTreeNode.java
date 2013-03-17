@@ -71,7 +71,7 @@ public class RequestTreeNode {
 	
 	public void addPromise(LogisticsPromise promise) {
 		if(promise.item != request.getItem()) throw new IllegalArgumentException("wrong item");
-		if(getMissingItemCount() == 0) throw new IllegalArgumentException("zero count");
+		if(getMissingItemCount() == 0) throw new IllegalArgumentException("zero count needed, promises not needed.");
 		if(promise.numberOfItems > getMissingItemCount()) {
 			int more = promise.numberOfItems - getMissingItemCount();
 			promise.numberOfItems = getMissingItemCount();

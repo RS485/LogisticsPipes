@@ -20,16 +20,16 @@ import java.util.UUID;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gates.ActionDisableLogistics;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logic.BaseRoutingLogic;
@@ -85,7 +85,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IChassiePowerProvider {
+public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
 
 	public enum ItemSendMode {
 		Normal,
@@ -196,12 +196,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		routedItem.SetPosition(p.x, p.y, p.z);
 		((PipeTransportItems) transport).entityEntering(routedItem.getEntityPassiveItem(), from.getOpposite());
 		
-		//assert: sending to an existing router which contains a pipe. something (possibly getPipeUnsafe) possibly npe's here.
 		IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(routedItem.getDestination(),false);
 		if(r != null) {
 			CoreRoutedPipe pipe = r.getCachedPipe();
-			pipe.notifyOfSend(routedItem);
-		}
+			if(pipe !=null) // pipes can unload at inconvenient times ...
+				pipe.notifyOfSend(routedItem);
+			else {
+				//TODO: handle sending items to known chunk-unloaded destination?
+			}
+		} // should not be able to send to a non-existing router
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
 		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 2);
 		stat_lifetime_sent++;
@@ -552,7 +555,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(MainProxy.isServer(world)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
 			if(station != null) {
-				settings = station.getSecuritySettingsForPlayer(entityplayer);
+				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
 		}
 		if(handleClick(world, i, j, k, entityplayer, settings)) return true;
@@ -705,13 +708,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return isPipeConnected(tile, dir, false);
 	}
 	
+	public boolean globalIgnoreConnectionDisconnection = false;
+	
 	public final boolean isPipeConnected(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
 		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
 		if(!stillNeedReplace) {
-			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection) {
+			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
 				return false;
 			}
 		}
@@ -745,29 +750,43 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return this.getRouter().getPowerProvider();
 	}
 	
-	public boolean canUseEnergy(int amount) {
+	public boolean useEnergy(int amount){
+		return useEnergy(amount, null);
+	}
+	public boolean canUseEnergy(int amount){
+		return canUseEnergy(amount,null);
+	}
+
+	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		if(amount == 0) return true;
+		if(providersToIgnore !=null && providersToIgnore.contains(this))
+			return false;
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		if(amount == 0) return true;
 		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount)) {
+			if(provider.canUseEnergy(amount, providersToIgnore)) {
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public boolean useEnergy(int amount) {
+	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
+		if(amount == 0) return true;
+		if(providersToIgnore==null)
+			providersToIgnore = new ArrayList<Object>();
+		if(providersToIgnore.contains(this))
+			return false;
+		providersToIgnore.add(this);
 		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		if(amount == 0) return true;
 		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount)) {
-				provider.useEnergy(amount);
+			if(provider.canUseEnergy(amount, providersToIgnore)) {
+				provider.useEnergy(amount, providersToIgnore);
 				int particlecount = amount;
 				if (particlecount > 10) {
 					particlecount = 10;

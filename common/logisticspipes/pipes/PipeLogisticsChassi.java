@@ -620,9 +620,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				IInventory inv = getRawInventory();
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN);
-				} 
-				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getFuzzyInventoryUtil(inv).getItems();
+				}
+				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
 				l1.addAll(items);
+
+				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
+				for(ItemIdentifier id:items) {
+					l1.add(id.getIgnoringNBT());
+				}
 
 				boolean modulesInterestedInUndamged=false;
 				for (int i = 0; i < this.getChassiSize(); i++) {

@@ -9,7 +9,7 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class Configs {
 
-	public static final String CATEGORY_MULTITHREAD = "multiThread";
+	public static final String CATEGORY_MULTITHREAD = "multithread";
 
 	// Ids
 	public static int ITEM_LIQUID_CONTAINER_ID = 6864;
@@ -83,8 +83,7 @@ public class Configs {
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
 
 	// MultiThread
-	public static boolean MULTI_THREAD_ENABLED = true;
-	public static int MULIT_THREAD_NUMBER = 4;
+	public static int MULTI_THREAD_NUMBER = 4;
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
 
 	public static int POWER_USAGE_MULTIPLIER = 1;
@@ -310,17 +309,17 @@ public class Configs {
 				"Whether or not special particles will spawn.").getBoolean(
 				false);
 
-		MULTI_THREAD_ENABLED = CONFIGURATION
-				.get(CATEGORY_MULTITHREAD, "enabled", MULTI_THREAD_ENABLED,
-						"Enabled the Logistics Pipes multiThread function to allow the network.")
-				.getBoolean(MULTI_THREAD_ENABLED);
-		MULIT_THREAD_NUMBER = CONFIGURATION.get(CATEGORY_MULTITHREAD, "count",
-				MULIT_THREAD_NUMBER, "Number of running Threads.").getInt();
-		if (MULIT_THREAD_NUMBER < 1) {
-			MULIT_THREAD_NUMBER = 1;
+		if(CONFIGURATION.hasKey(CATEGORY_MULTITHREAD, "enabled")) {
+			//ConfigCategory.remove is deprecated, but there's no other way to remove a key-value pair without completely recreating the config...
+			CONFIGURATION.getCategory(CATEGORY_MULTITHREAD).remove(new String("enabled"));
+		}
+		MULTI_THREAD_NUMBER = CONFIGURATION.get(CATEGORY_MULTITHREAD, "count",
+				MULTI_THREAD_NUMBER, "Number of routing table update Threads, 0 to disable.").getInt();
+		if (MULTI_THREAD_NUMBER < 0) {
+			MULTI_THREAD_NUMBER = 0;
 			CONFIGURATION.get(CATEGORY_MULTITHREAD, "count",
-					MULIT_THREAD_NUMBER, "Number of running Threads.").value = Integer
-					.toString(MULIT_THREAD_NUMBER);
+					MULTI_THREAD_NUMBER, "Number of routing table update Threads, 0 to disable.").value = Integer
+					.toString(MULTI_THREAD_NUMBER);
 		}
 		MULTI_THREAD_PRIORITY = CONFIGURATION
 				.get(CATEGORY_MULTITHREAD, "priority", MULTI_THREAD_PRIORITY,

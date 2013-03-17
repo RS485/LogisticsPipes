@@ -19,7 +19,6 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 	
 	public static boolean added = false;
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void loadConfig() {
 		
@@ -34,12 +33,12 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		main.add(LogisticsPipes.LogisticsCraftingSignCreator);
 		
 		Item[] pipeArray = BuildCraftProxy.pipelist.toArray(new Item[]{});
-		Arrays.sort(pipeArray, new Comparator() {
+		Arrays.sort(pipeArray, new Comparator<Item>() {
 			@Override
-			public int compare(Object arg0, Object arg1) {
-				if(((Item)arg0).itemID < ((Item)arg1).itemID) {
+			public int compare(Item arg0, Item arg1) {
+				if(arg0.itemID < arg1.itemID) {
 					return -1;
-				} else if(((Item)arg0).itemID > ((Item)arg1).itemID) {
+				} else if(arg0.itemID > arg1.itemID) {
 					return 1;
 				} else {
 					return 0;

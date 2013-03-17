@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDExtractor;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -151,14 +152,19 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 		}
 
 		if (targetInventory instanceof ISpecialInventory){
-			ItemStack[] stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation,1);
-			if (stack == null) return;
-			if (stack.length < 1) return;
-			if (stack[0] == null) return;
+			ItemStack[] stack = ((ISpecialInventory) targetInventory).extractItem(false, extractOrientation, 1);
+			if (stack == null || stack.length < 1 || stack[0] == null || stack[0].stackSize == 0) return;
 			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 			if (reply == null) return;
-			stack = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation,1);
-			_itemSender.sendStack(stack[0], reply, itemSendMode());
+			ItemStack[] stacks = ((ISpecialInventory) targetInventory).extractItem(true, extractOrientation, 1);
+			if (stacks == null || stacks.length < 1 || stacks[0] == null || stacks[0].stackSize == 0) {
+				LogisticsPipes.log.info("extractor extractItem(true) got nothing from " + ((Object)targetInventory).toString());
+				return;
+			}
+			if(!ItemStack.areItemStacksEqual(stack[0], stacks[0])) {
+				LogisticsPipes.log.info("extractor extract got a unexpected item from " + ((Object)targetInventory).toString());
+			}
+			_itemSender.sendStack(stacks[0], reply, itemSendMode());
 			return;
 		}
 

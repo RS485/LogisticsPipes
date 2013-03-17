@@ -74,28 +74,11 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
 	}
 	
-	private String getExtractionModeString(){
-		switch(logic.getExtractionMode()){
-			case Normal:
-				return "Normal";
-			case LeaveFirst:
-				return "Leave 1st stack";
-			case LeaveLast: 
-				return "Leave last stack";
-			case LeaveFirstAndLast:
-				return "Leave first & last stack";
-			case Leave1PerStack:
-				return "Leave 1 item per stack";
-			default:
-				return "Unknown!";
-		}
-	}
-	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(dummyInventory.getInvName(), xSize / 2 - fontRenderer.getStringWidth(dummyInventory.getInvName())/2, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Mode: " + getExtractionModeString(), 9, ySize - 112, 0x404040);
+		fontRenderer.drawString("Mode: " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 	
 	@Override

@@ -43,7 +43,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 
 	@Override
 	public List<String> handleItemTooltip(GuiContainer gui, final ItemStack itemstack, List<String> currenttip) {
-		if(Configs.ToolTipInfo && itemstack != null) {
+		if(Configs.TOOLTIP_INFO && itemstack != null) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if(lastTime + 1000 < System.currentTimeMillis()) {
 					lastTime = System.currentTimeMillis();

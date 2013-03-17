@@ -98,7 +98,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
-		_extractionMode = ExtractionMode.values()[nbttagcompound.getInteger("extractionMode")];
+		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		
 	}
 
@@ -307,6 +307,8 @@ outer:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
+			case Leave1PerType:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, true, 0, 0);
 			default:
 				break;
 		}
@@ -331,6 +333,10 @@ outer:
 
 	public ExtractionMode getExtractionMode(){
 		return _extractionMode;
+	}
+
+	public void setExtractionMode(int id) {
+		_extractionMode = ExtractionMode.getMode(id);
 	}
 
 	public void nextExtractionMode() {
@@ -370,9 +376,9 @@ outer:
 			oldList.clear();
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
-			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
+			MainProxy.sendCompressedToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
 		} else if(player != null) {
-			MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
+			MainProxy.sendCompressedPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
 		}
 	}
 
@@ -415,33 +421,20 @@ outer:
 
 	@Override
 	public List<ItemIdentifier> getSpecificInterests() {
-		if(!this.isExcludeFilter && !_filterInventory.isEmpty()){
-			Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
-			List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
-			li.addAll(mapIC.keySet());
-			return li;
-		} else {
-			IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
-			Set<ItemIdentifier> setI = inv.getItems();
-			List<ItemIdentifier> li = new ArrayList<ItemIdentifier>(setI.size());
-outer:
-			for (ItemIdentifier currItem : setI) {
-				if(!filterAllowsItem(currItem)) continue;
-
-				for(ILegacyActiveModule m:_previousLegacyModules) {
-					if(m.filterAllowsItem(currItem)) continue outer;
-				}
-				li.add(currItem);
-			}
-			return li;
+		//when filter is empty or in exclude mode, this is interested in attached inventory already
+		if(this.isExcludeFilter || _filterInventory.isEmpty()) {
+			return null;
 		}
+		// when items included this is only interested in items in the filter
+		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		li.addAll(mapIC.keySet());
+		return li;
 	}
 
 	@Override
 	public boolean interestedInAttachedInventory() {
-		//do it the dumb way for now and use invutil in getSpecificInterests
-		return false;
-		//return _filterInventory.isEmpty() || this.isExcludeFilter; // when items included this is only interested in items in the filter
+		return this.isExcludeFilter || _filterInventory.isEmpty(); // when items included this is only interested in items in the filter
 		// when items not included, we can only serve those items in the filter.
 	}
 

@@ -1,10 +1,11 @@
 package logisticspipes.config;
 
-import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import java.io.File;
 
 import logisticspipes.LogisticsPipes;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
+import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
 public class Configs {
 
@@ -89,7 +90,8 @@ public class Configs {
 	public static int POWER_USAGE_MULTIPLIER = 1;
 
 	public static void load(FMLPreInitializationEvent event) {
-		CONFIGURATION = new Configuration(event.getSuggestedConfigurationFile());
+		File configFile = new File(event.getModConfigurationDirectory(), "LogisticsPipes.cfg");
+		CONFIGURATION = new Configuration(configFile);
 		CONFIGURATION.load();
 
 		if (CONFIGURATION.hasCategory("logisticspipe.id")

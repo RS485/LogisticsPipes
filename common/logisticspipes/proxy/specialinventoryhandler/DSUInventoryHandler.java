@@ -56,7 +56,7 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 			return null;
 		}
 		if(_hideOnePerStack)
-			items.stackSize --; 
+			items.stackSize--;
 		if(count >= items.stackSize) {
 			_tile.setStoredItemCount((_hideOnePerStack?1:0));
 			return items;
@@ -82,14 +82,14 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
 		ItemStack items = _tile.getStoredItemType();
 		if(items != null && items.stackSize > 0) {
-			result.put(ItemIdentifier.get(items),items.stackSize-(_hideOnePerStack?1:0));
+			result.put(ItemIdentifier.get(items), items.stackSize-(_hideOnePerStack?1:0));
 		}
 		return result;
 	}
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier itemIdent) {
-		return getMultipleItems(itemIdent,1);
+		return getMultipleItems(itemIdent, 1);
 	}
 
 	@Override
@@ -110,9 +110,10 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 	public int roomForItem(ItemIdentifier item) {
 		return roomForItem(item, 0);
 	}
+
 	@Override
 	public int roomForItem(ItemIdentifier itemIdent, int count) {
-		if(itemIdent.tag != null && !itemIdent.tag.hasNoTags()) {
+		if(itemIdent.tag != null) {
 			return 0;
 		}
 		ItemStack items = _tile.getStoredItemType();
@@ -127,25 +128,34 @@ public class DSUInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public ItemStack add(ItemStack stack, ForgeDirection from, boolean doAdd) {
-		if(stack.getTagCompound() != null && !stack.getTagCompound().hasNoTags()) {
-			return null;
+		ItemStack st = stack.copy();
+		st.stackSize = 0;
+		if(stack.getTagCompound() != null) {
+			return st;
 		}
 		ItemStack items = _tile.getStoredItemType();
-		if((items == null || items.stackSize == 0 ) && stack.stackSize < _tile.getMaxStoredCount()) {
-			_tile.setStoredItemType(stack.itemID, stack.getItemDamage(), stack.stackSize);
-			return stack;
+		if((items == null || items.stackSize == 0)) {
+			if(stack.stackSize <= _tile.getMaxStoredCount()) {
+				_tile.setStoredItemType(stack.itemID, stack.getItemDamage(), stack.stackSize);
+				st.stackSize = stack.stackSize;
+				return st;
+			} else {
+				_tile.setStoredItemType(stack.itemID, stack.getItemDamage(), _tile.getMaxStoredCount());
+				st.stackSize = _tile.getMaxStoredCount();
+				return st;
+			}
 		}
-		if(items != null && !items.isItemEqual(stack)) {
-			return null;
+		if(!items.isItemEqual(stack)) {
+			return st;
 		}
-		int toAdd = Math.min(_tile.getMaxStoredCount() - items.stackSize,stack.stackSize);
-		if(toAdd == stack.stackSize) {
-			_tile.setStoredItemType(stack.itemID, stack.getItemDamage(), stack.stackSize);
-			return stack;
+		if(stack.stackSize <= _tile.getMaxStoredCount() - items.stackSize) {
+			_tile.setStoredItemCount(items.stackSize + stack.stackSize);
+			st.stackSize = stack.stackSize;
+			return st;
+		} else {
+			_tile.setStoredItemCount(_tile.getMaxStoredCount());
+			st.stackSize = _tile.getMaxStoredCount() - items.stackSize;
+			return st;
 		}
-		
-		ItemStack itemsToAdd = (ItemStack) stack.copy().splitStack(toAdd);
-		_tile.setStoredItemCount(_tile.getMaxStoredCount());
-		return itemsToAdd;
 	}
 }

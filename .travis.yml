@@ -1,0 +1,15 @@
+language: java
+jdk:
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
+before_script:
+  - sudo apt-get install astyle
+  - mkdir src
+  - mv common src/
+  - mv dummy src/
+  - mv resources src/
+  - mv .gitignore src/
+  - mv build.xml src/
+  - cd src
+script: ant setup

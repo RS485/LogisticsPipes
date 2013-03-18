@@ -12,4 +12,5 @@ before_script:
   - mv .gitignore src/
   - mv build.xml src/
   - cd src
-script: ant setup
+  - ant setup
+script: ant ci-dev

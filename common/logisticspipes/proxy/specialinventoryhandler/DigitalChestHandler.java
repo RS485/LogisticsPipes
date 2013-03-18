@@ -40,7 +40,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		if(apiIsBroken) return false;
 		try {
 			return (tile instanceof IDigitalChest) && ((IDigitalChest)tile).isQuantumChest() && (((IInventory)tile).getSizeInventory() == 3);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			LogisticsPipes.log.info("Looks like greg broke his API again, disabling Digital/Quantum chest support.");
 			apiIsBroken = true;
 			return false;

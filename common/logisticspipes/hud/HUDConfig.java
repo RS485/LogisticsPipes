@@ -1,8 +1,5 @@
 package logisticspipes.hud;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
@@ -15,38 +12,13 @@ public class HUDConfig {
 		stack.setTagCompound(getTag());
 	}
 	
-	@SuppressWarnings("rawtypes")
 	public HUDConfig(NBTTagCompound tag) {
 		configTag = tag;
 		if(configTag == null) {
 			configTag = new NBTTagCompound("tag");
 		}
-		HashMap internal = new HashMap();
-		Field fMap;
-		try {
-			fMap = NBTTagCompound.class.getDeclaredField("tagMap");
-		} catch(Exception e) {
-			try {
-				fMap = NBTTagCompound.class.getDeclaredField("a");
-			} catch (NoSuchFieldException e1) {
-				e1.printStackTrace();
-				return;
-			} catch (SecurityException e1) {
-				e1.printStackTrace();
-				return;
-			}
-		}
-		fMap.setAccessible(true);
-		try {
-			internal = (HashMap) fMap.get(configTag);
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-			return;
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			return;
-		}
-		if(internal.size() == 0) {
+		
+		if(configTag.hasNoTags()) {
 			configTag.setBoolean("HUDChassie", true);
 			configTag.setBoolean("HUDCrafting", true);
 			configTag.setBoolean("HUDInvSysCon", true);

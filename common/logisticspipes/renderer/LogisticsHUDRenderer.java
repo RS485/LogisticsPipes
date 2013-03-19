@@ -1,7 +1,7 @@
 package logisticspipes.renderer;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,7 +67,6 @@ public class LogisticsHUDRenderer {
 		list.clear();
 	}
 	
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void refreshList(double x,double y,double z) {
 		ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>> newList = new ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>>();
 		for(IRouter router:SimpleServiceLocator.routerManager.getRouters()) {
@@ -108,20 +107,22 @@ public class LogisticsHUDRenderer {
 			clearList(false);
 			return;
 		}
-		Object[] sorter = newList.toArray();
-		Arrays.sort(sorter, new Comparator() {
-			@Override
-			public int compare(Object o1, Object o2) {
-				if(((Pair<Double,IHeadUpDisplayRendererProvider>)o1).getValue1() < ((Pair<Double,IHeadUpDisplayRendererProvider>)o2).getValue1()) {
-					return -1;
-				} else if(((Pair<Double,IHeadUpDisplayRendererProvider>)o1).getValue1() > ((Pair<Double,IHeadUpDisplayRendererProvider>)o2).getValue1()) {
-					return 1;
-				} else {
-					return 0;
-				}
-			}
-		});
 		for(IHeadUpDisplayRendererProvider part:list) {
+		Collections.sort(newList,
+				new Comparator<Pair<Double, IHeadUpDisplayRendererProvider>>() {
+					@Override
+					public int compare(
+							Pair<Double, IHeadUpDisplayRendererProvider> o1,
+							Pair<Double, IHeadUpDisplayRendererProvider> o2) {
+						if (o1.getValue1() < o2.getValue1()) {
+							return -1;
+						} else if (o1.getValue1() > o2.getValue1()) {
+							return 1;
+						} else {
+							return 0;
+						}
+					}
+				});
 			boolean contains = false;
 			for(Pair<Double,IHeadUpDisplayRendererProvider> inpart:newList) {
 				if(inpart.getValue2().equals(part)) {
@@ -134,8 +135,8 @@ public class LogisticsHUDRenderer {
 			}
 		}
 		clearList(false);
-		for(Object part:sorter) {
-			list.addLast(((Pair<Double,IHeadUpDisplayRendererProvider>)part).getValue2());
+		for (Pair<Double, IHeadUpDisplayRendererProvider> part : newList) {
+			list.addLast(part.getValue2());
 		}
 	}
 	

@@ -572,12 +572,12 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	@Override
 	public int sendQueueChanged(boolean force) {
 		if(MainProxy.isServer(this.worldObj)) {
-			if(Configs.multiThreadEnabled && !force) {
+			if(Configs.MULTI_THREAD_NUMBER > 0 && !force) {
 				HudUpdateTick.add(getRouter());
 			} else {
 				if(localModeWatchers != null && localModeWatchers.size()>0) {
 					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);				
-					MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, items).getPacket(), localModeWatchers);
+					MainProxy.sendCompressedToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, xCoord, yCoord, zCoord, items).getPacket(), localModeWatchers);
 					return items.size();
 				}
 			}
@@ -622,9 +622,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				IInventory inv = getRawInventory();
 				if (inv instanceof ISidedInventory) {
 					inv = new SidedInventoryAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN);
-				} 
-				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getFuzzyInventoryUtil(inv).getItems();
+				}
+				Set<ItemIdentifier> items = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv).getItems();
 				l1.addAll(items);
+
+				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
+				for(ItemIdentifier id:items) {
+					l1.add(id.getIgnoringNBT());
+				}
 
 				boolean modulesInterestedInUndamged=false;
 				for (int i = 0; i < this.getChassiSize(); i++) {

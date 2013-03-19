@@ -32,6 +32,8 @@ public class ServerPacketBufferHandlerThread {
 		private final HashMap<Player, LinkedList<Packet250CustomPayload>> serverList = new HashMap<Player,LinkedList<Packet250CustomPayload>>();
 		//Map of Players to serialized but still uncompressed S->C data
 		private final HashMap<Player, byte[]> serverBuffer = new HashMap<Player, byte[]>();
+		//used to cork the compressor so we can queue up a whole bunch of packets at once
+		private boolean pause = false;
 
 		public ServerCompressorThread() {
 			super("LogisticsPipes Packet Compressor Server");
@@ -44,21 +46,23 @@ public class ServerPacketBufferHandlerThread {
 			while(true) {
 				try {
 					synchronized(serverList) {
-						for(Entry<Player, LinkedList<Packet250CustomPayload>> player:serverList.entrySet()) {
-							ByteArrayOutputStream out = new ByteArrayOutputStream();
-							DataOutputStream data = new DataOutputStream(out);
-							byte[] towrite = serverBuffer.get(player.getKey());
-							if(towrite != null) {
-								data.write(towrite);
+						if(!pause) {
+							for(Entry<Player, LinkedList<Packet250CustomPayload>> player:serverList.entrySet()) {
+								ByteArrayOutputStream out = new ByteArrayOutputStream();
+								DataOutputStream data = new DataOutputStream(out);
+								byte[] towrite = serverBuffer.get(player.getKey());
+								if(towrite != null) {
+									data.write(towrite);
+								}
+								LinkedList<Packet250CustomPayload> packets = player.getValue();
+								for(Packet250CustomPayload packet:packets) {
+									data.writeInt(packet.data.length);
+									data.write(packet.data);
+								}
+								serverBuffer.put(player.getKey(), out.toByteArray());
 							}
-							LinkedList<Packet250CustomPayload> packets = player.getValue();
-							for(Packet250CustomPayload packet:packets) {
-								data.writeInt(packet.data.length);
-								data.write(packet.data);
-							}
-							serverBuffer.put(player.getKey(), out.toByteArray());
+							serverList.clear();
 						}
-						serverList.clear();
 					}
 					//Send Content
 					for(Entry<Player, byte[]> player:serverBuffer.entrySet()) {
@@ -78,7 +82,7 @@ public class ServerPacketBufferHandlerThread {
 				}
 				serverBuffer.clear();
 				synchronized(serverList) {
-					while(serverList.size() == 0) {
+					while(pause || serverList.size() == 0) {
 						try {
 							serverList.wait();
 						} catch (InterruptedException e) {}
@@ -96,6 +100,17 @@ public class ServerPacketBufferHandlerThread {
 						serverList.put(player, packetList);
 					}
 					packetList.add(packet);
+					if(!pause) {
+						serverList.notify();
+					}
+				}
+			}
+		}
+
+		public void setPause(boolean flag) {
+			synchronized(serverList) {
+				pause = flag;
+				if(!pause) {
 					serverList.notify();
 				}
 			}
@@ -239,6 +254,10 @@ public class ServerPacketBufferHandlerThread {
 	private final ServerDecompressorThread serverDecompressorThread = new ServerDecompressorThread();
 
 	public ServerPacketBufferHandlerThread() {
+	}
+
+	public void setPause(boolean flag) {
+		serverCompressorThread.setPause(flag);
 	}
 
 	public void addPacketToCompressor(Packet250CustomPayload packet, Player player) {

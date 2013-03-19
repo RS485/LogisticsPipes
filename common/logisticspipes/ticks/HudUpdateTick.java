@@ -33,6 +33,8 @@ public class HudUpdateTick {
 		if(firstRouter == -1) return;
 		IRouterManager rm = SimpleServiceLocator.routerManager;
 		int slotSentCount = 0;
+		//cork the compressor
+		SimpleServiceLocator.serverBufferHandler.setPause(true);
 		while(firstRouter != -1 && slotSentCount < inventorySlotsToUpdatePerTick){
 			routersNeedingUpdate.clear(firstRouter);
 			IRouter currentRouter = rm.getRouterUnsafe(firstRouter, false);
@@ -43,5 +45,7 @@ public class HudUpdateTick {
 			}
 			firstRouter = routersNeedingUpdate.nextSetBit(firstRouter);
 		}
+		//and let it compress and send
+		SimpleServiceLocator.serverBufferHandler.setPause(false);
 	}
 }

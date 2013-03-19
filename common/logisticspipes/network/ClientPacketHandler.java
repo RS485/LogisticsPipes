@@ -466,16 +466,7 @@ public class ClientPacketHandler {
 			return;
 		}
 		
-		ExtractionMode mode = ((LogicProvider) pipe.pipe.logic).getExtractionMode();
-		int modeint = mode.ordinal();
-		while(modeint != packet.integer) {
-			((LogicProvider) pipe.pipe.logic).nextExtractionMode();
-			modeint = ((LogicProvider) pipe.pipe.logic).getExtractionMode().ordinal();
-			if(mode.ordinal() == modeint) {
-				//loop break
-				break;
-			}
-		}
+		((LogicProvider) pipe.pipe.logic).setExtractionMode(packet.integer);
 	}
 
 	private static void onProviderPipeIncludeRecive(PacketPipeInteger packet) {
@@ -810,7 +801,7 @@ public class ClientPacketHandler {
 	private static void enableNBTDEBUG() {
 		try {
 			Class.forName("codechicken.nei.forge.GuiContainerManager");
-			Configs.ToolTipInfo = true;
+			Configs.TOOLTIP_INFO = true;
 			LoadingHelper.LoadNeiNBTDebugHelper();
 		} catch(ClassNotFoundException e) {
 			
@@ -862,16 +853,16 @@ public class ClientPacketHandler {
 				}
 			}
 		}
-		SimpleServiceLocator.clientBufferHandler.pause = true;
+		SimpleServiceLocator.clientBufferHandler.setPause(true);
 		for(ItemIdentifier item:identList) {
-			MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
 		}
-		SimpleServiceLocator.clientBufferHandler.pause = false;
+		SimpleServiceLocator.clientBufferHandler.setPause(false);
 		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Names in send Queue");
 	}
 
 	private static void onItemNameRequest(PacketNameUpdatePacket packetAt) {
-		MainProxy.sendCompressedToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
+		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
 	}
 
 	private static void onModBasedItemSinkList(PacketModuleNBT packet) {

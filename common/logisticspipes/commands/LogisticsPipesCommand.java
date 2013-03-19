@@ -30,9 +30,8 @@ public class LogisticsPipesCommand extends CommandBase {
 		return "/" + getCommandName() + " help";
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public List getCommandAliases() {
+	public List<String> getCommandAliases() {
 		return Arrays.asList(new String[]{"lp", "logipipes"});
 	}
 

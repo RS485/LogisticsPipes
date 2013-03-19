@@ -134,7 +134,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		controlList.add(new SmallGuiButton(6, xCenter + 26, bottom - 26, 10, 10, "+")); // +1
 		controlList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
 		controlList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
-		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.displayPopup)); // Popup
+		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
 	}
 	
 	@Override
@@ -426,17 +426,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			ArrayList<String> msg = new ArrayList<String>();
 			msg.add("You are missing:");
 			for (ItemMessage item : items){
-				if(!Configs.displayPopup) {
+				if(!Configs.DISPLAY_POPUP) {
 					player.addChatMessage("Missing: " + item.toString());
 				} else {
 					msg.add(item.toString());
 				}
 			}
-			if(Configs.displayPopup) {
+			if(Configs.DISPLAY_POPUP) {
 				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
 		} else {
-			if(Configs.displayPopup) {
+			if(Configs.DISPLAY_POPUP) {
 				if(control.hasSubGui()) {
 					ISubGuiControler newcontroller = control;
 					while(newcontroller.hasSubGui()) {
@@ -456,7 +456,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	}
 
 	public void handleSimulateAnswer(List<ItemMessage> used, List<ItemMessage> missing, ISubGuiControler control, EntityPlayer player) {
-		if(Configs.displayPopup) {
+		if(Configs.DISPLAY_POPUP) {
 			if(control.hasSubGui()) {
 				ISubGuiControler newcontroller = control;
 				while(newcontroller.hasSubGui()) {
@@ -525,7 +525,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			requestCount+=getAmountChangeMode(3);
 		} else if (guibutton.id == 8) {
 			GuiCheckBox button = (GuiCheckBox)guibutton;
-			Configs.displayPopup = button.change();
+			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
 			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount, NetworkConstants.REQUEST_COMPONENTS).getPacket());

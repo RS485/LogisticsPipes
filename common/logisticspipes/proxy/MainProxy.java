@@ -112,6 +112,17 @@ public class MainProxy {
 		return proxy.getDimensionForWorld(world);
 	}
 
+	public static void sendPacketToServer(Packet packet) {
+		if(!isDirectSendPacket(packet)) {
+			new Exception("Packet size too big").printStackTrace();
+		}
+		PacketDispatcher.sendPacketToServer(packet);
+	}
+
+	public static void sendCompressedPacketToServer(Packet250CustomPayload packet) {
+		SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet);
+	}
+
 	public static void sendPacketToPlayer(Packet packet, Player player) {
 		if(!isDirectSendPacket(packet)) {
 			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, player);
@@ -119,26 +130,41 @@ public class MainProxy {
 			PacketDispatcher.sendPacketToPlayer(packet, player);
 		}
 	}
-	
+
+	public static void sendCompressedPacketToPlayer(Packet packet, Player player) {
+		if(packet instanceof Packet250CustomPayload) {
+			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, player);
+		} else {
+			PacketDispatcher.sendPacketToPlayer(packet, player);
+		}
+	}
+
 	public static void sendPacketToAllAround(double X, double Y, double Z, double range, int dimensionId, Packet packet) {
 		if(!isDirectSendPacket(packet)) {
-			new Exception("Packet size to big").printStackTrace();
+			new Exception("Packet size too big").printStackTrace();
 		}
 		PacketDispatcher.sendPacketToAllAround(X, Y, Z, range, dimensionId, packet);
 	}
 	
-	public static void sendPacketToServer(Packet packet) {
-		if(!isDirectSendPacket(packet)) {
-			new Exception("Packet size to big").printStackTrace();
-		}
-		PacketDispatcher.sendPacketToServer(packet);
-	}
-	
 	public static void sendToPlayerList(Packet packet, List<EntityPlayer> players) {
-		for(EntityPlayer player:players) {
-			if(!isDirectSendPacket(packet)) {
+		if(!isDirectSendPacket(packet)) {
+			for(EntityPlayer player:players) {
 				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
-			} else {
+			}
+		} else {
+			for(EntityPlayer player:players) {
+				PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
+			}
+		}
+	}
+
+	public static void sendCompressedToPlayerList(Packet packet, List<EntityPlayer> players) {
+		if(packet instanceof Packet250CustomPayload) {
+			for(EntityPlayer player:players) {
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
+			}
+		} else {
+			for(EntityPlayer player:players) {
 				PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
 			}
 		}
@@ -149,6 +175,27 @@ public class MainProxy {
 			new Exception("Packet size to big").printStackTrace();
 		}
 		PacketDispatcher.sendPacketToAllPlayers(packet);
+	}
+
+	public static void sendCompressedToAllPlayers(Packet250CustomPayload packet) {
+		for(World world: DimensionManager.getWorlds()) {
+			for(Object playerObject:world.playerEntities) {
+				Player player = (Player) playerObject;
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
+			}
+		}
+	}
+
+	private static boolean isDirectSendPacket(Packet packet) {
+		if(packet instanceof Packet250CustomPayload) {
+			Packet250CustomPayload packet250 = (Packet250CustomPayload) packet;
+			if(packet250.data != null) {
+				if(packet250.data.length > 32767 && packet250.channel.equals("BCLP")) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
@@ -162,31 +209,6 @@ public class MainProxy {
 			}
 		}
 		return list;
-	}
-
-	public static void sendCompressedToAllPlayers(Packet250CustomPayload packet) {
-		for(World world: DimensionManager.getWorlds()) {
-			for(Object playerObject:world.playerEntities) {
-				Player player = (Player) playerObject;
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
-			}
-		}
-	}
-
-	public static void sendCompressedToServer(Packet250CustomPayload packet) {
-		SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet);
-	}
-	
-	private static boolean isDirectSendPacket(Packet packet) {
-		if(packet instanceof Packet250CustomPayload) {
-			Packet250CustomPayload packet250 = (Packet250CustomPayload) packet;
-			if(packet250.data != null) {
-				if(packet250.data.length > 32767 && packet250.channel.equals("BCLP")) {
-					return false;
-				}
-			}
-		}
-		return true;
 	}
 
 	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {

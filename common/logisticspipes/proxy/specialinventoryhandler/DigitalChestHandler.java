@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.inventory.IInventory;
@@ -17,6 +18,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 
 	private final IDigitalChest _tile;
 	private final boolean _hideOnePerStack;
+	private static boolean apiIsBroken = false;
 
 	private DigitalChestHandler(IDigitalChest tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
 		_tile = tile;
@@ -35,7 +37,14 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return (tile instanceof IDigitalChest) && ((IDigitalChest)tile).isQuantumChest() && (((IInventory)tile).getSizeInventory() == 3);
+		if(apiIsBroken) return false;
+		try {
+			return (tile instanceof IDigitalChest) && ((IDigitalChest)tile).isQuantumChest() && (((IInventory)tile).getSizeInventory() == 3);
+		} catch (Throwable e) {
+			LogisticsPipes.log.info("Looks like greg broke his API again, disabling Digital/Quantum chest support.");
+			apiIsBroken = true;
+			return false;
+		}
 	}
 
 	@Override

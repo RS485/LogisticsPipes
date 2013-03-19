@@ -211,26 +211,6 @@ public class BasicGuiHelper {
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
-			/*try {
-				if(forceminecraft) {
-					throw new Exception();
-				}
-				//Look for NEI
-				Class<?> NEIUtils = Class.forName("codechicken.nei.NEIUtils");
-				Class<?> NEIConfig = Class.forName("codechicken.nei.NEIConfig");
-				Method itemDisplayNameMultiline = NEIUtils.getDeclaredMethod("itemDisplayNameMultiline", new Class[]{ItemStack.class, boolean.class, boolean.class});
-				Method showIDs = NEIConfig.getDeclaredMethod("showIDs", new Class[]{});
-				Object flagObject = showIDs.invoke(null, new Object[]{});
-				boolean flag = Boolean.valueOf((Boolean)flagObject);
-				
-				List<String> list = (List<String>) itemDisplayNameMultiline.invoke(null, new Object[]{tooltip[2],flag,true});
-				
-				if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
-					list.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
-				}
-				
-				drawToolTip(((Integer)tooltip[0]).intValue(), ((Integer)tooltip[1]).intValue(),list,((ItemStack)tooltip[2]).getRarity().rarityColor, forceminecraft);
-			} catch(Exception e) {*/
 				try {
 					//Use minecraft vanilla code
 					Minecraft mc = FMLClientHandler.instance().getClient();
@@ -246,7 +226,6 @@ public class BasicGuiHelper {
 	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor, forceminecraft);
 	            }
 	            catch(Exception e1) {}
-			//}
 		}
 	}
 	

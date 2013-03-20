@@ -70,6 +70,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
@@ -83,6 +84,8 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
@@ -396,13 +399,19 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public abstract TextureType getCenterTexture();
 	
-	@Override
+/*	@Override
 	public String getTextureFile() {
 		return Textures.BASE_TEXTURE_FILE;
-	}
-	
+	}*/
 	@Override
-	public final int getTextureIndex(ForgeDirection connection) {
+	@SideOnly(Side.CLIENT)
+	public Icon[] getTextureIcons() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int getIconIndex(ForgeDirection connection) {
 		TextureType texture = getTextureType(connection);
 		if(_textureBufferPowered) {
 			return texture.powered;

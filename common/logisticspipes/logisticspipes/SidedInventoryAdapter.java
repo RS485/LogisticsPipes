@@ -177,4 +177,16 @@ outer:
 	public ItemStack getStackInSlotOnClosing(int slot) {
 		return _sidedInventory.getStackInSlotOnClosing(_slotMap[slot]);
 	}
+
+	@Override
+	public boolean func_94042_c() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean func_94041_b(int i, ItemStack itemstack) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

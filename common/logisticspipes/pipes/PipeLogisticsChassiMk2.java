@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import net.minecraftforge.common.ForgeDirection;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 

@@ -240,7 +240,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getDebugName() {
 		if (Item.itemsList[itemID] != null)	{
-			return Item.itemsList[itemID].getItemName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
+			return Item.itemsList[itemID].getUnlocalizedName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
 		}
 		return "<item not found>";
 	}
@@ -258,13 +258,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[id].getItemNameIS(stack);
+				name = Item.itemsList[id].getLocalizedName(stack);
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[id].getItemName();
+					name = Item.itemsList[id].getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}

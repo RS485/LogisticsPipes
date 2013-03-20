@@ -288,20 +288,20 @@ public class LogisticsPipes {
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
-		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
+		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
 		
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
-		LogisticsItemCard.setItemName("logisticsItemCard");
+		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
-		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
+		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
 		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
 		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
-		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
+		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
 		if(MainProxy.isClient()) {
@@ -311,34 +311,34 @@ public class LogisticsPipes {
 		}
 		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
 		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
-		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		
 		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
 		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
-		LogisticsParts.setItemName("logisticsParts");
+		LogisticsParts.setUnlocalizedName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
-		ModuleItem.setItemName("itemModule");
+		ModuleItem.setUnlocalizedName("itemModule");
 		ModuleItem.loadModules();
 		
 		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
-		LogisticsItemDisk.setItemName("itemDisk");
+		LogisticsItemDisk.setUnlocalizedName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
 		
 		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
-		UpgradeItem.setItemName("itemUpgrade");
+		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
-		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
+		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
-			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
 		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());

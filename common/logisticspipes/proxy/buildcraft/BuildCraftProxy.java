@@ -217,7 +217,7 @@ public class BuildCraftProxy {
 	
 	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
 		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
-		res.setItemName(clas.getSimpleName());
+		res.setUnlocalizedName(clas.getSimpleName());
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		
 		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);

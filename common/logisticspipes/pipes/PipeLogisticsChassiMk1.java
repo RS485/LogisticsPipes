@@ -1,5 +1,9 @@
 package logisticspipes.pipes;
 
+import net.minecraft.util.Icon;
+import net.minecraftforge.common.ForgeDirection;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 

@@ -73,7 +73,7 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public void addLogisticsPipesOverride(int index, String override1, String override2) {
-		TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
+		TextureFXManager.instance().; .addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
 	}
 
 	@Override
@@ -97,13 +97,13 @@ public class ClientProxy implements IProxy {
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getItemNameIS(item.unsafeMakeNormalStack(1));
+				name = Item.itemsList[item.itemID].getUnlocalizedNameIS(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[item.itemID].getItemName();
+					name = Item.itemsList[item.itemID].getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}

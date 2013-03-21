@@ -318,8 +318,8 @@ public class Configs {
 		if (MULTI_THREAD_NUMBER < 0) {
 			MULTI_THREAD_NUMBER = 0;
 			CONFIGURATION.get(CATEGORY_MULTITHREAD, "count",
-					MULTI_THREAD_NUMBER, "Number of routing table update Threads, 0 to disable.").value = Integer
-					.toString(MULTI_THREAD_NUMBER);
+					MULTI_THREAD_NUMBER, "Number of routing table update Threads, 0 to disable.").set(
+					MULTI_THREAD_NUMBER);
 		}
 		MULTI_THREAD_PRIORITY = CONFIGURATION
 				.get(CATEGORY_MULTITHREAD, "priority", MULTI_THREAD_PRIORITY,
@@ -330,8 +330,8 @@ public class Configs {
 			CONFIGURATION
 					.get(CATEGORY_MULTITHREAD, "priority",
 							MULTI_THREAD_PRIORITY,
-							"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest").value = Integer
-					.toString(Thread.NORM_PRIORITY);
+							"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest").set
+					(Thread.NORM_PRIORITY);
 		}
 
 		POWER_USAGE_MULTIPLIER = CONFIGURATION.get(
@@ -343,7 +343,7 @@ public class Configs {
 			POWER_USAGE_MULTIPLIER = 1;
 			CONFIGURATION.get(Configuration.CATEGORY_GENERAL,
 					"powerUsageMultiplyer", POWER_USAGE_MULTIPLIER,
-					"A Multiplyer for the power usage.").value = "1";
+					"A Multiplyer for the power usage.").set("1");
 		}
 
 		CONFIGURATION.save();
@@ -355,7 +355,7 @@ public class Configs {
 						"displayPopup",
 						DISPLAY_POPUP,
 						"Set the default configuration for the popup of the Orderer Gui. Should it be used?");
-		pageDisplayPopupProperty.value = Boolean.toString(DISPLAY_POPUP);
+		pageDisplayPopupProperty.set(DISPLAY_POPUP);
 		CONFIGURATION.save();
 	}
 }

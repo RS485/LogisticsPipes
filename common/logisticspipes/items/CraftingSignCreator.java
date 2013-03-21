@@ -1,5 +1,7 @@
 package logisticspipes.items;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -7,6 +9,8 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -21,7 +25,14 @@ public class CraftingSignCreator extends LogisticsItem {
 		super(i);
 		this.setMaxStackSize(1);
 	}
-
+	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void func_94581_a(IconRegister par1IconRegister)
+    {
+        this.iconIndex = Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX;
+	}
+	
 	@Override
 	public boolean onItemUseFirst(ItemStack itemStack, EntityPlayer player, World world, int x, int y, int z, int sideinput, float hitX, float hitY, float hitZ) 
     {	
@@ -62,13 +73,13 @@ public class CraftingSignCreator extends LogisticsItem {
 				}
 				if(world.getBlockId(signX, signY, signZ) == 0) {
 					if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-						world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
+						world.setBlockAndMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID, 1);
 						TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
 						if(tilesign instanceof LogisticsSignTileEntity) {
 							((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
 							itemStack.damageItem(1, player);
 						} else {
-							world.setBlockAndMetadataWithNotify(signX, signY, signZ, 0, 0);
+							world.setBlockAndMetadataWithNotify(signX, signY, signZ, 0, 0, 1);
 						}
 					}
 				}

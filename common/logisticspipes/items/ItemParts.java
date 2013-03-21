@@ -2,9 +2,14 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
 
 public class ItemParts extends LogisticsItem {
 	
@@ -12,9 +17,17 @@ public class ItemParts extends LogisticsItem {
 		super(par1);
 		this.setHasSubtypes(true);
 	}
-	
+
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void func_94581_a(IconRegister par1IconRegister)
+    {
+        this.iconIndex = Textures.LOGISTICSITEMHUD_PART3_ICONINDEX;
+	}
+
+
     @Override
-	public int getIconFromDamage(int par1) {
+	public Icon getIconFromDamage(int par1) {
     	switch(par1) {
     	case 0: //bow
     		return Textures.LOGISTICSITEMHUD_PART1_ICONINDEX;

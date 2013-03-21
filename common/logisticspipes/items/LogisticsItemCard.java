@@ -3,6 +3,8 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -19,6 +21,13 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 	public LogisticsItemCard(int i) {
 		super(i);
 		this.hasSubtypes = true;
+	}
+
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void func_94581_a(IconRegister par1IconRegister)
+    {
+        this.iconIndex = Textures.LOGISTICSITEMCARD_ICONINDEX;
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

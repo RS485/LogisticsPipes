@@ -57,6 +57,11 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_REQUEST					= empty;
 	
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR						= 0;
+	public static Icon LOGISTICSACTIONTRIGGERS_DISABLED =  1 * 16 + 0 ;
+	public static Icon LOGISTICSACTIONTRIGGERS_CRAFTING_ICON = 0 * 16 + 2;
+	public static Icon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = 2 * 16 + 0;
+	public static Icon LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON =1 * 16 + 1;
+	public static Icon LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON = 0 * 16 + 0;;
 	
 	// Standalone pipes
 	public static final Icon LOGISTICSPIPE_TEXTURE_FILE					;
@@ -172,18 +177,18 @@ public class Textures {
 		 LOGISTICSPIPE_HUD_TEXTURE_FILE				=  itemTextures.func_94245_a("/logisticspipes/HUD.png");
 
 	}
-	public static final int LOGISTICSNETWORKMONITOR_ICONINDEX = 0 * 16 + 0;
-	public static final int LOGISTICSREMOTEORDERER_ICONINDEX = 0 * 16 + 1;
-	public static final int LOGISTICSREMOTEORDERERCOLORED_ICONINDEX = 8 * 16 + 0;
-	public static final int LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX = 0 * 16 + 2;
-	public static final int LOGISTICSITEMCARD_ICONINDEX = 0 * 16 + 4;
-	public static final int LOGISTICSITEMHUD_ICONINDEX = 0 * 16 + 5;
-	public static final int LOGISTICSITEMHUD_PART1_ICONINDEX = 0 * 16 + 6;
-	public static final int LOGISTICSITEMHUD_PART2_ICONINDEX = 0 * 16 + 7;
-	public static final int LOGISTICSITEMHUD_PART3_ICONINDEX = 0 * 16 + 8;
-	public static final int LOGISTICSITEM_NANOHOPPER_ICONINDEX = 0 * 16 + 9;
-	public static final int LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX = 0 * 16 + 10;
-	public static final int LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX = 0 * 16 + 11;
+	public static final Icon LOGISTICSNETWORKMONITOR_ICONINDEX = 0 * 16 + 0;
+	public static final Icon LOGISTICSREMOTEORDERER_ICONINDEX = 0 * 16 + 1;
+	public static final Icon[] LOGISTICSREMOTEORDERERCOLORED_ICONINDEX = new Icon[16];//8 * 16 + 0;
+	public static final Icon LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX = ;
+	public static final Icon LOGISTICSITEMCARD_ICONINDEX = 0 * 16 + 4;
+	public static final Icon LOGISTICSITEMHUD_ICONINDEX = 0 * 16 + 5;
+	public static final Icon LOGISTICSITEMHUD_PART1_ICONINDEX = 0 * 16 + 6;
+	public static final Icon LOGISTICSITEMHUD_PART2_ICONINDEX = 0 * 16 + 7;
+	public static final Icon LOGISTICSITEMHUD_PART3_ICONINDEX = 0 * 16 + 8;
+	public static final Icon LOGISTICSITEM_NANOHOPPER_ICONINDEX = 0 * 16 + 9;
+	public static final Icon LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX = 0 * 16 + 10;
+	public static final Icon LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX = 0 * 16 + 11;
 
 	//Overrider
 	public static final Icon BASE_TEXTURE_FILE = "/logisticspipes/empty.png";

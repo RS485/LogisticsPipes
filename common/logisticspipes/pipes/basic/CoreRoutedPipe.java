@@ -400,7 +400,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public abstract TextureType getCenterTexture();
 	
 /*	@Override
-	public String getTextureFile() {
+	public Icon getTextureIcon()  {
 		return Textures.BASE_TEXTURE_FILE;
 	}*/
 	@Override

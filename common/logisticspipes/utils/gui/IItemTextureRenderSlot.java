@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 public abstract class IItemTextureRenderSlot implements IRenderSlot {
 	public abstract int getTextureId();
 	
-	public abstract String getTextureFile();
+	public abstract Icon getTextureIcon() ;
 	
 	public abstract boolean drawSlotIcon();
 	

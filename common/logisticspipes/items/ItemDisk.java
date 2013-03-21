@@ -2,6 +2,11 @@ package logisticspipes.items;
 
 import java.util.List;
 
+import logisticspipes.textures.Textures;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -18,6 +23,13 @@ public class ItemDisk extends LogisticsItem {
     {
         return 1;
     }
+	
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void func_94581_a(IconRegister par1IconRegister)
+    {
+        this.iconIndex = Textures.LOGISTICSITEMTEXTURE_FOR_DISK;
+	}
 
 	@Override
 	public CreativeTabs getCreativeTab()

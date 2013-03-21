@@ -1,9 +1,12 @@
 package logisticspipes.items;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,6 +22,13 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 
 	public ItemHUDArmor(int par1, int renderIndex) {
 		super(par1, EnumArmorMaterial.CHAIN, renderIndex, 0);
+	}
+
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void func_94581_a(IconRegister par1IconRegister)
+    {
+        this.iconIndex = Textures.LOGISTICSITEMHUD_ICONINDEX;
 	}
 
 	@Override
@@ -42,7 +52,7 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 	}
 
 	@Override
-	public String getTextureFile() {
+	public Icon getTextureIcon()  {
 		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 

@@ -8,24 +8,27 @@
 
 package logisticspipes.gates;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.Textures;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.Trigger;
+import buildcraft.api.gates.ITrigger;
 import buildcraft.transport.ITriggerPipe;
+import buildcraft.transport.TileGenericPipe;
+
 import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
+public class TriggerSupplierFailed implements ITrigger{
 
+	int id;
 	public TriggerSupplierFailed(int id) {
-		super(id);
-	}
-	
-	@Override
-	public int getIndexInTexture() {
-		return 0 * 16 + 0;
+		this.id = id;
 	}
 	
 	@Override
@@ -34,7 +37,11 @@ public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 	}
 
 	@Override
-	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
+	public boolean isTriggerActive(TileEntity tile, ITriggerParameter parameter) {
+		if(!(tile instanceof TileGenericPipe))
+			return false;
+		Pipe pipe = ((TileGenericPipe)tile).pipe;
+			
 		if (pipe instanceof PipeItemsSupplierLogistics) {
 			PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) pipe;
 			return supplier.isRequestFailed();
@@ -51,7 +58,32 @@ public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 	}
 
 	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+	public Icon getTextureIcon()  {
+		return Textures.LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON;
+	}
+
+	@Override
+	public int getId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean hasParameter() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public ITriggerParameter createParameter() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

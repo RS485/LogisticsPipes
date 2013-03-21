@@ -287,20 +287,16 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
-		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
 		
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
-		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
-		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
 		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
 		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
@@ -310,11 +306,9 @@ public class LogisticsPipes {
 			renderIndex = 0;
 		}
 		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
-		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
 		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		
 		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
-		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
 		LogisticsParts.setUnlocalizedName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
@@ -325,19 +319,16 @@ public class LogisticsPipes {
 		
 		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
 		LogisticsItemDisk.setUnlocalizedName("itemDisk");
-		LogisticsItemDisk.setIconIndex(3);
 		
 		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
-		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
-		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
+		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID,Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
-			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
 			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
 		}
 		

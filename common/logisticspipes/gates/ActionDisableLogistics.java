@@ -8,29 +8,47 @@
 
 package logisticspipes.gates;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import net.minecraft.util.Icon;
 import logisticspipes.textures.Textures;
-import buildcraft.api.gates.Action;
+import buildcraft.api.core.IIconProvider;
+import buildcraft.api.gates.IAction;
+import buildcraft.core.triggers.BCAction;
 
-public class ActionDisableLogistics extends Action{
+public class ActionDisableLogistics implements IAction{
 
+	int id;
 	public ActionDisableLogistics(int id) {
-		super(id);
+		this.id = id;
 	}
 	
 	@Override
 	public String getDescription() {
 		return "Disable Pipe";
 	}
-	
+
 	@Override
-	public int getIndexInTexture() {
+	public Icon getTexture() {
 		// TODO Auto-generated method stub
-		return 1 * 16 + 0 ;
+		return Textures.LOGISTICSACTIONTRIGGERS_DISABLED;
 	}
-	
+
 	@Override
-	public String getTexture() {
+	public int getId() {
+		return id;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
 		// TODO Auto-generated method stub
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
+		return null;
+	}
+
+	@Override
+	public boolean hasParameter() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

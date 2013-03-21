@@ -44,6 +44,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
@@ -107,7 +108,7 @@ public class ItemModule extends LogisticsItem {
 		private String name;
 		private int id;
 		private Class<? extends ILogisticsModule> moduleClass;
-		private int textureIndex = -1;
+		private Icon textureIndex = null;
 
 		private Module(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
 			this.id = id;
@@ -115,7 +116,7 @@ public class ItemModule extends LogisticsItem {
 			this.moduleClass = moduleClass;
 		}
 
-		private Module(int id, String name, Class<? extends ILogisticsModule> moduleClass, int textureIndex) {
+		private Module(int id, String name, Class<? extends ILogisticsModule> moduleClass, Icon textureIndex) {
 			this.id = id;
 			this.name = name;
 			this.moduleClass = moduleClass;
@@ -154,7 +155,7 @@ public class ItemModule extends LogisticsItem {
 			return name;
 		}
 
-		private int getTextureIndex() {
+		private Icon getTextureIndex() {
 			return textureIndex;
 		}
 	}
@@ -165,7 +166,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	public void loadModules() {
-		registerModule(BLANK					, "Blank module"				, null);
+		registerModule(BLANK					, "Blank module"				, null, Textures.LOGISTICS);
 		registerModule(ITEMSINK					, "ItemSink module"				, ModuleItemSink.class);
 		registerModule(PASSIVE_SUPPLIER			, "Passive Supplier module"		, ModulePassiveSupplier.class);
 		registerModule(EXTRACTOR				, "Extractor module"			, ModuleExtractor.class);
@@ -188,7 +189,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class, 98);
 	}
-
+/*
 	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
 		boolean flag = true;
 		for(Module module:modules) {
@@ -203,9 +204,9 @@ public class ItemModule extends LogisticsItem {
 		} else {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Module. (No name given)");
 		}
-	}
+	}*/
 
-	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass, int textureId) {
+	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass, Icon textureId) {
 		boolean flag = true;
 		for(Module module:modules) {
 			if(module.getId() == id) {
@@ -304,15 +305,17 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public int getIconFromDamage(int i) {
+	public Icon getIconFromDamage(int i) {
+		// should set and store TextureIndex with this object.
 		for(Module module:modules) {
 			if(module.getId() == i) {
-				if(module.getTextureIndex() != -1) {
+				if(module.getTextureIndex() != null) {
 					return module.getTextureIndex();
 				}
 			}
 		}
-
+		return null;
+/*
 		if (i >= 500){
 			return 5 * 16 + (i - 500);
 		}
@@ -325,7 +328,7 @@ public class ItemModule extends LogisticsItem {
 			return 3 * 16 + (i - 100);
 		}
 
-		return 2 * 16 + i;
+		return 2 * 16 + i;*/
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -83,7 +83,12 @@ public class Textures {
 	public static Icon LOGISTICSACTIONTRIGGERS_CRAFTING_ICON = 0 * 16 + 2;
 	public static Icon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = 2 * 16 + 0;
 	public static Icon LOGISTICSACTIONTRIGGERS_NEEDS_POWER_ICON =1 * 16 + 1;
-	public static Icon LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON = 0 * 16 + 0;;
+	public static Icon LOGISTICSACTIONTRIGGERS_SUPPLIER_FAILED_ICON = 0 * 16 + 0;
+	public static Icon[] LOGISTICS_UPGRADES_DISCONECT_ICONINDEX;
+	public static Icon[] LOGISTICS_UPGRADES_SNEAKY_ICONINDEX;
+	public static Icon[] LOGISTICS_UPGRADES_ICONINDEX;
+	public static Icon LOGISTICSITEMS_ITEMHUD_ICON;
+	public static Icon LOGISTICSITEMTEXTURE_FOR_DISK;
 	
 	// Standalone pipes
 	public static final Icon LOGISTICSPIPE_TEXTURE_FILE					;
@@ -138,7 +143,7 @@ public class Textures {
 	public static final Icon LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE		;
 	
 	//Armor
-	public static final Icon LOGISTICSPIPE_HUD_TEXTURE_FILE				;
+	public static final String LOGISTICSPIPE_HUD_TEXTURE_FILE				;
 
 	static {
 		BROKEN CODE -- CAN NOT DO THIS STATIC, MUST INIT AFTER MINECRAFT
@@ -318,8 +323,79 @@ public class Textures {
 	}
 	
 	public static class TextureType {
-		public Icon normal;
-		public Icon powered;
-		public Icon unpowered;
+		public int normal;
+		public int powered;
+		public int unpowered;
 	}
 }
+\item_textures\
+HUDGlasses.png
+HUD_part_arm.png
+HUD_part_frame.png
+HUD_part_lense.png
+itemCraftingGenerator.png
+itemNetworkAnalyzer.png
+itemRemoteOrder.png
+itemRemoteOrder_c0.png
+itemRemoteOrder_c1.png
+itemRemoteOrder_c2.png
+itemRemoteOrder_c3.png
+itemRemoteOrder_c4.png
+itemRemoteOrder_c5.png
+itemRemoteOrder_c6.png
+itemRemoteOrder_c7.png
+itemRemoteOrder_c8.png
+itemRemoteOrder_c9.png
+itemRemoteOrder_cA.png
+itemRemoteOrder_cB.png
+itemRemoteOrder_cC.png
+itemRemoteOrder_cD.png
+itemRemoteOrder_cE.png
+itemRemoteOrder_cF.png
+itemUnknowenModule.png
+itemUnknown2.png
+itemUpgradeDetach_down.png
+itemUpgradeDetach_east.png
+itemUpgradeDetach_north.png
+itemUpgradeDetach_south.png
+itemUpgradeDetach_up.png
+itemUpgradeDetach_west.png
+itemUpgradeManager.png
+itemUpgradeSneaky_down.png
+itemUpgradeSneaky_east.png
+itemUpgradeSneaky_north.png
+itemUpgradeSneaky_south.png
+itemUpgradeSneaky_up.png
+itemUpgradeSneaky_west.png
+itemUpgrade_1.png
+itemUpgrade_2.png
+itemUpgrade_3.png
+logisticsDisk.png
+mod_bee1.png
+mod_bee2.png
+mod_bee3.png
+mod_bee4.png
+mod_blank.png
+mod_electric1.png
+mod_extract_2.png
+mod_extract_3.png
+mod_extract_advanced_1.png
+mod_extract_advanced_2.png
+mod_extract_advanced_3.png
+mod_modSink.png
+mod_passiveSupplier.png
+mod_polySink.png
+mod_provider1.png
+mod_provider2.png
+mod_quickSort.png
+mod_sink.png
+mod_terminus.png
+mod_thaumic.png
+nanoHopper.png
+
+actionTriggers\ActionTrigger1.png
+actionTriggers\ActionTrigger17.png
+actionTriggers\CraftingWaiting.png
+actionTriggers\DisablePipe.png
+actionTriggers\PowerDischarging.png
+actionTriggers\PowerNeeded.png

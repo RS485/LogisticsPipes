@@ -1,7 +1,11 @@
 package logisticspipes.pipes.basic.liquid;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.textures.Textures;
+import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportLiquids;
 import buildcraft.transport.pipes.PipeLogicGold;
@@ -16,12 +20,14 @@ public class LogisticsLiquidConnectorPipe extends Pipe {
 	}
 
 	@Override
-	public Icon getTextureIcon()  {
-		return Textures.BASE_TEXTURE_FILE;
+	public int getIconIndex(ForgeDirection direction) {
+		return Textures.LOGISTICSPIPE_LIQUID_CONNECTOR;
 	}
 
 	@Override
-	public int getTextureIndex(ForgeDirection direction) {
-		return Textures.LOGISTICSPIPE_LIQUID_CONNECTOR;
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

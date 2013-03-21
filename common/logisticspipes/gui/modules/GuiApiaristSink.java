@@ -71,7 +71,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		}
 
 		@Override
-		public Icon getTextureIcon()  {
+		public String getTextureIcon()  {
 			return "/gfx/forestry/gui/analyzer_icons.png";
 		}
 

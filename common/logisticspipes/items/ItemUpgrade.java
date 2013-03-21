@@ -4,6 +4,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
@@ -19,8 +22,11 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
+import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -52,15 +58,15 @@ public class ItemUpgrade extends LogisticsItem {
 		private String name;
 		private int id;
 		private Class<? extends IPipeUpgrade> upgradeClass;
-		private int textureIndex = -1;
-
+		private Icon textureIndex = null;
+/*
 		private Upgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
 			this.id = id;
 			this.name = name;
 			this.upgradeClass = moduleClass;
-		}
+		}*/
 
-		private Upgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureIndex) {
+		private Upgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, Icon textureIndex) {
 			this.id = id;
 			this.name = name;
 			this.upgradeClass = moduleClass;
@@ -99,7 +105,7 @@ public class ItemUpgrade extends LogisticsItem {
 			return name;
 		}
 		
-		private int getTextureIndex() {
+		private Icon getTextureIndex() {
 			return textureIndex;
 		}
 	}
@@ -108,24 +114,24 @@ public class ItemUpgrade extends LogisticsItem {
 		super(i);
 		this.hasSubtypes = true;
 	}
-	
+
 	public void loadUpgrades() {
-		registerUpgrade(SNEAKY_UP, "Sneaky Upgrade (UP)", SneakyUpgradeUP.class);
-		registerUpgrade(SNEAKY_DOWN, "Sneaky Upgrade (DOWN)", SneakyUpgradeDOWN.class);
-		registerUpgrade(SNEAKY_NORTH, "Sneaky Upgrade (NORTH)", SneakyUpgradeNORTH.class);
-		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class);
-		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class);
-		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class);
-		registerUpgrade(CONNECTION_UP, "Disconnection Upgrade (UP)", ConnectionUpgradeUP.class, 9 * 16 + 7);
-		registerUpgrade(CONNECTION_DOWN, "Disconnection Upgrade (DOWN)", ConnectionUpgradeDOWN.class, 9 * 16 + 8);
-		registerUpgrade(CONNECTION_NORTH, "Disconnection Upgrade (NORTH)", ConnectionUpgradeNORTH.class, 9 * 16 + 9);
-		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, 9 * 16 + 10);
-		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, 9 * 16 + 11);
-		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 9 * 16 + 12);
-		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 9 * 16 + 6);
-		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 9 * 16 + 13);
+		registerUpgrade(SNEAKY_UP, "Sneaky Upgrade (UP)", SneakyUpgradeUP.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[0]);
+		registerUpgrade(SNEAKY_DOWN, "Sneaky Upgrade (DOWN)", SneakyUpgradeDOWN.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[1]);
+		registerUpgrade(SNEAKY_NORTH, "Sneaky Upgrade (NORTH)", SneakyUpgradeNORTH.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[2]);
+		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[3]);
+		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[4]);
+		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[5]);
+		registerUpgrade(CONNECTION_UP, "Disconnection Upgrade (UP)", ConnectionUpgradeUP.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[0]);
+		registerUpgrade(CONNECTION_DOWN, "Disconnection Upgrade (DOWN)", ConnectionUpgradeDOWN.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[1]);
+		registerUpgrade(CONNECTION_NORTH, "Disconnection Upgrade (NORTH)", ConnectionUpgradeNORTH.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[2]);
+		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[3]);
+		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[4]);
+		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, Textures.LOGISTICS_UPGRADES_DISCONECT_ICONINDEX[5]);
+		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, Textures.LOGISTICS_UPGRADES_ICONINDEX[0]);
+		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, Textures.LOGISTICS_UPGRADES_ICONINDEX[1]);
 	}
-	
+/*	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
 		boolean flag = true;
 		for(Upgrade upgrade:upgrades) {
@@ -140,9 +146,9 @@ public class ItemUpgrade extends LogisticsItem {
 		} else {
 			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (No name given)");
 		}
-	}
+	}*/
 	
-	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
+	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, Icon textureId) {
 		boolean flag = true;
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == id) {
@@ -208,15 +214,15 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 	
 	@Override
-	public int getIconFromDamage(int i) {
+	public Icon getIconFromDamage(int i) {
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == i) {
-				if(upgrade.getTextureIndex() != -1) {
+				if(upgrade.getTextureIndex() != null) {
 					return upgrade.getTextureIndex();
 				}
 			}
 		}
 			
-		return 9 * 16 + i;
+		return Textures.LOGISTICS_UPGRADES_ICONINDEX[i];
 	}
 }

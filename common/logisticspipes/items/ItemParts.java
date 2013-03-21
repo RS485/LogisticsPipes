@@ -42,7 +42,7 @@ public class ItemParts extends LogisticsItem {
     }
 
 	@Override
-	public String getItemNameIS(ItemStack par1ItemStack) {
+	public String getUnlocalizedName(ItemStack par1ItemStack) {
     	switch(par1ItemStack.getItemDamage()) {
     	case 0: //bow
     		return "item.HUDbow";
@@ -53,7 +53,7 @@ public class ItemParts extends LogisticsItem {
     	case 3: 
     		return "item.NanoHopper";
     	}
-		return super.getItemNameIS(par1ItemStack);
+		return super.getUnlocalizedName(par1ItemStack);
 	}
 
 	@Override

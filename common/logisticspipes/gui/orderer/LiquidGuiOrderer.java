@@ -37,6 +37,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 		}
 	}
 	
+	@Override
 	protected int getAmountChangeMode(int step) {
 		if(step == 1) {
 			return 1;
@@ -49,10 +50,12 @@ public class LiquidGuiOrderer extends GuiOrderer {
 		}
 	}
 	
+	@Override
 	protected boolean isShiftPageChange() {
 		return false;
 	}
 	
+	@Override
 	protected int getStackAmount() {
 		return 1000;
 	}

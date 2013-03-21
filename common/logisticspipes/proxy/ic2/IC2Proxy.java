@@ -73,6 +73,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 * @return Boolean, true if electric item contains charge but is not full.
 	 * @param stack The stack to check if its partially chraged.
 	 */
+	@Override
 	public boolean isPartiallyCharged(ItemStack stack) {
 		return (!isFullyCharged(stack) && !isFullyDischarged(stack));
 	}

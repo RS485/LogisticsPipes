@@ -17,6 +17,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		this.setHasSubtypes(true);
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public String getItemDisplayName(ItemStack stack) {
 		switch (stack.getItemDamage()) {

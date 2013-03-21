@@ -470,7 +470,7 @@ public class RecipeManager {
 
 
 		for(int i=0; i<1000;i++) {
-			ILogisticsModule module = ((ItemModule)LogisticsPipes.ModuleItem).getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null, null, null);
+			ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null, null, null);
 			if(module != null) {
 				NBTTagCompound nbt = new NBTTagCompound();
 				boolean force = false;

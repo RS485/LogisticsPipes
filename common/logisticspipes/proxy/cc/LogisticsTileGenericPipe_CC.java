@@ -40,7 +40,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	
 	private CCType getType(Class<?> clazz) {
 		while(true) {
-			CCType type = (CCType) clazz.getAnnotation(CCType.class);
+			CCType type = clazz.getAnnotation(CCType.class);
 			if(type != null) return type;
 			if(clazz.getSuperclass() == Object.class) return null;
 			clazz = clazz.getSuperclass();

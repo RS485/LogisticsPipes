@@ -185,7 +185,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 			for (int i = 0; i < adjTanks.size(); i++) {
 				Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
 				ITankContainer tank = (ITankContainer) pair.getValue1();
-				ForgeDirection dir = (ForgeDirection) pair.getValue2();
+				ForgeDirection dir = pair.getValue2();
 				int filled = tank.fill(dir.getOpposite(), liquid, true);
 				liquid.amount -= filled;
 				if (liquid.amount != 0) continue;

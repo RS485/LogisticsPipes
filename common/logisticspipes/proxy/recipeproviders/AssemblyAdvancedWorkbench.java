@@ -8,10 +8,12 @@ import net.minecraft.tileentity.TileEntity;
 import buildcraft.silicon.TileAssemblyAdvancedWorkbench;
 
 public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
+	@Override
 	public boolean canOpenGui(TileEntity tile) {
 		return (tile instanceof TileAssemblyAdvancedWorkbench);
 	}
 
+	@Override
 	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
 		if (!(tile instanceof TileAssemblyAdvancedWorkbench))
 			return false;

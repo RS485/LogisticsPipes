@@ -376,6 +376,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		return count;
 	}
 	
+	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if(Search1 == "" && Search2 == "") return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(Search1 + Search2).toLowerCase())) return true;

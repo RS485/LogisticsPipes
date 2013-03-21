@@ -43,7 +43,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 		if(!onlyOnePipe) {
 			return new ArrayList<TileGenericPipe>(0);
 		}
-		List<? extends TileEntity> connections = (List<? extends TileEntity>) SimpleServiceLocator.thermalExpansionProxy.getConnectedTesseracts(tile);
+		List<? extends TileEntity> connections = SimpleServiceLocator.thermalExpansionProxy.getConnectedTesseracts(tile);
 		List<TileGenericPipe> list = new ArrayList<TileGenericPipe>();
 		for(TileEntity connected:connections) {
 			TileGenericPipe pipe = null;
@@ -60,7 +60,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 					}
 				}
 			}
-			if(pipe != null && ((TileGenericPipe)pipe).pipe instanceof CoreRoutedPipe) {
+			if(pipe != null && pipe.pipe instanceof CoreRoutedPipe) {
 				list.add(pipe);
 			}
 		}

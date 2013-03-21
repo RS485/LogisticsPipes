@@ -31,6 +31,7 @@ public class DummyModuleContainer extends DummyContainer {
 		_dummyInventory = inv;
 	}
 	
+	@Override
 	protected Slot addSlotToContainer(Slot par1Slot) {
 		if(par1Slot != null && par1Slot.getSlotIndex() == slot && par1Slot.inventory == this._playerInventory) {
 			return super.addSlotToContainer(new UnmodifiableSlot(par1Slot));

@@ -251,8 +251,11 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 
 		if (r.getPipe() instanceof PipeItemsCraftingLogistics){
 			PipeItemsCraftingLogistics pipe = (PipeItemsCraftingLogistics) r.getPipe();
-			if (pipe.getCraftedItem() != null){
-				return ("Crafter<" + pipe.getCraftedItem().getFriendlyName() + ">");
+			if (pipe.getCraftedItems() != null){
+				List<ItemIdentifier> items = pipe.getCraftedItems();
+				if(items.size()==1)
+					return ("Crafter<" + items.get(0).getFriendlyName() + ">");
+				return ("Crafter< MULTIPLE ITEMS >");
 			}
 		}
 
@@ -369,9 +372,13 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 
 			ICraftItems crafter = (ICraftItems) r.destination.getPipe();
-			ItemIdentifier craftedItem = crafter.getCraftedItem();
-			if (craftedItem != null && !craftableItems.contains(craftedItem)){
-				craftableItems.add(craftedItem);
+			List<ItemIdentifier> craftedItems = crafter.getCraftedItems();
+			if(craftedItems != null) {
+				for(ItemIdentifier craftedItem:craftedItems) {
+					if (craftedItem != null && !craftableItems.contains(craftedItem)){
+						craftableItems.add(craftedItem);
+					}
+				}
 			}
 			used.set(r.destination.getSimpleID(), true);
 		}
@@ -402,13 +409,15 @@ outer:
 			}
 
 			ICraftItems crafter = (ICraftItems) n.destination.getPipe();
-			ItemIdentifier craftedItem = crafter.getCraftedItem();
-			if(craftedItem != null) {
-				for(IFilter filter:filters) {
-					if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
-				}
-				if (!craftableItems.contains(craftedItem)){
-					craftableItems.add(craftedItem);
+			List<ItemIdentifier> craftedItems = crafter.getCraftedItems();
+			for(ItemIdentifier craftedItem:craftedItems){
+				if(craftedItem != null) {
+					for(IFilter filter:filters) {
+						if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
+					}
+					if (!craftableItems.contains(craftedItem)){
+						craftableItems.add(craftedItem);
+					}
 				}
 			}
 			used.set(n.destination.getSimpleID(), true);

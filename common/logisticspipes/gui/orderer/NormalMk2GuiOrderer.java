@@ -33,6 +33,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		Macrobutton.enabled = false;
 	}
 	
+	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		super.drawGuiContainerBackgroundLayer(f, i, j);
 
@@ -71,6 +72,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		}
 	}
 
+	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {

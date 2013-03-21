@@ -84,6 +84,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return stack;
 	}
 	
+	@Override
 	public boolean equals(Object object) {
 		if(object instanceof ItemIdentifierStack) {
 			ItemIdentifierStack stack = (ItemIdentifierStack)object;
@@ -92,14 +93,17 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return false;
 	}
 	
+	@Override
 	public int hashCode() {
 		return _item.hashCode() ^ (1023 * this.stackSize);
 	}
 
+	@Override
 	public String toString() {
 		return new StringBuilder(Integer.toString(stackSize)).append("x").append(_item.toString()).toString();
 	}
 	
+	@Override
 	public ItemIdentifierStack clone() {
 		return new ItemIdentifierStack(_item, stackSize);
 	}

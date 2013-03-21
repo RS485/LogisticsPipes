@@ -32,6 +32,7 @@ public class CCTurtleProxy extends CCProxy {
 		return turtleClass.isInstance(tile);
 	}
 	
+	@Override
 	protected Object get_local_tile_m_computer(TileEntity tile) throws IllegalArgumentException, IllegalAccessException {
 		if(turtleClass.isInstance(tile)) {
 			return Turtle_m_computer.get(tile);

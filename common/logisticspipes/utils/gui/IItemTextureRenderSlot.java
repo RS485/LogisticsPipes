@@ -11,6 +11,7 @@ public abstract class IItemTextureRenderSlot implements IRenderSlot {
 	
 	public abstract boolean customRender(Minecraft mc, float zLevel);
 
+	@Override
 	public int getSize() {
 		return 18;
 	}

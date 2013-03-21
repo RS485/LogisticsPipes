@@ -70,7 +70,7 @@ public class ItemUpgrade extends LogisticsItem {
 		private IPipeUpgrade getIPipeUpgrade() {
 			if(upgradeClass == null) return null;
 			try {
-				return (IPipeUpgrade)upgradeClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
+				return upgradeClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {

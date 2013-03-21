@@ -66,6 +66,7 @@ public class RemoteOrderer extends Item {
 		super.addInformation(itemstack, player, list, flag);
 	}
 	
+	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {	
 		if(par1ItemStack == null) {

@@ -27,6 +27,7 @@ public class ItemMessage {
 		this(selectedItemStack.getItem(),selectedItemStack.stackSize);
 	}
 	
+	@Override
 	public String toString() {
 		return amount + " " + ItemIdentifier.get(id,data,tag).getFriendlyName();
 	}

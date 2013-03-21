@@ -1,6 +1,7 @@
 package logisticspipes.utils.gui;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Icon;
 
 public abstract class IItemTextureRenderSlot implements IRenderSlot {
 	public abstract int getTextureId();

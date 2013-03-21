@@ -61,9 +61,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
-import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.Trigger;
+import buildcraft.api.gates.IAction;
+import buildcraft.api.gates.ITrigger;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
@@ -84,11 +84,11 @@ public class BuildCraftProxy {
 
 	public static List<Item> pipelist = new ArrayList<Item>();
 
-	public static Trigger LogisticsFailedTrigger;
-	public static Trigger LogisticsCraftingTrigger;
-	public static Trigger LogisticsNeedPowerTrigger;
-	public static Trigger LogisticsHasDestinationTrigger;
-	public static Action LogisticsDisableAction;
+	public static ITrigger LogisticsFailedTrigger;
+	public static ITrigger LogisticsCraftingTrigger;
+	public static ITrigger LogisticsNeedPowerTrigger;
+	public static ITrigger LogisticsHasDestinationTrigger;
+	public static IAction LogisticsDisableAction;
 	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
 		return checkPipesConnections(from, to, way, false);

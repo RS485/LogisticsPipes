@@ -1,12 +1,16 @@
 package logisticspipes.textures;
 
+import buildcraft.api.core.IIconProvider;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.Icon;
 import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.event.FMLStateEvent;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class Textures {
 	private int index = 0;
@@ -15,6 +19,24 @@ public class Textures {
 		empty.normal = 0;
 		empty.powered = 0;
 		empty.unpowered = 0;
+	}
+	
+	public class dummyIconProvider implements IIconProvider {
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public Icon getIcon(int iconIndex) {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public void registerIcons(IconRegister iconRegister) {
+			// TODO Auto-generated method stub
+			
+		}
+		
 	}
 	
 	public static TextureType LOGISTICSPIPE_TEXTURE							= empty;
@@ -296,8 +318,8 @@ public class Textures {
 	}
 	
 	public static class TextureType {
-		public int normal;
-		public int powered;
-		public int unpowered;
+		public Icon normal;
+		public Icon powered;
+		public Icon unpowered;
 	}
 }

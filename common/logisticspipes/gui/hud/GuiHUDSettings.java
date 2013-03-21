@@ -32,12 +32,12 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 		super.initGui();
 		if(player.inventory.getStackInSlot(slot) != null) {
 			HUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
-			this.controlList.add(new GuiCheckBox(0, guiLeft + 10, guiTop +  10, 12, 12, config.isHUDChassie()));
-			this.controlList.add(new GuiCheckBox(1, guiLeft + 10, guiTop +  30, 12, 12, config.isHUDCrafting()));
-			this.controlList.add(new GuiCheckBox(2, guiLeft + 10, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
-			this.controlList.add(new GuiCheckBox(3, guiLeft + 10, guiTop +  70, 12, 12, config.isHUDPowerJunction()));
-			this.controlList.add(new GuiCheckBox(4, guiLeft + 10, guiTop +  90, 12, 12, config.isHUDProvider()));
-			this.controlList.add(new GuiCheckBox(5, guiLeft + 10, guiTop + 110, 12, 12, config.isHUDSatellite()));
+			this.buttonList.add(new GuiCheckBox(0, guiLeft + 10, guiTop +  10, 12, 12, config.isHUDChassie()));
+			this.buttonList.add(new GuiCheckBox(1, guiLeft + 10, guiTop +  30, 12, 12, config.isHUDCrafting()));
+			this.buttonList.add(new GuiCheckBox(2, guiLeft + 10, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
+			this.buttonList.add(new GuiCheckBox(3, guiLeft + 10, guiTop +  70, 12, 12, config.isHUDPowerJunction()));
+			this.buttonList.add(new GuiCheckBox(4, guiLeft + 10, guiTop +  90, 12, 12, config.isHUDProvider()));
+			this.buttonList.add(new GuiCheckBox(5, guiLeft + 10, guiTop + 110, 12, 12, config.isHUDSatellite()));
 		} else {
 			this.closeGui();
 		}
@@ -50,9 +50,9 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 
 	@Override
 	protected void actionPerformed(GuiButton button) {
-		if(this.controlList.get(button.id) instanceof GuiCheckBox) {
-			((GuiCheckBox)this.controlList.get(button.id)).change();
-			MainProxy.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.controlList.get(button.id)).getState(), slot).getPacket());
+		if(this.buttonList.get(button.id) instanceof GuiCheckBox) {
+			((GuiCheckBox)this.buttonList.get(button.id)).change();
+			MainProxy.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.buttonList.get(button.id)).getState(), slot).getPacket());
 		}
 		//super.actionPerformed(par1GuiButton);
 	}

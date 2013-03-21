@@ -73,6 +73,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
@@ -403,12 +404,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public Icon getTextureIcon()  {
 		return Textures.BASE_TEXTURE_FILE;
 	}*/
-	@Override
-	@SideOnly(Side.CLIENT)
-	public Icon[] getTextureIcons() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public int getIconIndex(ForgeDirection connection) {
@@ -966,5 +961,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				count += next.getIDStack().stackSize;
 		}
 		return count;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

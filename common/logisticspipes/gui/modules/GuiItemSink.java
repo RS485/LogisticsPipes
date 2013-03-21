@@ -34,8 +34,8 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	public void initGui() {
 		super.initGui();
        //Default item toggle:
-       controlList.clear();
-       controlList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler(){
+       buttonList.clear();
+       buttonList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler(){
 		@Override
 		public String getContent() {
 			return _itemSink.isDefaultRoute() ? "Yes" : "No";
@@ -48,7 +48,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		{
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
-				//((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
+				//((GuiButton)buttonList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
 				if(slot != 20) {
 					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
 				} else {
@@ -85,10 +85,9 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/itemsink.png");
 				
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/itemsink.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

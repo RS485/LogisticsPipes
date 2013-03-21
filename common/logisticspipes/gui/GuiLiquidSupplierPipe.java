@@ -58,10 +58,9 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
 				
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/supplier.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -71,8 +70,8 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 	@Override
 	public void initGui() {
 		super.initGui();
-       controlList.clear();
-       controlList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
+       buttonList.clear();
+       buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
 
 	}
 
@@ -80,7 +79,7 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
 		}
 		super.actionPerformed(guibutton);

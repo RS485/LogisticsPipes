@@ -47,10 +47,9 @@ public class GuiLiquidSupplier extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/itemsink.png");
 				
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/itemsink.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

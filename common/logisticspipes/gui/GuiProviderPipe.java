@@ -52,16 +52,16 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public void initGui() {
 		super.initGui();
-       controlList.clear();
-       controlList.add(new GuiButton(0, width / 2 + 40, height / 2 - 59, 45, 20, logic.isExcludeFilter() ? "Exclude" : "Include"));
-       controlList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
+       buttonList.clear();
+       buttonList.add(new GuiButton(0, width / 2 + 40, height / 2 - 59, 45, 20, logic.isExcludeFilter() ? "Exclude" : "Include"));
+       buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 	
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
-			((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
+			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
@@ -71,7 +71,7 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 	}
 	
 	public void refreshInclude() {
-		((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
+		((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
 	}
 	
 	@Override
@@ -83,10 +83,9 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/supplier.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

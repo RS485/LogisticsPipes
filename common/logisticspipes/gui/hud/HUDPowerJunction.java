@@ -33,8 +33,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		super.renderHeadUpDisplay(distance, day, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/power_junction.png");
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/power_junction.png");
 		drawTexturedModalRect(-50, -30, 9, 10, 7, 61);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		int level = 100 - junction.getChargeState();

@@ -144,9 +144,9 @@ public class LogisticsRenderPipe extends RenderPipe {
 			return null;
 
 		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
-			ForgeHooksClient.bindTexture(Block.blocksList[liquidId].getTextureFile(), 0);
+			ForgeHooksClient.bindTexture(Block.blocksList[liquidId].getBlockTextureFromSide(), 0);
 		} else if (Item.itemsList[liquidId] != null) {
-			ForgeHooksClient.bindTexture(Item.itemsList[liquidId].getTextureFile(), 0);
+			ForgeHooksClient.bindTexture(Item.itemsList[liquidId].getTexture(), 0);
 		} else
 			return null;
 		return getDisplayLiquidLists(liquidId, stack.itemMeta, world);

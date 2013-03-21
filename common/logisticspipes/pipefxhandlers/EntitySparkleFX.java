@@ -119,7 +119,8 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, this.blendmode);
-        ForgeHooksClient.bindTexture("/logisticspipes/particles/particles.png", 0);
+//        ForgeHooksClient.bindTexture(, 0);
+		Minecraft.getMinecraft().renderEngine.func_98187_b("/logisticspipes/particles/particles.png");
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.75F);
         int var8 = this.particle + this.particleAge / this.multiplier;
         float var9 = var8 % 8 / 8.0F;

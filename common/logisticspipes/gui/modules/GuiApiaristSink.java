@@ -15,6 +15,7 @@ import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Icon;
 import buildcraft.transport.Pipe;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
@@ -257,7 +258,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		}
 
 		@Override
-		public Icon getTextureIcon()  {
+		public String getTextureIcon()  {
 			return "/gfx/forestry/items/bees.png";
 		}
 

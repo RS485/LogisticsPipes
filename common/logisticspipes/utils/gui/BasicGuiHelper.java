@@ -399,9 +399,8 @@ public class BasicGuiHelper {
 	}
 
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/slot.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -413,9 +412,9 @@ public class BasicGuiHelper {
     }
     
     public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-big.png");
+
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/slot-big.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -428,9 +427,8 @@ public class BasicGuiHelper {
     
 
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-small.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/slot-small.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -442,9 +440,9 @@ public class BasicGuiHelper {
     }
     
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, int iconIndex, String textureFile) {
-		int i = mc.renderEngine.getTexture(textureFile);
-		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+
+    	GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.func_98187_b(textureFile);
 		
 		double iconX = ((double)((iconIndex % 16) * 16)) / 256;
 		double iconXright = ((double)(((iconIndex % 16) + 1) * 16)) / 256;
@@ -461,9 +459,9 @@ public class BasicGuiHelper {
 	}
     
     public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
-		int tex = mc.renderEngine.getTexture("/gfx/forestry/items/bees.png");
+
 		//GL11.glDisable(2896 /*Light*/);
-		mc.renderEngine.bindTexture(tex);
+		mc.renderEngine.func_98187_b("/gfx/forestry/items/bees.png");
 		
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
 			int iconIndex = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
@@ -495,11 +493,10 @@ public class BasicGuiHelper {
     
     public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight){
 
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");
 		if(flag) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/GuiBackground.png");
 		
 		if(displayTop) {
 			//Top Side

@@ -35,9 +35,9 @@ public class GuiRequestPopup extends SubGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new GuiButton(0, xCenter - 55, bottom - 25, 50,20,"OK"));
-		controlList.add(new GuiButton(1, xCenter + 5, bottom - 25, 50,20,"Log"));
+		buttonList.clear();
+		buttonList.add(new GuiButton(0, xCenter - 55, bottom - 25, 50,20,"OK"));
+		buttonList.add(new GuiButton(1, xCenter + 5, bottom - 25, 50,20,"Log"));
 	}
 	
 	@Override
@@ -73,7 +73,7 @@ public class GuiRequestPopup extends SubGuiScreen {
 			for(String msg:text) {
 				player.addChatMessage(msg);
 			}
-			((GuiButton)controlList.get(1)).enabled = false;
+			((GuiButton)buttonList.get(1)).enabled = false;
 			break;
 		}
 	}

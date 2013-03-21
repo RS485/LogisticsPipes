@@ -53,14 +53,14 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-       controlList.clear();
-       controlList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20, new GuiStringHandlerButton.StringHandler() {
+       buttonList.clear();
+       buttonList.add(new GuiStringHandlerButton(0, width / 2 + 40, height / 2 - 59, 45, 20, new GuiStringHandlerButton.StringHandler() {
 		@Override
 		public String getContent() {
 			return _provider.isExcludeFilter() ? "Exclude" : "Include";
 		}
        }));
-       controlList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
+       buttonList.add(new GuiButton(1, width / 2 - 90, height / 2 - 41, 38, 20, "Switch"));
 	}
 	
 	@Override
@@ -85,10 +85,9 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
 
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/supplier.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -112,7 +111,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	}
 
 	public void refreshInclude() {
-		((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
+		((GuiButton)buttonList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
 	}
 	
 	public void handleModuleIncludeRecive(PacketPipeInteger packet) {

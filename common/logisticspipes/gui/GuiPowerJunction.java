@@ -35,9 +35,8 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/power_junction.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.func_98187_b("/logisticspipes/gui/power_junction.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -55,9 +54,9 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.controlList.clear();
+		this.buttonList.clear();
 		if (LogisticsPipes.DEBUG) {
-			this.controlList.add(new GuiButton(0, guiLeft + 140, guiTop + 20, 20, 20, "+"));
+			this.buttonList.add(new GuiButton(0, guiLeft + 140, guiTop + 20, 20, 20, "+"));
 		}
 	}
 	

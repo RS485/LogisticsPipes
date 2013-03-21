@@ -99,6 +99,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	
 	@Override
 	public String getType() {
+		init();
 		return typeName;
 	}
 	

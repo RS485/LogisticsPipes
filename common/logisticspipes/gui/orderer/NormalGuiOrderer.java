@@ -23,6 +23,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 		refreshItems();
 	}
 	
+	@Override
 	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
@@ -31,6 +32,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 		controlList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
 	}
 	
+	@Override
 	public void refreshItems(){
 			int integer;
 			switch(displayOptions) {
@@ -50,6 +52,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
 	}
 
+	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 9) {

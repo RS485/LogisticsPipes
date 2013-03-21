@@ -17,12 +17,14 @@ public class InventoryLargeChestLogistics extends InventoryLargeChest {
 		this._lowerChest = par3IInventory;
 	}
 
+	@Override
 	public boolean equals(Object obj) {
 		if(!(obj instanceof InventoryLargeChestLogistics)) return false;
 		InventoryLargeChestLogistics b = (InventoryLargeChestLogistics) obj;
 		return (this._upperChest == b._upperChest && this._lowerChest == b._lowerChest);
 	}
 
+	@Override
 	public int hashCode() {
 		return _upperChest.hashCode() ^ _lowerChest.hashCode();
 	}

@@ -750,13 +750,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return this.getRouter().getPowerProvider();
 	}
 	
+	@Override
 	public boolean useEnergy(int amount){
 		return useEnergy(amount, null);
 	}
+	@Override
 	public boolean canUseEnergy(int amount){
 		return canUseEnergy(amount,null);
 	}
 
+	@Override
 	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
@@ -773,6 +776,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
+	@Override
 	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;

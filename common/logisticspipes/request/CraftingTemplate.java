@@ -9,23 +9,21 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
 import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsPromise;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
 
 public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
-	private ItemIdentifierStack _result;
-	private ICraftItems _crafter;
-	private ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
+	protected ItemIdentifierStack _result;
+	protected ICraftItems _crafter;
+	protected ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
 	private final int priority;
 	
 	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
@@ -53,14 +51,8 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		return promise;
 	}
 	
-	public List<Pair<ItemIdentifierStack,IRequestItems>> getSource() {
-		return _required;
-	}
-
-	public ItemIdentifierStack getResultStack() {
-		return _result;
-	}
-	
+	//TODO: refactor so that other classes don't reach through the template to the crafter.
+	// needed to get the crafter todo, in order to sort
 	public ICraftItems getCrafter(){
 		return _crafter;
 	}
@@ -78,13 +70,31 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 			c=_crafter.compareTo(o._crafter);
 		return c;
 	}
-	
-	public static class PairPrioritizer implements Comparator<Pair<CraftingTemplate,List<IFilter>>>{
 
-		@Override
-		public int compare(Pair<CraftingTemplate,List<IFilter>> o1, Pair<CraftingTemplate,List<IFilter>> o2) {
-			return o2.getValue1().priority-o1.getValue1().priority;
-		}
-		
+	public boolean canCraft(ItemIdentifier item) {
+		return item.equals(_result);
 	}
+
+	public int getResultStackSize() {
+		return _result.stackSize;
+	}
+	
+	ItemIdentifier getResultItem() {
+		return _result.getItem();
+	}
+
+	protected List<Pair<ItemIdentifierStack, IRequestItems>> getComponentItems(
+			int nCraftingSetsNeeded) {
+		List<Pair<ItemIdentifierStack,IRequestItems>> stacks = new ArrayList<Pair<ItemIdentifierStack,IRequestItems>>(_required.size());
+
+
+		// for each thing needed to satisfy this promise
+		for(Pair<ItemIdentifierStack,IRequestItems> stack : _required) {
+			Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
+			pair.getValue1().stackSize *= nCraftingSetsNeeded;
+			stacks.add(pair);
+		}
+		return stacks;
+	}
+
 }

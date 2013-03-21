@@ -13,7 +13,8 @@ public class ItemParts extends LogisticsItem {
 		this.setHasSubtypes(true);
 	}
 	
-    public int getIconFromDamage(int par1) {
+    @Override
+	public int getIconFromDamage(int par1) {
     	switch(par1) {
     	case 0: //bow
     		return Textures.LOGISTICSITEMHUD_PART1_ICONINDEX;

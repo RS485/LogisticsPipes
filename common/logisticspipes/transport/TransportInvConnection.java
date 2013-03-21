@@ -10,6 +10,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 	
 	public TransportInvConnection() {}
 
+	@Override
 	protected boolean isItemExitable(ItemStack stack) {
 		return true;
 	}

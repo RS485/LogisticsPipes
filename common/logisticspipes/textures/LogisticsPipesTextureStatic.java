@@ -81,14 +81,14 @@ public class LogisticsPipesTextureStatic extends FMLTextureFX {
 	        pixels = new int[tileSizeSquare];
 	        //Add Overlay
 	        for (int idx = 0; idx < pixels.length; idx++) {
-	        	double a1 = ((double)(pixelbufferb[idx] >> 24 & 255));
-	        	double r1 = ((double)(pixelbufferb[idx] >> 16 & 255));
-	        	double g1 = ((double)(pixelbufferb[idx] >> 8 & 255));
-	        	double b1 = ((double)(pixelbufferb[idx] >> 0 & 255));
-	        	double a2 = ((double)(pixelbuffera[idx] >> 24 & 255));
-	        	double r2 = ((double)(pixelbuffera[idx] >> 16 & 255));
-	        	double g2 = ((double)(pixelbuffera[idx] >> 8 & 255));
-	        	double b2 = ((double)(pixelbuffera[idx] >> 0 & 255));
+	        	double a1 = (pixelbufferb[idx] >> 24 & 255);
+	        	double r1 = (pixelbufferb[idx] >> 16 & 255);
+	        	double g1 = (pixelbufferb[idx] >> 8 & 255);
+	        	double b1 = (pixelbufferb[idx] >> 0 & 255);
+	        	double a2 = (pixelbuffera[idx] >> 24 & 255);
+	        	double r2 = (pixelbuffera[idx] >> 16 & 255);
+	        	double g2 = (pixelbuffera[idx] >> 8 & 255);
+	        	double b2 = (pixelbuffera[idx] >> 0 & 255);
 
 	        	a1 /= 255;
 	        	r1 /= 255;

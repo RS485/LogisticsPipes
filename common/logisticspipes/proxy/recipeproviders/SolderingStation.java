@@ -15,6 +15,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 		return tile instanceof LogisticsSolderingTileEntity;
 	}
 
+	@Override
 	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
 		if (!(tile instanceof LogisticsSolderingTileEntity))
 			return false;

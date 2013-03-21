@@ -125,7 +125,7 @@ public class ItemModule extends LogisticsItem {
 		private ILogisticsModule getILogisticsModule() {
 			if(moduleClass == null) return null;
 			try {
-				return (ILogisticsModule)moduleClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
+				return moduleClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
 			} catch (IllegalArgumentException e) {
 				e.printStackTrace();
 			} catch (SecurityException e) {

@@ -27,6 +27,7 @@ public class FinalNBTTagCompound extends NBTTagCompound {
 		hashcode = super.hashCode();
 	}
 
+	@Override
 	public int hashCode()
 	{
 		return hashcode;

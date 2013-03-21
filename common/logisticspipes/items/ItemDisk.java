@@ -13,6 +13,7 @@ public class ItemDisk extends LogisticsItem {
 		super(i);
 	}
 	
+	@Override
 	public int getItemStackLimit()
     {
         return 1;

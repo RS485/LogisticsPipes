@@ -76,14 +76,17 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		this.yCenter = (bottom + guiTop) / 2;
 	}
 	
+	@Override
 	public boolean hasSubGui() {
 		return subGui != null;
 	}
 	
+	@Override
 	public SubGuiScreen getSubGui() {
 		return subGui;
 	}
 	
+	@Override
 	public void setSubGui(SubGuiScreen gui) {
 		if(subGui == null) {
 			subGui = gui;
@@ -100,6 +103,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 			subGui.setWorldAndResolution(mc, width, height);
 	}
 	
+	@Override
 	public void resetSubGui() {
 		subGui = null;
 	}
@@ -220,6 +224,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		}
 	}
 
+	@Override
 	protected void mouseClicked(int par1, int par2, int par3) {
 		for(IRenderSlot slot:slots) {
 			int mouseX = par1 - guiLeft;
@@ -250,7 +255,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		int lasty = y1;
 		for (int dx = 0; x1 + dx < x2; dx++){
 			int plotx = x1 + dx;
-			int ploty = y1 + (int)((y2 - y1) / (x2-x1-1)) * dx;
+			int ploty = y1 + (y2 - y1) / (x2-x1-1) * dx;
 			drawPoint(plotx, ploty, color);
 			while(lasty < ploty){
 				drawPoint(plotx,++lasty, color);

@@ -15,6 +15,7 @@ import appeng.api.me.tiles.ITileInterfaceApi;
  */
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
+	public static boolean init = false;
 	private final ITileInterfaceApi _tile;
 	private final boolean _hideOnePerStack;
 
@@ -30,6 +31,7 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean init() {
+		AEInterfaceInventoryHandler.init=true;
 		return true;
 	}
 

@@ -17,6 +17,7 @@ public class Pair4<T1, T2, T3, T4> extends Pair3<T1, T2, T3> {
 		_value4 = value4;
 	}
 	
+	@Override
 	public String toString() {
 		return new StringBuilder("<").append(_value1.toString()).append(",").append(_value2.toString()).append(",").append(_value3.toString()).append(",").append(_value4.toString()).append(">").toString();
 	}

@@ -497,6 +497,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		return getModName() + "(" + getModId() + "):" + getFriendlyName();
 	}
@@ -519,6 +520,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return 0;
 	}
 	
+	@Override
 	public boolean equals(Object that){
 		if (!(that instanceof ItemIdentifier))
 			return false;

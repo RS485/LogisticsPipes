@@ -8,13 +8,16 @@
 
 package logisticspipes.interfaces.routing;
 
+import java.util.List;
+
 import logisticspipes.request.CraftingTemplate;
+import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 
 public interface ICraftItems extends IProvideItems, IRequestItems{
-	void registerExtras(int count);
-	CraftingTemplate addCrafting();
+	void registerExtras(LogisticsPromise promise);
+	CraftingTemplate addCrafting(ItemIdentifier toCraft);
 	//void canCraft(LogisticsTransaction transaction);
-	ItemIdentifier getCraftedItem();
+	List<ItemIdentifier> getCraftedItems();
 	int getTodo();
 }

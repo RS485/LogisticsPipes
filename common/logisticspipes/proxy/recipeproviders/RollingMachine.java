@@ -27,6 +27,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		return true;
 	}
 
+	@Override
 	public boolean canOpenGui(TileEntity tile) {
 		return tileRollingMachineClass.isInstance(tile);
 	}
@@ -56,6 +57,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 	}
 
 
+	@Override
 	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
 		if (!tileRollingMachineClass.isInstance(tile))
 			return false;

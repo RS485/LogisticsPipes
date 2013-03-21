@@ -5,6 +5,7 @@ public abstract class ISmallColorRenderSlot implements IRenderSlot {
 	
 	public abstract boolean drawColor();
 
+	@Override
 	public int getSize() {
 		return 8;
 	}

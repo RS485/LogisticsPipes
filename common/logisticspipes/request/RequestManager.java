@@ -445,19 +445,21 @@ public class RequestManager {
 		boolean done=false;
 		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 		int currentPriority=0;
+		int itemsNeeded = treeNode.getMissingItemCount();
+		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 outer:
 		while(!done) {
+			itemsNeeded = treeNode.getMissingItemCount();
 			
 			/// First: Create a list of all crafters with the same priority (craftersSamePriority).	
 			if(iterAllCrafters.hasNext()) {
 				if(lastCrafter == null){
-					lastCrafter = iterAllCrafters.next();
+					lastCrafter = iterAllCrafters.next(); // a "peek" at the next thing to iterate to.
 				}
-			}else {
-				done=true;				
+			} else {
+				done = true; // all crafters have been checked for crafting.
 			}
 			
-			int itemsNeeded = treeNode.getMissingItemCount();
 			
 			if(lastCrafter!=null && (craftersSamePriority.isEmpty() || (currentPriority == lastCrafter.getValue1().getPriority()))) {
 				currentPriority=lastCrafter.getValue1().getPriority();
@@ -476,12 +478,8 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
-			if(craftersSamePriority == null || craftersSamePriority.isEmpty()) {
-				continue; //nothing at this priority was available for crafting
-			}
 			/// end of crafter prioriy selection.
 
-			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 			if(craftersSamePriority.size() == 1){ // then no need to balance.
 				craftersToBalance.add(craftersSamePriority.poll());
 				// automatically capped at the real amount of extra work.
@@ -541,8 +539,9 @@ outer:
 			if(itemsNeeded <= 0)
 				break outer; // we have everything we need for this crafting request
 
+			if(!craftersToBalance.isEmpty())
+				done = false;
 			// don't clear, because we might have under-requested, and need to consider these again
-			
 			//craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
 		//LogisticsPipes.log.info("done");

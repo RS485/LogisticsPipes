@@ -40,6 +40,8 @@ public class RequestManager {
 		public workWeightedSorter(double distanceWeight){this.distanceWeight=distanceWeight;}
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
+			if(o1.equals(o2))
+				return 0;
 			double c=0;
 			if(o1.destination.getPipe() instanceof IHavePriority) {
 				if(o2.destination.getPipe() instanceof IHavePriority) {
@@ -68,13 +70,12 @@ public class RequestManager {
 			if(distanceWeight != 0) {
 				c += (o1.distanceToDestination - o2.distanceToDestination) * distanceWeight;
 			}
-			if(c==0) {
-				return -flip; // lowest ID first, of same distance.
-			}
-			if(c>0)
-				return (int)(c+0.5)*flip; //round up
-			else
-				return (int)(c-0.5)*flip; //round down
+			double eps = Double.MIN_NORMAL*1024.0;
+			if(c>eps)
+				return flip; //round up
+			if(c<-eps)
+				return -flip;
+			return 0;
 		}
 		
 	}

@@ -40,6 +40,8 @@ public class RequestManager {
 		public workWeightedSorter(double distanceWeight){this.distanceWeight=distanceWeight;}
 		@Override
 		public int compare(ExitRoute o1, ExitRoute o2) {
+			if(o1.equals(o2))
+				return 0;
 			double c=0;
 			if(o1.destination.getPipe() instanceof IHavePriority) {
 				if(o2.destination.getPipe() instanceof IHavePriority) {
@@ -68,13 +70,12 @@ public class RequestManager {
 			if(distanceWeight != 0) {
 				c += (o1.distanceToDestination - o2.distanceToDestination) * distanceWeight;
 			}
-			if(c==0) {
-				return -flip; // lowest ID first, of same distance.
-			}
-			if(c>0)
-				return (int)(c+0.5)*flip; //round up
-			else
-				return (int)(c-0.5)*flip; //round down
+			double eps = Double.MIN_NORMAL*1024.0;
+			if(c>eps)
+				return flip; //round up
+			if(c<-eps)
+				return -flip;
+			return 0;
 		}
 		
 	}
@@ -445,19 +446,21 @@ public class RequestManager {
 		boolean done=false;
 		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 		int currentPriority=0;
+		int itemsNeeded = treeNode.getMissingItemCount();
+		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 outer:
 		while(!done) {
+			itemsNeeded = treeNode.getMissingItemCount();
 			
 			/// First: Create a list of all crafters with the same priority (craftersSamePriority).	
 			if(iterAllCrafters.hasNext()) {
 				if(lastCrafter == null){
-					lastCrafter = iterAllCrafters.next();
+					lastCrafter = iterAllCrafters.next(); // a "peek" at the next thing to iterate to.
 				}
-			}else {
-				done=true;				
+			} else {
+				done = true; // all crafters have been checked for crafting.
 			}
 			
-			int itemsNeeded = treeNode.getMissingItemCount();
 			
 			if(lastCrafter!=null && (craftersSamePriority.isEmpty() || (currentPriority == lastCrafter.getValue1().getPriority()))) {
 				currentPriority=lastCrafter.getValue1().getPriority();
@@ -476,12 +479,8 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
-			if(craftersSamePriority == null || craftersSamePriority.isEmpty()) {
-				continue; //nothing at this priority was available for crafting
-			}
 			/// end of crafter prioriy selection.
 
-			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 			if(craftersSamePriority.size() == 1){ // then no need to balance.
 				craftersToBalance.add(craftersSamePriority.poll());
 				// automatically capped at the real amount of extra work.
@@ -541,8 +540,9 @@ outer:
 			if(itemsNeeded <= 0)
 				break outer; // we have everything we need for this crafting request
 
+			if(!craftersToBalance.isEmpty())
+				done = false;
 			// don't clear, because we might have under-requested, and need to consider these again
-			
 			//craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
 		//LogisticsPipes.log.info("done");

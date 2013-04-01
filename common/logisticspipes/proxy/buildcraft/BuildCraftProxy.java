@@ -19,6 +19,7 @@ import logisticspipes.gates.TriggerCrafting;
 import logisticspipes.gates.TriggerHasDestination;
 import logisticspipes.gates.TriggerNeedsPower;
 import logisticspipes.gates.TriggerSupplierFailed;
+import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
@@ -214,11 +215,31 @@ public class BuildCraftProxy {
 			LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
 		}
 	}
+
+	/**
+	 * Registers a new logistics pipe with buildcraft. The buildcraft implementation does not allow for a new item
+	 * implementation (only the block)
+	 *
+	 * @param key   buildcraft key for the pipe
+	 * @param clas  Class name of the pipe block
+	 * @return the pipe
+	 */
+	public static ItemPipe registerPipe(int key, Class<? extends Pipe> clas) {
+		ItemPipe item = new ItemLogisticsPipe(key, clas);
+
+		BlockGenericPipe.pipes.put(item.itemID, clas);
+
+		Pipe dummyPipe = BlockGenericPipe.createPipe(item.itemID);
+		if (dummyPipe != null) {
+			item.setTextureFile(dummyPipe.getTextureFile());
+			item.setTextureIndex(dummyPipe.getTextureIndexForItem());
+		}
+
+		return item;
+	}
 	
 	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
-		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
-		res.setItemName(clas.getSimpleName());
-		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
+		ItemPipe res = registerPipe (defaultID, clas);
 		
 		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);
 		if(pipe instanceof CoreRoutedPipe) {

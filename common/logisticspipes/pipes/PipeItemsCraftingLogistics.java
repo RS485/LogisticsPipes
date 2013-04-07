@@ -275,6 +275,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			while (extracted.stackSize > 0) {
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
 				numtosend = Math.min(numtosend, nextOrder.getValue1().stackSize); 
+				if(numtosend == 0)
+					break;
 				stacksleft -= 1;
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
@@ -289,6 +291,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
 					} else {
 						processingOrder = false;
+						if(!_extras.isEmpty())
+						nextOrder = _extras.getFirst();
 					}
 					
 				} else {

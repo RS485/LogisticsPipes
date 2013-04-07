@@ -354,6 +354,8 @@ public class RequestTreeNode {
 		
 		//a queue to store the crafters, sorted by todo; we will fill up from least-most in a balanced way.
 		PriorityQueue<CraftingSorterNode> craftersSamePriority = new PriorityQueue<CraftingSorterNode>(5);
+		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
+
 		boolean done=false;
 		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 		int currentPriority=0;
@@ -388,12 +390,11 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
-			if(craftersSamePriority == null || craftersSamePriority.isEmpty()) {
+			if(craftersToBalance==null && (craftersSamePriority == null || craftersSamePriority.isEmpty())) {
 				continue; //nothing at this priority was available for crafting
 			}
 			/// end of crafter prioriy selection.
 
-			ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
 			if(craftersSamePriority.size() == 1){ // then no need to balance.
 				craftersToBalance.add(craftersSamePriority.poll());
 				// automatically capped at the real amount of extra work.
@@ -443,7 +444,7 @@ outer:
 			Iterator<CraftingSorterNode> iter = craftersToBalance.iterator();
 			while(iter.hasNext()){
 				CraftingSorterNode c = iter.next();
-				if(!c.addWorkPromisesToTree()) { // then it ran out of resources
+				if(c.stacksOfWorkRequested>0 && !c.addWorkPromisesToTree()) { // then it ran out of resources
 					iter.remove();								
 				}
 
@@ -454,7 +455,8 @@ outer:
 				break outer; // we have everything we need for this crafting request
 
 			// don't clear, because we might have under-requested, and need to consider these again
-			
+			if(!craftersToBalance.isEmpty())
+				done=false;
 			//craftersSamePriority.clear(); // we've extracted all we can from these priority crafters, and we still have more to do, back to the top to get the next priority level.
 		}
 		//LogisticsPipes.log.info("done");
@@ -530,13 +532,17 @@ outer:
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				treeNode.addPromise(job);
 			} else {
+				//stacksOfWorkRequested=0; // just incase we call it twice.
+				//return true; // don't remove from the list if we have no w
+				
 				//LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
 				//LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 			}
+			boolean isDone = setsToCraft == setsAbleToCraft;
 			stacksOfWorkRequested=0; // just incase we call it twice.
-			if(setsToCraft == 0) // so that we remove this node as failed when there is no work to do.
-				return false;
-			return setsToCraft == setsAbleToCraft;
+//			if(setsToCraft == 0) // so that we remove this node as failed when there is no work to do.
+//				return false;
+			return isDone;
 		}
 
 		@Override

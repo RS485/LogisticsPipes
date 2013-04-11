@@ -15,34 +15,35 @@ import java.util.List;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.RenderItem;
-import net.minecraft.src.Tessellator;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch {
 
 	//protected final IRequestItems _itemRequester;
 	public final EntityPlayer _entityPlayer;
-	protected ItemIdentifier selectedItem = null;
+	protected ItemIdentifierStack selectedItem = null;
 	public final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";
@@ -56,6 +57,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	
 	protected int lastClickedx = 0;
 	protected int lastClickedy = 0;
+	protected int lastClickedk = 0;
 	
 	protected final String _title = "Request items";
 	protected boolean clickWasButton = false;
@@ -87,6 +89,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			dimension = dimensioncache;
 		}
 		_entityPlayer = entityPlayer;
+		this.inventorySlots = new DummyContainer(entityPlayer.inventory, null);
 	}
 
 	public abstract void refreshItems();
@@ -95,8 +98,29 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		listbyserver = true;
 		_allItems.clear();
 		_allItems.addAll(packet._allItems);
+		keepLastItemSelected();
 	}
-	
+
+	private void keepLastItemSelected() {
+		if(selectedItem == null) return;
+		int itemindex = 0;
+		int panelxSize = 20;
+		int panelySize = 20;
+		ItemIdentifier selected = selectedItem.getItem();
+		for(ItemIdentifierStack itemStack : _allItems) {
+			ItemIdentifier item = itemStack.getItem();
+			if(!itemSearched(item)) continue;
+			if(item.equals(selected)) {
+				page = itemindex / 70;
+				lastClickedy = guiTop + 18 + panelySize * ((itemindex % 70) / 10);
+				lastClickedx = guiLeft + 10 + panelxSize * (itemindex % 10);
+				return;
+			}
+			itemindex++;
+		}
+	}
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -104,14 +128,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		controlList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
 		controlList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
 		controlList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
-		controlList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
-		controlList.add(new SmallGuiButton(10, xCenter - 41, bottom - 15, 26, 10, "---")); // -64
-		controlList.add(new SmallGuiButton(4, xCenter - 41, bottom - 26, 15, 10, "--")); // -10
-		controlList.add(new SmallGuiButton(5, xCenter - 25, bottom - 26, 10, 10, "-")); // -1
-		controlList.add(new SmallGuiButton(6, xCenter + 16, bottom - 26, 10, 10, "+")); // +1
-		controlList.add(new SmallGuiButton(7, xCenter + 28, bottom - 26, 15, 10, "++")); // +10
-		controlList.add(new SmallGuiButton(11, xCenter + 16, bottom - 15, 26, 10, "+++")); // +64
-		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.displayPopup)); // Popup
+		controlList.add(new SmallGuiButton(10, xCenter - 51, bottom - 15, 26, 10, "---")); // -64
+		controlList.add(new SmallGuiButton(4, xCenter - 51, bottom - 26, 15, 10, "--")); // -10
+		controlList.add(new SmallGuiButton(5, xCenter - 35, bottom - 26, 10, 10, "-")); // -1
+		controlList.add(new SmallGuiButton(6, xCenter + 26, bottom - 26, 10, 10, "+")); // +1
+		controlList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
+		controlList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
+		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
 	}
 	
 	@Override
@@ -125,7 +148,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		//drawDefaultBackground();
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 
-		maxPage = (int) Math.floor((getSearchedItemNumber() - 1)  / 70F);
+		maxPage = (getSearchedItemNumber() - 1) / 70;
 		if(maxPage == -1) maxPage = 0;
 		if (page > maxPage){
 			page = maxPage;
@@ -135,13 +158,13 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
 		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , guiTop + 6 , 0x404040);
 		
-		if(controlList.get(10) instanceof GuiCheckBox && ((GuiCheckBox)controlList.get(10)).getState()) {
+		if(controlList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)controlList.get(9)).getState()) {
 			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
 			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
 		}
 		
-		String StackrequestCount = ""+(requestCount/64) + "+" + (requestCount % 64);
+		String StackrequestCount = ""+(requestCount/getStackAmount()) + "+" + (requestCount % getStackAmount());
 		
 		fontRenderer.drawString(requestCount + "", xCenter - fontRenderer.getStringWidth(requestCount+"") / 2, bottom - 24, 0x404040);
 		fontRenderer.drawString(StackrequestCount + "", xCenter - fontRenderer.getStringWidth(StackrequestCount+"") / 2, bottom - 14, 0x404040);
@@ -174,14 +197,16 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				editsearch = true;
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
+				if(lastClickedk == 1) {
+					searchinput1 = "";
+					searchinput2 = "";
+				}
 			} else {
 				editsearch = false;
 			}
 		}
 		
 		int ppi = 0;
-		int row = 0;
-		int column = 0;
 		
 		int panelxSize = 20;
 		int panelySize = 20;
@@ -209,15 +234,16 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
             var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
             var9.draw();
 		} else {
-			long starttime = System.currentTimeMillis();
 			for(ItemIdentifierStack itemStack : _allItems) {
 				ItemIdentifier item = itemStack.getItem();
 				if(!itemSearched(item)) continue;
 				ppi++;
 				
 				if (ppi <= 70 * page) continue;
-				if (ppi > 70 * (page+1)) continue;
-				ItemStack st = itemStack.makeNormalStack();
+				if (ppi > 70 * (page+1)) break;
+				int row = ((ppi - 1) % 70) / 10;
+				int column = (ppi - 1) % 10;
+				ItemStack st = itemStack.unsafeMakeNormalStack();
 				int x = guiLeft + 10 + panelxSize * column;
 				int y = guiTop + 18 + panelySize * row;
 	
@@ -235,40 +261,19 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				
 				if (lastClickedx >= x && lastClickedx < x + panelxSize &&
 						lastClickedy >= y && lastClickedy < y + panelySize){
-					selectedItem = item;
+					selectedItem = itemStack;
 					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
 					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
 					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-				}
-				/*
-				renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-				String s;
-				if (st.stackSize == 1){
-					s = "";
-				} else if (st.stackSize < 1000) {
-					s = st.stackSize + "";
-				} else if (st.stackSize < 1000000){
-					s = st.stackSize / 1000 + "K";
-				} else {
-					s = st.stackSize / 1000000 + "M";
-				}
-					
-				GL11.glDisable(2896 /*GL_LIGHTING* /);
-				GL11.glDisable(2929 /*GL_DEPTH_TEST* /);			
-				fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-	            GL11.glEnable(2929 /*GL_DEPTH_TEST* /);
-				GL11.glEnable(2896 /*GL_LIGHTING* /);
-				*/
-				column++;
-				if (column == 10){
-					row++;
-					column = 0;
+					specialItemRendering(item, x, y);
 				}
 			}
 			BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, this, page, guiLeft + 10, guiTop + 18, 10, 70, panelxSize, panelySize, mc, true, false);
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}
+	
+	public abstract void specialItemRendering(ItemIdentifier item, int x, int y);
 	
 	@Override
 	public void drawGuiContainerForegroundLayer(int par1, int par2) {
@@ -308,13 +313,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		clickWasButton = false;
 		editsearchb = true;
 		super.mouseClicked(i, j, k);
-		if ((!clickWasButton & i > guiLeft & i < right && j > guiTop && j < bottom) || editsearch){
+		if ((!clickWasButton && i >= guiLeft + 10 && i < right - 10 && j >= guiTop + 18 && j < bottom - 63) || editsearch){
 			if(!editsearchb) {
 				editsearch = false;
 			}
 			selectedItem = null;
 			lastClickedx = i;
 			lastClickedy = j;
+			lastClickedk = k;
 		}
 	}
 	
@@ -328,7 +334,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			return;
 		}
 		
-		if (isShift && !isControl){
+		if (isShift && !isControl && isShiftPageChange()){
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_PAGE_INVERTWHEEL){
 					prevPage();
@@ -340,52 +346,68 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					nextPage();
 				} else {
 					prevPage();
+				}
+			}
+		} else if (isShift && !isControl && !isShiftPageChange()){
+			if (wheel > 0){
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(4)));
+				} else {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= wheel * getAmountChangeMode(4);
+				}
+			} else {
+				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
+					if(requestCount == 1) requestCount-=1;
+					requestCount+= -(wheel * getAmountChangeMode(4));	
+				} else {
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(4));
 				}
 			}
 		} else if(!isControl) {
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel);
+					requestCount = Math.max(1, requestCount - (wheel * getAmountChangeMode(1)));
 				} else {
-					requestCount+= wheel;
+					requestCount+= wheel * getAmountChangeMode(1);
 				}
 			} else {
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount+= -wheel;	
+					requestCount+= -(wheel * getAmountChangeMode(1));	
 				} else {
-					requestCount = Math.max(1, requestCount + wheel);
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(1));
 				}
 			}
 		} else if(isControl && !isShift) {
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel*10);
+					requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(2));
 				} else {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= wheel*10;
+					requestCount+= wheel * getAmountChangeMode(2);
 				}
 			} else {
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= -wheel*10;	
+					requestCount+= -wheel * getAmountChangeMode(2);	
 				} else {
-					requestCount = Math.max(1, requestCount + wheel*10);
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(2));
 				}
 			}
 		} else if(isControl && isShift) {
 			if (wheel > 0){
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
-					requestCount = Math.max(1, requestCount - wheel*64);
+					requestCount = Math.max(1, requestCount - wheel * getAmountChangeMode(3));
 				} else {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= wheel*64;
+					requestCount+= wheel * getAmountChangeMode(3);
 				}
 			} else {
 				if (!Configs.LOGISTICS_ORDERER_COUNT_INVERTWHEEL) {
 					if(requestCount == 1) requestCount-=1;
-					requestCount+= -wheel*64;	
+					requestCount+= -wheel * getAmountChangeMode(3);	
 				} else {
-					requestCount = Math.max(1, requestCount + wheel*64);
+					requestCount = Math.max(1, requestCount + wheel * getAmountChangeMode(3));
 				}
 			}
 		}
@@ -403,17 +425,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			ArrayList<String> msg = new ArrayList<String>();
 			msg.add("You are missing:");
 			for (ItemMessage item : items){
-				if(!Configs.displayPopup) {
+				if(!Configs.DISPLAY_POPUP) {
 					player.addChatMessage("Missing: " + item.toString());
 				} else {
 					msg.add(item.toString());
 				}
 			}
-			if(Configs.displayPopup) {
+			if(Configs.DISPLAY_POPUP) {
 				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
 			}
 		} else {
-			if(Configs.displayPopup) {
+			if(Configs.DISPLAY_POPUP) {
 				if(control.hasSubGui()) {
 					ISubGuiControler newcontroller = control;
 					while(newcontroller.hasSubGui()) {
@@ -431,7 +453,28 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		}
 	}
-	
+
+	public void handleSimulateAnswer(List<ItemMessage> used, List<ItemMessage> missing, ISubGuiControler control, EntityPlayer player) {
+		if(Configs.DISPLAY_POPUP) {
+			if(control.hasSubGui()) {
+				ISubGuiControler newcontroller = control;
+				while(newcontroller.hasSubGui()) {
+					newcontroller = newcontroller.getSubGui();
+				}
+				newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used.toArray(), "Missing: ", missing.toArray()));
+			} else {
+				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used.toArray(), "Missing: ", missing.toArray()));
+			}
+		} else {
+			for(ItemMessage item:used) {
+				player.addChatMessage("Component: " + item);
+			}
+			for(ItemMessage item:missing) {
+				player.addChatMessage("Missing: " + item);
+			}
+		}
+	}
+
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if(editsearch) {
@@ -452,7 +495,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				}
 				refreshItems();
 			} else {*/
-				PacketDispatcher.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem,requestCount).getPacket());
+				MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
 				refreshItems();
 			//}
 		} else if (guibutton.id == 1){
@@ -462,30 +505,50 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		} else if (guibutton.id == 3) {
 			refreshItems();
 		} else if (guibutton.id == 10) {
-			requestCount = Math.max(1, requestCount - 64);
+			requestCount = Math.max(1, requestCount - getAmountChangeMode(3));
 		} else if (guibutton.id == 4) {
-			requestCount = Math.max(1, requestCount - 10);
+			requestCount = Math.max(1, requestCount - getAmountChangeMode(2));
 		} else if (guibutton.id == 5) {
-			requestCount = Math.max(1, requestCount - 1);
+			requestCount = Math.max(1, requestCount - getAmountChangeMode(1));
 		} else if (guibutton.id == 6) {
-			requestCount+=1;
+			requestCount+=getAmountChangeMode(1);
 		} else if (guibutton.id == 7) {
 			if(requestCount == 1) {
 				requestCount-=1;
 			}
-			requestCount+=10;
+			requestCount+=getAmountChangeMode(2);
 		} else if (guibutton.id == 11) {
 			if(requestCount == 1) {
 				requestCount-=1;
 			}
-			requestCount+=64;
+			requestCount+=getAmountChangeMode(3);
 		} else if (guibutton.id == 8) {
-			GuiCheckBox button = (GuiCheckBox)controlList.get(10);
-			Configs.displayPopup = button.change();
+			GuiCheckBox button = (GuiCheckBox)guibutton;
+			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
+		} else if (guibutton.id == 13 && selectedItem != null){
+			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount, NetworkConstants.REQUEST_COMPONENTS).getPacket());
 		}
 		
 		super.actionPerformed(guibutton);
+	}
+	
+	protected int getAmountChangeMode(int step) {
+		if(step == 1) {
+			return 1;
+		} else if(step == 2) {
+			return 10;
+		} else {
+			return 64;
+		}
+	}
+	
+	protected int getStackAmount() {
+		return 64;
+	}
+	
+	protected boolean isShiftPageChange() {
+		return true;
 	}
 	
 	private void nextPage(){
@@ -503,7 +566,25 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			page = maxPage;
 		}
 	}
-	
+
+	@Override
+	public void handleKeyboardInputSub() {
+		if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+				if(selectedItem != null && selectedItem.stackSize != 0) {
+					requestCount = selectedItem.stackSize;
+				}
+			} else if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+				requestCount = 1;
+				selectedItem = null;
+				lastClickedx = -10000000;
+				lastClickedy = -10000000;
+				lastClickedk = 0;
+			}
+		}
+		super.handleKeyboardInputSub();
+	}
+
 	@Override
 	protected void keyTyped(char c, int i) {
 		if(editsearch) {

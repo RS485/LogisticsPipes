@@ -3,8 +3,8 @@ package logisticspipes.proxy.recipeproviders;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.TileEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.factory.TileAutoWorkbench;
 
 public class AutoWorkbench implements ICraftingRecipeProvider {
@@ -30,6 +30,8 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 				break;
 			}
 			final ItemStack newStack = bench.getStackInSlot(i) == null ? null : bench.getStackInSlot(i).copy();
+			if(newStack!=null && newStack.stackSize>1) // just incase size == 0 somehow.
+			newStack.stackSize=1;
 			inventory.setInventorySlotContents(i, newStack);
 		}
 

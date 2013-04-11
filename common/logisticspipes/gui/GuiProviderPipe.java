@@ -13,17 +13,15 @@ import logisticspipes.logic.LogicProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvider{
-	private IInventory playerInventory;
 	private IInventory dummyInventory;
 	private LogicProvider logic; 
 	
@@ -43,7 +41,6 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		this.inventorySlots = dummy;
 		
-		this.playerInventory = playerInventory;
 		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
@@ -51,6 +48,7 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -64,10 +62,10 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 	}
@@ -76,28 +74,11 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		((GuiButton)controlList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
 	}
 	
-	private String getExtractionModeString(){
-		switch(logic.getExtractionMode()){
-			case Normal:
-				return "Normal";
-			case LeaveFirst:
-				return "Leave 1st stack";
-			case LeaveLast: 
-				return "Leave last stack";
-			case LeaveFirstAndLast:
-				return "Leave first & last stack";
-			case Leave1PerStack:
-				return "Leave 1 item per stack";
-			default:
-				return "Unknown!";
-		}
-	}
-	
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(dummyInventory.getInvName(), xSize / 2 - fontRenderer.getStringWidth(dummyInventory.getInvName())/2, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Mode: " + getExtractionModeString(), 9, ySize - 112, 0x404040);
+		fontRenderer.drawString("Mode: " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 	
 	@Override

@@ -1,8 +1,10 @@
 package logisticspipes.pipes;
 
+import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 
-import logisticspipes.config.Textures;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -10,23 +12,30 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInvContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.CraftingPipeMk3Transport;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import buildcraft.core.inventory.Transactor;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.Position;
+import buildcraft.core.EntityPassiveItem;
+import buildcraft.core.utils.Utils;
+import buildcraft.transport.PipeTransportItems;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	
 	public SimpleInventory inv = new SimpleInventory(16, "Buffer", 127);
 	
-	public LinkedList<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
+	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
 	
 	public PipeItemsCraftingLogisticsMk3(int itemID) {
@@ -36,37 +45,77 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		//Add from interal buffer
-		LinkedList<AdjacentTile> crafters = locateCrafters();
-		if(crafters.size() < 1) return;
+	protected int neededEnergy() {
+		return 20;
+	}
+
+	@Override
+	protected int itemsToExtract() {
+		return 128;
+	}
+	
+	@Override
+	protected int stacksToExtract() {
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return 8;
+		}
+		return 2;
+	}
+	
+	@Override
+	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
+		if(inv.isEmpty()) return;
+		if(worldObj.getWorldTime() % 6 != 0) return;
+		//Add from internal buffer
+		List<AdjacentTile> crafters = locateCrafters();
+		if(crafters.size() < 1) {sendBuffer();return;}
 		boolean change = false;
-		for(AdjacentTile tile:locateCrafters()) {
+		for(AdjacentTile tile : crafters) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
 				ItemStack slot = inv.getStackInSlot(i);
 				if(slot == null) continue;
-				//IC2 workAround
-				for(int j=0;j < 2 && !change;j++) {
-					if(j == 1 &&SimpleServiceLocator.electricItemProxy.isElectricItem(slot) && slot.hasTagCompound() && slot.getTagCompound().getName().equals("")) {
-						slot.getTagCompound().setName("tag");
-					}
-					ItemStack added = Transactor.getTransactorFor(tile.tile).add(slot, tile.orientation.reverse(), true);
-					slot.stackSize -= added.stackSize;
-					if(added.stackSize != 0) {
-						change = true;
-					}
-					if(slot.stackSize <= 0) {
-						inv.setInventorySlotContents(i, null);
-					} else {
-						inv.setInventorySlotContents(i, slot);
-					}
+				ForgeDirection insertion = tile.orientation.getOpposite();
+				if(getUpgradeManager().hasSneakyUpgrade()) {
+					insertion = getUpgradeManager().getSneakyOrientation();
+				}
+				ItemStack toadd = slot.copy();
+				toadd.stackSize = Math.min(toadd.stackSize, toadd.getMaxStackSize());
+				toadd.stackSize = Math.min(toadd.stackSize, ((IInventory)tile.tile).getInventoryStackLimit());
+				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd, insertion, true);
+				slot.stackSize -= added.stackSize;
+				if(added.stackSize != 0) {
+					change = true;
+				}
+				if(slot.stackSize <= 0) {
+					inv.setInventorySlotContents(i, null);
+				} else {
+					inv.setInventorySlotContents(i, slot);
 				}
 			}
+		}
+		if(!_orderManager.hasOrders()){
+			sendBuffer();
 		}
 		if(change) {
 			inv.onInventoryChanged();
 		}
+	}
+
+	private void sendBuffer() {
+		for(int i=0;i<inv.getSizeInventory();i++) {
+			ItemStack stackToSend = inv.getStackInSlot(i);
+			if(stackToSend==null) continue;
+			Position p = new Position(container.xCoord, container.yCoord, container.zCoord, null);
+			Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, ForgeDirection.UNKNOWN);
+			EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
+			entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+			((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
+			inv.setInventorySlotContents(i, null);
+			break;
+		}
+		// TODO Auto-generated method stub
+		
 	}
 
 	@Override
@@ -76,12 +125,8 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public int getCenterTexture() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
-		} else {
-			return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE_DIS;
-		}
+	public TextureType getCenterTexture() {
+		return Textures.LOGISTICSPIPE_CRAFTERMK3_TEXTURE;
 	}
 
 	@Override
@@ -105,12 +150,12 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		super.playerStartWatching(player, mode);
 		if(mode == 1) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
 		}
 	}
 
 	@Override
-	public void setReceivedChestContent(LinkedList<ItemIdentifierStack> list) {
+	public void setReceivedChestContent(Collection<ItemIdentifierStack> list) {
 		bufferList.clear();
 		bufferList.addAll(list);
 	}

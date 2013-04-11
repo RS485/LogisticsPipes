@@ -1,15 +1,12 @@
 package logisticspipes.gui.orderer;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class NormalGuiOrderer extends GuiOrderer {
 
@@ -19,9 +16,6 @@ public class NormalGuiOrderer extends GuiOrderer {
 		CraftOnly,
 	}
 
-	private HashMap<ItemIdentifier, Integer> _availableItems;
-	private LinkedList<ItemIdentifier> _craftableItems;
-	
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
 	
 	public NormalGuiOrderer(int x, int y, int z, int dim, EntityPlayer entityPlayer) {
@@ -29,8 +23,11 @@ public class NormalGuiOrderer extends GuiOrderer {
 		refreshItems();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void initGui() {
 		super.initGui();
+		controlList.add(new SmallGuiButton(3, guiLeft + 10, bottom - 15, 46, 10, "Refresh")); // Refresh
+		controlList.add(new SmallGuiButton(13,  guiLeft + 10, bottom - 28, 46, 10, "Content")); // Component
 		controlList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
 	}
 	
@@ -50,7 +47,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 				integer = 3;
 			}
 			integer += (dimension * 10);
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
 	}
 
 	protected void actionPerformed(GuiButton guibutton) {
@@ -75,4 +72,7 @@ public class NormalGuiOrderer extends GuiOrderer {
 			refreshItems();
 		}
 	}
+
+	@Override
+	public void specialItemRendering(ItemIdentifier item, int x, int y) {}
 }

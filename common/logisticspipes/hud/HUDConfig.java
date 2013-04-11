@@ -3,8 +3,8 @@ package logisticspipes.hud;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 public class HUDConfig {
 	
@@ -15,6 +15,7 @@ public class HUDConfig {
 		stack.setTagCompound(getTag());
 	}
 	
+	@SuppressWarnings("rawtypes")
 	public HUDConfig(NBTTagCompound tag) {
 		configTag = tag;
 		if(configTag == null) {

@@ -6,7 +6,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.AdjacentTile;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 
 /**
@@ -28,21 +28,22 @@ public class PipeTransportLayer extends TransportLayer{
 	
 	
 	@Override
-	public Orientations itemArrived(IRoutedItem item) {
+	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
 		if (item.getItemStack() != null){
 			_trackStatistics.recievedItem(item.getItemStack().stackSize);
 		}
 		
-		item.setArrived(); //NOT TESTED
+		item.setArrived(true);
 		this._router.inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
 		
 		LinkedList<AdjacentTile> adjacentEntities = _worldAccess.getConnectedEntities();
-		LinkedList<Orientations> possibleOrientations = new LinkedList<Orientations>();
+		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<ForgeDirection>();
 		
 		// 1st prio, deliver to adjacent IInventories
 		
 		for (AdjacentTile tile : adjacentEntities){
 			if (tile.tile instanceof TileGenericPipe) continue;
+			if(denyed != null && denyed.equals(tile.orientation)) continue;
 			
 			CoreRoutedPipe pipe = _router.getPipe();
 			if(pipe != null) {
@@ -51,10 +52,10 @@ public class PipeTransportLayer extends TransportLayer{
 				}
 			}
 			
-			possibleOrientations.add(tile.orientation);
+			possibleForgeDirection.add(tile.orientation);
 		}
-		if (possibleOrientations.size() != 0){
-			return possibleOrientations.get(_worldAccess.getRandomInt(possibleOrientations.size()));
+		if (possibleForgeDirection.size() != 0){
+			return possibleForgeDirection.get(_worldAccess.getRandomInt(possibleForgeDirection.size()));
 		}
 		
 		// 2nd prio, deliver to non-routed exit
@@ -68,15 +69,15 @@ public class PipeTransportLayer extends TransportLayer{
 				}
 			}
 			
-			possibleOrientations.add(tile.orientation);
+			possibleForgeDirection.add(tile.orientation);
 		}
 		// 3rd prio, drop item
 		
-		if (possibleOrientations.size() == 0){
+		if (possibleForgeDirection.size() == 0){
 			return null;
 		}
 		
-		return possibleOrientations.get(_worldAccess.getRandomInt(possibleOrientations.size()));
+		return possibleForgeDirection.get(_worldAccess.getRandomInt(possibleForgeDirection.size()));
 	}
 
 

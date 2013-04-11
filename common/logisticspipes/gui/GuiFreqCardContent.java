@@ -1,19 +1,30 @@
 package logisticspipes.gui;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 
 public class GuiFreqCardContent extends KraphtBaseGuiScreen {
 
 	public GuiFreqCardContent(EntityPlayer player, IInventory card) {
 		super(180, 130, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, card);
-		dummy.addRestrictedSlot(0, card, 82, 15, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+		dummy.addRestrictedSlot(0, card, 82, 15, new ISlotCheck() {
+			@Override
+			public boolean isStackAllowed(ItemStack itemStack) {
+				if(itemStack == null) return false;
+				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+				if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+				return true;
+			}
+		});
 		dummy.addNormalSlotsForPlayerInventory(10, 45);
 		this.inventorySlots = dummy;
 	}

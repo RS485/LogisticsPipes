@@ -2,24 +2,25 @@ package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.Material;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
-import cpw.mods.fml.common.Side;
-import cpw.mods.fml.common.asm.SideOnly;
+import logisticspipes.textures.Textures;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsSolidBlock extends BlockContainer {
 
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
+	public static final int LOGISTICS_SECURITY_STATION = 2;
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -41,6 +42,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return true;
 			case LOGISTICS_POWER_JUNCTION:
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Power_Junction_ID, par1World, par2, par3, par4);
+				return true;
+			case LOGISTICS_SECURITY_STATION:
+				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Security_Station_ID, par1World, par2, par3, par4);
 				return true;
 				default:break;
 			}
@@ -110,6 +114,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 					instance = new LogisticsPowerJuntionTileEntity_BuildCraft();
 				}
 	    		return instance;
+	    	case LOGISTICS_SECURITY_STATION:
+	    		return new LogisticsSecurityTileEntity();
         	default: 
         		return null;
         }
@@ -159,6 +165,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				case 3:
 					return front;
 				}
+				return 16;
 			case 3: //West
 				switch(rotation) {
 				case 0:
@@ -206,6 +213,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return 5;
 			default: //Front
 				return 6;
+			}
+		case LOGISTICS_SECURITY_STATION:
+			switch (side) {
+			case 1: //TOP
+				return 20;
+			case 0: //Bottom
+				return 21;
+			default: //Front
+				return 22;
 			}
 		default:
 			return 0;

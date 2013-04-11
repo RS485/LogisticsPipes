@@ -10,11 +10,14 @@ package logisticspipes.logisticspipes;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.Delayed;
 
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
+import logisticspipes.utils.ItemIdentifierStack;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 
@@ -23,7 +26,7 @@ import buildcraft.core.EntityPassiveItem;
  * @author Krapht
  *
  */
-public interface IRoutedItem {
+public interface IRoutedItem extends Delayed{
 	
 	public enum TransportMode {
 		Unknown,
@@ -32,11 +35,15 @@ public interface IRoutedItem {
 		Active
 	}
 	
-	public UUID getDestination();
-	public void setDestination(UUID destination);
-	public void changeDestination(UUID destination);
-	public UUID getSource();
-	public void setSource(UUID source);
+	public int getDestination();
+	public UUID getDestinationUUID();
+	public void setDestination(int destination);
+	public void clearDestination();
+	
+	public void addRelayPoints(List<IRelayItem> relays);
+	public void itemRelayed();
+	public boolean isItemRelayed();
+	public void replaceRelayID(int newId);
 	
 //	public boolean isPassive();
 //	public void setPassive(boolean isPassive);
@@ -48,27 +55,29 @@ public interface IRoutedItem {
 	
 	public void setDoNotBuffer(boolean doNotBuffer);
 	public boolean getDoNotBuffer();
-	
+
+	public int getBufferCounter();
+	public void setBufferCounter(int counter);
+
 	public ItemStack getItemStack();
+	public void setItemStack(ItemStack item);
 	
 	//public void setSpeedBoost(float multiplier);
 	//public float getSpeedBoost();
 	
 	public EntityPassiveItem getEntityPassiveItem();
-	public IRoutedItem getNewUnRoutedItem();
 	public IPipedItem getNewEntityPassiveItem();
 	
-	@Deprecated
-	public void setArrived();
+	public void setArrived(boolean flag);
+	public boolean getArrived();
 	
-	public IRoutedItem split(World worldObj, int itemsToTake, Orientations orientation);
+	public void split(World worldObj, int itemsToTake, ForgeDirection orientation);
 	public void SetPosition(double x, double y, double z);
 	
-	public boolean isReRoute();
-	public void setReRoute(boolean flag);
-	
 	public void addToJamList(IRouter router);
-	public List<UUID> getJamList();
+	public List<Integer> getJamList();
 	
-	public boolean isUnRouted();
+	public IRoutedItem getCopy();
+	public void checkIDFromUUID();
+	ItemIdentifierStack getIDStack();
 }

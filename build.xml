@@ -1,242 +1,305 @@
 <project name="LogisticsPipes" basedir="../" default="main">
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-			<pathelement location="/usr/share/java/ant-contrib.jar"/>
-			<pathelement location="/usr/share/java/commons-httpclient.jar"/>
-		</classpath>
-    </taskdef>
-    <property environment="env" />
+	<property environment="env"/>
 
-    <!-- Properties -->
-    
-    <property name="build.dir"           value="build" />
-    <property name="src.dir"             value="src" />
-    
-    <property name="download.dir"        value="download" />
-    <property name="files.minecraft.dir" value="jars" />
-    
-    <property name="classes.dir"         value="${build.dir}/classes" />
-    <property name="jar.dir"             value="${build.dir}/dist" />
-          
-    <property name="mcp.dir"             value="${build.dir}/mcp" />
-    <property name="forge.dir"           value="${mcp.dir}/forge" />
-    <property name="buildcraft.dir"      value="${mcp.dir}/buildcraft" />
-    <property name="forestry.dir"        value="${mcp.dir}/forestry" />
-    <property name="ic2.dir"             value="${mcp.dir}/ic2" />
-    <property name="cc.dir"              value="${mcp.dir}/cc" />
-      
-    <property name="clientsrc.dir"       value="${mcp.dir}/src/minecraft" />
-    <property name="serversrc.dir"       value="${mcp.dir}/src/minecraft_server" />
-    <property name="commonsrc.dir"       value="${mcp.dir}/src/common" />
-    
-    <property name="downloadserver"      value="http://www.theZorro266.com" />
-    <property name="downloadserver.dir"  value="rs485/" />
-    <property name="downloadserver.full" value="${downloadserver}/${downloadserver.dir}" />
-          
-    <property name="mcp.version"         value="7.19" />
-    <property name="forge.version"       value="6.0.1.343" />
-    <property name="bc.version"          value="fbd0fa7" />
-    <property name="forestry.version"    value="1.5.0.1" />
-    <property name="ic2.version"         value="1.108.52-lf" />
-    <property name="cc.version"          value="1.41" />
-    <property name="lp.version"          value="0.6.0" />
-    <!-- <property name="lp.version.full"     value="${lp.version}.${BUILD_NUMBER}" /> -->
-    <property name="lp.version.full"     value="${lp.version}.pre2" />
-    
-    <echo message="Starting build for ${lp.version.full}" />
+	<!-- Properties -->
+
+	<property name="build.dir"            value="build"/>
+	<property name="src.dir"              value="src"/>
+	<property name="sign.dir"             value="/home/jenkins/.sign"/>
+
+	<property name="download.dir"         value="download"/>
+	<property name="files.minecraft.dir"  value="jars"/>
+
+	<property name="classes.dir"          value="${build.dir}/classes"/>
+	<property name="jar.dir"              value="${build.dir}/dist"/>
+	<property name="lib.dir"              value="${build.dir}/lib"/>
+
+	<property name="mcp.dir"              value="${build.dir}/mcp"/>
+	<property name="forge.dir"            value="${mcp.dir}/forge"/>
+	<property name="buildcraft.dir"       value="${mcp.dir}/buildcraft"/>
+	<property name="forestry.dir"         value="${mcp.dir}/forestry"/>
+	<property name="ic2.dir"              value="${mcp.dir}/ic2"/>
+	<property name="cc.dir"               value="${mcp.dir}/cc"/>
+
+	<property name="clientsrc.dir"        value="${mcp.dir}/src/minecraft"/>
+	<property name="commonsrc.dir"        value="${clientsrc.dir}"/>
+
+	<property name="downloadserver"       value="http://www.theZorro266.com"/>
+	<property name="downloadserver.dir"   value="rs485/"/>
+	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
+
+	<property name="antcont.version"      value="1.0b2"/>
+	<property name="mcp.version"          value="726"/>
+	<property name="mc.version"           value="1.4.7"/>
+	<property name="forge.version"        value="6.6.0.497"/>
+	<property name="bc.version"           value="3.4.1"/>
+	<property name="forestry.version"     value="1.7.0.0"/>
+	<property name="ic2.version"          value="1.112.189-lf"/>
+	<property name="cc.version"           value="1.48pr2"/>
+	<property name="lp.version"           value="0.7.0"/>
 	
-    <!-- Targets -->
-    
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-    </target>
-    
-    <target name="setup">
-        
-        <mkdir dir="${download.dir}"/>
-        
-        <get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}minecraftforge-src-${forge.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        <get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True" />
-        
-		<echo message="Download finished"/>
-		
-        <unzip dest="${mcp.dir}">
-            <fileset dir="${download.dir}">
-                <include name="mcp${mcp.version}.zip"/>
-            </fileset>
-        </unzip>
-        
-        <unzip dest="${mcp.dir}">
-            <fileset dir="${download.dir}">
-                <include name="minecraftforge-src-${forge.version}.zip"/>
-            </fileset>
-        </unzip>
-        
-        <unzip dest="${buildcraft.dir}">
-            <fileset dir="${download.dir}">
-                <include name="buildcraft-src-${bc.version}.zip"/>
-            </fileset>
-        </unzip>
-        
-        <unzip dest="${forestry.dir}">
-            <fileset dir="${download.dir}">
-                <include name="forestry-api-${forestry.version}.zip"/>
-            </fileset>
-        </unzip>
-        
-        <unzip dest="${ic2.dir}">
-            <fileset dir="${download.dir}">
-                <include name="industrialcraft-2-api_${ic2.version}.zip"/>
-            </fileset>
-        </unzip>
-        
-        <unzip dest="${cc.dir}">
-            <fileset dir="${download.dir}">
-                <include name="ComputerCraftAPI${cc.version}.zip"/>
-            </fileset>
-        </unzip>
-        
-		<echo message="Unpacking finished"/>
-		
-        <copy todir="${mcp.dir}/jars">
-            <fileset dir="${files.minecraft.dir}"/>
-        </copy>
-        
-        <chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
-        <chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
-        <chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
-        <chmod file="${mcp.dir}/reobfuscate.sh" perm="+x"/>
-        <chmod file="${forge.dir}/install.sh" perm="+x"/>
-		
-		<!-- if your building on OSX these 2 should be executable -->
-        <chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x" />
-        <chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x" />
+	<!-- Targets -->
+	<target name="init-msg">
+		<echo message="Starting build for ${lp.version.full} for MC ${mc.version} for BC ${bc.version}"/>
+	</target>
+	
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+	</target>
 
-        <!-- Install forge -->
-        <exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c install.cmd"/>
-        </exec>
-        
-        <exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg value="install.sh" />
-        </exec>
-        
+	<target name="setup">
+		<mkdir dir="${download.dir}"/>
+
+		<get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
+
+		<echo message="Download finished"/>
+
+
+		<unzip dest="${lib.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="ant-contrib-${antcont.version}-bin.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="mcp${mcp.version}.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${buildcraft.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="buildcraft-src-${bc.version}.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${forestry.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="forestry-api-${forestry.version}.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${ic2.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="industrialcraft-2-api_${ic2.version}.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${cc.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="ComputerCraftAPI${cc.version}.zip"/>
+			</fileset>
+		</unzip>
+
+		<echo message="Unpacking finished"/>
+
+		<chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
+		<chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
+		<chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
+		<chmod file="${mcp.dir}/reobfuscate.sh" perm="+x"/>
+		<chmod file="${forge.dir}/install.sh" perm="+x"/>
+
+		<!-- if your building on OSX these 2 should be executable -->
+		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x"/>
+		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x"/>
+
+		<!-- Install forge -->
+		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c install.cmd"/>
+		</exec>
+
+		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg value="install.sh"/>
+		</exec>
+
 		<echo message="Decompile finished"/>
-		
-        <!-- Copy BC source -->
-        <copy todir="${commonsrc.dir}">
-            <fileset dir="${buildcraft.dir}/common">
+
+		<!-- Copy BC source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${buildcraft.dir}/common">
 				<exclude name="**/buildcraft/devel"/>
 			</fileset>
-        </copy>
-        
+		</copy>
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${buildcraft.dir}/buildcraft_resources">
+			</fileset>
+		</copy>
+
 		<echo message="Copied BC files"/>
-		
-        <!-- Copy Forestry API source -->
-        <copy todir="${commonsrc.dir}">
-            <fileset dir="${forestry.dir}"/>
-        </copy>
-		
+
+		<!-- Copy Forestry API source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${forestry.dir}"/>
+		</copy>
+
 		<echo message="Copied Forestry API"/>
-		
-        <!-- Copy IC2 API source -->
-        <copy todir="${commonsrc.dir}">
-            <fileset dir="${ic2.dir}"/>
-        </copy>
-		
+
+		<!-- Copy IC2 API source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${ic2.dir}"/>
+		</copy>
+
 		<echo message="Copied IC2 API"/>
-		
-        <!-- Copy CC API source -->
-        <copy todir="${commonsrc.dir}">
-            <fileset dir="${cc.dir}"/>
-        </copy>
-		
+
+		<!-- Copy CC API source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${cc.dir}/src"/>
+		</copy>
+
 		<echo message="Copied CC API"/>
-		
-        <!-- Copy Dummy classes source -->
-        <copy todir="${commonsrc.dir}">
-            <fileset dir="${src.dir}/dummy"/>
-        </copy>
-		
+
+		<!-- Copy Dummy classes source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${src.dir}/dummy"/>
+		</copy>
+
 		<echo message="Copied dummy files"/>
-		
-        <!-- Refresh MD5 -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c updatemd5.bat -f"/>
-        </exec>
-        
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg line="updatemd5.sh -f" />
-        </exec>
-		
+
+		<!-- Refresh MD5 -->
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c updatemd5.bat -f --client"/>
+		</exec>
+
+		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg line="updatemd5.sh -f --client"/>
+		</exec>
+
 		<echo message="Regenerated MD5s"/>
-	
-    </target>
+
+	</target>
 
 
-    <target name="copySRC" depends="setup">
-        
-	<!-- Copy LP source -->
-        <copy todir="${commonsrc.dir}">
-            <fileset dir="${src.dir}/common"/>
-        </copy>
+	<target name="copySRC" >
+		<!-- Pull in ant-contrib for if task -->
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${lib.dir}/ant-contrib/lib/ant-contrib.jar"/>
+			</classpath>
+		</taskdef>
+		<echo message="Loaded ant-contrib"/>
+
+		<!-- Delete LP source in build space -->
+		<delete dir="${commonsrc.dir}/logisticspipes"/>
+
+		<!-- Copy LP source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${src.dir}/common"/>
+		</copy>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>		
-    </target>
-    
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
+		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 
-    <target name="compile" depends="copySRC">
-        
+		<echo message="Loading FingerPrint"/>
+		<if>
+			<available file="${sign.dir}/.fingerprint"/>
+			<then>
+				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
+				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value="${fingerprint}"/>
+			</then>
+		</if>
+	</target>
+
+
+	<target name="compile" depends="copySRC">
+
 		<echo message="Compiling version ${lp.version.full}"/>
-	
-        <!-- Recompile -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c recompile.bat"/>
-        </exec>
-        
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg value="recompile.sh" />
-        </exec>
-        
-        <!-- Reobf -->
-        <exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-            <arg line="/c reobfuscate.bat"/>
-        </exec>
-        
-        <exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-            <arg value="reobfuscate.sh" />
-        </exec>
-        
-        <!-- Copy LP classes -->
-        <copy todir="${classes.dir}/client">
-            <fileset dir="${mcp.dir}/reobf/minecraft"/>
-        </copy>
-        
-        <!-- Copy resoucres -->
-        <copy todir="${classes.dir}/client">
-            <fileset dir="${src.dir}/resources"></fileset>
-        </copy>
-		
-		<replace file="${classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
-        
-		<echo message="Compiling finished"/>
-	
-    </target>
-    
-    <target name="package" depends="compile">
-        
-		<echo message="Packing version ${lp.version.full}"/>
-	
-        <jar destfile="${jar.dir}/LogisticsPipes-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
-        
-		<echo message="Packing finished"/>
-	
-    </target>
-    
-    <target name="main" depends="clean,package"/>
 
+		<!-- Recompile -->
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c recompile.bat --client"/>
+		</exec>
+
+		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg value="recompile.sh"/>
+		</exec>
+
+		<!-- Reobf -->
+		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
+			<arg line="/c reobfuscate.bat --client"/>
+		</exec>
+
+		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg value="reobfuscate.sh"/>
+		</exec>
+
+		<!-- Copy LP classes -->
+		<copy todir="${classes.dir}/client">
+			<fileset dir="${mcp.dir}/reobf/minecraft"/>
+		</copy>
+
+		<!-- Copy resoucres -->
+		<copy todir="${classes.dir}/client">
+			<fileset dir="${src.dir}/resources"></fileset>
+		</copy>
+
+		<replace file="${classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
+
+		<echo message="Compiling finished"/>
+
+		<!-- Create resources zip for MC in mcp -->
+		<zip destfile="${mcp.dir}/jars/mods/LogisticsPipes_resources.zip" basedir="${src.dir}/resources" excludes="mcmod.info"/>
+
+	</target>
+
+	<target name="package-simple" depends="compile">
+		<echo message="Packing version ${lp.version.full}"/>
+
+		<jar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
+
+		<echo message="Packing finished"/>
+	</target>
+
+	<target name="package-sign" depends="compile">
+		<echo message="Loading SignSettings"/>
+		<loadfile property="key" srcFile="${sign.dir}/.key"/>
+
+		<echo message="Packing version ${lp.version.full}"/>
+
+		<jar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
+			<manifest>
+				<attribute name="Built-By" value="RS485-Jenkins"/>
+				<attribute name="Implementation-Vendor" value="RS485"/>
+				<attribute name="Implementation-Title" value="LogisticsPipes"/>
+				<attribute name="Implementation-Version" value="${lp.version.full}"/>
+			</manifest>
+		</jar>
+		<signjar jar="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" alias="RS485" keystore="${sign.dir}/.keystore" storepass="${key}"/>
+
+		<echo message="Packing finished"/>
+
+	</target>
+	
+	<target name="vars">
+		<property name="lp.version.full"      value="${lp.version}.${BUILD_NUMBER}"/>
+	</target>
+	
+	<target name="vars-dev">
+		<property name="lp.version.full"      value="${lp.version}.dev.${BUILD_NUMBER}"/>
+	</target>
+	
+	<target name="vars-test">
+		<property name="lp.version.full" value="0.0.0.0"/>
+		<property name="DEBUG"           value="true"/>
+	</target>
+	
+	<target name="main" depends="vars, init-msg, clean, setup, package-simple"/>
+	
+	<target name="ci-dev" depends="vars-dev, init-msg, clean, setup, package-sign"/>
+	
+	<target name="ci" depends="vars, init-msg, clean, setup, package-sign"/>
+	
+	<target name="test" depends="vars-test, init-msg, clean, setup, compile"/>
+	
 </project>

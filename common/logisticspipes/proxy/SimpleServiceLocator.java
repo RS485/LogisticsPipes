@@ -10,14 +10,22 @@ package logisticspipes.proxy;
 
 import java.util.LinkedList;
 
+import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
+import logisticspipes.logistics.ILogisticsLiquidManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
+import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.proxy.interfaces.IThaumCraftProxy;
+import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
+import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.routing.IRouterManager;
+import logisticspipes.ticks.ClientPacketBufferHandlerThread;
+import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.utils.InventoryUtilFactory;
 
 public final class SimpleServiceLocator {
@@ -29,9 +37,9 @@ public final class SimpleServiceLocator {
 		buildCraftProxy = bcProxy;
 	}
 	
-	public static IElectricItemProxy electricItemProxy;
-	public static  void setElectricItemProxy(final IElectricItemProxy fProxy){
-		electricItemProxy = fProxy;
+	public static IIC2Proxy IC2Proxy;
+	public static void setElectricItemProxy(final IIC2Proxy ic2Proxy){
+		IC2Proxy = ic2Proxy;
 	}
 
 	public static IForestryProxy forestryProxy;
@@ -49,18 +57,28 @@ public final class SimpleServiceLocator {
 		connectionManager = conMngr;
 	}
 	
+	public static ISecurityStationManager securityStationManager;
+	public static void setSecurityStationManager(final ISecurityStationManager secStationMngr){
+		securityStationManager = secStationMngr;
+	}
+	
 	public static IRouterManager routerManager;
 	public static void setRouterManager(final IRouterManager routerMngr){
 		routerManager = routerMngr;
 	}
 	
 	public static ILogisticsManagerV2 logisticsManager;
-	public static  void setLogisticsManager(final ILogisticsManagerV2 logisticsMngr){
+	public static void setLogisticsManager(final ILogisticsManagerV2 logisticsMngr){
 		logisticsManager = logisticsMngr;
 	}
 	
+	public static ILogisticsLiquidManager logisticsLiquidManager;
+	public static void setLogisticsLiquidManager(final ILogisticsLiquidManager logisticsMngr){
+		logisticsLiquidManager = logisticsMngr;
+	}
+	
 	public static InventoryUtilFactory inventoryUtilFactory;
-	public static  void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
+	public static void setInventoryUtilFactory(final InventoryUtilFactory invUtilFactory){
 		inventoryUtilFactory = invUtilFactory;
 	}
 	
@@ -70,5 +88,34 @@ public final class SimpleServiceLocator {
 			craftingRecipeProviders.add(provider);
 		}
 	}
+
+	public static SpecialPipeConnection specialpipeconnection;
+	public static void setSpecialConnectionHandler(final SpecialPipeConnection special){
+		specialpipeconnection = special;
+	}
 	
+	public static SpecialTileConnection specialtileconnection;
+	public static void setSpecialConnectionHandler(final SpecialTileConnection special){
+		specialtileconnection = special;
+	}
+	
+	public static IThaumCraftProxy thaumCraftProxy;
+	public static void setThaumCraftProxy(IThaumCraftProxy proxy) {
+		thaumCraftProxy = proxy;
+	}
+	
+	public static IThermalExpansionProxy thermalExpansionProxy;
+	public static void setThermalExpansionProxy(IThermalExpansionProxy proxy) {
+		thermalExpansionProxy = proxy;
+	}
+
+	public static ClientPacketBufferHandlerThread clientBufferHandler;
+	public static void setClientPacketBufferHandlerThread(ClientPacketBufferHandlerThread proxy) {
+		clientBufferHandler = proxy;
+	}
+	
+	public static ServerPacketBufferHandlerThread serverBufferHandler;
+	public static void setServerPacketBufferHandlerThread(ServerPacketBufferHandlerThread proxy) {
+		serverBufferHandler = proxy;
+	}
 }

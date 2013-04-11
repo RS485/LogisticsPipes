@@ -8,7 +8,7 @@ import java.util.Comparator;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import net.minecraft.src.Item;
+import net.minecraft.item.Item;
 import codechicken.nei.MultiItemRange;
 import codechicken.nei.api.API;
 import codechicken.nei.api.IConfigureNEI;
@@ -19,10 +19,11 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 	
 	public static boolean added = false;
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void loadConfig() {
 		
-		if(Configs.ToolTipInfo && !added) {
+		if(Configs.TOOLTIP_INFO && !added) {
 			GuiContainerManager.addTooltipHandler(new DebugHelper());
 			added = true;
 		}
@@ -36,9 +37,9 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		Arrays.sort(pipeArray, new Comparator() {
 			@Override
 			public int compare(Object arg0, Object arg1) {
-				if(((Item)arg0).shiftedIndex < ((Item)arg1).shiftedIndex) {
+				if(((Item)arg0).itemID < ((Item)arg1).itemID) {
 					return -1;
-				} else if(((Item)arg0).shiftedIndex > ((Item)arg1).shiftedIndex) {
+				} else if(((Item)arg0).itemID > ((Item)arg1).itemID) {
 					return 1;
 				} else {
 					return 0;

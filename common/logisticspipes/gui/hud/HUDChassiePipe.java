@@ -14,7 +14,7 @@ import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.opengl.GL11;
 

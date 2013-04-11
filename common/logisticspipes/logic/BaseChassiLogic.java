@@ -1,13 +1,13 @@
 package logisticspipes.logic;
 
-import net.minecraft.src.EntityPlayer;
-import buildcraft.api.core.Orientations;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.network.TileNetworkData;
 
 public class BaseChassiLogic extends BaseRoutingLogic {
 	
 	@TileNetworkData
-	public Orientations orientation = Orientations.Unknown;
+	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
 	
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {}

@@ -1,27 +1,37 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeSet;
 import java.util.concurrent.Callable;
 
-import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ILiquidProvider;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.packets.PacketItems;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cc.CCHelper;
+import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.IRouter;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import logisticspipes.utils.LiquidIdentifier;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
 import cpw.mods.fml.common.network.Player;
 
 public class RequestHandler {
@@ -35,16 +45,15 @@ public class RequestHandler {
 	}
 	
 	public static void request(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
-		//LogisticsRequest request = new LogisticsRequest(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag), packet.amount, pipe, true);
-		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		if(!pipe.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		boolean result = RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe
+				, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
-				LinkedList list = new LinkedList<ItemMessage>();
+				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
 				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
 				MessageManager.requested(player, list);
 			}
@@ -61,50 +70,58 @@ public class RequestHandler {
 		});
 	}
 	
+	public static void simulate(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
+		final LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
+		final LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
+		RequestManager.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, new RequestLog() {
+			@Override
+			public void handleSucessfullRequestOf(ItemMessage item) {
+				//Not needed
+			}
+			
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+				missing.addAll(list);
+			}
+
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+				used.addAll(items);
+			}
+		});
+		MessageManager.simulated(player, used, missing);
+	}
+	
 	public static void refresh(EntityPlayerMP player, CoreRoutedPipe pipe, DisplayOptions option) {
-		HashMap<ItemIdentifier, Integer> _availableItems;
+		Map<ItemIdentifier, Integer> _availableItems;
 		LinkedList<ItemIdentifier> _craftableItems;
-		LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 		
 		if (option == DisplayOptions.SupplyOnly || option == DisplayOptions.Both){
-			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getRouteTable().keySet());
+			_availableItems = SimpleServiceLocator.logisticsManager.getAvailableItems(pipe.getRouter().getIRoutersByCost());
 		} else {
 			_availableItems = new HashMap<ItemIdentifier, Integer>();
 		}
 		if (option == DisplayOptions.CraftOnly || option == DisplayOptions.Both){
-			_craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getRouteTable().keySet());
+			_craftableItems = SimpleServiceLocator.logisticsManager.getCraftableItems(pipe.getRouter().getIRoutersByCost());
 		} else {
 			_craftableItems = new LinkedList<ItemIdentifier>();
 		}
-		_allItems.clear();
+		TreeSet<ItemIdentifierStack>_allItems= new TreeSet<ItemIdentifierStack>();
 		
-		outer:
-		for (ItemIdentifier item : _availableItems.keySet()){
-			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
-					_allItems.add(i, item.makeStack(_availableItems.get(item)));
-					continue outer;
-				}
-			}
-			_allItems.addLast(item.makeStack(_availableItems.get(item)));
+		for (Entry<ItemIdentifier, Integer> item : _availableItems.entrySet()){
+			ItemIdentifierStack newStack = item.getKey().makeStack(item.getValue());
+			_allItems.add(newStack);
 		}
 		
-		outer:
 		for (ItemIdentifier item : _craftableItems){
 			if (_availableItems.containsKey(item)) continue;
-			for (int i = 0; i <_allItems.size(); i++){
-				if (item.itemID < _allItems.get(i).getItem().itemID || item.itemID == _allItems.get(i).getItem().itemID && item.itemDamage < _allItems.get(i).getItem().itemDamage){
-					_allItems.add(i, item.makeStack(0));
-					continue outer;
-				}
-			}
-			_allItems.addLast(item.makeStack(0));
+			_allItems.add(item.makeStack(0));
 		}
-		PacketDispatcher.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
 	}
 	
 
-	public static void requestMacrolist(NBTTagCompound itemlist, IRequestItems requester, final EntityPlayer player) {
+	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe requester, final EntityPlayer player) {
 		if(!requester.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
 			return;
@@ -122,11 +139,11 @@ public class RequestHandler {
 			transaction.add(stack);
 			items.add(new ItemMessage(stack));
 		}
-		RequestManager.request(transaction, requester, requester.getRouter().getIRoutersByCost(), new RequestLog() {
+		RequestManager.request(transaction, requester, new RequestLog() {
 			
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				PacketDispatcher.sendPacketToPlayer(new PacketItems(items, false).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketItems(items, false).getPacket(), (Player)player);
 			}
 			
 			@Override
@@ -136,21 +153,20 @@ public class RequestHandler {
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				PacketDispatcher.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
 			}
 		});
 	}
 
 	public static int computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe) {
-		LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
 		if(!pipe.useEnergy(15)) {
 			return -1;
 		}
 		request_id++;
-		QueuedTasks.queueTask(new Callable() {
+		QueuedTasks.queueTask(new Callable<Object>() {
 			@Override
 			public Object call() throws Exception {
-				RequestManager.request(makeStack, pipe, pipe.getRouter().getIRoutersByCost(), new RequestLog() {
+				RequestManager.request(makeStack, pipe, new RequestLog() {
 					@Override
 					public void handleSucessfullRequestOf(ItemMessage item) {
 						pipe.queueEvent("request_successfull", new Object[]{request_id});
@@ -158,7 +174,7 @@ public class RequestHandler {
 					
 					@Override
 					public void handleMissingItems(LinkedList<ItemMessage> list) {
-						pipe.queueEvent("request_failed", new Object[]{request_id});
+						pipe.queueEvent("request_failed", new Object[]{request_id, CCHelper.getAnswer(list)});
 					}
 
 					@Override
@@ -170,5 +186,47 @@ public class RequestHandler {
 			}
 		});
 		return request_id;
+	}
+
+	public static void refreshLiquid(EntityPlayerMP player, CoreRoutedPipe pipe) {
+		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
+		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+	}
+
+	public static void requestLiquid(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe, IRequestLiquid requester) {
+		if(!pipe.useEnergy(10)) {
+			player.sendChatToPlayer("No Energy");
+			return;
+		}
+		
+		// get all the routers
+		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
+		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
+		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
+			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
+			if(r.getPipe() instanceof ILiquidProvider){
+				ExitRoute e = requester.getRouter().getDistanceTo(r);
+				if (e!=null)
+					validDestinations.add(e);
+			}
+		}
+		RequestManager.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, validDestinations, new RequestLog() {
+			@Override
+			public void handleSucessfullRequestOf(ItemMessage item) {
+				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
+				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
+				MessageManager.requested(player, list);
+			}
+			
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+				MessageManager.errors(player, list);
+			}
+
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+				//Not needed here
+			}
+		});
 	}
 }

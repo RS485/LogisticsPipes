@@ -1,37 +1,45 @@
 package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.logic.TemporaryLogic;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import logisticspipes.security.SecuritySettings;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
-public class PipeItemsRemoteOrdererLogistics extends RoutedPipe implements IRequestItems {
+public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
 	public PipeItemsRemoteOrdererLogistics(int itemID) {
 		super(new TemporaryLogic(), itemID);
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE;
 	}
 
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && MainProxy.isServer()) {
-			ItemStack orderer = entityplayer.getCurrentEquippedItem();
-			RemoteOrderer.connectToPipe(orderer, this);
-			entityplayer.sendChatToPlayer("Connected to pipe");
+	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if(MainProxy.isServer(world)) {
+				if (settings == null || settings.openRequest) {
+					ItemStack orderer = entityplayer.getCurrentEquippedItem();
+					RemoteOrderer.connectToPipe(orderer, this);
+					entityplayer.sendChatToPlayer("Connected to pipe");
+				} else {
+					entityplayer.sendChatToPlayer("Permission denied");
+				}
+			}
 			return true;
-		} 
-		return super.blockActivated(world, i, j, k, entityplayer);
+		}
+		return false;
 	}
 
 	@Override

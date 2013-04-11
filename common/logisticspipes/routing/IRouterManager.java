@@ -8,15 +8,24 @@
 
 package logisticspipes.routing;
 
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
+
+import net.minecraftforge.common.ForgeDirection;
 
 
 public interface IRouterManager {
-	public IRouter getOrCreateRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord);
-	public IRouter getRouter(UUID id);
-	public boolean isRouter(UUID id);
-	public void removeRouter(UUID id);
-	public Map<UUID, IRouter> getRouters();
+	int getIDforUUID(UUID id);
+	public IRouter getOrCreateRouter(UUID routerUUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
+	public IRouter getOrCreateFirewallRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir);
+	public IRouter getRouter(int id);
+	public boolean isRouter(int id);
+	public void removeRouter(int id);
+	public List<IRouter> getRouters();
 	public void serverStopClean();
+	public void clearClientRouters();
+	public void dimensionUnloaded(int dim);
+
+	boolean isRouterUnsafe(int id, boolean isClientSide);
+	IRouter getRouterUnsafe(Integer value1, boolean isClientSide);
 }

@@ -11,21 +11,27 @@ package logisticspipes.pipes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
-import logisticspipes.config.Textures;
+import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 
-public class PipeItemsBasicLogistics extends RoutedPipe {
+public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private ModuleItemSink itemSinkModule;
 
@@ -33,11 +39,18 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		super(new PipeTransportLogistics() {
 
 			@Override
-			public boolean isPipeConnected(TileEntity tile) {
-				if(super.isPipeConnected(tile)) return true;
+			public boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
+				if(super.isPipeConnected(tile, dir)) return true;
 				if(tile instanceof ILogisticsPowerProvider) {
-					Orientations ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
-					if(ori == null || ori == Orientations.Unknown || ori == Orientations.YNeg || ori == Orientations.YPos) {
+					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
+						return false;
+					}
+					return true;
+				}
+				if(tile instanceof LogisticsSecurityTileEntity) {
+					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
+					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
 						return false;
 					}
 					return true;
@@ -46,38 +59,53 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 			}
 		}, new TemporaryLogic(), itemID);
 		itemSinkModule = new ModuleItemSink();
-		itemSinkModule.registerHandler(null, null, null, this);
+		itemSinkModule.registerHandler(null, null, this, this);
 	}
 
 	@Override
-	public int getNonRoutedTexture(Orientations connection) {
+	public TextureType getNonRoutedTexture(ForgeDirection connection) {
 		if(isPowerProvider(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
+		}
+		if(isSecurityProvider(connection)) {
+			return Textures.LOGISTICSPIPE_SECURITY_TEXTURE;
 		}
 		return super.getNonRoutedTexture(connection);
 	}
 
 	@Override
-	public boolean isLockedExit(Orientations orientation) {
-		if(isPowerProvider(orientation)) {
+	public boolean isLockedExit(ForgeDirection orientation) {
+		if(isPowerProvider(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
 	
-	private boolean isPowerProvider(Orientations ori) {
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
-		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof ILogisticsPowerProvider && ori ==tile.orientation) {
-				return true;
-			}
+	private boolean isPowerProvider(ForgeDirection ori) {
+		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		if(tilePipe == null || !this.container.isPipeConnected(tilePipe, ori)) {
+			return false;
+		}
+
+		if(tilePipe instanceof ILogisticsPowerProvider) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isSecurityProvider(ForgeDirection ori) {
+		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		if(tilePipe == null || !this.container.isPipeConnected(tilePipe, ori)) {
+			return false;
+		}
+		if(tilePipe instanceof LogisticsSecurityTileEntity) {
+			return true;
 		}
 		return false;
 	}
 	
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_TEXTURE;
 	}
 
@@ -103,19 +131,43 @@ public class PipeItemsBasicLogistics extends RoutedPipe {
 		}
 	}
 */
-	private boolean isSideOrientation(Orientations ori) {
-		return ori == Orientations.XPos || ori == Orientations.XNeg || ori == Orientations.ZPos || ori == Orientations.ZNeg;
+	private boolean isSideOrientation(ForgeDirection ori) {
+		return ori == ForgeDirection.EAST || ori == ForgeDirection.WEST || ori == ForgeDirection.SOUTH || ori == ForgeDirection.NORTH;
 	}
 	
 	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
 		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
 				list.add((ILogisticsPowerProvider)tile.tile);
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public void setTile(TileEntity tile) {
+		super.setTile(tile);
+		itemSinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
+	}
+	
+	@Override
+	public Set<ItemIdentifier> getSpecificInterests() {
+		if(this.itemSinkModule.isDefaultRoute())
+			return null;
+		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
+		for(int i=0; i<9;i++){
+			ItemStack item = this.itemSinkModule.getFilterInventory().getStackInSlot(i);
+			if(item != null)
+				l1.add(ItemIdentifier.get(item));
+		}
+		return l1;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return this.itemSinkModule.isDefaultRoute();
 	}
 }

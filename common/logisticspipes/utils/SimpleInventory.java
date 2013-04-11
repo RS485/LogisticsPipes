@@ -8,24 +8,30 @@
 
 package logisticspipes.utils;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Map;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.World;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.world.World;
 
 public class SimpleInventory implements IInventory, ISaveState{
 
 	private ItemStack[] _contents;
-	private String _name;
-	private int _stackLimit;
+	private final String _name;
+	private final int _stackLimit;
+	private final HashMap<ItemIdentifier, Integer> _contentsMap;
+	private final HashSet<ItemIdentifier> _contentsUndamagedSet;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	
@@ -33,6 +39,8 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_contents = new ItemStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
+		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
+		_contentsUndamagedSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
 	}
 	
 	@Override
@@ -48,16 +56,21 @@ public class SimpleInventory implements IInventory, ISaveState{
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		if (_contents[i] == null) return null;
-		if (_contents[i].stackSize > j) return _contents[i].splitStack(j);
+		if (_contents[i].stackSize > j) {
+			ItemStack ret = _contents[i].splitStack(j);
+			updateContents();
+			return ret;
+		}
 		ItemStack ret = _contents[i];
 		_contents[i] = null;
+		updateContents();
 		return ret;
 	}
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
 		_contents[i] = itemstack;
-		
+		updateContents();
 	}
 
 	@Override
@@ -72,6 +85,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public void onInventoryChanged() {
+		updateContents();
 		for (ISimpleInventoryEventHandler handler : _listener){
 			handler.InventoryChanged(this);
 		}
@@ -87,17 +101,30 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public void closeChest() {}
 
 	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		readFromNBT(nbttagcompound, "");
+	}
+	
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items");
     	
     	for (int j = 0; j < nbttaglist.tagCount(); ++j) {    		
     		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
     		int index = nbttagcompound2.getInteger("index");
-    		_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+    		if(index < _contents.length) {
+    			_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+    		} else {
+    			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
+    		}
     	}
+		updateContents();
 	}
 
 	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		writeToNBT(nbttagcompound, "");
+	}
+
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
 		NBTTagList nbttaglist = new NBTTagList();
     	for (int j = 0; j < _contents.length; ++j) {    		    		
@@ -109,6 +136,7 @@ public class SimpleInventory implements IInventory, ISaveState{
     		}     		
     	}
     	nbttagcompound.setTag(prefix + "items", nbttaglist);
+    	nbttagcompound.setInteger(prefix + "itemsCount", _contents.length);
 	}
 
 	public void dropContents(World worldObj, int xCoord, int yCoord, int zCoord) {
@@ -119,6 +147,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 			    	dropItems(worldObj, todrop, xCoord, yCoord, zCoord);
 				}
 			}
+			updateContents();
 		}
 	}
 
@@ -152,27 +181,28 @@ public class SimpleInventory implements IInventory, ISaveState{
 		
 		ItemStack stackToTake = this._contents[i];
 		this._contents[i] = null;
+		updateContents();
 		return stackToTake;
 	}
 
-	public void handleItemIdentifierList(LinkedList<ItemIdentifierStack> _allItems) {
+	public void handleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {
 		int i=0;
 		for(ItemIdentifierStack stack:_allItems) {
 			if(_contents.length <= i) break;
 			if(stack == null) {
 				_contents[i] = null;
 			} else {
-				_contents[i] = stack.makeNormalStack();
+				_contents[i] = stack.unsafeMakeNormalStack();
 			}
 			i++;
 		}
 		onInventoryChanged();
 	}
 	
-	public int tryAddToSlot(int i, ItemStack stack) {
-		ItemStack slot = this.getStackInSlot(i);
+	private int tryAddToSlot(int i, ItemStack stack) {
+		ItemStack slot = _contents[i];
 		if(slot == null) {
-			this.setInventorySlotContents(i, stack.copy());
+			_contents[i] = stack.copy();
 			return stack.stackSize;
 		}
 		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
@@ -202,5 +232,50 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 		onInventoryChanged();
 		return stack.stackSize;
+	}
+
+	/* InventoryUtil-like functions */
+
+	private void updateContents() {
+		_contentsMap.clear();
+		_contentsUndamagedSet.clear();
+		for (int i = 0; i < _contents.length; i++) {
+			ItemStack stack = _contents[i];
+			if (stack == null) {
+				continue;
+			}
+			ItemIdentifier itemId = ItemIdentifier.get(stack);
+			Integer count = _contentsMap.get(itemId);
+			if (count == null) {
+				_contentsMap.put(itemId, stack.stackSize);
+			} else {
+				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
+			}
+			ItemIdentifier itemUndamagedId = ItemIdentifier.getUndamaged(stack);
+			_contentsUndamagedSet.add(itemUndamagedId); // add is cheaper than check then add; it just returns false if it is already there
+		}
+	}
+
+	public int itemCount(final ItemIdentifier item) {
+		Integer i =  _contentsMap.get(item);
+		if(i == null) 
+			return 0;
+		return i;
+	}
+
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
+		return _contentsMap;
+	}
+
+	public boolean containsItem(final ItemIdentifier item) {
+		return _contentsMap.containsKey(item);
+	}
+
+	public boolean containsUndamagedItem(final ItemIdentifier item) {
+		return _contentsUndamagedSet.contains(item);
+	}
+
+	public boolean isEmpty() {
+		return _contentsMap.isEmpty();
 	}
 }

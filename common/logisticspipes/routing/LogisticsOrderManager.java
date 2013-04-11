@@ -9,13 +9,17 @@
 package logisticspipes.routing;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import logisticspipes.interfaces.IChangeListener;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
+import net.minecraft.world.World;
 
 
 public class LogisticsOrderManager {
@@ -27,7 +31,7 @@ public class LogisticsOrderManager {
 	}
 	
 	//private LinkedList<LogisticsRequest> _orders = new LinkedList<LogisticsRequest>();
-	private LinkedList<Pair<ItemIdentifierStack,IRequestItems>> _orders = new LinkedList<Pair<ItemIdentifierStack,IRequestItems>>();
+	private LinkedList<Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>>> _orders = new LinkedList<Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>>>();
 	private IChangeListener listener = null;
 	
 	private void listen() {
@@ -36,8 +40,8 @@ public class LogisticsOrderManager {
 		}
 	}
 	
-	public LinkedList<ItemIdentifierStack> getContentList() {
-		if(MainProxy.isClient()) return new LinkedList<ItemIdentifierStack>();
+	public LinkedList<ItemIdentifierStack> getContentList(World world) {
+		if(MainProxy.isClient(world) || _orders.size()==0) return new LinkedList<ItemIdentifierStack>();
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			addToList(request.getValue1(),list);
@@ -45,7 +49,7 @@ public class LogisticsOrderManager {
 		return list;
 	}
 
-	private void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
+	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
 		for(ItemIdentifierStack ident:list) {
 			if(ident.getItem().equals(stack.getItem())) {
 				ident.stackSize += stack.stackSize;
@@ -59,14 +63,16 @@ public class LogisticsOrderManager {
 		return _orders.size() > 0;
 	}
 	
-	public Pair<ItemIdentifierStack,IRequestItems> getNextRequest(){
+	public Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> getNextRequest(){
 		return _orders.getFirst();
 	}
 	
-	public void sendSuccessfull(int number) {
+	public void sendSuccessfull(int number, boolean defersend) {
 		_orders.getFirst().getValue1().stackSize -= number;
 		if (_orders.getFirst().getValue1().stackSize <= 0){
 			_orders.removeFirst();
+		} else if(defersend) {
+			_orders.add(_orders.removeFirst());
 		}
 		listen();
 	}
@@ -79,8 +85,20 @@ public class LogisticsOrderManager {
 		listen();
 	}
 
-	public void addOrder(ItemIdentifierStack stack, IRequestItems requester) {
-		_orders.addLast(new Pair<ItemIdentifierStack,IRequestItems>(stack,requester));
+	public void deferSend() {
+		_orders.add(_orders.removeFirst());
+		listen();
+	}
+
+	public void addOrder(ItemIdentifierStack stack, IRequestItems requester, List<IRelayItem> relays) {
+		for (Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> request : _orders){
+			if (request.getValue1().getItem() == stack.getItem() && request.getValue2() == requester) {
+				stack.stackSize += request.getValue1().stackSize;
+				_orders.remove(request);
+				break;
+			}
+		}
+		_orders.addLast(new Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>>(stack, requester, relays));
 		listen();
 	}
 	
@@ -88,6 +106,14 @@ public class LogisticsOrderManager {
 		int itemCount = 0;
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			if (request.getValue1().getItem() != item) continue;
+			itemCount += request.getValue1().stackSize;
+		}
+		return itemCount;
+	}
+
+	public int totalItemsCountInAllOrders(){
+		int itemCount = 0;
+		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			itemCount += request.getValue1().stackSize;
 		}
 		return itemCount;

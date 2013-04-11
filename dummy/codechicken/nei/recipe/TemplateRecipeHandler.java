@@ -2,7 +2,7 @@ package codechicken.nei.recipe;
 
 import java.util.ArrayList;
 
-import net.minecraft.src.ItemStack;
+import net.minecraft.item.ItemStack;
 
 public abstract class TemplateRecipeHandler implements ICraftingHandler, IUsageHandler {
 	public abstract class CachedRecipe {}

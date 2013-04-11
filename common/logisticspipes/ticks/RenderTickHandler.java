@@ -8,7 +8,7 @@ import java.util.List;
 
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.ActiveRenderInfo;
+import net.minecraft.client.renderer.ActiveRenderInfo;
 
 import org.lwjgl.opengl.GL11;
 
@@ -27,8 +27,8 @@ public class RenderTickHandler implements ITickHandler {
 	
 	private Method getSetupCameraTransformMethod() throws NoSuchMethodException {
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		Class start = mc.entityRenderer.getClass();
-		do {
+		Class<?> start = mc.entityRenderer.getClass();
+		while(!start.equals(Object.class)) {
 			try {
 				return start.getDeclaredMethod("a", new Class[]{float.class, int.class});
 			} catch(Exception e) {
@@ -36,10 +36,12 @@ public class RenderTickHandler implements ITickHandler {
 				return start.getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
 				} catch(Exception e1) {}
 			}
-		} while(!start.getSuperclass().equals(Object.class));
+			start = start.getSuperclass();
+		}
 		throw new NoSuchMethodException("Can't find setupCameraTransform or a to display HUD");
 	}
-	
+
+	@SuppressWarnings("deprecation")
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if(type.contains(TickType.RENDER)) {
@@ -75,7 +77,7 @@ public class RenderTickHandler implements ITickHandler {
 				} catch (InvocationTargetException e) {
 					e.printStackTrace();
 				}
-				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks);
+				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks, (Float) tickData[0]);
 				mc.entityRenderer.setupOverlayRendering();
 				//Stop saveguard
 				for(UnlockThreadSecure thread:suspendedThread) {

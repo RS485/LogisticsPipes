@@ -8,23 +8,26 @@
 
 package logisticspipes.logistics;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Set;
-import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.ItemStack;
+import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.SinkReply.FixedPriority;
 
 public interface ILogisticsManagerV2 {
-	
-	public IRoutedItem assignDestinationFor(IRoutedItem item, UUID sourceRouterUUID, boolean excludeSource);
-	public IRoutedItem destinationUnreachable(IRoutedItem item, UUID currentRouter);
-	boolean hasDestination(ItemStack stack, boolean allowDefault, UUID sourceRouter, boolean excludeSource);
-	LinkedList<ItemIdentifier> getCraftableItems(Set<IRouter> validDestinations);
-	HashMap<ItemIdentifier, Integer> getAvailableItems(Set<IRouter> validDestinations);
+
+	IRoutedItem assignDestinationFor(IRoutedItem item, int sourceRouterint, boolean excludeSource);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestination(ItemIdentifier stack, boolean allowDefault, int sourceID, List<Integer> routerIDsToExclude);
+	Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority);
+	LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> list);
+	Map<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> list);
 	String getBetterRouterName(IRouter r);
 	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors, boolean realrequest, boolean denyCrafterAdding);
 	//boolean request(LogisticsTransaction transaction, List<IRouter> validDestinations, List<ItemMessage> errors);

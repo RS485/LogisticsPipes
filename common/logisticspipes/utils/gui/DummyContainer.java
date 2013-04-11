@@ -14,19 +14,20 @@ import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.Container;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.InventoryPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.Slot;
+import logisticspipes.utils.LiquidIdentifier;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.InventoryPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.Slot;
+import net.minecraft.item.ItemStack;
 
 public class DummyContainer extends Container{
 	
-	private final IInventory _playerInventory;
-	private final IInventory _dummyInventory;
-	private final IGuiOpenControler _controler;
+	protected IInventory _playerInventory;
+	protected IInventory _dummyInventory;
+	protected IGuiOpenControler _controler;
 
 	public DummyContainer(IInventory playerInventory, IInventory dummyInventory){
 		_playerInventory = playerInventory;
@@ -95,17 +96,15 @@ public class DummyContainer extends Container{
 		addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
 	}
 	
-	/**
-	 * Disable whatever this is 
-	 **/
-	//@Override
-	//public void updateCraftingResults() {}
+	public void addLiquidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		addSlotToContainer(new LiquidSlot(inventory, slotId, xCoord, yCoord));
+	}
 	
 	/**
 	 * Disable shift-clicking to transfer items
 	 */
 	@Override
-	public ItemStack func_82846_b(EntityPlayer pl, int i)
+	public ItemStack transferStackInSlot(EntityPlayer pl, int i)
     {
 		return null;
 //		Slot slot = (Slot)inventorySlots.get(i);
@@ -121,12 +120,12 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot))) {
+		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
-			if(stack2 != null && stack2.getItem().shiftedIndex == LogisticsPipes.ModuleItem.shiftedIndex) {
+			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
 				if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
-					((EntityPlayerMP)entityplayer).updateCraftingInventorySlot(this, slotId, stack2);
+					((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, stack2);
 				}
 			}
 			return stack1;
@@ -140,12 +139,45 @@ public class DummyContainer extends Container{
 			return currentlyEquippedStack;
 		}
 		
+		if(slot instanceof LiquidSlot) {
+			LiquidIdentifier ident = null;
+			if(slot.getStack() != null) {
+				ident = ItemIdentifier.get(slot.getStack()).getLiquidIdentifier();
+			}
+			if(mouseButton == 0) {
+				if(ident != null) {
+					ident = ident.next();
+				} else {
+					ident = LiquidIdentifier.first();
+				}
+			} else if(mouseButton == 1) {
+				if(ident != null) {
+					ident = ident.prev();
+				} else {
+					ident = LiquidIdentifier.last();
+				}
+			} else {
+				ident = null;
+			}
+			if(ident == null) {
+				slot.putStack(null);
+			} else {
+				slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
+			}
+			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
+				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
+			}
+			return currentlyEquippedStack;
+		}
+		
 		if (currentlyEquippedStack == null){
 			if (slot.getStack() != null && mouseButton == 1){
 				if (isShift == 1){
-					slot.getStack().stackSize = Math.min(127, slot.getStack().stackSize * 2);
+					slot.getStack().stackSize = Math.min(slot.getSlotStackLimit(), slot.getStack().stackSize * 2);
+					slot.inventory.onInventoryChanged();
 				} else {
 					slot.getStack().stackSize/=2;
+					slot.inventory.onInventoryChanged();
 				}
 			}else{
 				slot.putStack(null);
@@ -161,7 +193,8 @@ public class DummyContainer extends Container{
 			if (slot.getStack().stackSize > slot.getSlotStackLimit()){
 				slot.getStack().stackSize = slot.getSlotStackLimit();
 			}
-			
+
+			slot.inventory.onInventoryChanged();
 			return currentlyEquippedStack;
 		}
 		
@@ -170,13 +203,19 @@ public class DummyContainer extends Container{
 		if (currentItem == slotItem){
 			//Do manual shift-checking to play nice with NEI
 			int counter = isShift == 1?10:1;
-			if (mouseButton == 1 && slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
-				slot.getStack().stackSize += counter;
+			if (mouseButton == 1)  {
+				if (slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
+					slot.getStack().stackSize += counter;
+				} else {
+					slot.getStack().stackSize = slot.getSlotStackLimit();
+				}
+				slot.inventory.onInventoryChanged();
 				return currentlyEquippedStack;
 			}
 			if (mouseButton == 0){
 				if (slot.getStack().stackSize - counter > 0){
 					slot.getStack().stackSize-=counter;	
+					slot.inventory.onInventoryChanged();
 				} else {
 					slot.putStack(null);
 				}
@@ -184,6 +223,10 @@ public class DummyContainer extends Container{
 			} 
 		} else {
 			slot.putStack(currentlyEquippedStack.copy());
+			if (slot.getStack().stackSize > slot.getSlotStackLimit()){
+				slot.getStack().stackSize = slot.getSlotStackLimit();
+				slot.inventory.onInventoryChanged();
+			}
 		}
 		return currentlyEquippedStack;
 	}
@@ -210,5 +253,31 @@ public class DummyContainer extends Container{
         for(int i1 = 0; i1 < 9; i1++) {
         	addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset));
         }
+	}
+
+	//Hacky overrides to handle client/server player inv sync with 0-slot containers
+	@Override
+	public Slot getSlotFromInventory(IInventory par1IInventory, int par2)
+	{
+		Slot s = super.getSlotFromInventory(par1IInventory, par2);
+		if(s != null)
+			return s;
+		if(inventorySlots.isEmpty() && par1IInventory == _playerInventory) {
+			s = new Slot(_playerInventory, par2, 0, 0);
+			s.slotNumber = par2;
+			return s;
+		}
+        return null;
+    }
+
+	@Override
+	public void putStackInSlot(int par1, ItemStack par2ItemStack)
+	{
+		if(inventorySlots.isEmpty()) {
+			_playerInventory.setInventorySlotContents(par1, par2ItemStack);
+			_playerInventory.onInventoryChanged();
+			return;
+		}
+		super.putStackInSlot(par1, par2ItemStack);
 	}
 }

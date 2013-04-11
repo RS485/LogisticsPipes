@@ -1,8 +1,6 @@
 package logisticspipes.proxy.cc;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -10,8 +8,8 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import dan200.computer.api.IComputerAccess;
 
 public class CCProxy implements ICCProxy {
@@ -20,7 +18,6 @@ public class CCProxy implements ICCProxy {
 	private Field Net_m_computer;
 	private Field m_apis;
 	private Field m_peripherals;
-	private Method parseSide;
 	private Class<?> computerClass;
 	private Class<?> peripheralAPIClass;
 	private Field target;
@@ -37,8 +34,6 @@ public class CCProxy implements ICCProxy {
 			m_apis = Class.forName("dan200.computer.core.Computer").getDeclaredField("m_apis");
 			m_apis.setAccessible(true);
 			peripheralAPIClass = Class.forName("dan200.computer.core.apis.PeripheralAPI");
-			parseSide = peripheralAPIClass.getDeclaredMethod("parseSide", new Class[]{Object[].class});
-			parseSide.setAccessible(true);
 			m_peripherals = peripheralAPIClass.getDeclaredField("m_peripherals");
 			m_peripherals.setAccessible(true);
 			target = Thread.class.getDeclaredField("target");
@@ -75,13 +70,14 @@ public class CCProxy implements ICCProxy {
 		return null;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@Override
-	public Orientations getOrientation(Object cObject, String computerSide, TileEntity pipe) {
-		if(!valid) return Orientations.Unknown;
-		if(!(cObject instanceof IComputerAccess)) return Orientations.Unknown;
+	public ForgeDirection getOrientation(Object cObject, TileEntity pipe) {
+		if(!valid) return ForgeDirection.UNKNOWN;
+		if(!(cObject instanceof IComputerAccess)) return ForgeDirection.UNKNOWN;
 		IComputerAccess computer = (IComputerAccess) cObject;
 		WorldUtil world = new WorldUtil(pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities();
+		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
 		for(AdjacentTile aTile: adjacent) {
 			try {
 				Object local_tile_m_computer = get_local_tile_m_computer(aTile.tile);
@@ -90,10 +86,11 @@ public class CCProxy implements ICCProxy {
 					ArrayList local_m_apis = (ArrayList) m_apis.get(local_net_m_omputer);
 					for(Object api: local_m_apis) {
 						if(peripheralAPIClass.isAssignableFrom(api.getClass())) {
-							int side = ((Integer) parseSide.invoke(api, new Object[]{new Object[]{(Object)computerSide}})).intValue();
 							Object[] local_m_peripherals = (Object[]) m_peripherals.get(api);
-							if(local_m_peripherals[side] == computer) {
-								return aTile.orientation;
+							for(Object computeraccess : local_m_peripherals) {
+								if(computeraccess == computer) {
+									return aTile.orientation;
+								}
 							}
 						}
 					}
@@ -110,13 +107,9 @@ public class CCProxy implements ICCProxy {
 				if(LogisticsPipes.DEBUG) {
 					e.printStackTrace();
 				}
-			} catch (InvocationTargetException e) {
-				if(LogisticsPipes.DEBUG) {
-					e.printStackTrace();
-				}
 			}
 		}
-		return Orientations.Unknown;
+		return ForgeDirection.UNKNOWN;
 	}
 
 	private Runnable getTaget(Thread thread) {

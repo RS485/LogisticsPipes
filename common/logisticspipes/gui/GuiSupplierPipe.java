@@ -13,18 +13,16 @@ import logisticspipes.logic.LogicSupplier;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
-	private IInventory playerInventory;
 	private IInventory dummyInventory;
 	private LogicSupplier logic; 
 	
@@ -45,7 +43,6 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		this.inventorySlots = dummy; 
 
-		this.playerInventory = playerInventory;
 		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
@@ -70,13 +67,12 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
-		// TODO Auto-generated method stub
 		super.initGui();
-       controlList.clear();
-       controlList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
-
+		controlList.clear();
+		controlList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
 	}
 
 	@Override
@@ -85,7 +81,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		

@@ -1,16 +1,17 @@
 package logisticspipes.items;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.DamageSource;
-import net.minecraft.src.EntityLiving;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EnumArmorMaterial;
-import net.minecraft.src.ItemArmor;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.World;
+import logisticspipes.textures.Textures;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.EnumArmorMaterial;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.DamageSource;
+import net.minecraft.world.World;
 import net.minecraftforge.common.IArmorTextureProvider;
 import net.minecraftforge.common.ISpecialArmor;
 
@@ -52,7 +53,7 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack stack, World world, EntityPlayer player) {
-		if(MainProxy.isClient()) return stack;
+		if(MainProxy.isClient(world)) return stack;
 		useItem(player, world);
 		return stack.copy();
 	}
@@ -60,11 +61,16 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 	@Override
 	public boolean onItemUseFirst(ItemStack stack, EntityPlayer player, World world, int x, int y, int z, int side, float hitX, float hitY, float hitZ) {
 		useItem(player, world);
-		if(MainProxy.isClient()) return false;
+		if(MainProxy.isClient(world)) return false;
 		return true;
 	}
 	
 	private void useItem(EntityPlayer player, World world) {
 		player.openGui(LogisticsPipes.instance, GuiIDs.GUI_HUD_Settings, world, player.inventory.currentItem, -1, 0);
+	}
+
+	@Override
+	public CreativeTabs[] getCreativeTabs() {
+        return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
 	}
 }

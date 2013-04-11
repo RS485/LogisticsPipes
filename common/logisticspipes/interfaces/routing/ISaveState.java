@@ -8,20 +8,18 @@
 
 package logisticspipes.interfaces.routing;
 
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 
 public interface ISaveState {
 	/**
 	 * Called to read every information for the given class from the NBTTagCompount
 	 * @param nbttagcompound to read from
-	 * @param prefix before every key to seperate information
 	 */
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix);
+	public void readFromNBT(NBTTagCompound nbttagcompound);
 	
 	/**
 	 * Called to save all information of the given class into an NBTTagCompount
 	 * @param nbttagcompound to save the information in
-	 * @param prefix before every key to seperate information
 	 */
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix);
+	public void writeToNBT(NBTTagCompound nbttagcompound);
 }

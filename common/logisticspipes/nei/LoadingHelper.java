@@ -7,7 +7,7 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class LoadingHelper {
 
 	public static void LoadNeiNBTDebugHelper() {
-		if(Configs.ToolTipInfo && !NEILogisticsPipesConfig.added) {
+		if(Configs.TOOLTIP_INFO && !NEILogisticsPipesConfig.added) {
 			GuiContainerManager.addTooltipHandler(new DebugHelper());
 			NEILogisticsPipesConfig.added = true;
 			if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null) {

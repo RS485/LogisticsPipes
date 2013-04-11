@@ -12,24 +12,24 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiItemSink extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleItemSink _itemSink;
 	private final int slot;
 	
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -49,7 +49,11 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 			case 0:
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				//((GuiButton)controlList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
+				if(slot != 20) {
+					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
+				} else {
+					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, 0, -1, 0, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
+				}
 				break;
 		}
 		
@@ -68,7 +72,6 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 	    }
 	    
 	    this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}

@@ -8,12 +8,11 @@ import java.util.Random;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTBase;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagString;
-import net.minecraft.src.World;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagString;
 
 public class ItemModuleInformationManager {
 	
@@ -24,21 +23,21 @@ public class ItemModuleInformationManager {
 		Filter.add("Random-Stack-Prevent");
 	}
 	
-	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module, World world) {
+	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module) {
 		if(module == null) return;
 		NBTTagCompound nbt = new NBTTagCompound();
-        module.writeToNBT(nbt, "");
+        module.writeToNBT(nbt);
         if(nbt.equals(new NBTTagCompound())) {
         	return;
         }
-        if(MainProxy.isClient(world)) {
+        if(MainProxy.isClient()) {
 			 NBTTagList list = new NBTTagList();
 			String info1 = "Please reopen the window";
 			String info2 = "to see the information.";
-    		list.appendTag(new NBTTagString(info1,info1));
-    		list.appendTag(new NBTTagString(info2,info2));
+    		list.appendTag(new NBTTagString(null ,info1));
+    		list.appendTag(new NBTTagString(null ,info2));
     		if(!itemStack.hasTagCompound()) {
-            	itemStack.setTagCompound(new NBTTagCompound());
+            	itemStack.setTagCompound(new NBTTagCompound("tag"));
             }
     		NBTTagCompound stacktag = itemStack.getTagCompound();
     		stacktag.setTag("informationList", list);
@@ -46,7 +45,7 @@ public class ItemModuleInformationManager {
     		return;
 		}
         if(!itemStack.hasTagCompound()) {
-        	itemStack.setTagCompound(new NBTTagCompound());
+        	itemStack.setTagCompound(new NBTTagCompound("tag"));
         }
         NBTTagCompound stacktag = itemStack.getTagCompound();
         stacktag.setCompoundTag("moduleInformation", nbt);
@@ -55,7 +54,7 @@ public class ItemModuleInformationManager {
         	if(information.size() > 0) {
         		NBTTagList list = new NBTTagList();
         		for(String info:information) {
-        			list.appendTag(new NBTTagString(info,info));
+        			list.appendTag(new NBTTagString(null ,info));
         		}
         		stacktag.setTag("informationList", list);
         	}
@@ -63,14 +62,13 @@ public class ItemModuleInformationManager {
 		stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
 	}
 	
-	public static void readInformation(ItemStack itemStack, ILogisticsModule module, World world) {
+	public static void readInformation(ItemStack itemStack, ILogisticsModule module) {
 		if(module == null) return;
-		if(MainProxy.isClient(world)) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
 			if(nbt.hasKey("moduleInformation")) {
 				NBTTagCompound moduleInformation = nbt.getCompoundTag("moduleInformation");
-				module.readFromNBT(moduleInformation, "");
+				module.readFromNBT(moduleInformation);
 			}
 			
 		}
@@ -80,8 +78,8 @@ public class ItemModuleInformationManager {
 		if(itemStack == null) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();
-			Collection collection = nbt.getTags();
-			nbt = new NBTTagCompound();
+			Collection<?> collection = nbt.getTags();
+			nbt = new NBTTagCompound("tag");
 			for(Object obj:collection) {
 				if(obj instanceof NBTBase) {
 					if(!Filter.contains(((NBTBase)obj).getName())) {

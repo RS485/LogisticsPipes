@@ -4,13 +4,20 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.concurrent.Callable;
 
+import logisticspipes.proxy.MainProxy;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
 public class QueuedTasks implements ITickHandler {
 	
+	@SuppressWarnings("rawtypes")
 	private static LinkedList<Callable> queue = new LinkedList<Callable>();
 	
+	// called on server shutdown only.
+	public static void clearAllTasks() {
+		queue.clear();
+	}
+	@SuppressWarnings("rawtypes")
 	public static void queueTask(Callable task) {
 		synchronized (queue) {
 			queue.add(task);
@@ -20,18 +27,23 @@ public class QueuedTasks implements ITickHandler {
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
+	@SuppressWarnings({"rawtypes" })
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-		synchronized (queue) {
-			for(Callable call:queue) {
+		Callable call = null;
+		while(!queue.isEmpty()) {
+			synchronized (queue) {
+				call = queue.removeFirst();
+			}
+			if(call != null) {
 				try {
 					call.call();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 			}
-			queue.clear();
 		}
+		MainProxy.proxy.tick();
 	}
 
 	@Override

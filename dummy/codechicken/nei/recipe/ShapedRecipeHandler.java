@@ -2,9 +2,9 @@ package codechicken.nei.recipe;
 
 import java.util.ArrayList;
 
-import net.minecraft.src.Container;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.ItemStack;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.ItemStack;
 import codechicken.nei.PositionedStack;
 
 public class ShapedRecipeHandler extends TemplateRecipeHandler {

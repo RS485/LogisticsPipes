@@ -11,8 +11,8 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
@@ -20,7 +20,6 @@ import buildcraft.transport.Pipe;
 
 public class GuiTerminus extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleTerminus _terminus;
 	
 	
@@ -36,7 +35,6 @@ public class GuiTerminus extends GuiWithPreviousGuiContainer {
 	    }
 	    
 	    this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}

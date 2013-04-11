@@ -10,13 +10,13 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.FontRenderer;
-import net.minecraft.src.Gui;
-import net.minecraft.src.ItemStack;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.RenderBlocks;
-import net.minecraft.src.RenderItem;
-import net.minecraft.src.Tessellator;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.input.Keyboard;
@@ -89,7 +89,7 @@ public class BasicGuiHelper {
 			
 			if (ppi <= items * page) continue;
 			if (ppi > items * (page+1)) continue;
-			ItemStack st = itemStack.makeNormalStack();
+			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = left + xSize * column;
 			int y = top + ySize * row;
 
@@ -107,7 +107,7 @@ public class BasicGuiHelper {
 			        }
 
 				} else {
-					renderItem.func_82406_b(fontRenderer, mc.renderEngine, st, x, y);
+					renderItem.renderItemAndEffectIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 				}
 			}
 			
@@ -120,8 +120,10 @@ public class BasicGuiHelper {
 					s = "";
 				} else if (st.stackSize < 1000) {
 					s = st.stackSize + "";
-				} else if (st.stackSize < 1000000){
+				} else if (st.stackSize < 100000){
 					s = st.stackSize / 1000 + "K";
+				} else if (st.stackSize < 1000000){
+					s = "0M" + st.stackSize / 100000;
 				} else {
 					s = st.stackSize / 1000000 + "M";
 				}
@@ -160,19 +162,19 @@ public class BasicGuiHelper {
      * @throws NoSuchFieldException 
      */
     private static int drawStringWithShadow(FontRenderer fontRenderer,String par1Str, int par2, int par3, int par4) throws Exception {
-    	Method a = fontRenderer.getClass().getDeclaredMethod("resetStyles");
+    	Method a = getObfuMethod(fontRenderer.getClass(), "c", "resetStyles");
     	a.setAccessible(true);
     	a.invoke(fontRenderer);
-    	
-    	Field b = fontRenderer.getClass().getDeclaredField("bidiFlag");
+
+    	Field b = getObfuField(fontRenderer.getClass(), "m", "bidiFlag");
     	b.setAccessible(true);
         if (((Boolean)b.get(fontRenderer)).booleanValue())
         {	
-        	Method c = fontRenderer.getClass().getDeclaredMethod("bidiReorder", String.class);
+        	Method c = getObfuMethod(fontRenderer.getClass(), "c", "bidiReorder", String.class);
         	c.setAccessible(true);
         	par1Str = (String)c.invoke(fontRenderer, par1Str);
         }
-        Method d = fontRenderer.getClass().getDeclaredMethod("renderString", String.class, int.class, int.class, int.class, boolean.class);
+        Method d = getObfuMethod(fontRenderer.getClass(), "b", "renderString", String.class, int.class, int.class, int.class, boolean.class);
         d.setAccessible(true);
         int var5 = ((Integer)d.invoke(fontRenderer, par1Str, par2 + 1, par3 + 1, par4, true)).intValue();
 
@@ -183,12 +185,29 @@ public class BasicGuiHelper {
         return var5;
     }
     
+    private static Field getObfuField(Class<?> clazz, String name1, String name2) throws SecurityException, NoSuchFieldException {
+    	try {
+    		return clazz.getDeclaredField(name1);
+    	} catch(Exception e) {
+    		return clazz.getDeclaredField(name2);
+    	}
+    }
+    
+    private static Method getObfuMethod(Class<?> clazz, String name1, String name2, Class<?>... objects) throws NoSuchMethodException, SecurityException {
+    	try {
+        	return clazz.getDeclaredMethod(name1, objects);
+    	} catch(Exception e) {
+    		return clazz.getDeclaredMethod(name2, objects);
+    	}
+    }
+    
 	private static float zLevel;
 	
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop) {
 		displayItemToolTip(tooltip, gui, pzLevel, guiLeft, guiTop, false, false);
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
@@ -216,7 +235,7 @@ public class BasicGuiHelper {
 					//Use minecraft vanilla code
 					Minecraft mc = FMLClientHandler.instance().getClient();
 					ItemStack var22 = (ItemStack) tooltip[2];
-					List var24 = var22.func_82840_a(mc.thePlayer, mc.gameSettings.field_82882_x);
+					List<String> var24 = var22.getTooltip(mc.thePlayer, mc.gameSettings.advancedItemTooltips);
 
 	                if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
 	    				var24.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
@@ -249,7 +268,7 @@ public class BasicGuiHelper {
 		} catch(Exception e) {
 			try {
 				//Use minecraft vanilla code
-				List var24 = msg;
+				List<String> var24 = msg;
 				
 	            if (var24.size() > 0)
 	            {
@@ -410,6 +429,20 @@ public class BasicGuiHelper {
         var9.addVertexWithUV(x		, y + 18	, (double)zLevel, 0	, 1);
         var9.addVertexWithUV(x + 18	, y + 18	, (double)zLevel, 1	, 1);
         var9.addVertexWithUV(x + 18	, y			, (double)zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
+        var9.draw();
+    }
+    
+    public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
+		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-big.png");
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+		mc.renderEngine.bindTexture(i);
+		
+		Tessellator var9 = Tessellator.instance;
+        var9.startDrawingQuads();
+        var9.addVertexWithUV(x		, y + 26	, (double)zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 26	, y + 26	, (double)zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 26	, y			, (double)zLevel, 1	, 0);
         var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
         var9.draw();
     }

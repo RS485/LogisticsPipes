@@ -12,33 +12,33 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleElectricManager _module;
 	private final int slot;
 
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
 	    //Default item toggle:
 		controlList.clear();
-		controlList.add(new GuiStringHandlerButton(0, width / 2 + 50, height / 2 - 34, 30, 20, new GuiStringHandlerButton.StringHandler() {
+		controlList.add(new GuiStringHandlerButton(0, width / 2 - 6, height / 2 - 34, 88, 20, new GuiStringHandlerButton.StringHandler() {
 			@Override
 			public String getContent() {
-				return _module.isDischargeMode() ? "Yes" : "No";
+				return _module.isDischargeMode() ? "Discharge Items" : "Charge Items";
 			}
 		}));
 	}
@@ -49,8 +49,11 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 		{
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
-				//((GuiButton)controlList.get(0)).displayString = _module.isDischargeMode() ? "Yes" : "No";
-				PacketDispatcher.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+				if(slot != 20) {
+					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+				} else {
+					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, _module.xCoord, _module.yCoord, _module.zCoord, slot, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+				}
 				break;
 		}
 	}
@@ -67,7 +70,6 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 		}
 		this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
 		xSize = 175;
 		ySize = 142;
 	}
@@ -76,7 +78,6 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(_module.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
-		fontRenderer.drawString("Discharge:", 65, 45, 0x404040);
 	}
 
 	@Override

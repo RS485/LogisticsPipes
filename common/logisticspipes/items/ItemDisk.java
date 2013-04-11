@@ -2,12 +2,12 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 
-public class ItemDisk extends LogisticsNBTTagCompundItem {
+public class ItemDisk extends LogisticsItem {
 
 	public ItemDisk(int i) {
 		super(i);
@@ -18,13 +18,13 @@ public class ItemDisk extends LogisticsNBTTagCompundItem {
         return 1;
     }
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public CreativeTabs getCreativeTab()
     {
         return CreativeTabs.tabRedstone;
     }
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack itemStack, EntityPlayer player, List list, boolean flag) {
 		if(itemStack.hasTagCompound()) {

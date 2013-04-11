@@ -13,20 +13,20 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import logisticspipes.config.Configs;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTBase;
-import net.minecraft.src.NBTTagByte;
-import net.minecraft.src.NBTTagByteArray;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagDouble;
-import net.minecraft.src.NBTTagFloat;
-import net.minecraft.src.NBTTagInt;
-import net.minecraft.src.NBTTagIntArray;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.NBTTagLong;
-import net.minecraft.src.NBTTagShort;
-import net.minecraft.src.NBTTagString;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagByte;
+import net.minecraft.nbt.NBTTagByteArray;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagDouble;
+import net.minecraft.nbt.NBTTagFloat;
+import net.minecraft.nbt.NBTTagInt;
+import net.minecraft.nbt.NBTTagIntArray;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.nbt.NBTTagLong;
+import net.minecraft.nbt.NBTTagShort;
+import net.minecraft.nbt.NBTTagString;
 
 import org.lwjgl.input.Keyboard;
 
@@ -34,7 +34,6 @@ import codechicken.nei.forge.IContainerTooltipHandler;
 
 public class DebugHelper implements IContainerTooltipHandler {
 	
-	private static boolean display = false;
 	private static long lastTime = 0;
 	
 	@Override
@@ -44,11 +43,10 @@ public class DebugHelper implements IContainerTooltipHandler {
 
 	@Override
 	public List<String> handleItemTooltip(GuiContainer gui, final ItemStack itemstack, List<String> currenttip) {
-		if(Configs.ToolTipInfo && itemstack != null) {
+		if(Configs.TOOLTIP_INFO && itemstack != null) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if(lastTime + 1000 < System.currentTimeMillis()) {
 					lastTime = System.currentTimeMillis();
-					display = true;
 					new Thread(new Runnable() {
 						@Override
 						public void run() {
@@ -59,7 +57,6 @@ public class DebugHelper implements IContainerTooltipHandler {
 									e.printStackTrace();
 								}
 							}
-							display = false;
 							DefaultMutableTreeNode node = new DefaultMutableTreeNode(ItemIdentifier.get(itemstack).getFriendlyName());
 							node.add(new DefaultMutableTreeNode("ItemId: " + itemstack.itemID));
 							node.add(new DefaultMutableTreeNode("ItemId: " + itemstack.getItemDamage()));
@@ -87,6 +84,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 		return currenttip;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	private void addNBTToTree(NBTBase nbt, DefaultMutableTreeNode node) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
 			return;
@@ -105,6 +103,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 				content.add(new DefaultMutableTreeNode("[" + i + "]: " + Byte.toString(byt)));
 				i++;
 			}
+			node.add(content);
 			node.add(type);
 		} else if(nbt instanceof NBTTagDouble) {
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagDouble");
@@ -173,14 +172,11 @@ public class DebugHelper implements IContainerTooltipHandler {
 			type.add(new DefaultMutableTreeNode("Name: " + nbt.getName()));
 			DefaultMutableTreeNode content = new DefaultMutableTreeNode("Data");
 			
-			int i = 0;
-			
 			for(Object objectKey:internal.keySet()) {
 				if(internal.get(objectKey) instanceof NBTBase) {
 					DefaultMutableTreeNode nbtNode = new DefaultMutableTreeNode(objectKey);
 					addNBTToTree((NBTBase)internal.get(objectKey), nbtNode);
 					content.add(nbtNode);
-					i++;
 				}
 			}
 			type.add(content);

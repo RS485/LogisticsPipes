@@ -2,8 +2,9 @@ package logisticspipes.logisticspipes;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.SinkReply;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 public class ChassiTransportLayer extends TransportLayer{
 
@@ -14,8 +15,9 @@ public class ChassiTransportLayer extends TransportLayer{
 	}
 
 	@Override
-	public Orientations itemArrived(IRoutedItem item) {
-//		item.setSpeedBoost(50F);	//Boost speed to help item arrive faster so we don't get overflow
+	public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
+		item.setArrived(true);
+		this._chassiPipe.getRouter().inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
 		return _chassiPipe.getPointedOrientation();
 	}
 
@@ -24,18 +26,16 @@ public class ChassiTransportLayer extends TransportLayer{
 		ILogisticsModule module = _chassiPipe.getLogisticsModule();
 		if (module == null) return false;
 		if (!_chassiPipe.isEnabled()) return false;
-		SinkReply reply = module.sinksItem(item.getItemStack());
+		SinkReply reply = module.sinksItem(item.getIDStack().getItem(), -1, 0);
 		if (reply == null) return false;
 		
 		if (reply.maxNumberOfItems != 0 && item.getItemStack().stackSize > reply.maxNumberOfItems){
-			Orientations o = _chassiPipe.getPointedOrientation();
-			if (o==null || o == Orientations.Unknown) o = Orientations.YPos;
+			ForgeDirection o = _chassiPipe.getPointedOrientation();
+			if (o==null || o == ForgeDirection.UNKNOWN) o = ForgeDirection.UP;
 			
-			IRoutedItem newItem = item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o.reverse());
-			//return false;
+			item.split(_chassiPipe.worldObj, reply.maxNumberOfItems, o);
 		}
-		
-		return module.sinksItem(item.getItemStack()) != null;	
+		return true;
 	}
 
 }

@@ -8,37 +8,58 @@
 
 package logisticspipes.routing;
 
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import net.minecraft.src.ItemStack;
-import buildcraft.api.core.Orientations;
-import buildcraft.api.core.Position;
+import net.minecraftforge.common.ForgeDirection;
 
 public interface IRouter {
+	public interface IRAction {
+		public boolean isInteresting(IRouter that);
+		public boolean doTo(IRouter that);
+		public void doneWith(IRouter that);
+	}
 	public void destroy();
 	public void update(boolean fullRefresh);
-	public void sendRoutedItem(ItemStack item, IRouter destination, Position origin);
-	public boolean isRoutedExit(Orientations connection);
-	public boolean hasRoute(UUID id);
-	public Orientations getExitFor(UUID id);
+	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 	
-	@Deprecated
-	public HashMap<IRouter, Orientations> getRouteTable();
-	public LinkedList<IRouter> getIRoutersByCost();
+	public boolean isRoutedExit(ForgeDirection connection);
+	public boolean hasRoute(int id);
+	public ForgeDirection getExitFor(int id);
+	
+	public ArrayList<ExitRoute> getRouteTable();
+	public List<ExitRoute> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
-	
+	public CoreRoutedPipe getCachedPipe();
+	public boolean isInDim(int dimension);
+	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
 	public UUID getId();
-	public void itemDropped(RoutedEntityItem routedEntityItem);
 	@Deprecated
 	public void displayRoutes();
 	@Deprecated
-	public void displayRouteTo(IRouter r);
-	@Deprecated
+	public void displayRouteTo(int r);
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public ILogisticsModule getLogisticsModule();
+	public void clearPipeCache();
+	
+	public IRouter getRouter(ForgeDirection insertOrientation);
+	public int getSimpleID();
+
+	public boolean act(BitSet hasBeenProcessed, IRAction actor);
+	public void flagForRoutingUpdate();
+	public boolean checkAdjacentUpdate();
+	public void clearPrevAdjacent();
+	
+	/* Automated Disconnection */
+	public boolean isSideDisconneceted(ForgeDirection dir);
+	public ExitRoute getDistanceTo(IRouter r);
+	
+	public void clearInterests();
+	public List<ILogisticsPowerProvider> getPowerProvider();
 }

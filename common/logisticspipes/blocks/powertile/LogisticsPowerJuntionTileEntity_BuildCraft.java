@@ -3,29 +3,34 @@ package logisticspipes.blocks.powertile;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerJunction;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.interfaces.routing.ILogisticsPowerProvider;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.Container;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
-import cpw.mods.fml.common.network.PacketDispatcher;
+
+
 
 public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+	
+	// true if it needs more power, turns off at full, turns on at 50%.
+	public boolean needMorePowerTriggerCheck = true;
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int MAX_STORAGE = 2000000;
@@ -46,14 +51,27 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		powerFramework.configure(0, 1, 250, 1, 750);
 		HUD = new HUDPowerJunction(this);
 	}
-	
 	@Override
-	public boolean useEnergy(int amount) {
-		if(canUseEnergy(amount)) {
-			internalStorage -= amount;
+	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
+		if(providersToIgnore!=null && providersToIgnore.contains(this))
+			return false;
+		if(canUseEnergy(amount,null)) {
+			internalStorage -= (amount * Configs.POWER_USAGE_MULTIPLIER);
+			if(internalStorage<MAX_STORAGE/2)
+				needMorePowerTriggerCheck=true;
 			return true;
 		}
-		return false;
+		return false;	}
+
+	@Override
+	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
+		if(providersToIgnore!=null && providersToIgnore.contains(this))
+			return false;
+		return internalStorage >= (amount * Configs.POWER_USAGE_MULTIPLIER);
+	}	
+	@Override
+	public boolean useEnergy(int amount) {
+		return useEnergy(amount,null);
 	}
 	
 	public int freeSpace() {
@@ -68,7 +86,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	
 	@Override
 	public boolean canUseEnergy(int amount) {
-		return internalStorage >= amount;
+		return canUseEnergy(amount,null);
 	}
 	
 	public void addEnergy(float amount) {
@@ -76,6 +94,8 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		if(internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;
 		}
+		if(internalStorage == MAX_STORAGE)
+			needMorePowerTriggerCheck=false;
 	}
 	
 	@Override
@@ -93,7 +113,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(MainProxy.isServer()) {
+		if(MainProxy.isServer(worldObj)) {
 			float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
 			if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
 				energy = 1;
@@ -107,8 +127,8 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 		  	}
 		}
 		if(!init) {
-			if(MainProxy.isClient()) {
-				LogisticsHUDRenderer.providers.add(this);
+			if(MainProxy.isClient(worldObj)) {
+				LogisticsHUDRenderer.instance().add(this);
 			}
 			init = true;
 		}
@@ -117,24 +137,24 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isClient()) {
-			LogisticsHUDRenderer.providers.remove(this);
+		if(MainProxy.isClient(this.worldObj)) {
+			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
 
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isClient()) {
-			LogisticsHUDRenderer.providers.add(this);
+		if(MainProxy.isClient(this.worldObj)) {
+			init = false;
 		}
 	}
 
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isClient()) {
-			LogisticsHUDRenderer.providers.remove(this);
+		if(MainProxy.isClient(this.worldObj)) {
+			LogisticsHUDRenderer.instance().remove(this);
 		}
 	}
 
@@ -183,7 +203,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	}
 
 	public void handlePowerPacket(PacketPipeInteger packet) {
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(this.worldObj)) {
 			internalStorage = packet.integer;
 		}
 	}
@@ -215,12 +235,12 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 
 	@Override
 	public void startWaitching() {
-		PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
 	@Override
 	public void stopWaitching() {
-		PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
 	@Override

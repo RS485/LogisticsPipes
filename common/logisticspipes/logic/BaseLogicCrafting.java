@@ -1,37 +1,45 @@
 package logisticspipes.logic;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.TimeUnit;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.GuiArgumentPacket;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketInventoryChange;
+import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.request.RequestManager;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.DelayedGeneric;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.Block;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.EntityPlayerMP;
-import net.minecraft.src.EntityPlayerSP;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import buildcraft.api.core.Orientations;
+import net.minecraft.block.Block;
+import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
@@ -46,34 +54,60 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public int signEntityZ = 0;
 	//public LogisticsTileEntiy signEntity;
 
-	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
-
+	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
+	
 	@TileNetworkData
 	public int satelliteId = 0;
+
+	@TileNetworkData(staticSize=9)
+	public int advancedSatelliteIdArray[] = new int[9];
 
 	@TileNetworkData
 	public int priority = 0;
 
+	private PipeItemsCraftingLogistics _pipe=null;
 	public BaseLogicCrafting() {
 		throttleTime = 40;
 	}
 
 	/* ** SATELLITE CODE ** */
 
-	protected int getNextConnectSatelliteId(boolean prev) {
-		final HashMap<IRouter, Orientations> routes = getRouter().getRouteTable();
+	protected int getNextConnectSatelliteId(boolean prev, int x, int y) {
+		final List<ExitRoute> routes = getRoutedPipe().getRouter().getIRoutersByCost();
 		int closestIdFound = prev ? 0 : Integer.MAX_VALUE;
 		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			if (routes.containsKey(satellite.getRouter())) {
-				if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
-					closestIdFound = satellite.satelliteId;
-				} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
-					closestIdFound = satellite.satelliteId;
+			CoreRoutedPipe satPipe = satellite.getRoutedPipe();
+			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+				continue;
+			IRouter satRouter = satPipe.getRouter();
+			for (ExitRoute route:routes){
+				if (route.destination == satRouter) {
+					if(x == -1 && y == -1) {
+						if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
+							closestIdFound = satellite.satelliteId;
+						} else if (prev && satellite.satelliteId < satelliteId && satellite.satelliteId > closestIdFound) {
+							closestIdFound = satellite.satelliteId;
+						}
+					} else if(y == -1) {
+						if (!prev && satellite.satelliteId > advancedSatelliteIdArray[x] && satellite.satelliteId < closestIdFound) {
+							closestIdFound = satellite.satelliteId;
+						} else if (prev && satellite.satelliteId < advancedSatelliteIdArray[x] && satellite.satelliteId > closestIdFound) {
+							closestIdFound = satellite.satelliteId;
+						}
+					} else {
+						//TODO
+					}
 				}
 			}
 		}
 		if (closestIdFound == Integer.MAX_VALUE) {
-			return satelliteId;
+			if(x == -1 && y == -1) {
+				return satelliteId;
+			} else if(y == -1) {
+				return advancedSatelliteIdArray[x];
+			} else {
+				//TODO
+			}
 		}
 
 		return closestIdFound;
@@ -81,49 +115,105 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void setNextSatellite(EntityPlayer player) {
-		satelliteId = getNextConnectSatelliteId(false);
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
+			satelliteId = getNextConnectSatelliteId(false, -1, -1);
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 
 	}
 	
 	// This is called by the packet PacketCraftingPipeSatelliteId
-	public void setSatelliteId(int satelliteId) {
-		this.satelliteId = satelliteId;
+	public void setSatelliteId(int satelliteId, int x, int y) {
+		if(x == -1 && y == -1) {
+			this.satelliteId = satelliteId;
+		} else if(y == -1) {
+			advancedSatelliteIdArray[x] = satelliteId;
+		} else {
+			//TODO
+		}
 	}
 
 	public void setPrevSatellite(EntityPlayer player) {
-		satelliteId = getNextConnectSatelliteId(true);
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
+			satelliteId = getNextConnectSatelliteId(true, -1, -1);
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 	}
 
 	public boolean isSatelliteConnected() {
-		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			if (satellite.satelliteId == satelliteId) {
-				if (getRouter().getRouteTable().containsKey(satellite.getRouter())) {
-					return true;
+		final List<ExitRoute> routes = getRoutedPipe().getRouter().getIRoutersByCost();
+		if(!((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter()) {
+			if(satelliteId == 0) return true;
+			for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
+				if (satellite.satelliteId == satelliteId) {
+					CoreRoutedPipe satPipe = satellite.getRoutedPipe();
+					if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+						continue;
+					IRouter satRouter = satPipe.getRouter();
+					for (ExitRoute route:routes) {
+						if (route.destination == satRouter) {
+							return true;
+						}
+					}
 				}
 			}
+		} else {
+			boolean foundAll = true;
+			for(int i=0;i<9;i++) {
+				boolean foundOne = false;
+				if(advancedSatelliteIdArray[i] == 0) {
+					continue;
+				}
+				for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
+					if (satellite.satelliteId == advancedSatelliteIdArray[i]) {
+						CoreRoutedPipe satPipe = satellite.getRoutedPipe();
+						if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+							continue;
+						IRouter satRouter = satPipe.getRouter();
+						for (ExitRoute route:routes) {
+							if (route.destination == satRouter) {
+								foundOne = true;
+								break;
+							}
+						}
+					}
+				}
+				foundAll &= foundOne;
+			}
+			return foundAll;
 		}
 		return false;
 	}
 
-	public IRouter getSatelliteRouter() {
-		for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
-			if (satellite.satelliteId == satelliteId) {
-				return satellite.getRouter();
+	public IRouter getSatelliteRouter(int x, int y) {
+		if(x == -1 && y == -1) {
+			for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
+				if (satellite.satelliteId == satelliteId) {
+					CoreRoutedPipe satPipe = satellite.getRoutedPipe();
+					if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+						continue;
+					return satPipe.getRouter();
+				}
 			}
+		} else if(y == -1) {
+			for (final BaseLogicSatellite satellite : BaseLogicSatellite.AllSatellites) {
+				if (satellite.satelliteId == advancedSatelliteIdArray[x]) {
+					CoreRoutedPipe satPipe = satellite.getRoutedPipe();
+					if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null)
+						continue;
+					return satPipe.getRouter();
+				}
+			}
+		} else {
+			//TODO
 		}
 		return null;
 	}
@@ -138,6 +228,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		signEntityZ = nbttagcompound.getInteger("CraftingSignEntityZ");
 		
 		priority = nbttagcompound.getInteger("priority");
+		for(int i=0;i<9;i++) {
+			advancedSatelliteIdArray[i] = nbttagcompound.getInteger("advancedSatelliteId" + i);
+		}
 	}
 
 	@Override
@@ -151,6 +244,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		nbttagcompound.setInteger("CraftingSignEntityZ", signEntityZ);
 		
 		nbttagcompound.setInteger("priority", priority);
+		for(int i=0;i<9;i++) {
+			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
+		}
 	}
 
 	@Override
@@ -166,6 +262,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
+			MainProxy.sendPacketToPlayer(new GuiArgumentPacket(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter()}).getPacket(),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}
@@ -176,21 +273,34 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
-		while (iterator.hasNext()) {
-			if (RequestManager.request(iterator.next().makeStack(1), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
-				iterator.remove();
+		DelayedGeneric<ItemIdentifierStack> lostItem = _lostItems.poll();
+		while (lostItem != null) {
+			
+			ItemIdentifierStack stack = lostItem.get();
+			if(_pipe != null && ! _pipe.hasOrder()) { 
+				SinkReply reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
+				if(reply == null || reply.maxNumberOfItems <1) {
+					lostItem = _lostItems.poll();
+					//iterator.remove(); // if we have no space for this and nothing to do, don't bother re-requesting the item.
+					continue;
+				}
 			}
+			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			if(received < stack.stackSize) {
+				stack.stackSize -= received;
+				_lostItems.add(new DelayedGeneric(stack,5000));
+			}
+			lostItem = _lostItems.poll();
 		}
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 	}
 
 	@Override
-	public void itemLost(ItemIdentifier item) {
-		_lostItems.add(item);
+	public void itemLost(ItemIdentifierStack item) {
+		_lostItems.add(new DelayedGeneric(item,5000));
 	}
 
 	public void openAttachedGui(EntityPlayer player) {
@@ -201,12 +311,40 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				((EntityPlayerSP)player).closeScreen();
 			}
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 			return;
 		}
+
+		//hack to avoid wrenching blocks
+		int savedEquipped = player.inventory.currentItem;
+		boolean foundSlot = false;
+		//try to find a empty slot
+		for(int i = 0; i < 9; i++) {
+			if(player.inventory.getStackInSlot(i) == null) {
+				foundSlot = true;
+				player.inventory.currentItem = i;
+				break;
+			}
+		}
+		//okay, anything that's a block?
+		if(!foundSlot) {
+			for(int i = 0; i < 9; i++) {
+				ItemStack is = player.inventory.getStackInSlot(i);
+				if(is.getItem() instanceof ItemBlock) {
+					foundSlot = true;
+					player.inventory.currentItem = i;
+					break;
+				}
+			}
+		}
+		//give up and select whatever is right of the current slot
+		if(!foundSlot) {
+			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
+		}
+
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		boolean found = false;
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
+		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.canOpenGui(tile.tile)) {
 					found = true;
@@ -226,32 +364,36 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				}
 			}
 		}
+
+		player.inventory.currentItem = savedEquipped;
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {
 		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities()) {
+		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.importRecipe(tile.tile, _dummyInventory))
 					break;
 			}
 		}
 		
+		if(player == null) return;
+		
 		if (MainProxy.isClient(player.worldObj)) {
 			// Send packet asking for import
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else{
 			// Send inventory as packet
 			final PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 
 		}
 	}
 
 	public void handleStackMove(int number) {
-		if(MainProxy.isClient()) {
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
+		if(MainProxy.isClient(this.worldObj)) {
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
 		}
 		ItemStack stack = _dummyInventory.getStackInSlot(number);
 		if(stack == null ) return;
@@ -267,19 +409,19 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	
 	public void priorityUp(EntityPlayer player) {
 		priority++;
-		if(MainProxy.isClient()) {
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
-		} else if(MainProxy.isServer() && player != null) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
+		if(MainProxy.isClient(player.worldObj)) {
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
+		} else if(player != null && MainProxy.isServer(player.worldObj)) {
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
 		}
 	}
 	
 	public void priorityDown(EntityPlayer player) {
 		priority--;
-		if(MainProxy.isClient()) {
-			PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
-		} else if(MainProxy.isServer() && player != null) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
+		if(MainProxy.isClient(player.worldObj)) {
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
+		} else if(player != null && MainProxy.isServer(player.worldObj)) {
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
 		}
 	}
 	
@@ -309,15 +451,31 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		_dummyInventory.setInventorySlotContents(slot, itemstack);
 	}
 
-	/* ** NON NETWORKING ** */
-	public void paintPathToSatellite() {
-		final IRouter satelliteRouter = getSatelliteRouter();
-		if (satelliteRouter == null) {
-			return;
+	public void setNextSatellite(EntityPlayer player, int i) {
+		if (MainProxy.isClient(player.worldObj)) {
+			final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i);
+			MainProxy.sendPacketToServer(packet.getPacket());
+		} else {
+			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i, -1);
+			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
-
-		getRouter().displayRouteTo(satelliteRouter);
 	}
 
+	public void setPrevSatellite(EntityPlayer player, int i) {
+		if (MainProxy.isClient(player.worldObj)) {
+			final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i);
+			MainProxy.sendPacketToServer(packet.getPacket());
+		} else {
+			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i, -1);
+			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+		}
+	}
 
+	public void setParentPipe(
+			PipeItemsCraftingLogistics pipeItemsCraftingLogistics) {
+		_pipe=pipeItemsCraftingLogistics;
+		
+	}
 }

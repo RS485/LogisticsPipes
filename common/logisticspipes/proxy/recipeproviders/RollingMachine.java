@@ -5,19 +5,20 @@ import java.lang.reflect.Method;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.InventoryCrafting;
-import net.minecraft.src.ItemStack;
+import net.minecraft.inventory.InventoryCrafting;
+import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 
 public class RollingMachine implements ICraftingRecipeProvider {
 
-	public static Class tileRollingMachineClass;
-	public static Method getCraftMatrixMethod;
+	private static Class<?> tileRollingMachineClass;
+	private static Method getCraftMatrixMethod;
 
 	public static boolean load() {
 		try {
-			tileRollingMachineClass = Class.forName("railcraft.common.utility.TileRollingMachine");
+			tileRollingMachineClass = Class.forName("railcraft.common.blocks.machine.alpha.TileRollingMachine");
 			getCraftMatrixMethod = tileRollingMachineClass.getMethod("getCraftMatrix");
 		} catch (Exception ex) {
 			ModLoader.getLogger().fine("Necessary classes from Railcraft were not found");
@@ -30,22 +31,22 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		return tileRollingMachineClass.isInstance(tile);
 	}
 
-	public ItemStack getResult(InventoryCrafting inventorycrafting) {
+	private ItemStack getResult(InventoryCrafting inventorycrafting, World world) {
 		if (inventorycrafting == null)
 			return null;
 		try {
-			Class c = Class.forName("railcraft.common.util.crafting.RollingMachineCraftingManager");
+			Class<?> c = Class.forName("railcraft.common.util.crafting.RollingMachineCraftingManager");
 			Method inst = c.getMethod("getInstance");
 			Object instance = inst.invoke(null);
-			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class);
-			return (ItemStack)findMatchingRecipe.invoke(instance, inventorycrafting);
+			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class, World.class);
+			return (ItemStack)findMatchingRecipe.invoke(instance, inventorycrafting, world);
 		} catch (Exception ex) {
 			ModLoader.getLogger().fine("getResult fail");
 		}		
 		return null;
 	}
 
-	public InventoryCrafting getCraftMatrix(TileEntity tile) {
+	private InventoryCrafting getCraftMatrix(TileEntity tile) {
 		try {
 			return (InventoryCrafting) getCraftMatrixMethod.invoke(tile);
 		} catch (Exception ex) {
@@ -63,7 +64,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		if (craftMatrix == null)
 			return false;
 
-		ItemStack result = getResult(craftMatrix);
+		ItemStack result = getResult(craftMatrix, tile.worldObj);
 
 		if (result == null)
 			return false;

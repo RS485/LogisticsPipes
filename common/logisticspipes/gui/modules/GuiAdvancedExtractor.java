@@ -12,31 +12,35 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.IInventory;
+import logisticspipes.utils.gui.GuiStringHandlerButton;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 
-	private final IInventory _playerInventory;
 	private final ModuleAdvancedExtractor _advancedExtractor;
 	private final int slot;
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-       //Default item toggle:
-       controlList.clear();
-       controlList.add(new GuiButton(0, width / 2 + 20, height / 2 - 34, 60, 20, _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded"));
-       if(_advancedExtractor.connectedToSidedInventory()) {
-    	   controlList.add(new GuiButton(1, width / 2 - 25, height / 2 - 34, 40, 20, "Sneaky"));
-       }
+		//Default item toggle:
+		controlList.clear();
+		controlList.add(new GuiStringHandlerButton(0, width / 2 + 20, height / 2 - 34, 60, 20, new GuiStringHandlerButton.StringHandler(){
+			@Override
+			public String getContent() {
+				return _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
+			}}));
+
+		controlList.add(new GuiButton(1, width / 2 - 25, height / 2 - 34, 40, 20, "Sneaky"));
 	}
 	
 	@Override
@@ -45,14 +49,18 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 		{
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
-				((GuiButton)controlList.get(0)).displayString = _advancedExtractor.areItemsIncluded() ? "Included" : "Excluded";
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
+				if(slot != 20) {
+					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
+				} else {
+					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, 0, -1, 0, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());	
+				}
 				break;
 			case 1:
-				if(!_advancedExtractor.connectedToSidedInventory()) {
-					controlList.remove(1);
+				if(slot != 20) {
+					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
+				} else {
+					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, _advancedExtractor.xCoord, -1, _advancedExtractor.zCoord, slot).getPacket());
 				}
-				PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
 				break;
 		}
 		
@@ -66,12 +74,11 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 		dummy.addNormalSlotsForPlayerInventory(8, 60);
 
 		//Pipe slots
-	    for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
-	    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
-	    }
-	    
-	    this.inventorySlots = dummy;
-		this._playerInventory = playerInventory;
+		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+			dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
+		}
+
+		this.inventorySlots = dummy;
 		xSize = 175;
 		ySize = 142;
 	}
@@ -96,5 +103,9 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 	@Override
 	public int getGuiID() {
 		return GuiIDs.GUI_Module_Advanced_Extractor_ID + (slot * 100);
+	}
+	
+	public void setInclude(boolean flag) {
+		_advancedExtractor.setItemsIncluded(flag);
 	}
 }

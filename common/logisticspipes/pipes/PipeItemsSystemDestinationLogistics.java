@@ -2,15 +2,18 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.DestinationLogic;
-import logisticspipes.pipes.basic.RoutedPipe;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.NBTTagCompound;
+import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.utils.SimpleInventory;
 
-public class PipeItemsSystemDestinationLogistics extends RoutedPipe {
+public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	public SimpleInventory inv = new SimpleInventory(1, "Freq Slot", 1);
 	
@@ -24,7 +27,7 @@ public class PipeItemsSystemDestinationLogistics extends RoutedPipe {
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_DESTINATION_TEXTURE;
 	}
 
@@ -37,6 +40,7 @@ public class PipeItemsSystemDestinationLogistics extends RoutedPipe {
 		if(inv.getStackInSlot(0) == null) return null;
 		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
 		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
+		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
 

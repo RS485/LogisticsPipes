@@ -1,6 +1,7 @@
 package logisticspipes.pipes;
 
-import logisticspipes.config.Textures;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 
 public class PipeLogisticsChassiMk3 extends PipeLogisticsChassi{
 
@@ -9,7 +10,7 @@ public class PipeLogisticsChassiMk3 extends PipeLogisticsChassi{
 	}
 
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_CHASSI3_TEXTURE;
 	}
 	

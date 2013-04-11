@@ -5,16 +5,16 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiScreen;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiProvider extends GuiWithPreviousGuiContainer {
 	
@@ -67,32 +67,22 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
-			//((GuiButton)controlList.get(0)).displayString = _provider.isExcludeFilter() ? "Exclude" : "Include";
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			if(_slot != 20) {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			} else {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _provider.xCoord, _provider.yCoord, _provider.zCoord, _slot).getPacket());	
+			}
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			if(_slot != 20) {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
+			} else {
+				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _provider.xCoord, _provider.yCoord, _provider.zCoord, _slot).getPacket());
+				}
 		}
 		super.actionPerformed(guibutton);
 	}
 	
-	private String getExtractionModeString(){
-		switch(_provider.getExtractionMode()){
-			case Normal:
-				return "Normal";
-			case LeaveFirst:
-				return "Leave 1st stack";
-			case LeaveLast: 
-				return "Leave last stack";
-			case LeaveFirstAndLast:
-				return "Leave first & last stack";
-			case Leave1PerStack:
-				return "Leave 1 item per stack";
-			default:
-				return "Unknown!";
-		}
-	}
-
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
@@ -109,7 +99,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		fontRenderer.drawString(_provider.getFilterInventory().getInvName(), xSize / 2 - fontRenderer.getStringWidth(_provider.getFilterInventory().getInvName())/2, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Mode: " + getExtractionModeString(), 9, ySize - 112, 0x404040);
+		fontRenderer.drawString("Mode: " + _provider.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 
 	@Override
@@ -118,16 +108,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	}
 
 	public void handleModuleModeRecive(PacketPipeInteger packet) {
-		ExtractionMode mode = _provider.getExtractionMode();
-		int modeint = mode.ordinal();
-		while(modeint != packet.integer) {
-			_provider.nextExtractionMode();
-			modeint = _provider.getExtractionMode().ordinal();
-			if(mode.ordinal() == modeint) {
-				//loop break
-				break;
-			}
-		}
+		_provider.setExtractionMode(packet.integer);
 	}
 
 	public void refreshInclude() {

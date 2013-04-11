@@ -1,6 +1,9 @@
 package logisticspipes.modules;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import java.util.List;
+
+import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -8,11 +11,17 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.INBTPacketProvider;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+import logisticspipes.utils.SinkReply.FixedPriority;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
-public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider {
+public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvider {
+	
+	public int xCoord;
+	public int yCoord;
+	public int zCoord;
 	
 	public enum FilterType {
 		Null("",0,0),
@@ -123,12 +132,14 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 			}
 			firstBee = nbttagcompound.getString("firstBeeString");
 			secondBee = nbttagcompound.getString("secondBeeString");
+			filterGroup = nbttagcompound.getInteger("filterGroup");
 		}
 
 		public void writeToNBT(NBTTagCompound nbttagcompound) {
 			nbttagcompound.setInteger("filterType", filterType.ordinal());
 			nbttagcompound.setString("firstBeeString", firstBee);
 			nbttagcompound.setString("secondBeeString", secondBee);
+			nbttagcompound.setInteger("filterGroup", filterGroup);
 		}
 
 		private boolean allAllele(ItemStack bee) {
@@ -143,30 +154,33 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 			return SimpleServiceLocator.forestryProxy.getSecondAlleleId(bee).equals(secondBee) || secondBee.equals("");
 		}
 		
-		public boolean isFiltered(ItemStack bee) {
+		public boolean isFiltered(ItemIdentifier itemID) {
+			ItemStack item = itemID.makeNormalStack(1);
 			switch(filterType) {
 			case BeeAllele:
-				return allAllele(bee);
+				return allAllele(item);
 			case Drone:
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isDrone(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isDrone(item);
 			case Princess:
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isPrincess(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isPrincess(item);
 			case Queen:
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isQueen(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isQueen(item);
 			case Purebred:
-				return firstAllele(bee) && SimpleServiceLocator.forestryProxy.isPurebred(bee);
+				return firstAllele(item) && SimpleServiceLocator.forestryProxy.isPurebred(item);
 			case Nocturnal: 
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isNocturnal(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isNocturnal(item);
 			case PureNocturnal: 
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isPureNocturnal(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isPureNocturnal(item);
 			case Flyer: 
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isFlyer(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isFlyer(item);
 			case PureFlyer: 
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isPureFlyer(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isPureFlyer(item);
 			case Cave: 
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isCave(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isCave(item);
 			case PureCave: 
-				return allAllele(bee) && SimpleServiceLocator.forestryProxy.isPureCave(bee);
+				return allAllele(item) && SimpleServiceLocator.forestryProxy.isPureCave(item);
+			default:
+				break;
 			}
 			
 			return false;
@@ -175,8 +189,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	
 	public SinkSetting[] filter = new SinkSetting[6];
 	public IWorldProvider worldProvider;
-	private IChassiePowerProvider _power;
-	private int slotNumber;
+	private IRoutedPowerProvider _power;
 	
 	public ModuleApiaristSink() {
 		filter[0] = new SinkSetting(this);
@@ -188,7 +201,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 	
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		NBTTagCompound filters = nbttagcompound.getCompoundTag("filters");
 		for(int i=0;i < filter.length; i++) {
 			NBTTagCompound filterNBT = filters.getCompoundTag(""+i);
@@ -198,7 +211,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		NBTTagCompound filters = new NBTTagCompound();
 		for(int i=0; i < filter.length; i++) {
 			NBTTagCompound filterNBT = new NBTTagCompound();
@@ -209,7 +222,7 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		this.worldProvider = world;
 		_power = powerprovider;
 	}
@@ -219,47 +232,42 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 		return GuiIDs.GUI_Module_Apiarist_Sink_ID;
 	}
 	
-	public boolean isFiltered(ItemStack itemBee) {
-		Boolean[] groups = new Boolean[6];
-		for(int i = 0;i < 6;i++) {
-			groups[i] = null;
-			for(SinkSetting setting:filter) {
-				if(setting.filterGroup - 1 == i) {
-					if(groups[i] == null) {
-						groups[i] = setting.isFiltered(itemBee);
+	public boolean isFiltered(ItemIdentifier item) {
+		for (int i = 0; i < 6; i++) {
+			Boolean accept = null;
+			for (SinkSetting setting : filter) {
+				if (setting.filterGroup - 1 == i) {
+					if (accept == null) {
+						accept = setting.isFiltered(item);
 					} else {
-						groups[i] &= setting.isFiltered(itemBee);
+						accept = accept && setting.isFiltered(item);
 					}
 				}
 			}
+			if (accept != null && accept) {
+				return true;
+			}
 		}
-		for(int i = 0;i < 6;i++) {
-			if(groups[i] != null) {
-				if(groups[i]) {
+		for (SinkSetting setting : filter) {
+			if (setting.filterGroup == 0) {
+				if (setting.isFiltered(item)) {
 					return true;
 				}
 			}
-		}
-		for(SinkSetting setting:filter) {
-			if(setting.filterGroup == 0) {
-				if(setting.isFiltered(itemBee)) {
-					return true;
-				}
-			}
-		}
+	    }
 		return false;
 	}
 	
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_BeeSink, 0, true, false, 2, 0);
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
+	public SinkReply sinksItem(ItemIdentifier itemID, int bestPriority, int bestCustomPriority) {
+		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
+		ItemStack item = itemID.makeNormalStack(1);
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {
 			if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-				if(isFiltered(item)) {
-					SinkReply reply = new SinkReply();
-					reply.fixedPriority = SinkReply.FixedPriority.APIARIST_BeeSink;
-					reply.isPassive = true;
-					if(_power.useEnergy(2)) {
-						return reply;
+				if(isFiltered(itemID)) {
+					if(_power.canUseEnergy(2)) {
+						return _sinkReply;
 					}
 				}
 			}
@@ -277,14 +285,42 @@ public class ModuleApiaristSink implements ILogisticsModule, INBTPacketProvider 
 
 	@Override
 	public void readFromPacketNBT(NBTTagCompound tag) {
-		readFromNBT(tag,"");
+		readFromNBT(tag);
 	}
 
 	@Override
 	public void writeToPacketNBT(NBTTagCompound tag) {
-		writeToNBT(tag,"");
+		writeToNBT(tag);
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
+	}
 }

@@ -1,13 +1,15 @@
 package logisticspipes.blocks;
 
+import java.util.Random;
+
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import net.minecraft.src.AxisAlignedBB;
-import net.minecraft.src.BlockContainer;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IBlockAccess;
-import net.minecraft.src.Material;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.block.BlockContainer;
+import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
 
 public class LogisticsSignBlock extends BlockContainer {
 
@@ -93,7 +95,7 @@ public class LogisticsSignBlock extends BlockContainer {
 		if (meta == SignBlockID && tile instanceof LogisticsSignTileEntity) {
 			PipeItemsCraftingLogistics pipe = ((LogisticsSignTileEntity)tile).getAttachedSignOwnerPipe();
 			if(pipe != null) {
-				pipe.logic.blockActivated(player);
+				pipe.blockActivated(world, x, y, z, player);
 				return true;
 			}
 		}
@@ -112,4 +114,10 @@ public class LogisticsSignBlock extends BlockContainer {
 		}
 		super.breakBlock(par1World, par2, par3, par4, par5, par6);
     }
+
+	@Override
+	public int quantityDropped(Random par1Random)
+	{
+		return 0;
+	}
 }

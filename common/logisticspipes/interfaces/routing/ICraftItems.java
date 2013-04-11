@@ -8,14 +8,13 @@
 
 package logisticspipes.interfaces.routing;
 
-import java.util.LinkedList;
-
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.utils.ItemIdentifier;
 
 public interface ICraftItems extends IProvideItems, IRequestItems{
 	void registerExtras(int count);
-	void addCrafting(LinkedList<CraftingTemplate> crafters);
+	CraftingTemplate addCrafting();
 	//void canCraft(LogisticsTransaction transaction);
 	ItemIdentifier getCraftedItem();
+	int getTodo();
 }

@@ -5,7 +5,7 @@ import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.Tessellator;
+import net.minecraft.client.renderer.Tessellator;
 
 import org.lwjgl.opengl.GL11;
 

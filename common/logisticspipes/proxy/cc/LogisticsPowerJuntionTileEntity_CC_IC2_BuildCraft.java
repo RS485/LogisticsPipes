@@ -28,7 +28,7 @@ public class LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft extends
 	}
 
 	@Override
-	public void attach(IComputerAccess computer, String computerSide) {}
+	public void attach(IComputerAccess computer) {}
 
 	@Override
 	public void detach(IComputerAccess computer) {}

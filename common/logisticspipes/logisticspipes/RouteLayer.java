@@ -8,9 +8,11 @@
 
 package logisticspipes.logisticspipes;
 
+import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import buildcraft.api.core.Orientations;
+import net.minecraftforge.common.ForgeDirection;
 
 /**
  * @author Krapht
@@ -19,7 +21,7 @@ import buildcraft.api.core.Orientations;
  */
 public class RouteLayer {
 
-	private final IRouter _router;
+	protected final IRouter _router;
 	private final TransportLayer _transport;
 	
 	public RouteLayer(IRouter router, TransportLayer transport) {
@@ -27,40 +29,51 @@ public class RouteLayer {
 		_transport = transport;
 	}
 	
-	public Orientations getOrientationForItem(IRoutedItem item){
+	public ForgeDirection getOrientationForItem(IRoutedItem item, ForgeDirection blocked){
 		
-		//If items have no destination, see if we can get one (unless it has a source, then drop it)
-		if (item.getDestination() == null){
-			if (item.getSource() != null) return Orientations.Unknown;
-			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true);
+		item.checkIDFromUUID();
+		//If a item has no destination, find one
+		if (item.getDestination() < 0) {
+			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
 		}
 		
-		//If the destination is unknown / unroutable		
-		if (item.getDestination() != null && !_router.hasRoute(item.getDestination())){
-				item = SimpleServiceLocator.logisticsManager.destinationUnreachable(item, _router.getId());
+		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back		
+		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination()) || item.getArrived())){
+			if(!item.isItemRelayed()) {
+				item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
+			} else {
+				int destination = item.getDestination();
+				for(ExitRoute node:_router.getIRoutersByCost()) {
+					if(node.destination instanceof IFilteringRouter) {
+						if(((IFilteringRouter)node.destination).isIdforOtherSide(destination)) {
+							item.replaceRelayID(node.destination.getSimpleID());
+							break;
+						}
+					}
+				}
+			}
 		}
 		
 		//If we still have no destination or client side unroutable, drop it
-		if (item.getDestination() == null) { 
-			return Orientations.Unknown;
+		if (item.getDestination() < 0) { 
+			return ForgeDirection.UNKNOWN;
 		}
-
 		
 		//Is the destination ourself? Deliver it
-		if (item.getDestination().equals(_router.getId())){
+		if (item.getDestinationUUID().equals(_router.getId())){
 			
-			//if (!_transport.stillWantItem(item)){
-			//	return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getId(), true));
-			//}
+			if (!_transport.stillWantItem(item)){
+				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
+			}
 			
 			item.setDoNotBuffer(true);
-			Orientations o =_transport.itemArrived(item);
-			return o != null?o:Orientations.Unknown;
+			ForgeDirection o =_transport.itemArrived(item, blocked);
+			return o != null?o:ForgeDirection.UNKNOWN;
 		}
 		
 		//Do we now know the destination?
 		if (!_router.hasRoute(item.getDestination())){
-			return Orientations.Unknown;
+			return ForgeDirection.UNKNOWN;
 		}
 		//Which direction should we send it
 		return _router.getExitFor(item.getDestination());

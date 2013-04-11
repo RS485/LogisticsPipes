@@ -2,8 +2,8 @@ package codechicken.nei.forge;
 
 import java.util.List;
 
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.ItemStack;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.item.ItemStack;
 
 public interface IContainerTooltipHandler {
 	public List<String> handleTooltipFirst(GuiContainer gui, int mousex, int mousey, List<String> currenttip);

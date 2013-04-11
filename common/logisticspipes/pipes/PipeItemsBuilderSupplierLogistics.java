@@ -8,16 +8,14 @@
 
 package logisticspipes.pipes;
 
-import logisticspipes.config.Textures;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicBuilderSupplier;
-import logisticspipes.pipes.basic.RoutedPipe;
-import logisticspipes.utils.InventoryUtilFactory;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 
-public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRequestItems{
-
-	private InventoryUtilFactory _inventoryUtilFactory = new InventoryUtilFactory();
+public class PipeItemsBuilderSupplierLogistics extends CoreRoutedPipe implements IRequestItems{
 
 	private boolean _lastRequestFailed = false;
 		
@@ -26,13 +24,8 @@ public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRe
 		((LogicBuilderSupplier)logic)._power = this;
 	}
 	
-	public PipeItemsBuilderSupplierLogistics(int itemID, InventoryUtilFactory inventoryUtilFactory) {
-		this(itemID);		
-		_inventoryUtilFactory = inventoryUtilFactory;
-	}
-	
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE;
 	}
 	
@@ -54,5 +47,10 @@ public class PipeItemsBuilderSupplierLogistics extends RoutedPipe implements IRe
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
 	}
 }

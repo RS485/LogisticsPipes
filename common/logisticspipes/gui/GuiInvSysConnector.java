@@ -1,30 +1,30 @@
 package logisticspipes.gui;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.ItemStack;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	
@@ -37,7 +37,15 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		super(180,200,0,0);
 		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
 		
-		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, LogisticsPipes.LogisticsItemCard.shiftedIndex);
+		dummy.addRestrictedSlot(0, pipe.inv, 98, 17, new ISlotCheck() {
+			@Override
+			public boolean isStackAllowed(ItemStack itemStack) {
+				if(itemStack == null) return false;
+				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
+				if(itemStack.getItemDamage() != LogisticsItemCard.FREQ_CARD) return false;
+				return true;
+			}
+		});
 		
 		dummy.addNormalSlotsForPlayerInventory(10, 115);
 		
@@ -46,6 +54,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		localresistance = pipe.resistance;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -82,12 +91,11 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		int column = 0;
 		int row = 0;
 		for(ItemIdentifierStack itemStack : _allItems) {
-			ItemIdentifier item = itemStack.getItem();
 			ppi++;
 			
 			if (ppi <= 27 * page) continue;
 			if (ppi > 27 * (page+1)) continue;
-			ItemStack st = itemStack.makeNormalStack();
+			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = 9 + 18 * column + guiLeft;
 			int y = 59 + 18 * row + guiTop;
 
@@ -110,7 +118,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	
 	private void refreshPacket() {
 		PacketCoordinates packet = new PacketCoordinates(NetworkConstants.INC_SYS_CON_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord);
-		PacketDispatcher.sendPacketToServer(packet.getPacket());
+		MainProxy.sendPacketToServer(packet.getPacket());
 	}
 	
 	private void pageDown() {
@@ -158,7 +166,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			}
 		} else if(button.id == 5) {
 			pipe.resistance = localresistance;
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
 		}
 	}
 
@@ -167,9 +175,9 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		return GuiIDs.GUI_Inv_Sys_Connector_ID;
 	}
 
-	public void handleContentAnswer(LinkedList<ItemIdentifierStack> _allItems2) {
+	public void handleContentAnswer(Collection<ItemIdentifierStack> allItems) {
 		_allItems.clear();
-		_allItems.addAll(_allItems2);
+		_allItems.addAll(allItems);
 	}
 
 	public void handleResistanceAnswer(int resistance) {

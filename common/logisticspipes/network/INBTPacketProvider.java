@@ -1,6 +1,6 @@
 package logisticspipes.network;
 
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.nbt.NBTTagCompound;
 
 public interface INBTPacketProvider {
 	public void readFromPacketNBT(NBTTagCompound tag);

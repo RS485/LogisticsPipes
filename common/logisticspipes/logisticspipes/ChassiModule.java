@@ -1,20 +1,22 @@
 package logisticspipes.logisticspipes;
 
-import logisticspipes.interfaces.IChassiePowerProvider;
+import java.util.List;
+
+import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
 
-public class ChassiModule implements ILogisticsModule{
+public class ChassiModule implements ILogisticsGuiModule{
 	
 	private final ILogisticsModule[] _modules;
 	private final PipeLogisticsChassi _parentPipe;
@@ -41,26 +43,32 @@ public class ChassiModule implements ILogisticsModule{
 	}
 	
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
-		
-		//Always deny items when we can't put the item anywhere
-		IInventory inv = _parentPipe.getInventory();
-		if (inv == null) return null;
-		InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
-		int roomForItem = invUtil.roomForItem(ItemIdentifier.get(item)); 
-		
-		if (roomForItem < 1) return null;
-		
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+		SinkReply bestresult = null;
 		for (ILogisticsModule module : _modules){
 			if (module != null){
-				SinkReply result = module.sinksItem(item);
-				if (result != null){
-					result.maxNumberOfItems = roomForItem;
-					return result;
+				SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority);
+				if (result != null) {
+					bestresult = result;
+					bestPriority = result.fixedPriority.ordinal();
+					bestCustomPriority = result.customPriority;
 				}
 			}
 		}
-		return null;
+
+		if (bestresult == null) return null;
+		//Always deny items when we can't put the item anywhere
+		IInventory inv = _parentPipe.getSneakyInventory();
+		if (inv == null) return null;
+		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		int roomForItem = invUtil.roomForItem(item); 
+		
+		if (roomForItem < 1) return null;
+
+		if(bestresult.maxNumberOfItems == 0) {
+			return new SinkReply(bestresult, roomForItem);
+		}
+		return new SinkReply(bestresult, Math.min(bestresult.maxNumberOfItems, roomForItem));
 	}
 
 
@@ -76,23 +84,23 @@ public class ChassiModule implements ILogisticsModule{
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < _modules.length; i++){
 			if (_modules[i] != null){
 				NBTTagCompound slot = nbttagcompound.getCompoundTag("slot" + i);
 				if (slot != null){
-					_modules[i].readFromNBT(slot, "");
+					_modules[i].readFromNBT(slot);
 				}
 			}
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		for (int i = 0; i < _modules.length; i++){
 			if (_modules[i] != null){
 				NBTTagCompound slot = new NBTTagCompound();
-				_modules[i].writeToNBT(slot, "");
+				_modules[i].writeToNBT(slot);
 				nbttagcompound.setTag("slot"+i, slot);
 			}
 		}
@@ -107,12 +115,40 @@ public class ChassiModule implements ILogisticsModule{
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		//Not used in Chassie Module
 	}
 
 	@Override
 	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
 		//Not used in Chassie Module
+	}
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {		
+		return false;
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		for (ILogisticsModule module : _modules){
+			if(module != null && module.recievePassive())
+				return true;
+		}
+		return false;
 	}
 }

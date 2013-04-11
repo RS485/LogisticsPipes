@@ -13,18 +13,16 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.GuiButton;
-import net.minecraft.src.GuiContainer;
-import net.minecraft.src.IInventory;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.inventory.IInventory;
 
 import org.lwjgl.opengl.GL11;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-
 public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
-	private IInventory playerInventory;
 	private IInventory dummyInventory;
 	private LogicLiquidSupplier logic; 
 	
@@ -45,7 +43,6 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 		}
 		this.inventorySlots = dummy; 
 
-		this.playerInventory = playerInventory;
 		this.dummyInventory = dummyInventory;
 		this.logic = logic;
 		xSize = 194;
@@ -70,6 +67,7 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
@@ -83,7 +81,7 @@ public class GuiLiquidSupplierPipe extends GuiContainer implements IGuiIDHandler
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-			PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		

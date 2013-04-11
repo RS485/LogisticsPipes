@@ -26,73 +26,85 @@ TODO later, maybe....
 
 package logisticspipes;
 
+import java.io.File;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_IC2_BuildCraft;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.config.Configs;
-import logisticspipes.config.Textures;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
+import logisticspipes.log.RequestLogFormator;
+import logisticspipes.logic.BaseLogicSatellite;
+import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
+import logisticspipes.main.CreativeTabLP;
+import logisticspipes.main.LogisticsEventListener;
+import logisticspipes.main.LogisticsWorldManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.cc.CCProxy;
-import logisticspipes.proxy.cc.CCTurtleProxy;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
-import logisticspipes.proxy.forestry.ForestryProxy;
-import logisticspipes.proxy.ic2.ElectricItemProxy;
-import logisticspipes.proxy.interfaces.ICCProxy;
-import logisticspipes.proxy.interfaces.IElectricItemProxy;
-import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
+import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
+import logisticspipes.proxy.specialconnection.SpecialTileConnection;
+import logisticspipes.proxy.specialconnection.TeleportPipes;
+import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
-import logisticspipes.ticks.PacketBufferHandlerThread;
+import logisticspipes.textures.Textures;
+import logisticspipes.ticks.ClientPacketBufferHandlerThread;
+import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
+import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
-import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.Block;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+import logisticspipes.utils.LiquidIdentifier;
+import net.minecraft.block.Block;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
-import buildcraft.api.core.Orientations;
-import buildcraft.transport.TileGenericPipe;
+import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
+import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.Mod.PostInit;
 import cpw.mods.fml.common.Mod.PreInit;
 import cpw.mods.fml.common.Mod.ServerStarting;
 import cpw.mods.fml.common.Mod.ServerStopping;
-import cpw.mods.fml.common.Side;
+import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
@@ -102,11 +114,35 @@ import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.FMLInjectionData;
+import cpw.mods.fml.relauncher.Side;
 
-@Mod(modid = "LogisticsPipes|Main", name = "Logistics Pipes", version = "%VERSION%", dependencies = "required-after:BuildCraft|Transport;required-after:BuildCraft|Builders;required-after:BuildCraft|Silicon;after:IC2;after:Forestry", useMetadata = true)
-@NetworkMod(channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME}, packetHandler = PacketHandler.class, clientSideRequired = true, serverSideRequired = true)
+@Mod(
+		modid = "LogisticsPipes|Main",
+		name = "Logistics Pipes",
+		version = "%VERSION%",
+		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
+		dependencies = "required-after:Forge@[6.5.0.0,);" +
+				"required-after:BuildCraft|Core;" +
+				"required-after:BuildCraft|Transport;" +
+				"required-after:BuildCraft|Builders;" +
+				"required-after:BuildCraft|Silicon;" +
+				"after:IC2;" +
+				"after:Forestry;" +
+				"after:Thaumcraft;" +
+				"after:CCTurtle;" +
+				"after:ComputerCraft;" +
+				"after:factorization;" +
+				"after:GregTech_Addon;" +
+				"after:AppliedEnergistics;" +
+				"after:ThermalExpansion|Transport;" +
+				"after:BetterStorage")
+@NetworkMod(
+		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},
+		packetHandler = PacketHandler.class,
+		clientSideRequired = true,
+		serverSideRequired = true)
 public class LogisticsPipes {
-	
 
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
@@ -115,6 +151,9 @@ public class LogisticsPipes {
 	public static boolean DisplayRequests;
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static String MCVersion = "%MCVERSION%";
+	
+	private boolean certificateError = false;
 
 	// Items
 	public static Item LogisticsBasicPipe;
@@ -140,6 +179,14 @@ public class LogisticsPipes {
 	public static Item LogisticsEntrance;
 	public static Item LogisticsDestination;
 	public static Item LogisticsCraftingPipeMK3;
+	public static Item LogisticsFirewall;
+	
+	//Liquid Pipes
+	public static Item LogisticsLiquidConnector;
+	public static Item LogisticsLiquidBasic;
+	public static Item LogisticsLiquidInsertion;
+	public static Item LogisticsLiquidProvider;
+	public static Item LogisticsLiquidRequest;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -149,18 +196,25 @@ public class LogisticsPipes {
 	public static Item LogisticsItemCard;
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
-	
+	public static Item LogisticsUpgradeManager;
+	public static Item LogisticsLiquidContainer;
+
 	public static ItemModule ModuleItem;
+	public static ItemUpgrade UpgradeItem;
 	
 	private Textures textures = new Textures();
 	
-	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;	
-	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe;
+	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
+	
+	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
 	
 	//Blocks
 	public static Block logisticsSign;
 	public static Block logisticsSolidBlock;
+	
+	public static Logger log;
+	public static Logger requestLog;
 	
 	@Init
 	public void init(FMLInitializationEvent event) {
@@ -169,8 +223,12 @@ public class LogisticsPipes {
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
+		SimpleServiceLocator.setSecurityStationManager(manager);
 		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
+		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
+		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
+		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
 		
 		textures.load(event);
 		
@@ -187,100 +245,52 @@ public class LogisticsPipes {
 		}
 		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
 		if(event.getSide() == Side.CLIENT) {
-			new PacketBufferHandlerThread(Side.CLIENT);
-			new PacketBufferHandlerThread(Side.SERVER);	
-		} else {
-			new PacketBufferHandlerThread(Side.SERVER);	
+			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
 		}
+		SimpleServiceLocator.setServerPacketBufferHandlerThread(new ServerPacketBufferHandlerThread());	
+		for(int i=0; i<Configs.MULTI_THREAD_NUMBER; i++) {
+			new RoutingTableUpdateThread(i);
+		}
+		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
+		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
 	}
 	
 	@PreInit
 	public void LoadConfig(FMLPreInitializationEvent evt) {
-		Configs.load();
+		Configs.load(evt);
+		log = evt.getModLog();
+		requestLog = Logger.getLogger("LogisticsPipes|Request");
+		requestLog.setUseParentHandlers(false);
+		try {
+			File logPath = new File((File) FMLInjectionData.data()[6], "LogisticsPipes-Request.log");
+			FileHandler fileHandler = new FileHandler(logPath.getPath(), true);
+			fileHandler.setFormatter(new RequestLogFormator());
+			fileHandler.setLevel(Level.ALL);
+			requestLog.addHandler(fileHandler);
+		} catch (Exception e) {}
+		if(DEBUG) {
+			log.setLevel(Level.ALL);
+		}
+		if(certificateError) {
+			log.severe("Certificate not correct");
+			log.severe("This in not a LogisticsPipes version from RS485.");
+		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
-		if(Loader.isModLoaded("Forestry")) {
-			SimpleServiceLocator.setForestryProxy(new ForestryProxy());
-			System.out.println("Loaded ForestryProxy");
-		} else {
-			//DummyProxy
-			SimpleServiceLocator.setForestryProxy(new IForestryProxy() {
-				@Override public boolean isBee(ItemStack item) {return false;}
-				@Override public boolean isBee(ItemIdentifier item) {return false;}
-				@Override public boolean isAnalysedBee(ItemStack item) {return false;}
-				@Override public boolean isAnalysedBee(ItemIdentifier item) {return false;}
-				@Override public boolean isTileAnalyser(TileEntity tile) {return false;}
-				@Override public boolean forestryEnabled() {return false;}
-				@Override public boolean isKnownAlleleId(String uid, World world) {return false;}
-				@Override public String getAlleleName(String uid) {return "";}
-				@Override public String getFirstAlleleId(ItemStack bee) {return "";}
-				@Override public String getSecondAlleleId(ItemStack bee) {return "";}
-				@Override public boolean isDrone(ItemStack bee) {return false;}
-				@Override public boolean isFlyer(ItemStack bee) {return false;}
-				@Override public boolean isPrincess(ItemStack bee) {return false;}
-				@Override public boolean isQueen(ItemStack bee) {return false;}
-				@Override public boolean isPurebred(ItemStack bee) {return false;}
-				@Override public boolean isNocturnal(ItemStack bee) {return false;}
-				@Override public boolean isPureNocturnal(ItemStack bee) {return false;}
-				@Override public boolean isPureFlyer(ItemStack bee) {return false;}
-				@Override public boolean isCave(ItemStack bee) {return false;}
-				@Override public boolean isPureCave(ItemStack bee) {return false;}
-				@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
-				@Override public int getIconIndexForAlleleId(String id, int phase) {return 0;}
-				@Override public int getColorForAlleleId(String id, int phase) {return 0;}
-				@Override public int getRenderPassesForAlleleId(String id) {return 0;}
-				@Override public void addCraftingRecipes() {}
-				@Override public String getNextAlleleId(String uid, World world) {return null;}
-				@Override public String getPrevAlleleId(String uid, World world) {return null;}
-			});
-			System.out.println("Loaded Forestry DummyProxy");
-		}
-		if(Loader.isModLoaded("IC2")) {
-			SimpleServiceLocator.setElectricItemProxy(new ElectricItemProxy());
-			System.out.println("Loaded IC2Proxy");
-		} else {
-			//DummyProxy
-			SimpleServiceLocator.setElectricItemProxy(new IElectricItemProxy() {
-				@Override public boolean isElectricItem(ItemStack stack) {return false;}
-				@Override public int getCharge(ItemStack stack) {return 0;}
-				@Override public int getMaxCharge(ItemStack stack) {return 0;}
-				@Override public boolean isDischarged(ItemStack stack, boolean partial) {return false;}
-				@Override public boolean isCharged(ItemStack stack, boolean partial) {return false;}
-				@Override public boolean isDischarged(ItemStack stack, boolean partial, Item electricItem) {return false;}
-				@Override public boolean isCharged(ItemStack stack, boolean partial, Item electricItem) {return false;}
-				@Override public void addCraftingRecipes() {}
-				@Override public boolean hasIC2() {return false;}
-			});
-			System.out.println("Loaded IC2 DummyProxy");
-		}
-		if(Loader.isModLoaded("ComputerCraft")) {
-			if(Loader.isModLoaded("CCTurtle")) {
-				SimpleServiceLocator.setCCProxy(new CCTurtleProxy());
-				System.out.println("Loaded CCTurtleProxy");
-			} else {
-				SimpleServiceLocator.setCCProxy(new CCProxy());
-				System.out.println("Loaded CCProxy");
-			}
-		} else {
-			//DummyProxy
-			SimpleServiceLocator.setCCProxy(new ICCProxy() {
-				@Override public boolean isTurtle(TileEntity tile) {return false;}
-				@Override public boolean isComputer(TileEntity tile) {return false;}
-				@Override public boolean isCC() {return false;}
-				@Override public Orientations getOrientation(Object computer, String computerSide, TileEntity tile) {return Orientations.Unknown;}
-				@Override public boolean isLuaThread(Thread thread) {return false;}
-			});
-			System.out.println("Loaded CC DummyProxy");
-		}
-		SimpleServiceLocator.buildCraftProxy.registerTeleportPipes();
-				
+		ProxyManager.load();
+		SpecialInventoryHandlerManager.load();
+
+		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
+		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
+		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
 		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
 		
-		LogisticsItemCard = new LogisticsItemCard(Configs.ItemCardId);
+		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
 		LogisticsItemCard.setItemName("logisticsItemCard");
 		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
@@ -299,23 +309,37 @@ public class LogisticsPipes {
 		} else {
 			renderIndex = 0;
 		}
-		LogisticsHUDArmor = new ItemHUDArmor(Configs.ItemHUDId, renderIndex);
+		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
 		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
 		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
 		
-		LogisticsParts = new ItemParts(Configs.ItemPartsId);
+		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
 		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
 		LogisticsParts.setItemName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
-		ModuleItem = new ItemModule(Configs.ItemModuleId);
+		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
 		ModuleItem.setItemName("itemModule");
 		ModuleItem.loadModules();
 		
-		LogisticsItemDisk = new ItemDisk(Configs.ItemDiskId);
+		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
 		LogisticsItemDisk.setItemName("itemDisk");
 		LogisticsItemDisk.setIconIndex(3);
+		
+		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
+		UpgradeItem.setItemName("itemUpgrade");
+		UpgradeItem.loadUpgrades();
+		
+		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
+		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
+		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
+		
+		if(DEBUG) {
+			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
+			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
+			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
@@ -330,9 +354,17 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,1), "en_US", "Logistics HUD Glass");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
 		
-		SimpleServiceLocator.electricItemProxy.addCraftingRecipes();
+		if(DEBUG) {
+			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
+		}
+		
+		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
+		
+		SimpleServiceLocator.IC2Proxy.addCraftingRecipes();
 		SimpleServiceLocator.forestryProxy.addCraftingRecipes();
+		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
@@ -348,7 +380,7 @@ public class LogisticsPipes {
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		
 		//Power Junction
-		if(SimpleServiceLocator.electricItemProxy.hasIC2()) {
+		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
 				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
 			} else {
@@ -364,27 +396,49 @@ public class LogisticsPipes {
 		
 		//LogisticsTileGenerticPipe
 		if(SimpleServiceLocator.ccProxy.isCC()) {
-			logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
-		} else {
-			logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
+			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
+		} else if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
+			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
 		}
 		
 		MainProxy.proxy.registerTileEntitis();
 
 		RecipeManager.loadRecipes();
+		
+		//Registering special particles
+		MainProxy.proxy.registerParticles();
+		
+		//init Liquids
+		LiquidIdentifier.initFromForge(false);
+		LiquidIdentifier.get(9, 0, "water");
+		LiquidIdentifier.get(11, 0, "lava");
 	}
 	
 	@ServerStopping
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
-		ServerRouter.resetStatics();
+		QueuedTasks.clearAllTasks();
+		HudUpdateTick.clearUpdateFlags();
+		BaseLogicSatellite.cleanup();
+		ServerRouter.cleanup();
 		if(event.getSide().equals(Side.CLIENT)) {
-			LogisticsHUDRenderer.providers.clear();
+			LogisticsHUDRenderer.instance().clear();
 		}
 	}
 	
 	@ServerStarting
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
+	}
+	
+	@FingerprintWarning
+	public void certificateWarning(FMLFingerprintViolationEvent warning) {
+		if(!DEBUG) {
+			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");
+			System.out.println("[LogisticsPipes|Certificate] Expected: " + warning.expectedFingerprint);
+			System.out.println("[LogisticsPipes|Certificate] File: " + warning.source.getAbsolutePath());
+			System.out.println("[LogisticsPipes|Certificate] This in not a LogisticsPipes version from RS485.");
+			certificateError = true;
+		}
 	}
 }

@@ -1,58 +1,64 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collection;
 import java.util.List;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDElectricManager;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 
-public class ModuleElectricManager implements ILogisticsModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
+public class ModuleElectricManager implements ILogisticsGuiModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Electric Items", 1);
 	private boolean _dischargeMode;
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
-	protected IChassiePowerProvider _power;
+	protected IRoutedPowerProvider _power;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
-	
+
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
-	
+	public int xCoord = 0;
+	public int yCoord = 0;
+	public int zCoord = 0;
+	private IWorldProvider _world;
+
 	private IHUDModuleRenderer HUD = new HUDElectricManager(this);
-	
+
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
-	
+
 	public ModuleElectricManager() {
 		_filterInventory.addListener(this);
 	}
@@ -70,43 +76,29 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
-	public static int getCharge(ItemStack item)
-	{
-		if (SimpleServiceLocator.electricItemProxy.isElectricItem(item) && item.hasTagCompound())
-			return item.getTagCompound().getInteger("charge");
-		else
-			return 0;
-	}
 
-	public boolean findElectricItem(ItemStack item, boolean discharged, boolean partial) {
-		if (!SimpleServiceLocator.electricItemProxy.isElectricItem(item)) return false;
-
-		for (int i = 0; i < _filterInventory.getSizeInventory(); i++){
-			ItemStack stack = _filterInventory.getStackInSlot(i);
-			if (stack == null) continue;
-			if (discharged && SimpleServiceLocator.electricItemProxy.isDischarged(item,partial,stack.getItem()))
-				return true;
-			if (!discharged && SimpleServiceLocator.electricItemProxy.isCharged(item,partial,stack.getItem()))
-				return true;
-		}
-		return false;
-	}
-
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 1);
 	@Override
-	public SinkReply sinksItem(ItemStack item) {
-		if (findElectricItem(item, !isDischargeMode(), true)) {
-			SinkReply reply = new SinkReply();
-			reply.fixedPriority = FixedPriority.ItemSink;
-			reply.isPassive = true;
-			if(_power.useEnergy(2)) {
-				return reply;
-			}
+	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority) {
+		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
+		if (!_power.canUseEnergy(1)) return null;
+		ItemStack stack = stackID.makeNormalStack(1);
+		if (isOfInterest(stack)) {
+			//If item is full and in discharge mode, sink.
+			if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) return _sinkReply;
+
+			//If item is empty and in charge mode, sink.
+			if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) return _sinkReply;
+
+			//If item is partially charged, sink.
+			if (SimpleServiceLocator.IC2Proxy.isPartiallyCharged(stack)) return _sinkReply;
 		}
 		return null;
 	}
@@ -120,39 +112,68 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	public ILogisticsModule getSubModule(int slot) {return null;}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		setDischargeMode(nbttagcompound.getBoolean("discharge"));
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
 		nbttagcompound.setBoolean("discharge", isDischargeMode());
 	}
 
 	@Override
 	public void tick() {
-		if(MainProxy.isClient()) return;
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 
-		IInventory inv = _invProvider.getInventory();
+		IInventory inv = _invProvider.getPointedInventory();
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
-			ItemStack item = inv.getStackInSlot(i);
-			if (item != null && findElectricItem(item, isDischargeMode(), false)) {
-				if(_power.useEnergy(6)) {
-					_itemSender.sendStack(inv.decrStackSize(i,1));
+			ItemStack stack = inv.getStackInSlot(i);
+			if (stack == null) return;
+			if (isOfInterest(stack)) {
+				//If item set to discharge and its fully discharged, then extract it.
+				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					if(reply == null) continue;
+					if(_power.useEnergy(10)) {
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+						return;
+					}
+				}
+				//If item set to charge  and its fully charged, then extract it.
+				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					if(reply == null) continue;
+					if(_power.useEnergy(10)) {
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+						return;
+					}
 				}
 			}
 		}
 	}
 
+	private boolean isOfInterest(ItemStack stack) {
+		if (!SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) return false;
+		String stackName = stack.getItemName();
+		for (int i = 0; i < _filterInventory.getSizeInventory(); i++) {
+			ItemStack fStack = _filterInventory.getStackInSlot(i);
+			if (fStack == null) continue;
+			String fStackName = fStack.getItemName();
+			if (stackName.equals(fStackName)) return true;
+		}
+		return false;
+	}	
+
 	@Override
 	public List<String> getClientInformation() {
 		List<String> list = new ArrayList<String>();
-		list.add("Discharge Mode: " + (isDischargeMode() ? "Yes" : "No"));
+		list.add("Mode: " + (isDischargeMode() ? "Discharge Items" : "Charge Items"));
 		list.add("Supplied: ");
 		list.add("<inventory>");
 		list.add("<that>");
@@ -170,19 +191,19 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 
 	@Override
 	public void startWatching() {
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		PacketDispatcher.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
-		PacketDispatcher.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, xCoord, yCoord, zCoord, slot, isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, xCoord, yCoord, zCoord, slot, isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
 	}
 
 	@Override
@@ -201,7 +222,32 @@ public class ModuleElectricManager implements ILogisticsModule, IClientInformati
 	}
 
 	@Override
-	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		_filterInventory.handleItemIdentifierList(list);
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return true;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		return null;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {
+		return false; // would be true, but hasGenericInterests means this is interested anyway.
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return true;
 	}
 }

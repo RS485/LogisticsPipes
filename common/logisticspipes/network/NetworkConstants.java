@@ -57,7 +57,7 @@ public class NetworkConstants {
 	public static final int HUD_STOP_WATCHING = 51;
 	public static final int PIPE_CHEST_CONTENT = 52;
 	public static final int ORDER_MANAGER_CONTENT = 53;
-	public static final int REQUEST_ROUTER_UPDATE = 54;
+	//public static final int REQUEST_ROUTER_UPDATE = 54;
 	public static final int ROUTER_UPDATE_CONTENT = 55;
 	public static final int BUFFERED_PACKET_TRANSFER = 56;
 	public static final int INC_SYS_CON_RESISTANCE = 57;
@@ -81,4 +81,26 @@ public class NetworkConstants {
 	public static final int ACTIVATNBTDEBUG = 75;
 	public static final int HUD_SETTING_SET = 76;
 	public static final int REQUEST_GUI_DIMENSION = 77;
+	public static final int PARTICLE_FX_RENDER_DATA = 78;
+	public static final int REQUEST_COMPONENTS = 79;
+	public static final int COMPONENT_LIST = 80;
+	public static final int REQUEST_UPDATE_NAMES = 81;
+	public static final int UPDATE_NAMES = 82;
+	public static final int LIQUID_UPDATE_PACKET = 83;
+	public static final int ORDERER_LIQUID_REFRESH_REQUEST = 84;
+	public static final int LIQUID_REQUEST_SUBMIT = 85;
+	public static final int MODBASEDITEMSINKLIST = 86;
+	public static final int FIREWALL_FLAG_SET = 87;
+	public static final int SECURITY_CARD = 89;
+	public static final int THAUMICASPECTSINKLIST = 90;
+	public static final int CHEATJUNCTIONPOWER = 91;
+	public static final int PLAYER_LIST = 92;
+	public static final int SECURITY_STATION_ID = 93;
+	public static final int OPEN_SECURITY_PLAYER = 94;
+	public static final int SAVE_SECURITY_PLAYER = 95;
+	public static final int SET_SECURITY_CC = 96;
+	public static final int GUI_ARGUMENT_PACKET = 97;
+	public static final int CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED = 98;
+	public static final int CRAFTING_PIPE_PREV_SATELLITE_ADVANCED = 99;
+	public static final int CRAFTING_PIPE_SATELLITE_ID_ADVANCED = 100;
 }

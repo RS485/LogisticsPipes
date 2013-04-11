@@ -4,13 +4,13 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.packets.PacketHUDSettings;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiButton;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.client.gui.GuiButton;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiHUDSettings extends KraphtBaseGuiScreen {
 
@@ -26,16 +26,21 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 		this.inventorySlots = dummy;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();
-		HUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
-		this.controlList.add(new GuiCheckBox(0, guiLeft + 10, guiTop +  10, 12, 12, config.isHUDChassie()));
-		this.controlList.add(new GuiCheckBox(1, guiLeft + 10, guiTop +  30, 12, 12, config.isHUDCrafting()));
-		this.controlList.add(new GuiCheckBox(2, guiLeft + 10, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
-		this.controlList.add(new GuiCheckBox(3, guiLeft + 10, guiTop +  70, 12, 12, config.isHUDPowerJunction()));
-		this.controlList.add(new GuiCheckBox(4, guiLeft + 10, guiTop +  90, 12, 12, config.isHUDProvider()));
-		this.controlList.add(new GuiCheckBox(5, guiLeft + 10, guiTop + 110, 12, 12, config.isHUDSatellite()));
+		if(player.inventory.getStackInSlot(slot) != null) {
+			HUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
+			this.controlList.add(new GuiCheckBox(0, guiLeft + 10, guiTop +  10, 12, 12, config.isHUDChassie()));
+			this.controlList.add(new GuiCheckBox(1, guiLeft + 10, guiTop +  30, 12, 12, config.isHUDCrafting()));
+			this.controlList.add(new GuiCheckBox(2, guiLeft + 10, guiTop +  50, 12, 12, config.isHUDInvSysCon()));
+			this.controlList.add(new GuiCheckBox(3, guiLeft + 10, guiTop +  70, 12, 12, config.isHUDPowerJunction()));
+			this.controlList.add(new GuiCheckBox(4, guiLeft + 10, guiTop +  90, 12, 12, config.isHUDProvider()));
+			this.controlList.add(new GuiCheckBox(5, guiLeft + 10, guiTop + 110, 12, 12, config.isHUDSatellite()));
+		} else {
+			this.closeGui();
+		}
 	}
 	
 	@Override
@@ -47,14 +52,14 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		if(this.controlList.get(button.id) instanceof GuiCheckBox) {
 			((GuiCheckBox)this.controlList.get(button.id)).change();
-			PacketDispatcher.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.controlList.get(button.id)).getState(), slot).getPacket());
+			MainProxy.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.controlList.get(button.id)).getState(), slot).getPacket());
 		}
 		//super.actionPerformed(par1GuiButton);
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.shiftedIndex) {
+		if(player.inventory.getStackInSlot(slot) == null || player.inventory.getStackInSlot(slot).itemID != LogisticsPipes.LogisticsHUDArmor.itemID) {
 			this.mc.thePlayer.closeScreen();
 		}
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);

@@ -9,28 +9,31 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import buildcraft.api.liquids.ILiquidTank;
-import buildcraft.api.liquids.ITankContainer;
-import buildcraft.api.liquids.LiquidManager;
-import buildcraft.api.liquids.LiquidStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.ILiquidTank;
+import net.minecraftforge.liquids.ITankContainer;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireReliableTransport{
@@ -41,7 +44,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	
 	private boolean _requestPartials = false;
 	
-	public IChassiePowerProvider _power;
+	public IRoutedPowerProvider _power;
 
 	public LogicLiquidSupplier(){
 		throttleTime = 100;
@@ -56,63 +59,59 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		if (MainProxy.isClient(worldObj)) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
+		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof ITankContainer) || tile.tile instanceof TileGenericPipe) continue;
 			ITankContainer container = (ITankContainer) tile.tile;
-			if (container.getTanks() == null || container.getTanks().length == 0) continue;
+			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;
 			
 			//How much do I want?
-			InventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(dummyInventory);
-			HashMap<ItemIdentifier, Integer> wantContainers = invUtil.getItemsAndCount();
+			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
 			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
-			for (ItemIdentifier item : wantContainers.keySet()){
-				ItemStack wantItem = item.makeNormalStack(1);
-				LiquidStack liquidstack = LiquidManager.getLiquidForFilledItem(wantItem);
+			for (Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()){
+				ItemStack wantItem = item.getKey().unsafeMakeNormalStack(1);
+				LiquidStack liquidstack = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 				if (liquidstack == null) continue;
-				wantLiquids.put(LiquidIdentifier.get(liquidstack), wantContainers.get(item) * liquidstack.amount);
+				wantLiquids.put(LiquidIdentifier.get(liquidstack), item.getValue() * liquidstack.amount);
 			}
 
 			//How much do I have?
 			HashMap<LiquidIdentifier, Integer> haveLiquids = new HashMap<LiquidIdentifier, Integer>();
 			
-			ILiquidTank[] result = container.getTanks();
+			ILiquidTank[] result = container.getTanks(ForgeDirection.UNKNOWN);
 			for (ILiquidTank slot : result){
 				if (slot.getLiquid() == null || !wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
-				if (!haveLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))){
+				Integer liquidWant = haveLiquids.get(LiquidIdentifier.get(slot.getLiquid()));
+				if (liquidWant==null){
 					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), slot.getLiquid().amount);
 				} else {
-					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), haveLiquids.get(slot.getLiquid()) +  slot.getLiquid().amount);
+					haveLiquids.put(LiquidIdentifier.get(slot.getLiquid()), liquidWant +  slot.getLiquid().amount);
 				}
 			}
 			
 			//HashMap<Integer, Integer> needLiquids = new HashMap<Integer, Integer>();
-			//Reduce what I have
-			for (LiquidIdentifier liquidId: wantLiquids.keySet()){
-				if (haveLiquids.containsKey(liquidId)){
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - haveLiquids.get(liquidId));
+			//Reduce what I have and what have been requested already
+			for (Entry<LiquidIdentifier, Integer> liquidId: wantLiquids.entrySet()){
+				Integer haveCount = haveLiquids.get(liquidId.getKey());
+				if (haveCount != null){
+					liquidId.setValue(liquidId.getValue() - haveCount);
 				}
-			}
-			
-			//Reduce what have been requested already
-			for (LiquidIdentifier liquidId : wantLiquids.keySet()){
-				for (ItemIdentifier requestedItem : _requestedItems.keySet()){
-					ItemStack wantItem = requestedItem.makeNormalStack(1);
-					LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(wantItem);
+				for (Entry<ItemIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
+					ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
+					LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
 					if (requestedLiquidId == null) continue;
-					wantLiquids.put(liquidId, wantLiquids.get(liquidId) - _requestedItems.get(requestedItem) * LiquidManager.getLiquidForFilledItem(requestedItem.makeNormalStack(1)).amount);
+					liquidId.setValue(liquidId.getValue() - requestedItem.getValue() * requestedLiquidId.amount);
 				}
 			}
 			
-			//((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(false);
+			((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(false);
 			
 			//Make request
 			
-			HashMap<ItemIdentifier, Integer> allNeededContainers = invUtil.getItemsAndCount();
-			for (ItemIdentifier need : allNeededContainers.keySet()){
-				LiquidStack requestedLiquidId = LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1));
+			for (ItemIdentifier need : wantContainers.keySet()){
+				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1));
 				if (requestedLiquidId == null) continue;
 				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
-				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / LiquidManager.getLiquidForFilledItem(need.makeNormalStack(1)).amount;
+				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / requestedLiquidId.amount;
 				if (countToRequest < 1) continue;
 				
 				if(!_power.useEnergy(11)) {
@@ -120,23 +119,25 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				}
 				
 				boolean success = false;
-				do{ 
-					success = RequestManager.request(need.makeStack(countToRequest),  (IRequestItems) this.container.pipe, getRouter().getIRoutersByCost(), null);
-					if (success || countToRequest == 1){
-						break;
+
+				if(_requestPartials) {
+					countToRequest = RequestManager.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
+					if(countToRequest > 0) {
+						success = true;
 					}
-					countToRequest = countToRequest / 2;
-				} while (_requestPartials && !success);
+				} else {
+					success = RequestManager.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
+				}
 				
 				if (success){
-					if (!_requestedItems.containsKey(need)){
+					Integer currentRequest = _requestedItems.get(need);
+					if(currentRequest==null) {
 						_requestedItems.put(need, countToRequest);
-					}else
-					{
-						_requestedItems.put(need, _requestedItems.get(need) + countToRequest);
+					} else {
+						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else{
-					//((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(true);
+					((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(true);
 				}
 			}
 		}
@@ -156,20 +157,41 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
-	@Override
-	public void itemLost(ItemIdentifier item) {
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+	private void decreaseRequested(ItemIdentifierStack item) {
+		int remaining = item.stackSize;
+		//see if we can get an exact match
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null) {
+			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			remaining -= count;
 		}
+		if(remaining <= 0) {
+			return;
+		}
+		//still remaining... was from fuzzyMatch on a crafter
+		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+				int expected = e.getValue();
+				e.setValue(Math.max(0, expected - remaining));
+				remaining -= expected;
+			}
+			if(remaining <= 0) {
+				return;
+			}
+		}
+		//we have no idea what this is, log it.
+		LogisticsPipes.requestLog.info("liquid supplier got unexpected item " + item.toString());
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
-		super.resetThrottle();
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
-		}
-		
+	public void itemLost(ItemIdentifierStack item) {
+		decreaseRequested(item);
+	}
+
+	@Override
+	public void itemArrived(ItemIdentifierStack item) {
+		decreaseRequested(item);
+		delayThrottle();
 	}
 	
 	public boolean isRequestingPartials(){

@@ -9,40 +9,38 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
+import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.IChassiePowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestManager;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.NBTTagCompound;
-import buildcraft.core.utils.Utils;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.energy.EngineWood;
 import buildcraft.energy.TileEngine;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableTransport{
 	
 	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
-	
-	private final InventoryUtilFactory _invUtilFactory;
-	private final InventoryUtil _dummyInvUtil;
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
@@ -50,15 +48,9 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 
 	public boolean pause = false;
 	
-	public IChassiePowerProvider _power;
+	public IRoutedPowerProvider _power;
 	
 	public LogicSupplier() {
-		this(new InventoryUtilFactory());
-	}
-	
-	public LogicSupplier(InventoryUtilFactory inventoryUtilFactory){
-		_invUtilFactory = inventoryUtilFactory;
-		_dummyInvUtil = _invUtilFactory.getInventoryUtil(dummyInventory);
 		throttleTime = 100;
 	}
 	
@@ -71,7 +63,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
 		}
 	}
 	
@@ -90,63 +82,111 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if(MainProxy.isClient(this.worldObj)) return;
 		if (pause) return;
 		super.throttledUpdateEntity();
+
+		for(int amount : _requestedItems.values()) {
+			if(amount > 0) {
+				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
+			}
+		}
+
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities()){
+		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			
 			//Do not attempt to supply redstone engines
 			if (tile.tile instanceof TileEngine && ((TileEngine)tile.tile).engine instanceof EngineWood) continue;
 			
-			IInventory inv = Utils.getInventory((IInventory) tile.tile);
+			IInventory inv = (IInventory) tile.tile;
 			if (inv.getSizeInventory() < 1) continue;
-			InventoryUtil invUtil = _invUtilFactory.getInventoryUtil(inv);
+			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
 			//How many do I want?
-			HashMap<ItemIdentifier, Integer> needed = _dummyInvUtil.getItemsAndCount();
+			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
 			
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
-			
-			//Reduce what I have
-			for (ItemIdentifier item : needed.keySet()){
-				if (have.containsKey(item)){
-					needed.put(item, needed.get(item) - have.get(item));
-				}
+			//How many do I have?
+			HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
+			for (Entry<ItemIdentifier, Integer> item : have.entrySet()){
+				Integer n=haveUndamaged.get(item.getKey().getUndamaged());
+				if(n==null)
+					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue());
+				else
+					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue()+n);
 			}
 			
-			//Reduce what have been requested already
-			for (ItemIdentifier item : needed.keySet()){
-				if (_requestedItems.containsKey(item)){
-					needed.put(item, needed.get(item) - _requestedItems.get(item));
+			//Reduce what I have and what have been requested already
+			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
+				if (haveCount != null){
+					item.setValue(item.getValue() - haveCount);
+					// so that 1 damaged item can't satisfy a request for 2 other damage values.
+					haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
+				}
+				Integer requestedCount =  _requestedItems.get(item.getKey());
+				if (requestedCount!=null){
+					item.setValue(item.getValue() - requestedCount);
 				}
 			}
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
 			
-			if(!_power.useEnergy(10)) break;
+			//List<ExitRoute> valid = getRouter().getIRoutersByCost();
 			
-			//Make request
-			for (ItemIdentifier need : needed.keySet()){
-				if (needed.get(need) < 1) continue;
-				int neededCount = needed.get(need);
-				boolean success = false;
-				do{ 
-					success = RequestManager.request(need.makeStack(neededCount),  (IRequestItems) container.pipe, getRouter().getIRoutersByCost(), null);
-					if (success || neededCount == 1){
-						break;
+			/*
+			//TODO Double Chests, Simplyfication
+			// Filter out providers attached to this inventory so that we don't get stuck in an
+			// endless supply/provide loop on this inventory.
+
+			WorldUtil invWU = new WorldUtil(tile.tile.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
+			ArrayList<IProvideItems> invProviders = new ArrayList<IProvideItems>();
+
+			for (AdjacentTile atile : invWU.getAdjacentTileEntities()) {
+				if ((atile.tile instanceof TileGenericPipe)) {
+					Pipe p = ((TileGenericPipe) atile.tile).pipe;
+					if ((p instanceof IProvideItems)) {
+						invProviders.add((IProvideItems) p);
 					}
-					neededCount = neededCount / 2;
-				} while (_requestPartials && !success);
+				}
+			}
+
+			for (IRouter r : valid) {
+				CoreRoutedPipe cp = r.getPipe();
+				if (((cp instanceof IProvideItems)) && (invProviders.contains((IProvideItems) cp))) {
+					valid.remove(r);
+				}
+			}
+			*/
+
+			//Make request
+			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
+				Integer amountRequested = need.getValue();
+				if (amountRequested==null || amountRequested < 1) continue;
+				int neededCount = amountRequested;
+				if(!_power.useEnergy(10)) {
+					break;
+				}
+				
+				boolean success = false;
+
+				if(_requestPartials) {
+					neededCount = RequestManager.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+					if(neededCount > 0) {
+						success = true;
+					}
+				} else {
+					success = RequestManager.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
+				}
 				
 				if (success){
-					if (!_requestedItems.containsKey(need)){
-						_requestedItems.put(need, neededCount);
-					}else
-					{
-						_requestedItems.put(need, _requestedItems.get(need) + neededCount);
+					Integer currentRequest = _requestedItems.get(need.getKey());
+					if(currentRequest == null) {
+						_requestedItems.put(need.getKey(), neededCount);
+					} else {
+						_requestedItems.put(need.getKey(), currentRequest + neededCount);
 					}
-				} else{
+				} else {
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 				}
 				
@@ -168,20 +208,41 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
-	
-	@Override
-	public void itemLost(ItemIdentifier item) {
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
+	private void decreaseRequested(ItemIdentifierStack item) {
+		int remaining = item.stackSize;
+		//see if we can get an exact match
+		Integer count = _requestedItems.get(item.getItem());
+		if (count != null) {
+			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			remaining -= count;
 		}
+		if(remaining <= 0) {
+			return;
+		}
+		//still remaining... was from fuzzyMatch on a crafter
+		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+				int expected = e.getValue();
+				e.setValue(Math.max(0, expected - remaining));
+				remaining -= expected;
+			}
+			if(remaining <= 0) {
+				return;
+			}
+		}
+		//we have no idea what this is, log it.
+		LogisticsPipes.requestLog.info("supplier got unexpected item " + item.toString());
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
-		super.resetThrottle();
-		if (_requestedItems.containsKey(item)){
-			_requestedItems.put(item, _requestedItems.get(item) - 1);
-		}
+	public void itemLost(ItemIdentifierStack item) {
+		decreaseRequested(item);
+	}
+
+	@Override
+	public void itemArrived(ItemIdentifierStack item) {
+		decreaseRequested(item);
+		delayThrottle();
 	}
 	
 	public boolean isRequestingPartials(){

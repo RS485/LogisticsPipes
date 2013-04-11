@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogisticsSignTileEntity extends TileEntity {

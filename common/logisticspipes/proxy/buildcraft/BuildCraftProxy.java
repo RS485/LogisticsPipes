@@ -8,16 +8,18 @@
 
 package logisticspipes.proxy.buildcraft;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
+import logisticspipes.gates.ActionDisableLogistics;
+import logisticspipes.gates.LogisticsTriggerProvider;
+import logisticspipes.gates.TriggerCrafting;
+import logisticspipes.gates.TriggerHasDestination;
+import logisticspipes.gates.TriggerNeedsPower;
+import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.main.ActionDisableLogistics;
-import logisticspipes.main.LogisticsTriggerProvider;
-import logisticspipes.main.TriggerSupplierFailed;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
@@ -25,6 +27,7 @@ import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
+import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
@@ -36,27 +39,33 @@ import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
+import logisticspipes.pipes.PipeLiquidBasic;
+import logisticspipes.pipes.PipeLiquidInsertion;
+import logisticspipes.pipes.PipeLiquidProvider;
+import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
 import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.routing.RoutedEntityItem;
-import net.minecraft.src.CraftingManager;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModLoader;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.CraftingManager;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.gates.Action;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.Trigger;
-import buildcraft.api.transport.IPipedItem;
 import buildcraft.api.tools.IToolWrench;
+import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
@@ -64,25 +73,58 @@ import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxyClient;
-import cpw.mods.fml.common.Side;
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {
-
-	/** Support for teleport pipes **/
-	public static boolean teleportPipeDetected = false;
-	public static Class<? extends Pipe> PipeItemTeleport;
-	public static Method teleportPipeMethod;
+	
+	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
 
 	public static List<Item> pipelist = new ArrayList<Item>();
-	
+
 	public static Trigger LogisticsFailedTrigger;
-	
+	public static Trigger LogisticsCraftingTrigger;
+	public static Trigger LogisticsNeedPowerTrigger;
+	public static Trigger LogisticsHasDestinationTrigger;
 	public static Action LogisticsDisableAction;
 	
-	public boolean checkPipesConnections(TileEntity tile1, TileEntity tile2) {
-		return Utils.checkPipesConnections(tile1, tile2);
+	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
+		return checkPipesConnections(from, to, way, false);
+	}
+	
+	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way, boolean ignoreSystemDisconnection) {
+		//Yes, the direction in TileGenericPipe.isPipeConnected(tile, direction) is the reverse of where tile is as seen from this...
+		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
+			if(((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
+				if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).isPipeConnected(to, way, ignoreSystemDisconnection)) {
+					return false;
+				}
+			} else {
+				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
+				if (!((TileGenericPipe) from).isPipeConnected(to, way.getOpposite())) {
+					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
+					return false;
+				}
+				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
+			}
+			if(((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
+				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).isPipeConnected(from, way.getOpposite(), ignoreSystemDisconnection)) {
+					return false;
+				}
+			} else {
+				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
+				if (!((TileGenericPipe) to).isPipeConnected(from, way)) {
+					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
+					return false;
+				}
+				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
+			}
+			return true;
+		} else {
+			return Utils.checkPipesConnections(from, to);
+		}
 	}
 
 	public void dropItems(World world, IInventory inventory, int x, int y, int z) {
@@ -120,31 +162,16 @@ public class BuildCraftProxy {
 		return CreateRoutedItem(worldObj, entityItem);
 	}
 
-	public void registerTeleportPipes() {
-		try {
-			PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
-			//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
-			teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-			teleportPipeDetected = true;
-			ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
-
-		} catch (Exception e) {
-			try {
-				//PipeItemTeleport = (Class<? extends Pipe>) Class.forName("buildcraft.additionalpipes.pipes.PipeItemTeleport");
-				PipeItemTeleport = (Class<? extends Pipe>) Class.forName("net.minecraft.src.buildcraft.additionalpipes.pipes.PipeItemTeleport");
-				teleportPipeMethod = PipeItemTeleport.getMethod("getConnectedPipes", boolean.class);
-				teleportPipeDetected = true;
-				ModLoader.getLogger().fine("Additional pipes detected, adding compatibility");
-
-			} catch (Exception e1) {
-				ModLoader.getLogger().fine("Additional pipes not detected: " + e1.getMessage());
-			}
-		}
-	}
-
 	public void registerTrigger() {
-		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
 		ActionManager.registerTriggerProvider(new LogisticsTriggerProvider());
+		
+		/* Triggers */
+		LogisticsFailedTrigger = new TriggerSupplierFailed(700);
+		LogisticsNeedPowerTrigger = new TriggerNeedsPower(701);
+		LogisticsCraftingTrigger = new TriggerCrafting(702);
+		LogisticsHasDestinationTrigger = new TriggerHasDestination(703);
+		
+		/* Actions */
 		LogisticsDisableAction = new ActionDisableLogistics(700);
 	}
 
@@ -174,19 +201,33 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsEntrance = createPipe(Configs.LOGISTICSPIPE_ENTRANCE_ID, PipeItemsSystemEntranceLogistics.class, "Logistics System Entrance Pipe", side);
 		LogisticsPipes.LogisticsDestination = createPipe(Configs.LOGISTICSPIPE_DESTINATION_ID, PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
 		LogisticsPipes.LogisticsCraftingPipeMK3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
+		LogisticsPipes.LogisticsFirewall = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
 		
 		LogisticsPipes.LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
+		
+		if(LogisticsPipes.DEBUG) {
+			LogisticsPipes.LogisticsLiquidConnector = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
+			LogisticsPipes.LogisticsLiquidBasic = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
+			LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
+			LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
+			LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
+		}
 	}
-
 	
 	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
 		ItemPipe res =  BlockGenericPipe.registerPipe (defaultID, clas);
 		res.setItemName(clas.getSimpleName());
+		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
+		
+		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);
+		if(pipe instanceof CoreRoutedPipe) {
+			res.setTextureIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+		}
 		
 		if(side.isClient()) {
 			LanguageRegistry.addName(res, descr);
-			MinecraftForgeClient.registerItemRenderer(res.shiftedIndex, TransportProxyClient.pipeItemRenderer);
+			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
 		}
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
@@ -211,5 +252,9 @@ public class BuildCraftProxy {
 	
 	public boolean isWrenchEquipped(EntityPlayer entityplayer) {
 		return (entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench);
+	}
+	
+	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
+		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.itemID;
 	}
 }

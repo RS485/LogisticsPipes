@@ -18,21 +18,24 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestManager;
-import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
+import logisticspipes.utils.ItemIdentifierStack;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.network.TileNetworkData;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReliableTransport {
 
 	public static HashSet<BaseLogicSatellite> AllSatellites = new HashSet<BaseLogicSatellite>();
 
-	protected final LinkedList<ItemIdentifier> _lostItems = new LinkedList<ItemIdentifier>();
+	// called only on server shutdown
+	public static void cleanup() {
+		AllSatellites.clear();
+	}
+	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<ItemIdentifierStack>();
 
 	@TileNetworkData
 	public int satelliteId;
@@ -55,7 +58,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	}
 
 	protected int findId(int increment) {
-		if(MainProxy.isClient()) return satelliteId;
+		if(MainProxy.isClient(this.worldObj)) return satelliteId;
 		int potentialId = satelliteId;
 		boolean conflict = true;
 		while (conflict) {
@@ -89,10 +92,10 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_NEXT, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 		updateWatchers();
 	}
@@ -102,10 +105,10 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
 			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_PREV, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(),(Player) player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
 		updateWatchers();
 	}
@@ -113,13 +116,13 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	private void updateWatchers() {
 		for(EntityPlayer player : ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers) {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(),(Player) player);
+			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
 	}
 
 	@Override
 	public void destroy() {
-		if(MainProxy.isClient()) return;
+		if(MainProxy.isClient(this.worldObj)) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -130,7 +133,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 			// Send the satellite id when opening gui
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
-			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
 
 		}
@@ -142,22 +145,27 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-
-		final Iterator<ItemIdentifier> iterator = _lostItems.iterator();
+		final Iterator<ItemIdentifierStack> iterator = _lostItems.iterator();
 		while (iterator.hasNext()) {
-			if (RequestManager.request(iterator.next().makeStack(1), ((RoutedPipe) container.pipe), ((RoutedPipe) container.pipe).getRouter().getIRoutersByCost(), null)) {
-				iterator.remove();
+			ItemIdentifierStack stack = iterator.next();
+			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			if(received > 0) {
+				if(received == stack.stackSize) {
+					iterator.remove();
+				} else {
+					stack.stackSize -= received;
+				}
 			}
 		}
 	}
 
 	@Override
-	public void itemLost(ItemIdentifier item) {
+	public void itemLost(ItemIdentifierStack item) {
 		_lostItems.add(item);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifier item) {
+	public void itemArrived(ItemIdentifierStack item) {
 	}
 
 	public void setSatelliteId(int integer) {

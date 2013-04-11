@@ -4,10 +4,12 @@ import java.util.LinkedList;
 
 import logisticspipes.network.packets.PacketCraftingLoop;
 import logisticspipes.network.packets.PacketItems;
+import logisticspipes.network.packets.PacketSimulate;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
-import net.minecraft.src.EntityPlayer;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import cpw.mods.fml.common.network.Player;
 
 public class MessageManager {
@@ -15,15 +17,19 @@ public class MessageManager {
 	public static void overflow(EntityPlayer player, ItemIdentifier item) {
 		LinkedList<ItemMessage> error = new LinkedList<ItemMessage>();
 		error.add(new ItemMessage(item.itemID, item.itemDamage, 1, item.tag));
-		PacketDispatcher.sendPacketToPlayer(new PacketCraftingLoop(error).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketCraftingLoop(error).getPacket(), (Player)player);
 	}
 
 	public static void errors(EntityPlayer player, LinkedList<ItemMessage> errors) {
-		PacketDispatcher.sendPacketToPlayer(new PacketItems(errors,true).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketItems(errors,true).getPacket(), (Player)player);
 	}
 
 	public static void requested(EntityPlayer player, LinkedList<ItemMessage> items) {
-		PacketDispatcher.sendPacketToPlayer(new PacketItems(items,false).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketItems(items,false).getPacket(), (Player)player);
+	}
+
+	public static void simulated(EntityPlayerMP player, LinkedList<ItemMessage> used, LinkedList<ItemMessage> missing) {
+		MainProxy.sendPacketToPlayer(new PacketSimulate(used,missing).getPacket(), (Player)player);		
 	}
 	
 }

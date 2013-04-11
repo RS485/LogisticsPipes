@@ -8,8 +8,10 @@
 
 package logisticspipes.items;
 
-import logisticspipes.config.Textures;
-import net.minecraft.src.Item;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.textures.Textures;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.Item;
 
 public class LogisticsItem extends Item {
 
@@ -20,5 +22,10 @@ public class LogisticsItem extends Item {
 	@Override
 	public String getTextureFile() {
 		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
+	}
+
+	@Override
+	public CreativeTabs[] getCreativeTabs() {
+        return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
 	}
 }

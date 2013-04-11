@@ -18,7 +18,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 
 import org.lwjgl.opengl.GL11;
 
@@ -30,13 +30,33 @@ public class LogisticsHUDRenderer {
 	private double lastXPos = 0;
 	private double lastYPos = 0;
 	private double lastZPos = 0;
-	private boolean warned = false;
-	private int warned_progress = 0;
-	private long lastTick = 0;
 	
-	public static ArrayList<IHeadUpDisplayBlockRendererProvider> providers = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
+	private ArrayList<IHeadUpDisplayBlockRendererProvider> providers = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
 	
 	private static LogisticsHUDRenderer renderer = null;
+
+	public void add(IHeadUpDisplayBlockRendererProvider provider) {
+		IHeadUpDisplayBlockRendererProvider toRemove = null;
+		for(IHeadUpDisplayBlockRendererProvider listedProvider:providers) {
+			if(listedProvider.getX() == provider.getX() && listedProvider.getY() == provider.getY() && listedProvider.getZ() == provider.getZ()) {
+				toRemove = listedProvider;
+				break;
+			}
+		}
+		if(toRemove != null) {
+			providers.remove(toRemove);
+		}
+		providers.add(provider);
+	}
+	
+	public void remove(IHeadUpDisplayBlockRendererProvider provider) {
+		providers.remove(provider);
+	}
+	
+	public void clear() {
+		providers.clear();
+		instance().clearList(false);
+	}
 	
 	private void clearList(boolean flag) {
 		if(flag) {
@@ -47,9 +67,12 @@ public class LogisticsHUDRenderer {
 		list.clear();
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void refreshList(double x,double y,double z) {
 		ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>> newList = new ArrayList<Pair<Double,IHeadUpDisplayRendererProvider>>();
-		for(IRouter router:SimpleServiceLocator.routerManager.getRouters().values()) {
+		for(IRouter router:SimpleServiceLocator.routerManager.getRouters()) {
+			if(router == null)
+				continue;
 			CoreRoutedPipe pipe = router.getPipe();
 			if(!(pipe instanceof IHeadUpDisplayRendererProvider)) continue;
 			if(MainProxy.getDimensionForWorld(pipe.worldObj) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
@@ -117,51 +140,13 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].itemID == LogisticsPipes.LogisticsHUDArmor.shiftedIndex;
+		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].itemID == LogisticsPipes.LogisticsHUDArmor.itemID;
 	}
 	
-	public void renderPlayerDisplay(long renderTicks) {
-		/*
-		if(!displayRenderer()) return;
-		Minecraft mc = FMLClientHandler.instance().getClient();
-		//Screen Rendering
-		if(!warned && !LogisticsPipes.DEBUG) {
-			if(lastTick == 0) {
-				lastTick = System.currentTimeMillis();
-			}
-			warned_progress += ((System.currentTimeMillis() - lastTick) * 20 / 1000);
-			if(warned_progress > 2000) {
-				warned = true;
-				warned_progress = 0;
-				lastTick = 0;
-			}
-			if(warned_progress < 1000) {
-				String warning = "Warning: This is a WIP. Highly testing. Use on your own risk.";
-				ScaledResolution size = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
-	            mc.fontRenderer.drawString(warning , ((size.getScaledWidth() - mc.fontRenderer.getStringWidth(warning)) / 2), (size.getScaledHeight() / 2) - 4, 0xFFFF0000);
-			}
-			if(warned_progress > 1000) {
-				double d = (2000 - ((double)warned_progress)) / 1000;
-				String warning = "Warning: This is a WIP. Highly testing. Use on your own risk.";
-				ScaledResolution size = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
-	            mc.fontRenderer.drawString(warning , (int) (((size.getScaledWidth() - mc.fontRenderer.getStringWidth(warning)) / 2) * d), (int) (((size.getScaledHeight() / 2) - 4) * d), 0xFFFF0000);
-			}
-			if(!warned) {
-				return;
-			} else {
-				EntityPlayer player = mc.thePlayer;
-				refreshList(player.posX,player.posY,player.posZ);
-			}
-		}
-		String warning = "Warning: This is a WIP. Highly testing. Use on your own risk.";
-		ScaledResolution size = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
-		mc.fontRenderer.drawString(warning , 3, 3, 0xFFFF0000);
-		*/
-	}
+	public void renderPlayerDisplay(long renderTicks) {}
 	
-	public void renderWorldRelative(long renderTicks) {
+	public void renderWorldRelative(long renderTicks, float partialTick) {
 		if(!displayRenderer()) return;
-        GL11.glEnable(GL11.GL_BLEND);
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		if(list.size() == 0 || Math.hypot(lastXPos - player.posX,Math.hypot(lastYPos - player.posY, lastZPos - player.posZ)) > 0.5 || (renderTicks % 10 == 0 && (lastXPos != player.posX || lastYPos != player.posY + player.getEyeHeight() || lastZPos != player.posZ)) || renderTicks % 600 == 0) {
@@ -187,21 +172,23 @@ public class LogisticsHUDRenderer {
 					}
 					cursorHandled = handleCursor(renderer);
 				}
-		        GL11.glPopMatrix();
-				GL11.glPushMatrix();
-				displayOneView(renderer, config);
+				//GL11.glPopMatrix();
+				//GL11.glPushMatrix();
+		        GL11.glEnable(GL11.GL_BLEND);
+		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+				displayOneView(renderer, config, partialTick);
 		        GL11.glPopMatrix();
 			}
 		}
 	}
 
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config, float partialTick) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
-		double x = renderer.getX() + 0.5 - player.posX;
-		double y = renderer.getY() + 0.5 - player.posY;
-		double z = renderer.getZ() + 0.5 - player.posZ;
+		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
+		double y = renderer.getY() + 0.5 - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
+		double z = renderer.getZ() + 0.5 - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
 		GL11.glTranslatef((float)x, (float)y, (float)z);
 		GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
 		GL11.glRotatef(getAngle(z,x) + 90, 0.0F, 0.0F, 1.0F);
@@ -231,11 +218,6 @@ public class LogisticsHUDRenderer {
 	private boolean handleCursor(IHeadUpDisplayRendererProvider renderer) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
-		double x = renderer.getX() + 0.5 - player.posX;
-		double y = renderer.getY() + 0.5 - player.posY;
-		double z = renderer.getZ() + 0.5 - player.posZ;
-		
-		//if(!player.isSneaking()) return true;
 		
 		MathVector playerView = MathVector.getFromAngles((270 - player.rotationYaw) / 360 * -2 * Math.PI, (player.rotationPitch) / 360 * -2 * Math.PI);
 		MathVector playerPos = new MathVector();
@@ -325,7 +307,6 @@ public class LogisticsHUDRenderer {
 			if(list.size() != 0) {
 				clearList(true);
 			}
-			warned = false;
 		}
 		return displayHUD();
 	}

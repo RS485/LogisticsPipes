@@ -1,10 +1,8 @@
 package logisticspipes.pipes;
 
-import logisticspipes.config.Textures;
-import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
 
 public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 
@@ -13,37 +11,28 @@ public class PipeItemsProviderLogisticsMk2 extends PipeItemsProviderLogistics {
 	}
 
 	@Override
-	public int getCenterTexture() {
-		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
-		} else {
-			return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE_DIS;
-		}
+	public TextureType getCenterTexture() {
+		return Textures.LOGISTICSPIPE_PROVIDERMK2_TEXTURE;
 	}
 
 	@Override
-	public void updateEntity() {
-		super.updateEntity();
-		
-		if (!_orderManager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
-		for(int i = 0; i < 16; i++) {
-			if(_orderManager.hasOrders()) {
-				if(!useEnergy(2)) return;
-				Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-				int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-				if (sent > 0){
-					_orderManager.sendSuccessfull(sent);
-				}
-				else {
-					_orderManager.sendFailed();
-				}
-				if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-					break;
-				}
-			}
-		}
+	protected int neededEnergy() {
+		return 2;
+	}
+	
+	@Override
+	protected int itemsToExtract() {
+		return 128;
 	}
 
+	@Override
+	protected int stacksToExtract() {
+		if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
+			return 8;
+		}
+		return 2;
+	}
+	
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Fast;

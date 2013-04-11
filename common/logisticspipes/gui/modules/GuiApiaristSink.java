@@ -6,27 +6,25 @@ import logisticspipes.modules.ModuleApiaristSink.SinkSetting;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBeePacket;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.IItemTextureRenderSlot;
 import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.GuiScreen;
+import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.Pipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
 	private final ModuleApiaristSink module;
-	private final EntityPlayer player;
 	private int slot;
 	
 	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, Pipe pipe, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(player.inventory,null), pipe, previousGui);
 		this.module = module;
-		this.player = player;
 		this.slot = slot;
 		for(int i=0; i < 6; i++) {
 			SinkSetting filter = module.filter[i];
@@ -87,8 +85,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.FilterTypeDown();
 			}
-			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			if(gui.slot != 20) {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
+				MainProxy.sendPacketToServer(packet.getPacket());
+			} else {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.xCoord, module.yCoord, module.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 		}
 
 		@Override
@@ -155,8 +158,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.filterGroupDown();
 			}
-			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			if(gui.slot != 20) {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			} else {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.xCoord, module.yCoord, module.zCoord, gui.slot, row, 2, setting.filterGroup);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 		}
 
 		@Override
@@ -276,8 +284,13 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 					setting.secondBeeDown();
 				}
 			}
-			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
-			PacketDispatcher.sendPacketToServer(packet.getPacket());
+			if(slot != 20) {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			} else {
+				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.xCoord, module.yCoord, module.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+				MainProxy.sendPacketToServer(packet.getPacket());
+			}
 		}
 
 		@Override

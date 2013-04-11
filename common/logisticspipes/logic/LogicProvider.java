@@ -14,13 +14,10 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.InventoryUtil;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.NBTTagCompound;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 
 public class LogicProvider extends BaseRoutingLogic{
@@ -28,19 +25,6 @@ public class LogicProvider extends BaseRoutingLogic{
 	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
 	private boolean _filterIsExclude;
 	private ExtractionMode _extractionMode = ExtractionMode.Normal;
-
-	private final InventoryUtilFactory _invUtilFactory;
-	private final InventoryUtil _dummyInvUtil;
-	
-	
-	public LogicProvider(){
-		this(new InventoryUtilFactory());
-	}
-	
-	public LogicProvider (InventoryUtilFactory invUtilFactory){
-		_invUtilFactory = invUtilFactory;
-		_dummyInvUtil = _invUtilFactory.getInventoryUtil(dummyInventory);
-	}
 
 	@Override
 	public void destroy() {}
@@ -50,8 +34,8 @@ public class LogicProvider extends BaseRoutingLogic{
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			//GuiProxy.openGuiProviderPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, worldObj, xCoord, yCoord, zCoord);
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, xCoord, yCoord, zCoord, getExtractionMode().ordinal()).getPacket(), (Player)entityplayer);
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, xCoord, yCoord, zCoord, isExcludeFilter() ? 1 : 0).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, xCoord, yCoord, zCoord, getExtractionMode().ordinal()).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, xCoord, yCoord, zCoord, isExcludeFilter() ? 1 : 0).getPacket(), (Player)entityplayer);
 		}	
 	}
 	
@@ -65,7 +49,7 @@ public class LogicProvider extends BaseRoutingLogic{
 		super.readFromNBT(nbttagcompound);
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		_filterIsExclude = nbttagcompound.getBoolean("filterisexclude");
-		_extractionMode = ExtractionMode.values()[nbttagcompound.getInteger("extractionMode")];
+		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
     }
 
 	@Override
@@ -78,11 +62,11 @@ public class LogicProvider extends BaseRoutingLogic{
 	
 	/** INTERFACE TO PIPE **/
 	public boolean hasFilter(){
-		return _dummyInvUtil.getItemsAndCount().size() > 0;
+		return !dummyInventory.isEmpty();
 	}
 	
 	public boolean itemIsFiltered(ItemIdentifier item){
-		return _dummyInvUtil.getItemsAndCount().containsKey(item);
+		return dummyInventory.containsItem(item);
 	}
 	
 	public boolean isExcludeFilter(){
@@ -95,6 +79,10 @@ public class LogicProvider extends BaseRoutingLogic{
 	
 	public ExtractionMode getExtractionMode(){
 		return _extractionMode;
+	}
+
+	public void setExtractionMode(int id) {
+		_extractionMode = ExtractionMode.getMode(id);
 	}
 
 	public void nextExtractionMode() {

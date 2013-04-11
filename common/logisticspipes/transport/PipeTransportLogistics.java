@@ -8,56 +8,116 @@
 
 package logisticspipes.transport;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.network.packets.PacketPipeLogisticsContent;
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.NBTTagList;
-import net.minecraft.src.Packet;
-import buildcraft.api.core.Orientations;
+import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.Pair;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.chunk.Chunk;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.transport.IPipeEntry;
 import buildcraft.api.transport.IPipedItem;
-import buildcraft.core.DefaultProps;
 import buildcraft.core.EntityPassiveItem;
-import buildcraft.core.network.PacketIds;
+import buildcraft.core.proxy.CoreProxy;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.EntityData;
+import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.network.PacketPipeTransportContent;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
-public class PipeTransportLogistics extends PipeTransportItems {
+public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
 
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
-	
-//	private class ResolvedRoute{
-//		UUID bestRouter;
-//		boolean isDefault;
-//	}
-	
-	private RoutedPipe _pipe = null;
-	
-	private final HashMap<ItemStack,Integer> _itemBuffer = new HashMap<ItemStack, Integer>(); 
+	private CoreRoutedPipe _pipe = null;
+	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
+	private Method _reverseItem = null;
+	private Field toRemove = null;
+	private Set<Integer> notToRemove = new HashSet<Integer>();
+	private Chunk chunk;
 	
 	public PipeTransportLogistics() {
 		allowBouncing = true;
-		travelHook = new LogisticsItemTravelingHook(worldObj, xCoord, yCoord, zCoord, this);
+		try {
+			_reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
+			_reverseItem.setAccessible(true);
+			toRemove = PipeTransportItems.class.getDeclaredField("toRemove");
+			toRemove.setAccessible(true);
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+		}
+		travelHook = this;
+	}
+
+	@Override
+	public void initialize() {
+		super.initialize();
+		if(MainProxy.isServer(worldObj)) {
+			//cache chunk for marking dirty
+			chunk = worldObj.getChunkFromBlockCoords(xCoord, zCoord);
+		}
+	}
+
+	public void markChunkModified(TileEntity tile) {
+		if(tile != null && chunk != null) {
+			//items are crossing a chunk boundary, mark both chunks modified
+			if(xCoord >> 4 != tile.xCoord >> 4 || zCoord >> 4 != tile.zCoord >> 4) {
+				chunk.isModified = true;
+				if(tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe != null && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportLogistics && ((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk != null) {
+					((PipeTransportLogistics)((TileGenericPipe) tile).pipe.transport).chunk.isModified = true;
+				} else {
+					worldObj.updateTileEntityChunkAndDoNothing(tile.xCoord, tile.yCoord, tile.zCoord, tile);
+				}
+			}
+		}
 	}
 	
-	private RoutedPipe getPipe() {
+	@SuppressWarnings("unchecked")
+	@Override
+	public void performRemoval() {
+		try {
+			if(!notToRemove.isEmpty()){
+				Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+				toRemoveList.removeAll(notToRemove);
+				notToRemove.clear();
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		super.performRemoval();
+	}
+
+	private CoreRoutedPipe getPipe() {
 		if (_pipe == null){
-			_pipe = (RoutedPipe) container.pipe;
+			_pipe = (CoreRoutedPipe) container.pipe;
 		}
 		return _pipe;
 	}
@@ -67,22 +127,23 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		super.updateEntity();
 		if (!_itemBuffer.isEmpty()){
 			List<IRoutedItem> toAdd = new LinkedList<IRoutedItem>();
-			Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
+			Iterator<Entry<ItemStack, Pair<Integer, Integer>>> iterator = _itemBuffer.entrySet().iterator();
 			while (iterator.hasNext()){
-				ItemStack next = iterator.next();
-				int currentTimeOut = _itemBuffer.get(next);
+				Entry<ItemStack, Pair<Integer, Integer>> next = iterator.next();
+				int currentTimeOut = next.getValue().getValue1();
 				if (currentTimeOut > 0){
-					_itemBuffer.put(next, currentTimeOut - 1 );
+					next.getValue().setValue1(currentTimeOut - 1);
 				} else {
-					EntityPassiveItem item = new EntityPassiveItem(container.pipe.worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next) - 0.1, this.zCoord + 0.5, next);
-					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(container.pipe.worldObj, item);
+					EntityPassiveItem item = new EntityPassiveItem(worldObj, this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(next.getKey()) - 0.1, this.zCoord + 0.5, next.getKey());
+					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, item);
 					routedItem.setDoNotBuffer(true);
+					routedItem.setBufferCounter(next.getValue().getValue2() + 1);
 					toAdd.add(routedItem);
 					iterator.remove();
 				}
 			}
 			for(IRoutedItem item:toAdd) {
-				this.entityEntering(item.getEntityPassiveItem(), Orientations.YPos);
+				this.entityEntering(item.getEntityPassiveItem(), ForgeDirection.UP);
 			}
 		}
 	}
@@ -91,105 +152,65 @@ public class PipeTransportLogistics extends PipeTransportItems {
 		Iterator<ItemStack> iterator = _itemBuffer.keySet().iterator();
 		while (iterator.hasNext()){
 			ItemStack next = iterator.next();
-			SimpleServiceLocator.buildCraftProxy.dropItems(this.container.worldObj, next, this.xCoord, this.yCoord, this.zCoord);
+			SimpleServiceLocator.buildCraftProxy.dropItems(worldObj, next, this.xCoord, this.yCoord, this.zCoord);
 			iterator.remove();
 		}
 	}
 	
 	@Override
-	public void entityEntering(IPipedItem item, Orientations orientation) {
-		if(MainProxy.isServer()) {
-			EntityData data = travelingEntities.get(item.getEntityId());
-			if(data != null && item instanceof RoutedEntityItem) {
-				RoutedEntityItem routed = (RoutedEntityItem) item;
-				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-					if(!routed.isKnownBy(player)) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(data), (Player)player);
-						if(routed.getDestination() != null) { 
-							routed.addKnownPlayer(player);
-						}
-					}
-				}
-			}
-		}
-		super.entityEntering(item, orientation);
-	}
-	
-	@Override
-	public void unscheduleRemoval(IPipedItem item) {
-		super.unscheduleRemoval(item);
-		if(item instanceof IRoutedItem) {
-			IRoutedItem routed = (IRoutedItem)item;
-			routed.changeDestination(null);
-			EntityData data = travelingEntities.get(item.getEntityId());
-			IRoutedItem newRoute = routed.getNewUnRoutedItem();
-			data.item = newRoute.getEntityPassiveItem();
-			newRoute.setReRoute(true);
-			newRoute.addToJamList(getPipe().getRouter());
-		}
-	}
-	
-	@Override
-	public Orientations resolveDestination(EntityData data) {
+	public ForgeDirection resolveDestination(EntityData data) {
 		
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);
 		}
+		data.item.setWorld(worldObj);
 		
-		boolean forcePacket = false;
-		if(!(data.item instanceof IRoutedItem)) {
-			forcePacket = true;
-		} else if(((IRoutedItem)data.item).getDestination() == null || ((IRoutedItem)data.item).isUnRouted()) {
-			forcePacket = true;
-		}
+		ForgeDirection blocked = null;
 		
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(getPipe().worldObj, data);
-		Orientations value = getPipe().getRouteLayer().getOrientationForItem(routedItem);
-		routedItem.setReRoute(false);
-		if (value == null && MainProxy.isClient()) {
-			routedItem.getItemStack().stackSize = 0;
-			scheduleRemoval(data.item);
-			return Orientations.Unknown;
-		} else if (value == null) {
-			System.out.println("THIS IS NOT SUPPOSED TO HAPPEN!");
-			return Orientations.Unknown;
-		}
-		if (value == Orientations.Unknown && !routedItem.getDoNotBuffer()){
-			if(MainProxy.isServer()) {
-				PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE, worldObj.getWorldInfo().getDimension(), createItemPacket(data));
-			}
-			_itemBuffer.put(routedItem.getItemStack().copy(), 20 * 2);
-			//routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
-			scheduleRemoval(data.item);			
-			return Orientations.XNeg;
-		}
-		
-		readjustSpeed(routedItem.getEntityPassiveItem());
-		
-		if(MainProxy.isServer()) {
-			if(routedItem instanceof RoutedEntityItem) {
-				RoutedEntityItem routed = (RoutedEntityItem) routedItem;
-				for(EntityPlayer player:MainProxy.getPlayerArround(worldObj, xCoord, yCoord, zCoord, DefaultProps.NETWORK_UPDATE_RANGE)) {
-					if(!routed.isKnownBy(player) || forcePacket) {
-						PacketDispatcher.sendPacketToPlayer(createItemPacket(data), (Player)player);
-						if(!forcePacket) {
-							routed.addKnownPlayer(player);
-						}
-					}
+		if(!(data.item instanceof IRoutedItem) && data.item != null) {
+			IPipedItem result = getPipe().getQueuedForItemStack(data.item.getItemStack());
+			if(result != null) {
+				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
+				if(routedItem instanceof RoutedEntityItem && result instanceof RoutedEntityItem) {
+					((RoutedEntityItem)routedItem).useInformationFrom((RoutedEntityItem)result);
+					blocked = data.input.getOpposite();
+				} else {
+					LogisticsPipes.log.warning("Unable to transfer information from ont Item to another. (" + routedItem.getClass().getName() + ", " + result.getClass().getName() + ")");
 				}
 			}
 		}
 		
-		if (value == Orientations.Unknown ){ 
-			//Reduce the speed of items being dropped so they don't go all over the place
-			data.item.setSpeed(Math.min(data.item.getSpeed(), Utils.pipeNormalSpeed * 5F));
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
+		ForgeDirection value;
+		if(this.getPipe().stillNeedReplace()){
+			routedItem.setDoNotBuffer(false);
+			value = ForgeDirection.UNKNOWN;
+		} else
+			value = getPipe().getRouteLayer().getOrientationForItem(routedItem, blocked);
+		if (value == null && MainProxy.isClient(worldObj)) {
+			routedItem.getItemStack().stackSize = 0;
+			scheduleRemoval(data.item);
+			return ForgeDirection.UNKNOWN;
+		} else if (value == null) {
+			LogisticsPipes.log.severe("THIS IS NOT SUPPOSED TO HAPPEN!");
+			return ForgeDirection.UNKNOWN;
+		}
+		if (value == ForgeDirection.UNKNOWN && !routedItem.getDoNotBuffer() && routedItem.getBufferCounter() < 5) {
+			_itemBuffer.put(routedItem.getItemStack().copy(), new Pair<Integer,Integer>(20 * 2, routedItem.getBufferCounter()));
+			routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
+			scheduleRemoval(data.item);
+			return ForgeDirection.UNKNOWN;
 		}
 		
-		//getPipe().queueEvent("item_direction", new Object[]{ItemIdentifier.get(data.item.getItemStack()).getId(), data.item.getItemStack().stackSize, value.ordinal()});
-		
-		if(!getPipe().getRouter().isRoutedExit(value)) {
-			data.item = routedItem.getNewEntityPassiveItem();
+		if(value != ForgeDirection.UNKNOWN && !_pipe.getRouter().isRoutedExit(value)) {
+			if(!isItemExitable(routedItem.getItemStack())) {
+				routedItem.getItemStack().stackSize = 0;	//Hack to make the item disappear
+				scheduleRemoval(data.item);
+				return ForgeDirection.UNKNOWN;
+			}
 		}
+		
+		readjustSpeed(routedItem.getEntityPassiveItem());
 		
 		return value;
 	}
@@ -204,7 +225,7 @@ public class PipeTransportLogistics extends PipeTransportItems {
         NBTTagList nbttaglist = nbttagcompound.getTagList("buffercontents");
         for(int i = 0; i < nbttaglist.tagCount(); i++) {
             NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
-            _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), _bufferTimeOut);
+            _itemBuffer.put(ItemStack.loadItemStackFromNBT(nbttagcompound1), new Pair<Integer, Integer>(_bufferTimeOut, 0));
         }
 	}
 	
@@ -241,95 +262,139 @@ public class PipeTransportLogistics extends PipeTransportItems {
 			case Active:
 				defaultBoost = 30F;
 				break;
+			case Unknown:
+				break;
+			default:
+				break;
 			
 			}
-			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost) - item.getSpeed();
-			if(getPipe().useEnergy(Math.round(add * 25))) {
-				item.setSpeed(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost));
+
+			float multiplyerSpeed = 1.0F + (0.2F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
+			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
+			
+			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
+			if(getPipe().useEnergy((int)(add * 25+0.5))) {
+				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
 			}
 		}
-	}
-
-	/**
-	 * Handles a packet describing a stack of items inside a pipe.
-	 * 
-	 * @param packet
-	 */
-	@Override
-	public void handleItemPacket(PacketPipeTransportContent packet) {
-		if (packet.getID() != PacketIds.PIPE_CONTENTS)
-			return;
-		
-		if(!PacketPipeLogisticsContent.isPacket(packet)) {
-			super.handleItemPacket(packet);
-			return;
+		if (MainProxy.isClient(worldObj)) {
+			MainProxy.spawnParticle(Particles.GoldParticle, xCoord, yCoord, zCoord, 1);
 		}
-		
-		IPipedItem item = EntityPassiveItem.getOrCreate(worldObj, packet.getEntityId());
-
-		item.setItemStack(new ItemStack(packet.getItemId(), packet.getStackSize(), packet.getItemDamage()));
-
-		item.setPosition(packet.getPosX(), packet.getPosY(), packet.getPosZ());
-		item.setSpeed(packet.getSpeed());
-		
-		if(SimpleServiceLocator.buildCraftProxy.isRoutedItem(item)) {
-			if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
-				if (item.getContainer() != null) {
-					((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
+	}
+	
+	//BC copy
+	private void handleTileReached(EntityData data, TileEntity tile) {
+		if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
+			SimpleServiceLocator.specialtileconnection.transmit(tile, data);
+		}
+		if (tile instanceof IPipeEntry)
+			((IPipeEntry) tile).entityEntering(data.item, data.output);
+		else if (tile instanceof TileGenericPipe && ((TileGenericPipe) tile).pipe.transport instanceof PipeTransportItems) {
+			TileGenericPipe pipe = (TileGenericPipe) tile;
+			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
+		} else if (tile instanceof IInventory) {
+			if(!isItemExitable(data.item.getItemStack())) return;
+			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
+				//LogisticsPipes start
+				//last chance for chassi to back out
+				if(data.item instanceof IRoutedItem) {
+					IRoutedItem routed = (IRoutedItem) data.item;
+					if (!getPipe().getTransportLayer().stillWantItem(routed)) {
+						logisticsReverseItem(data);
+						return;
+					}
 				}
-				EntityData entity = new EntityData(item, packet.getInputOrientation());
-				entity.output = packet.getOutputOrientation();
-				travelingEntities.put(new Integer(item.getEntityId()), entity);
-				item.setContainer(container);
-			} else {
-				travelingEntities.get(new Integer(item.getEntityId())).item = item;
-				travelingEntities.get(new Integer(item.getEntityId())).input = packet.getInputOrientation();
-				travelingEntities.get(new Integer(item.getEntityId())).output = packet.getOutputOrientation();
+				//sneaky insertion
+				UpgradeManager manager = getPipe().getUpgradeManager();
+				ForgeDirection insertion = data.output.getOpposite();
+				if(manager.hasSneakyUpgrade()) {
+					insertion = manager.getSneakyOrientation();
+				}
+				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
+				
+				data.item.getItemStack().stackSize -= added.stackSize;
+				
+				//For InvSysCon
+				if(data.item instanceof IRoutedItem) {
+					IRoutedItem routed = (IRoutedItem) data.item;
+					IRoutedItem newItem = routed.getCopy();
+					newItem.setItemStack(added);
+					EntityData addedData = new EntityData(newItem.getEntityPassiveItem(), data.input);
+					insertedItemStack(addedData, tile);
+				}
+				//LogisticsPipes end
+
+				if(data.item.getItemStack().stackSize > 0) {
+					logisticsReverseItem(data);
+				}
 			}
-			PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
-			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(item);
-			routed.setSource(newpacket.getSourceUUID(this.worldObj));
-			routed.setDestination(newpacket.getDestUUID(this.worldObj));
-			routed.setTransportMode(newpacket.getTransportMode());
-			travelingEntities.get(new Integer(item.getEntityId())).item = routed.getEntityPassiveItem();
-			return;
-		}
-		PacketPipeLogisticsContent newpacket = new PacketPipeLogisticsContent(packet);
-		IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.worldObj,item);
-		routed.setSource(newpacket.getSourceUUID(this.worldObj));
-		routed.setDestination(newpacket.getDestUUID(this.worldObj));
-		routed.setTransportMode(newpacket.getTransportMode());
-		item = routed.getEntityPassiveItem();
-		if (item.getContainer() != this.container || !travelingEntities.containsKey(item.getEntityId())) {
-			if (item.getContainer() != null) {
-				((PipeTransportItems) ((TileGenericPipe) item.getContainer()).pipe.transport).scheduleRemoval(item);
-			}
-			EntityData entity = new EntityData(item, packet.getInputOrientation());
-			entity.output = packet.getOutputOrientation();
-			travelingEntities.put(new Integer(item.getEntityId()), entity);
-			item.setContainer(container);
 		} else {
-			travelingEntities.get(new Integer(item.getEntityId())).item = item;
-			travelingEntities.get(new Integer(item.getEntityId())).input = packet.getInputOrientation();
-			travelingEntities.get(new Integer(item.getEntityId())).output = packet.getOutputOrientation();
+			if (travelHook != null)
+				travelHook.drop(this, data);
+
+			EntityItem dropped = data.item.toEntityItem(data.output);
+
+			if (dropped != null)
+				// On SMP, the client side doesn't actually drops
+				// items
+				onDropped(dropped);
+		}
+	}
+	//BC copy end
+	
+	protected boolean isItemExitable(ItemStack stack) {
+		if(stack != null && stack.getItem() instanceof IItemAdvancedExistance) {
+			return ((IItemAdvancedExistance)stack.getItem()).canExistInNormalInventory(stack);
+		}
+		return true;
+	}
+	
+	protected void logisticsReverseItem(EntityData data) {
+		if(_reverseItem != null) {
+			try {
+				_reverseItem.invoke(this, data);
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+				_reverseItem = null;
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+				_reverseItem = null;
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+				_reverseItem = null;
+			}
+		} else {
+			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");
 		}
 	}
 
-	/**
-	 * Creates a packet describing a stack of items inside a pipe.
-	 * 
-	 * @param item
-	 * @param orientation
-	 * @return
-	 */
+	protected void insertedItemStack(EntityData data, TileEntity tile) {}
+	
+	/* --- IItemTravelHook --- */
+	@SuppressWarnings("unchecked")
 	@Override
-	public Packet createItemPacket(EntityData data) {
-		if(data.item instanceof RoutedEntityItem) {
-			PacketPipeLogisticsContent packet = new PacketPipeLogisticsContent(container.xCoord, container.yCoord, container.zCoord, data);
-
-			return packet.getPacket();
-		} else {
-			return super.createItemPacket(data);
+	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+		((PipeTransportLogistics)pipe).markChunkModified(tile);
+		try {
+			Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
+			toRemoveList.add(data.item.getEntityId());
+			handleTileReached(data, tile);
+			if(!toRemoveList.contains(data.item.getEntityId())) {
+				notToRemove.add(data.item.getEntityId());
+				toRemoveList.add(data.item.getEntityId());
+			}
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void drop(PipeTransportItems pipe, EntityData data) {
+		data.item.setSpeed(0.0F);
+	}
+
+	@Override
+	public void centerReached(PipeTransportItems pipe, EntityData data) {}
 }

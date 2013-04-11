@@ -1,6 +1,6 @@
 package logisticspipes.logic;
 
-import net.minecraft.src.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayer;
 
 public class LogicInvSysConnection extends BaseRoutingLogic {
 

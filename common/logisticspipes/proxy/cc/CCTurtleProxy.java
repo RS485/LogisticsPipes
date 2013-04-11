@@ -3,7 +3,7 @@ package logisticspipes.proxy.cc;
 import java.lang.reflect.Field;
 
 import logisticspipes.LogisticsPipes;
-import net.minecraft.src.TileEntity;
+import net.minecraft.tileentity.TileEntity;
 
 public class CCTurtleProxy extends CCProxy {
 	
@@ -29,11 +29,11 @@ public class CCTurtleProxy extends CCProxy {
 	@Override
 	public boolean isTurtle(TileEntity tile) {
 		if(!valid) return false;
-		return turtleClass.isAssignableFrom(tile.getClass());
+		return turtleClass.isInstance(tile);
 	}
 	
 	protected Object get_local_tile_m_computer(TileEntity tile) throws IllegalArgumentException, IllegalAccessException {
-		if(turtleClass.isAssignableFrom(tile.getClass())) {
+		if(turtleClass.isInstance(tile)) {
 			return Turtle_m_computer.get(tile);
 		}
 		return super.get_local_tile_m_computer(tile);

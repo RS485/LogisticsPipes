@@ -1,14 +1,17 @@
 package logisticspipes.pipes;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.EntityItem;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.World;
+import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.security.SecuritySettings;
+import logisticspipes.textures.Textures;
+import logisticspipes.textures.Textures.TextureType;
+import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.world.World;
 
 public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	
@@ -19,9 +22,17 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	}
 
 	@Override
-	public boolean blockActivated(World world, int i, int j, int k,	EntityPlayer entityplayer) {
-		if (MainProxy.isServer(this.worldObj)) {
-			openGui(entityplayer);
+	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+		//allow using upgrade manager
+		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+			return false;
+		}
+		if(MainProxy.isServer(world)) {
+			if(settings == null || settings.openGui) {
+				openGui(entityplayer);
+			} else {
+				entityplayer.sendChatToPlayer("Permission denied");
+			}
 		}
 		return true;
 	}
@@ -66,7 +77,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	
 	
 	@Override
-	public int getCenterTexture() {
+	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_REQUESTERMK2_TEXTURE;
 	}
 	

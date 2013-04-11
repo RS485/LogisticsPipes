@@ -8,15 +8,17 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-import logisticspipes.pipes.basic.RoutedPipe;
+import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.World;
-import net.minecraft.src.WorldClient;
+import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.LaserKind;
-import buildcraft.api.core.Orientations;
 import buildcraft.api.core.Position;
 import buildcraft.core.EntityBlock;
 import buildcraft.core.utils.Utils;
@@ -37,11 +39,11 @@ class RouteLaser implements IPaintPath{
 		_lasers = new LinkedList<EntityBlock>();
 	}
 	
-	private void addLeg(World worldObj, Position start, Orientations o){
+	private void addLeg(World worldObj, Position start, ForgeDirection o){
 		Position end = new Position(start.x, start.y, start.z, o);			
 		end.moveForwards(1);
 		switch(o){
-			case XNeg: case YNeg: case ZNeg:
+			case WEST: case DOWN: case NORTH:
 				_lasers.add(Utils.createLaser(worldObj, end, start, _pewpewLazors));
 				break;
 			default:
@@ -49,9 +51,9 @@ class RouteLaser implements IPaintPath{
 		}
 	}
 	
-	public void displayRoute(IRouter source, IRouter destination) {
+	public void displayRoute(IRouter source, Integer destination) {
 		_pewpewLazors = LaserKind.Red;
-		LinkedList<IRouter> routerList = new LinkedList<IRouter>();
+		LinkedList<Integer> routerList = new LinkedList<Integer>();
 		routerList.add(destination);
 		displayRoute(source, routerList);
 		_pewpewLazors = LaserKind.Stripes;
@@ -59,15 +61,17 @@ class RouteLaser implements IPaintPath{
 
 	
 	public void displayRoute(IRouter r){
-		LinkedList<IRouter> knownRouters = new LinkedList<IRouter>();
-		for (IRouter table : r.getRouteTable().keySet()){
-			if (table == r) continue;
-			knownRouters.add(table);
+		LinkedList<Integer> knownRouters = new LinkedList<Integer>();
+		ArrayList<ExitRoute> table = r.getRouteTable();
+		for (int i=0; i< table.size(); i++){
+			if (table.get(i)==null || i == r.getSimpleID())
+				continue;
+			knownRouters.add(i);
 		}
 		displayRoute(r, knownRouters);
 	}
 	
-	public void displayRoute(IRouter r, LinkedList<IRouter> knownRouters){
+	public void displayRoute(IRouter r, LinkedList<Integer> knownRouters){
 		clear();
 		if (r == _lastRouter){
 			_lastRouter = null;
@@ -78,53 +82,52 @@ class RouteLaser implements IPaintPath{
 		
 		while (!knownRouters.isEmpty()){
 			//Pick a router
-			IRouter targetRouter = knownRouters.pop();
-			boolean found = false;
+			int targetRouter = knownRouters.pop();
 			
 			//Get the first exit
-			Orientations next = r.getRouteTable().get(targetRouter);
-			if (next == Orientations.Unknown){
-				System.out.println("BAAAD MOJO");
+			ForgeDirection next = r.getRouteTable().get(targetRouter).exitOrientation;
+			if (next == ForgeDirection.UNKNOWN){
+				LogisticsPipes.log.warning("BAAAD MOJO");
 			}
 			
 			IRouter nextRouter = r;
-			LinkedList<IRouter> visited = new LinkedList<IRouter>();
-			while(nextRouter != targetRouter){
+			LinkedList<Integer> visited = new LinkedList<Integer>();
+			while(nextRouter.getSimpleID() != targetRouter){
 				if (visited.contains(nextRouter)){
-					System.out.println("ROUTE LOOP");
+					LogisticsPipes.log.info("ROUTE LOOP");
 					break;
 				}
-				visited.add(nextRouter);
+				visited.add(nextRouter.getSimpleID());
 				
 				//Paint that route
 				LinkedList<IRouter> discovered = new LinkedList<IRouter>();
 				Position firstPos = new Position(nextRouter.getPipe().container.xCoord, nextRouter.getPipe().container.yCoord, nextRouter.getPipe().zCoord, next);
 				addLeg(r.getPipe().worldObj, firstPos, next);
-				HashMap<RoutedPipe, ExitRoute> result = PathFinder.paintAndgetConnectedRoutingPipes(nextRouter.getPipe().container, next, 50, 100, this);
+				HashMap<CoreRoutedPipe, ExitRoute> result = PathFinder.paintAndgetConnectedRoutingPipes(nextRouter.getPipe().container, next, 50, 100, this);
 				
-				for(RoutedPipe pipe : result.keySet()){
+				for(CoreRoutedPipe pipe : result.keySet()){
 					discovered.add(pipe.getRouter());
 				}
 				//OLD PAINT PATH LOGIC
 				//paintPath(r.getPipe().worldObj, firstPos, new LinkedList<TileEntity>(), discovered);
 				
 				if (discovered.isEmpty()){
-					System.out.println("BAD ROUTE");
+					LogisticsPipes.log.info("BAD ROUTE");
 				}
 				boolean ok = false;
 				for (IRouter dicoveredRouter : discovered){
 					if (knownRouters.contains(dicoveredRouter)){
 						knownRouters.remove(dicoveredRouter);
 					}
-					if (dicoveredRouter.getRouteTable().containsKey(targetRouter))
-					{
+					ExitRoute source =dicoveredRouter.getRouteTable().get(targetRouter);
+					if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
 						ok = true;
 						nextRouter = dicoveredRouter;
-						next = dicoveredRouter.getRouteTable().get(targetRouter);
+						next = dicoveredRouter.getRouteTable().get(targetRouter).exitOrientation;
 					}
 				}
 				if (!ok){
-					System.out.println("DEAD ROUTE");
+					LogisticsPipes.log.info("DEAD ROUTE");
 					break;
 				}
 			}
@@ -133,7 +136,7 @@ class RouteLaser implements IPaintPath{
 		//OLD PAINT PATH LOGIC
 //		Position p1 = new Position(r.getPipe().container.xCoord, r.getPipe().container.yCoord, r.getPipe().zCoord);
 //		for (int i = 0; i < 6; i++){
-//			Orientations o = Orientations.values()[i];
+//			ForgeDirection o = ForgeDirection.values()[i];
 //			if (!r.isRoutedExit(o)) continue;
 //			Position firstPos = new Position(p1.x, p1.y, p1.z, o);
 //			addLeg(r.getPipe().worldObj, firstPos, o);
@@ -160,7 +163,7 @@ class RouteLaser implements IPaintPath{
 //				return true;
 //			}
 //			for (int i = 0; i < 6; i++)	{
-//				Orientations nextOrientation = Orientations.values()[i];
+//				ForgeDirection nextOrientation = ForgeDirection.values()[i];
 //				if (nextOrientation.reverse() == start.orientation) continue;
 //				Position nextPos = new Position(start.x, start.y, start.z, nextOrientation);
 //				
@@ -175,7 +178,7 @@ class RouteLaser implements IPaintPath{
 //	}
 
 	@Override
-	public void addLaser(World worldObj, Position start, Orientations o) {
+	public void addLaser(World worldObj, Position start, ForgeDirection o) {
 		addLeg(worldObj, start, o);
 		
 	}

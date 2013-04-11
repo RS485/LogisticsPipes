@@ -8,15 +8,52 @@
 
 package logisticspipes.utils;
 
+import java.util.Comparator;
 import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import buildcraft.api.core.Orientations;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
 
-public final class ItemIdentifierStack {
+public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack>{
+	public static class orderedComparitor implements Comparator<ItemIdentifierStack>{
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c=o1._item.itemID-o2._item.itemID;
+			if(c!=0) return c;
+			c=o1._item.itemDamage-o2._item.itemDamage;
+			if(c!=0) return c;
+			c=o1._item.uniqueID-o2._item.uniqueID;
+			if(c!=0) return c;
+
+			return o2.stackSize-o1.stackSize;
+		}		
+	}
+	public static class itemComparitor implements Comparator<ItemIdentifierStack>{
+
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c=o1._item.itemID-o2._item.itemID;
+			if(c!=0) return c;
+			c=o1._item.itemDamage-o2._item.itemDamage;
+			if(c!=0) return c;
+			return o1._item.uniqueID-o2._item.uniqueID;
+		}
+		
+	}
+	public static class simpleItemComparitor implements Comparator<ItemIdentifierStack>{
+
+		@Override
+		public int compare(ItemIdentifierStack o1, ItemIdentifierStack o2) {
+			int c=o1._item.itemID-o2._item.itemID;
+			if(c!=0) return c;
+			return o1._item.itemDamage-o2._item.itemDamage;
+		}
+		
+	}
 	private final ItemIdentifier _item;
 	public int stackSize;
 	
@@ -33,9 +70,17 @@ public final class ItemIdentifierStack {
 		return _item;
 	}
 
-	public ItemStack makeNormalStack(){
+	public ItemStack unsafeMakeNormalStack(){
 		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
 		stack.setTagCompound(_item.tag);
+		return stack;
+	}
+
+	public ItemStack makeNormalStack(){
+		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
+		if(_item.tag != null) {
+			stack.setTagCompound((NBTTagCompound)_item.tag.copy());
+		}
 		return stack;
 	}
 	
@@ -47,6 +92,10 @@ public final class ItemIdentifierStack {
 		return false;
 	}
 	
+	public int hashCode() {
+		return _item.hashCode() ^ (1023 * this.stackSize);
+	}
+
 	public String toString() {
 		return new StringBuilder(Integer.toString(stackSize)).append("x").append(_item.toString()).toString();
 	}
@@ -73,9 +122,9 @@ public final class ItemIdentifierStack {
 		return list;
 	}
 
-	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Pair3<IRoutedItem, Orientations, ItemSendMode>> _sendQueue) {
+	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue) {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair3<IRoutedItem, Orientations, ItemSendMode> part:_sendQueue) {
+		for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> part:_sendQueue) {
 			if(part == null) {
 				list.add(null);
 			} else {
@@ -93,5 +142,13 @@ public final class ItemIdentifierStack {
 			}
 		}
 		return list;
+	}
+
+	@Override
+	public int compareTo(ItemIdentifierStack o) {
+		int c= _item.compareTo(o._item);
+		if(c==0)
+			return stackSize-o.stackSize;
+		return c;
 	}
 }

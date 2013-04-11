@@ -2,12 +2,11 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import logisticspipes.config.Textures;
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
+import logisticspipes.textures.Textures;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.item.ItemStack;
 
-public class ItemParts extends Item {
+public class ItemParts extends LogisticsItem {
 	
 	public ItemParts(int par1) {
 		super(par1);
@@ -44,15 +43,11 @@ public class ItemParts extends Item {
 	}
 
 	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
-	}
-
-	@Override
 	public CreativeTabs getCreativeTab() {
         return CreativeTabs.tabRedstone;
     }
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
 		par3List.add(new ItemStack(this, 1, 0));

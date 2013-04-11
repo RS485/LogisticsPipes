@@ -1,62 +1,68 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
+import java.util.Map.Entry;
+import java.util.Set;
 
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDProviderModule;
-import logisticspipes.interfaces.IChassiePowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
+import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInvContent;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.CroppedInventory;
-import logisticspipes.utils.InventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.IInventory;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import cpw.mods.fml.common.network.PacketDispatcher;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import cpw.mods.fml.common.network.Player;
 
-public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
+public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive {
 	
 	protected IInventoryProvider _invProvider;
 	protected ISendRoutedItem _itemSender;
-	protected IChassiePowerProvider _power;
+	protected IRoutedPowerProvider _power;
 	
 	protected LogisticsOrderManager _orderManager = new LogisticsOrderManager();
 	
+	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
+
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
-	private final InventoryUtil _filterUtil = new InventoryUtil(_filterInventory, false);
 	
 	protected final int ticksToAction = 6;
 	protected int currentTick = 0;
@@ -65,12 +71,14 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	protected ExtractionMode _extractionMode = ExtractionMode.Normal;
 	
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+	public int xCoord = 0;
+	public int yCoord = 0;
+	public int zCoord = 0;
+	private IWorldProvider _world;
 
-	public LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
+	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
+	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();
+	private final ArrayList<ItemIdentifierStack> oldList = new ArrayList<ItemIdentifierStack>();
 	
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
@@ -79,22 +87,23 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	public ModuleProvider() {}
 
 	@Override
-	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IChassiePowerProvider powerprovider) {
+	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
 		isExcludeFilter = nbttagcompound.getBoolean("filterisexclude");
-		_extractionMode = ExtractionMode.values()[nbttagcompound.getInteger("extractionMode")];
+		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
 		
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.writeToNBT(nbttagcompound, "");
     	nbttagcompound.setBoolean("filterisexclude", isExcludeFilter);
     	nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
@@ -110,145 +119,200 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 		return 1;
 	}
 	
-	@Override	public SinkReply sinksItem(ItemStack item) {return null;}
+	protected ItemSendMode itemSendMode() {
+		return ItemSendMode.Normal;
+	}
+	
+	protected int itemsToExtract() {
+		return 8;
+	}
 
-	@Override	public ILogisticsModule getSubModule(int slot) {return null;}
+	protected int stacksToExtract() {
+		return 1;
+	}
+
+	@Override
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+		return null;
+	}
+
+	@Override
+	public ILogisticsModule getSubModule(int slot) {
+		return null;
+	}
 
 	@Override
 	public void tick() {
-		if(MainProxy.isClient()) return;
 		if (++currentTick < ticksToAction) return;
 		currentTick = 0;
 		checkUpdate(null);
-		while (_orderManager.hasOrders()) {
-			Pair<ItemIdentifierStack,IRequestItems> order = _orderManager.getNextRequest();
-			int sent = sendItem(order.getValue1().getItem(), order.getValue1().stackSize, order.getValue2().getRouter().getId());
-			
-			if(!_power.useEnergy(neededEnergy())) break;
-			
-			if (sent > 0) {
-				_orderManager.sendSuccessfull(sent);
-			} else {
-				_orderManager.sendFailed();
-				break;
-			}
+		int itemsleft = itemsToExtract();
+		int stacksleft = stacksToExtract();
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
+		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
+		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
+			if(firstOrder == null)
+				firstOrder = order;
+			order = _orderManager.getNextRequest();
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
+			if(sent < 0) break;
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 3);
+			stacksleft -= 1;
+			itemsleft -= sent;
 		}
 	}
 
 	@Override
-	public void canProvide(RequestTreeNode tree, Map<ItemIdentifier, Integer> donePromisses) {
-		int canProvide = getAvailableItemCount(tree.getStack().getItem());
-		if (donePromisses.containsKey(tree.getStack().getItem())) {
-			canProvide -= donePromisses.get(tree.getStack().getItem());
+	public void registerPreviousLegacyModules(List<ILegacyActiveModule> previousModules) {
+		_previousLegacyModules = previousModules;
+	}
+
+	@Override
+	public boolean filterAllowsItem(ItemIdentifier item) {
+		if(!hasFilter()) return true;
+		boolean isFiltered = itemIsFiltered(item);
+		return isExcludeFilter ^ isFiltered;
+	}
+
+	@Override
+	public void onBlockRemoval() {
+		while(_orderManager.hasOrders()) {
+			_orderManager.sendFailed();
 		}
+	}
+
+	@Override
+	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filters) {
+		int canProvide = getAvailableItemCount(tree.getStack().getItem());
+		canProvide -= donePromisses;
 		if (canProvide < 1) return;
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = tree.getStack().getItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
-		//TODO: FIX THIS CAST
 		promise.sender = (IProvideItems) _itemSender;
+		promise.relayPoints = new LinkedList<IRelayItem>(filters);
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 	}
 
-	@Override
-	public int getAvailableItemCount(ItemIdentifier item) {
+	private int getAvailableItemCount(ItemIdentifier item) {
 		return getTotalItemCount(item) - _orderManager.totalItemsCountInOrders(item);
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getAllItems() {
-		HashMap<ItemIdentifier, Integer> allItems = new HashMap<ItemIdentifier, Integer>(); 
-		if (_invProvider.getInventory() == null) return allItems;
-	
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
+		if (_invProvider.getPointedInventory() == null) return;
+		
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
-		for (ItemIdentifier currItem : currentInv.keySet()){
-			if ( hasFilter() && ((isExcludeFilter && itemIsFiltered(currItem)) 
-							|| (!isExcludeFilter && !itemIsFiltered(currItem)))) continue;
 
-			if (!allItems.containsKey(currItem)){
-				allItems.put(currItem, currentInv.get(currItem));
-			}else {
-				allItems.put(currItem, allItems.get(currItem) + currentInv.get(currItem));
+		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
+outer:
+		for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
+			if(items.containsKey(currItem.getKey())) continue;
+			
+			if(!filterAllowsItem(currItem.getKey())) continue;
+
+			for(ILegacyActiveModule m:_previousLegacyModules) {
+				if(m.filterAllowsItem(currItem.getKey())) continue outer;
 			}
-		}
-		
-		//Reduce what has been reserved.
-		Iterator<ItemIdentifier> iterator = allItems.keySet().iterator();
-		while(iterator.hasNext()){
-			ItemIdentifier item = iterator.next();
-		
-			int remaining = allItems.get(item) - _orderManager.totalItemsCountInOrders(item);
-			if (remaining < 1){
-				iterator.remove();
-			} else {
-				allItems.put(item, remaining);	
+			
+			for(IFilter filter:filters) {
+				if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
 			}
+
+			int remaining = currItem.getValue() - _orderManager.totalItemsCountInOrders(currItem.getKey());
+			if (remaining < 1) continue;
+
+			items.put(currItem.getKey(), remaining);
 		}
-		
-		return allItems;	
 	}
 
-	@Override
-	public IRouter getRouter() {
-		//THIS IS NEVER SUPPOSED TO HAPPEN
-		return null;
-	}
 	
-	protected int sendItem(ItemIdentifier item, int maxCount, UUID destination) {
-		int sent = 0;
-		if (_invProvider.getInventory() == null) return 0;
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
-		if (inv.itemCount(item)> 0){
-			ItemStack removed = inv.getSingleItem(item);
-			_itemSender.sendStack(removed, destination);
-			sent++;
-			maxCount--;
-		}			
+	// returns -1 on perminatly failed, don't try another stack this tick
+	// returns 0 on "unable to do this delivery"
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
+		ItemIdentifier item = stack.getItem();
+		if (_invProvider.getPointedInventory() == null) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
+		
+		int available = inv.itemCount(item);
+		if (available == 0) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		int wanted = Math.min(available, stack.stackSize);
+		wanted = Math.min(wanted, maxCount);
+		wanted = Math.min(wanted, item.getMaxStackSize());
+		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);
+		if(dRtr == null) {
+			_orderManager.sendFailed();
+			return 0;
+		}
+		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
+		boolean defersend = false;
+		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
+			if(reply.maxNumberOfItems < wanted) {
+				wanted = reply.maxNumberOfItems;
+				if(wanted <= 0) {
+					_orderManager.deferSend();
+					return 0;
+				}
+				defersend = true;
+			}
+		}
+		if(!_power.canUseEnergy(wanted * neededEnergy())) return -1;
 
+		ItemStack removed = inv.getMultipleItems(item, wanted);
+		int sent = removed.stackSize;
+		_power.useEnergy(sent * neededEnergy());
+
+		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
+		_orderManager.sendSuccessfull(sent, defersend);
 		return sent;
 	}
 	
-	public int getTotalItemCount(ItemIdentifier item) {
+	private int getTotalItemCount(ItemIdentifier item) {
 		
-		if (_invProvider.getInventory() == null) return 0;
+		if (_invProvider.getPointedInventory() == null) return 0;
 		
-		if (_filterUtil.getItemsAndCount().size() > 0
-				&& ((this.isExcludeFilter && _filterUtil.getItemsAndCount().containsKey(item)) 
-						|| ((!this.isExcludeFilter) && !_filterUtil.getItemsAndCount().containsKey(item)))) return 0;
+		if(!filterAllowsItem(item)) return 0;
 		
-		InventoryUtil inv = getAdaptedUtil(_invProvider.getInventory());
+		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
 		return inv.itemCount(item);
 	}
 	
 	private boolean hasFilter() {
-		return _filterUtil.getItemsAndCount().size() > 0;
+		return !_filterInventory.isEmpty();
 	}
 	
-	public boolean itemIsFiltered(ItemIdentifier item){
-		return _filterUtil.getItemsAndCount().containsKey(item);
+	private boolean itemIsFiltered(ItemIdentifier item){
+		return _filterInventory.containsItem(item);
 	}
 	
-	public InventoryUtil getAdaptedUtil(IInventory base){
+	private IInventoryUtil getAdaptedUtil(IInventory base){
 		switch(_extractionMode){
 			case LeaveFirst:
-				base = new CroppedInventory(base, 1, 0);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
 			case LeaveLast:
-				base = new CroppedInventory(base, 0, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
 			case LeaveFirstAndLast:
-				base = new CroppedInventory(base, 1, 1);
-				break;
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
 			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getOneHiddenInventoryUtil(base);
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
+			case Leave1PerType:
+				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, true, 0, 0);
+			default:
+				break;
 		}
-		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
+		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
 	}
 
 
@@ -269,6 +333,10 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 
 	public ExtractionMode getExtractionMode(){
 		return _extractionMode;
+	}
+
+	public void setExtractionMode(int id) {
+		_extractionMode = ExtractionMode.getMode(id);
 	}
 
 	public void nextExtractionMode() {
@@ -295,29 +363,33 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	}
 	
 	private void checkUpdate(EntityPlayer player) {
+		if(localModeWatchers.size() == 0 && player == null)
+			return;
 		displayList.clear();
-		HashMap<ItemIdentifier, Integer> list = getAllItems();
-		for(ItemIdentifier item :list.keySet()) {
-			displayList.add(new ItemIdentifierStack(item, list.get(item)));
+		displayMap.clear();
+		getAllItems(displayMap, new ArrayList<IFilter>(0));
+		displayList.ensureCapacity(displayMap.size());
+		for(Entry<ItemIdentifier, Integer> item :displayMap.entrySet()) {
+			displayList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
 		}
 		if(!oldList.equals(displayList)) {
-			MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
 			oldList.clear();
+			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
-		}
-		if(player != null) {
-			PacketDispatcher.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
+			MainProxy.sendCompressedToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), localModeWatchers);
+		} else if(player != null) {
+			MainProxy.sendCompressedPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, displayList).getPacket(), (Player)player);
 		}
 	}
 
 	@Override
 	public void startWatching() {
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		PacketDispatcher.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
 	}
 
 	@Override
@@ -337,8 +409,42 @@ public class ModuleProvider implements ILogisticsModule, ILegacyActiveModule, IC
 	}
 
 	@Override
-	public void handleInvContent(LinkedList<ItemIdentifierStack> list) {
+	public void handleInvContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
+	}
+
+	@Override
+	public boolean hasGenericInterests() {
+		return false;
+	}
+
+	@Override
+	public List<ItemIdentifier> getSpecificInterests() {
+		//when filter is empty or in exclude mode, this is interested in attached inventory already
+		if(this.isExcludeFilter || _filterInventory.isEmpty()) {
+			return null;
+		}
+		// when items included this is only interested in items in the filter
+		Map<ItemIdentifier, Integer> mapIC = _filterInventory.getItemsAndCount();
+		List<ItemIdentifier> li= new ArrayList<ItemIdentifier>(mapIC.size());
+		li.addAll(mapIC.keySet());
+		return li;
+	}
+
+	@Override
+	public boolean interestedInAttachedInventory() {
+		return this.isExcludeFilter || _filterInventory.isEmpty(); // when items included this is only interested in items in the filter
+		// when items not included, we can only serve those items in the filter.
+	}
+
+	@Override
+	public boolean interestedInUndamagedID() {
+		return false;
+	}
+
+	@Override
+	public boolean recievePassive() {
+		return false;
 	}
 }

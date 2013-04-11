@@ -2,19 +2,19 @@ package logisticspipes.blocks;
 
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import net.minecraft.src.Block;
-import net.minecraft.src.FontRenderer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemBlock;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.ModelSign;
-import net.minecraft.src.RenderBlocks;
-import net.minecraft.src.RenderItem;
-import net.minecraft.src.RenderManager;
-import net.minecraft.src.Tessellator;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.TileEntityRenderer;
-import net.minecraft.src.TileEntitySpecialRenderer;
+import net.minecraft.block.Block;
+import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.model.ModelSign;
+import net.minecraft.client.renderer.RenderBlocks;
+import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
+import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
@@ -31,10 +31,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 	private RenderBlocks renderBlocks = new RenderBlocks();
 	RenderManager rendermanager = RenderManager.instance;
 	
-	private static long timesub = System.currentTimeMillis();
-	//private static int ID = 1;
-	
-    public CraftingSignRenderer() {
+	public CraftingSignRenderer() {
     	setTileEntityRenderer(TileEntityRenderer.instance);
     	renderItem.setRenderManager(rendermanager);
     }
@@ -49,7 +46,6 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			int disX = pipe.xCoord - par1TileEntitySign.xCoord;
 			int disZ = pipe.zCoord - par1TileEntitySign.zCoord;
 	        
-	        int var16 = par1TileEntitySign.getBlockMetadata();
 	        if (disZ > 0)
 	        {
 	            var12 = 180.0F;
@@ -166,7 +162,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 			    	        GL11.glEnable(GL11.GL_LIGHT1);
 			    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
 			        	}
-			   } else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.shiftedIndex].getRenderType())) {
+			   } else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.itemID].getRenderType())) {
 		            GL11.glScalef(0.20F, -0.20F, -0.01F);
 		            
 			        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
@@ -181,7 +177,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 
 			        GL11.glPushMatrix();
 			        
-			        renderBlocks.renderBlockAsItem(Block.blocksList[item.shiftedIndex], itemstack.getItemDamage(), 1.0F);
+			        renderBlocks.renderBlockAsItem(Block.blocksList[item.itemID], itemstack.getItemDamage(), 1.0F);
 
 			        GL11.glPopMatrix();
 			        
@@ -262,7 +258,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		        	} catch(Exception e1) {}
 		        }
 		        
-		        var17.drawString("ID: "+String.valueOf(item.shiftedIndex), -var17.getStringWidth("ID: "+String.valueOf(item.shiftedIndex)) / 2, 0 * 10 - 4 * 5, 0);
+		        var17.drawString("ID: "+String.valueOf(item.itemID), -var17.getStringWidth("ID: "+String.valueOf(item.itemID)) / 2, 0 * 10 - 4 * 5, 0);
 		        if(((BaseLogicCrafting)pipe.logic).satelliteId != 0) {
 		        	var17.drawString("Sat ID: "+String.valueOf(((BaseLogicCrafting)pipe.logic).satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(((BaseLogicCrafting)pipe.logic).satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 		        }

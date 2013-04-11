@@ -9,13 +9,11 @@ import java.util.List;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.utils.ItemMessage;
 
-
-
-
 public class PacketItems extends LogisticsPipesPacket {
 	
 	public List<ItemMessage> items = new LinkedList<ItemMessage>();
 	public boolean error = true;
+	private int ID = NetworkConstants.MISSING_ITEMS;
 	
 	public PacketItems() {
 		super();
@@ -24,6 +22,11 @@ public class PacketItems extends LogisticsPipesPacket {
 	public PacketItems(List<ItemMessage> errors) {
 		this();
 		this.items = errors;
+	}
+	
+	public PacketItems(List<ItemMessage> errors, int packetID) {
+		this(errors);
+		ID = packetID;
 	}
 	
 	public PacketItems(List<ItemMessage> items2, boolean flag) {
@@ -57,6 +60,6 @@ public class PacketItems extends LogisticsPipesPacket {
 
 	@Override
 	public int getID() {
-		return NetworkConstants.MISSING_ITEMS;
+		return ID;
 	}
 }

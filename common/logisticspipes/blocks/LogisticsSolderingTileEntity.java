@@ -19,27 +19,26 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
-import net.minecraft.src.Container;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
-import buildcraft.api.core.Orientations;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
-public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory , IGuiOpenControler, IRotationProvider {
+public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
 	private IPowerProvider provider;
 	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
-	
+	public boolean hasWork = false;
 	public int rotation = 0;
 	private boolean init = false;
 	
@@ -55,7 +54,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		for (int i = 0; i < 3; i++) {
 			for (int j = 0; j < 3; j++) {
 				final int slotNumber = i * 3 + j;
-				dummy.addRestrictedSlot(slotNumber, this, 30 + (j * 18),
+				dummy.addRestrictedSlot(slotNumber, this, 44 + (j * 18),
 						17 + (i * 18), new ISlotCheck() {
 							@Override
 							public boolean isStackAllowed(ItemStack itemStack) {
@@ -64,9 +63,9 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 						});
 			}
 		}
-		dummy.addRestrictedSlot(9, this, 93, 17, Item.ingotIron.shiftedIndex);
-		dummy.addRestrictedSlot(10, this, 127, 47, -1);
-		dummy.addRestrictedSlot(11, this, 149, 11, new ISlotCheck() {
+		dummy.addRestrictedSlot(9, this, 107, 17, Item.ingotIron.itemID);
+		dummy.addRestrictedSlot(10, this, 141, 47, -1);
+		dummy.addRestrictedSlot(11, this, 9, 9, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				return getRecipeForTaget(itemStack) != null && areStacksEmpty();
@@ -182,7 +181,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public ICraftingResultHandler getHandlerForRecipe() {
 		for(SolderingStationRecipe recipe:SolderingStationRecipes.getRecipes()) {
 			boolean match = true;
-			boolean removeThis = false;
 			for(int i=0;i<9;i++) {
 				ItemStack recipestack = recipe.source[i];
 				ItemStack inputStack = inv.getStackInSlot(i);
@@ -225,34 +223,35 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 	
 	private void updateHeat() {
-		PacketDispatcher.sendPacketToAllAround(xCoord, yCoord, zCoord, 64, MainProxy.getDimensionForWorld(worldObj), new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket());
+		MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, 64, MainProxy.getDimensionForWorld(worldObj), new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket());
 		for(EntityPlayer player:listener) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket(), (Player)player);
 		}
 	}
 
 	private void updateProgress() {
 		for(EntityPlayer player:listener) {
-			PacketDispatcher.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_PROGRESS, xCoord, yCoord, zCoord, this.progress).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_PROGRESS, xCoord, yCoord, zCoord, this.progress).getPacket(), (Player)player);
 		}
 	}
 	
 	private void updateInventory() {
 		for(EntityPlayer player:listener) {
-			PacketDispatcher.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.SOLDERING_UPDATE_INVENTORY, xCoord, yCoord, zCoord, this).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.SOLDERING_UPDATE_INVENTORY, xCoord, yCoord, zCoord, this).getPacket(), (Player)player);
 		}
 	}
 	
 	@Override
 	public void updateEntity() {
-		if(MainProxy.isClient()) {
+		if(MainProxy.isClient(worldObj)) {
 			if(!init) {
-				PacketDispatcher.sendPacketToServer(new PacketCoordinates(NetworkConstants.ROTATION_REQUEST, xCoord, yCoord, zCoord).getPacket());
+				MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.ROTATION_REQUEST, xCoord, yCoord, zCoord).getPacket());
 				init = true;
 			}
 			return;
 		}
-		if(hasWork() && heat < 100) {
+		hasWork = hasWork();
+		if(hasWork && heat < 100) {
 			if(provider.useEnergy(1, 100, false) >= 1) {
 				heat += provider.useEnergy(1, 100, true);
 				if(heat > 100) {
@@ -268,37 +267,58 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 					updateHeat();
 				}
 			}
-		} else if(!hasWork() && heat > 0) {
+		} else if(!hasWork && heat > 0) {
 			heat--;
 			updateHeat();
 		}
-		if(hasWork() && heat >= 100) {
+		if(hasWork && heat >= 100) {
 			progress += provider.useEnergy(1, 3, true);
 			if(progress >= 100) {
-				ItemStack content = inv.getStackInSlot(10);
-				if(content == null) {
-					ICraftingResultHandler handler = getHandlerForRecipe();
-					content = getTagetForRecipe(true);
-					if(handler != null) {
-						handler.handleCrafting(content);
-					}
-					inv.setInventorySlotContents(10, content);
-					inv.getStackInSlot(9).stackSize -= 1;
-					if(inv.getStackInSlot(9).stackSize <= 0) {
-						inv.setInventorySlotContents(9, null);
-					}
-					
-					updateInventory();
+				if(tryCraft()) {
 					progress = 0;
 				} else {
 					progress -= 50;
 				}
 			}
 			updateProgress();
-		} else if(!hasWork() && progress != 0) {
+		} else if(!hasWork && progress != 0) {
 			progress = 0;
 			updateProgress();
 		}
+	}
+
+	private boolean tryCraft() {
+		ItemStack content = inv.getStackInSlot(10);
+		ICraftingResultHandler handler = getHandlerForRecipe();
+		ItemStack toAdd = getTagetForRecipe(false);
+		if(handler != null) {
+			handler.handleCrafting(toAdd);
+		}
+		if(content != null) {
+			if(!content.isItemEqual(toAdd) || !ItemStack.areItemStackTagsEqual(content, toAdd)) {
+				return false;
+			}
+			if(content.stackSize + toAdd.stackSize > content.getMaxStackSize()) {
+				return false;
+			}
+			toAdd.stackSize += content.stackSize;
+		}
+
+		//dummy
+		content = getTagetForRecipe(true);
+
+		inv.setInventorySlotContents(10, toAdd);
+
+		inv.getStackInSlot(9).stackSize -= 1;
+		if(inv.getStackInSlot(9).stackSize <= 0) {
+			inv.setInventorySlotContents(9, null);
+		}
+
+		inv.onInventoryChanged();
+		super.onInventoryChanged();
+		updateInventory();
+
+		return true;
 	}
 
 	@Override
@@ -376,7 +396,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public int addItem(ItemStack stack, boolean doAdd, Orientations from) {
+	public int addItem(ItemStack stack, boolean doAdd, ForgeDirection from) {
 		if(stack == null) return 0;
 		if(stack.getItem() == null) return 0;
 		if (stack.getItem() == Item.ingotIron) {
@@ -389,6 +409,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			int toAdd = Math.min(stack.stackSize, freespace);
 			if (doAdd) {
 				iron.stackSize += toAdd;
+				inv.onInventoryChanged();
+				super.onInventoryChanged();
 			}
 			if (iron.stackSize == 0) {
 				inv.setInventorySlotContents(9, null);
@@ -396,68 +418,71 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			return toAdd;
 		}
 		ItemStack[] recipe = getRecipeForTaget();
-		if(recipe != null) {
-			boolean found = false;
-			int min = Integer.MAX_VALUE;
-			int i=0;
-			for(ItemStack itemstack:recipe) {
-				if(itemstack == null) {
-					i++;
-					continue;
-				}
-				if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
-					found = true;
-					ItemStack slot = inv.getStackInSlot(i);
-					if(slot != null) {
-						min = Math.min(slot.stackSize, min);
-					} else {
-						min = 0;
-					}
-				}
+		if(recipe == null) return 0;
+		
+		int availableslots = 0;
+		int itemsinslots = 0;
+		int i=0;
+		for(ItemStack itemstack:recipe) {
+			if(itemstack == null) {
 				i++;
+				continue;
 			}
-			if(found) {
-				int freespace = 64 - min;
-				int toAdd = Math.min(stack.stackSize, freespace);
-				if(doAdd) {
-					i=0;
-					for(ItemStack itemstack:recipe) {
-						if(itemstack == null) {
-							i++;
-							continue;
-						}
-						if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
-							ItemStack slot = inv.getStackInSlot(i);
-							if(slot == null) {
-								ItemStack stacktoAdd = stack.copy();
-								stacktoAdd.stackSize = toAdd;
-								inv.setInventorySlotContents(i, stacktoAdd);
-								inv.onInventoryChanged();
-								break;
-							} else if(slot.stackSize == min) {
-								slot.stackSize += toAdd;
-								inv.setInventorySlotContents(i, slot);
-								inv.onInventoryChanged();
-								break;
-							}
-						}
-						i++;
-					}
+			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+				availableslots++;
+				ItemStack slot = inv.getStackInSlot(i);
+				if(slot != null) {
+					itemsinslots += slot.stackSize;
 				}
-				return toAdd;
-			} else {
-				return 0;
 			}
+			i++;
 		}
-		return 0;
+		int toadd = Math.min(availableslots * 64 - itemsinslots, stack.stackSize);
+		if(!doAdd) {
+			return toadd;
+		}
+		if(toadd <= 0) {
+			return 0;
+		}
+		itemsinslots += toadd;
+		int itemsperslot = itemsinslots / availableslots;
+		int itemsextra = itemsinslots - (itemsperslot * availableslots);
+		i = 0;
+		for(ItemStack itemstack:recipe) {
+			if(itemstack == null) {
+				i++;
+				continue;
+			}
+			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
+				if(itemsperslot == 0 && itemsextra == 0) {
+					inv.setInventorySlotContents(i, null);
+				} else {
+					ItemStack slot = inv.getStackInSlot(i);
+					if(slot == null) {
+						slot = stack.copy();
+					}
+					slot.stackSize = itemsperslot;
+					if(itemsextra > 0) {
+						slot.stackSize++;
+						itemsextra--;
+					}
+					inv.setInventorySlotContents(i, slot);
+				}
+			}
+			i++;
+		}
+		inv.onInventoryChanged();
+		super.onInventoryChanged();
+		return toadd;
 	}
 
 	@Override
-	public ItemStack[] extractItem(boolean doRemove, Orientations from, int maxItemCount) {
+	public ItemStack[] extractItem(boolean doRemove, ForgeDirection from, int maxItemCount) {
 		ItemStack[] tmp = new ItemStack[] { inv.getStackInSlot(10) };
 		if (doRemove) {
 			inv.setInventorySlotContents(10, null);
 			inv.onInventoryChanged();
+			super.onInventoryChanged();
 		}
 		return tmp;
 	}

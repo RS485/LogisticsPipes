@@ -3,25 +3,24 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Textures;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
-import net.minecraft.src.CreativeTabs;
-import net.minecraft.src.EntityPlayer;
-import net.minecraft.src.Item;
-import net.minecraft.src.ItemStack;
-import net.minecraft.src.NBTTagCompound;
-import net.minecraft.src.TileEntity;
-import net.minecraft.src.World;
+import logisticspipes.textures.Textures;
+import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.lwjgl.input.Keyboard;
 
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 
 public class RemoteOrderer extends Item {
@@ -43,13 +42,18 @@ public class RemoteOrderer extends Item {
 
 	@Override
 	public int getIconFromDamage(int par1) {
-    	return Textures.LOGISTICSREMOTEORDERER_ICONINDEX;
+		if(par1 == 0) {
+			return Textures.LOGISTICSREMOTEORDERER_ICONINDEX;
+		} else {
+			return Textures.LOGISTICSREMOTEORDERERCOLORED_ICONINDEX + par1 - 1;
+		}
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		//Add special tooltip in tribute to DireWolf
-		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.shiftedIndex){
+		if (itemstack != null && itemstack.itemID == LogisticsPipes.LogisticsRemoteOrderer.itemID){
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)){
 				list.add("a.k.a \"Requesting Tool\" - DW20");
 			}
@@ -73,13 +77,11 @@ public class RemoteOrderer extends Item {
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
 		if(pipe != null) {
 			if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
-				PacketDispatcher.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
+				MainProxy.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
 				par3EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 			}
-			return par1ItemStack.copy();
-		} else {
-			return par1ItemStack;
 		}
+		return par1ItemStack;
     }
 	
 	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
@@ -111,7 +113,7 @@ public class RemoteOrderer extends Item {
 			return null;
 		}
 		int dim = stack.stackTagCompound.getInteger("connectedPipe-world-dim");
-		World world = MainProxy.getWorld(dim);
+		World world = DimensionManager.getWorld(dim);
 		if(world == null) {
 			return null;
 		}
@@ -130,5 +132,13 @@ public class RemoteOrderer extends Item {
 	public CreativeTabs getCreativeTab()
     {
         return CreativeTabs.tabTools;
+    }
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
+	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List) {
+		for(int i=0;i<17;i++) {
+			par3List.add(new ItemStack(par1, 1, i));
+		}
     }
 }

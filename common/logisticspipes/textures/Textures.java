@@ -127,13 +127,13 @@ public class Textures {
 	public static final String BASE_TEXTURE_FILE = "/logisticspipes/empty.png";
 
 	// Misc
-	public static final String LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures.png";
+	public static final String LOGISTICSITEMS_TEXTURE_FILE_BASE = "/logisticspipes/item_textures";
 	public static final String LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures.png";
 
 	public static final String LOGISTICS_SOLID_BLOCK = "/logisticspipes/blocks/logistics_solid_block.png";
 	
 	public void load(FMLStateEvent event) {
-		if(event.getSide().isClient()) {
+		/*if(event.getSide().isClient()) {
 			MinecraftForgeClient.preloadTexture(LOGISTICSITEMS_TEXTURE_FILE);
 			MinecraftForgeClient.preloadTexture(LOGISTICSACTIONTRIGGERS_TEXTURE_FILE);
 			MinecraftForgeClient.preloadTexture(LOGISTICS_SOLID_BLOCK);
@@ -149,7 +149,7 @@ public class Textures {
 				MinecraftForgeClient.preloadTexture("/logisticspipes/gui/chassipipe_size"+ i +".png");
 			}
 			MinecraftForgeClient.preloadTexture("/logisticspipes/gui/chassipipe_size8.png");
-		}
+		}*/
 		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);

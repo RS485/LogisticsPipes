@@ -16,7 +16,8 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 
-import appeng.api.InterfaceCraftingRequest;
+import appeng.api.me.util.ICraftRequest;
+import appeng.api.me.util.InterfaceCraftingResponse;
 import appeng.api.me.tiles.ITileInterfaceApi;
 
 public class AECraftingTemplate extends CraftingTemplate {
@@ -54,7 +55,7 @@ public class AECraftingTemplate extends CraftingTemplate {
 	
 	@Override 
 	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
-		InterfaceCraftingRequest response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
+		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = ItemIdentifier.get(response.Request);
 		promise.numberOfItems = response.Request.stackSize;

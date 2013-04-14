@@ -14,6 +14,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
@@ -22,16 +23,18 @@ import org.lwjgl.input.Keyboard;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
+import net.minecraft.client.renderer.texture.IconRegister;
 
 public class RemoteOrderer extends Item {
+	final static Icon[] icons = new Icon[17];
 	
 	public RemoteOrderer(int id) {
 		super(id);
 	}
 
 	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
+	public void registerIcons(IconRegister par1IconRegister) {
+		LogisticsPipes.remoteOrdererIconProvider.registerIcons(par1IconRegister);
 	}
 
 	@Override
@@ -41,12 +44,8 @@ public class RemoteOrderer extends Item {
     
 
 	@Override
-	public int getIconFromDamage(int par1) {
-		if(par1 == 0) {
-			return Textures.LOGISTICSREMOTEORDERER_ICONINDEX;
-		} else {
-			return Textures.LOGISTICSREMOTEORDERERCOLORED_ICONINDEX + par1 - 1;
-		}
+	public Icon getIconFromDamage(int par1) {
+		return LogisticsPipes.remoteOrdererIconProvider.getIcon(par1);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })

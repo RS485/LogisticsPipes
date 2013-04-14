@@ -6,16 +6,18 @@ import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.textures.Textures;
 import net.minecraft.block.BlockContainer;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-
+import net.minecraft.util.*;
 public class LogisticsSolidBlock extends BlockContainer {
 
 	public static final int SOLDERING_STATION = 0;
@@ -55,8 +57,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving) {
-		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving);
+	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack stack) {
+		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving, stack);
 		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
 		if(tile instanceof IRotationProvider) {
 			double x = tile.xCoord - par5EntityLiving.posX;
@@ -90,18 +92,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public int getBlockTextureFromSideAndMetadata(int side, int meta) {
+	public Icon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
 	
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
 		new UnsupportedOperationException("Please call createNewTileEntity(World,int) instead of createNewTileEntity(World).").printStackTrace();
-		return createNewTileEntity(var1, 0);
+		return createTileEntity(var1, 0);
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createTileEntity(World world, int metadata) {
         switch(metadata) {
 	    	case SOLDERING_STATION:
 	    		return new LogisticsSolderingTileEntity();
@@ -133,7 +135,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
+	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
 		TileEntity tile = access.getBlockTileEntity(x, y, z);
 		if(tile instanceof IRotationProvider) {
@@ -143,8 +145,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 	
-	private int getRotatedTexture(int meta, int side, int rotation, int front) {
-		switch (meta) {
+	private Icon getRotatedTexture(int meta, int side, int rotation, int front) {
+		//TODO: fixme
+		/*switch (meta) {
 		case SOLDERING_STATION:
 			if(front == 0) {
 				front = 17;
@@ -225,11 +228,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 			}
 		default:
 			return 0;
-		}
-	}
-	
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICS_SOLID_BLOCK;
+		}*/
+		return null;
 	}
 }

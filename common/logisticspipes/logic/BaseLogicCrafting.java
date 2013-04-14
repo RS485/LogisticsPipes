@@ -253,7 +253,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void destroy() {
 		if(signEntityX != 0 && signEntityY != 0 && signEntityZ != 0) {
-			worldObj.setBlockWithNotify(signEntityX, signEntityY, signEntityZ, 0);
+			worldObj.setBlock(signEntityX, signEntityY, signEntityZ, 0);
 			signEntityX = 0;
 			signEntityY = 0;
 			signEntityZ = 0;

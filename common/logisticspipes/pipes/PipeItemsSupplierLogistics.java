@@ -8,6 +8,10 @@
 
 package logisticspipes.pipes;
 
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicSupplier;
@@ -46,5 +50,11 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	@Override
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
+	}
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

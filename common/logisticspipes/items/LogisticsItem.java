@@ -8,8 +8,12 @@
 
 package logisticspipes.items;
 
+import universalelectricity.components.common.BasicComponents;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 
@@ -19,9 +23,11 @@ public class LogisticsItem extends Item {
 		super(i);
 	}
 	
+	@SideOnly(Side.CLIENT)
 	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
+	public void registerIcons(IconRegister iconRegister)
+	{
+		this.itemIcon = iconRegister.registerIcon("logisticspipes:"+this.getUnlocalizedName());
 	}
 
 	@Override

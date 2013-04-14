@@ -17,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
@@ -103,11 +104,11 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 	        	
 	        	if(item == null) return; //Only happens on false configuration
 		        
-		        this.bindTextureByName(item.getTextureFile());
+		        this.bindTextureByName(item.getIconFromDamage(0).getIconName());
 		        
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
-		        this.bindTextureByName(item.getTextureFile());
+		        this.bindTextureByName(item.getIconFromDamage(0).getIconName());
 				//ForgeHooksClient.overrideTexture(itemstack.getItem());
 		        
 				if(customRenderer != null) {
@@ -223,7 +224,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		            {
 		                for (int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14)
 		                {
-		                    int var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
+		                    Icon var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
 		                    renderItem(var15);
 		                }
 		            }
@@ -259,7 +260,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		        	name = item.getItemDisplayName(itemstack);
 		        } catch(Exception e) {
 		        	try {
-		        		name = item.getItemName();
+		        		name = item.getUnlocalizedName();
 		        	} catch(Exception e1) {}
 		        }
 		        
@@ -306,12 +307,13 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 	
-	private void renderItem(int par1) {
+	private void renderItem(Icon paricon) {
+		
 		Tessellator var3 = Tessellator.instance;
-		float var4 = (par1 % 16 * 16 + 0) / 256.0F;
-        float var5 = (par1 % 16 * 16 + 16) / 256.0F;
-        float var6 = (par1 / 16 * 16 + 0) / 256.0F;
-        float var7 = (par1 / 16 * 16 + 16) / 256.0F;
+		float var4 = (paricon.getSheetHeight() % 16 * 16 + 0) / 256.0F;
+        float var5 = (paricon.getSheetWidth() % 16 * 16 + 16) / 256.0F;
+        float var6 = (paricon.getSheetHeight() / 16 * 16 + 0) / 256.0F;
+        float var7 = (paricon.getSheetWidth() / 16 * 16 + 16) / 256.0F;
         float var8 = 1.0F;
         float var9 = 0.5F;
         float var10 = 0.25F;

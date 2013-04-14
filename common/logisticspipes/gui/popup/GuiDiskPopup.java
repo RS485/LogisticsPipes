@@ -78,13 +78,13 @@ public class GuiDiskPopup extends SubGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new SmallGuiButton(0, xCenter + 16	, bottom - 27, 50, 10, "Request"));
-		controlList.add(new SmallGuiButton(1, xCenter + 16	, bottom - 15, 50, 10, "Exit"));
-		controlList.add(new SmallGuiButton(2, xCenter - 66	, bottom - 27, 50, 10, "Add/Edit"));
-		controlList.add(new SmallGuiButton(3, xCenter - 66	, bottom - 15, 50, 10, "Delete"));
-		controlList.add(new SmallGuiButton(4, xCenter - 12	, bottom - 27, 25, 10, "/\\"));
-		controlList.add(new SmallGuiButton(5, xCenter - 12	, bottom - 15, 25, 10, "\\/"));
+		buttonList.clear();
+		buttonList.add(new SmallGuiButton(0, xCenter + 16	, bottom - 27, 50, 10, "Request"));
+		buttonList.add(new SmallGuiButton(1, xCenter + 16	, bottom - 15, 50, 10, "Exit"));
+		buttonList.add(new SmallGuiButton(2, xCenter - 66	, bottom - 27, 50, 10, "Add/Edit"));
+		buttonList.add(new SmallGuiButton(3, xCenter - 66	, bottom - 15, 50, 10, "Delete"));
+		buttonList.add(new SmallGuiButton(4, xCenter - 12	, bottom - 27, 25, 10, "/\\"));
+		buttonList.add(new SmallGuiButton(5, xCenter - 12	, bottom - 15, 25, 10, "\\/"));
 	}
 	
 	@Override

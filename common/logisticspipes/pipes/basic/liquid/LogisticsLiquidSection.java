@@ -10,13 +10,15 @@ public class LogisticsLiquidSection extends LiquidTank {
 		super(capacity);
 	}
 
-	public void readFromNBT(NBTTagCompound compoundTag) {
+	public LogisticsLiquidSection readFromNBT(NBTTagCompound compoundTag) {
 		setLiquid(LiquidStack.loadLiquidStackFromNBT(compoundTag));
+		return this;
 	}
 
-	public void writeToNBT(NBTTagCompound subTag) {
+	public NBTTagCompound writeToNBT(NBTTagCompound subTag) {
 		if (this.getLiquid() != null) {
-			this.getLiquid().writeToNBT(subTag);
+			return this.getLiquid().writeToNBT(subTag);
 		}
+		return null;
 	}
 }

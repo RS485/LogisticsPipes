@@ -177,4 +177,16 @@ outer:
 	public ItemStack getStackInSlotOnClosing(int slot) {
 		return _sidedInventory.getStackInSlotOnClosing(_slotMap[slot]);
 	}
+
+	@Override
+	public boolean isInvNameLocalized() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

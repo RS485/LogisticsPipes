@@ -41,10 +41,10 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 		return Textures.LOGISTICSPIPE_HUD_TEXTURE_FILE;
 	}
 
-	@Override
+	/*@Override
 	public String getTextureFile() {
 		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
-	}
+	}*/
 
 	@Override
 	public boolean getShareTag() {

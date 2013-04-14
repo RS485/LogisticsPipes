@@ -36,6 +36,7 @@ import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -44,6 +45,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
@@ -108,7 +110,7 @@ public class ItemModule extends LogisticsItem {
 		private int id;
 		private Class<? extends ILogisticsModule> moduleClass;
 		private int textureIndex = -1;
-
+		
 		private Module(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
 			this.id = id;
 			this.name = name;
@@ -304,28 +306,16 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
-	public int getIconFromDamage(int i) {
+	public Icon getIconFromDamage(int i) {
 		for(Module module:modules) {
 			if(module.getId() == i) {
 				if(module.getTextureIndex() != -1) {
-					return module.getTextureIndex();
+					LogisticsPipes.moduleIconProvider.getIcon(module.getTextureIndex());
 				}
 			}
 		}
 
-		if (i >= 500){
-			return 5 * 16 + (i - 500);
-		}
-
-		if (i >= 200){
-			return 4 * 16 + (i - 200);
-		}
-
-		if (i >= 100){
-			return 3 * 16 + (i - 100);
-		}
-
-		return 2 * 16 + i;
+		return LogisticsPipes.moduleIconProvider.getIcon(i);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

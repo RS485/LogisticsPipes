@@ -31,6 +31,8 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import buildcraft.api.core.IIconProvider;
+
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
@@ -81,6 +83,9 @@ import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.DummyProvider;
+import logisticspipes.textures.provider.ModuleIconProvider;
+import logisticspipes.textures.provider.RemoteOrdererIconProvider;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.ticks.QueuedTasks;
@@ -120,7 +125,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
-		version = "%VERSION%",
+		version = "${lp.version.full}",
 		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
 		dependencies = "required-after:Forge@[6.5.0.0,);" +
 				"required-after:BuildCraft|Core;" +
@@ -150,8 +155,8 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
-	public static String MCVersion = "%MCVERSION%";
+	public static boolean DEBUG = "${DEBUG}".equals("%" + "DEBUG" + "%") || "${DEBUG}".equals("true");
+	public static String MCVersion = "1.5.1";
 	
 	private boolean certificateError = false;
 
@@ -215,6 +220,11 @@ public class LogisticsPipes {
 	
 	public static Logger log;
 	public static Logger requestLog;
+	
+	//IconProviders
+	public static IIconProvider remoteOrdererIconProvider = new RemoteOrdererIconProvider();
+	public static IIconProvider moduleIconProvider = new ModuleIconProvider();
+	public static IIconProvider dummyIconProvider = new DummyProvider();
 	
 	@Init
 	public void init(FMLInitializationEvent event) {
@@ -287,21 +297,16 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
-		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
-		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
+		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
 		
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
-		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
-		LogisticsItemCard.setItemName("logisticsItemCard");
-		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
+		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
-		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
-		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
+		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
 		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
-		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
+		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
 		if(MainProxy.isClient()) {
@@ -310,35 +315,30 @@ public class LogisticsPipes {
 			renderIndex = 0;
 		}
 		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
-		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
-		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		
 		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
-		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
-		LogisticsParts.setItemName("logisticsParts");
+		LogisticsParts.setUnlocalizedName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
-		ModuleItem.setItemName("itemModule");
+		ModuleItem.setUnlocalizedName("itemModule");
 		ModuleItem.loadModules();
 		
 		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
-		LogisticsItemDisk.setItemName("itemDisk");
-		LogisticsItemDisk.setIconIndex(3);
+		LogisticsItemDisk.setUnlocalizedName("itemDisk");
 		
 		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
-		UpgradeItem.setItemName("itemUpgrade");
+		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
-		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
-		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
+		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
-			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
-			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
 		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
@@ -375,8 +375,10 @@ public class LogisticsPipes {
 		
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
+		logisticsSign.setUnlocalizedName("logisticsSign");
 		ModLoader.registerBlock(logisticsSign);
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		logisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
 		
 		//Power Junction

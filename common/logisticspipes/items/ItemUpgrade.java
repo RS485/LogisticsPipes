@@ -21,6 +21,7 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
 
 public class ItemUpgrade extends LogisticsItem {
 
@@ -208,7 +209,8 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 	
 	@Override
-	public int getIconFromDamage(int i) {
+	public Icon getIconFromDamage(int i) {
+		/*TODO: fixme
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == i) {
 				if(upgrade.getTextureIndex() != -1) {
@@ -218,5 +220,7 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 			
 		return 9 * 16 + i;
+		*/
+		return null;
 	}
 }

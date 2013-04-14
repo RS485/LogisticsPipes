@@ -62,12 +62,13 @@ public class PacketLiquidUpdate extends PacketCoordinates {
 			if (renderCache[dir.ordinal()] == null) {
 				renderCache[dir.ordinal()] = new LiquidStack(0, 0, 0);
 			}
-
+			
 			if (delta.get(dir.ordinal() * 3 + 0)) {
-				renderCache[dir.ordinal()].itemID = data.readShort();
+				renderCache[dir.ordinal()]=new LiquidStack(data.readShort(),renderCache[dir.ordinal()].amount);
 			}
 			if (delta.get(dir.ordinal() * 3 + 1)) {
-				renderCache[dir.ordinal()].itemMeta = data.readShort();
+				
+				renderCache[dir.ordinal()]= new LiquidStack(renderCache[dir.ordinal()].itemID, renderCache[dir.ordinal()].amount, data.readShort());
 			}
 			if (delta.get(dir.ordinal() * 3 + 2)) {
 				if(dir != ForgeDirection.UNKNOWN) {

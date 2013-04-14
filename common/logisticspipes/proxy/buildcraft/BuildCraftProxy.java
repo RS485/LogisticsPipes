@@ -62,9 +62,9 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
-import buildcraft.api.gates.Action;
+import buildcraft.core.triggers.BCAction;
 import buildcraft.api.gates.ActionManager;
-import buildcraft.api.gates.Trigger;
+import buildcraft.core.triggers.BCTrigger;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipedItem;
 import buildcraft.core.EntityPassiveItem;
@@ -75,6 +75,7 @@ import buildcraft.transport.EntityData;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
@@ -85,11 +86,11 @@ public class BuildCraftProxy {
 
 	public static List<Item> pipelist = new ArrayList<Item>();
 
-	public static Trigger LogisticsFailedTrigger;
-	public static Trigger LogisticsCraftingTrigger;
-	public static Trigger LogisticsNeedPowerTrigger;
-	public static Trigger LogisticsHasDestinationTrigger;
-	public static Action LogisticsDisableAction;
+	public static BCTrigger LogisticsFailedTrigger;
+	public static BCTrigger LogisticsCraftingTrigger;
+	public static BCTrigger LogisticsNeedPowerTrigger;
+	public static BCTrigger LogisticsHasDestinationTrigger;
+	public static BCAction LogisticsDisableAction;
 	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
 		return checkPipesConnections(from, to, way, false);
@@ -231,8 +232,8 @@ public class BuildCraftProxy {
 
 		Pipe dummyPipe = BlockGenericPipe.createPipe(item.itemID);
 		if (dummyPipe != null) {
-			item.setTextureFile(dummyPipe.getTextureFile());
-			item.setTextureIndex(dummyPipe.getTextureIndexForItem());
+			item.setPipeIconIndex(dummyPipe.getIconIndexForItem());
+			TransportProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
 		}
 
 		return item;
@@ -243,7 +244,7 @@ public class BuildCraftProxy {
 		
 		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);
 		if(pipe instanceof CoreRoutedPipe) {
-			res.setTextureIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
+			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
 		}
 		
 		if(side.isClient()) {

@@ -55,6 +55,7 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.textures.provider.DummyProvider;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -72,6 +73,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
@@ -83,6 +85,8 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
@@ -395,12 +399,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	
 	public abstract TextureType getCenterTexture();
-	
-	@Override
-	public String getTextureFile() {
-		return Textures.BASE_TEXTURE_FILE;
-	}
-	
+	//TODO: fixme
+	/*
 	@Override
 	public final int getTextureIndex(ForgeDirection connection) {
 		TextureType texture = getTextureType(connection);
@@ -412,7 +412,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			return texture.unpowered;
 		}
 	}
-	
+	*/
 	public TextureType getTextureType(ForgeDirection connection) {
 		if(stillNeedReplace || _initialInit)
 			return getCenterTexture();
@@ -931,7 +931,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
-	public String getItemName(Double itemId) throws Exception {
+	public String getUnlocalizedName(Double itemId) throws Exception {
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
@@ -957,5 +957,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				count += next.getIDStack().stackSize;
 		}
 		return count;
+	}
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		return LogisticsPipes.dummyIconProvider;
 	}
 }

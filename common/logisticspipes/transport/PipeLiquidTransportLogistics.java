@@ -224,13 +224,13 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 
 			if (prev.itemID != current.itemID || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()].itemID = current.itemID;
+				renderCache[dir.ordinal()]=new LiquidStack(current.itemID,renderCache[dir.ordinal()].amount);
 				delta.set(dir.ordinal() * 3 + 0);
 			}
 
 			if (prev.itemMeta != current.itemMeta || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()].itemMeta = current.itemMeta;
+				renderCache[dir.ordinal()]=new LiquidStack(current.itemID,renderCache[dir.ordinal()].amount,current.itemMeta);
 				delta.set(dir.ordinal() * 3 + 1);
 			}
 

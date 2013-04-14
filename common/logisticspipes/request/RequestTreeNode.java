@@ -535,7 +535,7 @@ outer:
 				//stacksOfWorkRequested=0; // just incase we call it twice.
 				//return true; // don't remove from the list if we have no w
 				
-				//LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
+				//LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getUnlocalizedName());
 				//LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 			}
 			boolean isDone = setsToCraft == setsAbleToCraft;

@@ -9,9 +9,9 @@
 package logisticspipes.gates;
 
 import logisticspipes.textures.Textures;
-import buildcraft.api.gates.Action;
+import buildcraft.core.triggers.BCAction;
 
-public class ActionDisableLogistics extends Action{
+public class ActionDisableLogistics extends BCAction{
 
 	public ActionDisableLogistics(int id) {
 		super(id);
@@ -23,14 +23,8 @@ public class ActionDisableLogistics extends Action{
 	}
 	
 	@Override
-	public int getIndexInTexture() {
-		// TODO Auto-generated method stub
+	public int getIconIndex() {
 		return 1 * 16 + 0 ;
 	}
 	
-	@Override
-	public String getTexture() {
-		// TODO Auto-generated method stub
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	}
 }

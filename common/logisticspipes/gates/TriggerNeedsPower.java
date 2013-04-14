@@ -6,23 +6,19 @@ import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraf
 import logisticspipes.textures.Textures;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.Trigger;
+import buildcraft.core.triggers.BCTrigger;
 
-public class TriggerNeedsPower extends Trigger{
+public class TriggerNeedsPower extends BCTrigger{
 
 	public TriggerNeedsPower(int id) {
 		super(id);
 	}
 
 	@Override
-	public int getIndexInTexture() {
+	public int getIconIndex() {
 		return 1 * 16 + 1 ;
 	}
 	
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	}
 
 	@Override
 	public boolean hasParameter() {
@@ -33,7 +29,7 @@ public class TriggerNeedsPower extends Trigger{
 	public String getDescription() {
 		return "Needs More Power";
 	}
-
+/*TODO: fixme
 	@Override
 	public boolean isTriggerActive(TileEntity tile, ITriggerParameter parameter) {
 		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
@@ -46,4 +42,5 @@ public class TriggerNeedsPower extends Trigger{
 		}
 		return false;
 	}	
+	*/ 
 }

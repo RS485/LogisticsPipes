@@ -28,8 +28,8 @@ public class GuiMessagePopup extends SubGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new GuiButton(0, xCenter - 25, bottom - 25, 50,20,"OK"));
+		buttonList.clear();
+		buttonList.add(new GuiButton(0, xCenter - 25, bottom - 25, 50,20,"OK"));
 	}
 	
 	@Override

@@ -5,6 +5,7 @@ import java.util.List;
 import logisticspipes.textures.Textures;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.Icon;
 
 public class ItemParts extends LogisticsItem {
 	
@@ -14,7 +15,9 @@ public class ItemParts extends LogisticsItem {
 	}
 	
     @Override
-	public int getIconFromDamage(int par1) {
+	public Icon getIconFromDamage(int par1) {
+    	
+    	/* TODO: fixme
     	switch(par1) {
     	case 0: //bow
     		return Textures.LOGISTICSITEMHUD_PART1_ICONINDEX;
@@ -25,11 +28,12 @@ public class ItemParts extends LogisticsItem {
     	case 3: //nano hopper
     		return Textures.LOGISTICSITEM_NANOHOPPER_ICONINDEX;
     		default: return super.getIconFromDamage(par1);
-    	}
+    	}*/
+    	return null;
     }
 
 	@Override
-	public String getItemNameIS(ItemStack par1ItemStack) {
+	public String getUnlocalizedName(ItemStack par1ItemStack) {
     	switch(par1ItemStack.getItemDamage()) {
     	case 0: //bow
     		return "item.HUDbow";
@@ -40,7 +44,7 @@ public class ItemParts extends LogisticsItem {
     	case 3: 
     		return "item.NanoHopper";
     	}
-		return super.getItemNameIS(par1ItemStack);
+		return super.getUnlocalizedName(par1ItemStack);
 	}
 
 	@Override

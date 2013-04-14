@@ -47,7 +47,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
+		//TODO: fixme
+		/*HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			Integer count = result.get(ident);
@@ -57,17 +58,22 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 				result.put(ident, items.stackSize - (_hideOnePerStack ? 1:0));
 			}
 		}
-		return result;
+		return result;*/
+		return null;
 	}
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
+		//TODO: fixme
+		/*
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			result.add(ident);
 		}
 		return result;
+		*/
+		return null;
 	}
 
 	@Override
@@ -83,12 +89,15 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
+		//TODO: fixme
+				/*
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.getUndamaged(items);
 			if(ident == item) {
 				return true;
 			}
 		}
+		return false;*/
 		return false;
 	}
 

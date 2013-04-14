@@ -161,7 +161,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	@Override
 	public void addCraftingRecipes() {
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.THAUMICASPECTSINK), new Object[] { 
 			"wGe", 
 			"rBr", 
 			"fra", 

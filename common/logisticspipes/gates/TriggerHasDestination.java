@@ -8,18 +8,18 @@ import logisticspipes.textures.Textures;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.Trigger;
+import buildcraft.core.triggers.BCTrigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerHasDestination extends Trigger implements ITriggerPipe {
+public class TriggerHasDestination extends BCTrigger implements ITriggerPipe {
 
 	public TriggerHasDestination(int id) {
 		super(id);
 	}
 
 	@Override
-	public int getIndexInTexture() {
+	public int getIconIndex() {
 		return 2 * 16 + 0;
 	}
 	
@@ -46,11 +46,5 @@ public class TriggerHasDestination extends Trigger implements ITriggerPipe {
 		return false;
 	}
 
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	}
 	
-	
-
 }

@@ -1,10 +1,10 @@
-<project name="LogisticsPipes" basedir="../" default="main">
+<project name="LogisticsPipes" basedir="" default="main">
 	<property environment="env"/>
 
 	<!-- Properties -->
 
 	<property name="build.dir"            value="build"/>
-	<property name="src.dir"              value="src"/>
+	<property name="src.dir"              value="."/>
 	<property name="sign.dir"             value="/home/jenkins/.sign"/>
 
 	<property name="download.dir"         value="download"/>
@@ -14,7 +14,7 @@
 	<property name="jar.dir"              value="${build.dir}/dist"/>
 	<property name="lib.dir"              value="${build.dir}/lib"/>
 
-	<property name="mcp.dir"              value="${build.dir}/mcp"/>
+	<property name="mcp.dir"              value="../MCP_test"/>
 	<property name="forge.dir"            value="${mcp.dir}/forge"/>
 	<property name="buildcraft.dir"       value="${mcp.dir}/buildcraft"/>
 	<property name="forestry.dir"         value="${mcp.dir}/forestry"/>

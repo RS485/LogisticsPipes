@@ -329,6 +329,7 @@ public class LogisticsPipes {
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
+		//TODO move to separate object
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID,Textures.BASE_TEXTURE_FILE);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		

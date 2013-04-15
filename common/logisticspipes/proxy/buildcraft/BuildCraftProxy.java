@@ -241,14 +241,15 @@ public class BuildCraftProxy {
 	
 	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
 		ItemPipe res = registerPipe (defaultID, clas);
-		
+		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
+		res.setUnlocalizedName(clas.getSimpleName());
 		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);
 		if(pipe instanceof CoreRoutedPipe) {
 			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
 		}
 		
 		if(side.isClient()) {
-			LanguageRegistry.addName(res, descr);
+			
 			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
 		}
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {

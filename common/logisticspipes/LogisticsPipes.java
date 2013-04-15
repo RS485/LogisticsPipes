@@ -433,7 +433,6 @@ public class LogisticsPipes {
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event){
-		int i=0;
 		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapItems) {
 			textures.registerItemIcons(event.map);
 		} 

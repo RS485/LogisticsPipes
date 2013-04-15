@@ -67,4 +67,9 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor {
 	public CreativeTabs[] getCreativeTabs() {
         return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
 	}
+	@Override
+	public void registerIcons(IconRegister par1IconRegister)
+	{	
+		itemIcon=par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
+	}
 }

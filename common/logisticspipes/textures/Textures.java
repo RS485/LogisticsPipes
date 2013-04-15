@@ -1,6 +1,7 @@
 package logisticspipes.textures;
 
 import buildcraft.api.core.IIconProvider;
+import logisticspipes.items.LogisticsItem;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IconRegister;

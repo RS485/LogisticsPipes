@@ -25,7 +25,7 @@ public class ItemParts extends LogisticsItem {
 	}
     @Override
 	public Icon getIconFromDamage(int par1) {
-    		return _icons[par1%3];
+    		return _icons[par1%4];
     }
 
 	@Override

@@ -49,9 +49,12 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.transport.EntityData;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
 	
@@ -411,5 +414,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public void setOrderManagerContent(Collection<ItemIdentifierStack> list) {
 		displayList.clear();
 		displayList.addAll(list);
+	}
+
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

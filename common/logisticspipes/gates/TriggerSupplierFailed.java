@@ -13,18 +13,18 @@ import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.Textures;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.Trigger;
+import buildcraft.core.triggers.BCTrigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
+public class TriggerSupplierFailed extends BCTrigger implements ITriggerPipe{
 
 	public TriggerSupplierFailed(int id) {
 		super(id);
 	}
 	
 	@Override
-	public int getIndexInTexture() {
+	public int getIconIndex() {
 		return 0 * 16 + 0;
 	}
 	
@@ -50,8 +50,4 @@ public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 		return false;
 	}
 
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	}
 }

@@ -46,19 +46,19 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		int left = width / 2 - xSize / 2;
 		int top = height / 2 - ySize / 2;
 
-		controlList.add(new GuiButton(0, left + 110, top + 103, 40, 20, ""));	//DOWN
-		controlList.add(new GuiButton(1, left + 110, top + 43, 40, 20, ""));	//UP
-		controlList.add(new GuiButton(2, left + 50, top + 53, 50, 20, ""));		//NORTH
-		controlList.add(new GuiButton(3, left + 50, top + 93, 50, 20, ""));		//SOUTH
-		controlList.add(new GuiButton(4, left + 10, top + 73, 40, 20, ""));		//WEST
-		controlList.add(new GuiButton(5, left + 100, top + 73, 40, 20, ""));	//EAST
-		controlList.add(new GuiButton(6, left + 10, top + 23, 60, 20, ""));		//DEFAULT
+		buttonList.add(new GuiButton(0, left + 110, top + 103, 40, 20, ""));	//DOWN
+		buttonList.add(new GuiButton(1, left + 110, top + 43, 40, 20, ""));	//UP
+		buttonList.add(new GuiButton(2, left + 50, top + 53, 50, 20, ""));		//NORTH
+		buttonList.add(new GuiButton(3, left + 50, top + 93, 50, 20, ""));		//SOUTH
+		buttonList.add(new GuiButton(4, left + 10, top + 73, 40, 20, ""));		//WEST
+		buttonList.add(new GuiButton(5, left + 100, top + 73, 40, 20, ""));	//EAST
+		buttonList.add(new GuiButton(6, left + 10, top + 23, 60, 20, ""));		//DEFAULT
 
 		refreshButtons();
 	}
 	
 	private void refreshButtons(){
-		for (Object p : controlList){
+		for (Object p : buttonList){
 			GuiButton button = (GuiButton) p;
 			button.displayString = isExtract(ForgeDirection.getOrientation(button.id));
 		}
@@ -90,10 +90,8 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/extractor.png");
-		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/extractor.png");
 		int j = guiLeft;
 		int k = guiTop;
 		//drawRect(width/2 - xSize / 2, height / 2 - ySize /2, width/2 + xSize / 2, height / 2 + ySize /2, 0xFF404040);

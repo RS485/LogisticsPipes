@@ -20,7 +20,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
+		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 	}
 	
 	@Override

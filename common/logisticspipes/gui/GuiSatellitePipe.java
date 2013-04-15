@@ -43,8 +43,8 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 		super.initGui();
 		
 	
-		controlList.add(new GuiButton(0, (width / 2) - (30 /2) + 35, (height / 2) - (20 / 2), 30, 20, "+"));
-		controlList.add(new GuiButton(1, (width / 2) - (30 /2) - 35, (height / 2) - (20 / 2), 30, 20, "-"));
+		buttonList.add(new GuiButton(0, (width / 2) - (30 /2) + 35, (height / 2) - (20 / 2), 30, 20, "+"));
+		buttonList.add(new GuiButton(1, (width / 2) - (30 /2) - 35, (height / 2) - (20 / 2), 30, 20, "-"));
 	}
 	
 	@Override
@@ -70,10 +70,8 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/satellite.png");
-		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/satellite.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

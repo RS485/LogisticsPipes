@@ -3,6 +3,10 @@ package logisticspipes.pipes;
 import java.util.ArrayList;
 import java.util.List;
 
+import buildcraft.api.core.IIconProvider;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
@@ -94,5 +98,12 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 	@Override
 	public boolean canInsertFromSideToTanks() {
 		return false;
+	}
+
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

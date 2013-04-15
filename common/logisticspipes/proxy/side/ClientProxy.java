@@ -19,7 +19,7 @@ import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.textures.LogisticsPipesTextureStatic;
+//import logisticspipes.textures.LogisticsPipesTextureStatic;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.entity.player.EntityPlayer;
@@ -33,6 +33,8 @@ import cpw.mods.fml.client.TextureFXManager;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class ClientProxy implements IProxy {
@@ -73,7 +75,8 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public void addLogisticsPipesOverride(int index, String override1, String override2) {
-		TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
+		//TODO: fixme
+		//TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
 	}
 
 	@Override
@@ -97,13 +100,13 @@ public class ClientProxy implements IProxy {
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getItemNameIS(item.unsafeMakeNormalStack(1));
+				name = Item.itemsList[item.itemID].getUnlocalizedName(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[item.itemID].getItemName();
+					name = Item.itemsList[item.itemID].getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -124,7 +127,6 @@ public class ClientProxy implements IProxy {
 	public void tick() {
 		//Not Client Side
 	}
-
 	@Override
 	public void sendNameUpdateRequest(Player player) {
 		//Not Client Side

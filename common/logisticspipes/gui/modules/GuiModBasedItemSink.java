@@ -42,11 +42,11 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.controlList.clear();
-		this.controlList.add(new SmallGuiButton(0, guiLeft + 38, guiTop + 18, 50, 10, "Add"));
-		this.controlList.add(new SmallGuiButton(1, guiLeft + 107, guiTop + 18, 50, 10, "Remove"));
-		((GuiButton)controlList.get(0)).enabled = false;
-		((GuiButton)controlList.get(1)).enabled = false;
+		this.buttonList.clear();
+		this.buttonList.add(new SmallGuiButton(0, guiLeft + 38, guiTop + 18, 50, 10, "Add"));
+		this.buttonList.add(new SmallGuiButton(1, guiLeft + 107, guiTop + 18, 50, 10, "Remove"));
+		((GuiButton)buttonList.get(0)).enabled = false;
+		((GuiButton)buttonList.get(1)).enabled = false;
 	}
 
 	@Override
@@ -95,27 +95,27 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 			name = "";
 			mc.fontRenderer.drawString(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName(), guiLeft + 28, guiTop + 7, 0x404040);
 			if(_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName())) {
-				((GuiButton)controlList.get(0)).enabled = false;
-				((GuiButton)controlList.get(1)).enabled = true;
+				((GuiButton)buttonList.get(0)).enabled = false;
+				((GuiButton)buttonList.get(1)).enabled = true;
 			} else if (_itemSink.modList.size() < 9) {
-				((GuiButton)controlList.get(0)).enabled = true;
-				((GuiButton)controlList.get(1)).enabled = false;
+				((GuiButton)buttonList.get(0)).enabled = true;
+				((GuiButton)buttonList.get(1)).enabled = false;
 			} else {
-				((GuiButton)controlList.get(0)).enabled = false;
-				((GuiButton)controlList.get(1)).enabled = false;
+				((GuiButton)buttonList.get(0)).enabled = false;
+				((GuiButton)buttonList.get(1)).enabled = false;
 			}
 		} else if(name.equals("")) {
-			((GuiButton)controlList.get(0)).enabled = false;
-			((GuiButton)controlList.get(1)).enabled = false;
+			((GuiButton)buttonList.get(0)).enabled = false;
+			((GuiButton)buttonList.get(1)).enabled = false;
 		} else {
 			if(_itemSink.modList.contains(name)) {
 				mc.fontRenderer.drawString(name, guiLeft + 28, guiTop + 7, 0x404040);
-				((GuiButton)controlList.get(0)).enabled = false;
-				((GuiButton)controlList.get(1)).enabled = true;
+				((GuiButton)buttonList.get(0)).enabled = false;
+				((GuiButton)buttonList.get(1)).enabled = true;
 			} else {
 				name = "";
-				((GuiButton)controlList.get(0)).enabled = false;
-				((GuiButton)controlList.get(1)).enabled = false;
+				((GuiButton)buttonList.get(0)).enabled = false;
+				((GuiButton)buttonList.get(1)).enabled = false;
 			}
 		}
 		BasicGuiHelper.drawRect(guiLeft + 5, guiTop + 30, guiLeft + 169, guiTop + 122, 0xff808080);

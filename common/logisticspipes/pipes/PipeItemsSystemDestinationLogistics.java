@@ -2,6 +2,9 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.DestinationLogic;
 import logisticspipes.pipefxhandlers.Particles;
@@ -11,6 +14,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.core.utils.SimpleInventory;
 
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
@@ -66,5 +71,11 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 		EntityItem item = new EntityItem(worldObj,this.xCoord, this.yCoord, this.zCoord, inv.getStackInSlot(0));
 		worldObj.spawnEntityInWorld(item);
 		inv.setInventorySlotContents(0, null);
+	}
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

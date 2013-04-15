@@ -21,6 +21,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
@@ -172,7 +173,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void doWork() {}
 
 	@Override
-	public int powerRequest() {
+	public int powerRequest(ForgeDirection from) {
 		return Math.min(powerFramework.getMaxEnergyReceived(), freeSpace() / BuildCraftMultiplier);
 	}
 

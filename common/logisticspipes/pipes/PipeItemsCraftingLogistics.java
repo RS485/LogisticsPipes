@@ -70,6 +70,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.EntityPassiveItem;
@@ -78,6 +79,8 @@ import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Crafting")
 public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraftItems, IHeadUpDisplayRendererProvider, IChangeListener, IOrderManagerContentReceiver, IHavePriority {
@@ -275,6 +278,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			while (extracted.stackSize > 0) {
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
 				numtosend = Math.min(numtosend, nextOrder.getValue1().stackSize); 
+				if(numtosend == 0)
+					break;
 				stacksleft -= 1;
 				itemsleft -= numtosend;
 				ItemStack stackToSend = extracted.splitStack(numtosend);
@@ -289,6 +294,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
 					} else {
 						processingOrder = false;
+						if(!_extras.isEmpty())
+						nextOrder = _extras.getFirst();
 					}
 					
 				} else {
@@ -635,6 +642,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	@Override
 	public int getPriority() {
 		return ((BaseLogicCrafting)this.logic).priority;
+	}
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }

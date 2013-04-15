@@ -1,2 +1,5 @@
 lib
 sign
+build/**
+output/**
+download/**

@@ -1,5 +1,7 @@
 package logisticspipes.pipes;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.network.GuiIDs;
@@ -19,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.LiquidStack;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.core.utils.SimpleInventory;
 
 public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
@@ -83,5 +86,11 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	@Override
 	public boolean canInsertToTanks() {
 		return true;
+	}
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

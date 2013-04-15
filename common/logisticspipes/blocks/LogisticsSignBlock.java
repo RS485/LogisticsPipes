@@ -19,7 +19,8 @@ public class LogisticsSignBlock extends BlockContainer {
 		super(par1, Material.iron);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
-
+	//TODO: @fixme
+/*
 	@Override
 	public int getBlockTextureFromSideAndMetadata(int par1, int par2) {
 		return 4;
@@ -27,9 +28,9 @@ public class LogisticsSignBlock extends BlockContainer {
 
 	@Override
 	public int getBlockTextureFromSide(int par1) {
-		return 0 /* NONE */;
+		return 0 ;
 	}
-
+*/
 	@Override
 	public boolean renderAsNormalBlock() {
 		return false;

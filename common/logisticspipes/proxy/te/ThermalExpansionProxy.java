@@ -4,19 +4,23 @@ import java.util.List;
 
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import net.minecraft.tileentity.TileEntity;
-import thermalexpansion.transport.tileentity.TileTeleportItem;
+//import thermalexpansion.transport.tileentity.TileTeleportItem;
 
 public class ThermalExpansionProxy implements IThermalExpansionProxy {
 
 	@Override
 	public boolean isTesseract(TileEntity tile) {
-		return tile instanceof TileTeleportItem;
+		//TODO TE related
+		//return tile instanceof TileTeleportItem;
+		return false;
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<TileEntity> getConnectedTesseracts(TileEntity tile) {
-		return ((TileTeleportItem)tile).getValidOutputs();
+		//TODO TE related
+		//return ((TileTeleportItem)tile).getValidOutputs();
+		return null;
 	}
 
 	@Override

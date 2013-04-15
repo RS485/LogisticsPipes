@@ -3,6 +3,8 @@ package logisticspipes.items;
 import java.util.List;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.relauncher.Side;
@@ -23,6 +25,13 @@ public class LogisticsLiquidContainer extends LogisticsItem implements IItemAdva
 		return false;
 	}
 
+	@Override
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+		//this.iconIndex = Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX;
+	}
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	@SuppressWarnings("rawtypes")

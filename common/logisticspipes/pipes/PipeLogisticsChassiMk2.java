@@ -1,5 +1,6 @@
 package logisticspipes.pipes;
 
+import net.minecraftforge.common.ForgeDirection;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
@@ -17,5 +18,11 @@ public class PipeLogisticsChassiMk2 extends PipeLogisticsChassi{
 	@Override
 	public int getChassiSize() {
 		return 2;
+	}
+
+	@Override
+	public int getIconIndex(ForgeDirection direction) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }

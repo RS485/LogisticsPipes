@@ -7,12 +7,16 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.textures.Textures;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -21,6 +25,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
+	
+	private static final Icon[] icons = new Icon[12];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -55,8 +61,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving) {
-		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving);
+	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving, itemStack);
 		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
 		if(tile instanceof IRotationProvider) {
 			double x = tile.xCoord - par5EntityLiving.posX;
@@ -90,18 +96,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public int getBlockTextureFromSideAndMetadata(int side, int meta) {
+	public Icon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
 	
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
 		new UnsupportedOperationException("Please call createNewTileEntity(World,int) instead of createNewTileEntity(World).").printStackTrace();
-		return createNewTileEntity(var1, 0);
+		return createTileEntity(var1, 0);
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createTileEntity(World world, int metadata) {
         switch(metadata) {
 	    	case SOLDERING_STATION:
 	    		return new LogisticsSolderingTileEntity();
@@ -133,7 +139,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
+	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
 		TileEntity tile = access.getBlockTileEntity(x, y, z);
 		if(tile instanceof IRotationProvider) {
@@ -143,8 +149,21 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 	
-	private int getRotatedTexture(int meta, int side, int rotation, int front) {
-		switch (meta) {
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IconRegister par1IconRegister)
+	{
+		/*icons = new Icon[3];
+		int i = 0;
+		for (String s : sideNames) // copied from https://github.com/cpw/ironchest/compare/mc1.5...master
+		{
+			icons[i++] = par1IconRegister.registerIcon(String.format("ironchest:%s_%s",name().toLowerCase(),s));
+		}*/
+
+	}
+	
+	private Icon getRotatedTexture(int meta, int side, int rotation, int front) {
+		/*switch (meta) {
 		case SOLDERING_STATION:
 			if(front == 0) {
 				front = 17;
@@ -225,11 +244,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 			}
 		default:
 			return 0;
-		}
-	}
-	
-	@Override
-	public String getTextureFile() {
+		}*/
 		return Textures.LOGISTICS_SOLID_BLOCK;
 	}
+	
 }

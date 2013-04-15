@@ -15,18 +15,21 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
-
-import appeng.api.InterfaceCraftingRequest;
-import appeng.api.me.tiles.ITileInterfaceApi;
+/*
+import appeng.api.me.util.ICraftRequest;
+import appeng.api.me.util.InterfaceCraftingResponse;
+import appeng.api.me.tiles.ITileInterfaceApi;*/
 
 public class AECraftingTemplate extends CraftingTemplate {
-	
-	ITileInterfaceApi _interface;
-	public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter,
+	//TODO ae realted fixme
+	//ITileInterfaceApi _interface;
+	/*public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter,
 			int priority) {
 		super(null, crafter, priority);
 		this._interface = _interface;
-	}
+	}*/
+	public AECraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {super( result,  crafter, priority);}
+	
 	
 	@Override
 	public int getResultStackSize() {
@@ -40,7 +43,8 @@ public class AECraftingTemplate extends CraftingTemplate {
 	
 	@Override
 	public boolean canCraft(ItemIdentifier item) {
-		List<ItemStack> results = _interface.getCraftingOptions();
+		//TODO: fixme
+		/*List<ItemStack> results = _interface.getCraftingOptions();
 		item.getId();
 		
 		for(ItemStack r:results){
@@ -48,19 +52,22 @@ public class AECraftingTemplate extends CraftingTemplate {
 				this._result = item.makeStack(1);
 				return true;
 			}
-		}
+		}*/
 		return false;
 	}
 	
 	@Override 
 	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
-		InterfaceCraftingRequest response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
+		//TODO ae realted fixme
+		/*
+		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = ItemIdentifier.get(response.Request);
 		promise.numberOfItems = response.Request.stackSize;
 		promise.sender = _crafter;
 		promise.relayPoints = relays;
-		return promise;
+		return promise;*/
+		return null;
 	}
 /*	
 	@Override

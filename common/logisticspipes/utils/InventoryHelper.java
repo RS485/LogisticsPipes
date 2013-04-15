@@ -11,7 +11,7 @@ import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.inventory.ITransactor;
 import buildcraft.core.inventory.TransactorFurnace;
-import buildcraft.core.inventory.TransactorSided;
+import buildcraft.core.inventory.TransactorForgeSided;
 import buildcraft.core.inventory.TransactorSimple;
 import buildcraft.core.inventory.TransactorSpecial;
 import buildcraft.core.utils.Utils;
@@ -60,7 +60,7 @@ public class InventoryHelper {
 			return new TransactorFurnace((ISidedInventory) object);
 
 		else if (object instanceof ISidedInventory)
-			return new TransactorSided((ISidedInventory) object);
+			return new TransactorForgeSided((ISidedInventory) object);
 
 		else if (object instanceof IInventory)
 			return new TransactorSimple(getInventory((IInventory) object));

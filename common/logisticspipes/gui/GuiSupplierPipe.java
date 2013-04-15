@@ -57,11 +57,9 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 	}
 	
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/supplier.png");
-				
+	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/supplier.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -71,8 +69,8 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
+		buttonList.clear();
+		buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
 	}
 
 	@Override
@@ -80,7 +78,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		// TODO Auto-generated method stub
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
@@ -88,7 +86,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 	}
 	
 	public void refreshMode() {
-		((GuiButton)controlList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+		((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
 	}
 	
 	@Override

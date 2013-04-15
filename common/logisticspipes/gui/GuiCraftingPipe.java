@@ -71,29 +71,28 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public void initGui() {
 		super.initGui();
-		
 		if(!isAdvancedSat) {
-			controlList.add(normalButtonArray[0] = new SmallGuiButton(0, (width-xSize) / 2 + 155, (height - ySize) / 2 + 50, 10,10, ">"));
-			controlList.add(normalButtonArray[1] = new SmallGuiButton(1, (width-xSize) / 2 + 120, (height - ySize) / 2 + 50, 10,10, "<"));
+			buttonList.add(normalButtonArray[0] = new SmallGuiButton(0, (width-xSize) / 2 + 155, (height - ySize) / 2 + 50, 10,10, ">"));
+			buttonList.add(normalButtonArray[1] = new SmallGuiButton(1, (width-xSize) / 2 + 120, (height - ySize) / 2 + 50, 10,10, "<"));
 		}
 		if(!isAdvancedSat) {
-			controlList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 50, 37,10, "Import"));
-			controlList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, "Open"));
+			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 50, 37,10, "Import"));
+			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, "Open"));
 			for(int i = 0; i < 6; i++) {
-				controlList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10,10, ">"));
+				buttonList.add(buttonarray[i] = new SmallGuiButton(5 + i, (width-xSize) / 2 + 11 + 18 * i, (height - ySize) / 2 + 35, 10,10, ">"));
 				buttonarray[i].drawButton = false;
 			}
-			controlList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 85, 10,10, ">"));
-			controlList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 85, 10,10, "<"));
+			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 85, 10,10, ">"));
+			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 85, 10,10, "<"));
 		} else {
 			for(int i=0;i<9;i++) {
-				controlList.add(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15,10, "/\\"));
-				controlList.add(advancedSatButtonArray[i][1] = new SmallGuiButton(40 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 70, 15,10, "\\/"));
+				buttonList.add(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15,10, "/\\"));
+				buttonList.add(advancedSatButtonArray[i][1] = new SmallGuiButton(40 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 70, 15,10, "\\/"));
 			}
-			controlList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 100, 37,10, "Import"));
-			controlList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 100, 28,10, "Open"));
-			controlList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 105, 10,10, ">"));
-			controlList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 105, 10,10, "<"));
+			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 100, 37,10, "Import"));
+			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 100, 28,10, "Open"));
+			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 105, 10,10, ">"));
+			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 105, 10,10, "<"));
 		}
 	}
 	

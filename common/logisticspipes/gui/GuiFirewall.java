@@ -31,11 +31,11 @@ public class GuiFirewall extends KraphtBaseGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new GuiStringHandlerButton(0, width / 2 + 23, height / 2 + 29 - 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlocking() ? "Blocked" : "Allowed";}}));
-		controlList.add(new GuiStringHandlerButton(1, width / 2 + 23, height / 2 + 62 - 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockProvider() ? "Blocked" : "Allowed";}}));
-		controlList.add(new GuiStringHandlerButton(2, width / 2 + 23, height / 2 + 95 - 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockCrafer() ? "Blocked" : "Allowed";}}));
-		controlList.add(new GuiStringHandlerButton(3, width / 2 + 23, height / 2 + 128- 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockSorting() ? "Blocked" : "Allowed";}}));
+		buttonList.clear();
+		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 23, height / 2 + 29 - 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlocking() ? "Blocked" : "Allowed";}}));
+		buttonList.add(new GuiStringHandlerButton(1, width / 2 + 23, height / 2 + 62 - 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockProvider() ? "Blocked" : "Allowed";}}));
+		buttonList.add(new GuiStringHandlerButton(2, width / 2 + 23, height / 2 + 95 - 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockCrafer() ? "Blocked" : "Allowed";}}));
+		buttonList.add(new GuiStringHandlerButton(3, width / 2 + 23, height / 2 + 128- 123, 60 , 20, new StringHandler() {@Override public String getContent() {return pipe.isBlockSorting() ? "Blocked" : "Allowed";}}));
 	}
 
 	@Override

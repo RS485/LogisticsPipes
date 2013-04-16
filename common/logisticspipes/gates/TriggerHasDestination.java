@@ -4,15 +4,14 @@ import java.util.ArrayList;
 
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.core.triggers.BCTrigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerHasDestination extends BCTrigger implements ITriggerPipe {
+public class TriggerHasDestination extends LPTrigger implements ITriggerPipe {
 
 	public TriggerHasDestination(int id) {
 		super(id);
@@ -20,7 +19,7 @@ public class TriggerHasDestination extends BCTrigger implements ITriggerPipe {
 
 	@Override
 	public int getIconIndex() {
-		return 2 * 16 + 0;
+		return LPActionTriggerIconProvider.triggerHasDestinationIconIndex;
 	}
 	
 	@Override

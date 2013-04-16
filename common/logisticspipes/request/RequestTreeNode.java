@@ -355,7 +355,7 @@ public class RequestTreeNode {
 		//a queue to store the crafters, sorted by todo; we will fill up from least-most in a balanced way.
 		PriorityQueue<CraftingSorterNode> craftersSamePriority = new PriorityQueue<CraftingSorterNode>(5);
 		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
-
+		//TODO ^ Make this a generic list
 		boolean done=false;
 		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 		int currentPriority=0;

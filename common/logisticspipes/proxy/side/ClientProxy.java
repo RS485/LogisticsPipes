@@ -76,6 +76,8 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void addLogisticsPipesOverride(int index, String override1, String override2) {
 		//TODO: fixme
+		int i=0;
+		
 		//TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
 	}
 

@@ -11,13 +11,12 @@ package logisticspipes.gates;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.core.triggers.BCTrigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends BCTrigger implements ITriggerPipe{
+public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 
 	public TriggerSupplierFailed(int id) {
 		super(id);
@@ -25,7 +24,7 @@ public class TriggerSupplierFailed extends BCTrigger implements ITriggerPipe{
 	
 	@Override
 	public int getIconIndex() {
-		return 0 * 16 + 0;
+		return LPActionTriggerIconProvider.triggerSupplierFailedIconIndex;
 	}
 	
 	@Override

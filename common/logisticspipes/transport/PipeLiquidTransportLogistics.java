@@ -225,6 +225,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 			if (prev.itemID != current.itemID || initPacket) {
 				changed = true;
 				renderCache[dir.ordinal()]=new LiquidStack(current.itemID,renderCache[dir.ordinal()].amount);
+				//TODO check: @GUIpsp Possibly instanciating multiple times, might be slow
 				delta.set(dir.ordinal() * 3 + 0);
 			}
 

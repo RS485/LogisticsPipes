@@ -1,14 +1,13 @@
 package logisticspipes.gates;
 
-
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.core.triggers.BCTrigger;
 
-public class TriggerNeedsPower extends BCTrigger{
+public class TriggerNeedsPower extends LPTrigger{
 
 	public TriggerNeedsPower(int id) {
 		super(id);
@@ -16,7 +15,7 @@ public class TriggerNeedsPower extends BCTrigger{
 
 	@Override
 	public int getIconIndex() {
-		return 1 * 16 + 1 ;
+		return LPActionTriggerIconProvider.triggerPowerNeededIconIndex;
 	}
 	
 
@@ -29,9 +28,8 @@ public class TriggerNeedsPower extends BCTrigger{
 	public String getDescription() {
 		return "Needs More Power";
 	}
-/*TODO: fixme
 	@Override
-	public boolean isTriggerActive(TileEntity tile, ITriggerParameter parameter) {
+	public boolean isTriggerActive(ForgeDirection side, TileEntity tile, ITriggerParameter parameter) {
 		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
 			LogisticsPowerJuntionTileEntity_BuildCraft LPJTE = (LogisticsPowerJuntionTileEntity_BuildCraft)tile;
 			return LPJTE.needMorePowerTriggerCheck;
@@ -42,5 +40,4 @@ public class TriggerNeedsPower extends BCTrigger{
 		}
 		return false;
 	}	
-	*/ 
 }

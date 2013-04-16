@@ -154,7 +154,7 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "${DEBUG}".equals("%" + "DEBUG" + "%") || "${DEBUG}".equals("true");
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "${DEBUG}".equals("true");
 	public static String MCVersion = "1.5.1";
 	
 	private boolean certificateError = false;
@@ -329,8 +329,8 @@ public class LogisticsPipes {
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
-		//TODO move to separate object
-		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID,Textures.BASE_TEXTURE_FILE);
+		//TODO make it visible in creative search
+		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
 		if(DEBUG) {
@@ -428,7 +428,6 @@ public class LogisticsPipes {
 		event.registerServerCommand(new LogisticsPipesCommand());
 	}
 	/*
-	 * @Author gejzer
 	 * subscribe forge pre stich event to register common texture
 	 */
 	@ForgeSubscribe

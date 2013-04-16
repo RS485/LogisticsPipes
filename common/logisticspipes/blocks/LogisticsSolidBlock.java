@@ -245,7 +245,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		default:
 			return 0;
 		}*/
-		return Textures.LOGISTICS_SOLID_BLOCK;
+		return Textures.BASE_TEXTURE_FILE;
 	}
 	
 }

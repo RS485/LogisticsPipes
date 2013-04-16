@@ -1,13 +1,12 @@
 package logisticspipes.gates;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.core.triggers.BCTrigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerCrafting extends BCTrigger implements ITriggerPipe {
+public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 
 	public TriggerCrafting(int id) {
 		super(id);
@@ -21,7 +20,7 @@ public class TriggerCrafting extends BCTrigger implements ITriggerPipe {
 
 	@Override
 	public int getIconIndex() {
-		return 0 * 16 + 2;
+		return LPActionTriggerIconProvider.triggerCraftingIconIndex;
 	}
 
 	@Override

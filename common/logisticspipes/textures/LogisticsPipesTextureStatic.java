@@ -12,10 +12,11 @@
 //import org.lwjgl.opengl.GL11;
 //
 //import cpw.mods.fml.client.FMLClientHandler;
-//import cpw.mods.fml.client.FMLTextureFX;
+////import cpw.mods.fml.client.FMLTextureFX;
+//import cpw.mods.fml.client.ITextureFX;
 //import cpw.mods.fml.client.TextureFXManager;
-//
-//public class LogisticsPipesTextureStatic extends FMLTextureFX {
+//import cpw.mods.fml.client.*;
+//public class LogisticsPipesTextureStatic implements  FML{
 //    private boolean oldanaglyph = false;
 //    private int[] pixels = null;
 //    private String targetTex = null;

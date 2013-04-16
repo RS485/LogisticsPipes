@@ -9,12 +9,27 @@
 package logisticspipes.gates;
 
 import logisticspipes.textures.Textures;
-import buildcraft.core.triggers.BCAction;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+import buildcraft.api.core.IIconProvider;
+import buildcraft.api.gates.ActionManager;
+import buildcraft.api.gates.IAction;
 
-public class ActionDisableLogistics extends BCAction{
+public class ActionDisableLogistics extends LPAction{
 
 	public ActionDisableLogistics(int id) {
 		super(id);
+	}
+	
+	@Override
+	public boolean hasParameter() {
+		return false;
+	}
+	
+	@Override
+	public int getId() {
+		return this.id;
 	}
 	
 	@Override
@@ -24,7 +39,13 @@ public class ActionDisableLogistics extends BCAction{
 	
 	@Override
 	public int getIconIndex() {
-		return 1 * 16 + 0 ;
+		return LPActionTriggerIconProvider.actionDisablePipeIconIndex;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		return Textures.LPactionIconProvider;
 	}
 	
 }

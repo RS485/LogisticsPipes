@@ -124,7 +124,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 @Mod(
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
-		version = "${lp.version.full}",
+		version = "%VERSION%",
 		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
 		dependencies = "required-after:Forge@[6.5.0.0,);" +
 				"required-after:BuildCraft|Core;" +
@@ -154,8 +154,8 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "${DEBUG}".equals("true");
-	public static String MCVersion = "1.5.1";
+	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static String MCVersion = "%MCVERSION%";
 	
 	private boolean certificateError = false;
 

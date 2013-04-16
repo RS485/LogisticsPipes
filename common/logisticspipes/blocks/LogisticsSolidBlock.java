@@ -155,9 +155,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 	{
 		/*icons = new Icon[3];
 		int i = 0;
-		for (String s : sideNames) // copied from https://github.com/cpw/ironchest/compare/mc1.5...master
+		for (String s : sideNames)
 		{
-			icons[i++] = par1IconRegister.registerIcon(String.format("ironchest:%s_%s",name().toLowerCase(),s));
+			//do sth
 		}*/
 
 	}

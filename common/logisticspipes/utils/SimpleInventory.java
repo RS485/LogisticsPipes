@@ -281,8 +281,8 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public boolean isInvNameLocalized() {
-		// TODO Auto-generated method stub
-		return false;
+		// TODO ?
+		return true;
 	}
 
 	@Override

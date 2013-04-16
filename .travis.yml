@@ -12,4 +12,4 @@ before_script:
   - mv .gitignore src/
   - mv build.xml src/
   - cd src
-script: ant main
+script: ant test

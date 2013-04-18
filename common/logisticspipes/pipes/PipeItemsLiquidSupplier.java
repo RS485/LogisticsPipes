@@ -1,7 +1,5 @@
 package logisticspipes.pipes;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -18,7 +16,6 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidContainerRegistry;
 import net.minecraftforge.liquids.LiquidStack;
-import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.EntityData;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
@@ -117,10 +114,4 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 		return true;
 	}
 
-
-	@Override
-	public int getIconIndex(ForgeDirection direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

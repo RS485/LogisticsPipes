@@ -27,6 +27,7 @@ TODO later, maybe....
 package logisticspipes;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,6 +96,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
+import net.minecraft.util.Icon;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -155,6 +157,7 @@ public class LogisticsPipes {
 	public static boolean DisplayRequests;
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG_OVGEN = false;
 	public static String MCVersion = "%MCVERSION%";
 	
 	private boolean certificateError = false;
@@ -206,7 +209,7 @@ public class LogisticsPipes {
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
 	
-	private Textures textures = new Textures();
+	private Textures textures;
 	
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
@@ -220,7 +223,8 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
-	
+	public static Icon teststuff;
+	public static Icon teststuff2;
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
@@ -373,9 +377,10 @@ public class LogisticsPipes {
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
 		ModLoader.registerBlock(logisticsSign);
+		logisticsSign.setUnlocalizedName("logisticsSign");
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
-		
+		logisticsSign.setUnlocalizedName("logisticsSolidBlock");
 		//Power Junction
 		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
@@ -432,10 +437,18 @@ public class LogisticsPipes {
 	 */
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
-	public void textureHook(TextureStitchEvent.Pre event){
+	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
+		if(textures==null)
+			textures = new Textures();
 		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapItems) {
 			textures.registerItemIcons(event.map);
-		} 
+		}
+		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapBlocks) {
+			//teststuff=OverlayManager.RegisterOverlays(event.map, "basic", "status_overlay" ,OverlayType.powered ,OverlayType.routed, OverlayType.unpowered, OverlayType.security);
+			teststuff=event.map.registerIcon("logisticspipes:pipes/combined");
+			teststuff2=event.map.registerIcon("logisticspipes:pipes/status_overlay/powered");
+			textures.registerBlockIcons(event.map);
+		}
 	}
 	@FingerprintWarning
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {

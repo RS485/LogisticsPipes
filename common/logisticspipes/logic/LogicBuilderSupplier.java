@@ -19,7 +19,6 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;

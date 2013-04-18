@@ -57,6 +57,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.textures.provider.DummyProvider;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
+import logisticspipes.textures.provider.LPPipeIconProvider;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -400,20 +401,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	
 	public abstract TextureType getCenterTexture();
-	//TODO: fixme
-	/*
-	@Override
-	public final int getTextureIndex(ForgeDirection connection) {
-		TextureType texture = getTextureType(connection);
-		if(_textureBufferPowered) {
-			return texture.powered;
-		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-			return texture.normal;
-		} else {
-			return texture.unpowered;
-		}
-	}
-	*/
+	
 	public TextureType getTextureType(ForgeDirection connection) {
 		if(stillNeedReplace || _initialInit)
 			return getCenterTexture();
@@ -962,6 +950,21 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIconProvider getIconProvider() {
-		return Textures.LPactionIconProvider;
+		return Textures.LPpipeIconProvider;
+	}
+	/*@Override
+	public int getIconIndex(ForgeDirection direction) {
+		return Textures.LOGISTICSPIPE_TEXTURE.normal;
+	}*/
+	@Override
+	public final int getIconIndex(ForgeDirection connection) {
+		TextureType texture = getTextureType(connection);
+		if(_textureBufferPowered) {
+			return texture.powered;
+		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
+			return texture.normal;
+		} else {
+			return texture.unpowered;
+		}
 	}
 }

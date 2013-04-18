@@ -1,18 +1,13 @@
 package logisticspipes.textures;
 
 import buildcraft.api.core.IIconProvider;
-import logisticspipes.items.LogisticsItem;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
-import net.minecraft.client.Minecraft;
+import logisticspipes.textures.provider.LPPipeIconProvider;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.util.Icon;
-import net.minecraftforge.client.MinecraftForgeClient;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.common.Mod.Init;
-import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.event.FMLStateEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -27,6 +22,7 @@ public class Textures {
 	public Textures()
 	{
 		LPactionIconProvider = new LPActionTriggerIconProvider();
+		LPpipeIconProvider = new LPPipeIconProvider(PIPETEXTURE_LIMIT);
 	}
 	
 	public class dummyIconProvider implements IIconProvider {
@@ -46,7 +42,7 @@ public class Textures {
 		}
 		
 	}
-	
+	public static final int PIPETEXTURE_LIMIT = 120;
 	public static TextureType LOGISTICSPIPE_TEXTURE							= empty;
 	public static TextureType LOGISTICSPIPE_PROVIDER_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_REQUESTER_TEXTURE				= empty;
@@ -99,117 +95,66 @@ public class Textures {
 	public static Icon LOGISTICSITEMTEXTURE_FOR_DISK;
 	
 	// Standalone pipes
-	public static String LOGISTICSPIPE_TEXTURE_FILE					;
-	public static String LOGISTICSPIPE_PROVIDER_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE		;
-	public static String LOGISTICSPIPE_REQUESTER_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		;
-	public static String LOGISTICSPIPE_CRAFTER_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		;
-	public static String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE ;
-	public static String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE 	;
-	public static String LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE 	;
-	public static String LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE 	;
-	public static String LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE 	;
-	public static String LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE 			;
-	public static String LOGISTICSPIPE_DESTINATION_TEXTURE_FILE 		;
-	public static String LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE		;
-	public static String LOGISTICSPIPE_FIREWALL_TEXTURE_FILE			;
+	public static String LOGISTICSPIPE_TEXTURE_FILE = "pipes/basic";
+	public static String LOGISTICSPIPE_PROVIDER_TEXTURE_FILE ="pipes/provider";
+	public static String LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE	="pipes/provider_mk2";
+	public static String LOGISTICSPIPE_REQUESTER_TEXTURE_FILE =  "pipes/request";
+	public static String LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE =  "pipes/request_mk2";
+	public static String LOGISTICSPIPE_CRAFTER_TEXTURE_FILE	 =  "pipes/crafting";
+	public static String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE =  "pipes/crafting_mk2";
+	public static String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE =  "pipes/satellite";
+	public static String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE =  "pipes/supplier";
+	public static String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	=  "pipes/builder_supplier";
+	public static String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	=  "pipes/liquid_supplier";
+	public static String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	=  "pipes/remote_orderer";
+	public static String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE =  "pipes/analyzer";
+	public static String LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE =  "pipes/beesink";
+	public static String LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE =  "pipes/invsyscon_con";
+	public static String LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE =  "pipes/invsyscon_dis";
+	public static String LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE =  "pipes/invsyscon_mis";
+	public static String LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE  =  "pipes/entrance";
+	public static String LOGISTICSPIPE_DESTINATION_TEXTURE_FILE =  "pipes/destination";
+	public static String LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE =  "pipes/crafting_mk3";
+	public static String LOGISTICSPIPE_FIREWALL_TEXTURE_FILE =  "pipes/firewall";
 	
 	// Liquid Pipes
-	public static String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_LIQUID_BASIC_FILE				;
-	public static String LOGISTICSPIPE_LIQUID_INSERTION_FILE			;
-	public static String LOGISTICSPIPE_LIQUID_PROVIDER_FILE			;
-	public static String LOGISTICSPIPE_LIQUID_REQUEST_FILE			;
+	public static String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE =  "pipes/liquid_connector";
+	public static String LOGISTICSPIPE_LIQUID_BASIC_FILE =  "pipes/liquid_basic";
+	public static String LOGISTICSPIPE_LIQUID_INSERTION_FILE =  "pipes/liquid_insertion";
+	public static String LOGISTICSPIPE_LIQUID_PROVIDER_FILE =  "pipes/liquid_provider";
+	public static String LOGISTICSPIPE_LIQUID_REQUEST_FILE =  "pipes/liquid_request";
 	
 	// Status overlay
-	public static String LOGISTICSPIPE_ROUTED_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_POWERED_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_SECURITY_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_LIQUID_TEXTURE_FILE			;
+	public static String LOGISTICSPIPE_ROUTED_TEXTURE_FILE = "pipes/status_overlay/routed";
+	public static String LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE = "pipes/status_overlay/not_routed";
+	public static String LOGISTICSPIPE_POWERED_TEXTURE_FILE = "pipes/status_overlay/powered";
+	public static String LOGISTICSPIPE_SECURITY_TEXTURE_FILE ="pipes/status_overlay/security";
+	public static String LOGISTICSPIPE_LIQUID_TEXTURE_FILE ="pipes/status_overlay/liquid_connection";
 	// Chassi pipes
-	public static String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			;
-	public static String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			;
+	public static String LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			=  "pipes/chassi/chassi_mk1";
+	public static String LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			=  "pipes/chassi/chassi_mk2";
+	public static String LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			=  "pipes/chassi/chassi_mk3";
+	public static String LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			=  "pipes/chassi/chassi_mk4";
+	public static String LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			=  "pipes/chassi/chassi_mk5";
+	
 	// Chassi status overlay
-	public static String LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE		;
-	public static String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	;
+	public static String LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE		=  "pipes/chassi/status_overlay/routed";
+	public static String LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	=  "pipes/chassi/status_overlay/not_routed";
+	public static String LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	=  "pipes/chassi/status_overlay/direction";
 	
 	//Pipe Power Overlays
-	public static String LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE	;
-	public static String LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE		;
+	public static String LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE="pipes/status_overlay/powered-pipe";
+	public static String LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE="pipes/status_overlay/un-powered-pipe";
+	//TODO is it really needen?
+	public static String LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE="pipes/status_overlay/un-overlayed";
 	
 	//Armor
-	public static final String LOGISTICSPIPE_HUD_TEXTURE_FILE="/logisticspipes/HUD.png";
+	public static final String LOGISTICSPIPE_HUD_TEXTURE_FILE="/logisticspipes/HUD";
 	
 	/*static {
 		//BROKEN CODE -- CAN NOT DO THIS STATIC, MUST INIT AFTER MINECRAFT
-		TextureMap itemTextures = Minecraft.getMinecraft().renderEngine.textureMapItems;
-		// Standalone pipes
-		 LOGISTICSPIPE_TEXTURE_FILE					=  itemTextures.registerIcon("/logisticspipes/pipes/basic.png");
-		 LOGISTICSPIPE_PROVIDER_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/provider.png");
-		 LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE		=  itemTextures.registerIcon("/logisticspipes/pipes/provider_mk2.png");
-		 LOGISTICSPIPE_REQUESTER_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/request.png");
-		 LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE		=  itemTextures.registerIcon("/logisticspipes/pipes/request_mk2.png");
-		 LOGISTICSPIPE_CRAFTER_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/crafting.png");
-		 LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE		=  itemTextures.registerIcon("/logisticspipes/pipes/crafting_mk2.png");
-		 LOGISTICSPIPE_SATELLITE_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/satellite.png");
-		 LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/supplier.png");
-		 LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/builder_supplier.png");
-		 LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/liquid_supplier.png");
-		 LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/remote_orderer.png");
-		 LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE =  itemTextures.registerIcon("/logisticspipes/pipes/analyzer.png");
-		 LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE 	=  itemTextures.registerIcon("/logisticspipes/pipes/beesink.png");
-		 LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE 	=  itemTextures.registerIcon("/logisticspipes/pipes/invsyscon_con.png");
-		 LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE 	=  itemTextures.registerIcon("/logisticspipes/pipes/invsyscon_dis.png");
-		 LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE 	=  itemTextures.registerIcon("/logisticspipes/pipes/invsyscon_mis.png");
-		 LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE 			=  itemTextures.registerIcon("/logisticspipes/pipes/entrance.png");
-		 LOGISTICSPIPE_DESTINATION_TEXTURE_FILE 		=  itemTextures.registerIcon("/logisticspipes/pipes/destination.png");
-		 LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE		=  itemTextures.registerIcon("/logisticspipes/pipes/crafting_mk3.png");
-		 LOGISTICSPIPE_FIREWALL_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/firewall.png");
-		
-		// Liquid Pipes
-		 LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/liquid_connector.png");
-		 LOGISTICSPIPE_LIQUID_BASIC_FILE				=  itemTextures.registerIcon("/logisticspipes/pipes/liquid_basic.png");
-		 LOGISTICSPIPE_LIQUID_INSERTION_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/liquid_insertion.png");
-		 LOGISTICSPIPE_LIQUID_PROVIDER_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/liquid_provider.png");
-		 LOGISTICSPIPE_LIQUID_REQUEST_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/liquid_request.png");
-		
-		// Status overlay
-		 LOGISTICSPIPE_ROUTED_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/routed.png");
-		 LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/not_routed.png");
-		 LOGISTICSPIPE_POWERED_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/powered.png");
-		 LOGISTICSPIPE_SECURITY_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/security.png");
-		 LOGISTICSPIPE_LIQUID_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/liquid_connection.png");
-		// Chassi pipes
-		 LOGISTICSPIPE_CHASSI1_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/chassi_mk1.png");
-		 LOGISTICSPIPE_CHASSI2_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/chassi_mk2.png");
-		 LOGISTICSPIPE_CHASSI3_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/chassi_mk3.png");
-		 LOGISTICSPIPE_CHASSI4_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/chassi_mk4.png");
-		 LOGISTICSPIPE_CHASSI5_TEXTURE_FILE			=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/chassi_mk5.png");
-		// Chassi status overlay
-		 LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE		=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/status_overlay/routed.png");
-		 LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/status_overlay/not_routed.png");
-		 LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/chassi/status_overlay/direction.png");
-		
-		//Pipe Power Overlays
-		 LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/powered-pipe.png");
-		 LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE	=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/un-powered-pipe.png");
-		 LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE		=  itemTextures.registerIcon("/logisticspipes/pipes/status_overlay/un-overlayed.png");
-		
 		//Armor
-		 LOGISTICSPIPE_HUD_TEXTURE_FILE				=  itemTextures.registerIcon("/logisticspipes/HUD.png");
+		 LOGISTICSPIPE_HUD_TEXTURE_FILE				=  "HUD");
 
 	}
 	public static Icon LOGISTICSNETWORKMONITOR_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
@@ -230,91 +175,101 @@ public class Textures {
 	public static Icon BASE_TEXTURE_FILE;
 
 	// Misc -- now split
-//	public static Icon LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures.png";
-//	public static Icon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures.png";
+//	public static Icon LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures";
+//	public static Icon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures";
 
 	public static String LOGISTICS_SOLID_BLOCK=LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider LPactionIconProvider;
+	public static LPPipeIconProvider LPpipeIconProvider;
+	public void registerBlockIcons(IconRegister par1IconRegister) {
+		//BASE_TEXTURE_FILE = "/logisticspipes/empty"
+		//LOGISTICS_SOLID_BLOCK="/logisticspipes/blocks/logistics_solid_block"
+		index=0;
+		// Standalone pipes
+		LOGISTICSPIPE_TEXTURE 					= registerTexture(par1IconRegister,LOGISTICSPIPE_TEXTURE_FILE);
+		LOGISTICSPIPE_PROVIDER_TEXTURE 			= registerTexture(par1IconRegister,LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
+		LOGISTICSPIPE_POWERED_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_ROUTED_TEXTURE            = registerTexture(par1IconRegister, LOGISTICSPIPE_ROUTED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_NOTROUTED_TEXTURE         = registerTexture(par1IconRegister, LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(par1IconRegister,LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(par1IconRegister,LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
+		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(par1IconRegister,LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
+		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(par1IconRegister,LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE		= registerTexture(par1IconRegister,LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(par1IconRegister,LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(par1IconRegister,LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(par1IconRegister,LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
+		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE 	= registerTexture(par1IconRegister,LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
+		LOGISTICSPIPE_APIARIST_SINK_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
+		LOGISTICSPIPE_INVSYSCON_CON_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE);
+		LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE);
+		LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE);
+		LOGISTICSPIPE_ENTRANCE_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE);
+		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(par1IconRegister,LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(par1IconRegister,LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
+		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(par1IconRegister,LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);
+		
+		//Liquid
+		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_LIQUID_CONNECTOR				= registerSingleTexture(par1IconRegister,LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE);
+		LOGISTICSPIPE_LIQUID_BASIC					= registerTexture(par1IconRegister,LOGISTICSPIPE_LIQUID_BASIC_FILE);
+		LOGISTICSPIPE_LIQUID_INSERTION				= registerTexture(par1IconRegister,LOGISTICSPIPE_LIQUID_INSERTION_FILE);
+		LOGISTICSPIPE_LIQUID_PROVIDER				= registerTexture(par1IconRegister,LOGISTICSPIPE_LIQUID_PROVIDER_FILE);
+		LOGISTICSPIPE_LIQUID_REQUEST				= registerTexture(par1IconRegister,LOGISTICSPIPE_LIQUID_REQUEST_FILE);
+		
+		//Chassi
+		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE 		= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI1_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI1_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI2_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI2_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI3_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(par1IconRegister,LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
+		
+		
+		if(LogisticsPipes.DEBUG)
+			System.out.println("LP: pipetextures "+index+" out of "+PIPETEXTURE_LIMIT);
+		if (index > PIPETEXTURE_LIMIT) {
+			throw new UnsupportedOperationException("Too many Textures.");
+		}
+	}
 	public void registerItemIcons(IconRegister par1IconRegister) {
 		
 		BASE_TEXTURE_FILE=par1IconRegister.registerIcon("logisticspipes:unknown");
 		LPactionIconProvider.registerIcons(par1IconRegister);
-		//BASE_TEXTURE_FILE = "/logisticspipes/empty.png"
-		//LOGISTICS_SOLID_BLOCK="/logisticspipes/blocks/logistics_solid_block.png"
-		LOGISTICSPIPE_TEXTURE 					= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
-		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
-		LOGISTICSPIPE_ROUTED_TEXTURE 				= registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_NOTROUTED_TEXTURE 			= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(LOGISTICSPIPE_POWERED_TEXTURE_FILE, false);
-		LOGISTICSPIPE_SECURITY_TEXTURE 				= registerTexture(LOGISTICSPIPE_SECURITY_TEXTURE_FILE, false);
-		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture(LOGISTICSPIPE_LIQUID_TEXTURE_FILE, false);
-		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
-		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE 		= registerTexture(LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
-		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE 	= registerTexture(LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
-		LOGISTICSPIPE_APIARIST_SINK_TEXTURE 		= registerTexture(LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
-		LOGISTICSPIPE_INVSYSCON_CON_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE);
-		LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE);
-		LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE);
-		LOGISTICSPIPE_ENTRANCE_TEXTURE 				= registerTexture(LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE);
-		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
-		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);
-
-		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI1_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI1_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI2_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI2_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI3_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
-		
-		LOGISTICSPIPE_LIQUID_CONNECTOR				= registerSingleTexture(LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUID_BASIC					= registerTexture(LOGISTICSPIPE_LIQUID_BASIC_FILE);
-		LOGISTICSPIPE_LIQUID_INSERTION				= registerTexture(LOGISTICSPIPE_LIQUID_INSERTION_FILE);
-		LOGISTICSPIPE_LIQUID_PROVIDER				= registerTexture(LOGISTICSPIPE_LIQUID_PROVIDER_FILE);
-		LOGISTICSPIPE_LIQUID_REQUEST				= registerTexture(LOGISTICSPIPE_LIQUID_REQUEST_FILE);
-		if (index > 256) {
-			throw new UnsupportedOperationException("Too many Textures.");
-		}
 	}
 	
-	public TextureType registerTexture(String fileName) {
-		return registerTexture(fileName, true);
+	public TextureType registerTexture(IconRegister par1IconRegister,String fileName) {
+		return registerTexture(par1IconRegister,fileName, 1);
 	}
-	
-	public TextureType registerTexture(String fileName, boolean flag) {
+	/**
+	 * @param par1IconRegister - IconRegister
+	 * @param fileName - name of texture
+	 * @param flag - 2 - register single texture without overlay, 1/0 register with overlay
+	 */
+	@SideOnly(Side.CLIENT)
+	public TextureType registerTexture(IconRegister par1IconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
-		texture.normal = index++;
-		texture.powered = index++;
-		texture.unpowered = index++;
-		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-			//MinecraftForgeClient.preloadTexture(fileName);
-			MainProxy.proxy.addLogisticsPipesOverride(texture.normal, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);
-			if(flag) {
-				MainProxy.proxy.addLogisticsPipesOverride(texture.powered, fileName, LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE);
-				MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered, fileName, LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE);
-			} else {
-				MainProxy.proxy.addLogisticsPipesOverride(texture.powered, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);
-				MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);	
-			}
-		}
+			texture.normal = index++;
+			texture.powered=texture.normal;
+			texture.unpowered=texture.normal;
+			MainProxy.proxy.addLogisticsPipesOverride(texture.normal,fileName,LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE, par1IconRegister,(flag==2));
+			if(flag==1) {
+				texture.powered = index++;
+				MainProxy.proxy.addLogisticsPipesOverride(texture.powered,fileName,LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE, par1IconRegister,false);
+				texture.unpowered = index++;
+				MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered,fileName,LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE, par1IconRegister,false);
+			} 
 		return texture;
 	}
-	
-	public int registerSingleTexture(String fileName) {
+	@SideOnly(Side.CLIENT)
+	public int registerSingleTexture(IconRegister par1IconRegister,String fileName) {
 		int texture = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-			//MinecraftForgeClient.preloadTexture(fileName);
-			//MainProxy.proxy.addLogisticsPipesOverride(texture, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE);
+			MainProxy.proxy.addLogisticsPipesOverride(texture, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,par1IconRegister,true);
 		}
 		return texture;
 	}

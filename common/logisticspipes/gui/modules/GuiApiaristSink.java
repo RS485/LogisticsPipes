@@ -15,7 +15,6 @@ import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.Icon;
 import buildcraft.transport.Pipe;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {

@@ -6,8 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-import buildcraft.api.core.IIconProvider;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -33,8 +31,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 
@@ -290,10 +286,4 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	*/
 
-
-	@Override
-	public int getIconIndex(ForgeDirection direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

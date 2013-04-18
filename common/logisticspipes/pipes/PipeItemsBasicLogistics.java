@@ -14,11 +14,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import buildcraft.api.core.IIconProvider;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
-import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ILogisticsModule;
@@ -27,7 +22,6 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.textures.provider.DummyProvider;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
@@ -175,12 +169,5 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	@Override
 	public boolean hasGenericInterests() {
 		return this.itemSinkModule.isDefaultRoute();
-	}
-
-
-	@Override
-	public int getIconIndex(ForgeDirection direction) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

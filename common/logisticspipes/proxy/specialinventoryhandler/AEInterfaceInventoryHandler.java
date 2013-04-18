@@ -2,8 +2,6 @@ package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.TreeSet;
-
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;

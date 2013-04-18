@@ -1,8 +1,5 @@
 package logisticspipes.pipes;
 
-import buildcraft.api.core.IIconProvider;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.network.GuiIDs;
@@ -14,7 +11,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
 
 public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IRequestLiquid {
 
@@ -58,9 +54,4 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 		return true;
 	}
 
-	@Override
-	public int getIconIndex(ForgeDirection direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

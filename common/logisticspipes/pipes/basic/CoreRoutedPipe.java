@@ -299,6 +299,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				return;
 			}
 		}
+		// remove old items _inTransit -- these should have arived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.
+		while(this._inTransitToMe.poll()!=null){}
 		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		getUpgradeManager().securityTick();

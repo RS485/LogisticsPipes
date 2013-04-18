@@ -3,7 +3,6 @@ package logisticspipes.pipes.basic.liquid;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.textures.Textures;
-import logisticspipes.textures.provider.DummyProvider;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.Pipe;

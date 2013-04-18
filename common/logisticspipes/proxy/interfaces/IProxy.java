@@ -2,12 +2,9 @@ package logisticspipes.proxy.interfaces;
 
 import buildcraft.transport.TileGenericPipe;
 import logisticspipes.utils.ItemIdentifier;
-import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IProxy {
 	public String getSide();

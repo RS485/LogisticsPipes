@@ -4,7 +4,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.textures.Textures;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;

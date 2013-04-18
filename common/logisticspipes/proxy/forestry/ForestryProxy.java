@@ -483,7 +483,7 @@ public class ForestryProxy implements IForestryProxy {
 		if (Configs.MANDATORY_CARPENTER_RECIPES) return;
 				
 		/* Regular recipes */
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
 			"CGC", 
 			"rBr", 
 			"CrC", 
@@ -493,7 +493,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEEANALYZER), new Object[] { 
 			"CGC", 
 			"rBr", 
 			"CrC", 
@@ -503,7 +503,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BEESINK), new Object[] { 
 			"CrC", 
 			"rBr", 
 			"CrC", 
@@ -512,7 +512,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ITEMSINK)
 		});
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.APIARISTREFILLER), new Object[] {
 			" p ",
 			"rBr",
 			"CwC",
@@ -534,7 +534,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		}));
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
 			"CGC", 
 			"rBr", 
 			"CrC", 
@@ -544,7 +544,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristAnalyserPipe, 1, 0), new Object[] { 
 			"CGC", 
 			"rBr", 
 			"CrC", 
@@ -554,7 +554,7 @@ public class ForestryProxy implements IForestryProxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1, 0)
 		});
 		
-		CraftingManager.getInstance().func_92051_a(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
+		CraftingManager.getInstance().addRecipe(new ItemStack(LogisticsPipes.LogisticsApiaristSinkPipe, 1, 0), new Object[] { 
 			"CrC", 
 			"rBr", 
 			"CrC", 
@@ -580,7 +580,7 @@ public class ForestryProxy implements IForestryProxy {
 		IAlleleSpecies species = (IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		int indexOffset = 0;
 		if (species != null) {
-			indexOffset = 16 * species.getBodyType();
+			indexOffset = 16 * species.getHumidity().getIconIndex();
 		}
 		if (phase == 0)
 			return indexOffset + 0 + 2;
@@ -601,14 +601,15 @@ public class ForestryProxy implements IForestryProxy {
 		if (!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid) instanceof IAlleleSpecies))
 			return 0;
 		IAlleleSpecies species = (IAlleleSpecies) forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
-		if (species != null) {
+		//@TODO: fixme
+		/*if (species != null) {
 			if (phase == 0)
 				return species.getPrimaryColor();
 			if (phase == 1) {
 				return species.getSecondaryColor();
 			}
 			return 16777215;
-		}
+		}*/
 
 		return 16777215;
 	}

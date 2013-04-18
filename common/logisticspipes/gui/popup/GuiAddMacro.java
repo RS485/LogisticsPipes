@@ -94,12 +94,12 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new SmallGuiButton(0, right - 15, guiTop + 5, 10 ,10 ,">")); // Next pageAll
-		controlList.add(new SmallGuiButton(1, right - 90, guiTop + 5, 10, 10, "<")); // Prev pageAll
-		controlList.add(new SmallGuiButton(2, right - 15, guiTop + 135, 10 ,10 ,">")); // Next pageAll
-		controlList.add(new SmallGuiButton(3, right - 90, guiTop + 135, 10, 10, "<")); // Prev pageAll
-		controlList.add(new GuiButton(4, right - 39, bottom - 27, 35, 20, "Save")); // Prev pageAll
+		buttonList.clear();
+		buttonList.add(new SmallGuiButton(0, right - 15, guiTop + 5, 10 ,10 ,">")); // Next pageAll
+		buttonList.add(new SmallGuiButton(1, right - 90, guiTop + 5, 10, 10, "<")); // Prev pageAll
+		buttonList.add(new SmallGuiButton(2, right - 15, guiTop + 135, 10 ,10 ,">")); // Next pageAll
+		buttonList.add(new SmallGuiButton(3, right - 90, guiTop + 135, 10, 10, "<")); // Prev pageAll
+		buttonList.add(new GuiButton(4, right - 39, bottom - 27, 35, 20, "Save")); // Prev pageAll
 	}
 	
 	@Override
@@ -376,6 +376,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		return count;
 	}
 	
+	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if(Search1 == "" && Search2 == "") return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(Search1 + Search2).toLowerCase())) return true;

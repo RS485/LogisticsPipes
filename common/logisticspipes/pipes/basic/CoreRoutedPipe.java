@@ -55,6 +55,9 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.textures.provider.DummyProvider;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
+import logisticspipes.textures.provider.LPPipeIconProvider;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -72,6 +75,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
@@ -83,6 +87,8 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
@@ -397,23 +403,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	
 	public abstract TextureType getCenterTexture();
-	
-	@Override
-	public String getTextureFile() {
-		return Textures.BASE_TEXTURE_FILE;
-	}
-	
-	@Override
-	public final int getTextureIndex(ForgeDirection connection) {
-		TextureType texture = getTextureType(connection);
-		if(_textureBufferPowered) {
-			return texture.powered;
-		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-			return texture.normal;
-		} else {
-			return texture.unpowered;
-		}
-	}
 	
 	public TextureType getTextureType(ForgeDirection connection) {
 		if(stillNeedReplace || _initialInit)
@@ -752,13 +741,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return this.getRouter().getPowerProvider();
 	}
 	
+	@Override
 	public boolean useEnergy(int amount){
 		return useEnergy(amount, null);
 	}
+	@Override
 	public boolean canUseEnergy(int amount){
 		return canUseEnergy(amount,null);
 	}
 
+	@Override
 	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
@@ -775,6 +767,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
+	@Override
 	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
 		if(MainProxy.isClient(worldObj)) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
@@ -929,7 +922,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
-	public String getItemName(Double itemId) throws Exception {
+	public String getUnlocalizedName(Double itemId) throws Exception {
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
@@ -955,5 +948,25 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				count += next.getIDStack().stackSize;
 		}
 		return count;
+	}
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		return Textures.LPpipeIconProvider;
+	}
+	/*@Override
+	public int getIconIndex(ForgeDirection direction) {
+		return Textures.LOGISTICSPIPE_TEXTURE.normal;
+	}*/
+	@Override
+	public final int getIconIndex(ForgeDirection connection) {
+		TextureType texture = getTextureType(connection);
+		if(_textureBufferPowered) {
+			return texture.powered;
+		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
+			return texture.normal;
+		} else {
+			return texture.unpowered;
+		}
 	}
 }

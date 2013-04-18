@@ -113,4 +113,5 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 	public boolean hasGenericInterests() {
 		return true;
 	}
+
 }

@@ -20,7 +20,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
+		buttonList.add(new GuiButton(3, guiLeft + 10, bottom - 25, 46, 20, "Refresh")); // Refresh
 	}
 	
 	@Override
@@ -37,6 +37,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 		}
 	}
 	
+	@Override
 	protected int getAmountChangeMode(int step) {
 		if(step == 1) {
 			return 1;
@@ -49,10 +50,12 @@ public class LiquidGuiOrderer extends GuiOrderer {
 		}
 	}
 	
+	@Override
 	protected boolean isShiftPageChange() {
 		return false;
 	}
 	
+	@Override
 	protected int getStackAmount() {
 		return 1000;
 	}

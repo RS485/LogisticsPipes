@@ -240,7 +240,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	public String getDebugName() {
 		if (Item.itemsList[itemID] != null)	{
-			return Item.itemsList[itemID].getItemName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
+			return Item.itemsList[itemID].getUnlocalizedName() + "(ID: " + itemID + ", Damage: " + itemDamage + ")";
 		}
 		return "<item not found>";
 	}
@@ -258,13 +258,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[id].getItemNameIS(stack);
+				name = Item.itemsList[id].getUnlocalizedName(stack);
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[id].getItemName();
+					name = Item.itemsList[id].getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -383,18 +383,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return map;
 	}
 	
-	/*
-	private <T> Map<Integer, T> getListAsMap(List<T> array) {
-		HashMap<Integer, T> map = new HashMap<Integer, T>();
-		int i = 1;
-		for(T object: array) {
-			map.put(i, object);
-			i++;
-		}
-		return map;
-	}
-	*/
-	
 	@SuppressWarnings("rawtypes")
 	private Map<Object, Object> getNBTBaseAsMap(NBTBase nbt) throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
 		if(nbt == null) {
@@ -509,6 +497,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		}
 	}
 	
+	@Override
 	public String toString() {
 		return getModName() + "(" + getModId() + "):" + getFriendlyName();
 	}
@@ -531,6 +520,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return 0;
 	}
 	
+	@Override
 	public boolean equals(Object that){
 		if (!(that instanceof ItemIdentifier))
 			return false;

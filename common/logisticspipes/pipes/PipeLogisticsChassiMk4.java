@@ -19,5 +19,4 @@ public class PipeLogisticsChassiMk4 extends PipeLogisticsChassi{
 		return 4;
 	}
 
-
 }

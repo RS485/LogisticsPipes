@@ -69,4 +69,5 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 		worldObj.spawnEntityInWorld(item);
 		inv.setInventorySlotContents(0, null);
 	}
+
 }

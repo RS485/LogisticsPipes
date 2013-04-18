@@ -72,7 +72,7 @@ public class BasicGuiHelper {
 		FontRenderer fontRenderer = mc.fontRenderer;
 		RenderItem renderItem = new RenderItem();
 	    RenderBlocks renderBlocks = new RenderBlocks();
-		renderItem.field_77024_a = color;
+		renderItem.renderWithColor = color;
 		for(ItemIdentifierStack itemStack : _allItems) {
 			if(itemStack == null) {
 				column++;
@@ -100,7 +100,7 @@ public class BasicGuiHelper {
 				if(disableEffect) {
 					if (st != null)
 			        {
-			            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.field_77024_a, renderItem.zLevel, (float)x, (float)y))
+			            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y))
 			            {
 			            	renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
 			            }
@@ -211,26 +211,6 @@ public class BasicGuiHelper {
 	public static void displayItemToolTip(Object[] tooltip, Gui gui, float pzLevel, int guiLeft, int guiTop, boolean forceminecraft, boolean forceAdd) {		
 		zLevel = pzLevel;
 		if(tooltip != null) {
-			/*try {
-				if(forceminecraft) {
-					throw new Exception();
-				}
-				//Look for NEI
-				Class<?> NEIUtils = Class.forName("codechicken.nei.NEIUtils");
-				Class<?> NEIConfig = Class.forName("codechicken.nei.NEIConfig");
-				Method itemDisplayNameMultiline = NEIUtils.getDeclaredMethod("itemDisplayNameMultiline", new Class[]{ItemStack.class, boolean.class, boolean.class});
-				Method showIDs = NEIConfig.getDeclaredMethod("showIDs", new Class[]{});
-				Object flagObject = showIDs.invoke(null, new Object[]{});
-				boolean flag = Boolean.valueOf((Boolean)flagObject);
-				
-				List<String> list = (List<String>) itemDisplayNameMultiline.invoke(null, new Object[]{tooltip[2],flag,true});
-				
-				if((Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)) && (tooltip.length < 4 || Boolean.valueOf((Boolean)tooltip[3]))) {
-					list.add(1, "\u00a77" + ((ItemStack)tooltip[2]).stackSize);	
-				}
-				
-				drawToolTip(((Integer)tooltip[0]).intValue(), ((Integer)tooltip[1]).intValue(),list,((ItemStack)tooltip[2]).getRarity().rarityColor, forceminecraft);
-			} catch(Exception e) {*/
 				try {
 					//Use minecraft vanilla code
 					Minecraft mc = FMLClientHandler.instance().getClient();
@@ -246,7 +226,6 @@ public class BasicGuiHelper {
 	                drawToolTip(var11, var12,var24,var22.getRarity().rarityColor, forceminecraft);
 	            }
 	            catch(Exception e1) {}
-			//}
 		}
 	}
 	
@@ -278,7 +257,7 @@ public class BasicGuiHelper {
 	                
 	                for (var11 = 0; var11 < var24.size(); ++var11)
 	                {
-	                    var12 = ModLoader.getMinecraftInstance().fontRenderer.getStringWidth((String)var24.get(var11));
+	                    var12 = ModLoader.getMinecraftInstance().fontRenderer.getStringWidth(var24.get(var11));
 
 	                    if (var12 > var10)
 	                    {
@@ -313,7 +292,7 @@ public class BasicGuiHelper {
 
 	                for (int var18 = 0; var18 < var24.size(); ++var18)
 	                {
-	                    String var19 = (String)var24.get(var18);
+	                    String var19 = var24.get(var18);
 
 	                    if (var18 == 0)
 	                    {
@@ -346,14 +325,14 @@ public class BasicGuiHelper {
 	
     private static void drawGradientRect(int par1, int par2, int par3, int par4, int par5, int par6)
     {
-        float var7 = (float)(par5 >> 24 & 255) / 255.0F;
-        float var8 = (float)(par5 >> 16 & 255) / 255.0F;
-        float var9 = (float)(par5 >> 8 & 255) / 255.0F;
-        float var10 = (float)(par5 & 255) / 255.0F;
-        float var11 = (float)(par6 >> 24 & 255) / 255.0F;
-        float var12 = (float)(par6 >> 16 & 255) / 255.0F;
-        float var13 = (float)(par6 >> 8 & 255) / 255.0F;
-        float var14 = (float)(par6 & 255) / 255.0F;
+        float var7 = (par5 >> 24 & 255) / 255.0F;
+        float var8 = (par5 >> 16 & 255) / 255.0F;
+        float var9 = (par5 >> 8 & 255) / 255.0F;
+        float var10 = (par5 & 255) / 255.0F;
+        float var11 = (par6 >> 24 & 255) / 255.0F;
+        float var12 = (par6 >> 16 & 255) / 255.0F;
+        float var13 = (par6 >> 8 & 255) / 255.0F;
+        float var14 = (par6 & 255) / 255.0F;
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_ALPHA_TEST);
@@ -362,11 +341,11 @@ public class BasicGuiHelper {
         Tessellator var15 = Tessellator.instance;
         var15.startDrawingQuads();
         var15.setColorRGBA_F(var8, var9, var10, var7);
-        var15.addVertex((double)par3, (double)par2, (double)zLevel);
-        var15.addVertex((double)par1, (double)par2, (double)zLevel);
+        var15.addVertex(par3, par2, zLevel);
+        var15.addVertex(par1, par2, zLevel);
         var15.setColorRGBA_F(var12, var13, var14, var11);
-        var15.addVertex((double)par1, (double)par4, (double)zLevel);
-        var15.addVertex((double)par3, (double)par4, (double)zLevel);
+        var15.addVertex(par1, par4, zLevel);
+        var15.addVertex(par3, par4, zLevel);
         var15.draw();
         GL11.glShadeModel(GL11.GL_FLAT);
         GL11.glDisable(GL11.GL_BLEND);
@@ -383,10 +362,10 @@ public class BasicGuiHelper {
         float var8 = 0.00390625F;
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV((double)(par1 + 0), (double)(par2 + par6), (double)zLevel, (double)((float)(par3 + 0) * var7), (double)((float)(par4 + par6) * var8));
-        var9.addVertexWithUV((double)(par1 + par5), (double)(par2 + par6), (double)zLevel, (double)((float)(par3 + par5) * var7), (double)((float)(par4 + par6) * var8));
-        var9.addVertexWithUV((double)(par1 + par5), (double)(par2 + 0), (double)zLevel, (double)((float)(par3 + par5) * var7), (double)((float)(par4 + 0) * var8));
-        var9.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), (double)zLevel, (double)((float)(par3 + 0) * var7), (double)((float)(par4 + 0) * var8));
+        var9.addVertexWithUV(par1 + 0, par2 + par6, zLevel, (float)(par3 + 0) * var7, (float)(par4 + par6) * var8);
+        var9.addVertexWithUV(par1 + par5, par2 + par6, zLevel, (float)(par3 + par5) * var7, (float)(par4 + par6) * var8);
+        var9.addVertexWithUV(par1 + par5, par2 + 0, zLevel, (float)(par3 + par5) * var7, (float)(par4 + 0) * var8);
+        var9.addVertexWithUV(par1 + 0, par2 + 0, zLevel, (float)(par3 + 0) * var7, (float)(par4 + 0) * var8);
         var9.draw();
     }
     
@@ -420,52 +399,49 @@ public class BasicGuiHelper {
 	}
 
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/slot.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV(x		, y + 18	, (double)zLevel, 0	, 1);
-        var9.addVertexWithUV(x + 18	, y + 18	, (double)zLevel, 1	, 1);
-        var9.addVertexWithUV(x + 18	, y			, (double)zLevel, 1	, 0);
-        var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
+        var9.addVertexWithUV(x		, y + 18	, zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 18	, y + 18	, zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 18	, y			, zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
         var9.draw();
     }
     
     public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-big.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/slot-big.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV(x		, y + 26	, (double)zLevel, 0	, 1);
-        var9.addVertexWithUV(x + 26	, y + 26	, (double)zLevel, 1	, 1);
-        var9.addVertexWithUV(x + 26	, y			, (double)zLevel, 1	, 0);
-        var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
+        var9.addVertexWithUV(x		, y + 26	, zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 26	, y + 26	, zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 26	, y			, zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
         var9.draw();
     }
     
 
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/slot-small.png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/slot-small.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV(x		, y + 8		, (double)zLevel, 0	, 1);
-        var9.addVertexWithUV(x + 8	, y + 8		, (double)zLevel, 1	, 1);
-        var9.addVertexWithUV(x + 8	, y			, (double)zLevel, 1	, 0);
-        var9.addVertexWithUV(x		, y			, (double)zLevel, 0	, 0);
+        var9.addVertexWithUV(x		, y + 8		, zLevel, 0	, 1);
+        var9.addVertexWithUV(x + 8	, y + 8		, zLevel, 1	, 1);
+        var9.addVertexWithUV(x + 8	, y			, zLevel, 1	, 0);
+        var9.addVertexWithUV(x		, y			, zLevel, 0	, 0);
         var9.draw();
     }
     
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, int iconIndex, String textureFile) {
 		int i = mc.renderEngine.getTexture(textureFile);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture(textureFile);
 		
 		double iconX = ((double)((iconIndex % 16) * 16)) / 256;
 		double iconXright = ((double)(((iconIndex % 16) + 1) * 16)) / 256;
@@ -474,17 +450,16 @@ public class BasicGuiHelper {
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV(x		, y + 16	, (double)zLevel, iconX			, iconYbottom);
-        var9.addVertexWithUV(x + 16	, y + 16	, (double)zLevel, iconXright	, iconYbottom);
-        var9.addVertexWithUV(x + 16	, y			, (double)zLevel, iconXright	, iconY);
-        var9.addVertexWithUV(x		, y			, (double)zLevel, iconX			, iconY);
+        var9.addVertexWithUV(x		, y + 16	, zLevel, iconX			, iconYbottom);
+        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, iconXright	, iconYbottom);
+        var9.addVertexWithUV(x + 16	, y			, zLevel, iconXright	, iconY);
+        var9.addVertexWithUV(x		, y			, zLevel, iconX			, iconY);
         var9.draw();
 	}
     
     public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
-		int tex = mc.renderEngine.getTexture("/gfx/forestry/items/bees.png");
 		//GL11.glDisable(2896 /*Light*/);
-		mc.renderEngine.bindTexture(tex);
+		mc.renderEngine.bindTexture("/gfx/forestry/items/bees.png");
 		
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
 			int iconIndex = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
@@ -502,10 +477,10 @@ public class BasicGuiHelper {
 			
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(x		, y + 16	, (double)zLevel, iconX			, iconYbottom);
-	        var9.addVertexWithUV(x + 16	, y + 16	, (double)zLevel, iconXright	, iconYbottom);
-	        var9.addVertexWithUV(x + 16	, y			, (double)zLevel, iconXright	, iconY);
-	        var9.addVertexWithUV(x		, y			, (double)zLevel, iconX			, iconY);
+	        var9.addVertexWithUV(x		, y + 16	, zLevel, iconX			, iconYbottom);
+	        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, iconXright	, iconYbottom);
+	        var9.addVertexWithUV(x + 16	, y			, zLevel, iconXright	, iconY);
+	        var9.addVertexWithUV(x		, y			, zLevel, iconX			, iconY);
 	        var9.draw();
 	      }
 	}
@@ -515,21 +490,19 @@ public class BasicGuiHelper {
     }
     
     public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight){
-
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/GuiBackground.png");
 		if(flag) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/GuiBackground.png");
 		
 		if(displayTop) {
 			//Top Side
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
-	        var9.addVertexWithUV(right - 15		, guiTop + 15	, (double)zLevel, 0.66	, 0.33);
-	        var9.addVertexWithUV(right - 15		, guiTop		, (double)zLevel, 0.66	, 0);
-	        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)zLevel, 0.33	, 0);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, zLevel, 0.33	, 0.33);
+	        var9.addVertexWithUV(right - 15		, guiTop + 15	, zLevel, 0.66	, 0.33);
+	        var9.addVertexWithUV(right - 15		, guiTop		, zLevel, 0.66	, 0);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop		, zLevel, 0.33	, 0);
 	        var9.draw();
 		}
 
@@ -537,10 +510,10 @@ public class BasicGuiHelper {
 			//Left Side
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)zLevel, 0	, 0.66);
-	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
-	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
-	        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)zLevel, 0	, 0.33);
+	        var9.addVertexWithUV(guiLeft		, bottom - 15	, zLevel, 0	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, zLevel, 0.33	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, zLevel, 0.33	, 0.33);
+	        var9.addVertexWithUV(guiLeft		, guiTop + 15	, zLevel, 0	, 0.33);
 	        var9.draw();
 		}
 		
@@ -548,10 +521,10 @@ public class BasicGuiHelper {
 	        //Bottom Side
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)zLevel, 0.33	, 1);
-	        var9.addVertexWithUV(right - 15		, bottom		, (double)zLevel, 0.66	, 1);
-	        var9.addVertexWithUV(right - 15		, bottom - 15	, (double)zLevel, 0.66	, 0.66);
-	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom		, zLevel, 0.33	, 1);
+	        var9.addVertexWithUV(right - 15		, bottom		, zLevel, 0.66	, 1);
+	        var9.addVertexWithUV(right - 15		, bottom - 15	, zLevel, 0.66	, 0.66);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, zLevel, 0.33	, 0.66);
 	        var9.draw();
 		}
 		
@@ -559,10 +532,10 @@ public class BasicGuiHelper {
 	        //Right Side
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)zLevel, 0.66	, 0.66);
-	        var9.addVertexWithUV(right		, bottom - 15		, (double)zLevel, 1	, 0.66);
-	        var9.addVertexWithUV(right		, guiTop + 15		, (double)zLevel, 1	, 0.33);
-	        var9.addVertexWithUV(right - 15	, guiTop + 15		, (double)zLevel, 0.66	, 0.33);
+	        var9.addVertexWithUV(right - 15	, bottom - 15		, zLevel, 0.66	, 0.66);
+	        var9.addVertexWithUV(right		, bottom - 15		, zLevel, 1	, 0.66);
+	        var9.addVertexWithUV(right		, guiTop + 15		, zLevel, 1	, 0.33);
+	        var9.addVertexWithUV(right - 15	, guiTop + 15		, zLevel, 0.66	, 0.33);
 	        var9.draw();
 		}
 		
@@ -570,10 +543,10 @@ public class BasicGuiHelper {
 			//Top Left
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(guiLeft		, guiTop + 15	, (double)zLevel, 0	, 0.33);
-	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, (double)zLevel, 0.33	, 0.33);
-	        var9.addVertexWithUV(guiLeft + 15	, guiTop		, (double)zLevel, 0.33	, 0);
-	        var9.addVertexWithUV(guiLeft		, guiTop		, (double)zLevel, 0	, 0);
+	        var9.addVertexWithUV(guiLeft		, guiTop + 15	, zLevel, 0	, 0.33);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15	, zLevel, 0.33	, 0.33);
+	        var9.addVertexWithUV(guiLeft + 15	, guiTop		, zLevel, 0.33	, 0);
+	        var9.addVertexWithUV(guiLeft		, guiTop		, zLevel, 0	, 0);
 	        var9.draw();
 		}
         
@@ -581,10 +554,10 @@ public class BasicGuiHelper {
 			//Bottom Left
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(guiLeft		, bottom		, (double)zLevel, 0	, 1);
-	        var9.addVertexWithUV(guiLeft + 15	, bottom		, (double)zLevel, 0.33	, 1);
-	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, (double)zLevel, 0.33	, 0.66);
-	        var9.addVertexWithUV(guiLeft		, bottom - 15	, (double)zLevel, 0	, 0.66);
+	        var9.addVertexWithUV(guiLeft		, bottom		, zLevel, 0	, 1);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom		, zLevel, 0.33	, 1);
+	        var9.addVertexWithUV(guiLeft + 15	, bottom - 15	, zLevel, 0.33	, 0.66);
+	        var9.addVertexWithUV(guiLeft		, bottom - 15	, zLevel, 0	, 0.66);
 	        var9.draw();
 		}
 
@@ -592,10 +565,10 @@ public class BasicGuiHelper {
     		//Bottom Right
         	Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(right - 15	, bottom			, (double)zLevel, 0.66	, 1);
-	        var9.addVertexWithUV(right		, bottom			, (double)zLevel, 1	, 1);
-	        var9.addVertexWithUV(right		, bottom - 15		, (double)zLevel, 1	, 0.66);
-	        var9.addVertexWithUV(right - 15	, bottom - 15		, (double)zLevel, 0.66	, 0.66);
+	        var9.addVertexWithUV(right - 15	, bottom			, zLevel, 0.66	, 1);
+	        var9.addVertexWithUV(right		, bottom			, zLevel, 1	, 1);
+	        var9.addVertexWithUV(right		, bottom - 15		, zLevel, 1	, 0.66);
+	        var9.addVertexWithUV(right - 15	, bottom - 15		, zLevel, 0.66	, 0.66);
 	        var9.draw();
 	    }
 
@@ -603,20 +576,20 @@ public class BasicGuiHelper {
 	    	//Top Right
 	        Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(right - 15	, guiTop + 15			, (double)zLevel, 0.66	, 0.33);
-	        var9.addVertexWithUV(right		, guiTop + 15			, (double)zLevel, 1	, 0.33);
-	        var9.addVertexWithUV(right		, guiTop				, (double)zLevel, 1	, 0);
-	        var9.addVertexWithUV(right - 15	, guiTop				, (double)zLevel, 0.66	, 0);
+	        var9.addVertexWithUV(right - 15	, guiTop + 15			, zLevel, 0.66	, 0.33);
+	        var9.addVertexWithUV(right		, guiTop + 15			, zLevel, 1	, 0.33);
+	        var9.addVertexWithUV(right		, guiTop				, zLevel, 1	, 0);
+	        var9.addVertexWithUV(right - 15	, guiTop				, zLevel, 0.66	, 0);
 	        var9.draw();
 	    }
 
         //Center
 	    Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV(guiLeft + 15	, bottom - 15		, (double)zLevel, 0.33	, 0.66);
-        var9.addVertexWithUV(right - 15		, bottom - 15		, (double)zLevel, 0.66	, 0.66);
-        var9.addVertexWithUV(right - 15		, guiTop + 15		, (double)zLevel, 0.66	, 0.33);
-        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15		, (double)zLevel, 0.33	, 0.33);
+        var9.addVertexWithUV(guiLeft + 15	, bottom - 15		, zLevel, 0.33	, 0.66);
+        var9.addVertexWithUV(right - 15		, bottom - 15		, zLevel, 0.66	, 0.66);
+        var9.addVertexWithUV(right - 15		, guiTop + 15		, zLevel, 0.66	, 0.33);
+        var9.addVertexWithUV(guiLeft + 15	, guiTop + 15		, zLevel, 0.33	, 0.33);
         var9.draw();
 	}
 	
@@ -641,20 +614,20 @@ public class BasicGuiHelper {
             par3 = var5;
         }
 
-        float var10 = (float)(par4 >> 24 & 255) / 255.0F;
-        float var6 = (float)(par4 >> 16 & 255) / 255.0F;
-        float var7 = (float)(par4 >> 8 & 255) / 255.0F;
-        float var8 = (float)(par4 & 255) / 255.0F;
+        float var10 = (par4 >> 24 & 255) / 255.0F;
+        float var6 = (par4 >> 16 & 255) / 255.0F;
+        float var7 = (par4 >> 8 & 255) / 255.0F;
+        float var8 = (par4 & 255) / 255.0F;
         Tessellator var9 = Tessellator.instance;
         //GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(var6, var7, var8, var10);
         var9.startDrawingQuads();
-        var9.addVertex((double)par0, (double)par3, 0.0D);
-        var9.addVertex((double)par2, (double)par3, 0.0D);
-        var9.addVertex((double)par2, (double)par1, 0.0D);
-        var9.addVertex((double)par0, (double)par1, 0.0D);
+        var9.addVertex(par0, par3, 0.0D);
+        var9.addVertex(par2, par3, 0.0D);
+        var9.addVertex(par2, par1, 0.0D);
+        var9.addVertex(par0, par1, 0.0D);
         var9.draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         //GL11.glDisable(GL11.GL_BLEND);

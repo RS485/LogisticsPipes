@@ -1,5 +1,9 @@
 package logisticspipes.proxy.side;
 
+import java.io.File;
+
+import javax.imageio.ImageIO;
+
 import buildcraft.transport.TileGenericPipe;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.CraftingSignRenderer;
@@ -19,9 +23,13 @@ import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.textures.LogisticsPipesTextureStatic;
+import logisticspipes.textures.OverlayManager;
+import logisticspipes.textures.Textures;
+//import logisticspipes.textures.LogisticsPipesTextureStatic;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -29,10 +37,11 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.client.TextureFXManager;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 
 public class ClientProxy implements IProxy {
@@ -70,12 +79,7 @@ public class ClientProxy implements IProxy {
 	public boolean isMainThreadRunning() {
 		return FMLClientHandler.instance().getClient().running;
 	}
-
-	@Override
-	public void addLogisticsPipesOverride(int index, String override1, String override2) {
-		TextureFXManager.instance().addAnimation(new LogisticsPipesTextureStatic(index, override1, override2));
-	}
-
+	
 	@Override
 	public void registerParticles() {
 		PipeFXRenderHandler.registerParticleHandler(Particles.WhiteParticle, new EntityWhiteSparkleFXProvider());
@@ -97,13 +101,13 @@ public class ClientProxy implements IProxy {
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getItemNameIS(item.unsafeMakeNormalStack(1));
+				name = Item.itemsList[item.itemID].getUnlocalizedName(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[item.itemID].getItemName();
+					name = Item.itemsList[item.itemID].getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -124,7 +128,6 @@ public class ClientProxy implements IProxy {
 	public void tick() {
 		//Not Client Side
 	}
-
 	@Override
 	public void sendNameUpdateRequest(Player player) {
 		//Not Client Side
@@ -172,4 +175,28 @@ public class ClientProxy implements IProxy {
 		return (TileGenericPipe) tile;
 	}
 	// BuildCraft method end
+
+	@Override
+	public void addLogisticsPipesOverride(int index, String override1, String override2, boolean flag) {
+		IconRegister par1IconRegister=Minecraft.getMinecraft().renderEngine.textureMapBlocks;
+		if(flag)
+			Textures.LPpipeIconProvider.icons[index]=par1IconRegister.registerIcon("logisticspipes:"+override1);
+		else
+			Textures.LPpipeIconProvider.icons[index]=par1IconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/",""));
+		if(LogisticsPipes.DEBUG_OVGEN&&!flag)
+		{
+			try
+			{
+				File output=new File("mods/mods/logisticspipes/textures/blocks/"+override1.replace("pipes/", "pipes/overlay_gen/"),override2.replace("pipes/status_overlay/", "")+".png");
+				output.mkdirs();
+				
+				ImageIO.write(OverlayManager.generateOverlay(override1.replace("pipes/","pipes/original/")+".png", override2+".png"), "PNG", output);
+			}
+			catch(Exception e)
+			{
+				System.out.println("Could not save:/mods/logisticspipes/textures/blocks/"+override1+"/"+override2.replace("pipes/status_overlay/", "")+".png");
+			}
+		}
+		
+	}
 }

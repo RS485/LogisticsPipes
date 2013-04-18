@@ -1,6 +1,6 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import gregtechmod.api.IDigitalChest;
+import gregtechmod.api.interfaces.IDigitalChest;
 
 import java.util.HashMap;
 import java.util.Set;
@@ -21,7 +21,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	private static boolean apiIsBroken = false;
 
 	private DigitalChestHandler(IDigitalChest tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = (IDigitalChest)tile;
+		_tile = tile;
 		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 
@@ -39,7 +39,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 	public boolean isType(TileEntity tile) {
 		if(apiIsBroken) return false;
 		try {
-			return (tile instanceof IDigitalChest) && ((IDigitalChest)tile).isQuantumChest() && (((IInventory)tile).getSizeInventory() == 3);
+			return (tile instanceof IDigitalChest) && ((IDigitalChest)tile).isDigitalChest() && (((IInventory)tile).getSizeInventory() == 3);
 		} catch (Throwable e) {
 			LogisticsPipes.log.info("Looks like greg broke his API again, disabling Digital/Quantum chest support.");
 			apiIsBroken = true;

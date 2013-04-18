@@ -3,7 +3,7 @@ package logisticspipes.items;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
@@ -12,10 +12,9 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
-import net.minecraftforge.common.IArmorTextureProvider;
 import net.minecraftforge.common.ISpecialArmor;
 
-public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, ISpecialArmor {
+public class ItemHUDArmor extends ItemArmor implements ISpecialArmor {
 
 	public ItemHUDArmor(int par1, int renderIndex) {
 		super(par1, EnumArmorMaterial.CHAIN, renderIndex, 0);
@@ -34,16 +33,6 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 	@Override
 	public void damageArmor(EntityLiving entity, ItemStack stack, DamageSource source, int damage, int slot) {
 		//Does not get dammaged
-	}
-
-	@Override
-	public String getArmorTextureFile(ItemStack itemstack) {
-		return Textures.LOGISTICSPIPE_HUD_TEXTURE_FILE;
-	}
-
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
 	}
 
 	@Override
@@ -72,5 +61,10 @@ public class ItemHUDArmor extends ItemArmor implements IArmorTextureProvider, IS
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
         return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
+	}
+	@Override
+	public void registerIcons(IconRegister par1IconRegister)
+	{	
+		itemIcon=par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
 	}
 }

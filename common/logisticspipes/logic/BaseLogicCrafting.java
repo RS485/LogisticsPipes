@@ -1,11 +1,8 @@
 package logisticspipes.logic;
 
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.TimeUnit;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logistics.LogisticsManagerV2;
@@ -21,7 +18,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.request.RequestManager;
+import logisticspipes.request.RequestTree;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.AdjacentTile;
@@ -252,7 +249,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void destroy() {
 		if(signEntityX != 0 && signEntityY != 0 && signEntityZ != 0) {
-			worldObj.setBlockWithNotify(signEntityX, signEntityY, signEntityZ, 0);
+			//TODO not sure setBlockMetadataWithNotify(signEntityX, signEntityY, signEntityZ, 0, 0, 1);
+			worldObj.setBlockMetadataWithNotify(signEntityX, signEntityY, signEntityZ, 0, 1);
 			signEntityX = 0;
 			signEntityY = 0;
 			signEntityZ = 0;
@@ -285,7 +283,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 					continue;
 				}
 			}
-			int received = RequestManager.requestPartial(stack, (CoreRoutedPipe) container.pipe);
+			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received < stack.stackSize) {
 				stack.stackSize -= received;
 				_lostItems.add(new DelayedGeneric(stack,5000));
@@ -430,8 +428,12 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 	
 	/* ** INTERFACE TO PIPE ** */
-	public ItemStack getCraftedItem() {
-		return _dummyInventory.getStackInSlot(9);
+	public List<ItemStack> getCraftedItems() {
+		//TODO: AECrafting check.
+		List<ItemStack> list = new ArrayList<ItemStack>(1);
+		if(_dummyInventory.getStackInSlot(9)!=null)
+			list.add(_dummyInventory.getStackInSlot(9));
+		return list;
 	}
 
 	public ItemStack getMaterials(int slotnr) {

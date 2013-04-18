@@ -79,15 +79,15 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		left = width / 2 - xSize / 2;
 		top = height /2 - ySize / 2;
 		
-		controlList.clear();
+		buttonList.clear();
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++){
-			controlList.add(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!"));
+			buttonList.add(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!"));
 			if(_moduleInventory == null) continue;
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton)controlList.get(i)).drawButton = false;
+				((SmallGuiButton)buttonList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
 			}
 		}
 	}
@@ -110,9 +110,9 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		for (int i = 0; i < _chassiPipe.getChassiSize(); i++) {
 			ItemStack module = _moduleInventory.getStackInSlot(i);
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
-				((SmallGuiButton)controlList.get(i)).drawButton = false;
+				((SmallGuiButton)buttonList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)controlList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {
@@ -144,10 +144,8 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/chassipipe_size"+ _chassiPipe.getChassiSize() +".png");
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/chassipipe_size"+ _chassiPipe.getChassiSize() +".png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

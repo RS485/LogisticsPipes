@@ -63,7 +63,7 @@ public class LogisticsOrderManager {
 		return _orders.size() > 0;
 	}
 	
-	public Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> getNextRequest(){
+	public Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> peekAtTopRequest(){
 		return _orders.getFirst();
 	}
 	

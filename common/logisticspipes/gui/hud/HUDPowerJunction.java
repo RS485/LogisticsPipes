@@ -33,8 +33,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		super.renderHeadUpDisplay(distance, day, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/power_junction.png");
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/power_junction.png");
 		drawTexturedModalRect(-50, -30, 9, 10, 7, 61);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		int level = 100 - junction.getChargeState();
@@ -50,10 +49,10 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
         float var8 = 0.00390625F;
         Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV((double)(par1 + 0), (double)(par2 + par6), (double)0, (double)((float)(par3 + 0) * var7), (double)((float)(par4 + par6) * var8));
-        var9.addVertexWithUV((double)(par1 + par5), (double)(par2 + par6), (double)0, (double)((float)(par3 + par5) * var7), (double)((float)(par4 + par6) * var8));
-        var9.addVertexWithUV((double)(par1 + par5), (double)(par2 + 0), (double)0, (double)((float)(par3 + par5) * var7), (double)((float)(par4 + 0) * var8));
-        var9.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), (double)0, (double)((float)(par3 + 0) * var7), (double)((float)(par4 + 0) * var8));
+        var9.addVertexWithUV(par1 + 0, par2 + par6, 0, (par3 + 0) * var7, (par4 + par6) * var8);
+        var9.addVertexWithUV(par1 + par5, par2 + par6, 0, (par3 + par5) * var7, (par4 + par6) * var8);
+        var9.addVertexWithUV(par1 + par5, par2 + 0, 0, (par3 + par5) * var7, (par4 + 0) * var8);
+        var9.addVertexWithUV(par1 + 0, par2 + 0, 0, (par3 + 0) * var7, (par4 + 0) * var8);
         var9.draw();
     }
 

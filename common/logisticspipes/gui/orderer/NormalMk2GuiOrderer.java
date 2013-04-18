@@ -29,10 +29,11 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
+		buttonList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
 		Macrobutton.enabled = false;
 	}
 	
+	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		super.drawGuiContainerBackgroundLayer(f, i, j);
 
@@ -71,6 +72,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		}
 	}
 
+	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {

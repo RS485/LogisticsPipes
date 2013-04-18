@@ -30,7 +30,7 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 		int i = mc.renderEngine.getTexture("/logisticspipes/gui/itemsink.png");
 		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(i);
+		mc.renderEngine.bindTexture("/logisticspipes/gui/itemsink.png");
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

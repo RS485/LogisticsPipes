@@ -11,7 +11,8 @@ public class CreativeTabLP extends CreativeTabs {
 		super("Logistics_Pipes");
 	}
 
-    @SideOnly(Side.CLIENT)
+    @Override
+	@SideOnly(Side.CLIENT)
     public int getTabIconItemIndex() {
         return LogisticsPipes.LogisticsBasicPipe.itemID;
     }

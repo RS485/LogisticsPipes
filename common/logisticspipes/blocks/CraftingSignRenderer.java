@@ -1,5 +1,7 @@
 package logisticspipes.blocks;
 
+import java.util.List;
+
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.block.Block;
@@ -15,6 +17,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
@@ -91,18 +94,21 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 
         if(pipe != null) {
         	BaseLogicCrafting craftingLogic = (BaseLogicCrafting) pipe.logic;
-    		ItemStack itemstack = craftingLogic.getCraftedItem();
+    		List<ItemStack> craftables = ((BaseLogicCrafting)pipe.logic).getCraftedItems();
+
     		String name = "";
-    		if(itemstack != null) {
-	        	Item item = itemstack.getItem();
+    		if(craftables != null && craftables.size() > 0) {
+    			ItemStack itemstack = craftables.get(0);
+    			//TODO: handle multiple crafables.
+	        	Item item = craftables.get(0).getItem();
 	        	
 	        	if(item == null) return; //Only happens on false configuration
 		        
-		        this.bindTextureByName(item.getTextureFile());
+		        this.bindTextureByName(item.getIconFromDamage(0).getIconName());
 		        
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
-		        this.bindTextureByName(itemstack.getItem().getTextureFile());
+		        this.bindTextureByName(item.getIconFromDamage(0).getIconName());
 				//ForgeHooksClient.overrideTexture(itemstack.getItem());
 		        
 				if(customRenderer != null) {
@@ -218,7 +224,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		            {
 		                for (int var14 = 0; var14 < item.getRenderPasses(itemstack.getItemDamage()); ++var14)
 		                {
-		                    int var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
+		                    Icon var15 = item.getIconFromDamageForRenderPass(itemstack.getItemDamage(), var14);
 		                    renderItem(var15);
 		                }
 		            }
@@ -254,7 +260,7 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		        	name = item.getItemDisplayName(itemstack);
 		        } catch(Exception e) {
 		        	try {
-		        		name = item.getItemName();
+		        		name = item.getUnlocalizedName();
 		        	} catch(Exception e1) {}
 		        }
 		        
@@ -301,12 +307,13 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
         GL11.glPopMatrix();
     }
 	
-	private void renderItem(int par1) {
+	private void renderItem(Icon paricon) {
+		
 		Tessellator var3 = Tessellator.instance;
-		float var4 = (float)(par1 % 16 * 16 + 0) / 256.0F;
-        float var5 = (float)(par1 % 16 * 16 + 16) / 256.0F;
-        float var6 = (float)(par1 / 16 * 16 + 0) / 256.0F;
-        float var7 = (float)(par1 / 16 * 16 + 16) / 256.0F;
+		float var4 = (paricon.getSheetHeight() % 16 * 16 + 0) / 256.0F;
+        float var5 = (paricon.getSheetWidth() % 16 * 16 + 16) / 256.0F;
+        float var6 = (paricon.getSheetHeight() / 16 * 16 + 0) / 256.0F;
+        float var7 = (paricon.getSheetWidth() / 16 * 16 + 16) / 256.0F;
         float var8 = 1.0F;
         float var9 = 0.5F;
         float var10 = 0.25F;
@@ -314,10 +321,10 @@ public class CraftingSignRenderer extends TileEntitySpecialRenderer {
 		GL11.glPushMatrix();
         var3.startDrawingQuads();
         var3.setNormal(0.0F, 1.0F, 0.0F);
-        var3.addVertexWithUV((double)(0.0F - var9), (double)(0.0F - var10), 0.0D, (double)var4, (double)var7);
-        var3.addVertexWithUV((double)(var8 - var9), (double)(0.0F - var10), 0.0D, (double)var5, (double)var7);
-        var3.addVertexWithUV((double)(var8 - var9), (double)(1.0F - var10), 0.0D, (double)var5, (double)var6);
-        var3.addVertexWithUV((double)(0.0F - var9), (double)(1.0F - var10), 0.0D, (double)var4, (double)var6);
+        var3.addVertexWithUV(0.0F - var9, 0.0F - var10, 0.0D, var4, var7);
+        var3.addVertexWithUV(var8 - var9, 0.0F - var10, 0.0D, var5, var7);
+        var3.addVertexWithUV(var8 - var9, 1.0F - var10, 0.0D, var5, var6);
+        var3.addVertexWithUV(0.0F - var9, 1.0F - var10, 0.0D, var4, var6);
         var3.draw();
         GL11.glPopMatrix();
 	}

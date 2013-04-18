@@ -337,7 +337,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public int powerRequest() {
+	public int powerRequest(ForgeDirection from) {
 		if (hasWork()) {
 			return provider.getMaxEnergyReceived();
 		} else {
@@ -511,12 +511,24 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		if(heat > 0) {
 			return 3;
 		} else {
-			return 17;
+			return 8;
 		}
 	}
 
 	@Override
 	public void setRotation(int rotation) {
 		this.rotation = rotation;
+	}
+
+	@Override
+	public boolean isInvNameLocalized() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 }

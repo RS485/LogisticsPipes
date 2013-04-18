@@ -84,4 +84,5 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	public boolean canInsertToTanks() {
 		return true;
 	}
+
 }

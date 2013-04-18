@@ -18,7 +18,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Container;
-
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 
@@ -76,14 +75,17 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		this.yCenter = (bottom + guiTop) / 2;
 	}
 	
+	@Override
 	public boolean hasSubGui() {
 		return subGui != null;
 	}
 	
+	@Override
 	public SubGuiScreen getSubGui() {
 		return subGui;
 	}
 	
+	@Override
 	public void setSubGui(SubGuiScreen gui) {
 		if(subGui == null) {
 			subGui = gui;
@@ -100,6 +102,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 			subGui.setWorldAndResolution(mc, width, height);
 	}
 	
+	@Override
 	public void resetSubGui() {
 		subGui = null;
 	}
@@ -202,7 +205,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	public void addRenderSlot(IRenderSlot slot) {
 		this.slots.add(slot);
 	}
-	
+
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		for(IRenderSlot slot:slots) {
@@ -210,7 +213,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 				if(slot.drawSlotBackground()) 
 					BasicGuiHelper.drawSlotBackground(mc, slot.getXPos(), slot.getYPos());
 				if(((IItemTextureRenderSlot)slot).drawSlotIcon() && !((IItemTextureRenderSlot)slot).customRender(mc, zLevel)) 
-					BasicGuiHelper.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel, ((IItemTextureRenderSlot)slot).getTextureId(), ((IItemTextureRenderSlot)slot).getTextureFile());
+					BasicGuiHelper.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel, ((IItemTextureRenderSlot)slot).getTextureId(), ((IItemTextureRenderSlot)slot).getTextureIcon());
 			} else if(slot instanceof ISmallColorRenderSlot) {
 				if(slot.drawSlotBackground())
 					BasicGuiHelper.drawSmallSlotBackground(mc, slot.getXPos(), slot.getYPos());
@@ -220,6 +223,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		}
 	}
 
+	@Override
 	protected void mouseClicked(int par1, int par2, int par3) {
 		for(IRenderSlot slot:slots) {
 			int mouseX = par1 - guiLeft;
@@ -250,7 +254,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		int lasty = y1;
 		for (int dx = 0; x1 + dx < x2; dx++){
 			int plotx = x1 + dx;
-			int ploty = y1 + (int)((y2 - y1) / (x2-x1-1)) * dx;
+			int ploty = y1 + (y2 - y1) / (x2-x1-1) * dx;
 			drawPoint(plotx, ploty, color);
 			while(lasty < ploty){
 				drawPoint(plotx,++lasty, color);

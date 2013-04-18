@@ -2,40 +2,43 @@ package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
 import java.util.Set;
-import java.util.TreeSet;
-
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import appeng.api.me.tiles.ITileInterfaceApi;
+//TODO: ae related fixme
+//import appeng.api.me.tiles.ITileInterfaceApi;
 /*
  * Compatibility for Applied Energistics
  * http://www.minecraftforum.net/topic/1625015-
  */
 
 public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
-	private final ITileInterfaceApi _tile;
+	public static boolean init = false;
+	//private final ITileInterfaceApi _tile;
 	private final boolean _hideOnePerStack;
 
 	private AEInterfaceInventoryHandler(TileEntity tile, boolean hideOnePerStack, boolean hideOne, int cropStart, int cropEnd) {
-		_tile = (ITileInterfaceApi)tile;
+		//_tile = (ITileInterfaceApi)tile;
 		_hideOnePerStack = hideOnePerStack || hideOne;
 	}
 
 	public AEInterfaceInventoryHandler() {
-		_tile = null;
+		//_tile = null;
 		_hideOnePerStack = false;
 	}
 
 	@Override
 	public boolean init() {
+		AEInterfaceInventoryHandler.init=true;
 		return true;
 	}
 
 	@Override
 	public boolean isType(TileEntity tile) {
-		return tile instanceof ITileInterfaceApi;
+		//TODO ae related fixme
+		//return tile instanceof ITileInterfaceApi;
+		return false;
 	}
 
 	@Override
@@ -45,7 +48,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
+		//TODO: fixme
+		/*HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			Integer count = result.get(ident);
@@ -55,38 +59,50 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 				result.put(ident, items.stackSize - (_hideOnePerStack ? 1:0));
 			}
 		}
-		return result;
+		return result;*/
+		return null;
 	}
 
 	@Override
 	public Set<ItemIdentifier> getItems() {
+		//TODO: fixme
+		/*
 		Set<ItemIdentifier> result = new TreeSet<ItemIdentifier>();
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			result.add(ident);
 		}
 		return result;
+		*/
+		return null;
 	}
 
 	@Override
 	public ItemStack getSingleItem(ItemIdentifier item) {
-		return _tile.apiExtractNetworkItem(item.makeNormalStack(1), true);
+		//TODO ae related fixme
+		//return _tile.apiExtractNetworkItem(item.makeNormalStack(1), true);
+		return null;
 	}
 
 	@Override
 	public boolean containsItem(ItemIdentifier item) {
-		ItemStack result = _tile.apiExtractNetworkItem(item.unsafeMakeNormalStack(1), false);
-		return result != null;
+		//TODO ae related fixme
+		//ItemStack result = _tile.apiExtractNetworkItem(item.unsafeMakeNormalStack(1), false);
+		//return result != null;
+		return false;
 	}
 
 	@Override
 	public boolean containsUndamagedItem(ItemIdentifier item) {
+		//TODO: fixme
+				/*
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.getUndamaged(items);
 			if(ident == item) {
 				return true;
 			}
 		}
+		return false;*/
 		return false;
 	}
 
@@ -97,7 +113,9 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 
 	@Override
 	public int roomForItem(ItemIdentifier item, int count) {
-		return _tile.apiCurrentAvailableSpace(item.unsafeMakeNormalStack(1), count);
+		//TODO ae related fixme
+		//return _tile.apiCurrentAvailableSpace(item.unsafeMakeNormalStack(1), count);
+		return 0;
 	}
 
 	@Override
@@ -107,10 +125,12 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 		if(tst.stackTagCompound != null && tst.stackTagCompound.getName().equals("")) {
 			tst.stackTagCompound.setName("tag");
 		}
-		ItemStack overflow = _tile.apiAddNetworkItem(tst, doAdd);
+		//TODO ae related fixme
+		/*ItemStack overflow = _tile.apiAddNetworkItem(tst, doAdd);
 		if(overflow != null) {
 			st.stackSize -= overflow.stackSize;
 		}
-		return st;
+		return st;*/
+		return null;
 	}
 }

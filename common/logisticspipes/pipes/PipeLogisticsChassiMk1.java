@@ -18,4 +18,5 @@ public class PipeLogisticsChassiMk1 extends PipeLogisticsChassi{
 	public int getChassiSize() {
 		return 1;
 	}
+
 }

@@ -43,7 +43,9 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public int getMaxCharge(ItemStack stack) {
 		if (!(stack.getItem() instanceof IElectricItem)) return 0;
-		return ((IElectricItem) stack.getItem()).getMaxCharge();
+		//TODO: fixme
+		return 0;
+		//return ((IElectricItem) stack.getItem()).getMaxCharge();
 	}
 
 	/**
@@ -73,6 +75,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 * @return Boolean, true if electric item contains charge but is not full.
 	 * @param stack The stack to check if its partially chraged.
 	 */
+	@Override
 	public boolean isPartiallyCharged(ItemStack stack) {
 		return (!isFullyCharged(stack) && !isFullyDischarged(stack));
 	}

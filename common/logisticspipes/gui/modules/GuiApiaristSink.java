@@ -70,7 +70,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		}
 
 		@Override
-		public String getTextureFile() {
+		public String getTextureIcon()  {
 			return "/gfx/forestry/gui/analyzer_icons.png";
 		}
 
@@ -257,7 +257,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		}
 
 		@Override
-		public String getTextureFile() {
+		public String getTextureIcon()  {
 			return "/gfx/forestry/items/bees.png";
 		}
 

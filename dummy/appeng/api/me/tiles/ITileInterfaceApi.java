@@ -2,10 +2,9 @@ package appeng.api.me.tiles;
 
 import java.util.List;
 
-import appeng.api.InterfaceCraftingRequest;
-import appeng.api.me.util.IMEInventory;
-
 import net.minecraft.item.ItemStack;
+import appeng.api.me.util.IMEInventory;
+import appeng.api.me.util.InterfaceCraftingResponse;
 
 public interface ITileInterfaceApi {
 	
@@ -20,7 +19,9 @@ public interface ITileInterfaceApi {
 	IMEInventory getApiArray();
 	
 	List<ItemStack> getCraftingOptions();
+
+	List<InterfaceCraftingPattern> findCraftingPatterns( ItemStack req );
 	
-	InterfaceCraftingRequest requestCrafting( ItemStack req, boolean calculateOnly );
+	InterfaceCraftingResponse requestCrafting( ItemStack req, boolean enableRecursive );
 	
 }

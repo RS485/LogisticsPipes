@@ -74,10 +74,12 @@ public class MathVector {
 		return this;
 	}
 	
+	@Override
 	public String toString() {
 		return new StringBuilder().append("[").append(X).append(",").append(Y).append(",").append(Z).append("]").append("(").append(abs()).append(")").toString();
 	}
 	
+	@Override
 	public MathVector clone() {
 		MathVector vector = new MathVector();
 		vector.X = X;

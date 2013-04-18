@@ -11,21 +11,20 @@ package logisticspipes.gates;
 import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
-import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.Trigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
+public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 
 	public TriggerSupplierFailed(int id) {
 		super(id);
 	}
 	
 	@Override
-	public int getIndexInTexture() {
-		return 0 * 16 + 0;
+	public int getIconIndex() {
+		return LPActionTriggerIconProvider.triggerSupplierFailedIconIndex;
 	}
 	
 	@Override
@@ -50,8 +49,4 @@ public class TriggerSupplierFailed extends Trigger implements ITriggerPipe{
 		return false;
 	}
 
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	}
 }

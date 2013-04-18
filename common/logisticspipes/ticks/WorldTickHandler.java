@@ -91,10 +91,10 @@ public class WorldTickHandler implements ITickHandler {
 						for(EntityData entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
 							entity.item.setContainer(newTile);
 						}
-						for(EntityData entity:((List<EntityData>)entitiesToLoad.get((PipeTransportItems)newTile.pipe.transport))) {
+						for(EntityData entity:((List<EntityData>)entitiesToLoad.get(newTile.pipe.transport))) {
 							entity.item.setContainer(newTile);
 						}
-						for(EntityData entity:((List<EntityData>)delayedEntitiesToLoad.get((PipeTransportItems)newTile.pipe.transport))) {
+						for(EntityData entity:((List<EntityData>)delayedEntitiesToLoad.get(newTile.pipe.transport))) {
 							entity.item.setContainer(newTile);
 						}
 					}

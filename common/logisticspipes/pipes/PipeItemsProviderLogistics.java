@@ -237,7 +237,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
-			order = _orderManager.getNextRequest();
+			order = _orderManager.peekAtTopRequest();
 			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 3);
@@ -254,15 +254,15 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		}
 		
 		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(tree.getStack().getItem().getUndamaged()) || filter.blockProvider()) return;
+			if(filter.isBlocked() == filter.isFilteredItem(tree.getStackItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		
 		// Check the transaction and see if we have helped already
-		int canProvide = getAvailableItemCount(tree.getStack().getItem());
+		int canProvide = getAvailableItemCount(tree.getStackItem());
 		canProvide -= donePromisses;
 		if (canProvide < 1) return;
 		LogisticsPromise promise = new LogisticsPromise();
-		promise.item = tree.getStack().getItem();
+		promise.item = tree.getStackItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
 		promise.sender = this;
 		List<IRelayItem> relays = new LinkedList<IRelayItem>();
@@ -451,5 +451,6 @@ outer:
 	public double getLoadFactor() {
 		return (_orderManager.totalItemsCountInAllOrders()+63)/64.0;
 	}
+
 
 }

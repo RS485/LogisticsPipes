@@ -124,17 +124,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
-		controlList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
-		controlList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
-		controlList.add(new SmallGuiButton(10, xCenter - 51, bottom - 15, 26, 10, "---")); // -64
-		controlList.add(new SmallGuiButton(4, xCenter - 51, bottom - 26, 15, 10, "--")); // -10
-		controlList.add(new SmallGuiButton(5, xCenter - 35, bottom - 26, 10, 10, "-")); // -1
-		controlList.add(new SmallGuiButton(6, xCenter + 26, bottom - 26, 10, 10, "+")); // +1
-		controlList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
-		controlList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
-		controlList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
+		buttonList.clear();
+		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
+		buttonList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
+		buttonList.add(new SmallGuiButton(2, right - 90, guiTop + 5, 10, 10, "<")); // Prev page
+		buttonList.add(new SmallGuiButton(10, xCenter - 51, bottom - 15, 26, 10, "---")); // -64
+		buttonList.add(new SmallGuiButton(4, xCenter - 51, bottom - 26, 15, 10, "--")); // -10
+		buttonList.add(new SmallGuiButton(5, xCenter - 35, bottom - 26, 10, 10, "-")); // -1
+		buttonList.add(new SmallGuiButton(6, xCenter + 26, bottom - 26, 10, 10, "+")); // +1
+		buttonList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
+		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
+		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
 	}
 	
 	@Override
@@ -158,7 +158,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
 		fontRenderer.drawString(pageString, right - 47 - fontRenderer.getStringWidth(pageString) / 2 , guiTop + 6 , 0x404040);
 		
-		if(controlList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)controlList.get(9)).getState()) {
+		if(buttonList.get(9) instanceof GuiCheckBox && ((GuiCheckBox)buttonList.get(9)).getState()) {
 			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0x404040);
 		} else {
 			fontRenderer.drawString("Popup", guiLeft + 25 , bottom - 56, 0xA0A0A0);
@@ -222,16 +222,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		
 		if(!listbyserver) {
 			int graphic = ((int)(System.currentTimeMillis() / 250) % 5);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture("/gui/icons.png"));
-            GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+//			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture());
+			mc.renderEngine.bindTexture("/gui/icons.png");
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
             Tessellator var9 = Tessellator.instance;
             var9.startDrawingQuads();
             int xPosition = xCenter - 50;
             int yPosition = guiTop + 40;
-            var9.addVertexWithUV(xPosition			, yPosition + 100		, (double)zLevel, 0.04	, 0.72 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition + 100	, yPosition + 100		, (double)zLevel, 0.08	, 0.72 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition + 100	, yPosition				, (double)zLevel, 0.08	, 0.69 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition			, yPosition				, (double)zLevel, 0.04	, 0.69 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition			, yPosition + 100		, zLevel, 0.04	, 0.72 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition + 100	, yPosition + 100		, zLevel, 0.08	, 0.72 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition + 100	, yPosition				, zLevel, 0.08	, 0.69 + (graphic * 0.03125));
+            var9.addVertexWithUV(xPosition			, yPosition				, zLevel, 0.04	, 0.69 + (graphic * 0.03125));
             var9.draw();
 		} else {
 			for(ItemIdentifierStack itemStack : _allItems) {
@@ -281,6 +282,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
 	
+	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if(searchinput1 == "" && searchinput2 == "") return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;

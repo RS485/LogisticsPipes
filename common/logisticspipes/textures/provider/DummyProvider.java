@@ -1,6 +1,6 @@
 package logisticspipes.textures.provider;
 
-import logisticspipes.textures.Textures;
+import logisticspipes.LogisticsPipes;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
@@ -12,7 +12,9 @@ public class DummyProvider implements IIconProvider {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getIcon(int iconIndex) {
-		return Textures.BASE_TEXTURE_FILE;
+		if(iconIndex==1)
+			return LogisticsPipes.teststuff2;
+		return LogisticsPipes.teststuff;
 	}
 
 	@Override

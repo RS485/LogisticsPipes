@@ -1,8 +1,5 @@
 package logisticspipes.pipes;
 
-import buildcraft.api.core.IIconProvider;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -16,7 +13,6 @@ import logisticspipes.textures.Textures.TextureType;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.common.ForgeDirection;
 
 public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
@@ -56,11 +52,5 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 		return ItemSendMode.Normal;
 	}
 
-
-	@Override
-	public int getIconIndex(ForgeDirection direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 }

@@ -234,7 +234,11 @@
 
 
 	<target name="copySRC" >
-	
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${lib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
+			</classpath>
+		</taskdef>
 		<echo message="Loaded ant-contrib"/>
 
 		<!-- Delete LP source in build space -->
@@ -247,7 +251,7 @@
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
-
+		
 		<echo message="Loading FingerPrint"/>
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>

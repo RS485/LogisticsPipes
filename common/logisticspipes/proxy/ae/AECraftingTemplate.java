@@ -1,24 +1,14 @@
 package logisticspipes.proxy.ae;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import net.minecraft.item.ItemStack;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.CraftingTemplate;
-import logisticspipes.request.RequestTree;
-import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
-/*
-import appeng.api.me.util.ICraftRequest;
-import appeng.api.me.util.InterfaceCraftingResponse;
-import appeng.api.me.tiles.ITileInterfaceApi;*/
 
 public class AECraftingTemplate extends CraftingTemplate {
 	//TODO ae realted fixme

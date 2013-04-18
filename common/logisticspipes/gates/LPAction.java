@@ -10,7 +10,6 @@
 package logisticspipes.gates;
 
 import logisticspipes.textures.Textures;
-import buildcraft.BuildCraftCore;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;

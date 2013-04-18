@@ -3,9 +3,6 @@ package logisticspipes.pipes;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
@@ -33,7 +30,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
-import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
 
@@ -196,9 +192,4 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		return true;
 	}
 	
-	@Override
-	public int getIconIndex(ForgeDirection direction) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 }

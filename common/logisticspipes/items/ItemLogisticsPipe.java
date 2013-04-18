@@ -11,7 +11,6 @@ package logisticspipes.items;
 import buildcraft.core.utils.Localization;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
-import logisticspipes.LogisticsPipes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;

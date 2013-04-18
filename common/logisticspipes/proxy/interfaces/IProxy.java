@@ -15,10 +15,8 @@ public interface IProxy {
 	public void registerTileEntitis();
 	public EntityPlayer getClientPlayer();
 	public boolean isMainThreadRunning();
-	@SideOnly(Side.CLIENT)
-	public void addLogisticsPipesOverride(int index, String override1, String override2, IconRegister par1IconRegister);
-	@SideOnly(Side.CLIENT)
-	public void addLogisticsPipesOverride(int index, String override1, String override2, IconRegister par1IconRegister, boolean flag);
+	
+	public void addLogisticsPipesOverride(int index, String override1, String override2, boolean flag);
 	public void registerParticles();
 	public String getName(ItemIdentifier item);
 	public void updateNames(ItemIdentifier item, String name);

@@ -27,6 +27,7 @@ import logisticspipes.textures.OverlayManager;
 import logisticspipes.textures.Textures;
 //import logisticspipes.textures.LogisticsPipesTextureStatic;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -79,12 +80,6 @@ public class ClientProxy implements IProxy {
 		return FMLClientHandler.instance().getClient().running;
 	}
 	
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void addLogisticsPipesOverride(int index, String override1, String override2,IconRegister par1IconRegister) {
-		
-	}
-
 	@Override
 	public void registerParticles() {
 		PipeFXRenderHandler.registerParticleHandler(Particles.WhiteParticle, new EntityWhiteSparkleFXProvider());
@@ -182,8 +177,8 @@ public class ClientProxy implements IProxy {
 	// BuildCraft method end
 
 	@Override
-	public void addLogisticsPipesOverride(int index, String override1,
-			String override2, IconRegister par1IconRegister, boolean flag) {
+	public void addLogisticsPipesOverride(int index, String override1, String override2, boolean flag) {
+		IconRegister par1IconRegister=Minecraft.getMinecraft().renderEngine.textureMapBlocks;
 		if(flag)
 			Textures.LPpipeIconProvider.icons[index]=par1IconRegister.registerIcon("logisticspipes:"+override1);
 		else

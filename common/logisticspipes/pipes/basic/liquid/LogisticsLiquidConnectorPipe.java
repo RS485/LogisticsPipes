@@ -22,9 +22,7 @@ public class LogisticsLiquidConnectorPipe extends Pipe {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIconProvider getIconProvider() {
-		// TODO Auto-generated method stub
-		//return LogisticsPipes.dummyIconProvider;
-		return new DummyProvider();
+		return Textures.LPpipeIconProvider;
 	}
 
 

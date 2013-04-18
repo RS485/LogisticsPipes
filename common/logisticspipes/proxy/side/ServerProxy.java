@@ -70,11 +70,7 @@ public class ServerProxy implements IProxy {
 	public boolean isMainThreadRunning() {
 		return FMLServerHandler.instance().getServer().isServerRunning();
 	}
-	@SideOnly(Side.CLIENT)
-	@Override
-	public void addLogisticsPipesOverride(int index, String override1, String override2,IconRegister p) {
-		//Only Client Side
-	}
+	
 
 	@Override
 	public void registerParticles() {
@@ -246,10 +242,9 @@ public class ServerProxy implements IProxy {
 		return (TileGenericPipe) tile;
 	}
 	// BuildCraft method end
-	@SideOnly(Side.CLIENT)
 	@Override
 	public void addLogisticsPipesOverride(int index, String override1,
-			String override2, IconRegister par1IconRegister, boolean flag) {
+			String override2, boolean flag) {
 		// TODO Auto-generated method stub
 		
 	}

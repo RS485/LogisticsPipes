@@ -209,7 +209,7 @@ public class LogisticsPipes {
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
 	
-	private Textures textures;
+	private Textures textures=new Textures();
 	
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
@@ -260,6 +260,9 @@ public class LogisticsPipes {
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
+		/* make sure server side texures are corectly indexed */
+		if(MainProxy.isServer())
+			textures.registerBlockIcons();
 	}
 	
 	@PreInit
@@ -438,16 +441,12 @@ public class LogisticsPipes {
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
-		if(textures==null)
-			textures = new Textures();
 		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapItems) {
 			textures.registerItemIcons(event.map);
 		}
 		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapBlocks) {
 			//teststuff=OverlayManager.RegisterOverlays(event.map, "basic", "status_overlay" ,OverlayType.powered ,OverlayType.routed, OverlayType.unpowered, OverlayType.security);
-			teststuff=event.map.registerIcon("logisticspipes:pipes/combined");
-			teststuff2=event.map.registerIcon("logisticspipes:pipes/status_overlay/powered");
-			textures.registerBlockIcons(event.map);
+			textures.registerBlockIcons();
 		}
 	}
 	@FingerprintWarning

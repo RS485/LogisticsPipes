@@ -9,13 +9,13 @@ import buildcraft.api.core.IIconProvider;
 public class LPPipeIconProvider implements IIconProvider {
 	public Icon icons[];
 	
-	@SideOnly(Side.CLIENT)
+	//@SideOnly(Side.CLIENT)
 	public LPPipeIconProvider(int limit) {
 		icons=new Icon[limit];
 	}
 	@Override
 	public Icon getIcon(int iconIndex) {
-		return icons[iconIndex];
+		return icons[iconIndex%icons.length];
 	}
 	public void setIcon(int index, Icon icon)
 	{

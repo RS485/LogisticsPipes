@@ -22,7 +22,7 @@ public class LogisticsLiquidConnectorPipe extends Pipe {
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIconProvider getIconProvider() {
-		return Textures.LPpipeIconProvider;
+		return Textures.LPpipeIconProvider;	
 	}
 
 

@@ -25,7 +25,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
 	
-	private static final Icon[] icons = new Icon[12];
+	private static final Icon[] icons = new Icon[10];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -152,99 +152,88 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister par1IconRegister)
 	{
-		/*icons = new Icon[3];
-		int i = 0;
-		for (String s : sideNames)
+		for(int i=0;i<10;i++)
 		{
-			//do sth
-		}*/
-
+			icons[i]=par1IconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
+		}
 	}
 	
 	private Icon getRotatedTexture(int meta, int side, int rotation, int front) {
-		/*switch (meta) {
+		switch (meta) {
 		case SOLDERING_STATION:
 			if(front == 0) {
-				front = 17;
+				front = 8;
 			}
 			switch (side) {
 			case 1: //TOP
-				return 1;
+				return icons[1];
 			case 0: //Bottom
-				return 2;
+				return icons[2];
 			case 2: //East
 				switch(rotation) {
 				case 0:
-					return 16;
 				case 1:
-					return 18;
 				case 2:
-					return 19;
+				default:
+					return icons[7];
 				case 3:
-					return front;
+					return icons[front];
 				}
-				return 16;
 			case 3: //West
 				switch(rotation) {
 				case 0:
-					return 18;
 				case 1:
-					return 19;
-				case 2:
-					return front;
 				case 3:
-					return 16;
+				default:
+					return icons[7];
+				case 2:
+					return icons[front];
 				}
-				return 18;
 			case 4: //South
 				switch(rotation) {
 				case 0:
-					return 19;
-				case 1:
-					return front;
 				case 2:
-					return 16;
 				case 3:
-					return 18;
+				default:
+				return icons[7];
+				case 1:
+					return icons[front];
 				}
-				return 19;
 			case 5: //North
 				switch(rotation) {
 				case 0:
-					return front;
+					return icons[front];
 				case 1:
-					return 16;
 				case 2:
-					return 18;
 				case 3:
-					return 19;
+				default:
+					return icons[7];
 				}
-				return front;
+				
 			default:
-				return 0;
+				return icons[0];
 			}
 		case LOGISTICS_POWER_JUNCTION:
 			switch (side) {
 			case 1: //TOP
-				return 4;
+				return icons[4];
 			case 0: //Bottom
-				return 5;
+				return icons[5];
 			default: //Front
-				return 6;
+				return icons[6];
 			}
 		case LOGISTICS_SECURITY_STATION:
 			switch (side) {
 			case 1: //TOP
-				return 20;
+				return icons[9];
 			case 0: //Bottom
-				return 21;
+				return icons[5];
 			default: //Front
-				return 22;
+				return icons[6];
 			}
 		default:
-			return 0;
-		}*/
-		return Textures.BASE_TEXTURE_FILE;
+			return icons[0];
+		}
 	}
 	
 }

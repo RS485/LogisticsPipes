@@ -511,7 +511,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		if(heat > 0) {
 			return 3;
 		} else {
-			return 17;
+			return 8;
 		}
 	}
 
@@ -529,6 +529,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	@Override
 	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 }

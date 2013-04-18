@@ -19,6 +19,7 @@ import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeNORTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeSOUTH;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeUP;
 import logisticspipes.pipes.upgrades.sneaky.SneakyUpgradeWEST;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
@@ -48,7 +49,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int ADVANCED_SAT_CRAFTINGPIPE = 21;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
-	
+	private static Icon[] icons;
 	private class Upgrade {
 		private String name;
 		private int id;
@@ -111,20 +112,21 @@ public class ItemUpgrade extends LogisticsItem {
 	}
 	
 	public void loadUpgrades() {
-		registerUpgrade(SNEAKY_UP, "Sneaky Upgrade (UP)", SneakyUpgradeUP.class);
-		registerUpgrade(SNEAKY_DOWN, "Sneaky Upgrade (DOWN)", SneakyUpgradeDOWN.class);
-		registerUpgrade(SNEAKY_NORTH, "Sneaky Upgrade (NORTH)", SneakyUpgradeNORTH.class);
-		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class);
-		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class);
-		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class);
-		registerUpgrade(CONNECTION_UP, "Disconnection Upgrade (UP)", ConnectionUpgradeUP.class, 9 * 16 + 7);
-		registerUpgrade(CONNECTION_DOWN, "Disconnection Upgrade (DOWN)", ConnectionUpgradeDOWN.class, 9 * 16 + 8);
-		registerUpgrade(CONNECTION_NORTH, "Disconnection Upgrade (NORTH)", ConnectionUpgradeNORTH.class, 9 * 16 + 9);
-		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, 9 * 16 + 10);
-		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, 9 * 16 + 11);
-		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 9 * 16 + 12);
-		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 9 * 16 + 6);
-		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 9 * 16 + 13);
+		registerUpgrade(SNEAKY_UP, "Sneaky Upgrade (UP)", SneakyUpgradeUP.class,0);
+		registerUpgrade(SNEAKY_DOWN, "Sneaky Upgrade (DOWN)", SneakyUpgradeDOWN.class,1);
+		registerUpgrade(SNEAKY_NORTH, "Sneaky Upgrade (NORTH)", SneakyUpgradeNORTH.class,2);
+		registerUpgrade(SNEAKY_SOUTH, "Sneaky Upgrade (SOUTH)", SneakyUpgradeSOUTH.class,3);
+		registerUpgrade(SNEAKY_EAST, "Sneaky Upgrade (EAST)", SneakyUpgradeEAST.class,4);
+		registerUpgrade(SNEAKY_WEST, "Sneaky Upgrade (WEST)", SneakyUpgradeWEST.class,5);
+		registerUpgrade(SPEED, "Item Speed Upgrade", SpeedUpgrade.class, 6);
+		registerUpgrade(CONNECTION_UP, "Disconnection Upgrade (UP)", ConnectionUpgradeUP.class, 7);
+		registerUpgrade(CONNECTION_DOWN, "Disconnection Upgrade (DOWN)", ConnectionUpgradeDOWN.class, 8);
+		registerUpgrade(CONNECTION_NORTH, "Disconnection Upgrade (NORTH)", ConnectionUpgradeNORTH.class, 9);
+		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, 10);
+		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, 11);
+		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 12);
+		
+		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 13);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
@@ -207,20 +209,40 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 		return null;
 	}
-	
+	@Override
+	public void registerIcons(IconRegister par1IconRegister)
+	{
+		icons=new Icon[15];
+		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
+		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
+		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
+		icons[3]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakySOUTH");
+		icons[4]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyEAST");
+		icons[5]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyWEST");
+		
+		icons[6]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Speed");
+		
+		icons[7]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisUP");
+		icons[8]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisDOWN");
+		icons[9]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisNORTH");
+		icons[10]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisSOUTH");
+		icons[11]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
+		icons[12]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
+		
+		icons[13]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
+		icons[14]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/UNKNOWN01");
+	}
 	@Override
 	public Icon getIconFromDamage(int i) {
-		/*TODO: fixme
+
 		for(Upgrade upgrade:upgrades) {
 			if(upgrade.getId() == i) {
 				if(upgrade.getTextureIndex() != -1) {
-					return upgrade.getTextureIndex();
+					return icons[upgrade.getTextureIndex()];
 				}
 			}
 		}
 			
-		return 9 * 16 + i;
-		*/
-		return null;
+		return icons[0];
 	}
 }

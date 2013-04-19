@@ -58,13 +58,13 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.clear();
-		controlList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 47, 10, 10, "<"));
-		controlList.add(new SmallGuiButton(1, guiLeft + 160, guiTop + 47, 10, 10, ">"));
-		controlList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 47, 46, 10, "Refresh"));
-		controlList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 35, 10, 10, "<"));
-		controlList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 35, 10, 10, ">"));
-		controlList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 35, 30, 10, "Save"));
+		buttonList.clear();
+		buttonList.add(new SmallGuiButton(0, guiLeft + 120, guiTop + 47, 10, 10, "<"));
+		buttonList.add(new SmallGuiButton(1, guiLeft + 160, guiTop + 47, 10, 10, ">"));
+		buttonList.add(new SmallGuiButton(2, guiLeft + 68, guiTop + 47, 46, 10, "Refresh"));
+		buttonList.add(new SmallGuiButton(3, guiLeft + 80, guiTop + 35, 10, 10, "<"));
+		buttonList.add(new SmallGuiButton(4, guiLeft + 120, guiTop + 35, 10, 10, ">"));
+		buttonList.add(new SmallGuiButton(5, guiLeft + 140, guiTop + 35, 30, 10, "Save"));
 		refreshPacket();
 	}
 

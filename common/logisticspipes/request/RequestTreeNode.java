@@ -355,7 +355,7 @@ public class RequestTreeNode {
 		//a queue to store the crafters, sorted by todo; we will fill up from least-most in a balanced way.
 		PriorityQueue<CraftingSorterNode> craftersSamePriority = new PriorityQueue<CraftingSorterNode>(5);
 		ArrayList<CraftingSorterNode> craftersToBalance = new ArrayList<CraftingSorterNode>();
-
+		//TODO ^ Make this a generic list
 		boolean done=false;
 		Pair<CraftingTemplate, List<IFilter>> lastCrafter =null;
 		int currentPriority=0;
@@ -535,7 +535,7 @@ outer:
 				//stacksOfWorkRequested=0; // just incase we call it twice.
 				//return true; // don't remove from the list if we have no w
 				
-				//LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getItemName());
+				//LogisticsPipes.log.info("minor bug detected, 0 sized promise attempted. Crafting:" + treeNode.request.makeNormalStack().getUnlocalizedName());
 				//LogisticsPipes.log.info("failed crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 			}
 			boolean isDone = setsToCraft == setsAbleToCraft;

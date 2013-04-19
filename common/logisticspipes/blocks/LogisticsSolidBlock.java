@@ -4,13 +4,15 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.textures.Textures;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
@@ -21,6 +23,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
+	
+	private static final Icon[] icons = new Icon[10];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -55,8 +59,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving) {
-		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving);
+	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack itemStack) {
+		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving, itemStack);
 		TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
 		if(tile instanceof IRotationProvider) {
 			double x = tile.xCoord - par5EntityLiving.posX;
@@ -90,18 +94,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 	}
 
 	@Override
-	public int getBlockTextureFromSideAndMetadata(int side, int meta) {
+	public Icon getIcon(int side, int meta) {
 		return getRotatedTexture(meta, side, 2, 0);
 	}
 	
 	@Override
 	public TileEntity createNewTileEntity(World var1) {
 		new UnsupportedOperationException("Please call createNewTileEntity(World,int) instead of createNewTileEntity(World).").printStackTrace();
-		return createNewTileEntity(var1, 0);
+		return createTileEntity(var1, 0);
 	}
 	
 	@Override
-	public TileEntity createNewTileEntity(World world, int metadata) {
+	public TileEntity createTileEntity(World world, int metadata) {
         switch(metadata) {
 	    	case SOLDERING_STATION:
 	    		return new LogisticsSolderingTileEntity();
@@ -133,7 +137,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 
 	@Override
 	@SideOnly(Side.CLIENT)
-	public int getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
+	public Icon getBlockTexture(IBlockAccess access, int x, int y, int z, int side) {
 		int meta = access.getBlockMetadata(x, y, z);
 		TileEntity tile = access.getBlockTileEntity(x, y, z);
 		if(tile instanceof IRotationProvider) {
@@ -143,93 +147,92 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 	}
 	
-	private int getRotatedTexture(int meta, int side, int rotation, int front) {
+	@Override
+	@SideOnly(Side.CLIENT)
+	public void registerIcons(IconRegister par1IconRegister)
+	{
+		for(int i=0;i<10;i++)
+		{
+			icons[i]=par1IconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
+		}
+	}
+	
+	private Icon getRotatedTexture(int meta, int side, int rotation, int front) {
 		switch (meta) {
 		case SOLDERING_STATION:
 			if(front == 0) {
-				front = 17;
+				front = 8;
 			}
 			switch (side) {
 			case 1: //TOP
-				return 1;
+				return icons[1];
 			case 0: //Bottom
-				return 2;
+				return icons[2];
 			case 2: //East
 				switch(rotation) {
 				case 0:
-					return 16;
 				case 1:
-					return 18;
 				case 2:
-					return 19;
+				default:
+					return icons[7];
 				case 3:
-					return front;
+					return icons[front];
 				}
-				return 16;
 			case 3: //West
 				switch(rotation) {
 				case 0:
-					return 18;
 				case 1:
-					return 19;
-				case 2:
-					return front;
 				case 3:
-					return 16;
+				default:
+					return icons[7];
+				case 2:
+					return icons[front];
 				}
-				return 18;
 			case 4: //South
 				switch(rotation) {
 				case 0:
-					return 19;
-				case 1:
-					return front;
 				case 2:
-					return 16;
 				case 3:
-					return 18;
+				default:
+				return icons[7];
+				case 1:
+					return icons[front];
 				}
-				return 19;
 			case 5: //North
 				switch(rotation) {
 				case 0:
-					return front;
+					return icons[front];
 				case 1:
-					return 16;
 				case 2:
-					return 18;
 				case 3:
-					return 19;
+				default:
+					return icons[7];
 				}
-				return front;
+				
 			default:
-				return 0;
+				return icons[0];
 			}
 		case LOGISTICS_POWER_JUNCTION:
 			switch (side) {
 			case 1: //TOP
-				return 4;
+				return icons[4];
 			case 0: //Bottom
-				return 5;
+				return icons[5];
 			default: //Front
-				return 6;
+				return icons[6];
 			}
 		case LOGISTICS_SECURITY_STATION:
 			switch (side) {
 			case 1: //TOP
-				return 20;
+				return icons[9];
 			case 0: //Bottom
-				return 21;
+				return icons[5];
 			default: //Front
-				return 22;
+				return icons[6];
 			}
 		default:
-			return 0;
+			return icons[0];
 		}
 	}
 	
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICS_SOLID_BLOCK;
-	}
 }

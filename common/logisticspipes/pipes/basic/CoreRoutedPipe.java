@@ -72,6 +72,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
@@ -83,6 +84,8 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Normal")
 public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
@@ -299,6 +302,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				return;
 			}
 		}
+		// remove old items _inTransit -- these should have arived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.
+		while(this._inTransitToMe.poll()!=null){}
 		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		getUpgradeManager().securityTick();
@@ -395,23 +400,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	
 	public abstract TextureType getCenterTexture();
-	
-	@Override
-	public String getTextureFile() {
-		return Textures.BASE_TEXTURE_FILE;
-	}
-	
-	@Override
-	public final int getTextureIndex(ForgeDirection connection) {
-		TextureType texture = getTextureType(connection);
-		if(_textureBufferPowered) {
-			return texture.powered;
-		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-			return texture.normal;
-		} else {
-			return texture.unpowered;
-		}
-	}
 	
 	public TextureType getTextureType(ForgeDirection connection) {
 		if(stillNeedReplace || _initialInit)
@@ -931,7 +919,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
-	public String getItemName(Double itemId) throws Exception {
+	public String getUnlocalizedName(Double itemId) throws Exception {
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
@@ -957,5 +945,25 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				count += next.getIDStack().stackSize;
 		}
 		return count;
+	}
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		return Textures.LPpipeIconProvider;
+	}
+	/*@Override
+	public int getIconIndex(ForgeDirection direction) {
+		return Textures.LOGISTICSPIPE_TEXTURE.normal;
+	}*/
+	@Override
+	public final int getIconIndex(ForgeDirection connection) {
+		TextureType texture = getTextureType(connection);
+		if(_textureBufferPowered) {
+			return texture.powered;
+		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
+			return texture.normal;
+		} else {
+			return texture.unpowered;
+		}
 	}
 }

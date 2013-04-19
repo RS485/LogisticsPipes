@@ -65,19 +65,19 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
-		this.controlList.add(new GuiButton(1, guiLeft + 45, guiTop + 179, 30, 20, "-"));
-		this.controlList.add(new GuiButton(2, guiLeft + 105, guiTop + 179, 30, 20, "+"));
-		this.controlList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
-		this.controlList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 167, 30, 10, "Open"));
-		this.controlList.add(new SmallGuiButton(5, guiLeft + 184, guiTop + 114, 30, 10, "Save"));
-		this.controlList.add(new GuiCheckBox(6, guiLeft + 200, guiTop + 51, 16, 16, false));
-		this.controlList.add(new GuiCheckBox(7, guiLeft + 200, guiTop + 66, 16, 16, false));
-		this.controlList.add(new GuiCheckBox(8, guiLeft + 200, guiTop + 81, 16, 16, false));
-		this.controlList.add(new GuiCheckBox(9, guiLeft + 200, guiTop + 96, 16, 16, false));
+		this.buttonList.clear();
+		this.buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
+		this.buttonList.add(new GuiButton(1, guiLeft + 45, guiTop + 179, 30, 20, "-"));
+		this.buttonList.add(new GuiButton(2, guiLeft + 105, guiTop + 179, 30, 20, "+"));
+		this.buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
+		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 167, 30, 10, "Open"));
+		this.buttonList.add(new SmallGuiButton(5, guiLeft + 184, guiTop + 114, 30, 10, "Save"));
+		this.buttonList.add(new GuiCheckBox(6, guiLeft + 200, guiTop + 51, 16, 16, false));
+		this.buttonList.add(new GuiCheckBox(7, guiLeft + 200, guiTop + 66, 16, 16, false));
+		this.buttonList.add(new GuiCheckBox(8, guiLeft + 200, guiTop + 81, 16, 16, false));
+		this.buttonList.add(new GuiCheckBox(9, guiLeft + 200, guiTop + 96, 16, 16, false));
 		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
-			this.controlList.add(new GuiCheckBox(10, guiLeft + 160, guiTop + 142, 16, 16, _tile.allowCC));
+			this.buttonList.add(new GuiCheckBox(10, guiLeft + 160, guiTop + 142, 16, 16, _tile.allowCC));
 		}
 		MainProxy.sendPacketToServer(new LogisticsPipesPacket() {
 			@Override public void writeData(DataOutputStream data) throws IOException {}
@@ -206,17 +206,17 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			fontRenderer.drawString("Allow Item Requesting: ", guiLeft + 87, guiTop + 70, 0x404040);
 			fontRenderer.drawString("Allow Open Pipe Upgrades Gui: ", guiLeft + 47, guiTop + 85, 0x404040);
 			fontRenderer.drawString("Allow Open Pipe Network Manager Gui: ", guiLeft + 10, guiTop + 100, 0x404040);
-			((GuiButton)this.controlList.get(5)).drawButton = true;
-			((GuiButton)this.controlList.get(6)).drawButton = true;
-			((GuiButton)this.controlList.get(7)).drawButton = true;
-			((GuiButton)this.controlList.get(8)).drawButton = true;
-			((GuiButton)this.controlList.get(9)).drawButton = true;
+			((GuiButton)this.buttonList.get(5)).drawButton = true;
+			((GuiButton)this.buttonList.get(6)).drawButton = true;
+			((GuiButton)this.buttonList.get(7)).drawButton = true;
+			((GuiButton)this.buttonList.get(8)).drawButton = true;
+			((GuiButton)this.buttonList.get(9)).drawButton = true;
 		} else {
-			((GuiButton)this.controlList.get(5)).drawButton = false;
-			((GuiButton)this.controlList.get(6)).drawButton = false;
-			((GuiButton)this.controlList.get(7)).drawButton = false;
-			((GuiButton)this.controlList.get(8)).drawButton = false;
-			((GuiButton)this.controlList.get(9)).drawButton = false;
+			((GuiButton)this.buttonList.get(5)).drawButton = false;
+			((GuiButton)this.buttonList.get(6)).drawButton = false;
+			((GuiButton)this.buttonList.get(7)).drawButton = false;
+			((GuiButton)this.buttonList.get(8)).drawButton = false;
+			((GuiButton)this.buttonList.get(9)).drawButton = false;
 		}
 	}
 
@@ -295,11 +295,11 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	
 	public void refreshCheckBoxes() {
 		if(activeSetting != null) {
-			((GuiCheckBox)this.controlList.get(6)).setState(activeSetting.openGui);
-			((GuiCheckBox)this.controlList.get(7)).setState(activeSetting.openRequest);
-			((GuiCheckBox)this.controlList.get(8)).setState(activeSetting.openUpgrades);
-			((GuiCheckBox)this.controlList.get(9)).setState(activeSetting.openNetworkMonitor);
+			((GuiCheckBox)this.buttonList.get(6)).setState(activeSetting.openGui);
+			((GuiCheckBox)this.buttonList.get(7)).setState(activeSetting.openRequest);
+			((GuiCheckBox)this.buttonList.get(8)).setState(activeSetting.openUpgrades);
+			((GuiCheckBox)this.buttonList.get(9)).setState(activeSetting.openNetworkMonitor);
 		}
-		((GuiCheckBox)this.controlList.get(10)).setState(_tile.allowCC);
+		((GuiCheckBox)this.buttonList.get(10)).setState(_tile.allowCC);
 	}
 }

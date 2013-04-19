@@ -27,6 +27,7 @@ TODO later, maybe....
 package logisticspipes;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -91,10 +92,14 @@ import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
+import net.minecraft.util.Icon;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.ForgeSubscribe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
@@ -116,12 +121,13 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 @Mod(
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
 		version = "%VERSION%",
-		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
+		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[6.5.0.0,);" +
 				"required-after:BuildCraft|Core;" +
 				"required-after:BuildCraft|Transport;" +
@@ -151,6 +157,7 @@ public class LogisticsPipes {
 	public static boolean DisplayRequests;
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG_OVGEN = false;
 	public static String MCVersion = "%MCVERSION%";
 	
 	private boolean certificateError = false;
@@ -202,7 +209,7 @@ public class LogisticsPipes {
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
 	
-	private Textures textures = new Textures();
+	private Textures textures=new Textures();
 	
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
@@ -216,6 +223,8 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
+	public static Icon teststuff;
+	public static Icon teststuff2;
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
@@ -229,8 +238,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
 		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
-		
-		textures.load(event);
 		
 		if(event.getSide().isClient()) {
 			SimpleServiceLocator.buildCraftProxy.registerLocalization();
@@ -253,6 +260,9 @@ public class LogisticsPipes {
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
+		/* make sure server side texures are corectly indexed */
+		if(MainProxy.isServer())
+			textures.registerBlockIcons();
 	}
 	
 	@PreInit
@@ -275,11 +285,13 @@ public class LogisticsPipes {
 			log.severe("Certificate not correct");
 			log.severe("This in not a LogisticsPipes version from RS485.");
 		}
+		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@SuppressWarnings("deprecation")
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
+		
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 
@@ -287,21 +299,17 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		
 		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
-		LogisticsNetworkMonitior.setIconIndex(Textures.LOGISTICSNETWORKMONITOR_ICONINDEX);
-		LogisticsNetworkMonitior.setItemName("networkMonitorItem");
+		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
 		
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
-		LogisticsItemCard.setIconIndex(Textures.LOGISTICSITEMCARD_ICONINDEX);
-		LogisticsItemCard.setItemName("logisticsItemCard");
+		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
-		//LogisticsRemoteOrderer.setIconIndex(LOGISTICSREMOTEORDERER_ICONINDEX);
-		LogisticsRemoteOrderer.setItemName("remoteOrdererItem");
+		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
 
 		LogisticsCraftingSignCreator = new CraftingSignCreator(Configs.LOGISTICSCRAFTINGSIGNCREATOR_ID);
-		LogisticsCraftingSignCreator.setIconIndex(Textures.LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX);
-		LogisticsCraftingSignCreator.setItemName("CraftingSignCreator");
+		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
 		if(MainProxy.isClient()) {
@@ -310,35 +318,31 @@ public class LogisticsPipes {
 			renderIndex = 0;
 		}
 		LogisticsHUDArmor = new ItemHUDArmor(Configs.ITEM_HUD_ID, renderIndex);
-		LogisticsHUDArmor.setIconIndex(Textures.LOGISTICSITEMHUD_ICONINDEX);
-		LogisticsHUDArmor.setItemName("logisticsHUDGlasses");
+		LogisticsHUDArmor.setUnlocalizedName("logisticsHUDGlasses");
 		
 		LogisticsParts = new ItemParts(Configs.ITEM_PARTS_ID);
-		LogisticsParts.setIconIndex(Textures.LOGISTICSITEMHUD_PART3_ICONINDEX);
-		LogisticsParts.setItemName("logisticsParts");
+		LogisticsParts.setUnlocalizedName("logisticsParts");
 		
 		SimpleServiceLocator.buildCraftProxy.registerTrigger();
 		
 		ModuleItem = new ItemModule(Configs.ITEM_MODULE_ID);
-		ModuleItem.setItemName("itemModule");
+		ModuleItem.setUnlocalizedName("itemModule");
 		ModuleItem.loadModules();
 		
 		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
-		LogisticsItemDisk.setItemName("itemDisk");
-		LogisticsItemDisk.setIconIndex(3);
+		LogisticsItemDisk.setUnlocalizedName("itemDisk");
 		
 		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
-		UpgradeItem.setItemName("itemUpgrade");
+		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
 		
+		//TODO make it visible in creative search
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
-		LogisticsUpgradeManager.setIconIndex(Textures.LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX);
-		LogisticsUpgradeManager.setItemName("upgradeManagerItem");
+		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
-			LogisticsLiquidContainer.setIconIndex(Textures.LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX);
-			LogisticsLiquidContainer.setItemName("logisticsLiquidContainer");
+			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
 		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
@@ -376,9 +380,10 @@ public class LogisticsPipes {
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
 		ModLoader.registerBlock(logisticsSign);
+		logisticsSign.setUnlocalizedName("logisticsSign");
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
-		
+		logisticsSign.setUnlocalizedName("logisticsSolidBlock");
 		//Power Junction
 		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
@@ -430,7 +435,20 @@ public class LogisticsPipes {
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
 	}
-	
+	/*
+	 * subscribe forge pre stich event to register common texture
+	 */
+	@ForgeSubscribe
+	@SideOnly(Side.CLIENT)
+	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
+		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapItems) {
+			textures.registerItemIcons(event.map);
+		}
+		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapBlocks) {
+			//teststuff=OverlayManager.RegisterOverlays(event.map, "basic", "status_overlay" ,OverlayType.powered ,OverlayType.routed, OverlayType.unpowered, OverlayType.security);
+			textures.registerBlockIcons();
+		}
+	}
 	@FingerprintWarning
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
 		if(!DEBUG) {

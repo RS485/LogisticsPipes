@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.LiquidStack;
 
@@ -142,13 +141,13 @@ public class LogisticsRenderPipe extends RenderPipe {
 
 		if (liquidId == 0)
 			return null;
-
-		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
-			ForgeHooksClient.bindTexture(Block.blocksList[liquidId].getTextureFile(), 0);
+		//@TODO: fixme
+		/*if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
+			Minecraft.getMinecraft().renderEngine.bindTexture(Block.blocksList[liquidId].getIcon(par1, par2)(), 0);
 		} else if (Item.itemsList[liquidId] != null) {
-			ForgeHooksClient.bindTexture(Item.itemsList[liquidId].getTextureFile(), 0);
+			Minecraft.getMinecraft().renderEngine.bindTexture(Item.itemsList[liquidId].getIconFromDamage(stack.itemMeta));
 		} else
-			return null;
+			return null;*/
 		return getDisplayLiquidLists(liquidId, stack.itemMeta, world);
 	}
 
@@ -169,7 +168,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 
 		BlockInterface block = new BlockInterface();
 		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
-			block.texture = Block.blocksList[liquidId].getBlockTextureFromSideAndMetadata(0, meta);
+			block.texture = Block.blocksList[liquidId].getIcon(0, meta);
 		} else {
 			block.texture = Item.itemsList[liquidId].getIconFromDamage(meta);
 		}

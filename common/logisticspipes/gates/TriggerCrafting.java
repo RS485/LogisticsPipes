@@ -1,13 +1,12 @@
 package logisticspipes.gates;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.textures.Textures;
+import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
-import buildcraft.api.gates.Trigger;
 import buildcraft.transport.ITriggerPipe;
 import buildcraft.transport.Pipe;
 
-public class TriggerCrafting extends Trigger implements ITriggerPipe {
+public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 
 	public TriggerCrafting(int id) {
 		super(id);
@@ -20,8 +19,8 @@ public class TriggerCrafting extends Trigger implements ITriggerPipe {
 	}
 
 	@Override
-	public int getIndexInTexture() {
-		return 0 * 16 + 2;
+	public int getIconIndex() {
+		return LPActionTriggerIconProvider.triggerCraftingIconIndex;
 	}
 
 	@Override
@@ -29,9 +28,5 @@ public class TriggerCrafting extends Trigger implements ITriggerPipe {
 		return "Pipe Waiting for Crafting";
 	}
 
-	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSACTIONTRIGGERS_TEXTURE_FILE;
-	}
 
 }

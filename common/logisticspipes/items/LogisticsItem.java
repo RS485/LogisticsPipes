@@ -8,10 +8,13 @@
 
 package logisticspipes.items;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
+import net.minecraft.util.Icon;
 
 public class LogisticsItem extends Item {
 
@@ -19,9 +22,18 @@ public class LogisticsItem extends Item {
 		super(i);
 	}
 	
+	public LogisticsItem(int i,
+			Icon icon) {
+				super(i);
+				this.itemIcon =icon;
+	}
+
 	@Override
-	public String getTextureFile() {
-		return Textures.LOGISTICSITEMS_TEXTURE_FILE;
+    @SideOnly(Side.CLIENT)
+    public void registerIcons(IconRegister par1IconRegister)
+    {
+		if(this.itemIcon == null)
+			this.itemIcon = par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
 	}
 
 	@Override

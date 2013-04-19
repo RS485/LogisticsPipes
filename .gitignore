@@ -1,2 +1,7 @@
 lib
 sign
+build/**
+output/**
+download/**
+**/.classpath
+**/.project

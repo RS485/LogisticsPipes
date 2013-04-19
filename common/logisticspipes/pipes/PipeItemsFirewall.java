@@ -20,8 +20,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
 import logisticspipes.security.SecuritySettings;
+import logisticspipes.routing.IRouter;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
@@ -285,4 +285,5 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		}
 	}
 	*/
+
 }

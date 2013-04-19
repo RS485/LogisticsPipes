@@ -67,11 +67,7 @@ public class ServerProxy implements IProxy {
 	public boolean isMainThreadRunning() {
 		return FMLServerHandler.instance().getServer().isServerRunning();
 	}
-
-	@Override
-	public void addLogisticsPipesOverride(int index, String override1, String override2) {
-		//Only Client Side
-	}
+	
 
 	@Override
 	public void registerParticles() {
@@ -87,13 +83,13 @@ public class ServerProxy implements IProxy {
 			}
 		} catch(Exception e) {
 			try {
-				name = Item.itemsList[item.itemID].getItemNameIS(item.unsafeMakeNormalStack(1));
+				name = Item.itemsList[item.itemID].getUnlocalizedName(item.unsafeMakeNormalStack(1));
 				if(name == null) {
 					throw new Exception();
 				}
 			} catch(Exception e1) {
 				try {
-					name = Item.itemsList[item.itemID].getItemName();
+					name = Item.itemsList[item.itemID].getUnlocalizedName();
 					if(name == null) {
 						throw new Exception();
 					}
@@ -106,7 +102,7 @@ public class ServerProxy implements IProxy {
 	}
 	
 	private String getNameForCategory(String category, ItemIdentifier item) {
-		String name = langDatabase.get(category, "name", "").value;
+		String name = langDatabase.get(category, "name", "").getString();
 		if(name.equals("")) {
 			saveLangDatabase();
 			if(item.unsafeMakeNormalStack(1).isItemStackDamageable()) {
@@ -119,7 +115,7 @@ public class ServerProxy implements IProxy {
 	}
 	
 	private void setNameForCategory(String category, ItemIdentifier item, String newName) {
-		langDatabase.get(category, "name", newName).value = newName;
+		langDatabase.get(category, "name", newName).set(newName);
 		saveLangDatabase();
 	}
 	
@@ -183,9 +179,9 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void sendNameUpdateRequest(Player player) {
-		for(String category:langDatabase.categories.keySet()) {
+		for(String category:langDatabase.getCategoryNames()) {
 			if(!category.startsWith("itemNames.")) continue;
-			String name = langDatabase.get(category, "name", "").value;
+			String name = langDatabase.get(category, "name", "").getString();
 			if(name.equals("")) {
 				String itemPart = category.substring(10);
 				String metaPart = "0";
@@ -243,4 +239,12 @@ public class ServerProxy implements IProxy {
 		return (TileGenericPipe) tile;
 	}
 	// BuildCraft method end
+	@Override
+	public void addLogisticsPipesOverride(int index, String override1,
+			String override2, boolean flag) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 }

@@ -29,7 +29,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		controlList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
+		buttonList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
 		Macrobutton.enabled = false;
 	}
 	

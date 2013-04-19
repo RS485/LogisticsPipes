@@ -191,4 +191,5 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public boolean hasGenericInterests() {
 		return true;
 	}
+	
 }

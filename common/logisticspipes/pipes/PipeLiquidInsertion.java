@@ -95,4 +95,5 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 	public boolean canInsertFromSideToTanks() {
 		return false;
 	}
+
 }

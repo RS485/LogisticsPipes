@@ -412,4 +412,5 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		displayList.clear();
 		displayList.addAll(list);
 	}
+
 }

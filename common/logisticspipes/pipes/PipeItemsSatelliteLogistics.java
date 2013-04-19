@@ -169,4 +169,5 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
 	}
+
 }

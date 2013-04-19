@@ -1,4 +1,4 @@
-package gregtechmod.api;
+package gregtechmod.api.interfaces;
 
 import net.minecraft.item.ItemStack;
 

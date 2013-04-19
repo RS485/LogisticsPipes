@@ -47,4 +47,6 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	public ItemSendMode getItemSendMode() {
 		return ItemSendMode.Normal;
 	}
+
+
 }

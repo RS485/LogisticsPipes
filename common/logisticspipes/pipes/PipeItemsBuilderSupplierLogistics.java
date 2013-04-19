@@ -53,4 +53,5 @@ public class PipeItemsBuilderSupplierLogistics extends CoreRoutedPipe implements
 	public boolean hasGenericInterests() {
 		return true;
 	}
+
 }

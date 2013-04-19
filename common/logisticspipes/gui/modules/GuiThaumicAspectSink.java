@@ -37,9 +37,9 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 	@Override
 	public void initGui() {
 		super.initGui();
-		this.controlList.clear();
-		this.controlList.add(new GuiButton(0, guiLeft + 8, guiTop + 53, 50, 20, "Inject"));
-		this.controlList.add(new GuiButton(1, guiLeft + 116, guiTop + 53, 50, 20, "Clear"));
+		this.buttonList.clear();
+		this.buttonList.add(new GuiButton(0, guiLeft + 8, guiTop + 53, 50, 20, "Inject"));
+		this.buttonList.add(new GuiButton(1, guiLeft + 116, guiTop + 53, 50, 20, "Clear"));
 	}
 
 	@Override
@@ -65,14 +65,14 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 100);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 78, guiTop + 7);
 		if(tmpInv.getStackInSlot(0) != null) {
-			((GuiButton)controlList.get(0)).displayString = "Inject";
+			((GuiButton)buttonList.get(0)).displayString = "Inject";
 		} else {
-			((GuiButton)controlList.get(0)).displayString = "...";
+			((GuiButton)buttonList.get(0)).displayString = "...";
 		}
 		if(_module.aspectList.size() == 0) {
-			((GuiButton)controlList.get(1)).displayString = "...";
+			((GuiButton)buttonList.get(1)).displayString = "...";
 		} else {
-			((GuiButton)controlList.get(1)).displayString = "Clear";
+			((GuiButton)buttonList.get(1)).displayString = "Clear";
 		}
 		
 		/** back **/

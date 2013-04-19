@@ -2,7 +2,6 @@
 	<property environment="env"/>
 
 	<!-- Properties -->
-
 	<property name="build.dir"            value="build"/>
 	<property name="src.dir"              value="src"/>
 	<property name="sign.dir"             value="/home/jenkins/.sign"/>
@@ -16,27 +15,29 @@
 
 	<property name="mcp.dir"              value="${build.dir}/mcp"/>
 	<property name="forge.dir"            value="${mcp.dir}/forge"/>
-	<property name="buildcraft.dir"       value="${mcp.dir}/buildcraft"/>
-	<property name="forestry.dir"         value="${mcp.dir}/forestry"/>
-	<property name="ic2.dir"              value="${mcp.dir}/ic2"/>
-	<property name="cc.dir"               value="${mcp.dir}/cc"/>
+	<property name="buildcraft.dir"       value="${mcp.dir}/unpack/buildcraft"/>
+	<property name="forestry.dir"         value="${mcp.dir}/unpack/forestry"/>
+	<property name="ic2.dir"              value="${mcp.dir}/unpack/ic2"/>
+	<property name="cc.dir"               value="${mcp.dir}/unpack/cc"/>
 
 	<property name="clientsrc.dir"        value="${mcp.dir}/src/minecraft"/>
 	<property name="commonsrc.dir"        value="${clientsrc.dir}"/>
-
+	
+	<property file="${clientsrc.dir}/fmlversion.properties" />
+	
 	<property name="downloadserver"       value="http://www.theZorro266.com"/>
 	<property name="downloadserver.dir"   value="rs485/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
-	<property name="antcont.version"      value="1.0b2"/>
-	<property name="mcp.version"          value="726"/>
-	<property name="mc.version"           value="1.4.7"/>
-	<property name="forge.version"        value="6.6.0.497"/>
-	<property name="bc.version"           value="3.4.1"/>
-	<property name="forestry.version"     value="1.7.0.0"/>
-	<property name="ic2.version"          value="1.112.189-lf"/>
-	<property name="cc.version"           value="1.48pr2"/>
-	<property name="lp.version"           value="0.7.0"/>
+	<property name="antcont.version"      value="1.0b3"/>
+	<property name="mcp.version"          value="744"/>
+	<property name="mc.version"           value="1.5.1"/>
+	<property name="forge.version"        value="7.7.1.660"/>
+	<property name="bc.version"           value="3.5.0"/>
+	<property name="forestry.version"     value="2.1.2.17"/>
+	<property name="ic2.version"          value="1.115.294"/>
+	<property name="cc.version"           value="1.52"/>
+	<property name="lp.version"           value="0.7.2-dev"/>
 	
 	<!-- Targets -->
 	<target name="init-msg">
@@ -66,13 +67,52 @@
 				<include name="ant-contrib-${antcont.version}-bin.zip"/>
 			</fileset>
 		</unzip>
-
-		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+		<!-- Pull in ant-contrib for if task -->
+		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
+			<classpath>
+				<pathelement location="${lib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
+			</classpath>
+		</taskdef>
+		<if>
+			<not>
+				<and>
+				<isset property="fmlbuild.build.number"/>
+				<isset property="keepforge"/>
+				</and>
+			</not>
+		<then>
+			<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="mcp${mcp.version}.zip"/>
 			</fileset>
 		</unzip>
-
+		</then>
+		<else>
+		<echo message="Forge kept"/>
+		<!-- keep dependency source fresh -->
+			<delete verbose="true">
+				<fileset dir="${mcp.dir}">
+					<include name="unpack/**"/>
+				</fileset>
+			</delete>
+			<delete verbose="true">
+				<fileset dir="${commonsrc.dir}">
+					<include name="ic2/**"/>
+					<include name="cc/**"/>
+					<include name="forestry/**"/>
+					<include name="buildcraft/**"/>
+					<include name="gregtechmod/**"/>
+					<include name="appeng/**"/>
+					<include name="codechicken/**"/>
+					<include name="powercrystals/**"/>
+					<include name="thaumcraft/**"/>
+					<include name="thermalexpansion/**"/>
+					<include name="logisticpipes/**"/>
+				</fileset>
+			</delete>
+		</else>
+		</if>
+		
 		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
@@ -108,13 +148,20 @@
 		<chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
 		<chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
 		<chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/reobfuscate.sh" perm="+x"/>
+		<chmod file="${mcp.dir}/reobfuscate_srg.sh" perm="+x"/>
 		<chmod file="${forge.dir}/install.sh" perm="+x"/>
 
 		<!-- if your building on OSX these 2 should be executable -->
 		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x"/>
 		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x"/>
-
+		<if>
+			<not>
+				<and>
+				<isset property="fmlbuild.build.number"/>
+				<isset property="keepforge"/>
+				</and>
+			</not>
+		<then>
 		<!-- Install forge -->
 		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
 			<arg line="/c install.cmd"/>
@@ -123,9 +170,13 @@
 		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
 			<arg value="install.sh"/>
 		</exec>
-
+		
 		<echo message="Decompile finished"/>
-
+		</then>
+		<else>
+			<echo message="Forge Setup skipped"/>
+		</else>
+		</if>
 		<!-- Copy BC source -->
 		<copy todir="${commonsrc.dir}">
 			<fileset dir="${buildcraft.dir}/common">
@@ -182,10 +233,9 @@
 
 
 	<target name="copySRC" >
-		<!-- Pull in ant-contrib for if task -->
 		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 			<classpath>
-				<pathelement location="${lib.dir}/ant-contrib/lib/ant-contrib.jar"/>
+				<pathelement location="${lib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
 			</classpath>
 		</taskdef>
 		<echo message="Loaded ant-contrib"/>
@@ -200,13 +250,13 @@
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
 		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
-
+		
 		<echo message="Loading FingerPrint"/>
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>
 			<then>
 				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
-				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value="${fingerprint}"/>
+				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
 			</then>
 		</if>
 	</target>
@@ -227,11 +277,11 @@
 
 		<!-- Reobf -->
 		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
-			<arg line="/c reobfuscate.bat --client"/>
+			<arg line="/c reobfuscate_srg.bat --client"/>
 		</exec>
 
 		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-			<arg value="reobfuscate.sh"/>
+			<arg value="reobfuscate_srg.sh"/>
 		</exec>
 
 		<!-- Copy LP classes -->
@@ -282,11 +332,11 @@
 	</target>
 	
 	<target name="vars">
-		<property name="lp.version.full"      value="${lp.version}.${BUILD_NUMBER}"/>
+		<property name="lp.version.full"      value="${lp.version}.${env.BUILD_NUMBER}"/>
 	</target>
 	
 	<target name="vars-dev">
-		<property name="lp.version.full"      value="${lp.version}.dev.${BUILD_NUMBER}"/>
+		<property name="lp.version.full"      value="${lp.version}.dev.${env.BUILD_NUMBER}"/>
 	</target>
 	
 	<target name="vars-test">
@@ -295,6 +345,8 @@
 	</target>
 	
 	<target name="main" depends="vars, init-msg, clean, setup, package-simple"/>
+	
+	<target name="main_keepforge" depends="vars, init-msg, setup, package-simple"/>
 	
 	<target name="ci-dev" depends="vars-dev, init-msg, clean, setup, package-sign"/>
 	

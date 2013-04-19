@@ -43,7 +43,9 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public int getMaxCharge(ItemStack stack) {
 		if (!(stack.getItem() instanceof IElectricItem)) return 0;
-		return ((IElectricItem) stack.getItem()).getMaxCharge();
+		//TODO: fixme
+		return 0;
+		//return ((IElectricItem) stack.getItem()).getMaxCharge();
 	}
 
 	/**

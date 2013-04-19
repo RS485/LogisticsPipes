@@ -1,12 +1,8 @@
 package logisticspipes.logic;
 
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
-import java.util.concurrent.TimeUnit;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logistics.LogisticsManagerV2;
@@ -253,7 +249,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void destroy() {
 		if(signEntityX != 0 && signEntityY != 0 && signEntityZ != 0) {
-			worldObj.setBlockWithNotify(signEntityX, signEntityY, signEntityZ, 0);
+			//TODO not sure setBlockMetadataWithNotify(signEntityX, signEntityY, signEntityZ, 0, 0, 1);
+			worldObj.setBlockMetadataWithNotify(signEntityX, signEntityY, signEntityZ, 0, 1);
 			signEntityX = 0;
 			signEntityY = 0;
 			signEntityZ = 0;

@@ -19,7 +19,7 @@ public class PipeFXRenderHandler {
 		double var17 = mc.renderViewEntity.posY - y;
 		double var19 = mc.renderViewEntity.posZ - z;
 		EntityFX effect = null;
-		Object effectObject = null;
+		
 		double var22 = 16.0D;
 		
 		if (var15 * var15 + var17 * var17 + var19 * var19 > var22 * var22) {
@@ -35,7 +35,7 @@ public class PipeFXRenderHandler {
 		for (int i = 0; i < amount; i++) {
 			effect = provider.createGenericParticle(mc.theWorld, x, y, z);
 			if (effect != null) {
-				mc.effectRenderer.addEffect(effect, effectObject);
+				mc.effectRenderer.addEffect(effect);
 			}
 		}
 		

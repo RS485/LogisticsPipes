@@ -278,4 +278,16 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public boolean isEmpty() {
 		return _contentsMap.isEmpty();
 	}
+
+	@Override
+	public boolean isInvNameLocalized() {
+		// TODO ?
+		return true;
+	}
+
+	@Override
+	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+		// TODO Auto-generated method stub
+		return false;
+	}
 }

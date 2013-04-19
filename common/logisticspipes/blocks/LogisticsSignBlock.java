@@ -8,6 +8,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
@@ -19,16 +20,13 @@ public class LogisticsSignBlock extends BlockContainer {
 		super(par1, Material.iron);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
+	
 
 	@Override
-	public int getBlockTextureFromSideAndMetadata(int par1, int par2) {
-		return 4;
+	public Icon getIcon(int par1, int par2) {
+		return planks.getBlockTextureFromSide(par1);
 	}
 
-	@Override
-	public int getBlockTextureFromSide(int par1) {
-		return 0 /* NONE */;
-	}
 
 	@Override
 	public boolean renderAsNormalBlock() {

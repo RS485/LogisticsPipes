@@ -293,7 +293,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						processingOrder = false;
 						if(!_extras.isEmpty())
 						nextOrder = _extras.getFirst();
-					}		
+					}
+					
 				} else {
 					removeExtras(numtosend,nextOrder.getValue1().getItem());
 

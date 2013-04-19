@@ -12,13 +12,19 @@ It is not allowed to use this mod in any mod packs, if not explicitly allowed.
 
 #Builds
 
+[gejzer builds] (https://www.dropbox.com/sh/tjzx65jqfrwvd73/qpX4mfApUZ)
+
+outdated:
 [Jenkins] (http://ci.thezorro266.com/)
 
 #Developing and building
 
 1. Clone this repo to a folder named src inside an empty folder
 
-2. Run `ant setup`
+2. Run `ant setup` or `ant main_keepminecraft` if you want to keep mcp/forge instance
+
+3. Usefull command lines parameters `-Dsrc.dir`, `-Dsrc.dir`(must be set to keep mcp/forge instance), `-Dbasedir`
+i.e: `ant main_keepminecraft -Dsrc.dir="." -Dkeepforge="1" -Dbasedir=""` (my local setup)
 
 ##Extended Description
 

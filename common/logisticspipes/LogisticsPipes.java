@@ -127,7 +127,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
 		version = "%VERSION%",
-		certificateFingerprint="%------------CERTIFICATE-SUM-----------%",
+		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[6.5.0.0,);" +
 				"required-after:BuildCraft|Core;" +
 				"required-after:BuildCraft|Transport;" +

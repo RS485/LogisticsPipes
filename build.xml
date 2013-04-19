@@ -25,20 +25,19 @@
 	
 	<property file="${clientsrc.dir}/fmlversion.properties" />
 	
-	<property name="downloadserver"       value="http://gejzer.cba.pl"/>
-	<property name="downloadserver.dir"   value="logisticpipes_dependencies/"/>
+	<property name="downloadserver"       value="http://www.theZorro266.com"/>
+	<property name="downloadserver.dir"   value="rs485/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
 	<property name="antcont.version"      value="1.0b3"/>
 	<property name="mcp.version"          value="744"/>
 	<property name="mc.version"           value="1.5.1"/>
-	<property name="forge.version"        value="7.7.1.651"/>
-	<property name="forge.build" value="651" />
-	<property name="bc.version"           value="dev"/>
-	<property name="forestry.version"     value="lastest"/>
-	<property name="ic2.version"          value="lastest"/>
+	<property name="forge.version"        value="7.7.1.660"/>
+	<property name="bc.version"           value="3.5.0"/>
+	<property name="forestry.version"     value="2.1.2.17"/>
+	<property name="ic2.version"          value="1.115.294"/>
 	<property name="cc.version"           value="1.52"/>
-	<property name="lp.version"           value="0.7.1-dev"/>
+	<property name="lp.version"           value="0.7.2-dev"/>
 	
 	<!-- Targets -->
 	<target name="init-msg">
@@ -257,7 +256,7 @@
 			<available file="${sign.dir}/.fingerprint"/>
 			<then>
 				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
-				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value="${fingerprint}"/>
+				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
 			</then>
 		</if>
 	</target>

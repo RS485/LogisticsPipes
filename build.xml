@@ -206,7 +206,7 @@
 
 		<!-- Copy CC API source -->
 		<copy todir="${commonsrc.dir}">
-			<fileset dir="${cc.dir}/src"/>
+			<fileset dir="${cc.dir}"/>
 		</copy>
 
 		<echo message="Copied CC API"/>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSolidBlock;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -54,5 +55,10 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
         return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
+	}
+	@Override
+	public void registerIcons(IconRegister par1IconRegister)
+	{
+		
 	}
 }

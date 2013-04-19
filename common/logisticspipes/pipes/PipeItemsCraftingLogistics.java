@@ -293,8 +293,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						processingOrder = false;
 						if(!_extras.isEmpty())
 						nextOrder = _extras.getFirst();
-					}
-					
+					}		
 				} else {
 					removeExtras(numtosend,nextOrder.getValue1().getItem());
 
@@ -456,28 +455,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
 		if (promise instanceof LogisticsExtraPromise) {
-			int itemCount = promise.numberOfItems;
-			while(!_extras.isEmpty() && itemCount>0) {
-				Iterator<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> itr=_extras.iterator();
-				while(itr.hasNext() && itemCount>0) {
-					Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> extra = itr.next();
-					if(extra.getValue1().stackSize >= itemCount) {
-						itemCount -= extra.getValue1().stackSize;
-						itr.remove();
-					} else {
-						extra.getValue1().stackSize -= itemCount;
-						itemCount = 0;
-					}
-				}
-			}
+			removeExtras(promise.numberOfItems, promise.item);
 		}
 		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
 	}
 
 	@Override
-	public void registerExtras(LogisticsPromise promise) {
-		
+	public void registerExtras(LogisticsPromise promise) {		
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
 		_extras.add(new Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>(stack,null,null));
 		LogisticsPipes.requestLog.info(stack.stackSize + " extras registered");

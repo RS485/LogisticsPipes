@@ -73,45 +73,12 @@
 				<pathelement location="${lib.dir}/ant-contrib/ant-contrib-${antcont.version}.jar"/>
 			</classpath>
 		</taskdef>
-		<if>
-			<not>
-				<and>
-				<isset property="fmlbuild.build.number"/>
-				<isset property="keepforge"/>
-				</and>
-			</not>
-		<then>
+		
 			<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="mcp${mcp.version}.zip"/>
 			</fileset>
 		</unzip>
-		</then>
-		<else>
-		<echo message="Forge kept"/>
-		<!-- keep dependency source fresh -->
-			<delete verbose="true">
-				<fileset dir="${mcp.dir}">
-					<include name="unpack/**"/>
-				</fileset>
-			</delete>
-			<delete verbose="true">
-				<fileset dir="${commonsrc.dir}">
-					<include name="ic2/**"/>
-					<include name="cc/**"/>
-					<include name="forestry/**"/>
-					<include name="buildcraft/**"/>
-					<include name="gregtechmod/**"/>
-					<include name="appeng/**"/>
-					<include name="codechicken/**"/>
-					<include name="powercrystals/**"/>
-					<include name="thaumcraft/**"/>
-					<include name="thermalexpansion/**"/>
-					<include name="logisticpipes/**"/>
-				</fileset>
-			</delete>
-		</else>
-		</if>
 		
 		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
@@ -154,14 +121,6 @@
 		<!-- if your building on OSX these 2 should be executable -->
 		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x"/>
 		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x"/>
-		<if>
-			<not>
-				<and>
-				<isset property="fmlbuild.build.number"/>
-				<isset property="keepforge"/>
-				</and>
-			</not>
-		<then>
 		<!-- Install forge -->
 		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
 			<arg line="/c install.cmd"/>
@@ -172,11 +131,6 @@
 		</exec>
 		
 		<echo message="Decompile finished"/>
-		</then>
-		<else>
-			<echo message="Forge Setup skipped"/>
-		</else>
-		</if>
 		<!-- Copy BC source -->
 		<copy todir="${commonsrc.dir}">
 			<fileset dir="${buildcraft.dir}/common">
@@ -345,8 +299,6 @@
 	</target>
 	
 	<target name="main" depends="vars, init-msg, clean, setup, package-simple"/>
-	
-	<target name="main_keepforge" depends="vars, init-msg, setup, package-simple"/>
 	
 	<target name="ci-dev" depends="vars-dev, init-msg, clean, setup, package-sign"/>
 	

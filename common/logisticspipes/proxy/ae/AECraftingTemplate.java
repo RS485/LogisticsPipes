@@ -2,22 +2,29 @@ package logisticspipes.proxy.ae;
 
 import java.util.List;
 
+import net.minecraft.item.ItemStack;
+
+import appeng.api.InterfaceCraftingRequest;
+import appeng.api.me.tiles.ITileInterfaceApi;
+import appeng.api.me.util.InterfaceCraftingResponse;
+
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.CraftingTemplate;
+import logisticspipes.request.RequestTree;
+import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 
 public class AECraftingTemplate extends CraftingTemplate {
-	//TODO ae realted fixme
-	//ITileInterfaceApi _interface;
-	/*public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter,
+	ITileInterfaceApi _interface;
+	public AECraftingTemplate(ITileInterfaceApi _interface, ICraftItems crafter,
 			int priority) {
 		super(null, crafter, priority);
 		this._interface = _interface;
-	}*/
+	}
 	public AECraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {super( result,  crafter, priority);}
 	
 	
@@ -33,8 +40,7 @@ public class AECraftingTemplate extends CraftingTemplate {
 	
 	@Override
 	public boolean canCraft(ItemIdentifier item) {
-		//TODO: fixme
-		/*List<ItemStack> results = _interface.getCraftingOptions();
+		List<ItemStack> results = _interface.getCraftingOptions();
 		item.getId();
 		
 		for(ItemStack r:results){
@@ -42,33 +48,29 @@ public class AECraftingTemplate extends CraftingTemplate {
 				this._result = item.makeStack(1);
 				return true;
 			}
-		}*/
+		}
 		return false;
 	}
 	
 	@Override 
 	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
-		//TODO ae realted fixme
-		/*
 		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = ItemIdentifier.get(response.Request);
 		promise.numberOfItems = response.Request.stackSize;
 		promise.sender = _crafter;
 		promise.relayPoints = relays;
-		return promise;*/
-		return null;
+		return promise;
 	}
-/*	
-	@Override
+
 	public int getSubRequests(int nCraftingSetsNeeded, RequestTree root, RequestTreeNode currentNode){
-		InterfaceCraftingRequest response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
+		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		return response.Request.stackSize;
 	}
 	
-	@Override
+
 	protected int generateRequestTreeFor(int workSetsAvailable, RequestTree root, RequestTreeNode currentNode) {		
-		InterfaceCraftingRequest response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
+		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		return response.Request.stackSize;
-	}*/
+	}
 }

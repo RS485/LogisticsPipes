@@ -18,7 +18,7 @@ It is not allowed to use this mod in any mod packs, if not explicitly allowed.
 
 1. Clone this repo to a folder named src inside an empty folder
 
-2. Run `ant setup` or `ant main_keepminecraft` if you want to keep mcp/forge instance
+2. Run `ant setup` or `ant vars package-simple` if you want to keep mcp/forge instance, but setup must be performed before
 
 ##Extended Description
 

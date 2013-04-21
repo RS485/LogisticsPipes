@@ -380,6 +380,11 @@ public class ServerPacketHandler {
 					packetBe.readData(data);
 					onCraftingPipePrevSatelliteAdvanced(player, packetBe);
 					break;
+				case NetworkConstants.SECURITY_AUTHORIZATION:
+					final PacketPipeInteger packetBf = new PacketPipeInteger();
+					packetBf.readData(data);
+					onSecurityAuthorizationChanged(player, packetBf);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1382,7 +1387,9 @@ public class ServerPacketHandler {
 	private static void onOpenSecurityPlayer(EntityPlayerMP player, PacketStringCoordinates packet) {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
-			((LogisticsSecurityTileEntity)tile).handleOpenSecurityPlayer(player, packet.string);
+			if (packet.string != null || packet.string != "") {
+				((LogisticsSecurityTileEntity)tile).handleOpenSecurityPlayer(player, packet.string);
+			}
 		}
 	}
 
@@ -1397,6 +1404,17 @@ public class ServerPacketHandler {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).changeCC();
+		}
+	}
+
+	private static void onSecurityAuthorizationChanged(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			if (packet.integer == 1) {
+				((LogisticsSecurityTileEntity)tile).authorizeStation();
+			} else {
+				((LogisticsSecurityTileEntity)tile).deauthorizeStation();
+			}
 		}
 	}
 

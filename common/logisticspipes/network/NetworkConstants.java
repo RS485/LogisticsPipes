@@ -103,4 +103,6 @@ public class NetworkConstants {
 	public static final int CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED = 98;
 	public static final int CRAFTING_PIPE_PREV_SATELLITE_ADVANCED = 99;
 	public static final int CRAFTING_PIPE_SATELLITE_ID_ADVANCED = 100;
+	public static final int SECURITY_AUTHORIZATION = 101;
+	public static final int SECURITY_AUTHORIZEDLIST_UPDATE = 102;
 }

@@ -348,7 +348,11 @@ public class ClientPacketHandler {
 					packetBd.readData(data);
 					onCraftingPipeSetSatelliteAdvanced(packetBd);
 					break;
-					
+				case NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE:
+					final PacketStringList packetBe = new PacketStringList();
+					packetBe.readData(data);
+					onSecurityAuthorizationListUpdate(packetBe);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -926,6 +930,10 @@ public class ClientPacketHandler {
 				((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
 			}
 		}
+	}
+
+	private static void onSecurityAuthorizationListUpdate(PacketStringList packet) {
+		SimpleServiceLocator.securityStationManager.setClientAuthorizationList(packet.list);
 	}
 
 	private static void onCraftingPipeSetSatelliteAdvanced(PacketModuleInteger packet) {

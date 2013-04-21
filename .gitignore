@@ -5,3 +5,4 @@ output/**
 download/**
 **/.classpath
 **/.project
+.DS_Store

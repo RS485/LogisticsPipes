@@ -2,10 +2,10 @@ package logisticspipes.utils;
 
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.PipeTransport;
 
 public class OrientationsUtil {
-	public static ForgeDirection getOrientationOfTilewithPipe(PipeTransportItems pipe,TileEntity tile) {
+	public static ForgeDirection getOrientationOfTilewithPipe(PipeTransport pipe,TileEntity tile) {
 		if(pipe.zCoord == tile.zCoord) {
 			if(pipe.yCoord == tile.yCoord) {
 				if(pipe.xCoord < tile.xCoord) {

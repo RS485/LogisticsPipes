@@ -6,7 +6,9 @@ import java.util.List;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.OrientationsUtil;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 
 public class LogisticsSignTileEntity extends TileEntity {
@@ -19,12 +21,22 @@ public class LogisticsSignTileEntity extends TileEntity {
 	public void updateEntity() {
 		if(!init) {
     		init = true;
-    		if(MainProxy.isClient(worldObj)) {
-	    		for(CoreRoutedPipe pipe:getNearRoutingPipes()) {
-	    			if(pipe instanceof PipeItemsCraftingLogistics) {
-	    				((PipeItemsCraftingLogistics)pipe).enableUpdateRequest();
-	    			}
-	    		}
+    		if(!MainProxy.isClient(worldObj)) {
+    			PipeItemsCraftingLogistics crafting = getAttachedSignOwnerPipe();
+    			if(crafting != null) {
+    				ForgeDirection dir = OrientationsUtil.getOrientationOfTilewithPipe(crafting.transport, this);
+    				crafting.setCraftingSign(dir, true, null);
+    				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    			} else {
+    				for(CoreRoutedPipe pipe:getNearRoutingPipes()) {
+    	    			if(pipe instanceof PipeItemsCraftingLogistics) {
+    	    				ForgeDirection dir = OrientationsUtil.getOrientationOfTilewithPipe(((PipeItemsCraftingLogistics)pipe).transport, this);
+    	    				((PipeItemsCraftingLogistics)pipe).setCraftingSign(dir, true, null);
+    	    				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+        	    			break;
+    	    			}
+    	    		}
+    			}
     		}
     	}
 	}

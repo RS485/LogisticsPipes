@@ -27,8 +27,6 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
-		int i = mc.renderEngine.getTexture("/logisticspipes/gui/itemsink.png");
-		
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture("/logisticspipes/gui/itemsink.png");
 		int j = guiLeft;

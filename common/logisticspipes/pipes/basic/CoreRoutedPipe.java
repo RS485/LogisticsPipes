@@ -946,15 +946,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		return count;
 	}
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIconProvider getIconProvider() {
 		return Textures.LPpipeIconProvider;
 	}
-	/*@Override
-	public int getIconIndex(ForgeDirection direction) {
-		return Textures.LOGISTICSPIPE_TEXTURE.normal;
-	}*/
+	
 	@Override
 	public final int getIconIndex(ForgeDirection connection) {
 		TextureType texture = getTextureType(connection);

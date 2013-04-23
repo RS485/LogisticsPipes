@@ -86,6 +86,7 @@ public class LogisticsSignBlock extends BlockContainer {
 		return new LogisticsSignTileEntity();
 	}
 	
+	/*
 	@Override
 	public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int par6, float par7, float par8, float par9) {
 		int meta = world.getBlockMetadata(x, y, z);
@@ -99,7 +100,9 @@ public class LogisticsSignBlock extends BlockContainer {
 		}
 		return false;
 	}
+	*/
 	
+	/*
 	@Override
     public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {
     	int meta = par1World.getBlockMetadata(par2, par3, par4);
@@ -112,10 +115,16 @@ public class LogisticsSignBlock extends BlockContainer {
 		}
 		super.breakBlock(par1World, par2, par3, par4, par5, par6);
     }
-
+    */
+	
 	@Override
 	public int quantityDropped(Random par1Random)
 	{
 		return 0;
+	}
+
+	@Override
+	public boolean hasTileEntity(int metadata) {
+		return true;
 	}
 }

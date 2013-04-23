@@ -24,6 +24,7 @@ import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.gui.GuiUpgradeManager;
 import logisticspipes.gui.hud.GuiHUDSettings;
 import logisticspipes.gui.modules.GuiAdvancedExtractor;
+import logisticspipes.gui.modules.GuiApiaristAnalyser;
 import logisticspipes.gui.modules.GuiApiaristSink;
 import logisticspipes.gui.modules.GuiElectricManager;
 import logisticspipes.gui.modules.GuiExtractor;
@@ -52,6 +53,7 @@ import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.modules.ModuleAdvancedExtractor;
+import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
@@ -588,6 +590,7 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				}
+				
 			case GuiIDs.GUI_Module_Thaumic_AspectSink_ID:
 				if(slot != 20) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
@@ -606,7 +609,17 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				}
-
+				
+			case GuiIDs.GUI_Module_Apiarist_Analyzer:
+				if(slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
+					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getExtractMode()).getPacket(), (Player)player);
+					return new DummyContainer(player.inventory, null);
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleApiaristAnalyser)) return null;
+					return dummy;
+				}
 				
 			default:break;
 			}
@@ -929,6 +942,24 @@ public class GuiHandler implements IGuiHandler {
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleThaumicAspectSink)) return null;
 					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, null, slot);
+				}
+			
+			case GuiIDs.GUI_Module_Apiarist_Analyzer:
+				if(slot != 20) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
+					return new GuiApiaristAnalyser((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot), pipe.pipe, ModLoader.getMinecraftInstance().currentScreen, player.inventory);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerPosition(0, -1, z, 20);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleApiaristAnalyser)) return null;
+					return new GuiApiaristAnalyser((ModuleApiaristAnalyser) module, null, null, player.inventory);
 				}
 
 				

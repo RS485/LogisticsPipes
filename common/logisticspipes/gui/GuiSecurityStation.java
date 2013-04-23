@@ -15,6 +15,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.LogisticsPipesPacket;
 import logisticspipes.network.packets.PacketNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.PacketStringCoordinates;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;

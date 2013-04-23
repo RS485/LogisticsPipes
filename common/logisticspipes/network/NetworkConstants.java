@@ -105,4 +105,5 @@ public class NetworkConstants {
 	public static final int CRAFTING_PIPE_SATELLITE_ID_ADVANCED = 100;
 	public static final int SECURITY_AUTHORIZATION = 101;
 	public static final int SECURITY_AUTHORIZEDLIST_UPDATE = 102;
+	public static final int APIRARIST_ANALYZER_EXTRACTMODE = 103;
 }

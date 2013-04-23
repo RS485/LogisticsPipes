@@ -10,7 +10,6 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.gui.PacketStringCoordinates;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -25,6 +24,7 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
+import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleElectricManager;
@@ -49,6 +49,7 @@ import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.network.packets.PacketStringCoordinates;
 import logisticspipes.network.packets.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -384,6 +385,11 @@ public class ServerPacketHandler {
 					final PacketPipeInteger packetBf = new PacketPipeInteger();
 					packetBf.readData(data);
 					onSecurityAuthorizationChanged(player, packetBf);
+					break;
+				case NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE:
+					final PacketModuleInteger packetBg = new PacketModuleInteger();
+					packetBg.readData(data);
+					onApiaristAnalyserChangeExtract(player, packetBg);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1429,6 +1435,27 @@ public class ServerPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).setNextSatellite(player, packet.integer);
+	}
+
+	private static void onApiaristAnalyserChangeExtract(EntityPlayerMP player, PacketModuleInteger packet) {
+		if(packet.slot == 20) {
+			if(player.openContainer instanceof DummyModuleContainer) {
+				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
+				if(dummy.getModule() instanceof ModuleApiaristAnalyser) {
+					ModuleApiaristAnalyser module = (ModuleApiaristAnalyser) dummy.getModule();
+					module.setExtractMode(packet.integer);
+				}
+			}
+			return;
+		}
+
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if(pipe == null) return;
+	
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleApiaristAnalyser) {
+			((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).setExtractMode(packet.integer);
+		}		
+		
 	}
 
 	private static void onCraftingPipePrevSatelliteAdvanced(EntityPlayerMP player, PacketPipeInteger packet) {

@@ -90,13 +90,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		if(!pipe.getCraftingSigns().isEmpty()) {
 			List<ForgeDirection> list = pipe.getCraftingSigns();
 			for(ForgeDirection dir:list) {
-				if(pipe.container.isPipeConnected(dir)) {
-					TileEntity tile = pipe.container.getTile(dir);
-					if(tile != null) {
-						if(pipe.container.isPipeConnected(tile, dir)) {
-							continue;
-						}
-					}
+				if(pipe.container.getRenderState().pipeConnectionMatrix.isConnected(dir)) {
+					continue;
 				}
 				GL11.glPushMatrix();
 				GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);

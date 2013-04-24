@@ -13,6 +13,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 import logisticspipes.config.Configs;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ObfuscationHelper;
+import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -133,12 +135,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 			node.add(type);
 		} else if(nbt instanceof NBTTagList) {
 			ArrayList internal = new ArrayList();
-			Field fList;
-			try {
-				fList = NBTTagList.class.getDeclaredField("tagList");
-			} catch(Exception e) {
-				fList = NBTTagList.class.getDeclaredField("a");
-			}
+			Field fList = ObfuscationHelper.getDeclaredField(NAMES.tagList);
 			fList.setAccessible(true);
 			internal = (ArrayList) fList.get(nbt);
 			
@@ -160,12 +157,7 @@ public class DebugHelper implements IContainerTooltipHandler {
 			node.add(type);
 		} else if(nbt instanceof NBTTagCompound) {
 			HashMap internal = new HashMap();
-			Field fMap;
-			try {
-				fMap = NBTTagCompound.class.getDeclaredField("tagMap");
-			} catch(Exception e) {
-				fMap = NBTTagCompound.class.getDeclaredField("a");
-			}
+			Field fMap = ObfuscationHelper.getDeclaredField(NAMES.tagMap);
 			fMap.setAccessible(true);
 			internal = (HashMap) fMap.get(nbt);
 			DefaultMutableTreeNode type = new DefaultMutableTreeNode("NBTTagCompound");

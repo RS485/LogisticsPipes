@@ -2,6 +2,8 @@ package logisticspipes.utils;
 
 import java.lang.reflect.Field;
 
+import logisticspipes.utils.ObfuscationHelper.NAMES;
+
 import net.minecraft.nbt.NBTTagCompound;
 
 public class FinalNBTTagCompound extends NBTTagCompound {
@@ -12,11 +14,7 @@ public class FinalNBTTagCompound extends NBTTagCompound {
 		super(base.getName() == "" ? "tag":base.getName());
 		try {
 			if(fMap==null){
-				try {
-					fMap = NBTTagCompound.class.getDeclaredField("a");
-				} catch(Exception e) {
-					fMap = NBTTagCompound.class.getDeclaredField("tagMap");
-				}
+				fMap = ObfuscationHelper.getDeclaredField(NAMES.tagMap);
 				fMap.setAccessible(true);
 			}
 			fMap.set(this,fMap.get(base));

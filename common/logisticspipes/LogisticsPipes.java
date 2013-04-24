@@ -255,9 +255,7 @@ public class LogisticsPipes {
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
-		/* make sure server side texures are corectly indexed */
-		if(MainProxy.isServer())
-			textures.registerBlockIcons();
+		textures.registerBlockIcons();
 	}
 	
 	@PreInit

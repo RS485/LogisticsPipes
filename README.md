@@ -1,4 +1,4 @@
-#LogisticsPipes
+#LogisticsPipes [![Build Status](https://travis-ci.org/RS485/LogisticsPipes-Dev.png?branch=1.5)](https://travis-ci.org/RS485/LogisticsPipes-Dev)
 
 This is the **SMP version with additional features** of the minecraft modification *Logistics Pipes*.
 

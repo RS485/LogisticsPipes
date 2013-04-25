@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11;
 import thaumcraft.api.EnumTag;
 import thaumcraft.api.ObjectTags;
 import thaumcraft.api.ThaumcraftApiHelper;
-import thaumcraft.client.UtilsFX;
+import thaumcraft.client.lib.UtilsFX;
 import buildcraft.BuildCraftSilicon;
 import cpw.mods.fml.client.FMLClientHandler;
 

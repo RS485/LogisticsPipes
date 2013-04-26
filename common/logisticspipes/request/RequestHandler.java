@@ -36,8 +36,6 @@ import cpw.mods.fml.common.network.Player;
 
 public class RequestHandler {
 	
-	private static int request_id = 0;
-	
 	public enum DisplayOptions {
 		Both,
 		SupplyOnly,
@@ -158,34 +156,28 @@ public class RequestHandler {
 		});
 	}
 
-	public static int computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe) {
+	public static String computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe) {
 		if(!pipe.useEnergy(15)) {
-			return -1;
+			return "NO_POWER";
 		}
-		request_id++;
-		QueuedTasks.queueTask(new Callable<Object>() {
+		final String[] status = new String[1];
+		RequestTree.request(makeStack, pipe, new RequestLog() {
 			@Override
-			public Object call() throws Exception {
-				RequestTree.request(makeStack, pipe, new RequestLog() {
-					@Override
-					public void handleSucessfullRequestOf(ItemMessage item) {
-						pipe.queueEvent("request_successfull", new Object[]{request_id});
-					}
-					
-					@Override
-					public void handleMissingItems(LinkedList<ItemMessage> list) {
-						pipe.queueEvent("request_failed", new Object[]{request_id, CCHelper.getAnswer(list)});
-					}
+			public void handleSucessfullRequestOf(ItemMessage item) {
+				status[0] = "DONE";
+			}
+			
+			@Override
+			public void handleMissingItems(LinkedList<ItemMessage> list) {
+				status[0] = "MISSING";
+			}
 
-					@Override
-					public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-						//Not needed here
-					}
-				});
-				return null;
+			@Override
+			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
+				//Not needed here
 			}
 		});
-		return request_id;
+		return status[0];
 	}
 
 	public static void refreshLiquid(EntityPlayerMP player, CoreRoutedPipe pipe) {

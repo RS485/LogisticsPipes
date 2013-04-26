@@ -183,8 +183,8 @@ outer:
 	/* CC */
 
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
-	@CCQueued(event="request_successfull\n      ---request_failed", realQueue=false)
-	public int makeRequest(Double itemId, Double amount) throws Exception {
+	@CCQueued
+	public String makeRequest(Double itemId, Double amount) throws Exception {
 		checkCCAccess();
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
@@ -192,7 +192,7 @@ outer:
 	}
 
 	@CCCommand(description="Asks for all available ItemIdentifier inside the Logistics Network")
-	@CCQueued(event="available_items_return")
+	@CCQueued
 	public List<Pair<ItemIdentifier, Integer>> getAvailableItems() {
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
 		List<Pair<ItemIdentifier, Integer>> list = new LinkedList<Pair<ItemIdentifier, Integer>>();
@@ -204,11 +204,9 @@ outer:
 	}
 
 	@CCCommand(description="Asks for all craftable ItemIdentifier inside the Logistics Network")
-	@CCQueued(event="craftable_items_return")
+	@CCQueued
 	public List<ItemIdentifier> getCraftableItems() {
 		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
 		return items;
 	}
-
-
 }

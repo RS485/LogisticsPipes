@@ -66,11 +66,20 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			SimpleServiceLocator.securityStationManager.remove(this);
 		}
 	}
+	
+	public void deauthorizeStation() {
+		SimpleServiceLocator.securityStationManager.deauthorizeUUID(getSecId());
+	}
+	
+	public void authorizeStation() {
+		SimpleServiceLocator.securityStationManager.authorizeUUID(getSecId());
+	}
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), (Player) player);
 		MainProxy.sendPacketToPlayer(new PacketCoordinatesUUID(NetworkConstants.SECURITY_STATION_ID, xCoord, yCoord, zCoord, getSecId()).getPacket(), (Player) player);
+		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}
 
@@ -183,7 +192,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	public void handleOpenSecurityPlayer(EntityPlayerMP player, String string) {
 		SecuritySettings setting = settingsList.get(string);
-		if(setting == null) {
+		if(setting == null && string != "" && string != null) {
 			setting = new SecuritySettings(string);
 			settingsList.put(string, setting);
 		}

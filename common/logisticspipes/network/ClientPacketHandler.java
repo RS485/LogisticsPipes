@@ -34,6 +34,7 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
+import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
@@ -348,7 +349,16 @@ public class ClientPacketHandler {
 					packetBd.readData(data);
 					onCraftingPipeSetSatelliteAdvanced(packetBd);
 					break;
-					
+				case NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE:
+					final PacketStringList packetBe = new PacketStringList();
+					packetBe.readData(data);
+					onSecurityAuthorizationListUpdate(packetBe);
+					break;
+				case NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE:
+					final PacketModuleInteger packetBf = new PacketModuleInteger();
+					packetBf.readData(data);
+					onApiaristAnalyserChangeExtract(packetBf);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -925,6 +935,18 @@ public class ClientPacketHandler {
 			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSecurityStation) {
 				((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
 			}
+		}
+	}
+
+	private static void onSecurityAuthorizationListUpdate(PacketStringList packet) {
+		SimpleServiceLocator.securityStationManager.setClientAuthorizationList(packet.list);
+	}
+
+	private static void onApiaristAnalyserChangeExtract(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(MainProxy.getClientMainWorld(), packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) return;
+		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleApiaristAnalyser) {
+			((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).setExtractMode(packet.integer);
 		}
 	}
 

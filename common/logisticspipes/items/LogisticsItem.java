@@ -22,10 +22,9 @@ public class LogisticsItem extends Item {
 		super(i);
 	}
 	
-	public LogisticsItem(int i,
-			Icon icon) {
-				super(i);
-				this.itemIcon =icon;
+	public LogisticsItem(int i,Icon icon) {
+		super(i);
+		this.itemIcon = icon;
 	}
 
 	@Override

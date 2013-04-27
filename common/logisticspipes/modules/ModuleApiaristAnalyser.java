@@ -4,29 +4,47 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.network.GuiIDs;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketModuleInteger;
+import logisticspipes.network.packets.PacketModuleNBT;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-
-public class ModuleApiaristAnalyser implements ILogisticsModule {
+import cpw.mods.fml.common.network.Player;
+public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInformationProvider, IModuleWatchReciver {
 
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private int ticksToAction = 100;
 	private int currentTick = 0;
+	private int slot = 0;
+	private int xCoord = 0;
+	private int yCoord = 0;
+	private int zCoord = 0;
+
+	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 
 	private IRoutedPowerProvider _power;
+	private IWorldProvider _world;
+
+	public boolean extractMode = true;
 
 	public ModuleApiaristAnalyser() {
 
@@ -37,16 +55,17 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 		_invProvider = invProvider;
 		_itemSender = itemSender;
 		_power = powerprovider;
+		_world = world;
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-
+	public void readFromNBT(NBTTagCompound nbt) {
+		extractMode = nbt.getBoolean("extractMode");
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-
+	public void writeToNBT(NBTTagCompound nbt) {
+		nbt.setBoolean("extractMode", extractMode);
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
@@ -71,19 +90,21 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 
 	@Override
 	public void tick() {
-		if (++currentTick  < ticksToAction) return;
-		currentTick = 0;
-
-		IInventory inv = _invProvider.getRawInventory();
-		if(inv == null) return;
-		for(int i=0; i < inv.getSizeInventory(); i++) {
-			ItemStack item = inv.getStackInSlot(i);
-			if(SimpleServiceLocator.forestryProxy.isBee(item)) {
-				if(SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-					Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
-					if(reply == null) continue;
-					if(_power.useEnergy(6)) {
-						_itemSender.sendStack(inv.decrStackSize(i,1), reply, ItemSendMode.Normal);
+		if (extractMode) {
+			if (++currentTick < ticksToAction) return;
+			currentTick = 0;
+			IInventory inv = _invProvider.getRawInventory();
+			if (inv == null) return;
+			for (int i = 0; i < inv.getSizeInventory(); i++) {
+				ItemStack item = inv.getStackInSlot(i);
+				if (SimpleServiceLocator.forestryProxy.isBee(item)) {
+					if (SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
+						Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
+						if (reply == null)
+							continue;
+						if (_power.useEnergy(6)) {
+							_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
+						}
 					}
 				}
 			}
@@ -91,7 +112,12 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	}
 
 	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
+	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+		this.xCoord = xCoord;
+		this.yCoord = yCoord;
+		this.zCoord = zCoord;
+		this.slot = slot;		
+	}
 
 	@Override
 	public boolean hasGenericInterests() {
@@ -116,5 +142,54 @@ public class ModuleApiaristAnalyser implements ILogisticsModule {
 	@Override
 	public boolean recievePassive() {
 		return true;
+	}
+
+	@Override
+	public int getGuiHandlerID() {
+		return GuiIDs.GUI_Module_Apiarist_Analyzer;
+	}
+	
+	public void setExtractMode(int mode) {
+		if (getExtractMode() == mode) return;
+		
+		if (mode == 1) {
+			extractMode = true;
+		} else if (mode == 0) {
+			extractMode = false;
+		}
+		modeChanged();
+	}
+		
+	public int getExtractMode() {
+		return extractMode?1:0;
+	}
+	
+	public void modeChanged() {
+		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket());
+		if(MainProxy.isServer(_world.getWorld())) {
+			MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket(), localModeWatchers);
+		} else {
+			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket());
+		}
+
+	}
+
+	@Override
+	public List<String> getClientInformation() {
+		List<String> info = new ArrayList<String>();
+		info.add("Extract Mode:");
+		info.add(" - " + (extractMode?"on":"off"));
+		return info;
+	}
+
+	@Override
+	public void startWatching(EntityPlayer player) {
+		localModeWatchers.add(player);
+		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket(), (Player)player);
+	}
+
+	@Override
+	public void stopWatching(EntityPlayer player) {
+		localModeWatchers.remove(player);
 	}
 }

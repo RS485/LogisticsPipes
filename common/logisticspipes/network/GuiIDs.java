@@ -24,6 +24,7 @@ public class GuiIDs {
 	public static final int GUI_Module_ModBased_ItemSink_ID = 29;
 	public static final int GUI_Module_ElectricManager_ID = 40;
 	public static final int GUI_Module_Thaumic_AspectSink_ID = 41;
+	public static final int GUI_Module_Apiarist_Analyzer = 42;
 	
 	//Devices
 	public static final int GUI_RoutingStats_ID = 30;

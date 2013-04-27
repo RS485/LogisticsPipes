@@ -134,15 +134,17 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				}
 	    	});
 	    }
-    	dummy.addRestrictedSlot(8, inv, 8 + 8 * 18, 18, new ISlotCheck() {
+	    //Static slot for Security Cards
+    	dummy.addStaticRestrictedSlot(8, inv, 8 + 8 * 18, 18, new ISlotCheck() {
 			@Override
 			public boolean isStackAllowed(ItemStack itemStack) {
 				if(itemStack == null) return false;
 				if(itemStack.itemID != LogisticsPipes.LogisticsItemCard.itemID) return false;
 				if(itemStack.getItemDamage() != LogisticsItemCard.SEC_CARD) return false;
+				if(!SimpleServiceLocator.securityStationManager.isAuthorized(UUID.fromString(itemStack.getTagCompound().getString("UUID")))) return false;
 				return true;
 			}
-    	});
+    	}, 1);
 	    return dummy;
 	}
 	
@@ -203,8 +205,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	public void securityTick() {
 		UUID id;
 		if((id = getSecurityID()) != null) {
-			TileEntity station = SimpleServiceLocator.securityStationManager.getStation(id);
-			if(station == null) {
+			if(!SimpleServiceLocator.securityStationManager.isAuthorized(id)) {
 				securityDelay++;
 			} else {
 				securityDelay = 0;

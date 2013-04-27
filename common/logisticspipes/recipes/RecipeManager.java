@@ -808,6 +808,7 @@ public class RecipeManager {
 			Character.valueOf('P'), Item.paper, 
 			Character.valueOf('s'), Item.ingotIron
 		});
+		
 		//Liquid Routing
 		if(LogisticsPipes.DEBUG&&false) {
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnector, 4), new Object[] { 

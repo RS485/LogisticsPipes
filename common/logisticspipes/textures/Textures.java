@@ -19,29 +19,12 @@ public class Textures {
 		empty.powered = 0;
 		empty.unpowered = 0;
 	}
-	public Textures()
-	{
+	
+	public Textures() {
 		LPactionIconProvider = new LPActionTriggerIconProvider();
 		LPpipeIconProvider = new LPPipeIconProvider(PIPETEXTURE_LIMIT);
 	}
 	
-	public class dummyIconProvider implements IIconProvider {
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public Icon getIcon(int iconIndex) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		@SideOnly(Side.CLIENT)
-		public void registerIcons(IconRegister iconRegister) {
-			// TODO Auto-generated method stub
-			
-		}
-		
-	}
 	public static final int PIPETEXTURE_LIMIT = 120;
 	public static TextureType LOGISTICSPIPE_TEXTURE							= empty;
 	public static TextureType LOGISTICSPIPE_PROVIDER_TEXTURE				= empty;

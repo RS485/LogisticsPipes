@@ -1,4 +1,4 @@
-package thaumcraft.client;
+package thaumcraft.client.lib;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;

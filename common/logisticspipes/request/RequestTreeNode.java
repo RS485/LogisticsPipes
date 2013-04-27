@@ -690,6 +690,6 @@ outer:
 	}
 	
 	private void destroy() {
-		root.remove(this);		
+		parentNode.remove(this);		
 	}
 }

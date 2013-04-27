@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
@@ -55,6 +56,7 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -108,6 +110,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected boolean _initialInit = true;
 	
 	private boolean enabled = true;
+	
+	public long delayTo = 0;
+	public int repeatFor = 0;
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
@@ -300,6 +305,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				//first tick just create a router and do nothing.
 				getRouter();
 				return;
+			}
+		}
+		if(repeatFor > 0) {
+			if(delayTo < System.currentTimeMillis()) {
+				delayTo = System.currentTimeMillis() + 200;
+				repeatFor--;
+				worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
 			}
 		}
 		// remove old items _inTransit -- these should have arived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.
@@ -822,6 +834,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
 	}
 	
+	public boolean canBeDestroyedByPlayer(EntityPlayer entityPlayer) {
+		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+		if(station != null) {
+			SecuritySettings settings = station.getSecuritySettingsForPlayer(entityPlayer, true);
+			return settings.openGui;
+		}
+		return true;
+	}
+	
 	public void checkCCAccess() throws PermissionException {
 		ISecurityProvider sec = getSecurityProvider();
 		if(sec != null) {
@@ -946,15 +967,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		return count;
 	}
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public IIconProvider getIconProvider() {
 		return Textures.LPpipeIconProvider;
 	}
-	/*@Override
-	public int getIconIndex(ForgeDirection direction) {
-		return Textures.LOGISTICSPIPE_TEXTURE.normal;
-	}*/
+	
 	@Override
 	public final int getIconIndex(ForgeDirection connection) {
 		TextureType texture = getTextureType(connection);

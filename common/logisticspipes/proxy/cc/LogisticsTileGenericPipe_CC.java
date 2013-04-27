@@ -157,33 +157,15 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 					a = true;
 				}
 				param.append(")");
-				int sub = 0;
 				if(param.toString().length() + command.length() > 36) {
 					command.append("\n      ---");
-					sub = command.length() - 5;
 				}
 				command.append(param.toString());
-				StringBuilder event = new StringBuilder();
-				if(method.isAnnotationPresent(CCQueued.class)) {
-					CCQueued queued = method.getAnnotation(CCQueued.class);
-					if(queued != null && queued.event() != null && !queued.event().equals("")) {
-						command.append(": ");
-						event.append(queued.event());
-					}
-				}
-				if(event.length() + command.length() - sub > 36) {
-					if(sub == 0) {
-						command.append("\n      ---");
-					} else {
-						command.append("\n         ---");
-					}
-				}
-				command.append(event.toString());
 				help.append(command.toString());
 			}
 			String commands = help.toString();
 			String[] lines = commands.split("\n");
-			if(lines.length > 10) {
+			if(lines.length > 16) {
 				int pageNumber = 1;
 				if(arguments.length > 0) {
 					if(arguments[0] instanceof Double) {
@@ -213,6 +195,12 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 					}
 				}
 				return new Object[]{page.toString()};
+			} else {
+				for(int i=0;i<16-lines.length;i++) {
+					String buffer = head.toString();
+					head = new StringBuilder();
+					head.append("\n").append(buffer);
+				}
 			}
 			return new Object[]{new StringBuilder().append(head).append(head2).append(help).toString()};
 		}
@@ -244,13 +232,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 				help.append("NONE\n");
 			}
 			help.append("Return Type: ");
-			if(method.isAnnotationPresent(CCQueued.class)) {
-				help.append("Event\n");
-				help.append("Event Name: ");
-				help.append(method.getAnnotation(CCQueued.class).event());
-			} else {
-				help.append(method.getReturnType().getName());
-			}
+			help.append(method.getReturnType().getName());
 			help.append("\n");
 			help.append("Description: \n");
 			help.append(method.getAnnotation(CCCommand.class).description());
@@ -300,7 +282,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			throw new UnsupportedOperationException(error.toString());
 		}
 		
-		if(match.getAnnotation(CCQueued.class) != null && match.getAnnotation(CCQueued.class).realQueue()) {
+		if(match.getAnnotation(CCQueued.class) != null) {
 			final Method m = match;
 			String prefunction = null;
 			if(!(prefunction = match.getAnnotation(CCQueued.class).prefunction()).equals("")) {
@@ -330,33 +312,49 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 				}
 			}
 			final Object[] a = arguments;
+			final Object[] resultArray = new Object[1];
+			final Boolean[] booleans = new Boolean[2];
+			booleans[0] = false;
+			booleans[1] = false;
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
 					try {
 						Object result = m.invoke(pipe, a);
 						if(result != null) {
-							CCQueued method = m.getAnnotation(CCQueued.class);
-							String event = method.event();
-							if(event != null && !event.equals("")) {
-								queueEvent(event, CCHelper.createArray(CCHelper.getAnswer(result)));
-							}
+							resultArray[0] = result;
 						}
 					} catch (InvocationTargetException e) {
 						if(e.getTargetException() instanceof PermissionException) {
-							CCQueued method = m.getAnnotation(CCQueued.class);
-							String event = method.event();
-							if(event != null && !event.equals("")) {
-								queueEvent(event, new Object[]{"Permission denied"});
-							}
+							booleans[1] = true;
+							resultArray[0] = e.getTargetException();
 						} else {
+							booleans[0] = true;
 							throw e;
 						}
 					}
+					booleans[0] = true;
 					return null;
 				}
 			});
-			return null;
+			int count = 0;
+			while(!booleans[0] && count < 200) {
+				Thread.sleep(10);
+				count++;
+			}
+			if(count >= 199) {
+				CoreRoutedPipe pipe = getCPipe();
+				new Exception("Took too long (" + m.getName() + "," + pipe.getClass().getName() + ")").printStackTrace();
+				throw new Exception("Took too long");
+			}
+			if(m.getReturnType().equals(Void.class)) {
+				return null;
+			}
+			if(booleans[1]) {
+				//PermissionException
+				throw ((Exception)resultArray[0]);
+			}
+			return CCHelper.createArray(CCHelper.getAnswer(resultArray[0]));
 		}
 		Object result;
 		try {

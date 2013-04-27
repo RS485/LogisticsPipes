@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
@@ -67,6 +66,7 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.Packet;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
@@ -488,7 +488,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public boolean isAttachedSign(TileEntity entity) {
 		return entity.xCoord == ((BaseLogicCrafting)logic).signEntityX && entity.yCoord == ((BaseLogicCrafting)logic).signEntityY && entity.zCoord == ((BaseLogicCrafting)logic).signEntityZ;
 	}
-	
+
+	/*
 	public void addSign(LogisticsSignTileEntity entity, EntityPlayer player) {
 		if(((BaseLogicCrafting)logic).signEntityX == 0 && ((BaseLogicCrafting)logic).signEntityY == 0 && ((BaseLogicCrafting)logic).signEntityZ == 0) {
 			((BaseLogicCrafting)logic).signEntityX = entity.xCoord;
@@ -510,6 +511,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		((BaseLogicCrafting)logic).signEntityZ = 0;
 		MainProxy.sendToPlayerList(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,this.getLogisticsNetworkPacket()).getPacket(), localModeWatchers);
 	}
+	*/
 
 	@Override
 	public ItemSendMode getItemSendMode() {
@@ -627,4 +629,32 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return ((BaseLogicCrafting)this.logic).priority;
 	}
 
+	public List<ForgeDirection> getCraftingSigns() {
+		List<ForgeDirection> list = new ArrayList<ForgeDirection>();
+		for(int i=0;i<6;i++) {
+			if(((BaseLogicCrafting)logic).craftingSigns[i]) {
+				list.add(ForgeDirection.VALID_DIRECTIONS[i]);
+			}
+		}
+		return list;
+	}
+
+	public boolean setCraftingSign(ForgeDirection dir, boolean b, EntityPlayer player) {
+		if(dir.ordinal() < 6) {
+			if(((BaseLogicCrafting)logic).craftingSigns[dir.ordinal()] != b) {
+				((BaseLogicCrafting)logic).craftingSigns[dir.ordinal()] = b;
+				final Packet packetA = new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,xCoord,yCoord,zCoord,getLogisticsNetworkPacket()).getPacket();
+				final Packet packetB = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, ((BaseLogicCrafting)logic).getDummyInventory()).getPacket();
+				if(player != null) {
+					MainProxy.sendPacketToPlayer(packetA, (Player)player);
+					MainProxy.sendPacketToPlayer(packetB, (Player)player);
+				}
+				MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, 64, MainProxy.getDimensionForWorld(worldObj), packetA);
+				MainProxy.sendPacketToAllAround(xCoord, yCoord, zCoord, 64, MainProxy.getDimensionForWorld(worldObj), packetB);
+				this.refreshRender(false);
+				return true;
+			}
+		}
+		return false;
+	}
 }

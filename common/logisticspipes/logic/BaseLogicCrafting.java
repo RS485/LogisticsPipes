@@ -51,6 +51,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public int signEntityZ = 0;
 	//public LogisticsTileEntiy signEntity;
 
+	@TileNetworkData(staticSize=6)
+	public boolean[] craftingSigns = new boolean[6];
+	
 	protected final DelayQueue< DelayedGeneric<ItemIdentifierStack>> _lostItems = new DelayQueue< DelayedGeneric<ItemIdentifierStack>>();
 	
 	@TileNetworkData
@@ -228,6 +231,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		for(int i=0;i<9;i++) {
 			advancedSatelliteIdArray[i] = nbttagcompound.getInteger("advancedSatelliteId" + i);
 		}
+		for(int i=0;i<6;i++) {
+			craftingSigns[i] = nbttagcompound.getBoolean("craftingSigns" + i);
+		}
 	}
 
 	@Override
@@ -243,6 +249,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		nbttagcompound.setInteger("priority", priority);
 		for(int i=0;i<9;i++) {
 			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
+		}
+		for(int i=0;i<6;i++) {
+			nbttagcompound.setBoolean("craftingSigns" + i, craftingSigns[i]);
 		}
 	}
 

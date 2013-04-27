@@ -1,9 +1,5 @@
 package logisticspipes.items;
 
-import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSignBlock;
-import logisticspipes.blocks.LogisticsSignTileEntity;
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -12,6 +8,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 
@@ -41,36 +38,16 @@ public class CraftingSignCreator extends LogisticsItem {
 			itemStack.damageItem(10, player);
 			return true;
 		}
-		if(pipe.logic instanceof BaseLogicCrafting) {
-			if(sideinput > 1 && sideinput < 6) {
-				int signX = x;
-				int signY = y;
-				int signZ = z;
-				switch(sideinput) {
-				case 2:
-					signZ--;
-					break;
-				case 3:
-					signZ++;
-					break;
-				case 4:
-					signX--;
-					break;
-				case 5:
-					signX++;
-					break;
+		if(pipe instanceof PipeItemsCraftingLogistics) {
+			ForgeDirection dir = ForgeDirection.getOrientation(sideinput);
+			if(dir == ForgeDirection.UNKNOWN) return false;
+			if(!player.isSneaking()) {
+				if(((PipeItemsCraftingLogistics)pipe).setCraftingSign(dir, true, player)) {
+					itemStack.damageItem(1, player);
 				}
-				if(world.getBlockId(signX, signY, signZ) == 0) {
-					if(((PipeItemsCraftingLogistics)pipe).canRegisterSign()) {
-						world.setBlockMetadataWithNotify(signX, signY, signZ, LogisticsPipes.logisticsSign.blockID, LogisticsSignBlock.SignBlockID);
-						TileEntity tilesign = world.getBlockTileEntity(signX, signY, signZ);
-						if(tilesign instanceof LogisticsSignTileEntity) {
-							((PipeItemsCraftingLogistics)pipe).addSign((LogisticsSignTileEntity)tilesign, player);
-							itemStack.damageItem(1, player);
-						} else {
-							world.setBlockMetadataWithNotify(signX, signY, signZ, 0, 0);
-						}
-					}
+			} else {
+				if(((PipeItemsCraftingLogistics)pipe).setCraftingSign(dir, false, player)) {
+					itemStack.damageItem(-1, player);
 				}
 			}
 		}
@@ -79,7 +56,7 @@ public class CraftingSignCreator extends LogisticsItem {
 	
 	@Override
 	public int getMaxDamage() {
-		return 100;
+		return 250;
 	}
 
 	@Override

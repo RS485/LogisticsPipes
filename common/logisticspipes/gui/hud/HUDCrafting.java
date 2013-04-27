@@ -68,7 +68,7 @@ public class HUDCrafting extends BasicHUDGui {
 
 	@Override
 	public boolean display(HUDConfig config) {
-		return config.isHUDCrafting() && ((pipe.canRegisterSign() && ((BaseLogicCrafting)pipe.logic).getCraftedItems() != null) || pipe.displayList.size() > 0);
+		return config.isHUDCrafting() && ((pipe.getCraftingSigns().isEmpty() && ((BaseLogicCrafting)pipe.logic).getCraftedItems() != null) || pipe.displayList.size() > 0);
 	}
 
 

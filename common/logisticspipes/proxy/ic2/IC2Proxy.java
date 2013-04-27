@@ -1,8 +1,8 @@
 package logisticspipes.proxy.ic2;
 
-import ic2.api.IElectricItem;
-import ic2.api.Ic2Recipes;
-import ic2.api.Items;
+import ic2.api.item.IElectricItem;
+import ic2.api.recipe.Recipes;
+import ic2.api.item.Items;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -20,7 +20,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public boolean isElectricItem(ItemStack stack) {
-		return stack != null && stack.getItem() instanceof IElectricItem;
+		return stack != null && (stack.getItem() instanceof IElectricItem);
 	}
 
 	/**
@@ -29,7 +29,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public int getCharge(ItemStack stack) {
-		if (stack.getItem() instanceof IElectricItem && stack.hasTagCompound()) {
+		if ((stack.getItem() instanceof IElectricItem) && stack.hasTagCompound()) {
 			return stack.getTagCompound().getInteger("charge");
 		} else {
 			return 0;
@@ -85,7 +85,7 @@ public class IC2Proxy implements IIC2Proxy {
 	 */
 	@Override
 	public void addCraftingRecipes() {
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
 			"CGC", 
 			"rBr", 
 			"CrC", 
@@ -95,7 +95,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICBUFFER), new Object[] { 
 			" G ", 
 			"rBr", 
 			"CrC", 
@@ -106,7 +106,7 @@ public class IC2Proxy implements IIC2Proxy {
 		});
 
 
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			"CGD", 
 			"rBr", 
 			"DrC", 
@@ -117,7 +117,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			"CGD", 
 			"rBr", 
 			"DrC", 
@@ -128,7 +128,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			"CGc", 
 			"rBr", 
 			"DrC", 
@@ -140,7 +140,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			"CGc", 
 			"rBr", 
 			"DrC", 
@@ -152,7 +152,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			" G ", 
 			"rBr", 
 			"DrC", 
@@ -163,7 +163,7 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		Ic2Recipes.addCraftingRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
+		Recipes.advRecipes.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.ELECTRICMANAGER), new Object[] { 
 			" G ", 
 			"rBr", 
 			"DrC", 

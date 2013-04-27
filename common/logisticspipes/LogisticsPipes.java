@@ -27,7 +27,6 @@ TODO later, maybe....
 package logisticspipes;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,14 +92,11 @@ import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.util.Icon;
-import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.ForgeSubscribe;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
@@ -122,7 +118,6 @@ import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 @Mod(
 		modid = "LogisticsPipes|Main",
@@ -210,7 +205,7 @@ public class LogisticsPipes {
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
 	
-	private Textures textures=new Textures();
+	public static Textures textures = new Textures();
 	
 	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
@@ -261,9 +256,7 @@ public class LogisticsPipes {
 		}
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
-		/* make sure server side texures are corectly indexed */
-		if(MainProxy.isServer())
-			textures.registerBlockIcons();
+		textures.registerBlockIcons();
 	}
 	
 	@PreInit
@@ -286,7 +279,6 @@ public class LogisticsPipes {
 			log.severe("Certificate not correct");
 			log.severe("This in not a LogisticsPipes version from RS485.");
 		}
-		MinecraftForge.EVENT_BUS.register(this);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -437,20 +429,7 @@ public class LogisticsPipes {
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
 	}
-	/*
-	 * subscribe forge pre stich event to register common texture
-	 */
-	@ForgeSubscribe
-	@SideOnly(Side.CLIENT)
-	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
-		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapItems) {
-			textures.registerItemIcons(event.map);
-		}
-		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapBlocks) {
-			//teststuff=OverlayManager.RegisterOverlays(event.map, "basic", "status_overlay" ,OverlayType.powered ,OverlayType.routed, OverlayType.unpowered, OverlayType.security);
-			textures.registerBlockIcons();
-		}
-	}
+	
 	@FingerprintWarning
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
 		if(!DEBUG) {

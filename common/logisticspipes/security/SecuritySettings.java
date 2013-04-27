@@ -31,6 +31,7 @@ public class SecuritySettings implements ISaveState{
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		if (name == "" || name == null) return;
 		nbttagcompound.setString("name", name);
 		nbttagcompound.setBoolean("openGui", openGui);
 		nbttagcompound.setBoolean("openRequest", openRequest);

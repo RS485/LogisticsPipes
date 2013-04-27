@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.ILiquidSink;
-import logisticspipes.items.LogisticsLiquidContainer;
+import logisticspipes.items.LiquidIconProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -19,7 +18,6 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.liquids.LiquidStack;
 
 public class LogisticsLiquidManager implements ILogisticsLiquidManager {
@@ -48,19 +46,12 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 
 	@Override
 	public ItemStack getLiquidContainer(LiquidStack stack) {
-		ItemStack item = new ItemStack(LogisticsPipes.LogisticsLiquidContainer, 1);
-		NBTTagCompound nbt = new NBTTagCompound("tag");
-		stack.writeToNBT(nbt);
-		item.setTagCompound(nbt);
-		return item;
+		return LiquidIconProvider.getFilledContainer(stack);
 	}
 
 	@Override
 	public LiquidStack getLiquidFromContainer(ItemStack stack) {
-		if(stack.getItem() instanceof LogisticsLiquidContainer && stack.hasTagCompound()) {
-			return LiquidStack.loadLiquidStackFromNBT(stack.getTagCompound());
-		}
-		return null;
+		return LiquidIconProvider.getLiquidFromContainer(stack);
 	}
 	
 	@Override

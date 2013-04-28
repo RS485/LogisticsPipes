@@ -78,6 +78,7 @@ import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
+import logisticspipes.renderer.LiquidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
@@ -96,6 +97,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
 import net.minecraft.util.Icon;
+import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.Mod;
@@ -285,6 +287,8 @@ public class LogisticsPipes {
 	@PostInit
 	public void PostLoad(FMLPostInitializationEvent event) {
 		
+		boolean isClient = MainProxy.isClient();
+		
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
 
@@ -305,7 +309,7 @@ public class LogisticsPipes {
 		LogisticsCraftingSignCreator.setUnlocalizedName("CraftingSignCreator");
 		
 		int renderIndex;
-		if(MainProxy.isClient()) {
+		if(isClient) {
 			renderIndex = RenderingRegistry.addNewArmourRendererPrefix("LogisticsHUD");
 		} else {
 			renderIndex = 0;
@@ -336,6 +340,9 @@ public class LogisticsPipes {
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
+			if(isClient) {
+				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, new LiquidContainerRenderer());
+			}
 			LiquidIconProvider.registerLiquids(LogisticsLiquidContainer);
 		}
 		

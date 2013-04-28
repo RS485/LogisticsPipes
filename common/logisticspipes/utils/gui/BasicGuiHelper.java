@@ -439,7 +439,6 @@ public class BasicGuiHelper {
     }
     
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, int iconIndex, String textureFile) {
-		int i = mc.renderEngine.getTexture(textureFile);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.bindTexture(textureFile);
 		

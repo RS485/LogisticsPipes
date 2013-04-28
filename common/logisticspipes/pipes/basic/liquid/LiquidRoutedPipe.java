@@ -111,7 +111,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	
 	public final boolean isConnectableTank(TileEntity tile, ForgeDirection dir, boolean flag) {
 		if(!(tile instanceof ITankContainer)) return false;
-		if(!this.isPipeConnected(tile, dir)) return false;
+		if(!this.canPipeConnect(tile, dir)) return false;
 		if(tile instanceof TileGenericPipe) {
 			if(!flag) return false;
 			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return false;

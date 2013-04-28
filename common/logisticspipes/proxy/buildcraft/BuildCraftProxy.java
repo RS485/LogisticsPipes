@@ -99,24 +99,24 @@ public class BuildCraftProxy {
 		//Yes, the direction in TileGenericPipe.isPipeConnected(tile, direction) is the reverse of where tile is as seen from this...
 		if(from instanceof TileGenericPipe && to instanceof TileGenericPipe && (((TileGenericPipe)from).pipe instanceof CoreRoutedPipe || ((TileGenericPipe)to).pipe instanceof CoreRoutedPipe)) {
 			if(((TileGenericPipe)from).pipe instanceof CoreRoutedPipe) {
-				if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).isPipeConnected(to, way, ignoreSystemDisconnection)) {
+				if (!((CoreRoutedPipe)((TileGenericPipe)from).pipe).canPipeConnect(to, way, ignoreSystemDisconnection)) {
 					return false;
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!((TileGenericPipe) from).isPipeConnected(to, way.getOpposite())) {
+				if (!((TileGenericPipe) from).arePipesConnected(to, way.getOpposite())) {
 					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
 				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 			}
 			if(((TileGenericPipe)to).pipe instanceof CoreRoutedPipe) {
-				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).isPipeConnected(from, way.getOpposite(), ignoreSystemDisconnection)) {
+				if (!((CoreRoutedPipe)((TileGenericPipe) to).pipe).canPipeConnect(from, way.getOpposite(), ignoreSystemDisconnection)) {
 					return false;
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!((TileGenericPipe) to).isPipeConnected(from, way)) {
+				if (!((TileGenericPipe) to).arePipesConnected(from, way)) {
 					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}

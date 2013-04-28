@@ -39,8 +39,8 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		super(new PipeTransportLogistics() {
 
 			@Override
-			public boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
-				if(super.isPipeConnected(tile, dir)) return true;
+			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
+				if(super.canPipeConnect(tile, dir)) return true;
 				if(tile instanceof ILogisticsPowerProvider) {
 					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
 					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
@@ -83,7 +83,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
-		if(tilePipe == null || !this.container.isPipeConnected(tilePipe, ori)) {
+		if(tilePipe == null || !this.container.arePipesConnected(tilePipe, ori)) {
 			return false;
 		}
 
@@ -95,7 +95,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isSecurityProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
-		if(tilePipe == null || !this.container.isPipeConnected(tilePipe, ori)) {
+		if(tilePipe == null || !this.container.arePipesConnected(tilePipe, ori)) {
 			return false;
 		}
 		if(tilePipe instanceof LogisticsSecurityTileEntity) {

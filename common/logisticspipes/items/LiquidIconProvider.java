@@ -73,7 +73,6 @@ public enum LiquidIconProvider {
 	public static ItemStack getFilledContainer(LiquidStack stack) {
 		int ordinal = 0;
 		String liqName = LiquidDictionary.findLiquidName(stack);
-		System.out.println(liqName);
 		if (liqName.equalsIgnoreCase("water")) ordinal = 1;
 		if (liqName.equalsIgnoreCase("lava")) ordinal = 2;
     	if (stack != null) {

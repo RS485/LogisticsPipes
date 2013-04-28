@@ -46,7 +46,7 @@ public class WorldUtil {
 			if(flag) {
 				if(tilePipe instanceof TileGenericPipe) {
 					if(((TileGenericPipe)tilePipe).pipe != null) {
-						if(!((TileGenericPipe)tilePipe).pipe.isPipeConnected(tile, o)) {
+						if(!((TileGenericPipe)tilePipe).pipe.canPipeConnect(tile, o)) {
 							continue;
 						}
 					}

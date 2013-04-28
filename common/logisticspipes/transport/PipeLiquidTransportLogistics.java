@@ -102,10 +102,12 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 		return null;
 	}
 	
+	/*
 	@Override
 	public boolean allowsConnect(PipeTransport with) {
 		return super.allowsConnect(with) || with instanceof LogisitcsLiquidConnectionTransport;
 	}
+	*/
 
 	public int getInnerCapacity() {
 		return 10000;

@@ -104,7 +104,7 @@ public class BuildCraftProxy {
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!((TileGenericPipe) from).isPipeConnected(to, way.getOpposite())) {
+				if (!((TileGenericPipe) from).isPipeConnected(way.getOpposite())) {
 					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
@@ -116,7 +116,7 @@ public class BuildCraftProxy {
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!((TileGenericPipe) to).isPipeConnected(from, way)) {
+				if (!((TileGenericPipe) to).isPipeConnected(way)) {
 					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}

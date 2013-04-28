@@ -8,6 +8,7 @@ import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ILiquidTank;
 import net.minecraftforge.liquids.ITankContainer;
@@ -103,8 +104,8 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 	}
 	
 	@Override
-	public boolean allowsConnect(PipeTransport with) {
-		return super.allowsConnect(with) || with instanceof LogisitcsLiquidConnectionTransport;
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		return super.canPipeConnect(tile, side);
 	}
 
 	public int getInnerCapacity() {

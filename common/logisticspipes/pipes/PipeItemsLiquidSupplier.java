@@ -29,8 +29,8 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 		super(new PipeTransportLogistics() {
 
 			@Override
-			public boolean isPipeConnected(TileEntity tile, ForgeDirection dir) {
-				if(super.isPipeConnected(tile, dir)) return true;
+			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
+				if(super.canPipeConnect(tile, dir)) return true;
 				if(tile instanceof TileGenericPipe) return false;
 				if (tile instanceof ITankContainer) {
 					ITankContainer liq = (ITankContainer) tile;

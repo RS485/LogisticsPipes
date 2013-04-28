@@ -84,10 +84,10 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		return true;
 	}
 	
-	@Override
+	//@Override
 	public boolean isPipeConnected(TileEntity with, ForgeDirection dir) {
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
-		return super.isPipeConnected(with, dir);
+		return super.isPipeConnected(dir);
 	}
 
 	private CoreRoutedPipe getCPipe() {

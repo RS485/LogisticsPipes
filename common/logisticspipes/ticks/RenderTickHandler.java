@@ -7,6 +7,8 @@ import java.util.EnumSet;
 import java.util.List;
 
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.utils.ObfuscationHelper;
+import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 
@@ -30,12 +32,8 @@ public class RenderTickHandler implements ITickHandler {
 		Class<?> start = mc.entityRenderer.getClass();
 		while(!start.equals(Object.class)) {
 			try {
-				return start.getDeclaredMethod("a", new Class[]{float.class, int.class});
-			} catch(Exception e) {
-				try {
-				return start.getDeclaredMethod("setupCameraTransform", new Class[]{float.class, int.class});
-				} catch(Exception e1) {}
-			}
+				return ObfuscationHelper.getDeclaredMethod(NAMES.setupCameraTransform, start, float.class, int.class);
+			} catch(Exception e) {}
 			start = start.getSuperclass();
 		}
 		throw new NoSuchMethodException("Can't find setupCameraTransform or a to display HUD");

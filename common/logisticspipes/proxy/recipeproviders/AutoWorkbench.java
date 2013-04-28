@@ -19,7 +19,7 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 			return false;
 
 		TileAutoWorkbench bench = (TileAutoWorkbench) tile;
-		ItemStack result = bench.findRecipe();
+		ItemStack result = bench.getCraftResult().getStackInSlot(0);
 
 		if (result == null)
 			return false;

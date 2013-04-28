@@ -18,7 +18,7 @@ public final class SinkReply {
 	public final boolean isPassive;
 	public final boolean isDefault;
 	public final int energyUse;
-	public int maxNumberOfItems;
+	public final int maxNumberOfItems;
 	
 	public SinkReply(FixedPriority fixedPriority, int customPriority, boolean isPassive, boolean isDefault, int energyUse, int maxNumberOfItems) {
 		this.fixedPriority = fixedPriority;

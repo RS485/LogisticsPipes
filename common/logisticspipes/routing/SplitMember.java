@@ -5,19 +5,26 @@ import java.util.UUID;
 public class SplitMember {
 	
 	public int groupNumber;
+	public int id;
 	public final int totalAmount;
 	public int amountSinked;
 	public boolean myTurn;
+	public boolean successOnLastSink;
 		
-	public SplitMember(int group, int amount, boolean turn) {
+	public SplitMember(int id, int group, int amount, boolean turn) {
+		this.id = id;
 		this.groupNumber = group;
 		this.totalAmount = amount;
 		myTurn = turn;
+		successOnLastSink = true;
 	}
 
 	public int reduceSink(int par1) {
 		//not my turn
-		if (!myTurn) return 0;
+		if (!myTurn) {
+			giveUpTurn();
+			return 0;
+		}
 
 		//cant sink that many
 		if (par1 > totalAmount-amountSinked) {
@@ -41,7 +48,14 @@ public class SplitMember {
 	public void giveUpTurn() {
 		myTurn = false;
 		amountSinked = 0;
+		setLastSinkStatus(true);
 	}
 	
+	public void setLastSinkStatus(boolean flag) {
+		successOnLastSink = flag;
+	}
 	
+	public boolean getLastSinkStatus() {
+		return successOnLastSink;
+	}
 }

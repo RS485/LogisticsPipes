@@ -190,46 +190,47 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2, ILogisticsTurnHa
 		}
 		if (crp instanceof ISplitItems) {
 			//Check if router is subscribed to split sending
-			if (((ISplitItems) crp).getSplitGroup()>0 && reply !=null) {
-				reply = SimpleServiceLocator.logisticsTurnHandler.getScaledSinkReply(reply, crp.getRouter().getId(), ((ISplitItems) crp).getSplitGroup());
+			if (((ISplitItems) crp).getSplitGroup()>0) {
+				reply = SimpleServiceLocator.logisticsTurnHandler.getScaledSinkReply(reply, crp.getRouter().getSimpleID(), ((ISplitItems) crp).getSplitGroup());
 			}
 		}
 		return reply;
 	}
 	
-	//UUID, group, member dataq
-	public List<Pair3<UUID, Integer, SplitMember>> groups = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
+	//list of ID, group, member data
+	private List<Pair3<Integer, Integer, SplitMember>> groups = new LinkedList<Pair3<Integer, Integer, SplitMember>>();
 	
 	@Override
-	public void subscribeToOrCreateGroup(int group, UUID id, int amount) {
+	public void subscribeToOrCreateGroup(int group, int id, int amount) {
 		unsubscribe(id);
-		System.out.println("size of List: " + groups.size() + " " +id.toString());
 		boolean newGroup = true;
-		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+		for (Pair3<Integer, Integer, SplitMember> pair3:groups){
 			if (pair3.getValue2() == group) {
 				newGroup = false;
 				//return if this ID is already subscribed
 				if (pair3.getValue1() == id) return;
 			}
 		}
-		groups.add(new Pair3<UUID, Integer, SplitMember>(id, group, new SplitMember(group, amount, newGroup)));
+		groups.add(new Pair3<Integer, Integer, SplitMember>(id, group, new SplitMember(id, group, amount, newGroup)));
 	}
 		
 	@Override
-	public SinkReply getScaledSinkReply(SinkReply reply, UUID id, int group) {
-		if(reply == null) return null;
+	public SinkReply getScaledSinkReply(SinkReply reply, int id, int group) {
 		if (groups.isEmpty()) return null;
-		List<Pair3<UUID, Integer, SplitMember>>  thisGroup = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
-		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+		List<Pair3<Integer, Integer, SplitMember>>  thisGroup = new LinkedList<Pair3<Integer, Integer, SplitMember>>();
+		for (Pair3<Integer, Integer, SplitMember> pair3:groups){
 			if(pair3.getValue2() == group) {
 				thisGroup.add(pair3);
 			}
 		}
 		if (thisGroup.isEmpty()) return null;
-		for (Pair3<UUID, Integer, SplitMember> pair3:thisGroup) {
+		for (Pair3<Integer, Integer, SplitMember> pair3:thisGroup) {
 			if (pair3.getValue1() == id) {
 				if (pair3.getValue3().myTurn) {
-					int amountToSink = pair3.getValue3().reduceSink(1);
+					int amountToSink = 0;
+					if (reply != null) {
+						amountToSink = pair3.getValue3().reduceSink(1);
+					}
 					if (!(pair3.getValue3().myTurn)) {
 						//Pass turn to another member
 						int nextMember = thisGroup.indexOf(pair3)+1;
@@ -237,7 +238,10 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2, ILogisticsTurnHa
 						thisGroup.get(nextMember).getValue3().myTurn = true;
 					}
 					if (amountToSink>0) {
+						pair3.getValue3().setLastSinkStatus(true);
 						return new SinkReply(reply, 1);
+					} else {
+						pair3.getValue3().setLastSinkStatus(false);
 					}
 				}
 			}
@@ -246,38 +250,42 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2, ILogisticsTurnHa
 	}
 	
 	@Override
-	public void passTurn(int group, UUID id) {
+	public void passTurn(int group, int id) {
 		if (groups.isEmpty()) return;
-		List<Pair3<UUID, Integer, SplitMember>>  thisGroup = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
-		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+		List<Pair3<Integer, Integer, SplitMember>>  thisGroup = new LinkedList<Pair3<Integer, Integer, SplitMember>>();
+		for (Pair3<Integer, Integer, SplitMember> pair3:groups){
 			if(pair3.getValue2() == group) {
 				thisGroup.add(pair3);
 			}
 		}
 		
-		for (Pair3<UUID, Integer, SplitMember> pair3:thisGroup) {
+		for (Pair3<Integer, Integer, SplitMember> pair3:thisGroup) {
 			if(pair3.getValue1() == id) {
-				int thisMember = thisGroup.indexOf(pair3)+1;
-				if (thisMember > thisGroup.size()-1) thisMember = 0;
-				thisGroup.get(thisMember).getValue3().myTurn = true;
+				if (pair3.getValue2() == group) {
+					if (pair3.getValue3().myTurn) {
+						pair3.getValue3().giveUpTurn();
+						int thisMember = thisGroup.indexOf(pair3) + 1;
+						if (thisMember > thisGroup.size() - 1) thisMember = 0;
+						thisGroup.get(thisMember).getValue3().myTurn = true;
+					}
+				}
 			}
 		}
 	}
 	
 	@Override
-	public void unsubscribe(UUID id) {
+	public void unsubscribe(int id) {
 		if (groups.isEmpty()) return;
-		List<Pair3<UUID, Integer, SplitMember>> removeQue = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
-		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
-			if (pair3.getValue1().toString().equals(id)) {
+		List<Pair3<Integer, Integer, SplitMember>> removeQue = new LinkedList<Pair3<Integer, Integer, SplitMember>>();
+		for (Pair3<Integer, Integer, SplitMember> pair3:groups){
+			if (pair3.getValue1() == id) {
 				if (pair3.getValue3().myTurn){
 					passTurn(pair3.getValue2(), id);
-					return;
 				}
 				removeQue.add(pair3);
 			}
 		}
-		for (Pair3<UUID, Integer, SplitMember> pair3:removeQue){
+		for (Pair3<Integer, Integer, SplitMember> pair3:removeQue){
 			groups.remove(pair3);
 		}
 	}

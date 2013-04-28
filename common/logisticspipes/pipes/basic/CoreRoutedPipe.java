@@ -32,7 +32,6 @@ import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.interfaces.routing.ISplitItems;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -289,7 +288,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void ignoreDisableUpdateEntity() {}
 	
 	@Override
-	public final void updateEntity() {
+	public void updateEntity() {
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
 			return;
@@ -301,12 +300,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
 				}
-				//first tick just create a router and subscribe to splitsending.
+				//first tick just create a router and do nothing.
 				getRouter();
-				if (this instanceof ISplitItems) {
-					((ISplitItems)this).subscribeToSplitting();
-				}
-				return;
 			}
 		}
 		if(repeatFor > 0) {
@@ -377,9 +372,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				((PipeTransportLogistics)transport).dropBuffer();
 			}
 			getUpgradeManager().dropUpgrades(worldObj, xCoord, yCoord, zCoord);
-			if (this instanceof ISplitItems) {
-				((ISplitItems)this).unsubscribeFromSplitting();
-			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -400,9 +392,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(router != null){
 			router.clearPipeCache();
 			router.clearInterests();
-		}
-		if (this instanceof ISplitItems) {
-			((ISplitItems)this).unsubscribeFromSplitting();
 		}
 	}
 	

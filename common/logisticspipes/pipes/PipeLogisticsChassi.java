@@ -332,6 +332,19 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			}
 			_moduleInventory.dropContents(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
 		}
+		if (this instanceof ISplitItems && subscribed) {
+			((ISplitItems)this).unsubscribeFromSplitting();
+			subscribed = false;
+		}
+	}
+	
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if (this instanceof ISplitItems && subscribed) {
+			((ISplitItems)this).unsubscribeFromSplitting();
+			subscribed = false;
+		}
 	}
 
 	@Override
@@ -379,6 +392,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 					prevModules.add(y);
 				}
 			}
+		}
+	}
+	
+	@Override
+	public void updateEntity() {
+		super.updateEntity();
+		if (stillNeedReplace) return;
+		if (this instanceof ISplitItems && !subscribed) {
+			((ISplitItems)this).subscribeToSplitting();
+			subscribed = true;
 		}
 	}
 
@@ -695,11 +718,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	@Override
 	public void subscribeToSplitting() {
 		if (splitGroup <= 0) return;
-		SimpleServiceLocator.logisticsTurnHandler.subscribeToOrCreateGroup(splitGroup, this.getRouter().getId(), splitAmount);
+		SimpleServiceLocator.logisticsTurnHandler.subscribeToOrCreateGroup(splitGroup, this.getRouter().getSimpleID(), splitAmount);
 	}
 	@Override
 	public void unsubscribeFromSplitting() {
-		SimpleServiceLocator.logisticsTurnHandler.unsubscribe(this.getRouter().getId());
+		SimpleServiceLocator.logisticsTurnHandler.unsubscribe(this.getRouter().getSimpleID());
 	}
 	@Override
 	public int getSplitGroup() {

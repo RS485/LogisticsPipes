@@ -59,9 +59,17 @@ public class LiquidContainerRenderer implements IItemRenderer {
 
 	public void doRenderItem(ItemStack itemstack, Minecraft mc, ItemRenderType type) {
 		useThis = false;
-		if(renderItem == null) {
-			 renderItem = new RenderItem();
-			 renderItem.setRenderManager(RenderManager.instance);
+		if (renderItem == null) {
+			renderItem = new RenderItem() {
+				public boolean shouldBob() {
+					return false;
+				};
+
+				public boolean shouldSpreadItems() {
+					return false;
+				};
+			};
+			renderItem.setRenderManager(RenderManager.instance);
 		}
 		if(type == ItemRenderType.INVENTORY) {
 			renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.renderEngine, itemstack, 0, 0);

@@ -20,6 +20,7 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -83,7 +84,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
-		if(tilePipe == null || !this.container.arePipesConnected(tilePipe, ori)) {
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
 			return false;
 		}
 
@@ -95,7 +96,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isSecurityProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
-		if(tilePipe == null || !this.container.arePipesConnected(tilePipe, ori)) {
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
 			return false;
 		}
 		if(tilePipe instanceof LogisticsSecurityTileEntity) {

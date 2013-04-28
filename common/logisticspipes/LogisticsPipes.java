@@ -259,6 +259,8 @@ public class LogisticsPipes {
 		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
 		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
 		textures.registerBlockIcons();
+		
+		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
 	}
 	
 	@PreInit

@@ -407,11 +407,14 @@ public class LogisticsRenderPipe extends RenderPipe {
 	
 	private void renderLiquids(Pipe pipe, double x, double y, double z) {
 		PipeLiquidTransportLogistics liq = (PipeLiquidTransportLogistics) pipe.transport;
-
 		GL11.glPushMatrix();
-		GL11.glDisable(2896 /* GL_LIGHTING */);
+		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
+		GL11.glEnable(GL11.GL_CULL_FACE);
+		GL11.glDisable(GL11.GL_LIGHTING);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
-		GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
+		GL11.glTranslatef((float) x, (float) y, (float) z);
 
 		// sides
 
@@ -450,13 +453,16 @@ public class LogisticsRenderPipe extends RenderPipe {
 				case SOUTH:
 				case NORTH:
 					sides = true;
+					// Yes, this is kind of ugly, but was easier than transform the coordinates above.
+					GL11.glTranslatef(0.5F, 0.0F, 0.5F);
 					GL11.glRotatef(angleY[i], 0, 1, 0);
 					GL11.glRotatef(angleZ[i], 0, 0, 1);
+					GL11.glTranslatef(-0.5F, 0.0F, -0.5F);
 					list = d.sideHorizontal[stage];
 					break;
 				default:
 				}
-
+				bindTextureByName(liquid.canonical().getTextureSheet());
 				GL11.glCallList(list);
 				GL11.glPopMatrix();
 			}
@@ -475,6 +481,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 			if (d != null) {
 				int stage = (int) ((float) liquid.amount / (float) (liq.getInnerCapacity()) * (LIQUID_STAGES - 1));
 
+				bindTextureByName(liquid.canonical().getTextureSheet());
+				
 				if (above) {
 					GL11.glCallList(d.centerVertical[stage]);
 				}
@@ -485,8 +493,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 			}
 
 		}
-
-		GL11.glEnable(2896 /* GL_LIGHTING */);
+		
+		GL11.glPopAttrib();
 		GL11.glPopMatrix();
 	}
 
@@ -496,35 +504,28 @@ public class LogisticsRenderPipe extends RenderPipe {
 
 		if (liquidId == 0)
 			return null;
-		//@TODO: fixme
-		/*if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
-			Minecraft.getMinecraft().renderEngine.bindTexture(Block.blocksList[liquidId].getIcon(par1, par2)(), 0);
-		} else if (Item.itemsList[liquidId] != null) {
-			Minecraft.getMinecraft().renderEngine.bindTexture(Item.itemsList[liquidId].getIconFromDamage(stack.itemMeta));
-		} else
-			return null;*/
+
 		return getDisplayLiquidLists(liquidId, stack.itemMeta, world);
 	}
 
 	private DisplayLiquidList getDisplayLiquidLists(int liquidId, int meta, World world) {
-		HashMap<Integer, DisplayLiquidList> list = displayLiquidLists.get(liquidId);
-		if (list!=null) {
+		if (displayLiquidLists.containsKey(liquidId)) {
 			HashMap<Integer, DisplayLiquidList> x = displayLiquidLists.get(liquidId);
-			DisplayLiquidList liquidList = x.get(meta);
-			if (liquidList!=null)
-				return liquidList;
+			if (x.containsKey(meta))
+				return x.get(meta);
 		} else {
-			list = new HashMap<Integer, DisplayLiquidList>();
-			displayLiquidLists.put(liquidId, list);
+			displayLiquidLists.put(liquidId, new HashMap<Integer, DisplayLiquidList>());
 		}
 
 		DisplayLiquidList d = new DisplayLiquidList();
-		list.put(meta, d);
+		displayLiquidLists.get(liquidId).put(meta, d);
 
 		BlockInterface block = new BlockInterface();
+
 		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
-			block.texture = Block.blocksList[liquidId].getIcon(0, meta);
+			block.baseBlock = Block.blocksList[liquidId];
 		} else {
+			block.baseBlock = Block.waterStill;
 			block.texture = Item.itemsList[liquidId].getIconFromDamage(meta);
 		}
 

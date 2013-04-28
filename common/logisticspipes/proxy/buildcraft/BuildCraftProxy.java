@@ -8,6 +8,8 @@
 
 package logisticspipes.proxy.buildcraft;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +93,8 @@ public class BuildCraftProxy {
 	public static ITrigger LogisticsHasDestinationTrigger;
 	public static IAction LogisticsDisableAction;
 	
+	private Method arePipesConnected;
+	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
 		return checkPipesConnections(from, to, way, false);
 	}
@@ -104,7 +108,7 @@ public class BuildCraftProxy {
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!((TileGenericPipe) from).arePipesConnected(to, way.getOpposite())) {
+				if (!arePipesConnected((TileGenericPipe) from, to, way.getOpposite())) {
 					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
@@ -116,7 +120,7 @@ public class BuildCraftProxy {
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!((TileGenericPipe) to).arePipesConnected(from, way)) {
+				if (!arePipesConnected((TileGenericPipe) to, from, way)) {
 					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
@@ -126,6 +130,30 @@ public class BuildCraftProxy {
 		} else {
 			return Utils.checkPipesConnections(from, to);
 		}
+	}
+
+	public boolean initProxyAndCheckVersion() {
+		try {
+			arePipesConnected = TileGenericPipe.class.getDeclaredMethod("arePipesConnected", new Class[]{TileEntity.class, ForgeDirection.class});
+			arePipesConnected.setAccessible(true);
+			return true;
+		} catch(Exception e) {
+			e.printStackTrace();
+			throw new UnsupportedOperationException("You seem to have an outdated Buildcraft version. Please update to the newest BuildCraft version to run LogisticsPipes.");
+		}
+	}
+
+	public boolean arePipesConnected(TileGenericPipe tile, TileEntity with, ForgeDirection side) {
+		try {
+			return (Boolean) arePipesConnected.invoke(tile, with, side);
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	public void dropItems(World world, IInventory inventory, int x, int y, int z) {

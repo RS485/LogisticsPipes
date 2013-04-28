@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
@@ -33,6 +32,7 @@ import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.ISplitItems;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -56,7 +56,6 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -302,8 +301,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
 				}
-				//first tick just create a router and do nothing.
+				//first tick just create a router and subscribe to splitsending.
 				getRouter();
+				if (this instanceof ISplitItems) {
+					((ISplitItems)this).subscribeToSplitting();
+				}
 				return;
 			}
 		}
@@ -375,6 +377,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				((PipeTransportLogistics)transport).dropBuffer();
 			}
 			getUpgradeManager().dropUpgrades(worldObj, xCoord, yCoord, zCoord);
+			if (this instanceof ISplitItems) {
+				((ISplitItems)this).unsubscribeFromSplitting();
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -395,6 +400,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(router != null){
 			router.clearPipeCache();
 			router.clearInterests();
+		}
+		if (this instanceof ISplitItems) {
+			((ISplitItems)this).unsubscribeFromSplitting();
 		}
 	}
 	

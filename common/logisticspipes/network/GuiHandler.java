@@ -8,6 +8,7 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.gui.GuiChassiPipe;
+import logisticspipes.gui.GuiChassiSplitSending;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFirewall;
 import logisticspipes.gui.GuiFreqCardContent;
@@ -416,6 +417,12 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(10, 210);
 				return dummy;
 				
+			case GuiIDs.GUI_Chassi_SplitSending:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeLogisticsChassi)) return null;
+				PipeLogisticsChassi chassiPipe = (PipeLogisticsChassi)pipe.pipe;
+				dummy = new DummyContainer(player.inventory, null);
+				return dummy;
+				
 			default:break;
 			}
 		} else {
@@ -778,6 +785,9 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Security_Station_ID:
 				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
 				return new GuiSecurityStation((LogisticsSecurityTileEntity)tile, player);
+			case GuiIDs.GUI_Chassi_SplitSending:
+				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLogisticsChassi))) return null;
+				return new GuiChassiSplitSending(player, pipe.pipe, ModLoader.getMinecraftInstance().currentScreen);
 				
 			default:break;
 			}

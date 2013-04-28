@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.ICraftItems;
@@ -23,6 +24,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
+import logisticspipes.interfaces.routing.ISplitItems;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipefxhandlers.Particles;
@@ -37,12 +39,14 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.routing.SplitMember;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair4;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 
-public class LogisticsManagerV2 implements ILogisticsManagerV2 {
+public class LogisticsManagerV2 implements ILogisticsManagerV2, ILogisticsTurnHandler {
 
 	/**
 	 * Method used to check if a given stack has a destination.
@@ -125,6 +129,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false);
 					
 			if (reply == null) continue;
+			
 			if (result.getValue1() == null){
 				result.setValue1(candidateRouter.destination.getSimpleID());
 				result.setValue2(reply);
@@ -173,8 +178,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		ILogisticsModule module = destination.getLogisticsModule();
 		CoreRoutedPipe crp = destination.getPipe();
 		if (module == null) return null;
-		if (!(module.recievePassive() || activeRequest))
-			return null;
+		if (!(module.recievePassive() || activeRequest)) return null;
 		if (crp == null || !crp.isEnabled()) return null;
 		if (excludeSource && sourceRouter !=null) {
 			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
@@ -184,7 +188,103 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		} else {
 			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority);
 		}
+		if (crp instanceof ISplitItems) {
+			//Check if router is subscribed to split sending
+			if (((ISplitItems) crp).getSplitGroup()>0 && reply !=null) {
+				reply = SimpleServiceLocator.logisticsTurnHandler.getScaledSinkReply(reply, crp.getRouter().getId(), ((ISplitItems) crp).getSplitGroup());
+			}
+		}
 		return reply;
+	}
+	
+	//UUID, group, member dataq
+	public List<Pair3<UUID, Integer, SplitMember>> groups = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
+	
+	@Override
+	public void subscribeToOrCreateGroup(int group, UUID id, int amount) {
+		unsubscribe(id);
+		System.out.println("size of List: " + groups.size() + " " +id.toString());
+		boolean newGroup = true;
+		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+			if (pair3.getValue2() == group) {
+				newGroup = false;
+				//return if this ID is already subscribed
+				if (pair3.getValue1() == id) return;
+			}
+		}
+		groups.add(new Pair3<UUID, Integer, SplitMember>(id, group, new SplitMember(group, amount, newGroup)));
+	}
+		
+	@Override
+	public SinkReply getScaledSinkReply(SinkReply reply, UUID id, int group) {
+		if(reply == null) return null;
+		if (groups.isEmpty()) return null;
+		List<Pair3<UUID, Integer, SplitMember>>  thisGroup = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
+		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+			if(pair3.getValue2() == group) {
+				thisGroup.add(pair3);
+			}
+		}
+		if (thisGroup.isEmpty()) return null;
+		for (Pair3<UUID, Integer, SplitMember> pair3:thisGroup) {
+			if (pair3.getValue1() == id) {
+				if (pair3.getValue3().myTurn) {
+					int amountToSink = pair3.getValue3().reduceSink(1);
+					if (!(pair3.getValue3().myTurn)) {
+						//Pass turn to another member
+						int nextMember = thisGroup.indexOf(pair3)+1;
+						if (nextMember > thisGroup.size()-1) nextMember = 0;
+						thisGroup.get(nextMember).getValue3().myTurn = true;
+					}
+					if (amountToSink>0) {
+						return new SinkReply(reply, 1);
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public void passTurn(int group, UUID id) {
+		if (groups.isEmpty()) return;
+		List<Pair3<UUID, Integer, SplitMember>>  thisGroup = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
+		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+			if(pair3.getValue2() == group) {
+				thisGroup.add(pair3);
+			}
+		}
+		
+		for (Pair3<UUID, Integer, SplitMember> pair3:thisGroup) {
+			if(pair3.getValue1() == id) {
+				int thisMember = thisGroup.indexOf(pair3)+1;
+				if (thisMember > thisGroup.size()-1) thisMember = 0;
+				thisGroup.get(thisMember).getValue3().myTurn = true;
+			}
+		}
+	}
+	
+	@Override
+	public void unsubscribe(UUID id) {
+		if (groups.isEmpty()) return;
+		List<Pair3<UUID, Integer, SplitMember>> removeQue = new LinkedList<Pair3<UUID, Integer, SplitMember>>();
+		for (Pair3<UUID, Integer, SplitMember> pair3:groups){
+			if (pair3.getValue1().toString().equals(id)) {
+				if (pair3.getValue3().myTurn){
+					passTurn(pair3.getValue2(), id);
+					return;
+				}
+				removeQue.add(pair3);
+			}
+		}
+		for (Pair3<UUID, Integer, SplitMember> pair3:removeQue){
+			groups.remove(pair3);
+		}
+	}
+	
+	@Override
+	public void clearList() {
+		groups.clear();
 	}
 	
 	/**

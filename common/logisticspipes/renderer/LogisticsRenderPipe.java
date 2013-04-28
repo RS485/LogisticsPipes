@@ -175,62 +175,40 @@ public class LogisticsRenderPipe extends RenderPipe {
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
 		        this.bindTextureByName(itemstack.getItemSpriteNumber() == 0 ? "/terrain.png" : "/gui/items.png");
-		        
+
+				GL11.glPushMatrix();
+				
 				if(customRenderer != null) {
-			        	if(customRenderer.shouldUseRenderHelper(ItemRenderType.INVENTORY, itemstack, ItemRendererHelper.INVENTORY_BLOCK)) {
-			        		GL11.glScalef(0.20F, -0.20F, -0.01F);
-			                
-			    	        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
-			    	        GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
-			    	
-			    	        GL11.glDisable(GL11.GL_LIGHTING);
-			    	        GL11.glDisable(GL11.GL_LIGHT0);
-			    	        GL11.glDisable(GL11.GL_LIGHT1);
-			    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-			    	        
-			    	        GL11.glPushMatrix();
-			    	        
-			    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
+		        	if(customRenderer.shouldUseRenderHelper(ItemRenderType.INVENTORY, itemstack, ItemRendererHelper.INVENTORY_BLOCK)) {
+		        		GL11.glScalef(0.20F, -0.20F, -0.01F);
+		                
+		    	        GL11.glRotatef(210.0F, 1.0F, 0.0F, 0.0F);
+		    	        GL11.glRotatef(-45.0F, 0.0F, 1.0F, 0.0F);
+		    	
+		    	        GL11.glDisable(GL11.GL_LIGHTING);
+		    	        GL11.glDisable(GL11.GL_LIGHT0);
+		    	        GL11.glDisable(GL11.GL_LIGHT1);
+		    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+		    	        
+		    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
 
-			    	        GL11.glPopMatrix();
-			    	        
-			    	        GL11.glEnable(GL11.GL_LIGHTING);
-			    	        GL11.glEnable(GL11.GL_LIGHT0);
-			    	        GL11.glEnable(GL11.GL_LIGHT1);
-			    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			
-			    	        GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-			    	        GL11.glRotatef(-210.0F, 1.0F, 0.0F, 0.0F);
-			                
-			    	        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
-			    	        GL11.glDepthMask(false);
-			    	
-			    	        GL11.glTranslatef(2.5F, 0.0F, 0.0F);
-			    	
-			    	        GL11.glScalef(5.0F, 5.0F, 1.0F);
-			    	
-			    	        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
-			    	        
-			    		    GL11.glScalef(var12, var12, var12);
-			        	} else {
-			        		GL11.glDisable(GL11.GL_LIGHTING);
-			    	        GL11.glDisable(GL11.GL_LIGHT0);
-			    	        GL11.glDisable(GL11.GL_LIGHT1);
-			    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-			    	        
-			    	        //renderBlocks.useInventoryTint = false;
-
-					        GL11.glPushMatrix();
-					        
-			    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
-
-					        GL11.glPopMatrix();
-					        
-			    	        GL11.glEnable(GL11.GL_LIGHTING);
-			    	        GL11.glEnable(GL11.GL_LIGHT0);
-			    	        GL11.glEnable(GL11.GL_LIGHT1);
-			    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			        	}
+		    	        GL11.glEnable(GL11.GL_LIGHTING);
+		    	        GL11.glEnable(GL11.GL_LIGHT0);
+		    	        GL11.glEnable(GL11.GL_LIGHT1);
+		    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+		        	} else {
+		        		GL11.glDisable(GL11.GL_LIGHTING);
+		    	        GL11.glDisable(GL11.GL_LIGHT0);
+		    	        GL11.glDisable(GL11.GL_LIGHT1);
+		    	        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
+		    	        
+		    	        customRenderer.renderItem(ItemRenderType.INVENTORY, itemstack, renderBlocks);
+		    	        
+		    	        GL11.glEnable(GL11.GL_LIGHTING);
+		    	        GL11.glEnable(GL11.GL_LIGHT0);
+		    	        GL11.glEnable(GL11.GL_LIGHT1);
+		    	        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
+		        	}
 			   } else if(item instanceof ItemBlock && RenderBlocks.renderItemIn3d(Block.blocksList[item.itemID].getRenderType())) {
 		            GL11.glScalef(0.20F, -0.20F, -0.01F);
 		            
@@ -244,44 +222,21 @@ public class LogisticsRenderPipe extends RenderPipe {
 			        GL11.glDisable(GL11.GL_LIGHT1);
 			        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 
-			        GL11.glPushMatrix();
-			        
 			        renderBlocks.renderBlockAsItem(Block.blocksList[item.itemID], itemstack.getItemDamage(), 1.0F);
 
-			        GL11.glPopMatrix();
-			        
 			        GL11.glEnable(GL11.GL_LIGHTING);
 			        GL11.glEnable(GL11.GL_LIGHT0);
 			        GL11.glEnable(GL11.GL_LIGHT1);
 			        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			        
-			        GL11.glRotatef(45.0F, 0.0F, 1.0F, 0.0F);
-	    	        GL11.glRotatef(-210.0F, 1.0F, 0.0F, 0.0F);
-	                
-			        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
-			        GL11.glDepthMask(false);
-			
-			        GL11.glTranslatef(2.5F, 0.0F, 0.0F);
-			
-			        GL11.glScalef(5.0F, 5.0F, 1.0F);
-			
-			        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
-			        
-				    GL11.glScalef(var12, var12, var12);
 		        } else {
-		        	GL11.glScalef(0.25F, -0.25F, -0.01F);
+			        GL11.glScalef(0.02F, -0.02F, -0.01F);
 		            
-			        GL11.glRotatef(180.0F, 1.0F, 0.0F, 0.0F);
-			        GL11.glRotatef(0.0F, 0.0F, 1.0F, 0.0F);
-			        
 			        GL11.glDisable(GL11.GL_LIGHTING);
 			        GL11.glDisable(GL11.GL_LIGHT0);
 			        GL11.glDisable(GL11.GL_LIGHT1);
 			        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
 			        
-			        GL11.glTranslatef(0.1F, -0.2F, 0.0F);
-
-			        GL11.glPushMatrix();
+			        GL11.glTranslatef(-8F, -8F, 0.0F);
 			        
 			        if (item.requiresMultipleRenderPasses())
 		            {
@@ -295,30 +250,20 @@ public class LogisticsRenderPipe extends RenderPipe {
 		            {
 		            	renderItem(item.getIconIndex(itemstack));
 		            }
-
-			        GL11.glPopMatrix();
 			        
-			        GL11.glTranslatef(-0.6F, 0.2F, 0.0F);
-		
 			        GL11.glEnable(GL11.GL_LIGHTING);
 			        GL11.glEnable(GL11.GL_LIGHT0);
 			        GL11.glEnable(GL11.GL_LIGHT1);
 			        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-			
-			        GL11.glRotatef(-0.0F, 0.0F, 1.0F, 0.0F);
-			        GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
-		            
-			        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
-			        GL11.glDepthMask(false);
-		
-			        GL11.glTranslatef(2.5F, 0.0F, 0.0F);
-			
-			        GL11.glScalef(4.0F, 4.0F, 1.0F);
-			
-			        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
-			        
-				    GL11.glScalef(var12, var12, var12);
 		        }
+				
+				GL11.glPopMatrix();
+
+		        GL11.glDepthMask(false);
+    	        GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
+		        GL11.glTranslatef(0.5F, +0.08F, 0.0F);			        
+			    GL11.glScalef(var12, var12, var12);
+			    
 		        try {
 		        	name = item.getItemDisplayName(itemstack);
 		        } catch(Exception e) {
@@ -332,31 +277,9 @@ public class LogisticsRenderPipe extends RenderPipe {
 		        	var17.drawString("Sat ID: "+String.valueOf(((BaseLogicCrafting)pipe.logic).satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(((BaseLogicCrafting)pipe.logic).satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 		        }
     		} else {
-    			GL11.glScalef(0.25F, -0.25F, 0.00F);
-    			
-		        GL11.glDisable(GL11.GL_LIGHTING);
-		        GL11.glDisable(GL11.GL_LIGHT0);
-		        GL11.glDisable(GL11.GL_LIGHT1);
-		        GL11.glDisable(GL11.GL_COLOR_MATERIAL);
-		        
-		        GL11.glTranslatef(0.1F, -0.2F, 0.0F);
-		        GL11.glTranslatef(-0.6F, 0.2F, 0.0F);
-	
-		        GL11.glEnable(GL11.GL_LIGHTING);
-		        GL11.glEnable(GL11.GL_LIGHT0);
-		        GL11.glEnable(GL11.GL_LIGHT1);
-		        GL11.glEnable(GL11.GL_COLOR_MATERIAL);
-		
-		        GL11.glNormal3f(0.0F, 0.0F, -1.0F * var12);
-		        GL11.glDepthMask(false);
-	
-		        GL11.glTranslatef(2.5F, 0.0F, 0.0F);
-		
-		        GL11.glScalef(4.0F, 4.0F, 1.0F);
-		
-		        GL11.glTranslatef(0.0F, +0.08F, 0.0F);
-		        
-			    GL11.glScalef(var12, var12, var12);
+    			GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
+    	        GL11.glTranslatef(0.5F, +0.08F, 0.0F);
+		        GL11.glScalef(var12, var12, var12);
 			    name = "Empty";
     		}
     		
@@ -369,24 +292,21 @@ public class LogisticsRenderPipe extends RenderPipe {
 	    }
 	}
 	
-	private void renderItem(Icon paricon) {
-		Tessellator var3 = Tessellator.instance;
-		float var4 = (paricon.getSheetHeight() % 16 * 16 + 0) / 256.0F;
-        float var5 = (paricon.getSheetWidth() % 16 * 16 + 16) / 256.0F;
-        float var6 = (paricon.getSheetHeight() / 16 * 16 + 0) / 256.0F;
-        float var7 = (paricon.getSheetWidth() / 16 * 16 + 16) / 256.0F;
-        float var8 = 1.0F;
-        float var9 = 0.5F;
-        float var10 = 0.25F;
-        
+	private void renderItem(Icon par3Icon) {
+		int par1 = 0;
+		int par2 = 0;
+		int par4 = 16;
+		int par5 = 16;
+		double zLevel = 0;
 		GL11.glPushMatrix();
-        var3.startDrawingQuads();
-        var3.setNormal(0.0F, 1.0F, 0.0F);
-        var3.addVertexWithUV(0.0F - var9, 0.0F - var10, 0.0D, var4, var7);
-        var3.addVertexWithUV(var8 - var9, 0.0F - var10, 0.0D, var5, var7);
-        var3.addVertexWithUV(var8 - var9, 1.0F - var10, 0.0D, var5, var6);
-        var3.addVertexWithUV(0.0F - var9, 1.0F - var10, 0.0D, var4, var6);
-        var3.draw();
+		Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.setNormal(0.0F, 1.0F, 0.0F);
+        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + par5), (double)zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMaxV());
+        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + par5), (double)zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMaxV());
+        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + 0), (double)zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMinV());
+        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), (double)zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMinV());
+        tessellator.draw();
         GL11.glPopMatrix();
 	}
 	

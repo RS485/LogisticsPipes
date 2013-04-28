@@ -20,17 +20,16 @@ public class LogisticsSignBlock extends BlockContainer {
 		super(par1, Material.iron);
 		this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 	}
-	
 
 	@Override
 	public Icon getIcon(int par1, int par2) {
 		return planks.getBlockTextureFromSide(par1);
 	}
 
-
+	/*
 	@Override
 	public boolean renderAsNormalBlock() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -40,7 +39,7 @@ public class LogisticsSignBlock extends BlockContainer {
 
 	@Override
 	public boolean isOpaqueCube() {
-		return false;
+		return true;
 	}
 
 	@Override
@@ -80,6 +79,7 @@ public class LogisticsSignBlock extends BlockContainer {
 			}
 		}
 	}
+*/
 
 	@Override
 	public TileEntity createNewTileEntity(World var1) {

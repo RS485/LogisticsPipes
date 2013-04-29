@@ -567,7 +567,7 @@ public class ServerPacketHandler {
 		final int value = packet.integer % 10;
 		final int slot = packet.integer / 10;
 		
-		if(slot == 20) {
+		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleItemSink) {
@@ -655,7 +655,7 @@ public class ServerPacketHandler {
 	private static void onExtractorModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
 		final int value = packet.integer % 10;
 		final int slot = packet.integer / 10;
-		if(slot == 20) {
+		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ISneakyDirectionReceiver) {
@@ -703,7 +703,7 @@ public class ServerPacketHandler {
 
 	private static void onProviderModuleModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
 		final int slot = packet.integer;
-		if(slot == 20) {
+		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleProvider) {
@@ -749,7 +749,7 @@ public class ServerPacketHandler {
 
 	private static void onProviderModuleIncludeChange(EntityPlayerMP player, PacketPipeInteger packet) {
 		final int slot = packet.integer;
-		if(slot == 20) {
+		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleProvider) {
@@ -796,7 +796,7 @@ public class ServerPacketHandler {
 
 	private static void onAdvancedExtractorModuleIncludeChange(EntityPlayerMP player, PacketPipeInteger packet) {
 		final int slot = packet.integer / 10;
-		if(slot == 20) {
+		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
@@ -843,7 +843,7 @@ public class ServerPacketHandler {
 
 	private static void onAdvancedExtractorModuleGuiSneaky(EntityPlayerMP player, PacketPipeInteger packet) {
 		final int slot = packet.integer;
-		if(slot == 20) {
+		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
@@ -1013,7 +1013,7 @@ public class ServerPacketHandler {
 
 	private static void onBeeModuleSetBee(EntityPlayerMP player, PacketPipeBeePacket packet) {
 		ModuleApiaristSink sink;
-		if(packet.integer1 == 20) {
+		if(packet.integer1 < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleApiaristSink) {
@@ -1141,7 +1141,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onElectricModuleStateChange(EntityPlayerMP player, PacketModuleInteger packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleElectricManager) {
@@ -1304,7 +1304,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onModBasedItemSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleModBasedItemSink) {
@@ -1325,7 +1325,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onThaumicAspectSinkList(EntityPlayerMP player, PacketModuleNBT packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleThaumicAspectSink) {
@@ -1438,7 +1438,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onApiaristAnalyserChangeExtract(EntityPlayerMP player, PacketModuleInteger packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {
 				DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
 				if(dummy.getModule() instanceof ModuleApiaristAnalyser) {

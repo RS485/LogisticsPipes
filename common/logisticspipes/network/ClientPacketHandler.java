@@ -435,7 +435,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onItemSinkStatusRecive(PacketModuleInteger packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			return;
 		}
 		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
@@ -511,7 +511,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onModulePipeRecive(PacketModuleInteger packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiExtractor) {
 				((GuiExtractor) FMLClientHandler.instance().getClient().currentScreen).setMode(ForgeDirection.getOrientation(packet.integer));
 			}
@@ -548,7 +548,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onAdvancedExtractorModuleIncludeRecive(PacketModuleInteger packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiAdvancedExtractor) {
 				((GuiAdvancedExtractor) FMLClientHandler.instance().getClient().currentScreen).setInclude(packet.integer == 1);
 			}
@@ -602,7 +602,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void handleBeePacketNBT(PacketModuleNBT packet) {
-		if(packet.slot == 20) {
+		if(packet.slot < 0) {
 			//EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
 			//ItemStack module = player.inventory.mainInventory[packet.posZ];
 			return;

@@ -49,10 +49,10 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 		{
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
-				if(slot != 20) {
+				if(slot >= 0) {
 					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
 				} else {
-					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, _module.xCoord, _module.yCoord, _module.zCoord, slot, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, _module.getX(), _module.getY(), _module.getZ(), slot, (_module.isDischargeMode() ? 1 : 0)).getPacket());
 				}
 				break;
 		}

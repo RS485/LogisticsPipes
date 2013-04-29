@@ -148,8 +148,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	    return dummy;
 	}
 	
-	public void dropUpgrades(World worldObj, int getX(), int getY(), int getZ()) {
-		inv.dropContents(worldObj, getX(), getY(), getZ());
+	public void dropUpgrades(World worldObj, int xCoord, int yCoord, int zCoord) {
+		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
 	}
 
 	public boolean isSideDisconnected(ForgeDirection side) {

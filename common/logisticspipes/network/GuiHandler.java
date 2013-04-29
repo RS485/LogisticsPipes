@@ -118,11 +118,11 @@ public class GuiHandler implements IGuiHandler {
 		
 		//Handle Module Configuration
 		if(ID == -1) {
-			return getServerGuiElement(100 * 20 + x, player, world, 0, -1, z);
+			return getServerGuiElement(100 * -20 + x, player, world, 0, -1, z);
 		}
 		
 		
-		if(ID < 120) {
+		if(ID < 120 && ID > 0) {
 			switch(ID) {
 			
 			case GuiIDs.GUI_CRAFTINGPIPE_ID:
@@ -424,7 +424,7 @@ public class GuiHandler implements IGuiHandler {
 			if(slot >= 0) {
 				slot--;
 			}
-			switch(ID % 100) {
+			switch(((ID % 100) + 100) % 100) {
 			/*** Modules ***/
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(slot >= 0) {
@@ -637,7 +637,7 @@ public class GuiHandler implements IGuiHandler {
 		}
 		
 		if(ID == -1) {
-			return getClientGuiElement(100 * 20 + x, player, world, 0, -1, z);
+			return getClientGuiElement(-100 * 20 + x, player, world, 0, -1, z);
 		}
 		
 		if(ID > 10000) {
@@ -654,7 +654,7 @@ public class GuiHandler implements IGuiHandler {
 		
 		Object[] args = argumentQueue.get(GuiIDs.GUI_CRAFTINGPIPE_ID);
 		
-		if(ID < 120) {
+		if(ID < 120 && ID > 0) {
 			switch(ID) {
 			
 			case GuiIDs.GUI_CRAFTINGPIPE_ID:
@@ -787,7 +787,7 @@ public class GuiHandler implements IGuiHandler {
 			if(slot >= 0) {
 				slot--;
 			}
-			switch(ID % 100) {
+			switch(((ID % 100) + 100) % 100) {
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ISneakyDirectionReceiver)) return null;

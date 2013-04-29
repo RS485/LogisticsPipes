@@ -564,7 +564,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onItemSinkDefault(EntityPlayerMP player, PacketPipeInteger packet) {
-		final int value = packet.integer % 10;
+		final int value = ((packet.integer % 10) + 10) % 10;
 		final int slot = packet.integer / 10;
 		
 		if(slot < 0) {
@@ -653,7 +653,7 @@ public class ServerPacketHandler {
 	}
 
 	private static void onExtractorModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
-		final int value = packet.integer % 10;
+		final int value = ((packet.integer % 10) + 10) % 10;
 		final int slot = packet.integer / 10;
 		if(slot < 0) {
 			if(player.openContainer instanceof DummyModuleContainer) {

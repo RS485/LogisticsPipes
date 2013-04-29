@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.Callable;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
@@ -56,7 +55,6 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -868,6 +866,67 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		return null;
 	}
+
+	/** used as a distance offset when deciding which pipe to use
+	 * NOTE: called very regularly, returning a pre-calculated int is probably appropriate.
+	 * @return
+	 */
+	public double getLoadFactor() {
+		return 0.0;
+	}
+
+	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
+		this._inTransitToMe.remove(routedEntityItem);		
+	}
+
+	public int countOnRoute(ItemIdentifier it) {
+		int count = 0;
+		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			IRoutedItem next = iter.next();
+			if(next.getIDStack().getItem() == it)
+				count += next.getIDStack().stackSize;
+		}
+		return count;
+	}
+	
+	@Override
+	@SideOnly(Side.CLIENT)
+	public IIconProvider getIconProvider() {
+		return Textures.LPpipeIconProvider;
+	}
+	
+	@Override
+	public final int getIconIndex(ForgeDirection connection) {
+		TextureType texture = getTextureType(connection);
+		if(_textureBufferPowered) {
+			return texture.powered;
+		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
+			return texture.normal;
+		} else {
+			return texture.unpowered;
+		}
+	}
+
+	public final int getX() {
+		if(this.container == null) {
+			return xCoord;
+		}
+		return this.container.xCoord;
+	}
+
+	public final int getY() {
+		if(this.container == null) {
+			return yCoord;
+		}
+		return this.container.yCoord;
+	}
+
+	public final int getZ() {
+		if(this.container == null) {
+			return zCoord;
+		}
+		return this.container.zCoord;
+	}
 	
 	/* --- Trigger --- */
 	@Override
@@ -944,57 +1003,5 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
-	}
-
-	/** used as a distance offset when deciding which pipe to use
-	 * NOTE: called very regularly, returning a pre-calculated int is probably appropriate.
-	 * @return
-	 */
-	public double getLoadFactor() {
-		return 0.0;
-	}
-
-	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
-		this._inTransitToMe.remove(routedEntityItem);		
-	}
-
-	public int countOnRoute(ItemIdentifier it) {
-		int count = 0;
-		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
-			IRoutedItem next = iter.next();
-			if(next.getIDStack().getItem() == it)
-				count += next.getIDStack().stackSize;
-		}
-		return count;
-	}
-	
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIconProvider getIconProvider() {
-		return Textures.LPpipeIconProvider;
-	}
-	
-	@Override
-	public final int getIconIndex(ForgeDirection connection) {
-		TextureType texture = getTextureType(connection);
-		if(_textureBufferPowered) {
-			return texture.powered;
-		} else if(Configs.LOGISTICS_POWER_USAGE_DISABLED) {
-			return texture.normal;
-		} else {
-			return texture.unpowered;
-		}
-	}
-
-	public final int getX() {
-		return getX();
-	}
-
-	public final int getY() {
-		return getY();
-	}
-
-	public final int getZ() {
-		return getZ();
 	}
 }

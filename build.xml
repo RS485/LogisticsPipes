@@ -191,12 +191,12 @@
 
 		<echo message="Copied ThaumCraft API"/>
 
-		<!-- Copy CC API source -->
+		<!-- Copy TE API source -->
 		<copy todir="${commonsrc.dir}">
 			<fileset dir="${te.dir}"/>
 		</copy>
 
-		<echo message="Copied CC API"/>
+		<echo message="Copied TE API"/>
 
 		<!-- Copy Dummy classes source -->
 		<copy todir="${commonsrc.dir}">

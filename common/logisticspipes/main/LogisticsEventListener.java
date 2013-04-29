@@ -1,19 +1,11 @@
 package logisticspipes.main;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.Callable;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.security.SecuritySettings;
-import logisticspipes.ticks.QueuedTasks;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
@@ -24,9 +16,6 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import buildcraft.transport.TileGenericPipe;
-
-import com.google.common.base.Objects;
-
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

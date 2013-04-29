@@ -3,6 +3,7 @@ package logisticspipes.logic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.DelayQueue;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logistics.LogisticsManagerV2;
@@ -295,7 +296,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received < stack.stackSize) {
 				stack.stackSize -= received;
-				_lostItems.add(new DelayedGeneric(stack,5000));
+				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack,5000));
 			}
 			lostItem = _lostItems.poll();
 		}
@@ -307,7 +308,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	@Override
 	public void itemLost(ItemIdentifierStack item) {
-		_lostItems.add(new DelayedGeneric(item,5000));
+		_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(item,5000));
 	}
 
 	public void openAttachedGui(EntityPlayer player) {

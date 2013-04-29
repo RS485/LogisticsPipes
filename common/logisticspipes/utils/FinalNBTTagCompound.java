@@ -3,7 +3,6 @@ package logisticspipes.utils;
 import java.lang.reflect.Field;
 
 import logisticspipes.utils.ObfuscationHelper.NAMES;
-
 import net.minecraft.nbt.NBTTagCompound;
 
 public class FinalNBTTagCompound extends NBTTagCompound {

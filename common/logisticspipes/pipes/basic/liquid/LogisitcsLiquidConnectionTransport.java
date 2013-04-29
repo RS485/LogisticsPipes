@@ -1,13 +1,12 @@
 package logisticspipes.pipes.basic.liquid;
 
+import logisticspipes.transport.PipeLiquidTransportLogistics;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
-import logisticspipes.transport.PipeLiquidTransportLogistics;
 import buildcraft.core.IMachine;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.PipeTransport;
 import buildcraft.transport.PipeTransportLiquids;
 import buildcraft.transport.TileGenericPipe;
 

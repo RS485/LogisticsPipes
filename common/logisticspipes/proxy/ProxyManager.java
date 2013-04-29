@@ -13,7 +13,6 @@ import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
-/*import logisticspipes.proxy.te.ThermalExpansionProxy;*/
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.gui.GuiScreen;
@@ -22,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.Loader;
+/*import logisticspipes.proxy.te.ThermalExpansionProxy;*/
 
 public class ProxyManager {
 

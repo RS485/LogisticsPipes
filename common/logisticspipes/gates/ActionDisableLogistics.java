@@ -10,9 +10,9 @@ package logisticspipes.gates;
 
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
+import buildcraft.api.core.IIconProvider;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import buildcraft.api.core.IIconProvider;
 
 public class ActionDisableLogistics extends LPAction{
 

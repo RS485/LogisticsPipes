@@ -20,6 +20,7 @@
 	<property name="ic2.dir"              value="${mcp.dir}/unpack/ic2"/>
 	<property name="cc.dir"               value="${mcp.dir}/unpack/cc"/>
 	<property name="thaumcraft.dir"       value="${mcp.dir}/unpack/thaumcraft"/>
+	<property name="te.dir"               value="${mcp.dir}/unpack/te"/>
 
 	<property name="clientsrc.dir"        value="${mcp.dir}/src/minecraft"/>
 	<property name="commonsrc.dir"        value="${clientsrc.dir}"/>
@@ -33,13 +34,14 @@
 	<property name="antcont.version"      value="1.0b3"/>
 	<property name="mcp.version"          value="744"/>
 	<property name="mc.version"           value="1.5.1"/>
-	<property name="forge.version"        value="7.7.1.660"/>
+	<property name="forge.version"        value="7.7.1.676"/>
 	<property name="bc.version"           value="3.5.0.2"/>
 	<property name="forestry.version"     value="2.1.2.17"/>
 	<property name="ic2.version"          value="1.115.304-lf"/>
 	<property name="cc.version"           value="1.52"/>
 	<property name="thaumcraft.version.api" value="0.0.5"/>
 	<property name="thaumcraft.version.mod" value="3.0.4b"/>
+	<property name="te.version"           value="2.3.0"/>
 	<property name="lp.version"           value="0.7.2"/>
 	
 	<!-- Targets -->
@@ -61,6 +63,7 @@
 		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ThaumcraftApi-${thaumcraft.version.api}-for-${thaumcraft.version.mod}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}ThermalExpansion-API-${te.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 
 		<echo message="Download finished"/>
@@ -117,6 +120,12 @@
 		<unzip dest="${thaumcraft.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="ThaumcraftApi-${thaumcraft.version.api}-for-${thaumcraft.version.mod}.zip"/>
+			</fileset>
+		</unzip>
+
+		<unzip dest="${te.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="ThermalExpansion-API-${te.version}.zip"/>
 			</fileset>
 		</unzip>
 
@@ -181,6 +190,13 @@
 		</copy>
 
 		<echo message="Copied ThaumCraft API"/>
+
+		<!-- Copy CC API source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${te.dir}"/>
+		</copy>
+
+		<echo message="Copied CC API"/>
 
 		<!-- Copy Dummy classes source -->
 		<copy todir="${commonsrc.dir}">

@@ -2,9 +2,9 @@ package logisticspipes.textures.provider;
 
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
+import buildcraft.api.core.IIconProvider;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import buildcraft.api.core.IIconProvider;
 
 public class LPPipeIconProvider implements IIconProvider {
 	public Icon icons[];

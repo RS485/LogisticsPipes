@@ -331,7 +331,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	}
 	
 	@Override
-	public void setClientAuthorizationList(List list) {
+	public void setClientAuthorizationList(List<String> list) {
 		this._authorized = list;
 	}
 	@Override

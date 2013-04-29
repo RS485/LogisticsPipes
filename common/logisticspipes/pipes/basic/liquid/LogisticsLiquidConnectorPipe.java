@@ -1,13 +1,13 @@
 package logisticspipes.pipes.basic.liquid;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.textures.Textures;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportLiquids;
 import buildcraft.transport.pipes.PipeLogicGold;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsLiquidConnectorPipe extends Pipe {
 

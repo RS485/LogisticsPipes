@@ -8,15 +8,17 @@
 
 package logisticspipes.items;
 
+import java.text.MessageFormat;
+import java.util.List;
+
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+
+import org.lwjgl.input.Keyboard;
+
 import buildcraft.core.utils.Localization;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
-import org.lwjgl.input.Keyboard;
-
-import java.text.MessageFormat;
-import java.util.List;
 
 /**
  * A logistics pipe Item

@@ -13,5 +13,5 @@ public interface ISecurityStationManager {
 	public void authorizeUUID(UUID id);
 	public boolean isAuthorized(UUID id);
 	public void sendClientAuthorizationList();
-	public void setClientAuthorizationList(List list);
+	public void setClientAuthorizationList(List<String> list);
 }

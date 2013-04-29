@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -27,7 +28,7 @@ public class RequestTree extends RequestTreeNode {
 		super(item, requester, parent);
 	}
 	
-	private int getExistingPromisesFor(FinalPair key) {
+	private int getExistingPromisesFor(FinalPair<IProvideItems, ItemIdentifier> key) {
 		if(_promisetotals == null)
 			_promisetotals = new HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer>();
 		Integer n = _promisetotals.get(key);

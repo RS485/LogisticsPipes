@@ -1,8 +1,8 @@
 package logisticspipes.proxy.ic2;
 
 import ic2.api.item.IElectricItem;
-import ic2.api.recipe.Recipes;
 import ic2.api.item.Items;
+import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IIC2Proxy;

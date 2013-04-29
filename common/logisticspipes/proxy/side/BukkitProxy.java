@@ -1,9 +1,9 @@
 package logisticspipes.proxy.side;
 
-import buildcraft.transport.TileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
+import buildcraft.transport.TileGenericPipe;
 
 public class BukkitProxy extends ServerProxy {
 

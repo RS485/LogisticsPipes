@@ -810,7 +810,7 @@ public class RecipeManager {
 		});
 		
 		//Liquid Routing
-		if(LogisticsPipes.DEBUG&&false) {
+		if(LogisticsPipes.DEBUG) {
 			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnector, 4), new Object[] { 
 				"GtG", 
 				"gPg", 

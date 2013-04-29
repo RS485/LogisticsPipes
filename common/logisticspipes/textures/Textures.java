@@ -1,15 +1,13 @@
 package logisticspipes.textures;
 
-import buildcraft.api.core.IIconProvider;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
+import buildcraft.api.core.IIconProvider;
 import cpw.mods.fml.common.FMLCommonHandler;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class Textures {
 	private int index = 0;

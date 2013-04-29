@@ -3,7 +3,6 @@ package logisticspipes.transport;
 import java.util.BitSet;
 
 import logisticspipes.network.packets.PacketLiquidUpdate;
-import logisticspipes.pipes.basic.liquid.LogisitcsLiquidConnectionTransport;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
@@ -16,7 +15,6 @@ import buildcraft.BuildCraftCore;
 import buildcraft.api.core.SafeTimeTracker;
 import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransport;
 
 public class PipeLiquidTransportLogistics extends PipeTransportLogistics implements ITankContainer {
 

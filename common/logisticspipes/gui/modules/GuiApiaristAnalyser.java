@@ -21,6 +21,7 @@ public class GuiApiaristAnalyser extends GuiWithPreviousGuiContainer {
 		ySize = 60;
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void initGui() {
 		super.initGui();

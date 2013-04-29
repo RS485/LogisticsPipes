@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 		        }
 		 
 		        if( delayed instanceof DelayedGeneric ) {
-		            long diff = delay - ( ( DelayedGeneric )delayed ).delay;
+		            long diff = delay - ( ( DelayedGeneric<?> )delayed ).delay;
 		            return ( ( diff == 0 ) ? 0 : ( ( diff < 0 ) ? -1 : 1 ) );
 		        }
 		 

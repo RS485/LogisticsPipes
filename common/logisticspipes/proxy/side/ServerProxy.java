@@ -2,8 +2,6 @@ package logisticspipes.proxy.side;
 
 import java.io.File;
 
-import buildcraft.transport.TileGenericPipe;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -23,6 +21,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.DimensionManager;
+import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.server.FMLServerHandler;

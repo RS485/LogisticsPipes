@@ -7,6 +7,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -22,7 +23,6 @@ import org.lwjgl.input.Keyboard;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
-import net.minecraft.client.renderer.texture.IconRegister;
 
 public class RemoteOrderer extends Item {
 	final static Icon[] _icons = new Icon[17];

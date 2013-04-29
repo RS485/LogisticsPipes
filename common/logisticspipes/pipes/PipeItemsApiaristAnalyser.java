@@ -123,7 +123,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	private TileEntity getPointedTileEntity() {
-		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		WorldUtil wUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile != null) {
 				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile)) {
@@ -184,7 +184,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		analyserModule.registerPosition(xCoord, yCoord, zCoord, 0);
+		analyserModule.registerSlot(0);
 	}
 
 	@Override

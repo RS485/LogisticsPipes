@@ -74,32 +74,17 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public int getX() {
-		return xCoord;
-	}
-
-	@Override
-	public int getY() {
-		return yCoord;
-	}
-
-	@Override
-	public int getZ() {
-		return zCoord;
-	}
-
-	@Override
 	public void startWaitching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 	}
 
 	@Override
 	public void stopWaitching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 	}
 	
 	private IInventory getRawInventory(ForgeDirection ori) {
-		Position pos = new Position(this.xCoord, this.yCoord, this.zCoord, ori);
+		Position pos = new Position(this.getX(), this.getY(), this.getZ(), ori);
 		pos.moveForwards(1);
 		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 		if (tile instanceof TileGenericPipe) return null;
@@ -138,7 +123,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		if(!itemList.equals(oldList) || force) {
 			oldList.clear();
 			oldList.addAll(itemList);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, itemList).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), itemList).getPacket(), localModeWatchers);
 		}
 	}
 	
@@ -146,7 +131,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, ((BaseLogicSatellite)this.logic).satelliteId).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, getX(), getY(), getZ(), ((BaseLogicSatellite)this.logic).satelliteId).getPacket(), (Player)player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);

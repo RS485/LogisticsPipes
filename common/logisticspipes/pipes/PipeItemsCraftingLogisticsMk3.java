@@ -121,7 +121,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	@Override
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
-		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+		inv.dropContents(worldObj, getX(), getY(), getZ());
 	}
 
 	@Override
@@ -143,14 +143,14 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
-		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), localModeWatchers);
 	}
 	
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		super.playerStartWatching(player, mode);
 		if(mode == 1) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, xCoord, yCoord, zCoord, ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
 		}
 	}
 

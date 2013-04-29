@@ -172,7 +172,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public logisticspipes.network.packets.PacketPayload getLogisticsNetworkPacket() {
-		logisticspipes.network.packets.PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(xCoord, yCoord, zCoord, new Object[] { container, transport, logic });
+		logisticspipes.network.packets.PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(getX(), getY(), getZ(), new Object[] { container, transport, logic });
 
 		return payload;
 	}
@@ -193,7 +193,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
-		Position p = new Position(this.xCoord + 0.5F, this.yCoord + Utils.getPipeFloorOf(routedItem.getItemStack()), this.zCoord + 0.5F, from);
+		Position p = new Position(this.getX() + 0.5F, this.getY() + Utils.getPipeFloorOf(routedItem.getItemStack()), this.getZ() + 0.5F, from);
 		if(from == ForgeDirection.DOWN) {
 			p.moveForwards(0.24F);
 		} else if(from == ForgeDirection.UP) {
@@ -214,7 +214,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 		} // should not be able to send to a non-existing router
 		//router.startTrackingRoutedItem((RoutedEntityItem) routedItem.getEntityPassiveItem());
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 2);
+		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, 2);
 		stat_lifetime_sent++;
 		stat_session_sent++;
 		updateStats();
@@ -230,7 +230,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	private boolean checkTileEntity(boolean force) {
 		if(worldObj.getWorldTime() % 10 == 0 || force) {
 			if(this.container.getClass() != BuildCraftProxy.logisticsTileGenericPipe) {
-				TileEntity tile = worldObj.getBlockTileEntity(xCoord, yCoord, zCoord);
+				TileEntity tile = worldObj.getBlockTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
 					LogisticsPipes.log.severe("LocalCodeError");
 				}
@@ -266,7 +266,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(_cachedAdjacentInventories != null) {
 			return _cachedAdjacentInventories;
 		}
-		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		WorldUtil worldUtil = new WorldUtil(this.worldObj, this.getX(), this.getY(), this.getZ());
 		LinkedList<IInventory> adjacent = new LinkedList<IInventory>();
 		for (AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;
@@ -297,7 +297,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		} else {
 			if(stillNeedReplace) {
 				stillNeedReplace = false;
-				worldObj.notifyBlockChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord, yCoord, zCoord));
+				worldObj.notifyBlockChange(getX(), getY(), getZ(), worldObj.getBlockId(getX(), getY(), getZ()));
 				for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
@@ -311,7 +311,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(delayTo < System.currentTimeMillis()) {
 				delayTo = System.currentTimeMillis() + 200;
 				repeatFor--;
-				worldObj.markBlockForUpdate(this.xCoord, this.yCoord, this.zCoord);
+				worldObj.markBlockForUpdate(this.getX(), this.getY(), this.getZ());
 			}
 		}
 		// remove old items _inTransit -- these should have arived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.
@@ -374,7 +374,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if (transport != null && transport instanceof PipeTransportLogistics){
 				((PipeTransportLogistics)transport).dropBuffer();
 			}
-			getUpgradeManager().dropUpgrades(worldObj, xCoord, yCoord, zCoord);
+			getUpgradeManager().dropUpgrades(worldObj, getX(), getY(), getZ());
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -406,7 +406,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
 			_textureBufferPowered = flag;
 			refreshRender(false);
-			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
+			MainProxy.sendSpawnParticlePacket(Particles.RedParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, 3);
 		}
 	}
 	
@@ -513,7 +513,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				UUID routerIntId = null;
 				if(routerId!=null && !routerId.isEmpty())
 					routerIntId = UUID.fromString(routerId);
-				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, false);
+				router = SimpleServiceLocator.routerManager.getOrCreateRouter(routerIntId, MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), false);
 			}
 		}
 		return router;
@@ -588,7 +588,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule) {
 			if(MainProxy.isServer(world)) {
 				if (settings == null || settings.openGui) {
-					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, xCoord, yCoord, zCoord);
+					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, getX(), getY(), getZ());
 				} else {
 					entityplayer.sendChatToPlayer("Permission denied");
 				}
@@ -606,7 +606,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		
 		this.container.scheduleRenderUpdate();
 		if (spawnPart) {
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
+			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, 3);
 		}
 	}
 	
@@ -614,7 +614,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		clearCache();
 		this.container.scheduleNeighborChange();
 		if (spawnPart) {
-			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, 3);
+			MainProxy.sendSpawnParticlePacket(Particles.GreenParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, 3);
 		}
 	}
 	
@@ -622,7 +622,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public LinkedList<AdjacentTile> getConnectedEntities() {
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		WorldUtil world = new WorldUtil(this.worldObj, this.getX(), this.getY(), this.getZ());
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		
 		Iterator<AdjacentTile> iterator = adjacent.iterator();
@@ -726,7 +726,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void connectionUpdate() {
 		if(container != null && !stillNeedReplace) {
 			container.scheduleNeighborChange();
-			worldObj.notifyBlockChange(xCoord, yCoord, zCoord, worldObj.getBlockId(xCoord, yCoord, zCoord));
+			worldObj.notifyBlockChange(getX(), getY(), getZ(), worldObj.getBlockId(getX(), getY(), getZ()));
 		}
 	}
 	
@@ -795,7 +795,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				if (particlecount > 10) {
 					particlecount = 10;
 				}
-				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.xCoord, this.yCoord, this.zCoord, this.worldObj, particlecount);
+				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, particlecount);
 				return true;
 			}
 		}
@@ -984,5 +984,17 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		} else {
 			return texture.unpowered;
 		}
+	}
+
+	public final int getX() {
+		return getX();
+	}
+
+	public final int getY() {
+		return getY();
+	}
+
+	public final int getZ() {
+		return getZ();
 	}
 }

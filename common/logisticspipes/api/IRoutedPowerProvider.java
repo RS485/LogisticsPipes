@@ -20,4 +20,8 @@ public interface IRoutedPowerProvider {
 	//   b) add itself to the list (creating it if the list is null), 
 	boolean useEnergy(int amount, List<Object> providersToIgnore);	
 	boolean canUseEnergy(int amount, List<Object> providersToIgnore);
+	
+	int getX(); // the coordinates of the associated tile (typically "this.xCoords"). needed for sending packets.
+	int getY();
+	int getZ(); 
 }

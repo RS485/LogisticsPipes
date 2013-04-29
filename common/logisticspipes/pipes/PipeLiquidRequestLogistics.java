@@ -19,7 +19,7 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 	}
 	
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Orderer_ID, this.worldObj, this.xCoord , this.yCoord, this.zCoord);
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Orderer_ID, this.worldObj, this.getX() , this.getY(), this.getZ());
 	}
 	
 	@Override

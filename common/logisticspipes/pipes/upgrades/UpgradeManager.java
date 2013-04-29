@@ -112,7 +112,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public void openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.worldObj, pipe.getX(), pipe.getY(), pipe.getZ());
 	}
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {
@@ -148,8 +148,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	    return dummy;
 	}
 	
-	public void dropUpgrades(World worldObj, int xCoord, int yCoord, int zCoord) {
-		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+	public void dropUpgrades(World worldObj, int getX(), int getY(), int getZ()) {
+		inv.dropContents(worldObj, getX(), getY(), getZ());
 	}
 
 	public boolean isSideDisconnected(ForgeDirection side) {

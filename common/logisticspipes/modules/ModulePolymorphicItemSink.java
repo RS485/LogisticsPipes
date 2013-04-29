@@ -56,9 +56,23 @@ public class ModulePolymorphicItemSink implements ILogisticsModule {
 	@Override
 	public void tick() {}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {}
-
+	@Override 
+	public void registerSlot(int slot) {
+	}
+	
+	@Override 
+	public final int getX() {
+		return this._power.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this._power.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this._power.getX();
+	}
 	@Override
 	public boolean hasGenericInterests() {
 		return false;

@@ -24,9 +24,9 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
 	private ISendRoutedItem _itemSender;
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
+
+
+
 	private IWorldProvider _world;
 
 	private int currentTickCount = 0;
@@ -48,11 +48,23 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 		_itemSender = itemSender;
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+
+	@Override 
+	public void registerSlot(int slot) {
+	}
+	
+	@Override 
+	public final int getX() {
+		return this._power.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this._power.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this._power.getX();
 	}
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 0);
@@ -85,7 +97,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
 				Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
 				if(reply == null) continue;
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
 				_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);
 				return;
 			}

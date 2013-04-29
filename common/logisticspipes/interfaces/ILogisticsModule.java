@@ -18,9 +18,23 @@ public interface ILogisticsModule extends ISaveState {
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider);
 	
 	/**
-	 * Registers the position to the module
+	 * Registers the slot the module is in
+	 * Negative numbers indicate an in-hand inventory, not in a gui or chassi 
 	 */
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot);
+	public void registerSlot(int slot);
+	
+	/**
+	 * typically returns the coord of the pipe that holds it.
+	 */
+	public int getX();
+	/**
+	 * typically returns the coord of the pipe that holds it.
+	 */
+	public int getY();
+	/**
+	 * typically returns the coord of the pipe that holds it.
+	 */
+	public int getZ();
 	
 	/**
 	 * Gives an sink answer on the given itemstack 

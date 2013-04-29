@@ -30,9 +30,9 @@ public class ModuleCrafter implements ILogisticsModule{
 	//private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested items", 1);
 	/*private boolean _isDefaultRoute;
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;*/
+
+
+*/
 	
 //	private IHUDModuleRenderer HUD = new HUDItemSink(this);
 	private final PipeItemsCraftingLogistics pipe;
@@ -49,8 +49,23 @@ public class ModuleCrafter implements ILogisticsModule{
 //		_power = powerprovider;
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
+
+	@Override 
+	public void registerSlot(int slot) {
+	}
+	
+	@Override 
+	public final int getX() {
+		return this.pipe.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this.pipe.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this.pipe.getX();
 	}
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
@@ -65,7 +80,7 @@ public class ModuleCrafter implements ILogisticsModule{
 
 	private int spaceFor(ItemIdentifier item){
 		int count=0;
-		WorldUtil wUtil = new WorldUtil(pipe.worldObj,pipe.xCoord,pipe.yCoord,pipe.zCoord);
+		WorldUtil wUtil = new WorldUtil(pipe.worldObj,pipe.getX(),pipe.getY(),pipe.getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
@@ -100,19 +115,19 @@ public class ModuleCrafter implements ILogisticsModule{
 /*
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, xCoord, yCoord, zCoord, slot, isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, getX(), getY(), getZ(), slot, isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
 	}
 
 	@Override
@@ -122,7 +137,7 @@ public class ModuleCrafter implements ILogisticsModule{
 
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
-		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, xCoord, yCoord, zCoord, slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
 	}
 
 	@Override

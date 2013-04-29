@@ -57,7 +57,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		if(MainProxy.isServer(world)) {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
-				MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket(), (Player) entityplayer);
+				MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket(), (Player) entityplayer);
 			} else {
 				entityplayer.sendChatToPlayer("Permission denied");
 			}
@@ -80,7 +80,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, dir);
+					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir);
 				}
 			}
 			return routers[dir.ordinal()];
@@ -95,7 +95,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				if (routerId == null || routerId == ""){
 					routerId = UUID.randomUUID().toString();
 				}
-				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), xCoord, yCoord, zCoord, ForgeDirection.UNKNOWN);
+				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN);
 			}
 		}
 		return router;
@@ -225,7 +225,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockProvider(boolean blockProvider) {
 		this.blockProvider = blockProvider;
-		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 	}
 
 	public boolean isBlockCrafer() {
@@ -234,7 +234,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockCrafer(boolean blockCrafer) {
 		this.blockCrafer = blockCrafer;
-		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 	}
 
 	public boolean isBlockSorting() {
@@ -243,7 +243,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockSorting(boolean blockSorting) {
 		this.blockSorting = blockSorting;
-		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 	}
 
 	public boolean isBlocking() {
@@ -252,7 +252,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlocking(boolean isBlocking) {
 		this.isBlocking = isBlocking;
-		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, xCoord, yCoord, zCoord, getFlags()).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 	}
 	
 	private BitSet getFlags() {

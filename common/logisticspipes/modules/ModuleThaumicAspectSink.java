@@ -28,9 +28,9 @@ import cpw.mods.fml.common.network.Player;
 public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInformationProvider, IModuleWatchReciver {
 
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+
+
+
 	
 	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;
@@ -45,13 +45,35 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		_world = world;
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
-		this.slot = slot;		
+
+	@Override 
+	public void registerSlot(int slot) {
+		this.slot = slot;
 	}
+	
+	@Override 
+	public final int getX() {
+		if(slot>=0)
+			return this._power.getX();
+		else 
+			return 0;
+	}
+	@Override 
+	public final int getY() {
+		if(slot>=0)
+			return this._power.getX();
+		else 
+			return -1;
+	}
+	
+	@Override 
+	public final int getZ() {
+		if(slot>=0)
+			return this._power.getX();
+		else 
+			return -1-slot;
+	}
+
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
 	@Override
@@ -104,7 +126,7 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), (Player)player);		
+		MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), (Player)player);		
 	}
 
 	@Override
@@ -116,11 +138,11 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), localModeWatchers);
 		} else {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket());	
+			MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket());	
 		}
 	}
 

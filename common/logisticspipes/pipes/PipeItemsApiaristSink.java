@@ -36,7 +36,7 @@ public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		sinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
+		sinkModule.registerSlot(0);
 	}
 
 	@Override

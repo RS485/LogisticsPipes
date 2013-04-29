@@ -18,11 +18,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvider {
-	
-	public int xCoord;
-	public int yCoord;
-	public int zCoord;
-	
+
 	public enum FilterType {
 		Null("",0,0),
 		BeeAllele("gui.pipe.filter.BEE",3,2),
@@ -293,12 +289,25 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 		writeToNBT(tag);
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+
+	@Override 
+	public void registerSlot(int slot) {
 	}
+	
+	@Override 
+	public final int getX() {
+		return this._power.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this._power.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this._power.getX();
+	}
+
 	@Override
 	public boolean hasGenericInterests() {
 		return true;

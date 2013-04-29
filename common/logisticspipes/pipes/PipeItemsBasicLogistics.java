@@ -138,7 +138,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		WorldUtil world = new WorldUtil(this.worldObj, this.getX(), this.getY(), this.getZ());
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
@@ -151,7 +151,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		itemSinkModule.registerPosition(xCoord, yCoord, zCoord, 0);
+		itemSinkModule.registerSlot(0);
 	}
 	
 	@Override

@@ -109,7 +109,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	private void checkConnectedInvs() {
-		WorldUtil wUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		WorldUtil wUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile instanceof IInventory) {
 				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
@@ -154,7 +154,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, this.worldObj, 4);
+		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.worldObj, 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -185,7 +185,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	private void dropFreqCard() {
 		if(inv.getStackInSlot(0) == null) return;
-		EntityItem item = new EntityItem(worldObj,this.xCoord, this.yCoord, this.zCoord, inv.getStackInSlot(0));
+		EntityItem item = new EntityItem(worldObj,this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
 		worldObj.spawnEntityInWorld(item);
 		inv.setInventorySlotContents(0, null);
 	}
@@ -277,7 +277,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(xCoord, yCoord, zCoord, ForgeDirection.values()[i]);
+			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
 			p.moveForwards(1);
 			TileEntity tile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(tile instanceof IInventory) {
@@ -324,7 +324,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	public boolean isConnectedInv(TileEntity tile) {
 		for (int i = 0; i < 6; i++)	{
-			Position p = new Position(xCoord, yCoord, zCoord, ForgeDirection.values()[i]);
+			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
 			p.moveForwards(1);
 			TileEntity lTile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(lTile instanceof IInventory) {
@@ -346,7 +346,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 					if(CRP instanceof IDirectRoutingConnection) {
 						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 						pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getItemStack().stackSize, routed.getDestination(), routed.getTransportMode());
-						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, this.worldObj, 4);
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.worldObj, 4);
 					}
 				}
 			}
@@ -354,28 +354,13 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	@Override
-	public int getX() {
-		return this.xCoord;
-	}
-
-	@Override
-	public int getY() {
-		return this.yCoord;
-	}
-
-	@Override
-	public int getZ() {
-		return this.zCoord;
-	}
-
-	@Override
 	public void startWaitching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 	}
 
 	@Override
 	public void stopWaitching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, xCoord, yCoord, zCoord, 1).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 	}
 
 	@Override
@@ -387,7 +372,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		Set<ItemIdentifierStack> newList = getExpectedItems();
 		if(!newList.equals(oldList)) {
 			oldList=newList;
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, newList).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), newList).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -395,7 +380,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, xCoord, yCoord, zCoord, getExpectedItems()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), getExpectedItems()).getPacket(), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}

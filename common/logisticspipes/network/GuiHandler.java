@@ -796,7 +796,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ISneakyDirectionReceiver)) return null;
 					return new GuiExtractor(player.inventory, null, (ISneakyDirectionReceiver) module, null, slot);
@@ -810,7 +810,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleItemSink)) return null;
 					return new GuiItemSink(player.inventory, null, (ModuleItemSink) module, null, slot);
@@ -828,7 +828,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModulePassiveSupplier)) return null;
 					return new GuiPassiveSupplier(player.inventory, null, (ModulePassiveSupplier) module, null);	
@@ -842,7 +842,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleProvider)) return null;
 					return new GuiProvider(player.inventory, null, (ModuleProvider) module, null, slot);
@@ -856,7 +856,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleTerminus)) return null;
 					return new GuiTerminus(player.inventory, null, (ModuleTerminus) module, null);
@@ -870,7 +870,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleAdvancedExtractor)) return null;
 					return new GuiAdvancedExtractor(player.inventory, null, (ModuleAdvancedExtractor) module, null, slot);
@@ -884,7 +884,7 @@ public class GuiHandler implements IGuiHandler {
 					ItemStack item = player.inventory.mainInventory[z];
 					if(item == null) return null;
 					ILogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, null, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleElectricManager)) return null;
 					return new GuiElectricManager(player.inventory, null, (ModuleElectricManager) module, null, slot);
@@ -902,7 +902,7 @@ public class GuiHandler implements IGuiHandler {
 						public World getWorld() {
 							return world;
 						}}, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleApiaristSink)) return null;
 					return new GuiApiaristSink((ModuleApiaristSink) module, player, null, null, slot);
@@ -920,7 +920,7 @@ public class GuiHandler implements IGuiHandler {
 						public World getWorld() {
 							return world;
 						}}, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleModBasedItemSink)) return null;
 					return new GuiModBasedItemSink(player.inventory, null, (ModuleModBasedItemSink) module, null, slot);
@@ -938,7 +938,7 @@ public class GuiHandler implements IGuiHandler {
 						public World getWorld() {
 							return world;
 						}}, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleThaumicAspectSink)) return null;
 					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, null, slot);
@@ -956,7 +956,7 @@ public class GuiHandler implements IGuiHandler {
 						public World getWorld() {
 							return world;
 						}}, null);
-					module.registerPosition(0, -1, z, 20);
+					module.registerSlot(-1-z);
 					ItemModuleInformationManager.readInformation(item, module);
 					if(!(module instanceof ModuleApiaristAnalyser)) return null;
 					return new GuiApiaristAnalyser((ModuleApiaristAnalyser) module, null, null, player.inventory);

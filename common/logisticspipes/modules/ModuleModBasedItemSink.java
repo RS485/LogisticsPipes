@@ -33,9 +33,9 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 	public final List<String> modList = new LinkedList<String>();
 	private BitSet modIdSet;
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+
+
+
 	
 	private IHUDModuleRenderer HUD = new HUDModBasedItemSink(this);
 	
@@ -50,13 +50,35 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		_world = world;
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+
+	@Override 
+	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
+	
+	@Override 
+	public final int getX() {
+		if(slot>=0)
+			return this._power.getX();
+		else 
+			return 0;
+	}
+	@Override 
+	public final int getY() {
+		if(slot>=0)
+			return this._power.getX();
+		else 
+			return -1;
+	}
+	
+	@Override 
+	public final int getZ() {
+		if(slot>=0)
+			return this._power.getX();
+		else 
+			return -1-slot;
+	}
+
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ModBasedItemSink, 0, true, false, 5, 0);
 	@Override
@@ -121,12 +143,12 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
 	}
 
 	@Override
@@ -134,7 +156,7 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), (Player)player);
 	}
 
 	@Override
@@ -146,11 +168,11 @@ public class ModuleModBasedItemSink implements ILogisticsGuiModule, IClientInfor
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), localModeWatchers);
 		} else {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, xCoord, yCoord, zCoord, slot, nbt).getPacket());	
+			MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket());	
 		}
 	}
 

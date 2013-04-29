@@ -59,7 +59,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 	
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, this.worldObj, this.xCoord , this.yCoord, this.zCoord);
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, this.worldObj, this.getX() , this.getY(), this.getZ());
 	}
 	
 	@Override

@@ -27,9 +27,9 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
 	private ISendRoutedItem _itemSender;
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
+
+
+
 	private IWorldProvider _world;
 
 	private int currentTickCount = 0;
@@ -60,12 +60,25 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+
+	@Override 
+	public void registerSlot(int slot) {
 	}
+	
+	@Override 
+	public final int getX() {
+		return this._invProvider.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this._invProvider.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this._invProvider.getX();
+	}
+
 
 	@Override
 	public void tick() {
@@ -99,8 +112,8 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 					}
 					_power.useEnergy(100);
 					inv.extractItem(true, direction, 1);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
+					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
 					return true;
 				}
 			}
@@ -114,8 +127,8 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 					}
 					_power.useEnergy(100);
 					inv.extractItem(true, direction, 1);
-					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
-					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 5);
+					MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
+					MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 5);
 					return true;
 				}
 			}

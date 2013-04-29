@@ -35,13 +35,13 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	public LiquidRoutedPipe(int itemID) {
 		super(new PipeLiquidTransportLogistics(), new TemporaryLogic(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
-		worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		worldUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
 	}
 	
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		worldUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
 	}
 
 	@Override
@@ -70,7 +70,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	}
 	
 	private boolean isLiquidSidedTexture(ForgeDirection connection) {
-		WorldUtil util = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		WorldUtil util = new WorldUtil(worldObj, getX(), getY(), getZ());
 		TileEntity tile = util.getAdjacentTileEntitie(connection);
 		if (tile instanceof ITankContainer) {
 			ITankContainer liq = (ITankContainer) tile;

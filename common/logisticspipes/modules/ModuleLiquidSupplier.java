@@ -23,10 +23,11 @@ import net.minecraft.nbt.NBTTagCompound;
 public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInformationProvider {
 	
 	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested liquids", 1);
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
+
+
+
 	private IWorldProvider _world;
+	IRoutedPowerProvider _power;
 	
 	public IInventory getFilterInventory(){
 		return _filterInventory;
@@ -35,6 +36,7 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {
 		_world = world;
+		_power = powerprovider;
 	}
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0);
@@ -42,7 +44,7 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsItem(item)){
-			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, _world.getWorld(), 2);
+			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
 			return _sinkReply;
 		}
 		return null;
@@ -78,11 +80,23 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 		return list;
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+
+	@Override 
+	public void registerSlot(int slot) {
+	}
+	
+	@Override 
+	public final int getX() {
+		return this._power.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this._power.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this._power.getX();
 	}
 
 	@Override

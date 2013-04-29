@@ -35,9 +35,9 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	private int ticksToAction = 100;
 	private int currentTick = 0;
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+
+
+
 
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 
@@ -111,13 +111,35 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 		}
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
-		this.slot = slot;		
+
+	@Override 
+	public void registerSlot(int slot) {
+		this.slot = slot;
 	}
+	
+	@Override 
+	public final int getX() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return 0;
+	}
+	@Override 
+	public final int getY() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return -1;
+	}
+	
+	@Override 
+	public final int getZ() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return -1-slot;
+	}
+
 
 	@Override
 	public boolean hasGenericInterests() {
@@ -165,11 +187,11 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	}
 	
 	public void modeChanged() {
-		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket());
+		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
 		if(MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), localModeWatchers);
 		} else {
-			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket());
+			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
 		}
 
 	}
@@ -185,7 +207,7 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, xCoord, yCoord, zCoord, slot, getExtractMode()).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), (Player)player);
 	}
 
 	@Override

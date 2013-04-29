@@ -50,9 +50,9 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 	private IWorldProvider _world;
 
 	private int slot = 0;
-	private int xCoord = 0;
-	private int yCoord = 0;
-	private int zCoord = 0;
+
+
+
 
 	private IHUDModuleRenderer HUD = new HUDExtractor(this);
 
@@ -94,7 +94,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 	@Override
 	public void setSneakyDirection(ForgeDirection sneakyDirection){
 		_sneakyDirection = sneakyDirection;
-		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getX(), getY(), getZ(), slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);
 	}
 
 	@Override
@@ -190,7 +190,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 				}
 
 				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.xCoord, this.yCoord, this.zCoord, _world.getWorld(), 2);
+					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
 					count--;
 				}
 
@@ -219,28 +219,50 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 		return list;
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+
+	@Override 
+	public void registerSlot(int slot) {
 		this.slot = slot;
 	}
+	
+	@Override 
+	public final int getX() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return 0;
+	}
+	@Override 
+	public final int getY() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return -1;
+	}
+	
+	@Override 
+	public final int getZ() {
+		if(slot>=0)
+			return this._invProvider.getX();
+		else 
+			return -1-slot;
+	}
+
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, xCoord, yCoord, zCoord, slot).getPacket());
+		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, xCoord, yCoord, zCoord, slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getX(), getY(), getZ(), slot, _sneakyDirection.ordinal()).getPacket(), localModeWatchers);
 	}
 
 	@Override
@@ -253,10 +275,6 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 		return HUD;
 	}
 
-	@Override
-	public int getZPos() {
-		return zCoord;
-	}
 	@Override
 	public boolean hasGenericInterests() {
 		return false;

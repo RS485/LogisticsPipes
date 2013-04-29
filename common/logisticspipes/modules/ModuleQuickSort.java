@@ -36,9 +36,9 @@ public class ModuleQuickSort implements ILogisticsModule {
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
 	private IRoutedPowerProvider _power;
-	private int xCoord;
-	private int yCoord;
-	private int zCoord;
+
+
+
 	private IWorldProvider _world;
 	private ItemIdentifier lastItemKey;
 
@@ -136,7 +136,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 					_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
 					availableItems-=stackToSend.stackSize;
 					
-					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
+					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
 		
 					if(availableItems <= 0) break;
 					if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
@@ -206,7 +206,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 				ItemStack stackToSend = slot.splitStack(count);
 	
 				_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, xCoord, yCoord, zCoord, _world.getWorld(), 8);
+				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
 	
 				if(slot.stackSize == 0) break;
 				if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
@@ -240,11 +240,22 @@ public class ModuleQuickSort implements ILogisticsModule {
 		}
 	}
 
-	@Override
-	public void registerPosition(int xCoord, int yCoord, int zCoord, int slot) {
-		this.xCoord = xCoord;
-		this.yCoord = yCoord;
-		this.zCoord = zCoord;
+	@Override 
+	public void registerSlot(int slot) {
+	}
+	
+	@Override 
+	public final int getX() {
+		return this._power.getX();
+	}
+	@Override 
+	public final int getY() {
+		return this._power.getX();
+	}
+	
+	@Override 
+	public final int getZ() {
+		return this._power.getX();
 	}
 	@Override
 	public boolean hasGenericInterests() {

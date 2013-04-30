@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
@@ -107,22 +108,21 @@ public class LogisticsHUDRenderer {
 			clearList(false);
 			return;
 		}
+		Collections.sort(newList, new Comparator<Pair<Double, IHeadUpDisplayRendererProvider>>() {
+			@Override
+			public int compare(
+					Pair<Double, IHeadUpDisplayRendererProvider> o1,
+					Pair<Double, IHeadUpDisplayRendererProvider> o2) {
+				if (o1.getValue1() < o2.getValue1()) {
+					return -1;
+				} else if (o1.getValue1() > o2.getValue1()) {
+					return 1;
+				} else {
+					return 0;
+				}
+			}
+		});
 		for(IHeadUpDisplayRendererProvider part:list) {
-		Collections.sort(newList,
-				new Comparator<Pair<Double, IHeadUpDisplayRendererProvider>>() {
-					@Override
-					public int compare(
-							Pair<Double, IHeadUpDisplayRendererProvider> o1,
-							Pair<Double, IHeadUpDisplayRendererProvider> o2) {
-						if (o1.getValue1() < o2.getValue1()) {
-							return -1;
-						} else if (o1.getValue1() > o2.getValue1()) {
-							return 1;
-						} else {
-							return 0;
-						}
-					}
-				});
 			boolean contains = false;
 			for(Pair<Double,IHeadUpDisplayRendererProvider> inpart:newList) {
 				if(inpart.getValue2().equals(part)) {
@@ -141,7 +141,7 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].itemID == LogisticsPipes.LogisticsHUDArmor.itemID;
+		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor && ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
 	}
 	
 	public void renderPlayerDisplay(long renderTicks) {}

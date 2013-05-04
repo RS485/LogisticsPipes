@@ -3,6 +3,9 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -17,8 +20,10 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 
 public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInformationProvider {
 	
@@ -122,5 +127,11 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 	@Override
 	public boolean recievePassive() {
 		return true;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Icon getIconTexture(IconRegister register) {
+		return null;
 	}
 }

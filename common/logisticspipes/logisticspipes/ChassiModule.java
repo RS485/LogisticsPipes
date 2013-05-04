@@ -13,8 +13,10 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
 
 public class ChassiModule implements ILogisticsGuiModule{
 	
@@ -166,5 +168,11 @@ public class ChassiModule implements ILogisticsGuiModule{
 				return true;
 		}
 		return false;
+	}
+
+	@Override
+	public Icon getIconTexture(IconRegister register) {
+		//Not Needed
+		return null;
 	}
 }

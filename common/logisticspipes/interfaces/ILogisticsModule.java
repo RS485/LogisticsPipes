@@ -7,6 +7,10 @@ import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.util.Icon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public interface ILogisticsModule extends ISaveState {
 	/**
@@ -82,4 +86,11 @@ public interface ILogisticsModule extends ISaveState {
 	 * is this module a valid destination for bounced items.
 	 */
 	public boolean recievePassive();
+	
+	/**
+	 * get The Icon for this Module Class
+	 * @return
+	 */
+	@SideOnly(Side.CLIENT)
+	public Icon getIconTexture(IconRegister register);
 }

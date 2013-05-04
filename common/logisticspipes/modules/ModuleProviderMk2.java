@@ -1,5 +1,9 @@
 package logisticspipes.modules;
 
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.util.Icon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 
 public class ModuleProviderMk2 extends ModuleProvider {
@@ -21,5 +25,11 @@ public class ModuleProviderMk2 extends ModuleProvider {
 	@Override
 	protected int stacksToExtract() {
 		return 8;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Icon getIconTexture(IconRegister register) {
+		return register.registerIcon("logisticspipes:itemModule/ModuleProviderMk2");
 	}
 }

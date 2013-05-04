@@ -1,10 +1,9 @@
-package logisticspipes.items;
+package logisticspipes.network.packets;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.network.packets.LogisticsPipesPacket;
 
 public class PacketInteger extends LogisticsPipesPacket {
 	

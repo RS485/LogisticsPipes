@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;

@@ -176,10 +176,11 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void addLogisticsPipesOverride(int index, String override1, String override2, boolean flag) {
 		IconRegister par1IconRegister=Minecraft.getMinecraft().renderEngine.textureMapBlocks;
-		if(flag)
-			Textures.LPpipeIconProvider.icons[index]=par1IconRegister.registerIcon("logisticspipes:"+override1);
-		else
-			Textures.LPpipeIconProvider.icons[index]=par1IconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/",""));
+		if(flag) {
+			Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1));
+		} else {
+			Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/","")));
+		}
 		if(LogisticsPipes.DEBUG_OVGEN&&!flag)
 		{
 			try

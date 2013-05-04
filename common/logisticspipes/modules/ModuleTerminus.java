@@ -5,9 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDTerminatorModule;
 import logisticspipes.interfaces.IClientInformationProvider;
@@ -36,6 +33,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 

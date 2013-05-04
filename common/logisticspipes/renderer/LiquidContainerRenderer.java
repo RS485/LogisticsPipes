@@ -1,7 +1,7 @@
 package logisticspipes.renderer;
 
-import logisticspipes.items.LiquidIconProvider;
 import logisticspipes.items.LogisticsLiquidContainer;
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -38,8 +38,8 @@ public class LiquidContainerRenderer implements IItemRenderer {
 		if (!(item.getItem() instanceof LogisticsLiquidContainer))
 			return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		LiquidStack liquid = LiquidIconProvider.getLiquidFromContainer(item);
-		if (liquid == null/* || item.getItemDamage() != 0/*/) {
+		LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+		if (liquid == null) {
 			doRenderItem(item, mc, type);
 			return;
 		}
@@ -74,11 +74,7 @@ public class LiquidContainerRenderer implements IItemRenderer {
 		if(type == ItemRenderType.INVENTORY) {
 			renderItem.renderItemAndEffectIntoGUI(mc.fontRenderer, mc.renderEngine, itemstack, 0, 0);
 		} else {
-			//float renderScale = 0.7f;
 			GL11.glPushMatrix();
-			//GL11.glTranslatef((float) d, (float) d1, (float) d2);
-			//GL11.glTranslatef(0, 0.25F, 0);
-			//GL11.glScalef(renderScale, renderScale, renderScale);
 			dummyEntityItem.setEntityItemStack(itemstack);
             GL11.glScalef(2F, 2F, 2F);
 			renderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);

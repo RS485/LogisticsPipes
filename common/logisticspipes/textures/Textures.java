@@ -20,10 +20,9 @@ public class Textures {
 	
 	public Textures() {
 		LPactionIconProvider = new LPActionTriggerIconProvider();
-		LPpipeIconProvider = new LPPipeIconProvider(PIPETEXTURE_LIMIT);
+		LPpipeIconProvider = new LPPipeIconProvider();
 	}
-	
-	public static final int PIPETEXTURE_LIMIT = 120;
+
 	public static TextureType LOGISTICSPIPE_TEXTURE							= empty;
 	public static TextureType LOGISTICSPIPE_PROVIDER_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_REQUESTER_TEXTURE				= empty;
@@ -126,52 +125,23 @@ public class Textures {
 	//Pipe Power Overlays
 	public static String LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE="pipes/status_overlay/powered-pipe";
 	public static String LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE="pipes/status_overlay/un-powered-pipe";
-	//TODO is it really needen?
 	public static String LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE="pipes/status_overlay/un-overlayed";
 	
 	//Armor
 	public static final String LOGISTICSPIPE_HUD_TEXTURE_FILE="/logisticspipes/HUD";
 	
-	/*static {
-		//BROKEN CODE -- CAN NOT DO THIS STATIC, MUST INIT AFTER MINECRAFT
-		//Armor
-		 LOGISTICSPIPE_HUD_TEXTURE_FILE				=  "HUD");
-
-	}
-	public static Icon LOGISTICSNETWORKMONITOR_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSREMOTEORDERER_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon[] LOGISTICSREMOTEORDERERCOLORED_ICONINDEX = new Icon[16];//8 * 16 + 0;
-	public static Icon LOGISTICSCRAFTINGSIGNCREATOR_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEMCARD_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEMHUD_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEMHUD_PART1_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEMHUD_PART2_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEMHUD_PART3_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEM_NANOHOPPER_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEM_UPGRADEMANAGER_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;
-	public static Icon LOGISTICSITEM_LIQUIDCONTAINER_ICONINDEX=LOGISTICSPIPE_TEXTURE_FILE;*/
-
-	//Overrider
-	@Deprecated
-	public static Icon BASE_TEXTURE_FILE;
-
-	// Misc -- now split
-//	public static Icon LOGISTICSITEMS_TEXTURE_FILE = "/logisticspipes/item_textures";
-//	public static Icon LOGISTICSACTIONTRIGGERS_TEXTURE_FILE = "/logisticspipes/actiontriggers_textures";
-
 	public static String LOGISTICS_SOLID_BLOCK=LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider LPactionIconProvider;
 	public static LPPipeIconProvider LPpipeIconProvider;
 	public void registerBlockIcons() {
-		//BASE_TEXTURE_FILE = "/logisticspipes/empty"
-		//LOGISTICS_SOLID_BLOCK="/logisticspipes/blocks/logistics_solid_block"
-		index=0;
+		index = 0;
+		
 		// Standalone pipes
-		LOGISTICSPIPE_TEXTURE 					= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDER_TEXTURE 			= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
-		LOGISTICSPIPE_POWERED_TEXTURE 			= registerTexture(LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
-		LOGISTICSPIPE_ROUTED_TEXTURE            = registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_NOTROUTED_TEXTURE         = registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
+		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
+		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_ROUTED_TEXTURE            	= registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_NOTROUTED_TEXTURE         	= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
@@ -211,15 +181,12 @@ public class Textures {
 		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
 		
 		
-		if(LogisticsPipes.DEBUG)
-			System.out.println("LP: pipetextures "+index+" out of "+PIPETEXTURE_LIMIT);
-		if (index > PIPETEXTURE_LIMIT) {
-			throw new UnsupportedOperationException("Too many Textures.");
+		if(LogisticsPipes.DEBUG) {
+			System.out.println("LP: pipetextures " + index);
 		}
 	}
+	
 	public void registerItemIcons(IconRegister par1IconRegister) {
-		
-		BASE_TEXTURE_FILE=par1IconRegister.registerIcon("logisticspipes:unknown");
 		LPactionIconProvider.registerIcons(par1IconRegister);
 	}
 	
@@ -237,14 +204,14 @@ public class Textures {
 			texture.normal = index++;
 			texture.powered=texture.normal;
 			texture.unpowered=texture.normal;
-			boolean isClient=MainProxy.isClient();
-			if(isClient)
+			boolean isClient = MainProxy.isClient();
+			if(isClient) {
 				MainProxy.proxy.addLogisticsPipesOverride(texture.normal,fileName,LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,(flag==2));
+			}
 			if(flag==1) {
 				texture.powered = index++;
 				texture.unpowered = index++;
-				if(isClient)
-				{
+				if(isClient) {
 					MainProxy.proxy.addLogisticsPipesOverride(texture.powered,fileName,LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE,false);
 					MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered,fileName,LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE,false);
 				}
@@ -266,74 +233,3 @@ public class Textures {
 		public int unpowered;
 	}
 }
-/*\item_textures\
-HUDGlasses.png
-HUD_part_arm.png
-HUD_part_frame.png
-HUD_part_lense.png
-itemCraftingGenerator.png
-itemNetworkAnalyzer.png
-itemRemoteOrder.png
-itemRemoteOrder_c0.png
-itemRemoteOrder_c1.png
-itemRemoteOrder_c2.png
-itemRemoteOrder_c3.png
-itemRemoteOrder_c4.png
-itemRemoteOrder_c5.png
-itemRemoteOrder_c6.png
-itemRemoteOrder_c7.png
-itemRemoteOrder_c8.png
-itemRemoteOrder_c9.png
-itemRemoteOrder_cA.png
-itemRemoteOrder_cB.png
-itemRemoteOrder_cC.png
-itemRemoteOrder_cD.png
-itemRemoteOrder_cE.png
-itemRemoteOrder_cF.png
-itemUnknowenModule.png
-itemUnknown2.png
-itemUpgradeDetach_down.png
-itemUpgradeDetach_east.png
-itemUpgradeDetach_north.png
-itemUpgradeDetach_south.png
-itemUpgradeDetach_up.png
-itemUpgradeDetach_west.png
-itemUpgradeManager.png
-itemUpgradeSneaky_down.png
-itemUpgradeSneaky_east.png
-itemUpgradeSneaky_north.png
-itemUpgradeSneaky_south.png
-itemUpgradeSneaky_up.png
-itemUpgradeSneaky_west.png
-itemUpgrade_1.png
-itemUpgrade_2.png
-itemUpgrade_3.png
-logisticsDisk.png
-mod_bee1.png
-mod_bee2.png
-mod_bee3.png
-mod_bee4.png
-mod_blank.png
-mod_electric1.png
-mod_extract_2.png
-mod_extract_3.png
-mod_extract_advanced_1.png
-mod_extract_advanced_2.png
-mod_extract_advanced_3.png
-mod_modSink.png
-mod_passiveSupplier.png
-mod_polySink.png
-mod_provider1.png
-mod_provider2.png
-mod_quickSort.png
-mod_sink.png
-mod_terminus.png
-mod_thaumic.png
-nanoHopper.png
-
-actionTriggers\ActionTrigger1.png
-actionTriggers\ActionTrigger17.png
-actionTriggers\CraftingWaiting.png
-actionTriggers\DisablePipe.png
-actionTriggers\PowerDischarging.png
-actionTriggers\PowerNeeded.png*/

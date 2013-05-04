@@ -3,9 +3,6 @@ package logisticspipes.modules;
 import java.util.ArrayList;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.ILogisticsGuiModule;
@@ -24,6 +21,8 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInformationProvider {
 	

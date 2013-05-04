@@ -9,16 +9,16 @@ public class LPActionTriggerIconProvider implements IIconProvider
 {
 	public static int actionDisablePipeIconIndex = 0;
 	public static int triggerCraftingIconIndex = 1;
-	public static int triggerPowerDischargingIconIndex =2;
-	public static int triggerPowerNeededIconIndex =3;
-	public static int triggerSupplierFailedIconIndex =4;
-	public static int triggerHasDestinationIconIndex =5;
+	public static int triggerPowerDischargingIconIndex = 2;
+	public static int triggerPowerNeededIconIndex = 3;
+	public static int triggerSupplierFailedIconIndex = 4;
+	public static int triggerHasDestinationIconIndex = 5;
 	
 	private Icon icons[];
-	public LPActionTriggerIconProvider()
-	{
-		icons=new Icon[6];
+	public LPActionTriggerIconProvider() {
+		icons = new Icon[6];
 	}
+	
 	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getIcon(int iconIndex) {
@@ -30,12 +30,11 @@ public class LPActionTriggerIconProvider implements IIconProvider
 	@Override
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister iconRegister) {
-		icons[actionDisablePipeIconIndex]=iconRegister.registerIcon("logisticspipes:actionTriggers/DisablePipe");
-		icons[triggerCraftingIconIndex]=iconRegister.registerIcon("logisticspipes:actionTriggers/CraftingWaiting");
-		icons[triggerPowerDischargingIconIndex]=iconRegister.registerIcon("logisticspipes:actionTriggers/PowerDischarging");
-		icons[triggerCraftingIconIndex]=iconRegister.registerIcon("logisticspipes:actionTriggers/PowerNeeded");
-		icons[triggerSupplierFailedIconIndex]=iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger1");
-		icons[triggerHasDestinationIconIndex]=iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger17");
+		icons[actionDisablePipeIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/DisablePipe");
+		icons[triggerCraftingIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/CraftingWaiting");
+		icons[triggerPowerDischargingIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/PowerDischarging");
+		icons[triggerPowerNeededIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/PowerNeeded");
+		icons[triggerSupplierFailedIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger1");
+		icons[triggerHasDestinationIconIndex] = iconRegister.registerIcon("logisticspipes:actionTriggers/ActionTrigger17");
 	}
-	
 }

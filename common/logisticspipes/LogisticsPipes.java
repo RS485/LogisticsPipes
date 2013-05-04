@@ -43,7 +43,6 @@ import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemUpgrade;
-import logisticspipes.items.LiquidIconProvider;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsLiquidContainer;
@@ -345,7 +344,6 @@ public class LogisticsPipes {
 			if(isClient) {
 				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, new LiquidContainerRenderer());
 			}
-			LiquidIconProvider.registerLiquids(LogisticsLiquidContainer);
 		}
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());

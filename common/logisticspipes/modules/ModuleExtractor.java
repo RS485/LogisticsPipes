@@ -4,9 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.gui.hud.modules.HUDExtractor;
@@ -42,6 +39,8 @@ import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.inventory.ISpecialInventory;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionReceiver, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 

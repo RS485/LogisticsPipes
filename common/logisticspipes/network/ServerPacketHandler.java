@@ -49,6 +49,7 @@ import logisticspipes.network.packets.PacketPipeString;
 import logisticspipes.network.packets.PacketPipeUpdate;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.network.packets.PacketSplitSendingSettings;
 import logisticspipes.network.packets.PacketStringCoordinates;
 import logisticspipes.network.packets.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
@@ -391,6 +392,15 @@ public class ServerPacketHandler {
 					packetBg.readData(data);
 					onApiaristAnalyserChangeExtract(player, packetBg);
 					break;
+				case NetworkConstants.GUI_CHASSIS_SPLITSENDING:
+					final PacketCoordinates packetBh = new PacketCoordinates();
+					packetBh.readData(data);
+					onChassiSplitSendingGuiOpen(player, packetBh);
+					break;
+				case NetworkConstants.CHASSIS_SPLITSENDING_CONFIG:
+					final PacketSplitSendingSettings packetBi = new PacketSplitSendingSettings();
+					packetBi.readData(data);
+					onChassiSplitSendingSettings(player, packetBi);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -492,6 +502,29 @@ public class ServerPacketHandler {
 		}
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleAdvancedExtractor) {
 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, packet.posX, packet.posY, packet.posZ, packet.integer, (((ModuleAdvancedExtractor) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).areItemsIncluded() ? 1 : 0)).getPacket(), (Player)player);
+		}
+	}
+
+	private static void onChassiSplitSendingGuiOpen(EntityPlayerMP player, PacketCoordinates packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (pipe.pipe instanceof PipeLogisticsChassi) {
+			MainProxy.sendPacketToPlayer(new PacketSplitSendingSettings(NetworkConstants.CHASSIS_SPLITSENDING_CONFIG, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((PipeLogisticsChassi) pipe.pipe).getSplitGroup(), ((PipeLogisticsChassi) pipe.pipe).getSplitAmount(), ((PipeLogisticsChassi) pipe.pipe).getSplitGroup()>0?true:false).getPacket(), (Player)player);
+			player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Chassi_SplitSending, player.worldObj, packet.posX, packet.posY, packet.posZ);
+		}
+	}
+	
+	private static void onChassiSplitSendingSettings(EntityPlayerMP player, PacketSplitSendingSettings packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+		if (pipe.pipe instanceof PipeLogisticsChassi) {
+			((PipeLogisticsChassi) pipe.pipe).setSplitGroup(packet.group);
+			((PipeLogisticsChassi) pipe.pipe).setSplitAmount(packet.amountToSplit);
 		}
 	}
 

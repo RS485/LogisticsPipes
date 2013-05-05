@@ -288,7 +288,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void ignoreDisableUpdateEntity() {}
 	
 	@Override
-	public final void updateEntity() {
+	public void updateEntity() {
 		if(checkTileEntity(_initialInit)) {
 			stillNeedReplace = true;
 			return;
@@ -302,7 +302,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				}
 				//first tick just create a router and do nothing.
 				getRouter();
-				return;
 			}
 		}
 		if(repeatFor > 0) {

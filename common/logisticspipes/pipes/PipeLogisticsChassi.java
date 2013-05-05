@@ -31,6 +31,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.ISplitItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logic.BaseChassiLogic;
 import logisticspipes.logisticspipes.ChassiModule;
@@ -78,7 +79,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
-public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
+public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver, ISplitItems {
 
 	private final ChassiModule _module;
 	private final SimpleInventory _moduleInventory;
@@ -91,7 +92,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
 	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 	private HUDChassiePipe HUD;
-
+	
+	private int splitGroup=0;
+	private int splitAmount=1;
+	
+	
 	public PipeLogisticsChassi(int itemID) {
 		super(new BaseChassiLogic(), itemID);
 		ChassiLogic = (BaseChassiLogic) logic;
@@ -280,28 +285,32 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
+	public void readFromNBT(NBTTagCompound nbt) {
 		try {
-			super.readFromNBT(nbttagcompound);
-			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
+			super.readFromNBT(nbt);
+			_moduleInventory.readFromNBT(nbt, "chassi");
 			InventoryChanged(_moduleInventory);
-			_module.readFromNBT(nbttagcompound);
-			ChassiLogic.orientation = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
-			if(nbttagcompound.getInteger("Orientation") == 0) {
+			_module.readFromNBT(nbt);
+			ChassiLogic.orientation = ForgeDirection.values()[nbt.getInteger("Orientation") % 7];
+			if(nbt.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
 			switchOrientationOnTick = (ChassiLogic.orientation == ForgeDirection.UNKNOWN);
+			splitGroup = nbt.getInteger("SplitGroup");
+			splitAmount = nbt.getInteger("SplitAmount");
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
-		_module.writeToNBT(nbttagcompound);
-		nbttagcompound.setInteger("Orientation", ChassiLogic.orientation.ordinal());
+	public void writeToNBT(NBTTagCompound nbt) {
+		super.writeToNBT(nbt);
+		_moduleInventory.writeToNBT(nbt, "chassi");
+		_module.writeToNBT(nbt);
+		nbt.setInteger("Orientation", ChassiLogic.orientation.ordinal());
+		nbt.setInteger("SplitGroup", getSplitGroup());
+		nbt.setInteger("SplitAmount", getSplitAmount());
 	}
 
 	@Override
@@ -322,6 +331,19 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				}
 			}
 			_moduleInventory.dropContents(this.worldObj, getX(), getY(), getZ());
+		}
+		if (this instanceof ISplitItems && subscribed) {
+			((ISplitItems)this).unsubscribeFromSplitting();
+			subscribed = false;
+		}
+	}
+	
+	@Override
+	public void onChunkUnload() {
+		super.onChunkUnload();
+		if (this instanceof ISplitItems && subscribed) {
+			((ISplitItems)this).unsubscribeFromSplitting();
+			subscribed = false;
 		}
 	}
 
@@ -370,6 +392,16 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 					prevModules.add(y);
 				}
 			}
+		}
+	}
+	
+	@Override
+	public void updateEntity() {
+		super.updateEntity();
+		if (stillNeedReplace) return;
+		if (this instanceof ISplitItems && !subscribed) {
+			((ISplitItems)this).subscribeToSplitting();
+			subscribed = true;
 		}
 	}
 
@@ -652,5 +684,37 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				return true;			
 		}
 		return false;
+	}
+	
+	boolean subscribed = false;
+	@Override
+	public void setSplitGroup(int par1) {
+		splitGroup = par1;
+		if (par1>0 && MainProxy.isServer(getWorld())) {
+			subscribeToSplitting();
+		} else if(par1<=0 && MainProxy.isServer(getWorld())) {
+			unsubscribeFromSplitting();
+		}
+	}
+	@Override
+	public void setSplitAmount(int par1) {
+		splitAmount = par1;
+	}
+	@Override
+	public void subscribeToSplitting() {
+		if (splitGroup <= 0) return;
+		SimpleServiceLocator.logisticsTurnHandler.subscribeToOrCreateGroup(splitGroup, this.getRouter().getSimpleID(), splitAmount);
+	}
+	@Override
+	public void unsubscribeFromSplitting() {
+		SimpleServiceLocator.logisticsTurnHandler.unsubscribe(this.getRouter().getSimpleID());
+	}
+	@Override
+	public int getSplitGroup() {
+		return splitGroup;
+	}
+	@Override
+	public int getSplitAmount() {
+		return splitAmount;
 	}
 }

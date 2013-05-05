@@ -227,10 +227,12 @@ public class LogisticsPipes {
 		
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		RouterManager manager = new RouterManager();
+		LogisticsManagerV2 logManager = new LogisticsManagerV2();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
 		SimpleServiceLocator.setSecurityStationManager(manager);
-		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
+		SimpleServiceLocator.setLogisticsManager(logManager);
+		SimpleServiceLocator.setLogisticsTurnHandler(logManager);
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
@@ -427,6 +429,7 @@ public class LogisticsPipes {
 		HudUpdateTick.clearUpdateFlags();
 		BaseLogicSatellite.cleanup();
 		ServerRouter.cleanup();
+		SimpleServiceLocator.logisticsTurnHandler.clearList();
 		if(event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();
 		}

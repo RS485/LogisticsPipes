@@ -14,6 +14,7 @@ import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsLiquidManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
+import logisticspipes.logistics.ILogisticsTurnHandler;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
@@ -117,5 +118,10 @@ public final class SimpleServiceLocator {
 	public static ServerPacketBufferHandlerThread serverBufferHandler;
 	public static void setServerPacketBufferHandlerThread(ServerPacketBufferHandlerThread proxy) {
 		serverBufferHandler = proxy;
+	}
+	
+	public static ILogisticsTurnHandler logisticsTurnHandler;
+	public static void setLogisticsTurnHandler(ILogisticsTurnHandler handler) {
+		logisticsTurnHandler = handler;
 	}
 }

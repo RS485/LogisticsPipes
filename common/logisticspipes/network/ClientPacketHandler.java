@@ -62,6 +62,7 @@ import logisticspipes.network.packets.PacketRenderFX;
 import logisticspipes.network.packets.PacketRequestGuiContent;
 import logisticspipes.network.packets.PacketRoutingStats;
 import logisticspipes.network.packets.PacketSimulate;
+import logisticspipes.network.packets.PacketSplitSendingSettings;
 import logisticspipes.network.packets.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -359,10 +360,24 @@ public class ClientPacketHandler {
 					packetBf.readData(data);
 					onApiaristAnalyserChangeExtract(packetBf);
 					break;
+				case NetworkConstants.CHASSIS_SPLITSENDING_CONFIG:
+					final PacketSplitSendingSettings packetBg= new PacketSplitSendingSettings();
+					packetBg.readData(data);
+					onChassiSplitSendSettings(packetBg);
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
+	}
+
+	private static void onChassiSplitSendSettings(PacketSplitSendingSettings packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) return;
+		if (pipe.pipe instanceof PipeLogisticsChassi) {
+			((PipeLogisticsChassi) pipe.pipe).setSplitAmount(packet.amountToSplit);
+			((PipeLogisticsChassi) pipe.pipe).setSplitGroup(packet.group);
+		}
+
 	}
 
 	private static void onCraftingPipeSetSatellite(PacketPipeInteger packet) {

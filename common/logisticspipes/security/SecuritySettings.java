@@ -10,6 +10,7 @@ public class SecuritySettings implements ISaveState{
 	public boolean openRequest = false;
 	public boolean openUpgrades = false;
 	public boolean openNetworkMonitor = false;
+	public boolean removePipes = false;
 	
 	public SecuritySettings(String name) {
 		this.name = name;
@@ -27,6 +28,7 @@ public class SecuritySettings implements ISaveState{
 		openRequest = nbttagcompound.getBoolean("openRequest");
 		openUpgrades = nbttagcompound.getBoolean("openUpgrades");
 		openNetworkMonitor = nbttagcompound.getBoolean("openNetworkMonitor");
+		removePipes = nbttagcompound.getBoolean("removePipes");
 	}
 
 	@Override
@@ -37,5 +39,6 @@ public class SecuritySettings implements ISaveState{
 		nbttagcompound.setBoolean("openRequest", openRequest);
 		nbttagcompound.setBoolean("openUpgrades", openUpgrades);
 		nbttagcompound.setBoolean("openNetworkMonitor", openNetworkMonitor);
+		nbttagcompound.setBoolean("removePipes", removePipes);
 	}
 }

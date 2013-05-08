@@ -587,13 +587,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	/* ComputerCraftCommands */
 	@CCCommand(description="Imports the crafting recipe from the connected machine/crafter")
 	@CCQueued(prefunction="testImportAccess")
-	public void reimport() throws Exception {
-		checkCCAccess();
+	public void reimport() {
 		((BaseLogicCrafting)logic).importFromCraftingTable(null);
-	}
-	
-	public void testImportAccess() throws PermissionException {
-		checkCCAccess();
 	}
 
 	@Override

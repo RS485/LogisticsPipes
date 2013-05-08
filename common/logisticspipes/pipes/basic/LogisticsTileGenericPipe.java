@@ -10,4 +10,6 @@ public class LogisticsTileGenericPipe extends TileGenericPipe {
 
 	public void setTurtrleConnect(boolean flag) {}
 	public boolean getTurtrleConnect() {return false;}
+
+	public int getLastCCID() {return -1;}
 }

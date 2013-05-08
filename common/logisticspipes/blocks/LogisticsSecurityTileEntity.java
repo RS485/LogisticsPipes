@@ -1,6 +1,7 @@
 package logisticspipes.blocks;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -38,6 +40,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	private List<EntityPlayer> listener = new ArrayList<EntityPlayer>();
 	private UUID secId = null;
 	private Map<String, SecuritySettings> settingsList = new HashMap<String, SecuritySettings>();
+	public List<Integer> excludedCC = new ArrayList<Integer>();
 	public boolean allowCC = false;
 	
 	public LogisticsSecurityTileEntity() {
@@ -127,6 +130,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			settings.readFromNBT(value);
 			settingsList.put(name, settings);
 		}
+		excludedCC.clear();
+		list = par1nbtTagCompound.getTagList("excludedCC");
+		while(list.tagCount() > 0) {
+			NBTBase base = list.removeTag(0);
+			excludedCC.add(((NBTTagInt)base).data);
+		}
 	}
 
 	@Override
@@ -145,6 +154,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			list.appendTag(nbt);
 		}
 		par1nbtTagCompound.setTag("settings", list);
+		list = new NBTTagList();
+		int count = 0;
+		for(Integer i:excludedCC) {
+			list.appendTag(new NBTTagInt("Part: " + count++, i));
+		}
+		par1nbtTagCompound.setTag("excludedCC", list);
 	}
 
 	public void buttonFreqCard(int integer, EntityPlayer player) {
@@ -227,11 +242,41 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		allowCC = !allowCC;
 		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), listener);
 	}
+	
+	public void addCCToList(Integer id) {
+		if(!excludedCC.contains(id)) {
+			excludedCC.add(id);
+		}
+		Collections.sort(excludedCC);
+	}
+	
+	public void removeCCFromList(Integer id) {
+		excludedCC.remove(id);
+	}
+
+	public void requestList(EntityPlayer player) {
+		NBTTagCompound tag = new NBTTagCompound();
+		NBTTagList list = new NBTTagList();
+		for(Integer i:excludedCC) {
+			list.appendTag(new NBTTagInt("" + i, i));
+		}
+		tag.setTag("list", list);
+		MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.SEND_CC_IDS, xCoord, yCoord, zCoord, tag).getPacket(), (Player)player);
+	}
+
+	public void handleListPacket(PacketNBT packet) {
+		excludedCC.clear();
+		NBTTagList list = packet.tag.getTagList("list");
+		while(list.tagCount() > 0) {
+			NBTBase base = list.removeTag(0);
+			excludedCC.add(((NBTTagInt)base).data);
+		}
+	}
 
 	@Override
-	public boolean getAllowCC() {
+	public boolean getAllowCC(int id) {
 		if(!useEnergy(10)) return false;
-		return allowCC;
+		return allowCC != excludedCC.contains(id);
 	}
 	
 	private boolean useEnergy(int amount) {

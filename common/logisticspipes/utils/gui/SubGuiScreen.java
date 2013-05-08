@@ -50,10 +50,8 @@ public class SubGuiScreen extends GuiScreen implements ISubGuiControler {
 	}
 	
 	@Override
-	protected void keyTyped(char par1, int par2)
-    {
-        if (par2 == 1)
-        {
+	protected void keyTyped(char par1, int par2) {
+        if (par2 == 1) {
             exitGui();
         }
     }

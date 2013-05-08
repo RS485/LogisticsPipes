@@ -150,9 +150,11 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 			if(!subGui.hasSubGui()) {
 		        GL11.glDisable(GL11.GL_DEPTH_TEST);
 				super.drawDefaultBackground();
-		        GL11.glEnable(GL11.GL_DEPTH_TEST);
-			}
+			    GL11.glEnable(GL11.GL_DEPTH_TEST);
+				}
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			subGui.drawScreen(par1, par2, par3);
+		    GL11.glEnable(GL11.GL_DEPTH_TEST);
 			GL11.glTranslatef(0.0F, 0.0F, -101.0F);
 	        RenderHelper.enableStandardItemLighting();
 		} else {

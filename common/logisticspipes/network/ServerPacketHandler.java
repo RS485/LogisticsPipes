@@ -391,6 +391,21 @@ public class ServerPacketHandler {
 					packetBg.readData(data);
 					onApiaristAnalyserChangeExtract(player, packetBg);
 					break;
+				case NetworkConstants.ADD_CC_ID:
+					final PacketPipeInteger packetBh = new PacketPipeInteger();
+					packetBh.readData(data);
+					onAddCCID(player, packetBh);
+					break;
+				case NetworkConstants.REMOVE_CC_ID:
+					final PacketPipeInteger packetBi = new PacketPipeInteger();
+					packetBi.readData(data);
+					onRemoveCCID(player, packetBi);
+					break;
+				case NetworkConstants.REQUEST_CC_IDS:
+					final PacketCoordinates packetBj = new PacketCoordinates();
+					packetBj.readData(data);
+					onRequestCCIDs(player, packetBj);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1469,6 +1484,29 @@ public class ServerPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).setPrevSatellite(player, packet.integer);
+	}
+
+	private static void onAddCCID(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).addCCToList(packet.integer);
+			((LogisticsSecurityTileEntity)tile).requestList(player);
+		}
+	}
+
+	private static void onRemoveCCID(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).removeCCFromList(packet.integer);
+			((LogisticsSecurityTileEntity)tile).requestList(player);
+		}
+	}
+
+	private static void onRequestCCIDs(EntityPlayerMP player, PacketCoordinates packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).requestList(player);
+		}
 	}
 	
 	// BuildCraft method

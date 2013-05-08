@@ -185,7 +185,6 @@ outer:
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	@CCQueued
 	public String makeRequest(Double itemId, Double amount) throws Exception {
-		checkCCAccess();
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
 		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this);

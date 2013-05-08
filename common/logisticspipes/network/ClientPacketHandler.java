@@ -359,6 +359,11 @@ public class ClientPacketHandler {
 					packetBf.readData(data);
 					onApiaristAnalyserChangeExtract(packetBf);
 					break;
+				case NetworkConstants.SEND_CC_IDS:
+					final PacketNBT packetBg = new PacketNBT();
+					packetBg.readData(data);
+					onCCIDs(packetBg);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -961,6 +966,13 @@ public class ClientPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, packet.slot, -1);
+	}
+
+	private static void onCCIDs(PacketNBT packet) {
+		TileEntity tile = MainProxy.getClientMainWorld().getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).handleListPacket(packet);
+		}
 	}
 	
 	// BuildCraft method

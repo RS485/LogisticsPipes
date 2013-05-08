@@ -282,6 +282,10 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			throw new UnsupportedOperationException(error.toString());
 		}
 		
+		if(match.getAnnotation(CCCommand.class).needPermission()) {
+			getCPipe().checkCCAccess();
+		}
+		
 		if(match.getAnnotation(CCQueued.class) != null) {
 			final Method m = match;
 			String prefunction = null;
@@ -435,5 +439,11 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	@Override
 	public boolean getTurtrleConnect() {
 		return turtleConnect[connections.get(lastPC).ordinal()];
+	}
+
+	@Override
+	public int getLastCCID() {
+		if(lastPC == null) return -1;
+		return lastPC.getID();
 	}
 }

@@ -835,8 +835,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public boolean canBeDestroyedByPlayer(EntityPlayer entityPlayer) {
 		LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
 		if(station != null) {
-			SecuritySettings settings = station.getSecuritySettingsForPlayer(entityPlayer, true);
-			return settings.openGui;
+			return station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
 		}
 		return true;
 	}
@@ -844,7 +843,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void checkCCAccess() throws PermissionException {
 		ISecurityProvider sec = getSecurityProvider();
 		if(sec != null) {
-			if(!sec.getAllowCC()) {
+			int id = -1;
+			if(this.container instanceof LogisticsTileGenericPipe) {
+				id = ((LogisticsTileGenericPipe)this.container).getLastCCID();
+			}
+			if(!sec.getAllowCC(id)) {
 				throw new PermissionException();
 			}
 		}
@@ -1003,5 +1006,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();
+	}
+
+	@CCCommand(description="Returns true if the computer is allowed to interact with the connected pipe.", needPermission=false)
+	public boolean canAccess() {
+		ISecurityProvider sec = getSecurityProvider();
+		if(sec != null) {
+			int id = -1;
+			if(this.container instanceof LogisticsTileGenericPipe) {
+				id = ((LogisticsTileGenericPipe)this.container).getLastCCID();
+			}
+			return sec.getAllowCC(id);
+		}
+		return true;
 	}
 }

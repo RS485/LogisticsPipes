@@ -9,10 +9,12 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.LogisticsPipesPacket;
+import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketNBT;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketStringCoordinates;
@@ -29,6 +31,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 import org.lwjgl.input.Keyboard;
+
 
 public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerListReciver {
 	
@@ -70,22 +73,24 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	public void initGui() {
 		super.initGui();
 		this.buttonList.clear();
-		this.buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
-		((GuiButton)this.buttonList.get(0)).drawButton = false;
+			this.buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
+			((GuiButton)this.buttonList.get(0)).drawButton = false;
 		this.buttonList.add(new GuiButton(1, guiLeft + 10, guiTop + 179, 30, 20, "-"));
 		this.buttonList.add(new GuiButton(2, guiLeft + 45, guiTop + 179, 30, 20, "+"));
-		this.buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
-		((GuiButton)this.buttonList.get(3)).drawButton = false;
+			this.buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
+			((GuiButton)this.buttonList.get(3)).drawButton = false;
 		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 167, 30, 10, "Open"));
 		this.buttonList.add(new GuiCheckBox(5, guiLeft + 110, guiTop + 51, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(6, guiLeft + 110, guiTop + 66, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(7, guiLeft + 110, guiTop + 81, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(8, guiLeft + 110, guiTop + 96, 16, 16, false));
+		this.buttonList.add(new GuiCheckBox(9, guiLeft + 110, guiTop + 111, 16, 16, false));
 		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
-			this.buttonList.add(new GuiCheckBox(9, guiLeft + 160, guiTop + 142, 16, 16, _tile.allowCC));
+			this.buttonList.add(new GuiCheckBox(10, guiLeft + 160, guiTop + 132, 16, 16, _tile.allowCC));
+			this.buttonList.add(new SmallGuiButton(11, guiLeft + 162, guiTop + 150, 60, 10, "Edit Table"));
 		}
-		this.buttonList.add(new GuiButton(10, guiLeft + 175, guiTop + 55, 70, 20, "Authorize"));
-		this.buttonList.add(new GuiButton(11, guiLeft + 175, guiTop + 80, 70, 20, "Deauthorize"));
+		this.buttonList.add(new GuiButton(12, guiLeft + 175, guiTop + 55, 70, 20, "Authorize"));
+		this.buttonList.add(new GuiButton(13, guiLeft + 175, guiTop + 80, 70, 20, "Deauthorize"));
 		MainProxy.sendPacketToServer(new LogisticsPipesPacket() {
 			@Override public void writeData(DataOutputStream data) throws IOException {}
 			@Override public void readData(DataInputStream data) throws IOException {}
@@ -128,13 +133,22 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			activeSetting.writeToNBT(nbt);
 			MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
 		} else if(button.id == 9) {
+			activeSetting.removePipes = !activeSetting.removePipes;
+			refreshCheckBoxes();
+			NBTTagCompound nbt = new NBTTagCompound();
+			activeSetting.writeToNBT(nbt);
+			MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
+		} else if(button.id == 10) {
 			_tile.allowCC = !_tile.allowCC;
 			refreshCheckBoxes();
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, _tile.xCoord, _tile.yCoord, _tile.zCoord, _tile.allowCC?1:0).getPacket());
-		} else if(button.id == 10) {
+		} else if(button.id == 11) {
+			this.setSubGui(new GuiEditCCAccessTable(_tile));
+			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_CC_IDS, _tile.xCoord, _tile.yCoord, _tile.zCoord).getPacket());
+		} else if(button.id == 12) {
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SECURITY_AUTHORIZATION, _tile.xCoord, _tile.yCoord, _tile.zCoord, 1).getPacket());
 			authorized = true;
-		} else if (button.id == 11) {
+		} else if (button.id == 13) {
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SECURITY_AUTHORIZATION, _tile.xCoord, _tile.yCoord, _tile.zCoord, 0).getPacket());
 			authorized = false;
 		} else {
@@ -158,8 +172,10 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		fontRenderer.drawString("Inventory:", guiLeft + 10, guiTop + 203, 0x404040);
 		fontRenderer.drawString("Security Cards:", guiLeft + 10, guiTop + 167, 0x404040);
 		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
-			fontRenderer.drawString("Allow ComputerCraft Access:", guiLeft + 10, guiTop + 147, 0x404040);
+			fontRenderer.drawString("Allow ComputerCraft Access:", guiLeft + 10, guiTop + 136, 0x404040);
+			fontRenderer.drawString("Excluded ComputerCraft IDs:", guiLeft + 10, guiTop + 151, 0x404040);
 		}
+		fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 160, 0x404040);
 		
 		addition = (fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
 		
@@ -229,15 +245,19 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			fontRenderer.drawString("Active Requesting: ", guiLeft + 10, guiTop + 70, 0x404040);
 			fontRenderer.drawString("Upgrade Pipes: ", guiLeft + 10, guiTop + 85, 0x404040);
 			fontRenderer.drawString("Check Network: ", guiLeft + 10, guiTop + 100, 0x404040);
+			fontRenderer.drawString("Remove Pipes: ", guiLeft + 10, guiTop + 115, 0x404040);
+			fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 126, 0x404040);
 			((GuiButton)this.buttonList.get(5)).drawButton = true;
 			((GuiButton)this.buttonList.get(6)).drawButton = true;
 			((GuiButton)this.buttonList.get(7)).drawButton = true;
 			((GuiButton)this.buttonList.get(8)).drawButton = true;
+			((GuiButton)this.buttonList.get(9)).drawButton = true;
 		} else {
 			((GuiButton)this.buttonList.get(5)).drawButton = false;
 			((GuiButton)this.buttonList.get(6)).drawButton = false;
 			((GuiButton)this.buttonList.get(7)).drawButton = false;
 			((GuiButton)this.buttonList.get(8)).drawButton = false;
+			((GuiButton)this.buttonList.get(9)).drawButton = false;
 		}
 		
 		if (authorized) {
@@ -326,7 +346,8 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			((GuiCheckBox)this.buttonList.get(6)).setState(activeSetting.openRequest);
 			((GuiCheckBox)this.buttonList.get(7)).setState(activeSetting.openUpgrades);
 			((GuiCheckBox)this.buttonList.get(8)).setState(activeSetting.openNetworkMonitor);
+			((GuiCheckBox)this.buttonList.get(9)).setState(activeSetting.removePipes);
 		}
-		((GuiCheckBox)this.buttonList.get(9)).setState(_tile.allowCC);
+		((GuiCheckBox)this.buttonList.get(10)).setState(_tile.allowCC);
 	}
 }

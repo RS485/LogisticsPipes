@@ -106,4 +106,8 @@ public class NetworkConstants {
 	public static final int SECURITY_AUTHORIZATION = 101;
 	public static final int SECURITY_AUTHORIZEDLIST_UPDATE = 102;
 	public static final int APIRARIST_ANALYZER_EXTRACTMODE = 103;
+	public static final int ADD_CC_ID = 104;
+	public static final int REMOVE_CC_ID = 105;
+	public static final int REQUEST_CC_IDS = 106;
+	public static final int SEND_CC_IDS = 107;
 }

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
@@ -29,9 +28,13 @@ public class InventoryUtilFactory {
 	private TileEntity getTileEntityFromInventory(IInventory inv) {
 		if(inv instanceof TileEntity) {
 			return (TileEntity) inv;
-		} else if(inv instanceof SidedInventoryAdapter) {
-			if(((SidedInventoryAdapter) inv)._sidedInventory instanceof TileEntity) {
-				return (TileEntity) ((SidedInventoryAdapter) inv)._sidedInventory;
+		} else if(inv instanceof SidedInventoryForgeAdapter) {
+			if(((SidedInventoryForgeAdapter) inv)._sidedInventory instanceof TileEntity) {
+				return (TileEntity) ((SidedInventoryForgeAdapter) inv)._sidedInventory;
+			}
+		} else if(inv instanceof SidedInventoryMinecraftAdapter) {
+			if(((SidedInventoryMinecraftAdapter) inv)._sidedInventory instanceof TileEntity) {
+				return (TileEntity) ((SidedInventoryMinecraftAdapter) inv)._sidedInventory;
 			}
 		}
 		return null;

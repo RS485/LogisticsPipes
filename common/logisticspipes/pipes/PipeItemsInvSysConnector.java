@@ -20,7 +20,6 @@ import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.logic.LogicInvSysConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -38,6 +37,8 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair4;
+import logisticspipes.utils.SidedInventoryForgeAdapter;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.item.EntityItem;
@@ -48,7 +49,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.transport.EntityData;
 import cpw.mods.fml.common.network.Player;
@@ -113,8 +113,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile instanceof IInventory) {
 				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
-				if(inv instanceof ISidedInventory) {
-					inv = new SidedInventoryAdapter((ISidedInventory)inv, tile.orientation.getOpposite());
+				if(inv instanceof net.minecraft.inventory.ISidedInventory) {
+					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite());
+				}
+				if(inv instanceof net.minecraftforge.common.ISidedInventory) {
+					inv = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory)inv, tile.orientation.getOpposite());
 				}
 				if(checkOneConnectedInv(inv,tile.orientation)) {
 					updateContentListener();

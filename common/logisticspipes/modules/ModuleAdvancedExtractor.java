@@ -22,7 +22,6 @@ import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
@@ -38,6 +37,8 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SidedInventoryForgeAdapter;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -48,7 +49,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.ISidedInventory;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -171,12 +171,19 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 
 		IInventory inventory = _invProvider.getRawInventory();
 		if (inventory == null) return;
-		if (inventory instanceof ISidedInventory) {
+		if (inventory instanceof net.minecraft.inventory.ISidedInventory) {
 			ForgeDirection extractOrientation = _sneakyDirection;
 			if(extractOrientation == ForgeDirection.UNKNOWN) {
 				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 			}
-			inventory = new SidedInventoryAdapter((ISidedInventory) inventory, extractOrientation);	
+			inventory = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inventory, extractOrientation);	
+		}
+		if (inventory instanceof net.minecraftforge.common.ISidedInventory) {
+			ForgeDirection extractOrientation = _sneakyDirection;
+			if(extractOrientation == ForgeDirection.UNKNOWN) {
+				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
+			}
+			inventory = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) inventory, extractOrientation);	
 		}
 
 		checkExtract(inventory);

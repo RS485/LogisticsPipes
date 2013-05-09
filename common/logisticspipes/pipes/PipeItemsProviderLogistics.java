@@ -34,7 +34,6 @@ import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
 import logisticspipes.network.packets.PacketPipeInvContent;
@@ -52,12 +51,13 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SidedInventoryForgeAdapter;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.ISidedInventory;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -184,8 +184,11 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	
 	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
 		IInventory base = (IInventory) tile.tile;
-		if (base instanceof ISidedInventory) {
-			base = new SidedInventoryAdapter((ISidedInventory) base, tile.orientation.getOpposite());
+		if(base instanceof net.minecraft.inventory.ISidedInventory) {
+			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite());
+		}
+		if(base instanceof net.minecraftforge.common.ISidedInventory) {
+			base = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory)base, tile.orientation.getOpposite());
 		}
 		ExtractionMode mode = ((LogicProvider)logic).getExtractionMode();
 		switch(mode){

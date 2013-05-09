@@ -18,7 +18,6 @@ import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
-import logisticspipes.logisticspipes.SidedInventoryAdapter;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketModuleInteger;
@@ -29,6 +28,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.SidedInventoryForgeAdapter;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -37,7 +38,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.inventory.ISpecialInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -174,8 +174,11 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 			return;
 		}
 
-		if (targetInventory instanceof ISidedInventory){
-			targetInventory = new SidedInventoryAdapter((ISidedInventory) targetInventory, extractOrientation);
+		if (targetInventory instanceof net.minecraft.inventory.ISidedInventory){
+			targetInventory = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) targetInventory, extractOrientation);
+		}
+		if (targetInventory instanceof net.minecraftforge.common.ISidedInventory){
+			targetInventory = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) targetInventory, extractOrientation);
 		}
 
 		for (int i = 0; i < targetInventory.getSizeInventory(); i++){

@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.logisticspipes;
+package logisticspipes.utils;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -19,12 +19,12 @@ import net.minecraftforge.common.ISidedInventory;
  * @author Krapht
  *
  */
-public final class SidedInventoryAdapter implements IInventory {
+public final class SidedInventoryForgeAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
 	private final int _slotMap[];
 	
-	public SidedInventoryAdapter(ISidedInventory sidedInventory, ForgeDirection side) {
+	public SidedInventoryForgeAdapter(ISidedInventory sidedInventory, ForgeDirection side) {
 		_sidedInventory = sidedInventory;
 		if(side == ForgeDirection.UNKNOWN) {
 			_slotMap = buildAllSidedMap(sidedInventory);

@@ -8,6 +8,7 @@
 
 package logisticspipes.pipes.basic;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
@@ -55,6 +57,7 @@ import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
+import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
@@ -72,6 +75,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.gates.ActionManager;
@@ -108,6 +112,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	protected boolean _initialInit = true;
 	
 	private boolean enabled = true;
+	private Field itemIDAccess;
+	private int cachedItemID = -1;
+	private boolean blockRemove = false;
+	private boolean destroyByPlayer = false;
 	
 	public long delayTo = 0;
 	public int repeatFor = 0;
@@ -360,21 +368,41 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void onBlockRemoval() {
-		try {
-			super.onBlockRemoval();
-			//invalidate() removes the router
-			if (logic instanceof BaseRoutingLogic){
-				((BaseRoutingLogic)logic).destroy();
+		revertItemID();
+		if(canBeDestroyed() || destroyByPlayer) {
+			try {
+				super.onBlockRemoval();
+				//invalidate() removes the router
+				if (logic instanceof BaseRoutingLogic){
+					((BaseRoutingLogic)logic).destroy();
+				}
+				//Just in case
+				pipecount = Math.max(pipecount - 1, 0);
+				
+				if (transport != null && transport instanceof PipeTransportLogistics){
+					((PipeTransportLogistics)transport).dropBuffer();
+				}
+				getUpgradeManager().dropUpgrades(worldObj, getX(), getY(), getZ());
+			} catch(Exception e) {
+				e.printStackTrace();
 			}
-			//Just in case
-			pipecount = Math.max(pipecount - 1, 0);
-			
-			if (transport != null && transport instanceof PipeTransportLogistics){
-				((PipeTransportLogistics)transport).dropBuffer();
-			}
-			getUpgradeManager().dropUpgrades(worldObj, getX(), getY(), getZ());
-		} catch(Exception e) {
-			e.printStackTrace();
+		} else if(!blockRemove) {
+			final World worldCache = worldObj;
+			final int xCache = getX();
+			final int yCache = getY();
+			final int zCache = getZ();
+			final TileEntity tileCache = this.container;
+			blockRemove = true;
+			QueuedTasks.queueTask(new Callable<Object>() {
+				@Override
+				public Object call() throws Exception {
+					tileCache.validate();
+					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
+					worldCache.setBlockTileEntity(xCache, yCache, zCache, tileCache);
+					blockRemove = false;
+					return null;
+				}
+			});
 		}
 	}
 	
@@ -390,12 +418,68 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(router != null){
+		if(router != null) {
 			router.clearPipeCache();
 			router.clearInterests();
 		}
 	}
 	
+	@Override
+	public void dropContents() {
+		if(MainProxy.isClient(worldObj)) return;
+		if(canBeDestroyed()) {
+			super.dropContents();
+		} else {
+			if(itemIDAccess == null) {
+				try {
+					itemIDAccess = Pipe.class.getDeclaredField("itemID");
+					itemIDAccess.setAccessible(true);
+				} catch (NoSuchFieldException e) {
+					e.printStackTrace();
+				} catch (SecurityException e) {
+					e.printStackTrace();
+				}
+			}
+			cachedItemID = itemID;
+			try {
+				itemIDAccess.setInt(this, LogisticsPipes.LogisticsBrokenItem.itemID);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			final World worldCache = worldObj;
+			final int xCache = getX();
+			final int yCache = getY();
+			final int zCache = getZ();
+			final TileEntity tileCache = this.container;
+			blockRemove = true;
+			QueuedTasks.queueTask(new Callable<Object>() {
+				@Override
+				public Object call() throws Exception {
+					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
+					worldCache.setBlockTileEntity(xCache, yCache, zCache, tileCache);
+					revertItemID();
+					blockRemove = false;
+					return null;
+				}
+			});
+		}
+	}
+
+	private void revertItemID() {
+		if(cachedItemID != -1) {
+			try {
+				itemIDAccess.setInt(this, cachedItemID);
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			}
+			cachedItemID = -1;
+		}
+	}
+
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
 		if(worldObj.getWorldTime() % 10 != 0) return;
@@ -838,6 +922,24 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			return station.getSecuritySettingsForPlayer(entityPlayer, true).removePipes;
 		}
 		return true;
+	}
+	
+	public boolean canBeDestroyed() {
+		ISecurityProvider sec = getSecurityProvider();
+		if(sec != null) {
+			if(!sec.canAutomatedDestroy()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public void setDestroyByPlayer() {
+		destroyByPlayer = true;
+	}
+	
+	public boolean blockRemove() {
+		return blockRemove;
 	}
 	
 	public void checkCCAccess() throws PermissionException {

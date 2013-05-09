@@ -406,6 +406,11 @@ public class ServerPacketHandler {
 					packetBj.readData(data);
 					onRequestCCIDs(player, packetBj);
 					break;
+				case NetworkConstants.SET_SECURITY_DESTROY:
+					final PacketPipeInteger packetBk = new PacketPipeInteger();
+					packetBk.readData(data);
+					onSetSecurityDestroy(player, packetBk);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -1506,6 +1511,13 @@ public class ServerPacketHandler {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).requestList(player);
+		}
+	}
+
+	private static void onSetSecurityDestroy(EntityPlayerMP player, PacketPipeInteger packet) {
+		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).changeDestroy();
 		}
 	}
 	

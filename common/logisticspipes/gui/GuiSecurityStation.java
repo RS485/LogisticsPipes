@@ -59,10 +59,10 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	
 	
 	public GuiSecurityStation(LogisticsSecurityTileEntity tile, EntityPlayer player) {
-		super(280, 300, 0, 0);
+		super(280, 320, 0, 0);
 		DummyContainer dummy = new DummyContainer(player.inventory, tile.inv);
-		dummy.addRestrictedSlot(0, tile.inv, 82, 181, -1);
-		dummy.addNormalSlotsForPlayerInventory(10, 215);
+		dummy.addRestrictedSlot(0, tile.inv, 82, 201, -1);
+		dummy.addNormalSlotsForPlayerInventory(10, 235);
 		this.inventorySlots = dummy;
 		_tile = tile;
 		authorized = SimpleServiceLocator.securityStationManager.isAuthorized(tile.getSecId());
@@ -75,22 +75,27 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		this.buttonList.clear();
 			this.buttonList.add(new GuiButton(0, guiLeft + 10, guiTop + 179, 30, 20, "--"));
 			((GuiButton)this.buttonList.get(0)).drawButton = false;
-		this.buttonList.add(new GuiButton(1, guiLeft + 10, guiTop + 179, 30, 20, "-"));
-		this.buttonList.add(new GuiButton(2, guiLeft + 45, guiTop + 179, 30, 20, "+"));
+		this.buttonList.add(new GuiButton(1, guiLeft + 10, guiTop + 199, 30, 20, "-"));
+		this.buttonList.add(new GuiButton(2, guiLeft + 45, guiTop + 199, 30, 20, "+"));
 			this.buttonList.add(new GuiButton(3, guiLeft + 140, guiTop + 179, 30, 20, "++"));
 			((GuiButton)this.buttonList.get(3)).drawButton = false;
-		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 167, 30, 10, "Open"));
+		this.buttonList.add(new SmallGuiButton(4, guiLeft + 241, guiTop + 187, 30, 10, "Open"));
 		this.buttonList.add(new GuiCheckBox(5, guiLeft + 110, guiTop + 51, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(6, guiLeft + 110, guiTop + 66, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(7, guiLeft + 110, guiTop + 81, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(8, guiLeft + 110, guiTop + 96, 16, 16, false));
 		this.buttonList.add(new GuiCheckBox(9, guiLeft + 110, guiTop + 111, 16, 16, false));
-		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
-			this.buttonList.add(new GuiCheckBox(10, guiLeft + 160, guiTop + 132, 16, 16, _tile.allowCC));
-			this.buttonList.add(new SmallGuiButton(11, guiLeft + 162, guiTop + 150, 60, 10, "Edit Table"));
+		this.buttonList.add(new GuiCheckBox(10, guiLeft + 160, guiTop + 132, 16, 16, _tile.allowCC));
+		this.buttonList.add(new SmallGuiButton(11, guiLeft + 162, guiTop + 150, 60, 10, "Edit Table"));
+		if(!SimpleServiceLocator.ccProxy.isCC() && !LogisticsPipes.DEBUG) {
+			((GuiButton)this.buttonList.get(10)).drawButton = false;
+			((GuiButton)this.buttonList.get(11)).drawButton = false;
 		}
 		this.buttonList.add(new GuiButton(12, guiLeft + 175, guiTop + 55, 70, 20, "Authorize"));
 		this.buttonList.add(new GuiButton(13, guiLeft + 175, guiTop + 80, 70, 20, "Deauthorize"));
+		this.buttonList.add(new GuiCheckBox(14, guiLeft + 160, guiTop + 164, 16, 16, _tile.allowAutoDestroy));
+		this.buttonList.add(new SmallGuiButton(15, guiLeft + 131, guiTop + 114, 30, 10, "Close"));
+		((GuiButton)this.buttonList.get(15)).drawButton = false;
 		MainProxy.sendPacketToServer(new LogisticsPipesPacket() {
 			@Override public void writeData(DataOutputStream data) throws IOException {}
 			@Override public void readData(DataInputStream data) throws IOException {}
@@ -151,6 +156,14 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		} else if (button.id == 13) {
 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SECURITY_AUTHORIZATION, _tile.xCoord, _tile.yCoord, _tile.zCoord, 0).getPacket());
 			authorized = false;
+		} else if(button.id == 14) {
+			_tile.allowAutoDestroy = !_tile.allowAutoDestroy;
+			refreshCheckBoxes();
+			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, _tile.xCoord, _tile.yCoord, _tile.zCoord, _tile.allowAutoDestroy?1:0).getPacket());
+		} else if(button.id == 15) {
+			activeSetting = null;
+			searchinput1 = "";
+			searchinput2 = "";
 		} else {
 			super.actionPerformed(button);
 		}
@@ -164,18 +177,19 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 215);
-		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 180);
+		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 10, guiTop + 235);
+		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 81, guiTop + 200);
 		fontRenderer.drawString("Security Station", guiLeft + 105, guiTop + 10, 0x404040);
 		fontRenderer.drawString(_tile.getSecId() == null ? "null" : _tile.getSecId().toString(), guiLeft + 32, guiTop + 25, 0x404040);
-		fontRenderer.drawString("Player:", guiLeft + 180, guiTop + 167, 0x404040);
-		fontRenderer.drawString("Inventory:", guiLeft + 10, guiTop + 203, 0x404040);
-		fontRenderer.drawString("Security Cards:", guiLeft + 10, guiTop + 167, 0x404040);
+		fontRenderer.drawString("Player:", guiLeft + 180, guiTop + 187, 0x404040);
+		fontRenderer.drawString("Inventory:", guiLeft + 10, guiTop + 223, 0x404040);
+		fontRenderer.drawString("Security Cards:", guiLeft + 10, guiTop + 187, 0x404040);
 		if(SimpleServiceLocator.ccProxy.isCC() || LogisticsPipes.DEBUG) {
 			fontRenderer.drawString("Allow ComputerCraft Access:", guiLeft + 10, guiTop + 136, 0x404040);
 			fontRenderer.drawString("Excluded ComputerCraft IDs:", guiLeft + 10, guiTop + 151, 0x404040);
 		}
-		fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 160, 0x404040);
+		fontRenderer.drawString("Allow automated Pipe remove:", guiLeft + 10, guiTop + 168, 0x404040);
+		fontRenderer.drawString("---------------------------------------------", guiLeft + 5, guiTop + 180, 0x404040);
 		
 		addition = (fontRenderer.getStringWidth(searchinput1 + searchinput2) - 82);
 		
@@ -252,12 +266,14 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			((GuiButton)this.buttonList.get(7)).drawButton = true;
 			((GuiButton)this.buttonList.get(8)).drawButton = true;
 			((GuiButton)this.buttonList.get(9)).drawButton = true;
+			((GuiButton)this.buttonList.get(15)).drawButton = true;
 		} else {
 			((GuiButton)this.buttonList.get(5)).drawButton = false;
 			((GuiButton)this.buttonList.get(6)).drawButton = false;
 			((GuiButton)this.buttonList.get(7)).drawButton = false;
 			((GuiButton)this.buttonList.get(8)).drawButton = false;
 			((GuiButton)this.buttonList.get(9)).drawButton = false;
+			((GuiButton)this.buttonList.get(15)).drawButton = false;
 		}
 		
 		if (authorized) {
@@ -349,5 +365,6 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			((GuiCheckBox)this.buttonList.get(9)).setState(activeSetting.removePipes);
 		}
 		((GuiCheckBox)this.buttonList.get(10)).setState(_tile.allowCC);
+		((GuiCheckBox)this.buttonList.get(14)).setState(_tile.allowAutoDestroy);
 	}
 }

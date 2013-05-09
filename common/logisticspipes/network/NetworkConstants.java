@@ -110,4 +110,5 @@ public class NetworkConstants {
 	public static final int REMOVE_CC_ID = 105;
 	public static final int REQUEST_CC_IDS = 106;
 	public static final int SEND_CC_IDS = 107;
+	public static final int SET_SECURITY_DESTROY = 108;
 }

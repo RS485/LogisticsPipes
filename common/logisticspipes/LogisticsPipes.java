@@ -43,6 +43,7 @@ import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemUpgrade;
+import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsLiquidContainer;
@@ -202,6 +203,7 @@ public class LogisticsPipes {
 	public static Item LogisticsParts;
 	public static Item LogisticsUpgradeManager;
 	public static Item LogisticsLiquidContainer;
+	public static Item LogisticsBrokenItem;
 
 	public static ItemModule ModuleItem;
 	public static ItemUpgrade UpgradeItem;
@@ -346,6 +348,9 @@ public class LogisticsPipes {
 			}
 		}
 		
+		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
+		LogisticsBrokenItem.setUnlocalizedName("brokenItem");
+		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
 		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
@@ -360,6 +365,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,2), "en_US", "Logistics HUD Nose Bridge");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsBrokenItem,1,0), "en_US", "Logistics Broken Item");
 		
 		if(DEBUG) {
 			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");

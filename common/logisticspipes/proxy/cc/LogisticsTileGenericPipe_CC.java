@@ -89,13 +89,6 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
 		return super.arePipesConnected(with, dir);
 	}
-
-	private CoreRoutedPipe getCPipe() {
-		if(pipe instanceof CoreRoutedPipe) {
-			return (CoreRoutedPipe) pipe;
-		}
-		return null;
-	}
 	
 	@Override
 	public String getType() {
@@ -400,6 +393,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 	public void attach(IComputerAccess computer) {
 		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, this);
 		connections.put(computer, ori);
+		this.scheduleNeighborChange();
 	}
 
 	@Override

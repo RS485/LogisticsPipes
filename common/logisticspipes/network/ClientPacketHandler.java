@@ -364,6 +364,11 @@ public class ClientPacketHandler {
 					packetBg.readData(data);
 					onCCIDs(packetBg);
 					break;
+				case NetworkConstants.SET_SECURITY_DESTROY:
+					final PacketPipeInteger packetBh = new PacketPipeInteger();
+					packetBh.readData(data);
+					onSetSecurityDestroy(packetBh);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -972,6 +977,16 @@ public class ClientPacketHandler {
 		TileEntity tile = MainProxy.getClientMainWorld().getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			((LogisticsSecurityTileEntity)tile).handleListPacket(packet);
+		}
+	}
+
+	private static void onSetSecurityDestroy(PacketPipeInteger packet) {
+		TileEntity tile = MainProxy.getClientMainWorld().getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
+		if(tile instanceof LogisticsSecurityTileEntity) {
+			((LogisticsSecurityTileEntity)tile).setClientDestroy(packet.integer == 1);
+			if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSecurityStation) {
+				((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
+			}
 		}
 	}
 	

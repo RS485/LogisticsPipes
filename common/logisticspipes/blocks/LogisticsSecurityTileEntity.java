@@ -42,6 +42,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	private Map<String, SecuritySettings> settingsList = new HashMap<String, SecuritySettings>();
 	public List<Integer> excludedCC = new ArrayList<Integer>();
 	public boolean allowCC = false;
+	public boolean allowAutoDestroy = false;
 	
 	public LogisticsSecurityTileEntity() {
 	}
@@ -81,6 +82,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), (Player) player);
 		MainProxy.sendPacketToPlayer(new PacketCoordinatesUUID(NetworkConstants.SECURITY_STATION_ID, xCoord, yCoord, zCoord, getSecId()).getPacket(), (Player) player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
@@ -111,6 +113,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			allowCC = flag;
 		}
 	}
+
+	public void setClientDestroy(boolean flag) {
+		if(MainProxy.isClient(worldObj)) {
+			allowAutoDestroy = flag;
+		}
+	}
 	
 	@Override
 	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
@@ -119,6 +127,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			secId = UUID.fromString(par1nbtTagCompound.getString("UUID"));
 		}
 		allowCC = par1nbtTagCompound.getBoolean("allowCC");
+		allowAutoDestroy = par1nbtTagCompound.getBoolean("allowAutoDestroy");
 		inv.readFromNBT(par1nbtTagCompound);
 		settingsList.clear();
 		NBTTagList list = par1nbtTagCompound.getTagList("settings");
@@ -143,6 +152,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		super.writeToNBT(par1nbtTagCompound);
 		par1nbtTagCompound.setString("UUID", getSecId().toString());
 		par1nbtTagCompound.setBoolean("allowCC", allowCC);
+		par1nbtTagCompound.setBoolean("allowAutoDestroy", allowAutoDestroy);
 		inv.writeToNBT(par1nbtTagCompound);
 		NBTTagList list = new NBTTagList();
 		for(Entry<String, SecuritySettings> entry:settingsList.entrySet()) {
@@ -242,6 +252,11 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		allowCC = !allowCC;
 		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), listener);
 	}
+
+	public void changeDestroy() {
+		allowAutoDestroy = !allowAutoDestroy;
+		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), listener);
+	}
 	
 	public void addCCToList(Integer id) {
 		if(!excludedCC.contains(id)) {
@@ -277,6 +292,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public boolean getAllowCC(int id) {
 		if(!useEnergy(10)) return false;
 		return allowCC != excludedCC.contains(id);
+	}
+
+	@Override
+	public boolean canAutomatedDestroy() {
+		if(!useEnergy(10)) return false;
+		return allowAutoDestroy;
 	}
 	
 	private boolean useEnergy(int amount) {

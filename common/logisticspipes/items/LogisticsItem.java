@@ -29,14 +29,13 @@ public class LogisticsItem extends Item {
 
 	@Override
     @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister par1IconRegister)
-    {
+    public void registerIcons(IconRegister par1IconRegister) {
 		if(this.itemIcon == null)
 			this.itemIcon = par1IconRegister.registerIcon("logisticspipes:"+getUnlocalizedName().replace("item.",""));
 	}
 
 	@Override
 	public CreativeTabs[] getCreativeTabs() {
-        return new CreativeTabs[]{ getCreativeTab() , LogisticsPipes.LPCreativeTab };
+        return new CreativeTabs[]{ LogisticsPipes.LPCreativeTab };
 	}
 }

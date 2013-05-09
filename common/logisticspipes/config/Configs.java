@@ -12,6 +12,7 @@ public class Configs {
 	public static final String CATEGORY_MULTITHREAD = "multithread";
 
 	// Ids
+	public static int ITEM_BROKEN_ID = 6863;
 	public static int ITEM_LIQUID_CONTAINER_ID = 6864;
 	public static int ITEM_UPGRADE_MANAGER_ID = 6865;
 	public static int ITEM_UPGRADE_ID = 6866;
@@ -122,7 +123,10 @@ public class Configs {
 		ITEM_PARTS_ID = CONFIGURATION.getItem("logisticsHUDParts.id",
 				ITEM_PARTS_ID, "The item id for the Logistics item parts")
 				.getInt();
-
+		ITEM_BROKEN_ID = CONFIGURATION.getItem("LogisticsBrokenItem.id",
+				ITEM_BROKEN_ID, "The item id for the logistics broken item")
+				.getInt();
+	
 		// DEBUG (TEST) ONLY
 		if (LogisticsPipes.DEBUG) {
 			ITEM_LIQUID_CONTAINER_ID = CONFIGURATION.getItem(

@@ -59,6 +59,8 @@ public class LogisticsEventListener {
 							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
 							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;
 							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).repeatFor = 10;
+						} else {
+							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).setDestroyByPlayer();
 						}
 					}
 				}

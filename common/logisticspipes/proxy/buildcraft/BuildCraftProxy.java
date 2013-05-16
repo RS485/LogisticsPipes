@@ -12,6 +12,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
@@ -254,7 +255,19 @@ public class BuildCraftProxy {
 	public static ItemPipe registerPipe(int key, Class<? extends Pipe> clas) {
 		ItemPipe item = new ItemLogisticsPipe(key, clas);
 
-		BlockGenericPipe.pipes.put(item.itemID, clas);
+		Map<Integer, Class<? extends Pipe>> pipes = null;
+		
+		try {
+			pipes = BlockGenericPipe.pipes;
+		} catch(NoSuchFieldError e) {
+			try {
+				pipes = (Map<Integer, Class<? extends Pipe>>) BlockGenericPipe.class.getDeclaredField("pipes").get(null);
+			} catch (Exception e2) {
+				return null;
+			}
+		}
+		
+		pipes.put(item.itemID, clas);
 
 		Pipe dummyPipe = BlockGenericPipe.createPipe(item.itemID);
 		if (dummyPipe != null) {

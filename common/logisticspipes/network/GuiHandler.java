@@ -88,6 +88,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import buildcraft.core.utils.SimpleInventory;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.Player;
 
@@ -415,6 +416,11 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addRestrictedSlot(0, ((LogisticsSecurityTileEntity)tile).inv, 50, 50, -1);
 				dummy.addNormalSlotsForPlayerInventory(10, 210);
 				return dummy;
+
+			case GuiIDs.GUI_Module_Apiarist_Analyzer:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
+				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, 0, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).getPacket(), (Player)player);
+				return new DummyContainer(player.inventory, null);
 				
 			default:break;
 			}
@@ -778,6 +784,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Security_Station_ID:
 				if(!(tile instanceof LogisticsSecurityTileEntity)) return null;
 				return new GuiSecurityStation((LogisticsSecurityTileEntity)tile, player);
+
+			case GuiIDs.GUI_Module_Apiarist_Analyzer:
+				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
+				return new GuiApiaristAnalyser((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), pipe.pipe, FMLClientHandler.instance().getClient().currentScreen, player.inventory);
 				
 			default:break;
 			}

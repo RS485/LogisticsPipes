@@ -24,27 +24,27 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvider {
 
 	public enum FilterType {
-		Null("",0,0),
-		BeeAllele("gui.pipe.filter.BEE",3,2),
-		Drone("gui.pipe.filter.DRONE",4,2),
-		Princess("gui.pipe.filter.PRINCESS",5,2),
-		Queen("gui.pipe.filter.QUEEN",6,2),
-		Purebred("gui.pipe.filter.PURE_BREED",7,1),
-		Nocturnal("gui.pipe.filter.NOCTURNAL",8,2),
-		PureNocturnal("gui.pipe.filter.PURE_NOCTURNAL",9,2),
-		Flyer("gui.pipe.filter.FLYER",10,2),
-		PureFlyer("gui.pipe.filter.PURE_FLYER",11,2),
-		Cave("gui.pipe.filter.CAVE",12,2),
-		PureCave("gui.pipe.filter.PURE_CAVE",13,2);
+		Null("","anything",0),
+		BeeAllele("gui.pipe.filter.BEE","bee",2),
+		Drone("gui.pipe.filter.DRONE","drone",2),
+		Princess("gui.pipe.filter.PRINCESS","princess",2),
+		Queen("gui.pipe.filter.QUEEN","queen",2),
+		Purebred("gui.pipe.filter.PURE_BREED","pure_breed",1),
+		Nocturnal("gui.pipe.filter.NOCTURNAL","nocturnal",2),
+		PureNocturnal("gui.pipe.filter.PURE_NOCTURNAL","pure_nocturnal",2),
+		Flyer("gui.pipe.filter.FLYER","flyer",2),
+		PureFlyer("gui.pipe.filter.PURE_FLYER","pure_flyer",2),
+		Cave("gui.pipe.filter.CAVE","cave",2),
+		PureCave("gui.pipe.filter.PURE_CAVE","pure_flyer",2);
 		
-		FilterType(String text, int id, int secondSlot) {
+		FilterType(String text, String id, int secondSlot) {
 			this.path = text;
 			this.icon = id;
 			this.secondSlots = secondSlot;
 		}
 		
 		public String path;
-		public int icon;
+		public String icon;
 		public int secondSlots;
 	}
 	

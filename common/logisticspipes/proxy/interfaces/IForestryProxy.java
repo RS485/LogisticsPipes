@@ -3,7 +3,10 @@ package logisticspipes.proxy.interfaces;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public interface IForestryProxy {
 	
@@ -53,11 +56,17 @@ public interface IForestryProxy {
 	
 	public abstract String getForestryTranslation(String input);
 
-	public abstract int getIconIndexForAlleleId(String uid, int phase);
-
-	public abstract int getColorForAlleleId(String uid, int phase);
-			
-	public abstract int getRenderPassesForAlleleId(String uid);
+	@SideOnly(Side.CLIENT)
+	public abstract Icon getIconIndexForAlleleId(String uid, int phase);
 	
+	@SideOnly(Side.CLIENT)
+	public abstract int getColorForAlleleId(String uid, int phase);
+	
+	@SideOnly(Side.CLIENT)
+	public abstract int getRenderPassesForAlleleId(String uid);
+
+	@SideOnly(Side.CLIENT)
+	public abstract Icon getIconFromTextureManager(String name);
+
 	public abstract void addCraftingRecipes();
 }

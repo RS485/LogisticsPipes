@@ -18,10 +18,13 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.Loader;
 /*import logisticspipes.proxy.te.ThermalExpansionProxy;*/
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class ProxyManager {
 
@@ -53,12 +56,13 @@ public class ProxyManager {
 				@Override public boolean isCave(ItemStack bee) {return false;}
 				@Override public boolean isPureCave(ItemStack bee) {return false;}
 				@Override public String getForestryTranslation(String input) {return input.substring(input.lastIndexOf(".") + 1).toLowerCase().replace("_", " ");}
-				@Override public int getIconIndexForAlleleId(String id, int phase) {return 0;}
-				@Override public int getColorForAlleleId(String id, int phase) {return 0;}
-				@Override public int getRenderPassesForAlleleId(String id) {return 0;}
+				@Override @SideOnly(Side.CLIENT) public Icon getIconIndexForAlleleId(String id, int phase) {return null;}
+				@Override @SideOnly(Side.CLIENT) public int getColorForAlleleId(String id, int phase) {return 0;}
+				@Override @SideOnly(Side.CLIENT) public int getRenderPassesForAlleleId(String id) {return 0;}
 				@Override public void addCraftingRecipes() {}
 				@Override public String getNextAlleleId(String uid, World world) {return "";}
 				@Override public String getPrevAlleleId(String uid, World world) {return "";}
+				@Override @SideOnly(Side.CLIENT) public Icon getIconFromTextureManager(String name) {return null;}
 			});
 			LogisticsPipes.log.info("Loaded Forestry DummyProxy");
 		}

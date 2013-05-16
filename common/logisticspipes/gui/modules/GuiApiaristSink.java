@@ -15,7 +15,10 @@ import logisticspipes.utils.gui.ISmallColorRenderSlot;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.Icon;
 import buildcraft.transport.Pipe;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
@@ -64,14 +67,10 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		}
 		
 		@Override
-		public int getTextureId() {
-			if(setting.filterType == null) return 0;
-			return setting.filterType.icon;
-		}
-
-		@Override
-		public String getTextureIcon()  {
-			return "/gfx/forestry/gui/analyzer_icons.png";
+		@SideOnly(Side.CLIENT)
+		public Icon getTextureIcon() {
+			if(setting.filterType == null) return null;
+			return SimpleServiceLocator.forestryProxy.getIconFromTextureManager("analyzer/" + setting.filterType.icon);
 		}
 
 		@Override
@@ -250,16 +249,6 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			this.row = row;
 			this.gui = guiApiaristSink;
 		}
-		
-		@Override
-		public int getTextureId() {
-			return 0;
-		}
-
-		@Override
-		public String getTextureIcon()  {
-			return "/gfx/forestry/items/bees.png";
-		}
 
 		@Override
 		public void mouseClicked(int button) {
@@ -335,6 +324,12 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				BasicGuiHelper.renderForestryBeeAt(mc, xPos + 1, yPos + 1, zLevel, setting.secondBee);
 			}
 			return true;
+		}
+
+		@Override
+		@SideOnly(Side.CLIENT)
+		public Icon getTextureIcon() {
+			return null;
 		}
 		
 	}

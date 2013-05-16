@@ -216,7 +216,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 				if(slot.drawSlotBackground()) 
 					BasicGuiHelper.drawSlotBackground(mc, slot.getXPos(), slot.getYPos());
 				if(((IItemTextureRenderSlot)slot).drawSlotIcon() && !((IItemTextureRenderSlot)slot).customRender(mc, zLevel)) 
-					BasicGuiHelper.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel, ((IItemTextureRenderSlot)slot).getTextureId(), ((IItemTextureRenderSlot)slot).getTextureIcon());
+					BasicGuiHelper.renderIconAt(mc, slot.getXPos() + 1, slot.getYPos() + 1, zLevel,  ((IItemTextureRenderSlot)slot).getTextureIcon());
 			} else if(slot instanceof ISmallColorRenderSlot) {
 				if(slot.drawSlotBackground())
 					BasicGuiHelper.drawSmallSlotBackground(mc, slot.getXPos(), slot.getYPos());

@@ -39,9 +39,6 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	private int currentTick = 0;
 	private int slot = 0;
 
-
-
-
 	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
 
 	private IRoutedPowerProvider _power;
@@ -130,7 +127,7 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	@Override 
 	public final int getY() {
 		if(slot>=0)
-			return this._invProvider.getX();
+			return this._invProvider.getY();
 		else 
 			return -1;
 	}
@@ -138,7 +135,7 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	@Override 
 	public final int getZ() {
 		if(slot>=0)
-			return this._invProvider.getX();
+			return this._invProvider.getZ();
 		else 
 			return -1-slot;
 	}
@@ -190,13 +187,15 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	}
 	
 	public void modeChanged() {
-		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
-		if(MainProxy.isServer(_world.getWorld())) {
-			MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), localModeWatchers);
+		if(_world != null) {
+			if(MainProxy.isServer(_world.getWorld())) {
+				MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), localModeWatchers);
+			} else {
+				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
+			}
 		} else {
 			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
 		}
-
 	}
 
 	@Override

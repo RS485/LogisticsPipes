@@ -1471,11 +1471,14 @@ public class ServerPacketHandler {
 
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null) return;
-	
+
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot) instanceof ModuleApiaristAnalyser) {
 			((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(packet.slot)).setExtractMode(packet.integer);
-		}		
-		
+		}	
+
+		if(pipe.pipe instanceof CoreRoutedPipe && ((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser) {
+			((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setExtractMode(packet.integer);
+		}
 	}
 
 	private static void onCraftingPipePrevSatelliteAdvanced(EntityPlayerMP player, PacketPipeInteger packet) {

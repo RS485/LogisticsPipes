@@ -1,11 +1,13 @@
 package logisticspipes.utils.gui;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.Icon;
 
 public abstract class IItemTextureRenderSlot implements IRenderSlot {
-	public abstract int getTextureId();
-	
-	public abstract String getTextureIcon() ;
+	@SideOnly(Side.CLIENT)
+	public abstract Icon getTextureIcon();
 	
 	public abstract boolean drawSlotIcon();
 	

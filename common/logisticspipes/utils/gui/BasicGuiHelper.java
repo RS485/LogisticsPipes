@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.src.ModLoader;
+import net.minecraft.util.Icon;
 import net.minecraftforge.client.ForgeHooksClient;
 
 import org.lwjgl.input.Keyboard;
@@ -438,50 +439,43 @@ public class BasicGuiHelper {
         var9.draw();
     }
     
-    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, int iconIndex, String textureFile) {
+    public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture(textureFile);
-		
-		double iconX = ((double)((iconIndex % 16) * 16)) / 256;
-		double iconXright = ((double)(((iconIndex % 16) + 1) * 16)) / 256;
-		double iconY = ((double)((iconIndex / 16) * 16)) / 256;
-		double iconYbottom = ((double)(((iconIndex / 16) + 1) * 16)) / 256;
+    	mc.renderEngine.bindTexture("/gui/items.png");
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
-        var9.addVertexWithUV(x		, y + 16	, zLevel, iconX			, iconYbottom);
-        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, iconXright	, iconYbottom);
-        var9.addVertexWithUV(x + 16	, y			, zLevel, iconXright	, iconY);
-        var9.addVertexWithUV(x		, y			, zLevel, iconX			, iconY);
+        var9.addVertexWithUV(x		, y + 16	, zLevel, icon.getMinU()	, icon.getMaxV());
+        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, icon.getMaxU()	, icon.getMaxV());
+        var9.addVertexWithUV(x + 16	, y			, zLevel, icon.getMaxU()	, icon.getMinV());
+        var9.addVertexWithUV(x		, y			, zLevel, icon.getMinU()	, icon.getMinV());
         var9.draw();
 	}
     
     public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
-		//GL11.glDisable(2896 /*Light*/);
-		mc.renderEngine.bindTexture("/gfx/forestry/items/bees.png");
-		
+    	GL11.glDisable(GL11.GL_LIGHTING);
+    	mc.renderEngine.bindTexture("/gui/items.png");
+    	
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
-			int iconIndex = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			Icon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
+			if(icon == null) continue;
 	        int color = SimpleServiceLocator.forestryProxy.getColorForAlleleId(id, i);
 	        float colorR = (color >> 16 & 0xFF) / 255.0F;
 	        float colorG = (color >> 8 & 0xFF) / 255.0F;
 	        float colorB = (color & 0xFF) / 255.0F;
 
 	        GL11.glColor4f(colorR, colorG, colorB, 1.0F);
-			//Render Icon
-			double iconX = ((double)((iconIndex % 16) * 16)) / 256;
-			double iconXright = ((double)(((iconIndex % 16) + 1) * 16)) / 256;
-			double iconY = ((double)((iconIndex / 16) * 16)) / 256;
-			double iconYbottom = ((double)(((iconIndex / 16) + 1) * 16)) / 256;
 			
+	        //Render Icon
 			Tessellator var9 = Tessellator.instance;
 	        var9.startDrawingQuads();
-	        var9.addVertexWithUV(x		, y + 16	, zLevel, iconX			, iconYbottom);
-	        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, iconXright	, iconYbottom);
-	        var9.addVertexWithUV(x + 16	, y			, zLevel, iconXright	, iconY);
-	        var9.addVertexWithUV(x		, y			, zLevel, iconX			, iconY);
+	        var9.addVertexWithUV(x		, y + 16	, zLevel, icon.getMinU()	, icon.getMaxV());
+	        var9.addVertexWithUV(x + 16	, y + 16	, zLevel, icon.getMaxU()	, icon.getMaxV());
+	        var9.addVertexWithUV(x + 16	, y			, zLevel, icon.getMaxU()	, icon.getMinV());
+	        var9.addVertexWithUV(x		, y			, zLevel, icon.getMinU()	, icon.getMinV());
 	        var9.draw();
-	      }
+		}
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
     
     public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag){

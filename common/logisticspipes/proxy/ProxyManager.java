@@ -13,6 +13,7 @@ import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.gui.GuiScreen;
@@ -118,17 +119,17 @@ public class ProxyManager {
 			});
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}
-		//@FIXME
-		/*if(Loader.isModLoaded("ThermalExpansion|Transport")) {
+		
+		if(Loader.isModLoaded("ThermalExpansion|Transport")) {
 			SimpleServiceLocator.setThermalExpansionProxy(new ThermalExpansionProxy());
 			LogisticsPipes.log.info("Loaded ThermalExpansion Proxy");
-		} else {*/
+		} else {
 			SimpleServiceLocator.setThermalExpansionProxy(new IThermalExpansionProxy() {
 				@Override public boolean isTesseract(TileEntity tile) {return false;}
 				@Override public boolean isTE() {return false;}
 				@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
 			});
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
-		/*}*/
+		}
 	}
 }

@@ -130,6 +130,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		switch(par1) {
 		case SOLDERING_STATION:
 		case LOGISTICS_POWER_JUNCTION:
+		case LOGISTICS_SECURITY_STATION:
 			return par1;
 		}
 		return super.damageDropped(par1);

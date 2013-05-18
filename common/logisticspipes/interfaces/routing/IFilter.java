@@ -8,4 +8,5 @@ public interface IFilter extends IRelayItem {
 	boolean blockProvider();
 	boolean blockCrafting();
 	boolean blockRouting();
+	boolean blockPower();
 }

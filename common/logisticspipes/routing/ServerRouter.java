@@ -29,6 +29,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -141,6 +142,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	public ArrayList<ExitRoute> _routeTable = new ArrayList<ExitRoute>();
 	public List<ExitRoute> _routeCosts = new ArrayList<ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
+	public List<IRouter> _firewallRouter = new ArrayList<IRouter>();
 	public List<IRouter> _externalRoutersByCost = null;
 	
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
@@ -450,6 +452,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		List<ExitRoute> routeCosts = new ArrayList<ExitRoute>(routingTableSize);
 		
 		ArrayList<ILogisticsPowerProvider> powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
+		ArrayList<IRouter> firewallRouter = new ArrayList<IRouter>();
 		
 		//space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
 		ArrayList<EnumSet<PipeRoutingConnectionType>> closedSet = new ArrayList<EnumSet<PipeRoutingConnectionType>>(getBiggestSimpleID());
@@ -479,13 +482,18 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		while ((lowestCostNode = candidatesCost.poll()) != null){
 			if(!lowestCostNode.hasActivePipe())
 				continue;
+
+			if(lowestCostNode.destination instanceof IFilteringRouter) {
+				firewallRouter.add(lowestCostNode.destination);
+			}
+			
 			//if the node does not have any flags not in the closed set, check it
 			EnumSet<PipeRoutingConnectionType> lowestCostClosedFlags = closedSet.get(lowestCostNode.destination.getSimpleID());
 			if(lowestCostClosedFlags == null)
 				lowestCostClosedFlags = EnumSet.noneOf(PipeRoutingConnectionType.class);
 			if(lowestCostClosedFlags.containsAll(lowestCostNode.getFlags()))
 				continue;
-			 
+			
 			//Add new candidates from the newly approved route 
 			LSA lsa = null;
 			if(lowestCostNode.destination.getSimpleID() < SharedLSADatabase.length) {
@@ -520,8 +528,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				int candidateCost = lowestCostNode.distanceToDestination + newCandidate.getValue().getValue1();
 				EnumSet<PipeRoutingConnectionType> newCT = lowestCostNode.getFlags();
 				newCT.retainAll(newCandidate.getValue().getValue2());
-				if(!newCT.isEmpty())
+				if(!newCT.isEmpty()) {
 					candidatesCost.add(new ExitRoute(lowestCostNode.root, newCandidate.getKey(), candidateCost, newCT));
+				}
 			}
 
 			lowestCostNode.removeFlags(lowestCostClosedFlags);
@@ -575,6 +584,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				_powerTable = powerTable;
 				_routeTable = routeTable;
 				_routeCosts = routeCosts; 
+				_firewallRouter = firewallRouter;
 			}
 			SharedLSADatabasereadLock.unlock();
 		}
@@ -779,7 +789,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public List<ILogisticsPowerProvider> getPowerProvider() {
-		return _powerTable;
+		return Collections.unmodifiableList(_powerTable);
 	}
 	
 	private List<ILogisticsPowerProvider> getConnectedPowerProvider() {
@@ -802,6 +812,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	@Override
 	public boolean isSideDisconneceted(ForgeDirection dir) {
 		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
+	}
+
+	@Override
+	public List<IRouter> getFilteringRouter() {
+		return Collections.unmodifiableList(_firewallRouter);
 	}
 
 	@Override

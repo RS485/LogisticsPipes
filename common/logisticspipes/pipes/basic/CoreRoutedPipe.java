@@ -10,6 +10,9 @@ package logisticspipes.pipes.basic;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -32,6 +35,8 @@ import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logic.BaseRoutingLogic;
@@ -51,8 +56,12 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.request.RequestTree.workWeightedSorter;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.RoutedEntityItem;
+import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.PermissionException;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -831,7 +840,58 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(stillNeedReplace) {
 			return null;
 		}
-		return this.getRouter().getPowerProvider();
+		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>(this.getRouter().getPowerProvider());
+		addAll(list, getRoutedPowerProviders(this.getRouter(), new BitSet(ServerRouter.getBiggestSimpleID()+1), new ArrayList<IFilter>()));
+		return list;
+	}
+	
+	private List<ILogisticsPowerProvider> getRoutedPowerProviders(IRouter router, BitSet layer, List<IFilter> filters) {
+		List<ILogisticsPowerProvider> power = new LinkedList<ILogisticsPowerProvider>();
+		List<IRouter> routersIndex = router.getFilteringRouter();
+		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
+		for (IRouter r:routersIndex) {
+			ExitRoute e = router.getDistanceTo(r);
+			if (e!=null) {
+				validSources.add(e);
+			}
+		}
+		Collections.sort(validSources, new workWeightedSorter(1.0));
+		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
+		BitSet used = (BitSet) layer.clone();
+		for(ExitRoute r : validSources) {
+			if(r.containsFlag(PipeRoutingConnectionType.canPowerFrom) && !used.get(r.destination.getSimpleID())) {
+				if(r.destination instanceof IFilteringRouter) {
+					firewalls.add(r);
+					used.set(r.destination.getSimpleID());
+				}
+			}
+		}
+		for(ExitRoute r:firewalls) {
+			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
+			filters.add(filter);
+			boolean canPassPower = true;
+			for(IFilter f:filters) {
+				if(f.blockPower()) canPassPower = false;
+			}
+			if(canPassPower) {
+				IRouter center = r.destination.getRouter(ForgeDirection.UNKNOWN);
+				if(center != null) {
+					addAll(power, center.getPowerProvider());
+				}
+			}
+			List<ILogisticsPowerProvider> list = getRoutedPowerProviders(r.destination.getRouter(ForgeDirection.UNKNOWN), used, filters);
+			filters.remove(filter);
+			addAll(power, list);
+		}
+		return power;
+	}
+	
+	private <T> void addAll(List<T> list, List<T> add) {
+		for(T o:add) {
+			if(!list.contains(o)) {
+				list.add(o);
+			}
+		}
 	}
 	
 	@Override

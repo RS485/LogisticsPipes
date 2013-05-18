@@ -148,6 +148,10 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		System.out.println(Arrays.toString(ForgeDirection.VALID_DIRECTIONS));
 		System.out.println(Arrays.toString(sr.sideDisconnected));
 		System.out.println(Arrays.toString(getRoutedPipe().container.pipeConnectionsBuffer));
+		System.out.println();
+		System.out.println("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~");
+		System.out.println(r.getPipe().getRoutedPowerProviders());
+		System.out.println(r.getPowerProvider());
 		getRoutedPipe().refreshConnectionAndRender(true);
 	}
 

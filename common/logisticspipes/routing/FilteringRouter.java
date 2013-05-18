@@ -48,6 +48,7 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			@Override public boolean blockProvider() {return false;}
 			@Override public boolean blockCrafting() {return false;}
 			@Override public boolean blockRouting() {return false;}
+			@Override public boolean blockPower() {return true;}
 		};
 	}
 

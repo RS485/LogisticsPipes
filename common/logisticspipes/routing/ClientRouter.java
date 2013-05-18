@@ -201,4 +201,10 @@ public class ClientRouter implements IRouter {
 		// TODO Auto-generated method stub
 		
 	}
+
+	@Override
+	public List<IRouter> getFilteringRouter() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

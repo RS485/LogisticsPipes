@@ -26,6 +26,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -295,5 +296,13 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
+	}
+
+	@Override
+	protected void addRouterCrashReport(CrashReportCategory crashReportCategory) {
+		for(int i=0; i<7;i++) {
+			ForgeDirection dir = ForgeDirection.getOrientation(i);
+			crashReportCategory.addCrashSection("Router (" + dir.toString() + ")", this.getRouter(dir));
+		}
 	}
 }

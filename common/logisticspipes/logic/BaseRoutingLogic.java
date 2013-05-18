@@ -126,7 +126,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		
 		ServerRouter sr = (ServerRouter) r;
 		
-		System.out.println("ID: " + r.getSimpleID());
+		System.out.println(r.toString());
 		System.out.println("---------CONNECTED TO---------------");
 		for (CoreRoutedPipe adj : sr._adjacent.keySet()) {
 			System.out.println(adj.getRouter().getSimpleID());

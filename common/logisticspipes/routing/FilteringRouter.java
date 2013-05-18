@@ -9,6 +9,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.pipes.PipeItemsFirewall;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -64,7 +65,17 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
 		boolean hasBeenReset=false;
 		if(!ForgeDirection.UNKNOWN.equals(side)) {
-			hasBeenReset = this.getPipe().getRouter().act(hasBeenProcessed, actor);
+			CoreRoutedPipe pipe = this.getPipe();
+			if(pipe != null) {
+				IRouter router = pipe.getRouter();
+				if(router != null) {
+					hasBeenReset = router.act(hasBeenProcessed, actor);
+				} else {
+					throw new RuntimeException("Why is the router null? (" + this.toString() + ")");
+				}
+			} else {
+				throw new RuntimeException("Why is the pipe null? (" + this.toString() + ")");
+			}
 		}
 		if(hasBeenProcessed.get(this.simpleID))
 			return hasBeenReset;
@@ -85,5 +96,15 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			}
 		}
 		return hasBeenReset;
+	}
+
+	@Override
+	public String toString() {
+		String higher = super.toString().substring(6);
+		StringBuilder string = new StringBuilder("Filtering");
+		string.append(higher.substring(0, higher.length() - 1));
+		string.append(", ");
+		string.append(side);
+		return string.append("}").toString();
 	}
 }

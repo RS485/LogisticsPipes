@@ -11,7 +11,6 @@ package logisticspipes.pipes.basic;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -76,6 +75,7 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -1093,6 +1093,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			return zCoord;
 		}
 		return this.container.zCoord;
+	}
+
+	public void addCrashReport(CrashReportCategory crashReportCategory) {
+		addRouterCrashReport(crashReportCategory);
+		crashReportCategory.addCrashSection("stillNeedReplace", stillNeedReplace);
+	}
+	
+	protected void addRouterCrashReport(CrashReportCategory crashReportCategory) {
+		crashReportCategory.addCrashSection("Router", this.getRouter().toString());
 	}
 	
 	/* --- Trigger --- */

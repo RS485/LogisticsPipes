@@ -943,6 +943,25 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	public void clearInterests() {
 		this.removeAllInterests();		
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder string = new StringBuilder("ServerRouter: {ID: ");
+		string.append(simpleID);
+		string.append(", UUID: ");
+		string.append(this.getId());
+		string.append(", AT: (");
+		string.append(this._dimension);
+		string.append(", ");
+		string.append(this._xCoord);
+		string.append(", ");
+		string.append(this._yCoord);
+		string.append(", ");
+		string.append(this._zCoord);
+		string.append("), Version: ");
+		string.append(_LSAVersion);
+		return string.append("}").toString();
+	}
 }
 
 

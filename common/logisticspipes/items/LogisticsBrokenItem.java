@@ -2,11 +2,11 @@ package logisticspipes.items;
 
 import java.util.List;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import logisticspipes.interfaces.IItemAdvancedExistance;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsBrokenItem extends LogisticsItem implements IItemAdvancedExistance {
 

@@ -753,6 +753,16 @@ public class RecipeManager {
 			Character.valueOf('P'), Item.paper
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 21), new Object[] { 
+			false, 
+			"PrP", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Item.ingotIron, 
+			Character.valueOf('P'), Item.paper
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), new Object[] { 
 			false, 
 			"srs", 

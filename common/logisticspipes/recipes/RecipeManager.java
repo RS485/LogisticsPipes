@@ -733,6 +733,16 @@ public class RecipeManager {
 			Character.valueOf('s'), Item.slimeBall
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 6), new Object[] { 
+			false, 
+			"PrP", 
+			"rCr", 
+			"PrP", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('P'), Item.paper
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 20), new Object[] { 
 			false, 
 			"PrP", 

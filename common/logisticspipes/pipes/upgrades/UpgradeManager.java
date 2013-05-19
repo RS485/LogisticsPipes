@@ -1,9 +1,12 @@
 package logisticspipes.pipes.upgrades;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
@@ -14,23 +17,30 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler {
-	
+
 	private SimpleInventory inv = new SimpleInventory(9, "UpgradeInventory", 16);
+	private SimpleInventory sneakyInv = new SimpleInventory(9, "SneakyUpgradeInventory", 1);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[8];
+	private IPipeUpgrade[] sneakyUpgrades = new IPipeUpgrade[9];
 	private CoreRoutedPipe pipe;
 	private int securityDelay = 0;
 
 	/* cached attributes */
 	private ForgeDirection sneakyOrientation = ForgeDirection.UNKNOWN;
+	private ForgeDirection[] combinedSneakyOrientation = new ForgeDirection[9];
 	private int speedUpgradeCount = 0;
 	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
 	private boolean isAdvancedCrafter = false;
+	private boolean isCombinedSneakyUpgrade = false;
+	
+	private boolean needsContainerPositionUpdate = false;
 	
 	public UpgradeManager(CoreRoutedPipe pipe) {
 		this.pipe = pipe;
@@ -47,7 +57,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		InventoryChanged(inv);
 	}
 
-	private boolean updateModule(int slot) {
+	private boolean updateModule(int slot, IPipeUpgrade[] upgrades, IInventory inv) {
 		upgrades[slot] = LogisticsPipes.UpgradeItem.getUpgradeForItem(inv.getStackInSlot(slot), upgrades[slot]);
 		if(upgrades[slot] == null) {
 			inv.setInventorySlotContents(slot, null);
@@ -57,7 +67,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		}
 	}
 	
-	private boolean removeUpgrade(int slot) {
+	private boolean removeUpgrade(int slot, IPipeUpgrade[] upgrades) {
 		boolean needUpdate = upgrades[slot].needsUpdate();
 		upgrades[slot] = null;
 		return needUpdate;
@@ -69,19 +79,21 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		for(int i=0;i<inv.getSizeInventory() - 1;i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item != null) {
-				needUpdate |= updateModule(i);
+				needUpdate |= updateModule(i, upgrades, inv);
 			} else if(item == null && upgrades[i] != null) {
-				needUpdate |= removeUpgrade(i);
+				needUpdate |= removeUpgrade(i, upgrades);
 			}
 		}
 		//update sneaky direction, speed upgrade count and disconnection
 		sneakyOrientation = ForgeDirection.UNKNOWN;
 		speedUpgradeCount = 0;
 		isAdvancedCrafter = false;
+		boolean combinedBuffer = isCombinedSneakyUpgrade;
+		isCombinedSneakyUpgrade = false;
 		disconnectedSides.clear();
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
-			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
+			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
 				sneakyOrientation = ((SneakyUpgrade) upgrade).getSneakyOrientation();
 			} else if(upgrade instanceof SpeedUpgrade) {
 				speedUpgradeCount += inv.getStackInSlot(i).stackSize;
@@ -89,6 +101,25 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				disconnectedSides.add(((ConnectionUpgrade)upgrade).getSide());
 			} else if(upgrade instanceof AdvancedSatelliteUpgrade) {
 				isAdvancedCrafter = true;
+			} else if(upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
+				isCombinedSneakyUpgrade = true;
+			}
+		}
+		if(combinedBuffer != isCombinedSneakyUpgrade) {
+			needsContainerPositionUpdate = true;
+		}
+		for(int i=0;i<sneakyInv.getSizeInventory() - 1;i++) {
+			ItemStack item = sneakyInv.getStackInSlot(i);
+			if(item != null) {
+				needUpdate |= updateModule(i, sneakyUpgrades, sneakyInv);
+			} else if(item == null && sneakyUpgrades[i] != null) {
+				needUpdate |= removeUpgrade(i, sneakyUpgrades);
+			}
+		}
+		for(int i=0;i<sneakyUpgrades.length;i++) {
+			IPipeUpgrade upgrade = sneakyUpgrades[i];
+			if(upgrade instanceof SneakyUpgrade) {
+				combinedSneakyOrientation[i] = ((SneakyUpgrade) upgrade).getSneakyOrientation();
 			}
 		}
 		if(needUpdate) {
@@ -109,14 +140,35 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	public int getSpeedUpgradeCount() {
 		return speedUpgradeCount;
 	}
+	
+	public boolean hasCombinedSneakyUpgrade() {
+		return isCombinedSneakyUpgrade;
+	}
+
+	public ForgeDirection[] getCombinedSneakyOrientation() {
+		return combinedSneakyOrientation;
+	}
 
 	public void openGui(EntityPlayer entityplayer, CoreRoutedPipe pipe) {
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Upgrade_Manager, pipe.worldObj, pipe.getX(), pipe.getY(), pipe.getZ());
 	}
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {
-		DummyContainer dummy = new DummyContainer(player.inventory, inv);
-		dummy.addNormalSlotsForPlayerInventory(8, 60);
+		DummyContainer dummy = new DummyContainer(player, inv, new IGuiOpenControler() {
+			List<EntityPlayer> players = new ArrayList<EntityPlayer>();
+			@Override
+			public void guiOpenedByPlayer(EntityPlayer player) {
+				players.add(player);
+			}
+			@Override
+			public void guiClosedByPlayer(EntityPlayer player) {
+				players.remove(player);
+				if(players.isEmpty() && !isCombinedSneakyUpgrade) {
+					sneakyInv.dropContents(pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
+				}
+			}
+		});
+		dummy.addNormalSlotsForPlayerInventory(8, isCombinedSneakyUpgrade ? 90 : 60);
 
 		//Pipe slots
 	    for(int pipeSlot = 0; pipeSlot < 8; pipeSlot++){
@@ -144,7 +196,31 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				return true;
 			}
     	}, 1);
+    	
+		int y = isCombinedSneakyUpgrade ? 58 : 100000;
+		for(int pipeSlot = 0; pipeSlot < 9; pipeSlot++){
+	    	dummy.addRestrictedSlot(pipeSlot, sneakyInv, 8 + pipeSlot * 18, y, new ISlotCheck() {
+				@Override
+				public boolean isStackAllowed(ItemStack itemStack) {
+					if(itemStack == null) return false;
+					if(itemStack.itemID == LogisticsPipes.UpgradeItem.itemID) {
+						IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(itemStack, null);
+						if(!(upgrade instanceof SneakyUpgrade)) return false;
+						if(!upgrade.isAllowed(pipe)) return false;
+					} else {
+						return false;
+					}
+					return true;
+				}
+	    	});
+	    }
 	    return dummy;
+	}
+	
+	public boolean isNeedingContainerUpdate() {
+		boolean tmp = needsContainerPositionUpdate;
+		needsContainerPositionUpdate = false;
+		return tmp;
 	}
 	
 	public void dropUpgrades(World worldObj, int xCoord, int yCoord, int zCoord) {
@@ -156,21 +232,16 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 
 	public boolean tryIserting(World world, EntityPlayer entityplayer) {
-		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID && LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null).isAllowed(pipe)) {
+		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.UpgradeItem.itemID) {
 			if(MainProxy.isClient(world)) return true;
-			for(int i=0;i<inv.getSizeInventory() - 1;i++) {
-				ItemStack item = inv.getStackInSlot(i);
-				if(item == null) {
-					inv.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
-					InventoryChanged(inv);
-					return true;
-				} else if(item.getItemDamage() == entityplayer.getCurrentEquippedItem().getItemDamage()) {
-					if(item.stackSize < inv.getInventoryStackLimit()) {
-						item.stackSize++;
-						entityplayer.getCurrentEquippedItem().splitStack(1);
-						return true;
+			IPipeUpgrade upgrade = LogisticsPipes.UpgradeItem.getUpgradeForItem(entityplayer.getCurrentEquippedItem(), null);
+			if(upgrade.isAllowed(pipe)) {
+				if(isCombinedSneakyUpgrade) {
+					if(upgrade instanceof SneakyUpgrade) {
+						if(insertIntInv(entityplayer, sneakyInv, 0)) return true;
 					}
 				}
+				if(insertIntInv(entityplayer, inv, 1)) return true;
 			}
 		}
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsItemCard.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
@@ -179,7 +250,27 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				inv.setInventorySlotContents(8, entityplayer.getCurrentEquippedItem().copy());
 				inv.getStackInSlot(8).stackSize = 1;
 				entityplayer.getCurrentEquippedItem().splitStack(1);
+				InventoryChanged(inv);
 				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean insertIntInv(EntityPlayer entityplayer, SimpleInventory inv, int sub) {
+		for(int i=0;i<inv.getSizeInventory() - sub;i++) {
+			ItemStack item = inv.getStackInSlot(i);
+			if(item == null) {
+				inv.setInventorySlotContents(i, entityplayer.getCurrentEquippedItem().splitStack(1));
+				InventoryChanged(inv);
+				return true;
+			} else if(item.getItemDamage() == entityplayer.getCurrentEquippedItem().getItemDamage()) {
+				if(item.stackSize < inv.getInventoryStackLimit()) {
+					item.stackSize++;
+					entityplayer.getCurrentEquippedItem().splitStack(1);
+					InventoryChanged(inv);
+					return true;
+				}
 			}
 		}
 		return false;

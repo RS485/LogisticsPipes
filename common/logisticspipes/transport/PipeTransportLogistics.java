@@ -306,22 +306,44 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				}
 				//sneaky insertion
 				UpgradeManager manager = getPipe().getUpgradeManager();
-				ForgeDirection insertion = data.output.getOpposite();
-				if(manager.hasSneakyUpgrade()) {
-					insertion = manager.getSneakyOrientation();
+				if(!manager.hasCombinedSneakyUpgrade()) {
+					ForgeDirection insertion = data.output.getOpposite();
+					if(manager.hasSneakyUpgrade()) {
+						insertion = manager.getSneakyOrientation();
+					}
+					ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
+					
+					data.item.getItemStack().stackSize -= added.stackSize;
+					
+					//For InvSysCon
+					if(data.item instanceof IRoutedItem) {
+						IRoutedItem routed = (IRoutedItem) data.item;
+						IRoutedItem newItem = routed.getCopy();
+						newItem.setItemStack(added);
+						EntityData addedData = new EntityData(newItem.getEntityPassiveItem(), data.input);
+						insertedItemStack(addedData, tile);
+					}
+				} else {
+					ForgeDirection[] dirs = manager.getCombinedSneakyOrientation();
+					for(int i=0;i<dirs.length;i++) {
+						ForgeDirection insertion = dirs[i];
+						if(insertion == null) continue;
+						ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
+						
+						data.item.getItemStack().stackSize -= added.stackSize;
+						
+						//For InvSysCon
+						if(data.item instanceof IRoutedItem) {
+							IRoutedItem routed = (IRoutedItem) data.item;
+							IRoutedItem newItem = routed.getCopy();
+							newItem.setItemStack(added);
+							EntityData addedData = new EntityData(newItem.getEntityPassiveItem(), data.input);
+							insertedItemStack(addedData, tile);
+						}
+						if(data.item.getItemStack().stackSize <= 0) break;
+					}
 				}
-				ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 				
-				data.item.getItemStack().stackSize -= added.stackSize;
-				
-				//For InvSysCon
-				if(data.item instanceof IRoutedItem) {
-					IRoutedItem routed = (IRoutedItem) data.item;
-					IRoutedItem newItem = routed.getCopy();
-					newItem.setItemStack(added);
-					EntityData addedData = new EntityData(newItem.getEntityPassiveItem(), data.input);
-					insertedItemStack(addedData, tile);
-				}
 				//LogisticsPipes end
 
 				if(data.item.getItemStack().stackSize > 0) {

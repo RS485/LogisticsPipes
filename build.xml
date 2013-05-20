@@ -319,11 +319,11 @@
 	</target>
 	
 	<target name="vars">
-		<property name="lp.version.full"      value="${lp.version}.${env.BUILD_NUMBER}"/>
+		<property name="lp.version.full"      value="${lp.version}.${BUILD_NUMBER}"/>
 	</target>
 	
 	<target name="vars-dev">
-		<property name="lp.version.full"      value="${lp.version}.dev.${env.BUILD_NUMBER}"/>
+		<property name="lp.version.full"      value="${lp.version}.dev.${BUILD_NUMBER}"/>
 	</target>
 	
 	<target name="vars-test">

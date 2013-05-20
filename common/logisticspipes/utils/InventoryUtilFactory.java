@@ -11,6 +11,7 @@ package logisticspipes.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import net.minecraft.inventory.IInventory;
@@ -22,6 +23,9 @@ public class InventoryUtilFactory {
 	public void registerHandler(SpecialInventoryHandler invHandler) {
 		if(invHandler.init()) {
 			handler.add(invHandler);
+			LogisticsPipes.log.info("Loaded SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
+		} else {
+			LogisticsPipes.log.warning("Could not load SpecialInventoryHandler: " + invHandler.getClass().getCanonicalName());
 		}
 	}
 

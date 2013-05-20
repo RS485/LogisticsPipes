@@ -119,7 +119,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("ThermalExpansion|Transport")) {
+		if(Loader.isModLoaded("ThermalExpansion")) {
 			SimpleServiceLocator.setThermalExpansionProxy(new ThermalExpansionProxy());
 			LogisticsPipes.log.info("Loaded ThermalExpansion Proxy");
 		} else {

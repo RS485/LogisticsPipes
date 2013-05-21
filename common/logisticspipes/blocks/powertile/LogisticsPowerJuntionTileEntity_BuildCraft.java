@@ -31,7 +31,7 @@ import buildcraft.api.power.PowerFramework;
 public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	
 	// true if it needs more power, turns off at full, turns on at 50%.
-	public boolean needMorePowerTriggerCheck = false;
+	public boolean needMorePowerTriggerCheck = true;
 	
 	public final int BuildCraftMultiplier = 5;
 	public final int MAX_STORAGE = 2000000;
@@ -103,12 +103,16 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
 		super.readFromNBT(par1nbtTagCompound);
 		internalStorage = par1nbtTagCompound.getInteger("powerLevel");
+		if(par1nbtTagCompound.hasKey("needMorePowerTriggerCheck")) {
+			needMorePowerTriggerCheck = par1nbtTagCompound.getBoolean("needMorePowerTriggerCheck");
+		}
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
 		super.writeToNBT(par1nbtTagCompound);
 		par1nbtTagCompound.setInteger("powerLevel", internalStorage);
+		par1nbtTagCompound.setBoolean("needMorePowerTriggerCheck", needMorePowerTriggerCheck);
 	}
 
 	@Override

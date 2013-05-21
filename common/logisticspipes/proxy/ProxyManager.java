@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cc.CCTurtleProxy;
 import logisticspipes.proxy.forestry.ForestryProxy;
 import logisticspipes.proxy.ic2.IC2Proxy;
+import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
@@ -129,6 +131,16 @@ public class ProxyManager {
 				@Override public List<TileEntity> getConnectedTesseracts(TileEntity tile) {return new ArrayList<TileEntity>(0);}
 			});
 			LogisticsPipes.log.info("Loaded ThermalExpansion DummyProxy");
+		}
+		
+		if(Loader.isModLoaded("BetterStorage")) {
+			SimpleServiceLocator.setBetterStorageProxy(new BetterStorageProxy());
+			LogisticsPipes.log.info("Loaded BetterStorage Proxy");
+		} else {
+			SimpleServiceLocator.setBetterStorageProxy(new IBetterStorageProxy() {
+				@Override public boolean isBetterStorageCrate(TileEntity tile) {return false;}
+			});
+			LogisticsPipes.log.info("Loaded BetterStorage DummyProxy");
 		}
 	}
 }

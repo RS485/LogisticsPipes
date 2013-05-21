@@ -15,6 +15,7 @@ import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsLiquidManager;
 import logisticspipes.logistics.ILogisticsManagerV2;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IForestryProxy;
@@ -107,6 +108,11 @@ public final class SimpleServiceLocator {
 	public static IThermalExpansionProxy thermalExpansionProxy;
 	public static void setThermalExpansionProxy(IThermalExpansionProxy proxy) {
 		thermalExpansionProxy = proxy;
+	}
+	
+	public static IBetterStorageProxy betterStorageProxy;
+	public static void setBetterStorageProxy(IBetterStorageProxy proxy) {
+		betterStorageProxy = proxy;
 	}
 
 	public static ClientPacketBufferHandlerThread clientBufferHandler;

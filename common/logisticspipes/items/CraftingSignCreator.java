@@ -17,6 +17,7 @@ public class CraftingSignCreator extends LogisticsItem {
 	public CraftingSignCreator(int i) {
 		super(i);
 		this.setMaxStackSize(1);
+		this.setMaxDamage(250);
 	}
 
 	@Override
@@ -53,11 +54,6 @@ public class CraftingSignCreator extends LogisticsItem {
 		}
         return true;
     }
-	
-	@Override
-	public int getMaxDamage() {
-		return 250;
-	}
 
 	@Override
 	public CreativeTabs getCreativeTab()

@@ -419,4 +419,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 
 	@Override
 	public void centerReached(PipeTransportItems pipe, EntityData data) {}
+
+	@Override
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		return super.canPipeConnect(tile, side) || SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
+	}
 }

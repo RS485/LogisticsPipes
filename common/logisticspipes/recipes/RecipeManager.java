@@ -866,6 +866,12 @@ public class RecipeManager {
 				Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
 				Character.valueOf('g'), Item.glassBottle
 			});
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidExtractor, 1), new Object[] {
+				"w",
+				"I",
+				Character.valueOf('I'), new ItemStack(LogisticsPipes.LogisticsLiquidInsertion, 1),
+				Character.valueOf('w'), BuildCraftTransport.pipeLiquidsWood
+			});
 		}
 	}
 }

@@ -12,6 +12,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.LiquidStack;
 
@@ -78,6 +79,26 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 			this.queueRoutedItem(routed, dir);
 			nextSendMax[dir.ordinal()] = 100;
 			nextSendMin[dir.ordinal()] = 10;
+		}
+	}
+
+	@Override
+	public void writeToNBT(NBTTagCompound nbttagcompound) {
+		super.writeToNBT(nbttagcompound);
+		nbttagcompound.setIntArray("nextSendMax", nextSendMax);
+		nbttagcompound.setIntArray("nextSendMin", nextSendMin);
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		super.readFromNBT(nbttagcompound);
+		nextSendMax = nbttagcompound.getIntArray("nextSendMax");
+		if(nextSendMax.length < 6) {
+			nextSendMax = new int[6];
+		}
+		nextSendMin = nbttagcompound.getIntArray("nextSendMin");
+		if(nextSendMin.length < 6) {
+			nextSendMin = new int[6];
 		}
 	}
 

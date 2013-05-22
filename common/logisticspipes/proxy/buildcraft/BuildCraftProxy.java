@@ -44,6 +44,7 @@ import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
 import logisticspipes.pipes.PipeLiquidBasic;
+import logisticspipes.pipes.PipeLiquidExtractor;
 import logisticspipes.pipes.PipeLiquidInsertion;
 import logisticspipes.pipes.PipeLiquidProvider;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
@@ -241,6 +242,7 @@ public class BuildCraftProxy {
 			LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
 			LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
 			LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
+			LogisticsPipes.LogisticsLiquidExtractor = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
 		}
 	}
 

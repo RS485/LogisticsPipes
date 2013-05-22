@@ -11,7 +11,6 @@ import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.inventory.ITransactor;
 import buildcraft.core.inventory.TransactorForgeSided;
-import buildcraft.core.inventory.TransactorFurnace;
 import buildcraft.core.inventory.TransactorSimple;
 import buildcraft.core.inventory.TransactorSpecial;
 import buildcraft.core.inventory.TransactorVanillaSided;
@@ -58,10 +57,6 @@ public class InventoryHelper {
 
 		else if (object instanceof net.minecraft.inventory.ISidedInventory)
 		    return new TransactorVanillaSided((net.minecraft.inventory.ISidedInventory) object);
-
-		// Furnaces need to be special cased to prevent vanilla XP exploits.
-		else if (object instanceof TileEntityFurnace)
-			return new TransactorFurnace((ISidedInventory) object);
 
 		else if (object instanceof ISidedInventory)
 			return new TransactorForgeSided((ISidedInventory) object);

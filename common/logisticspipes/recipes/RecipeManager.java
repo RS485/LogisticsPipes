@@ -662,6 +662,29 @@ public class RecipeManager {
 			Character.valueOf('i'), Item.ingotIron
 		});
 		
+		//Security Station
+		if(LogisticsPipes.DEBUG) {
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.logisticsSolidBlock, 1, 2), new Object[] { 
+				"iDi", 
+				"rBr", 
+				"iii", 
+				Character.valueOf('D'), new ItemStack(BuildCraftCore.diamondGearItem, 1),
+				Character.valueOf('r'), Item.redstone, 
+				Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe, 
+				Character.valueOf('i'), Item.ingotIron
+			});
+			
+			craftingManager.addRecipe(new ItemStack(LogisticsPipes.logisticsSolidBlock, 1, 2), new Object[] { 
+				"iDi", 
+				"rBr", 
+				"iii", 
+				Character.valueOf('D'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3),
+				Character.valueOf('r'), Item.redstone, 
+				Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe, 
+				Character.valueOf('i'), Item.ingotIron
+			});
+		}
+		
 		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsUpgradeManager, 1), new Object[] { 
 			LogisticsPipes.LogisticsNetworkMonitior,
 			BuildCraftCore.wrenchItem

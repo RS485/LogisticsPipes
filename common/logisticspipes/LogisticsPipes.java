@@ -47,6 +47,7 @@ import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsLiquidContainer;
+import logisticspipes.items.LogisticsNetworkManager;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.log.RequestLogFormator;
@@ -303,12 +304,16 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		
-		LogisticsNetworkMonitior = new LogisticsItem(Configs.LOGISTICSNETWORKMONITOR_ID);
+		LiquidContainerRenderer renderer = new LiquidContainerRenderer();
+		
+		LogisticsNetworkMonitior = new LogisticsNetworkManager(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
 		
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
-		//LogisticsItemCard.setTabToDisplayOn(CreativeTabs.tabRedstone);
+		if(isClient) {
+			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, renderer);
+		}
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
 		LogisticsRemoteOrderer.setUnlocalizedName("remoteOrdererItem");
@@ -345,7 +350,6 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
-		LiquidContainerRenderer renderer = new LiquidContainerRenderer();
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");

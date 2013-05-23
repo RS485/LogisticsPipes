@@ -7,6 +7,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.gui.GuiCardManager;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFirewall;
@@ -77,6 +78,7 @@ import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.client.gui.GuiScreen;
@@ -329,7 +331,29 @@ public class GuiHandler implements IGuiHandler {
 						((CoreRoutedPipe)fpipe.pipe).playerStopWatching(player, 0);
 					}
 				});
-				
+			
+			case GuiIDs.GUI_Item_Manager:
+				final CardManagmentInventory Cinv = new CardManagmentInventory();
+				dummy = new DummyContainer(player, Cinv, new IGuiOpenControler() {
+					@Override public void guiOpenedByPlayer(EntityPlayer player) {}
+					@Override
+					public void guiClosedByPlayer(EntityPlayer player) {
+						Cinv.close(player);
+					}
+				});
+				for(int i=0;i<2;i++) {
+					dummy.addRestrictedSlot(i, Cinv, 0, 0, LogisticsPipes.ModuleItem.itemID);
+				}
+				dummy.addRestrictedSlot(2, Cinv, 0, 0, new ISlotCheck() {
+					@Override public boolean isStackAllowed(ItemStack itemStack) {return false;}
+				});
+				dummy.addRestrictedSlot(3, Cinv, 0, 0, LogisticsPipes.LogisticsItemCard.itemID);
+				for(int i=4;i<10;i++) {
+					dummy.addColorSlot(i, Cinv, 0, 0);
+				}
+				dummy.addNormalSlotsForPlayerInventory(0, 0);
+				return dummy;
+			
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new DummyContainer(player.inventory, null);
@@ -743,7 +767,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_RoutingStats_ID:
 				if(pipe.pipe == null || !(pipe.pipe.logic instanceof BaseRoutingLogic)) return null;
 				return new GuiRoutingStats(((BaseRoutingLogic)pipe.pipe.logic).getRoutedPipe().getRouter(), player);
-
+			
+			case GuiIDs.GUI_Item_Manager:
+				return new GuiCardManager(player);
+				
 			case GuiIDs.GUI_Normal_Orderer_ID:
 				return new NormalGuiOrderer(x, y, z, MainProxy.getDimensionForWorld(world), player);
 				

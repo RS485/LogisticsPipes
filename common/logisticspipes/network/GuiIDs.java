@@ -41,6 +41,7 @@ public class GuiIDs {
 	public static final int GUI_Security_Station_ID = 52;
 
 	public static final int GUI_Upgrade_Manager = 60;
+	public static final int GUI_Item_Manager = 61;
 
 	//SubModules 
 	//All IDS above 120 and so on...

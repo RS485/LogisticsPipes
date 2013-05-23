@@ -46,6 +46,7 @@ import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.logic.BaseLogicCrafting;
+import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logic.LogicLiquidSupplier;
@@ -137,6 +138,12 @@ public class GuiHandler implements IGuiHandler {
 		        
 		        //Output slot
 		        dummy.addDummySlot(9, 90, 64);
+		        
+		        for(int i=0;i<((CoreRoutedPipe)pipe.pipe).getUpgradeManager().getLiquidCrafter();i++) {
+					int liquidLeft = -(i*40) - 40;
+					dummy.addLiquidSlot(i, ((BaseLogicCrafting)pipe.pipe.logic).getLiquidInventory(), liquidLeft + 13, 42);
+				}
+		        
 				return dummy;
 			
 			case GuiIDs.GUI_LiquidSupplier_ID:
@@ -172,8 +179,12 @@ public class GuiHandler implements IGuiHandler {
 				return dummy;
 				
 			case GuiIDs.GUI_SatelitePipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseLogicSatellite)) return null;
-				return new DummyContainer(player.inventory, null);
+				if(pipe != null && pipe.pipe != null && pipe.pipe.logic instanceof BaseLogicSatellite) {
+					return new DummyContainer(player.inventory, null);
+				}
+				if(pipe != null && pipe.pipe != null && pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
+					return new DummyContainer(player.inventory, null);
+				}
 				
 			case GuiIDs.GUI_SupplierPipe_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicSupplier)) return null;
@@ -669,7 +680,7 @@ public class GuiHandler implements IGuiHandler {
 					new UnsupportedOperationException("Arguments missing").printStackTrace();
 					return null;
 				}
-				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0]);
+				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0], (Integer) args[1], (int[]) args[2]);
 			
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;
@@ -680,8 +691,13 @@ public class GuiHandler implements IGuiHandler {
 				return new GuiProviderPipe(player.inventory, ((LogicProvider)pipe.pipe.logic).getDummyInventory(), (LogicProvider)pipe.pipe.logic);
 			
 			case GuiIDs.GUI_SatelitePipe_ID:
-				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof BaseLogicSatellite)) return null;
-				return new GuiSatellitePipe((BaseLogicSatellite)pipe.pipe.logic, player);
+				if(pipe != null && pipe.pipe != null && pipe.pipe.logic instanceof BaseLogicSatellite) {
+					return new GuiSatellitePipe((BaseLogicSatellite)pipe.pipe.logic, player);
+				}
+				if(pipe != null && pipe.pipe != null && pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
+					return new GuiSatellitePipe((BaseLogicLiquidSatellite)pipe.pipe.logic, player);
+				}
+				return null;
 				
 			case GuiIDs.GUI_SupplierPipe_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicSupplier)) return null;

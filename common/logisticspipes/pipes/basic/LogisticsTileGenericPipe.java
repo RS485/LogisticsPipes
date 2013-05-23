@@ -1,5 +1,6 @@
 package logisticspipes.pipes.basic;
 
+import logisticspipes.LogisticsPipes;
 import net.minecraft.crash.CrashReportCategory;
 import buildcraft.transport.TileGenericPipe;
 
@@ -23,9 +24,11 @@ public class LogisticsTileGenericPipe extends TileGenericPipe {
 			super.invalidate();
 		}
 	}
+	
 	@Override
 	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_85027_a(par1CrashReportCategory);
+		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 		if(this.pipe != null) {
 			par1CrashReportCategory.addCrashSection("Pipe", this.pipe.getClass().getCanonicalName());
 			if(this.pipe.transport != null) {

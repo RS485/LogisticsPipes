@@ -48,6 +48,7 @@ import logisticspipes.pipes.PipeLiquidExtractor;
 import logisticspipes.pipes.PipeLiquidInsertion;
 import logisticspipes.pipes.PipeLiquidProvider;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
+import logisticspipes.pipes.PipeLiquidSatelliteLogistics;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
@@ -243,6 +244,7 @@ public class BuildCraftProxy {
 			LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
 			LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
 			LogisticsPipes.LogisticsLiquidExtractor = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
+			LogisticsPipes.LogisticsLiquidSatellite = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatelliteLogistics.class, "Logistics Liquid Satellite Pipe", side);
 		}
 	}
 
@@ -254,6 +256,7 @@ public class BuildCraftProxy {
 	 * @param clas  Class name of the pipe block
 	 * @return the pipe
 	 */
+	@SuppressWarnings("unchecked")
 	public static ItemPipe registerPipe(int key, Class<? extends Pipe> clas) {
 		ItemPipe item = new ItemLogisticsPipe(key, clas);
 

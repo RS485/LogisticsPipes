@@ -27,12 +27,15 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	private final GuiButton[] buttonarray;
 	private final GuiButton[] normalButtonArray;
 	private final GuiButton[][] advancedSatButtonArray;
+	private final GuiButton[][] liquidGuiParts;
 	private final boolean isAdvancedSat;
+	private final int liquidCrafter;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat, int liquidCrafter, int[] amount) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
+		this.liquidCrafter = liquidCrafter;
 		
 		if(!isAdvancedSat) {
 			xSize = 177;
@@ -57,10 +60,18 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
         	dummy.addDummySlot(9, 85, 105);
         }
 		
+        liquidGuiParts = new GuiButton[liquidCrafter][];
+        
+        for(int i=0;i<liquidCrafter;i++) {
+			int liquidLeft = -(i*40) - 40;
+			dummy.addLiquidSlot(i, logic.getLiquidInventory(), liquidLeft + 13, 22);
+		}
+        
         this.inventorySlots = dummy;
 		_logic = logic;
+		_logic.setLiquidAmount(amount);
 		buttonarray = new GuiButton[6];
-		normalButtonArray = new GuiButton[6];
+		normalButtonArray = new GuiButton[8];
 		advancedSatButtonArray = new GuiButton[9][2];
 		for(int i=0;i<9;i++) {
 			advancedSatButtonArray[i] = new GuiButton[2];
@@ -71,11 +82,10 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public void initGui() {
 		super.initGui();
+		buttonList.clear();
 		if(!isAdvancedSat) {
 			buttonList.add(normalButtonArray[0] = new SmallGuiButton(0, (width-xSize) / 2 + 155, (height - ySize) / 2 + 50, 10,10, ">"));
 			buttonList.add(normalButtonArray[1] = new SmallGuiButton(1, (width-xSize) / 2 + 120, (height - ySize) / 2 + 50, 10,10, "<"));
-		}
-		if(!isAdvancedSat) {
 			buttonList.add(normalButtonArray[2] = new SmallGuiButton(3, (width-xSize) / 2 + 39, (height - ySize) / 2 + 50, 37,10, "Import"));
 			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 50, 28,10, "Open"));
 			for(int i = 0; i < 6; i++) {
@@ -84,6 +94,10 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}
 			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 85, 10,10, ">"));
 			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 85, 10,10, "<"));
+			if(liquidCrafter != 0) {
+				buttonList.add(normalButtonArray[6] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 + 5, guiTop + 158, 10,10, ">"));
+				buttonList.add(normalButtonArray[7] = new SmallGuiButton(23, guiLeft - (liquidCrafter * 40) / 2 - 15, guiTop + 158, 10,10, "<"));	
+			}
 		} else {
 			for(int i=0;i<9;i++) {
 				buttonList.add(advancedSatButtonArray[i][0] = new SmallGuiButton(30 + i, (width-xSize) / 2 + 10 + 18 * i, (height - ySize) / 2 + 40, 15,10, "/\\"));
@@ -93,6 +107,22 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			buttonList.add(normalButtonArray[3] = new SmallGuiButton(4, (width-xSize) / 2 + 6, (height - ySize) / 2 + 100, 28,10, "Open"));
 			buttonList.add(normalButtonArray[4] = new SmallGuiButton(20, (width-xSize) / 2 + 155, (height - ySize) / 2 + 105, 10,10, ">"));
 			buttonList.add(normalButtonArray[5] = new SmallGuiButton(21, (width-xSize) / 2 + 120, (height - ySize) / 2 + 105, 10,10, "<"));
+		}
+		for(int i=0;i<liquidCrafter;i++) {
+			int liquidLeft = guiLeft - (i*40) - 40;
+			liquidGuiParts[i] = new GuiButton[10];
+			buttonList.add(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop +  65, 10,10, "+"));
+			buttonList.add(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop +  85, 10,10, "+"));
+			buttonList.add(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10,10, "+"));
+			buttonList.add(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10,10, "+"));
+			buttonList.add(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft +  8, guiTop +  65, 10,10, "-"));
+			buttonList.add(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft +  8, guiTop +  85, 10,10, "-"));
+			buttonList.add(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft +  8, guiTop + 105, 10,10, "-"));
+			buttonList.add(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft +  8, guiTop + 125, 10,10, "-"));
+			if(isAdvancedSat) {
+				buttonList.add(liquidGuiParts[i][8] = new SmallGuiButton(100 + 10 * i + 8, liquidLeft +  5, guiTop + 158, 10,10, "<"));
+				buttonList.add(liquidGuiParts[i][9] = new SmallGuiButton(100 + 10 * i + 9, liquidLeft +  25, guiTop + 158, 10,10, ">"));
+			}
 		}
 	}
 	
@@ -107,6 +137,31 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		if(40 <= guibutton.id && guibutton.id < 50) {
 			_logic.setPrevSatellite(_player, guibutton.id - 40);
+		}
+		if(100 <= guibutton.id && guibutton.id < 200) {
+			int i = guibutton.id - 100;
+			int action = i % 10;
+			i -= action;
+			i /= 10;
+			if(action >=0 && action < 8) {
+				int amount=0;
+				switch(action) {
+					case 0:amount = 1;     break;
+					case 1:amount = 10;    break;
+					case 2:amount = 100;   break;
+					case 3:amount = 1000;  break;
+					case 4:amount = -1;    break;
+					case 5:amount = -10;   break;
+					case 6:amount = -100;  break;
+					case 7:amount = -1000; break;
+					default:break;
+				}
+				_logic.changeLiquidAmount(amount, i, _player);
+			} else if(action == 8) {
+				_logic.setPrevLiquidSatellite(_player, i);
+			} else if(action == 9) {
+				_logic.setNextLiquidSatellite(_player, i);
+			}
 		}
 		switch(guibutton.id){
 		case 0:
@@ -129,6 +184,12 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			return;
 		case 21:
 			_logic.priorityDown(_player);
+			return;
+		case 22:
+			_logic.setNextLiquidSatellite(_player, -1);
+			return;
+		case 23:
+			_logic.setPrevLiquidSatellite(_player, -1);
 			return;
 		default:
 			super.actionPerformed(guibutton);
@@ -169,8 +230,82 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			fontRenderer.drawString("Priority:" , 123 , 95, 0x404040);
 			fontRenderer.drawString(""+_logic.priority , 143 - (fontRenderer.getStringWidth(""+_logic.priority) / 2) , 107, 0x404040);
 		}
+		
+		for(int i=0;i<liquidCrafter;i++) {
+			int liquidLeft = -(i*40) - 40;
+			fontRenderer.drawString(Integer.toString(_logic.getLiquidAmount()[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_logic.getLiquidAmount()[i])) / 2), 43, 0x404040);
+			fontRenderer.drawString("1", liquidLeft + 18, 57, 0x404040);
+			fontRenderer.drawString("10", liquidLeft + 15, 77, 0x404040);
+			fontRenderer.drawString("100", liquidLeft + 12, 97, 0x404040);
+			fontRenderer.drawString("1000", liquidLeft + 9, 117, 0x404040);
+			if(isAdvancedSat) {
+				if(_logic.liquidSatelliteIdArray[i] == 0) {
+					drawRect(liquidLeft + 1, 13, liquidLeft + 40, 142, 0xAA8B8B8B);
+					fontRenderer.drawString("Off", liquidLeft + 13, 149, 0x404040);
+					for(int j=0;j<8;j++) {
+						liquidGuiParts[i][j].enabled = false;
+					}
+				} else {
+					fontRenderer.drawString(Integer.toString(_logic.liquidSatelliteIdArray[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_logic.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
+					for(int j=0;j<8;j++) {
+						liquidGuiParts[i][j].enabled = true;
+					}
+				}
+			}
+		}
+		if(!isAdvancedSat && liquidCrafter != 0) {
+			if(_logic.liquidSatelliteId == 0) {
+				drawRect(-(liquidCrafter * 40) + 1, 13, 0, 142, 0xAA8B8B8B);
+				fontRenderer.drawString("Off", -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
+				for(int i=0;i<liquidCrafter;i++) {
+					for(int j=0;j<8;j++) {
+						liquidGuiParts[i][j].enabled = false;
+					}
+				}
+			} else {
+				fontRenderer.drawString(Integer.toString(_logic.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (fontRenderer.getStringWidth(Integer.toString(_logic.liquidSatelliteId)) / 2), 149, 0x404040);
+				for(int i=0;i<liquidCrafter;i++) {
+					for(int j=0;j<8;j++) {
+						liquidGuiParts[i][j].enabled = true;
+					}
+				}
+			}
+		}
+		for(int i=0;i<liquidCrafter;i++) {
+			if(_logic.getLiquidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _logic.liquidSatelliteId == 0) || (isAdvancedSat && _logic.liquidSatelliteIdArray[i] == 0))) {
+				drawRect(-((i + 1) * 40) + 1, 40, -(i * 40), 142, 0xAA8B8B8B);
+				for(int j=0;j<8;j++) {
+					liquidGuiParts[i][j].enabled = false;
+				}
+			}
+		}
 	}
 	
+	@Override
+	protected boolean isPointInRegion(int x, int y, int par3, int par4, int par5, int par6) {
+		if(!isAdvancedSat && liquidCrafter != 0) {
+			if(_logic.liquidSatelliteId == 0) {
+				if(-(liquidCrafter * 40) < x && x < 0) {
+					if(10 < y && y < 170) {
+						return false;
+					}
+				}
+			}	
+		} else if(liquidCrafter != 0) {
+			for(int i=0;i<liquidCrafter;i++) {
+				if(_logic.liquidSatelliteIdArray[i] == 0) {
+					if(-((i + 1) * 40) < x && x < -(i * 40)) {
+						if(10 < y && y < 170) {
+							return false;
+						}
+					}
+				}	
+				
+			}
+		}
+		return super.isPointInRegion(x, y, par3, par4, par5, par6);
+	}
+
 	@Override
 	public void drawScreen(int par1, int par2, float par3) {
 		super.drawScreen(par1, par2, par3);
@@ -180,6 +315,25 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, zLevel, true, true, true, true, true);
 
+		if(liquidCrafter != 0) {
+			BasicGuiHelper.drawGuiBackGround(mc, guiLeft - (liquidCrafter * 40) - 2, guiTop + 10, guiLeft + 15, guiTop + 175, zLevel, true, true, true, true, false);
+			if(liquidCrafter > 1) {
+				for(int i=1;i < liquidCrafter;i++) {
+					int xLine = guiLeft - (i * 40);
+					drawRect(xLine, guiTop + 13, xLine + 1, guiTop + (isAdvancedSat ? 172 : 142), 0xff8B8B8B);
+				}
+			}
+			
+			if(!isAdvancedSat) {
+				drawRect(guiLeft - (liquidCrafter * 40), guiTop + 142, guiLeft, guiTop + 143, 0xff8B8B8B);
+			}
+			
+			for(int i=0;i<liquidCrafter;i++) {
+				int liquidLeft = guiLeft - (i*40) - 40;
+				BasicGuiHelper.drawSlotBackground(mc, liquidLeft + 12, guiTop + 21);
+			}
+		}
+		
 		if(!isAdvancedSat) {
 			drawRect(guiLeft + 115, guiTop + 4, guiLeft + 170, guiTop + 70, 0xff8B8B8B);
 		}

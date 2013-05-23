@@ -9,8 +9,8 @@ import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.FinalPair;
@@ -21,8 +21,9 @@ import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 
 public class RequestTree extends RequestTreeNode {
-	
+
 	private HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer> _promisetotals;
+	private HashMap<FinalPair<ILiquidProvider,LiquidIdentifier>,Integer> _promisetotalsliquid;
 
 	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent) {
 		super(item, requester, parent);
@@ -36,10 +37,22 @@ public class RequestTree extends RequestTreeNode {
 		return n;
 	}
 
+	private int getExistingLiquidPromisesFor(FinalPair<ILiquidProvider, LiquidIdentifier> key) {
+		if(_promisetotalsliquid == null)
+			_promisetotalsliquid = new HashMap<FinalPair<ILiquidProvider,LiquidIdentifier>,Integer>();
+		Integer n = _promisetotalsliquid.get(key);
+		if(n == null) return 0;
+		return n;
+	}
 
 	protected int getAllPromissesFor(IProvideItems provider, ItemIdentifier item) {
 		FinalPair<IProvideItems,ItemIdentifier> key = new FinalPair<IProvideItems,ItemIdentifier>(provider, item);
 		return getExistingPromisesFor(key);
+	}
+	
+	protected int getAllPromissesFor(ILiquidProvider provider, LiquidIdentifier liquid) {
+		FinalPair<ILiquidProvider, LiquidIdentifier> key = new FinalPair<ILiquidProvider,LiquidIdentifier>(provider, liquid);
+		return getExistingLiquidPromisesFor(key);
 	}
 	
 	protected LinkedList<LogisticsExtraPromise> getExtrasFor(ItemIdentifier item) {
@@ -86,6 +99,21 @@ public class RequestTree extends RequestTreeNode {
 			_promisetotals.remove(key);
 		} else {
 			_promisetotals.put(key, r);
+		}
+	}
+
+	protected void promiseAdded(LiquidLogisticsPromise promise) {
+		FinalPair<ILiquidProvider, LiquidIdentifier> key = new FinalPair<ILiquidProvider,LiquidIdentifier>(promise.sender, promise.liquid);
+		_promisetotalsliquid.put(key, getExistingLiquidPromisesFor(key) + promise.amount);
+	}
+
+	protected void promiseRemoved(LiquidLogisticsPromise promise) {
+		FinalPair<ILiquidProvider,LiquidIdentifier> key = new FinalPair<ILiquidProvider,LiquidIdentifier>(promise.sender, promise.liquid);
+		int r = getExistingLiquidPromisesFor(key) - promise.amount;
+		if(r == 0) {
+			_promisetotalsliquid.remove(key);
+		} else {
+			_promisetotalsliquid.put(key, r);
 		}
 	}
 
@@ -183,42 +211,36 @@ public class RequestTree extends RequestTreeNode {
 			IRequestItems requester, RequestLog log) {
 		return request( item, requester, log, false, false,true,false);
 	}
+	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
 		return request( item, requester, null, true, false,true,false);
 	}
 
 	public static int simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
 		return request( item, requester, log, true, true, false, true);
-	}	
+	}
 	
-	public static boolean requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, List<ExitRoute> list, RequestLog log) {
-		List<ILiquidProvider> providers = getLiquidProviders(list);
-		LiquidRequest request = new LiquidRequest(liquid, amount);
-		for(ILiquidProvider provider:providers) {
-			provider.canProvide(request);
-		}
-		if(request.isAllDone()) {
-			request.fullFill(pipe);
+	public static int requestLiquidPartial(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log) {
+		return requestLiquid(liquid, amount, pipe, log, true);
+	}
+
+	public static int requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log) {
+		return requestLiquid(liquid, amount, pipe, log, false);
+	}
+	
+	public static int requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log, boolean acceptPartial) {
+		LiquidRequestTreeNode request = new LiquidRequestTreeNode(liquid, amount, pipe, null);
+		if(request.isDone() || acceptPartial) {
+			request.fullFill();
 			if(log != null) {
 				log.handleSucessfullRequestOf(new ItemMessage(request.getStack()));
 			}
-			return true;
+			return request.getPromiseLiquidAmount();
 		} else {
 			if(log != null) {
 				request.sendMissingMessage(log);
 			}
-			return false;
+			return request.getPromiseLiquidAmount();
 		}
-	}
-
-	private static List<ILiquidProvider> getLiquidProviders(List<ExitRoute> list) {
-		List<ILiquidProvider> providers = new LinkedList<ILiquidProvider>();
-		for(ExitRoute r : list) {
-			CoreRoutedPipe pipe = r.destination.getPipe();
-			if (pipe instanceof ILiquidProvider){
-				providers.add((ILiquidProvider)pipe);
-			}
-		}
-		return providers;
 	}
 }

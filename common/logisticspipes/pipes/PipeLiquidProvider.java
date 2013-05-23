@@ -11,7 +11,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.request.LiquidRequest;
+import logisticspipes.request.LiquidRequestTreeNode;
 import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.LogisticsLiquidOrderManager;
 import logisticspipes.textures.Textures;
@@ -114,22 +114,26 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	}
 
 	@Override
-	public void canProvide(LiquidRequest request) {
-		if(request.isAllDone()) return;
+	public void canProvide(LiquidRequestTreeNode request, int donePromises) {
+		if(request.isDone()) return;
+		int containedAmount = 0;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
 			for(ILiquidTank tank:tanks) {
 				LiquidStack liquid;
 				if((liquid = tank.getLiquid()) != null) {
 					if(request.getLiquid() == LiquidIdentifier.get(liquid)) {
-						LiquidLogisticsPromise promise = new LiquidLogisticsPromise();
-						promise.item = request.getLiquid();
-						promise.amount = Math.min(request.amountLeft(), liquid.amount);
-						promise.sender = this;
-						request.addPromise(promise);
+						containedAmount += liquid.amount;
 					}
 				}
 			}
+		}
+		LiquidLogisticsPromise promise = new LiquidLogisticsPromise();
+		promise.liquid = request.getLiquid();
+		promise.amount = Math.min(request.amountLeft(), containedAmount - donePromises);
+		promise.sender = this;
+		if(promise.amount > 0) {
+			request.addPromise(promise);
 		}
 	}
 

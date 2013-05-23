@@ -12,13 +12,13 @@ import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.utils.LiquidIdentifier;
 
 public class LiquidLogisticsPromise {
-	public LiquidIdentifier item;
+	public LiquidIdentifier liquid;
 	public int amount;
 	public ILiquidProvider sender;
 	
 	public LiquidLogisticsPromise copy() {
 		LiquidLogisticsPromise result = new LiquidLogisticsPromise();
-		result.item = item;
+		result.liquid = liquid;
 		result.amount = amount;
 		result.sender = sender;
 		return result;

@@ -50,12 +50,12 @@ import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.log.RequestLogFormator;
+import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logistics.LogisticsLiquidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsEventListener;
-import logisticspipes.main.LogisticsWorldManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
@@ -116,6 +116,7 @@ import cpw.mods.fml.common.event.FMLServerStartingEvent;
 import cpw.mods.fml.common.event.FMLServerStoppingEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
@@ -156,7 +157,8 @@ public class LogisticsPipes {
 
 	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
 	public static boolean DEBUG_OVGEN = false;
-	public static String MCVersion = "%MCVERSION%";
+	public static final String MCVersion = "%MCVERSION%";
+	public static final String VERSION = "%VERSION%:%DEBUG%";
 	
 	private boolean certificateError = false;
 
@@ -193,6 +195,7 @@ public class LogisticsPipes {
 	public static Item LogisticsLiquidProvider;
 	public static Item LogisticsLiquidRequest;
 	public static Item LogisticsLiquidExtractor;
+	public static Item LogisticsLiquidSatellite;
 	
 	
 	public static Item LogisticsNetworkMonitior;
@@ -258,8 +261,9 @@ public class LogisticsPipes {
 		for(int i=0; i<Configs.MULTI_THREAD_NUMBER; i++) {
 			new RoutingTableUpdateThread(i);
 		}
-		MinecraftForge.EVENT_BUS.register(new LogisticsWorldManager());
-		MinecraftForge.EVENT_BUS.register(new LogisticsEventListener());
+		LogisticsEventListener eventListener = new LogisticsEventListener();
+		MinecraftForge.EVENT_BUS.register(eventListener);
+		GameRegistry.registerPlayerTracker(eventListener);
 		textures.registerBlockIcons();
 		
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
@@ -332,7 +336,7 @@ public class LogisticsPipes {
 		
 		LogisticsItemDisk = new ItemDisk(Configs.ITEM_DISK_ID);
 		LogisticsItemDisk.setUnlocalizedName("itemDisk");
-		
+
 		UpgradeItem = new ItemUpgrade(Configs.ITEM_UPGRADE_ID);
 		UpgradeItem.setUnlocalizedName("itemUpgrade");
 		UpgradeItem.loadUpgrades();
@@ -341,11 +345,12 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
+		LiquidContainerRenderer renderer = new LiquidContainerRenderer();
 		if(DEBUG) {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
 			if(isClient) {
-				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, new LiquidContainerRenderer());
+				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, renderer);
 			}
 		}
 		
@@ -433,6 +438,7 @@ public class LogisticsPipes {
 		QueuedTasks.clearAllTasks();
 		HudUpdateTick.clearUpdateFlags();
 		BaseLogicSatellite.cleanup();
+		BaseLogicLiquidSatellite.cleanup();
 		ServerRouter.cleanup();
 		if(event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();

@@ -8,6 +8,7 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -39,6 +40,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private final EnumSet<ForgeDirection> disconnectedSides = EnumSet.noneOf(ForgeDirection.class);
 	private boolean isAdvancedCrafter = false;
 	private boolean isCombinedSneakyUpgrade = false;
+	private int liquidCrafter = 0;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -90,6 +92,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		isAdvancedCrafter = false;
 		boolean combinedBuffer = isCombinedSneakyUpgrade;
 		isCombinedSneakyUpgrade = false;
+		liquidCrafter = 0;
 		disconnectedSides.clear();
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
@@ -103,8 +106,11 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				isAdvancedCrafter = true;
 			} else if(upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
 				isCombinedSneakyUpgrade = true;
+			} else if(upgrade instanceof LiquidCraftingUpgrade) {
+				liquidCrafter += inv.getStackInSlot(i).stackSize;
 			}
 		}
+		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
 		if(combinedBuffer != isCombinedSneakyUpgrade) {
 			needsContainerPositionUpdate = true;
 		}
@@ -308,5 +314,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public boolean isAdvancedSatelliteCrafter() {
 		return isAdvancedCrafter;
+	}
+	
+	public int getLiquidCrafter() {
+		return liquidCrafter;
 	}
 }

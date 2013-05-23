@@ -1,8 +1,8 @@
 package logisticspipes.proxy.bs;
 
-import net.minecraft.tileentity.TileEntity;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
+import net.minecraft.tileentity.TileEntity;
 
 public class BetterStorageProxy implements IBetterStorageProxy {
 	

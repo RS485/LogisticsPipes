@@ -16,6 +16,7 @@ import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
 import logisticspipes.interfaces.routing.IRelayItem;
+import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -24,10 +25,12 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Position;
 import buildcraft.api.transport.IPipedItem;
@@ -138,6 +141,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 					((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
 				}
+				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableLiquidTransport) {
+					if(item.getItem() instanceof LogisticsLiquidContainer) {
+						LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+						((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).itemLost(LiquidIdentifier.get(liquid), liquid.amount);
+					}
+				}
 			}
 			jamlist.add(destinationint);
 		}
@@ -157,6 +166,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
 				((IRequireReliableTransport)destinationRouter.getPipe().logic).itemLost(ItemIdentifierStack.GetFromStack(item));
+			}
+			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableLiquidTransport) {
+				if(item.getItem() instanceof LogisticsLiquidContainer) {
+					LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+					((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).itemLost(LiquidIdentifier.get(liquid), liquid.amount);
+				}
 			}
 		}
 		super.remove();

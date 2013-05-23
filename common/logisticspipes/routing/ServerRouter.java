@@ -30,7 +30,9 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IFilteringRouter;
+import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -38,11 +40,14 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, Comparable<ServerRouter> {
@@ -608,6 +613,13 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		pipe.notifyOfItemArival(routedEntityItem);
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
 			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
+		}
+		if (pipe != null && pipe.logic instanceof IRequireReliableLiquidTransport) {
+			ItemStack stack = routedEntityItem.getItemStack();
+			if(stack.getItem() instanceof LogisticsLiquidContainer) {
+				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
+				((IRequireReliableLiquidTransport)pipe.logic).itemArrived(LiquidIdentifier.get(liquid), liquid.amount);				
+			}
 		}
 	}
 

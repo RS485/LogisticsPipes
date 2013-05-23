@@ -35,26 +35,26 @@ public class LiquidContainerRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
-		if (!(item.getItem() instanceof LogisticsLiquidContainer))
-			return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
-		if (liquid == null) {
+		if (item.getItem() instanceof LogisticsLiquidContainer) {
+			LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+			if (liquid == null) {
+				doRenderItem(item, mc, type);
+				return;
+			}
+			ItemStack liquidItem = liquid.asItemStack();
+			GL11.glPushMatrix();
+			if(type == ItemRenderType.INVENTORY) {
+				GL11.glScaled(0.45, 0.75, 1);
+				GL11.glTranslated(10, 2.5, 0);
+			} else {
+				GL11.glScaled(0.45, 0.75, 0.45);
+				GL11.glTranslated(0, 0.09, 0);
+			}
+			doRenderItem(liquidItem, mc, type);
+			GL11.glPopMatrix();
 			doRenderItem(item, mc, type);
-			return;
 		}
-		ItemStack liquidItem = liquid.asItemStack();
-		GL11.glPushMatrix();
-		if(type == ItemRenderType.INVENTORY) {
-			GL11.glScaled(0.45, 0.75, 1);
-			GL11.glTranslated(10, 2.5, 0);
-		} else {
-			GL11.glScaled(0.45, 0.75, 0.45);
-			GL11.glTranslated(0, 0.09, 0);
-		}
-		doRenderItem(liquidItem, mc, type);
-		GL11.glPopMatrix();
-		doRenderItem(item, mc, type);
 	}
 
 	public void doRenderItem(ItemStack itemstack, Minecraft mc, ItemRenderType type) {

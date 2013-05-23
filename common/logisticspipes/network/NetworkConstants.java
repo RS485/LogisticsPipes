@@ -111,4 +111,8 @@ public class NetworkConstants {
 	public static final int REQUEST_CC_IDS = 106;
 	public static final int SEND_CC_IDS = 107;
 	public static final int SET_SECURITY_DESTROY = 108;
+	public static final int LIQUID_CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED = 109;
+	public static final int LIQUID_CRAFTING_PIPE_PREV_SATELLITE_ADVANCED = 110;
+	public static final int LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED = 111;
+	public static final int LIQUID_CRAFTING_PIPE_AMOUNT = 112;
 }

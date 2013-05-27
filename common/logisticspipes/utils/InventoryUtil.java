@@ -8,7 +8,8 @@
 
 package logisticspipes.utils;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -50,8 +51,8 @@ public class InventoryUtil implements IInventoryUtil {
 	}
 	
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		HashMap<ItemIdentifier, Integer> items = new HashMap<ItemIdentifier, Integer>();
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
+		Map<ItemIdentifier, Integer> items = new LinkedHashMap<ItemIdentifier, Integer>();
 		for (int i = _cropStart; i < _inventory.getSizeInventory() - _cropEnd; i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null) continue;
@@ -155,5 +156,25 @@ public class InventoryUtil implements IInventoryUtil {
 			totalRoom += (Math.min(stackLimit, item.getMaxStackSize()) - stack.stackSize);
 		}
 		return totalRoom;
+	}
+
+	@Override
+	public boolean isSpecialInventory() {
+		return false;
+	}
+
+	@Override
+	public int getSizeInventory() {
+		return _inventory.getSizeInventory();
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int i) {
+		return _inventory.getStackInSlot(i);
+	}
+
+	@Override
+	public ItemStack decrStackSize(int i, int j) {
+		return _inventory.decrStackSize(i, j);
 	}
 }

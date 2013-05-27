@@ -1,6 +1,10 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -47,8 +51,17 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
-		HashMap<ItemIdentifier, Integer> result = new HashMap<ItemIdentifier, Integer>();
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
+		return getItemsAndCount(false);
+	}
+	
+	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
+		Map<ItemIdentifier, Integer> result;
+		if(linked) {
+			result = new LinkedHashMap<ItemIdentifier, Integer>();
+		} else {
+			result = new HashMap<ItemIdentifier, Integer>();
+		}
 		for(ItemStack items: _tile.apiGetNetworkContents()) {
 			ItemIdentifier ident = ItemIdentifier.get(items);
 			Integer count = result.get(ident);
@@ -116,5 +129,43 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 			st.stackSize -= overflow.stackSize;
 		}
 		return st;
+	}
+
+	@Override
+	public boolean isSpecialInventory() {
+		return true;
+	}
+
+	LinkedList<Entry<ItemIdentifier, Integer>> cached;
+
+	@Override
+	public int getSizeInventory() {
+		if(cached == null) initCache();
+		return cached.size();
+	}
+	
+	public void initCache() {
+		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
+		for(Entry<ItemIdentifier, Integer> e:map.entrySet()) {
+			cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
+			cached.add(e);
+		}
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int i) {
+		if(cached == null) initCache();
+		Entry<ItemIdentifier, Integer> entry = cached.get(i);
+		return entry.getKey().makeNormalStack(entry.getValue());
+	}
+
+	@Override
+	public ItemStack decrStackSize(int i, int j) {
+		if(cached == null) initCache();
+		Entry<ItemIdentifier, Integer> entry = cached.get(i);
+		ItemStack stack = entry.getKey().makeNormalStack(entry.getValue());
+		ItemStack extracted = _tile.apiExtractNetworkItem(stack, true);
+		initCache();
+		return extracted;
 	}
 }

@@ -72,13 +72,12 @@ public class ModulePassiveSupplier implements ILogisticsGuiModule, IClientInform
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventory targetInventory = _invProvider.getSneakyInventory();
-		if (targetInventory == null) return null;
+		IInventoryUtil targetUtil = _invProvider.getSneakyInventory();
+		if (targetUtil == null) return null;
 		
 		if (!_filterInventory.containsItem(item)) return null;
 		
 		int targetCount = _filterInventory.itemCount(item);
-		IInventoryUtil targetUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(targetInventory);
 		int haveCount = targetUtil.itemCount(item);
 		if (targetCount <= haveCount) return null;
 		

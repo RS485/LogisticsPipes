@@ -206,10 +206,10 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		if (_invProvider.getPointedInventory() == null) return;
+		if (_invProvider.getPointedInventory(_extractionMode) == null) return;
 		
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
-		HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode);
+		Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 
 		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
 outer:
@@ -238,11 +238,11 @@ outer:
 	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
-		if (_invProvider.getPointedInventory() == null) {
+		if (_invProvider.getPointedInventory(_extractionMode) == null) {
 			_orderManager.sendFailed();
 			return 0;
 		}
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode);
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
@@ -282,11 +282,11 @@ outer:
 	
 	private int getTotalItemCount(ItemIdentifier item) {
 		
-		if (_invProvider.getPointedInventory() == null) return 0;
+		if (_invProvider.getPointedInventory(_extractionMode) == null) return 0;
 		
 		if(!filterAllowsItem(item)) return 0;
 		
-		IInventoryUtil inv = getAdaptedUtil(_invProvider.getPointedInventory());
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode);
 		return inv.itemCount(item);
 	}
 	
@@ -297,26 +297,6 @@ outer:
 	private boolean itemIsFiltered(ItemIdentifier item){
 		return _filterInventory.containsItem(item);
 	}
-	
-	private IInventoryUtil getAdaptedUtil(IInventory base){
-		switch(_extractionMode){
-			case LeaveFirst:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
-			case LeaveLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 1);
-			case LeaveFirstAndLast:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 1);
-			case Leave1PerStack:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, true, false, 0, 0);
-			case Leave1PerType:
-				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, true, 0, 0);
-			default:
-				break;
-		}
-		return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 0, 0);
-	}
-
-
 	
 	/*** GUI STUFF ***/
 	

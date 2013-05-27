@@ -5,6 +5,7 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -24,7 +25,6 @@ import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
@@ -93,7 +93,7 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 		if (extractMode) {
 			if (++currentTick < ticksToAction) return;
 			currentTick = 0;
-			IInventory inv = _invProvider.getRawInventory();
+			IInventoryUtil inv = _invProvider.getUnsidedInventory();
 			if (inv == null) return;
 			for (int i = 0; i < inv.getSizeInventory(); i++) {
 				ItemStack item = inv.getStackInSlot(i);

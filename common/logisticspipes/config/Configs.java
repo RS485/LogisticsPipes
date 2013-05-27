@@ -29,7 +29,7 @@ public class Configs {
 	public static int LOGISTICSPIPE_CRAFTING_ID = 6877;
 	public static int LOGISTICSPIPE_SATELLITE_ID = 6878;
 	public static int LOGISTICSPIPE_SUPPLIER_ID = 6879;
-	public static int LOGISTICSPIPE_BUILDERSUPPLIER_ID = 6880;
+	//Free ID from Old Builder Supplier = 6880;
 	public static int LOGISTICSPIPE_CHASSI1_ID = 6881;
 	public static int LOGISTICSPIPE_CHASSI2_ID = 6882;
 	public static int LOGISTICSPIPE_CHASSI3_ID = 6883;
@@ -304,10 +304,6 @@ public class Configs {
 						"Set the default configuration for the popup of the Orderer Gui. Should it be used?")
 				.getBoolean(false);
 
-		LOGISTICSPIPE_BUILDERSUPPLIER_ID = CONFIGURATION.getItem(
-				"logisticsPipeBuilderSupplier.id",
-				LOGISTICSPIPE_BUILDERSUPPLIER_ID,
-				"The item id for the builder supplier pipe").getInt();
 		LOGISTICSPIPE_LIQUIDSUPPLIER_ID = CONFIGURATION.getItem(
 				"logisticsPipeLiquidSupplier.id",
 				LOGISTICSPIPE_LIQUIDSUPPLIER_ID,

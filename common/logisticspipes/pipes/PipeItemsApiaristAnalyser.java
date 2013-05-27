@@ -3,11 +3,13 @@ package logisticspipes.pipes;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -135,39 +137,41 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	@Override
-	public IInventory getRawInventory() {
+	public IInventoryUtil getPointedInventory() {
+		return null; //Unused
+	}
+
+	@Override
+	public IInventoryUtil getPointedInventory(ExtractionMode mode) {
+		return null; //Unused
+	}
+
+	@Override
+	public IInventoryUtil getSneakyInventory() {
+		return null; //Unused
+	}
+
+	@Override
+	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation) {
+		return null;
+	}
+
+	@Override
+	public IInventoryUtil getUnsidedInventory() {
+		IInventory inv = getRealInventory();
+		if(inv == null) return null;
+		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+	}
+
+	@Override
+	public IInventory getRealInventory() {
 		TileEntity tile = getPointedTileEntity();
+		if (tile == null ) return null;
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
 	}
-
-	@Override
-	public IInventory getPointedInventory() {
-		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
-		if (rawInventory instanceof net.minecraftforge.common.ISidedInventory) return new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) rawInventory, this.getPointedOrientation().getOpposite());
-		return rawInventory;
-	}
-
-	@Override
-	public IInventory getSneakyInventory() {
-		UpgradeManager manager = getUpgradeManager();
-		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
-		if(manager.hasSneakyUpgrade()) {
-			insertion = manager.getSneakyOrientation();
-		}
-		return getSneakyInventory(insertion);
-	}
-
-	@Override
-	public IInventory getSneakyInventory(ForgeDirection sneakyOrientation) {
-		IInventory rawInventory = getRawInventory();
-		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, sneakyOrientation);
-		if (rawInventory instanceof net.minecraftforge.common.ISidedInventory) return new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) rawInventory, sneakyOrientation);
-		return rawInventory;
-	}
-
+	
 	@Override
 	public ForgeDirection inventoryOrientation() {
 		return getPointedOrientation();

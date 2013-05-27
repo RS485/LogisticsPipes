@@ -12,7 +12,6 @@ import java.util.LinkedList;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
@@ -30,7 +29,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider{
 
 	@Override
 	public LinkedList<ITrigger> getPipeTriggers(IPipe pipe) {
-		if (pipe instanceof PipeItemsSupplierLogistics || pipe instanceof PipeItemsBuilderSupplierLogistics || pipe instanceof PipeItemsLiquidSupplier) {
+		if (pipe instanceof PipeItemsSupplierLogistics || pipe instanceof PipeItemsLiquidSupplier) {
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsFailedTrigger);
 			return triggers;

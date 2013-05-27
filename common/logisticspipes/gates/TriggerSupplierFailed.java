@@ -8,7 +8,6 @@
 
 package logisticspipes.gates;
 
-import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
@@ -36,10 +35,6 @@ public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 	public boolean isTriggerActive(Pipe pipe, ITriggerParameter parameter) {
 		if (pipe instanceof PipeItemsSupplierLogistics) {
 			PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) pipe;
-			return supplier.isRequestFailed();
-		}
-		if (pipe instanceof PipeItemsBuilderSupplierLogistics) {
-			PipeItemsBuilderSupplierLogistics supplier = (PipeItemsBuilderSupplierLogistics) pipe;
 			return supplier.isRequestFailed();
 		}
 		if (pipe instanceof PipeItemsLiquidSupplier) {

@@ -254,4 +254,48 @@ public class BarrelInventoryHandler extends SpecialInventoryHandler {
 		}
 		return st;
 	}
+
+	@Override
+	public boolean isSpecialInventory() {
+		return true;
+	}
+
+	@Override
+	public int getSizeInventory() {
+		return 1;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int i) {
+		if(i != 0) return null;
+		try {
+			return (ItemStack) item.get(_tile);
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public ItemStack decrStackSize(int i, int j) {
+		try {
+			ItemStack itemStack = (ItemStack) item.get(_tile);
+			int value = (Integer) getItemCount.invoke(_tile, new Object[]{});
+			if(value > (_hideOnePerStack?1:0)) {
+				setItemCount.invoke(_tile, new Object[]{value - 1});
+				ItemStack ret = itemStack.copy();
+				ret.stackSize = 1;
+				return ret;
+			}
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

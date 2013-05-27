@@ -6,24 +6,6 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-/*
-TODO later, maybe....
- - Status screen (in transit, waiting for craft, ready etc)
- - RoutedEntityItem, targetTile - specify which "chest" it should be delivered to
- - RoutedEntityItem, travel time
- - Change recipes to chip-sets in 3.0.0.0
- - Add in-game item for network management (turn on/off link detection, poke link detection etc) ?
- - Context sensitive textures. Flashing routers on deliveries?
- - Track deliveries / en route ?
- - Save stuff, like destinations
- - Texture improvement
- - Route liquids (in container)?
- - Persistance:
- 	- Save logistics to file. Save coordinates so they can be resolved later. Also save items in transit and count them as not delivered
- - SMP:
-	- Peering, transport other peoples items. Need hook to set owner of PassiveEntity
-*/
-
 package logisticspipes;
 
 import java.io.File;
@@ -170,7 +152,6 @@ public class LogisticsPipes {
 	public static Item LogisticsCraftingPipe;
 	public static Item LogisticsSatellitePipe;
 	public static Item LogisticsSupplierPipe;
-	public static Item LogisticsBuilderSupplierPipe;
 	public static Item LogisticsLiquidSupplierPipe;
 	public static Item LogisticsChassiPipe1;
 	public static Item LogisticsChassiPipe2;

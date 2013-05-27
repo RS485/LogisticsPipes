@@ -3,8 +3,11 @@ package logisticspipes.proxy.specialinventoryhandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.item.Item;
@@ -85,7 +88,11 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		return result;
 	}
 	@Override
-	public HashMap<ItemIdentifier, Integer> getItemsAndCount() {
+	public Map<ItemIdentifier, Integer> getItemsAndCount() {
+		return getItemsAndCount(false);
+	}
+		
+	private Map<ItemIdentifier, Integer> getItemsAndCount(boolean linked) {
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
 			int numitems = (Integer) getNumItems.invoke(cratePileData, new Object[]{});
@@ -220,5 +227,55 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 			st.stackSize = Math.max(Math.min(space, stack.stackSize), 0);
 		}
 		return st;
+	}
+
+	@Override
+	public boolean isSpecialInventory() {
+		return true;
+	}
+
+	LinkedList<Entry<ItemIdentifier, Integer>> cached;
+
+	@Override
+	public int getSizeInventory() {
+		if(cached == null) initCache();
+		return cached.size();
+	}
+	
+	public void initCache() {
+		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
+		for(Entry<ItemIdentifier, Integer> e:map.entrySet()) {
+			cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
+			cached.add(e);
+		}
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int i) {
+		if(cached == null) initCache();
+		Entry<ItemIdentifier, Integer> entry = cached.get(i);
+		return entry.getKey().makeNormalStack(entry.getValue());
+	}
+
+	@Override
+	public ItemStack decrStackSize(int i, int j) {
+		if(cached == null) initCache();
+		Entry<ItemIdentifier, Integer> entry = cached.get(i);
+		ItemStack stack = entry.getKey().makeNormalStack(entry.getValue());
+		ItemStack extracted = null;
+		try {
+			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
+			int count = (Integer) getItemCount.invoke(cratePileData, new Object[]{stack});
+			if (count <= (_hideOnePerStack?1:0)) return null;
+			extracted = (ItemStack) removeItems.invoke(cratePileData, new Object[]{stack, 1});
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		initCache();
+		return extracted;
 	}
 }

@@ -104,8 +104,7 @@ public class WorldTickHandler implements ITickHandler {
 					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
 					pos.moveForwards(1.0);
 
-					newTile.tileBuffer[o.ordinal()] = new TileBuffer();
-					newTile.tileBuffer[o.ordinal()].initialize(newTile.worldObj, (int) pos.x, (int) pos.y, (int) pos.z);
+					newTile.tileBuffer[o.ordinal()] = new TileBuffer(newTile.worldObj, (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
 				}
 
 				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {

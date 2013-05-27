@@ -42,7 +42,7 @@
 	<property name="thaumcraft.version.api" value="0.0.5"/>
 	<property name="thaumcraft.version.mod" value="3.0.4b"/>
 	<property name="te.version"           value="2.3.0"/>
-	<property name="lp.version"           value="0.7.2"/>
+	<property name="lp.version"           value="0.7.3"/>
 	
 	<!-- Targets -->
 	<target name="init-msg">
@@ -329,6 +329,10 @@
 	<target name="vars-test">
 		<property name="lp.version.full" value="0.0.0.0"/>
 		<property name="DEBUG"           value="true"/>
+	</target>
+	
+	<target name="dev">
+		<property name="src.dir"              value="src_dev"/>
 	</target>
 	
 	<target name="main" depends="vars, init-msg, clean, setup, package-simple"/>

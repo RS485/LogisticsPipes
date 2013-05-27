@@ -21,7 +21,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
-import java.util.concurrent.DelayQueue;
+import java.util.concurrent.PriorityBlockingQueue;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
@@ -131,7 +131,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
-	private DelayQueue<IRoutedItem> _inTransitToMe = new DelayQueue<IRoutedItem>();
+	private final PriorityBlockingQueue<IRoutedItem> _inTransitToMe = new PriorityBlockingQueue<IRoutedItem>(10,new IRoutedItem.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
@@ -237,6 +237,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private void notifyOfSend(IRoutedItem routedItem) {
 		this._inTransitToMe.add(routedItem);
+		LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 		
 	}
 
@@ -329,8 +330,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				worldObj.markBlockForUpdate(this.getX(), this.getY(), this.getZ());
 			}
 		}
-		// remove old items _inTransit -- these should have arived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.
-		while(this._inTransitToMe.poll()!=null){}
+
+		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.		
+		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut()<=0){
+			IRoutedItem p=_inTransitToMe.poll();
+			LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getItem().getFriendlyName());		
+		}
 		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		getUpgradeManager().securityTick();
@@ -1044,6 +1049,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
 		this._inTransitToMe.remove(routedEntityItem);		
+		LogisticsPipes.log.info("Ariving: "+routedEntityItem.getIDStack().getItem().getFriendlyName());
 	}
 
 	public int countOnRoute(ItemIdentifier it) {

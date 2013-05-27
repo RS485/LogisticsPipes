@@ -45,7 +45,7 @@ public class ModuleLiquidSupplier implements ILogisticsGuiModule, IClientInforma
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 0, 0);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsItem(item)){
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 2);

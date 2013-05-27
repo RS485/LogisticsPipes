@@ -45,9 +45,11 @@ public interface ILogisticsModule extends ISaveState {
 	 * @param stack to sink
 	 * @param bestPriority best priority seen so far
 	 * @param bestCustomPriority best custom subpriority
+	 * @param allowDefault is a default only sink allowed to sink this?
+	 * @param includeInTransit inclide the "in transit" items? -- true for a destination search, false for a sink check.
 	 * @return SinkReply whether the module sinks the item or not
 	 */
-	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority);
+	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit);
 	
 	/**
 	 * Returns submodules. Normal modules don't have submodules 

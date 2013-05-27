@@ -8,12 +8,14 @@
 
 package logisticspipes.logisticspipes;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.Delayed;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -26,8 +28,17 @@ import buildcraft.core.EntityPassiveItem;
  * @author Krapht
  *
  */
-public interface IRoutedItem extends Delayed{
+public interface IRoutedItem{
 	
+	public class DelayComparator implements Comparator<IRoutedItem> {
+
+		@Override
+		public int compare(IRoutedItem o1, IRoutedItem o2) {
+			// TODO Auto-generated method stub
+			return (int)(o2.getTimeOut()-o1.getTimeOut()); // cast will never overflow because the delta is in 1/20ths of a second.
+		}
+	
+	}
 	public enum TransportMode {
 		Unknown,
 		Default,
@@ -80,4 +91,9 @@ public interface IRoutedItem extends Delayed{
 	public IRoutedItem getCopy();
 	public void checkIDFromUUID();
 	ItemIdentifierStack getIDStack();
+
+	// how many ticks until this times out
+	public long getTickToTimeOut();
+	// the world tick in which getTickToTimeOut returns 0.
+	public long getTimeOut();
 }

@@ -1,6 +1,4 @@
-/** 
- * Copyright (c) Krapht, 2011
- * 
+/*
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -9,6 +7,7 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -38,6 +37,7 @@ import buildcraft.transport.TileGenericPipe;
 
 public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
+
 	int destinationint = -1;
 	UUID destinationUUID;
 	ItemIdentifierStack thisItem;
@@ -61,7 +61,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
-		delay = 62*20; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
+
+		delay = 10*20 + world.getTotalWorldTime(); //10 seconds, it should be delivered by then
+//		delay = 62; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
+		
+		
 		if(entityItem.getContribution("routingInformation") == null) {
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
 		} else {
@@ -366,25 +370,13 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
     private final long origin = System.currentTimeMillis();
     private final long delay;
 
-    @Override
-    public long getDelay( TimeUnit unit ) {
-        return unit.convert( delay - ( System.currentTimeMillis() - origin ),
-                TimeUnit.MILLISECONDS );
-    }
- 
-    @Override
-    public int compareTo( Delayed delayed ) {
-        if( delayed == this ) {
-            return 0;
-        }
- 
-        if( delayed instanceof RoutedEntityItem ) {
-            long diff = delay - ( ( RoutedEntityItem )delayed ).delay;
-            return ( ( diff == 0 ) ? 0 : ( ( diff < 0 ) ? -1 : 1 ) );
-        }
- 
-        long d = ( getDelay( TimeUnit.MILLISECONDS ) - delayed.getDelay( TimeUnit.MILLISECONDS ) );
-        return ( ( d == 0 ) ? 0 : ( ( d < 0 ) ? -1 : 1 ) );
-    }
+	@Override
+	public long getTimeOut() {
+		return delay;
+	}
+	@Override
+	public long getTickToTimeOut() {
+		return delay-this.container.worldObj.getTotalWorldTime();
+	}
 
 }

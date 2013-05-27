@@ -63,7 +63,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	public void writeToNBT(NBTTagCompound nbttagcompound) {}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		return null;
 	}
 

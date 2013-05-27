@@ -88,7 +88,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 1);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		if (!_power.canUseEnergy(1)) return null;
 		ItemStack stack = stackID.makeNormalStack(1);

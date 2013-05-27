@@ -102,7 +102,7 @@ public class ModuleExtractor implements ILogisticsGuiModule, ISneakyDirectionRec
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		return null;
 	}
 

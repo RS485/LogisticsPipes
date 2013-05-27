@@ -66,7 +66,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,allowDefault);
 
 		if (search.getValue2() == null) return null;
 
@@ -87,14 +87,14 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	@Override
 	public Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);
 		if (search.getValue2() == null) return null;
 		if (search.getValue2().fixedPriority.ordinal() < priority.ordinal()) return null;
 		return search;
 	}
 
 
-	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result){
+	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result, boolean allowDefault){
 		List<ExitRoute> firewall = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 
@@ -122,7 +122,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				firewall.add(candidateRouter);
 			}
 			
-			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false);
+			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false,allowDefault);
 					
 			if (reply == null) continue;
 			if (result.getValue1() == null){
@@ -155,7 +155,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		for(ExitRoute n:firewall) {
 			IFilter filter = ((IFilteringRouter)n.destination).getFilter();
 			filters.add(filter);
-			result = getBestReply(stack, sourceRouter, ((IFilteringRouter)n.destination).getRouters(), excludeSource, jamList, used, filters, result);
+			result = getBestReply(stack, sourceRouter, ((IFilteringRouter)n.destination).getRouters(), excludeSource, jamList, used, filters, result,allowDefault);
 			filters.remove(filter);
 		}
 		if(filters.isEmpty() && result.getValue1() != null) {
@@ -167,7 +167,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 	}
 	
 		
-	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result, boolean activeRequest) {
+	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result, boolean activeRequest, boolean allowDefault) {
 
 		SinkReply reply = null;
 		ILogisticsModule module = destination.getLogisticsModule();
@@ -180,9 +180,9 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			if(destination.getPipe().sharesInventoryWith(sourceRouter.getPipe())) return null;
 		}
 		if (result== null) {
-			reply = module.sinksItem(stack, -1, 0);
+			reply = module.sinksItem(stack, -1, 0, allowDefault,true);
 		} else {
-			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority);
+			reply = module.sinksItem(stack, result.fixedPriority.ordinal(), result.customPriority, allowDefault,true);
 		}
 		return reply;
 	}
@@ -215,7 +215,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);
-		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null);
+		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);
 
 		if (bestReply.getValue1() != null){
 			item.setBufferCounter(0);

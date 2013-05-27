@@ -133,7 +133,7 @@ public class ModuleProvider implements ILogisticsGuiModule, ILegacyActiveModule,
 	}
 
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		return null;
 	}
 
@@ -257,7 +257,7 @@ outer:
 			_orderManager.sendFailed();
 			return 0;
 		}
-		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true);
+		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true, false);
 		boolean defersend = false;
 		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			if(reply.maxNumberOfItems < wanted) {

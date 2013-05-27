@@ -3,7 +3,7 @@
 
 	<!-- Properties -->
 	<property name="build.dir"            value="build"/>
-	<property name="src.dir"              value="src"/>
+	<property name="src.dir"              value="logisticsPipes-Dev"/>
 	<property name="sign.dir"             value="/home/jenkins/.sign"/>
 
 	<property name="download.dir"         value="download"/>

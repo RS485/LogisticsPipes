@@ -70,7 +70,7 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.APIARIST_Analyser, 0, true, false, 3, 0);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier itemID, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier itemID, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		ItemStack item = itemID.makeNormalStack(1);
 		if(SimpleServiceLocator.forestryProxy.isBee(item)) {

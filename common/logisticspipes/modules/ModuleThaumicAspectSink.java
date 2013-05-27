@@ -81,7 +81,7 @@ public class ModuleThaumicAspectSink implements ILogisticsGuiModule, IClientInfo
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, -2, true, false, 5, 0);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if(isOfInterest(item)) return _sinkReply;
 		return null;

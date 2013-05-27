@@ -104,7 +104,8 @@ public class ModuleItemSink implements ILogisticsGuiModule, IClientInformationPr
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
 	private static final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
+		if(_isDefaultRoute && !allowDefault) return null;
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
 			if(_power.canUseEnergy(1)) {

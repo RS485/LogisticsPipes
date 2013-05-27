@@ -73,7 +73,7 @@ public class ModuleElectricBuffer implements ILogisticsModule {
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 0);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack.makeNormalStack(1))) {
 			if (_power.canUseEnergy(1)) {

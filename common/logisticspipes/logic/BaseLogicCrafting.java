@@ -286,7 +286,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			
 			ItemIdentifierStack stack = lostItem.get();
 			if(_pipe != null && ! _pipe.hasOrder()) { 
-				SinkReply reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true);
+				SinkReply reply = LogisticsManagerV2.canSink(_pipe.getRouter(), null, true, stack.getItem(), null, true,true);
 				if(reply == null || reply.maxNumberOfItems <1) {
 					lostItem = _lostItems.poll();
 					//iterator.remove(); // if we have no space for this and nothing to do, don't bother re-requesting the item.

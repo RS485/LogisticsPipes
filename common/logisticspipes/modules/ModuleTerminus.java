@@ -81,7 +81,7 @@ public class ModuleTerminus implements ILogisticsGuiModule, IClientInformationPr
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.Terminus, 0, true, false, 2, 0);
 	@Override
-	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority) {
+	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 		if (_filterInventory.containsUndamagedItem(item.getUndamaged())){
 			if(_power.canUseEnergy(2)) {

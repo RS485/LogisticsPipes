@@ -22,10 +22,10 @@ import buildcraft.BuildCraftSilicon;
 import buildcraft.BuildCraftTransport;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-import forestry.api.apiculture.BeeManager;
 import forestry.api.apiculture.EnumBeeChromosome;
 import forestry.api.apiculture.EnumBeeType;
 import forestry.api.apiculture.IAlleleBeeSpecies;
+import forestry.api.apiculture.IBeeRoot;
 import forestry.api.core.ForestryAPI;
 import forestry.api.core.ItemInterface;
 import forestry.api.genetics.AlleleManager;
@@ -45,6 +45,7 @@ public class ForestryProxy implements IForestryProxy {
 			propolis = ItemInterface.getItem("propolis").getItem();
 			pollen = ItemInterface.getItem("pollen").getItem();
 			honey = LiquidDictionary.getLiquid("honey", 1500);
+			root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 			initsuccessful = true;
 		} catch(Exception e) {
 			if(LogisticsPipes.DEBUG) {
@@ -60,6 +61,7 @@ public class ForestryProxy implements IForestryProxy {
 	private Item pollen;
 	private LiquidStack honey;
 	private final boolean has_all;
+	private IBeeRoot root;
 
 	/**
 	 * Checks if item is bee via ItemIdentifier.
@@ -79,7 +81,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isBee(ItemStack item) {
 		if(!has_all) return false;
-		return BeeManager.beeInterface.isBee(item);
+		return root.isMember(item);
 	}
 
 	/**
@@ -101,7 +103,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isAnalysedBee(ItemStack item) {
 		if(!isBee(item)) return false;
-		return BeeManager.beeInterface.getBee(item).isAnalyzed();
+		return root.getMember(item).isAnalyzed();
 	}
 	
 	/**
@@ -144,7 +146,7 @@ public class ForestryProxy implements IForestryProxy {
 		if(!has_all) return false;
 		if(!(forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele) instanceof IAlleleBeeSpecies)) return false;
 		if(!((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele)).isSecret()) return true;
-		return BeeManager.breedingManager.getApiaristTracker(world, MainProxy.proxy.getClientPlayer().username).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
+		return root.getBreedingTracker(world, MainProxy.proxy.getClientPlayer().username).isDiscovered((IAlleleSpecies)forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(allele));
 	}
 
 	/**
@@ -249,7 +251,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public String getFirstAlleleId(ItemStack bee) {
 		if(!isBee(bee)) return "";
-		return BeeManager.beeInterface.getBee(bee).getGenome().getPrimaryAsBee().getUID();
+		return root.getMember(bee).getGenome().getPrimary().getUID();
 	}
 	
 	/**
@@ -260,7 +262,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public String getSecondAlleleId(ItemStack bee) {
 		if(!isBee(bee)) return "";
-		return BeeManager.beeInterface.getBee(bee).getGenome().getSecondaryAsBee().getUID();
+		return root.getMember(bee).getGenome().getSecondary().getUID();
 	}
 
 	/**
@@ -271,7 +273,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isDrone(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.isDrone(bee);
+		return root.isDrone(bee);
 	}
 
 	/**
@@ -295,7 +297,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isQueen(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.isMated(bee);
+		return root.isMated(bee);
 	}
 
 	/**
@@ -306,7 +308,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isPurebred(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.SPECIES);
+		return root.getMember(bee).isPureBred(EnumBeeChromosome.SPECIES.ordinal());
 	}
 
 	/**
@@ -317,7 +319,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isNocturnal(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).getGenome().getNocturnal();
+		return root.getMember(bee).getGenome().getNocturnal();
 	}
 
 	/**
@@ -328,7 +330,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isPureNocturnal(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).getGenome().getNocturnal() && BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.NOCTURNAL);
+		return root.getMember(bee).getGenome().getNocturnal() && root.getMember(bee).isPureBred(EnumBeeChromosome.NOCTURNAL.ordinal());
 	}
 
 	/**
@@ -339,7 +341,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isFlyer(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).getGenome().getTolerantFlyer();
+		return root.getMember(bee).getGenome().getTolerantFlyer();
 	}
 
 	/**
@@ -350,7 +352,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isPureFlyer(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).getGenome().getTolerantFlyer() && BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER);
+		return root.getMember(bee).getGenome().getTolerantFlyer() && root.getMember(bee).isPureBred(EnumBeeChromosome.TOLERANT_FLYER.ordinal());
 	}
 
 	/**
@@ -361,7 +363,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isCave(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).getGenome().getCaveDwelling();
+		return root.getMember(bee).getGenome().getCaveDwelling();
 	}
 	
 	/**
@@ -372,7 +374,7 @@ public class ForestryProxy implements IForestryProxy {
 	@Override
 	public boolean isPureCave(ItemStack bee) {
 		if(!isBee(bee)) return false;
-		return BeeManager.beeInterface.getBee(bee).getGenome().getCaveDwelling() && BeeManager.beeInterface.getBee(bee).isPureBred(EnumBeeChromosome.CAVE_DWELLING);
+		return root.getMember(bee).getGenome().getCaveDwelling() && root.getMember(bee).isPureBred(EnumBeeChromosome.CAVE_DWELLING.ordinal());
 	}
 
 	/**
@@ -574,7 +576,7 @@ public class ForestryProxy implements IForestryProxy {
 		if(!has_all) return null;
 		IAllele bSpecies = forestry.api.genetics.AlleleManager.alleleRegistry.getAllele(uid);
 		if (!(bSpecies instanceof IAlleleBeeSpecies))
-			bSpecies = BeeManager.breedingManager.getDefaultBeeTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
+			bSpecies = root.getDefaultTemplate()[forestry.api.apiculture.EnumBeeChromosome.SPECIES.ordinal()];
 		IAlleleBeeSpecies species = (IAlleleBeeSpecies) bSpecies;
 		return species.getIcon(EnumBeeType.DRONE, phase);
 	}

@@ -285,7 +285,10 @@ public class LogisticsPipes {
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
 		
-		LiquidContainerRenderer renderer = new LiquidContainerRenderer();
+		Object renderer = null;
+		if(isClient) {
+			renderer = new LiquidContainerRenderer();
+		}
 		
 		LogisticsNetworkMonitior = new LogisticsNetworkManager(Configs.LOGISTICSNETWORKMONITOR_ID);
 		LogisticsNetworkMonitior.setUnlocalizedName("networkMonitorItem");
@@ -293,7 +296,7 @@ public class LogisticsPipes {
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, renderer);
+			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, (LiquidContainerRenderer)renderer);
 		}
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
@@ -335,7 +338,7 @@ public class LogisticsPipes {
 			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
 			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
 			if(isClient) {
-				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, renderer);
+				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, (LiquidContainerRenderer)renderer);
 			}
 		}
 		

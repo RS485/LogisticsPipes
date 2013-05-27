@@ -73,6 +73,7 @@ public class RequestTreeNode {
 	List<LiquidRequestTreeNode> liquidSubRequests = new ArrayList<LiquidRequestTreeNode>();
 	private List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	private List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
+	private List<LogisticsExtraPromise> byproducts = new ArrayList<LogisticsExtraPromise>();
 	private SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
 	private CraftingTemplate lastCrafterTried = null;
 	
@@ -209,6 +210,11 @@ public class RequestTreeNode {
 			promise.sender.fullFill(promise, target);
 		}
 		for(LogisticsPromise promise:extrapromises) {
+			if(promise.sender instanceof ICraftItems) {
+				((ICraftItems)promise.sender).registerExtras(promise);
+			}
+		}
+		for(LogisticsPromise promise:byproducts) {
 			if(promise.sender instanceof ICraftItems) {
 				((ICraftItems)promise.sender).registerExtras(promise);
 			}
@@ -636,6 +642,14 @@ outer:
 			
 			return generateRequestTreeFor(workSetsAvailable, template);
 		}
+		for(ItemIdentifierStack stack:template.getByproduct()) {
+			LogisticsExtraPromise extra = new LogisticsExtraPromise();
+			extra.item = stack.getItem();
+			extra.numberOfItems = stack.stackSize * workSetsAvailable;
+			extra.sender = template.getCrafter();
+			extra.provided = false;
+			byproducts.add(extra);
+		}
 		return workSetsAvailable;
 	}
 
@@ -674,6 +688,14 @@ outer:
 				}
 				return 0;
 			}
+		}
+		for(ItemIdentifierStack stack:template.getByproduct()) {
+			LogisticsExtraPromise extra = new LogisticsExtraPromise();
+			extra.item = stack.getItem();
+			extra.numberOfItems = stack.stackSize * workSets;
+			extra.sender = template.getCrafter();
+			extra.provided = false;
+			byproducts.add(extra);
 		}
 		return workSets;
 	}

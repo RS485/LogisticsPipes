@@ -45,7 +45,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireReliableTransport {
 
-	protected SimpleInventory _dummyInventory = new SimpleInventory(10, "Requested items", 127);
+	protected SimpleInventory _dummyInventory = new SimpleInventory(11, "Requested items", 127);
 	protected SimpleInventory _liquidInventory = new SimpleInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Liquid items", 1);
 	
 	@TileNetworkData(staticSize=ItemUpgrade.MAX_LIQUID_CRAFTER)
@@ -322,7 +322,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-			MainProxy.sendPacketToPlayer(new GuiArgumentPacket(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount}).getPacket(),  (Player) entityplayer);
+			MainProxy.sendPacketToPlayer(new GuiArgumentPacket(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}).getPacket(),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}
@@ -498,6 +498,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		return list;
 	}
 
+	public ItemStack getByproductItem() {
+		return _dummyInventory.getStackInSlot(10);
+	}
+	
 	public ItemStack getMaterials(int slotnr) {
 		return _dummyInventory.getStackInSlot(slotnr);
 	}

@@ -29,6 +29,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	protected ICraftItems _crafter;
 	protected ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
 	protected ArrayList<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> _requiredLiquid = new ArrayList<Pair3<LiquidIdentifier, Integer, IRequestLiquid>>();
+	protected ArrayList<ItemIdentifierStack> _byproduct = new ArrayList<ItemIdentifierStack>(9);
 	private final int priority;
 	
 	public CraftingTemplate(ItemIdentifierStack result, ICraftItems crafter, int priority) {
@@ -55,6 +56,16 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 			}
 		}
 		_requiredLiquid.add(new Pair3<LiquidIdentifier, Integer, IRequestLiquid>(liquid, amount, crafter));
+	}
+	
+	public void addByproduct(ItemIdentifierStack stack) {
+		for(ItemIdentifierStack i : _byproduct) {
+			if(i.getItem() == stack.getItem()) {
+				i.stackSize += stack.stackSize;
+				return;
+			}
+		}
+		_byproduct.add(stack);
 	}
 	
 	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
@@ -96,6 +107,10 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	
 	ItemIdentifier getResultItem() {
 		return _result.getItem();
+	}
+	
+	public List<ItemIdentifierStack> getByproduct() {
+		return _byproduct;
 	}
 
 	protected List<Pair<ItemIdentifierStack, IRequestItems>> getComponentItems(int nCraftingSetsNeeded) {

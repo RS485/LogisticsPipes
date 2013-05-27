@@ -144,6 +144,10 @@ public class GuiHandler implements IGuiHandler {
 					int liquidLeft = -(i*40) - 40;
 					dummy.addLiquidSlot(i, ((BaseLogicCrafting)pipe.pipe.logic).getLiquidInventory(), liquidLeft + 13, 42);
 				}
+
+		        if(((CoreRoutedPipe)pipe.pipe).getUpgradeManager().hasByproductExtractor()) {
+		        	dummy.addDummySlot(10, 197, 104);
+		        }
 		        
 				return dummy;
 			
@@ -692,7 +696,7 @@ public class GuiHandler implements IGuiHandler {
 			}
 		}
 		
-		Object[] args = argumentQueue.get(GuiIDs.GUI_CRAFTINGPIPE_ID);
+		Object[] args = argumentQueue.get(ID);
 		
 		if(ID < 120 && ID > 0) {
 			switch(ID) {
@@ -703,7 +707,7 @@ public class GuiHandler implements IGuiHandler {
 					new UnsupportedOperationException("Arguments missing").printStackTrace();
 					return null;
 				}
-				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0], (Integer) args[1], (int[]) args[2]);
+				return new GuiCraftingPipe(player, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory(), (BaseLogicCrafting)pipe.pipe.logic, (Boolean) args[0], (Integer) args[1], (int[]) args[2], (Boolean) args[3]);
 			
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;

@@ -30,18 +30,24 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	private final GuiButton[][] liquidGuiParts;
 	private final boolean isAdvancedSat;
 	private final int liquidCrafter;
+	private final boolean hasByproductExtractor;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat, int liquidCrafter, int[] amount) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
 		this.liquidCrafter = liquidCrafter;
+		this.hasByproductExtractor = hasByproductExtractor;
+		
+		if(!hasByproductExtractor) {
+			xSize = 177;
+		} else {
+			xSize = 217;
+		}
 		
 		if(!isAdvancedSat) {
-			xSize = 177;
 			ySize = 187;
 		} else {
-			xSize = 177;
 			ySize = 187 + 30;
 		}
 		
@@ -66,6 +72,10 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			int liquidLeft = -(i*40) - 40;
 			dummy.addLiquidSlot(i, logic.getLiquidInventory(), liquidLeft + 13, 22);
 		}
+        
+        if(hasByproductExtractor) {
+        	dummy.addDummySlot(10, 187, 105);
+        }
         
         this.inventorySlots = dummy;
 		_logic = logic;
@@ -279,6 +289,9 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				}
 			}
 		}
+		if(hasByproductExtractor) {
+			fontRenderer.drawString("Extra", xSize - 35, 88, 0x404040);
+		}
 	}
 	
 	@Override
@@ -313,7 +326,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
     
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
-		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize, guiTop + ySize, zLevel, true, true, true, true, true);
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, guiLeft + xSize - (hasByproductExtractor ? 40:0), guiTop + ySize, zLevel, true, true, true, true, true);
 
 		if(liquidCrafter != 0) {
 			BasicGuiHelper.drawGuiBackGround(mc, guiLeft - (liquidCrafter * 40) - 2, guiTop + 10, guiLeft + 15, guiTop + 175, zLevel, true, true, true, true, false);
@@ -332,6 +345,11 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				int liquidLeft = guiLeft - (i*40) - 40;
 				BasicGuiHelper.drawSlotBackground(mc, liquidLeft + 12, guiTop + 21);
 			}
+		}
+		
+		if(hasByproductExtractor) {
+			BasicGuiHelper.drawGuiBackGround(mc, guiLeft + xSize - 55, guiTop + 80, guiLeft + xSize, guiTop + 135, zLevel, true, true, false, true, true);
+			BasicGuiHelper.drawBigSlotBackground(mc, guiLeft + xSize - 35, guiTop + 100);
 		}
 		
 		if(!isAdvancedSat) {

@@ -95,8 +95,8 @@ import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.util.Icon;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
@@ -363,12 +363,12 @@ public class LogisticsPipes {
 		
 		SimpleServiceLocator.buildCraftProxy.registerPipes(event.getSide());
 		
-		ModLoader.addName(LogisticsNetworkMonitior, "Network monitor");
-		ModLoader.addName(LogisticsItemCard, "Logistics Item Card");
-		ModLoader.addName(LogisticsRemoteOrderer, "Remote Orderer");
-		ModLoader.addName(LogisticsCraftingSignCreator, "Crafting Sign Creator");
-		ModLoader.addName(ModuleItem, "BlankModule");
-		ModLoader.addName(LogisticsItemDisk, "Logistics Disk");
+		LanguageRegistry.instance().addNameForObject(LogisticsNetworkMonitior, "en_US", "Network monitor");
+		LanguageRegistry.instance().addNameForObject(LogisticsItemCard, "en_US", "Logistics Item Card");
+		LanguageRegistry.instance().addNameForObject(LogisticsRemoteOrderer, "en_US", "Remote Orderer");
+		LanguageRegistry.instance().addNameForObject(LogisticsCraftingSignCreator, "en_US", "Crafting Sign Creator");
+		LanguageRegistry.instance().addNameForObject(ModuleItem, "en_US", "BlankModule");
+		LanguageRegistry.instance().addNameForObject(LogisticsItemDisk, "en_US", "Logistics Disk");
 		LanguageRegistry.instance().addNameForObject(LogisticsHUDArmor, "en_US", "Logistics HUD Glasses");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,0), "en_US", "Logistics HUD Bow");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,1), "en_US", "Logistics HUD Glass");
@@ -396,10 +396,10 @@ public class LogisticsPipes {
 		
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
-		ModLoader.registerBlock(logisticsSign);
+		GameRegistry.registerBlock(logisticsSolidBlock, ItemBlock.class, null);
 		logisticsSign.setUnlocalizedName("logisticsSign");
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
-		ModLoader.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class);
+		GameRegistry.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 		logisticsSign.setUnlocalizedName("logisticsSolidBlock");
 		//Power Junction
 		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {

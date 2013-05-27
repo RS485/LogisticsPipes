@@ -396,7 +396,7 @@ public class LogisticsPipes {
 		
 		//Blocks
 		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
-		GameRegistry.registerBlock(logisticsSolidBlock, ItemBlock.class, null);
+		GameRegistry.registerBlock(logisticsSign, ItemBlock.class, null);
 		logisticsSign.setUnlocalizedName("logisticsSign");
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		GameRegistry.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class, null);

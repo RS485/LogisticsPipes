@@ -237,8 +237,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private void notifyOfSend(IRoutedItem routedItem) {
 		this._inTransitToMe.add(routedItem);
-		LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
-		
+		//LogisticsPipes.log.info("Sending: "+routedItem.getIDStack().getItem().getFriendlyName());
 	}
 
 	public abstract ItemSendMode getItemSendMode();
@@ -334,7 +333,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.		
 		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut()<=0){
 			IRoutedItem p=_inTransitToMe.poll();
-			LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getItem().getFriendlyName());		
+			//LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getItem().getFriendlyName());		
 		}
 		//update router before ticking logic/transport
 		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
@@ -1049,7 +1048,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
 		this._inTransitToMe.remove(routedEntityItem);		
-		LogisticsPipes.log.info("Ariving: "+routedEntityItem.getIDStack().getItem().getFriendlyName());
+		//LogisticsPipes.log.info("Ariving: "+routedEntityItem.getIDStack().getItem().getFriendlyName());
 	}
 
 	public int countOnRoute(ItemIdentifier it) {

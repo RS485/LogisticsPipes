@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
@@ -331,7 +332,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public void handleMouseInputSub() {
 		boolean isShift = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT);
 		boolean isControl = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL);
-		int wheel = org.lwjgl.input.Mouse.getDWheel() / 120;
+		int wheel = Mouse.getEventDWheel() / 120;
 		if (wheel == 0){
 			super.handleMouseInputSub();
 			return;

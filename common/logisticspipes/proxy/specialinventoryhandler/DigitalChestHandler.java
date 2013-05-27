@@ -224,4 +224,26 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 
 		return st;
 	}
+
+	@Override
+	public boolean isSpecialInventory() {
+		return true;
+	}
+
+	@Override
+	public int getSizeInventory() {
+		return 1;
+	}
+
+	@Override
+	public ItemStack getStackInSlot(int i) {
+		if(i != 0) return null;
+		return getContents().makeNormalStack();
+	}
+
+	@Override
+	public ItemStack decrStackSize(int i, int j) {
+		if(i != 0) return null;
+		return getMultipleItems(getContents().getItem(), j);
+	}
 }

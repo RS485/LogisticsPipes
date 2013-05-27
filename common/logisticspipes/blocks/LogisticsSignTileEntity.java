@@ -3,10 +3,12 @@ package logisticspipes.blocks;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.OrientationsUtil;
+import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
@@ -71,5 +73,11 @@ public class LogisticsSignTileEntity extends TileEntity {
 			list.add((CoreRoutedPipe) ((TileGenericPipe)tile).pipe);
 		}
 		return list.toArray(new CoreRoutedPipe[]{});
+	}
+
+	@Override
+	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
+		super.func_85027_a(par1CrashReportCategory);
+		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
 }

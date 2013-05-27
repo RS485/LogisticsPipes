@@ -1,7 +1,6 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,7 +8,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.packets.PacketItems;
@@ -18,9 +16,6 @@ import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
-import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -188,18 +183,7 @@ public class RequestHandler {
 			return;
 		}
 		
-		// get all the routers
-		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(LiquidIdentifier.get(packet.itemID, packet.dataValue).getItemIdentifier());
-		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
-		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
-			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
-			if(r.getPipe() instanceof ILiquidProvider){
-				ExitRoute e = requester.getRouter().getDistanceTo(r);
-				if (e!=null)
-					validDestinations.add(e);
-			}
-		}
-		RequestTree.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, validDestinations, new RequestLog() {
+		RequestTree.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();

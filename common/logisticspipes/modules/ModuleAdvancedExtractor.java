@@ -2,9 +2,9 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.api.IRoutedPowerProvider;
@@ -31,19 +31,14 @@ import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
-import logisticspipes.utils.SidedInventoryForgeAdapter;
-import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -169,108 +164,52 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 			return;
 		currentTick = 0;
 
-		IInventory inventory = _invProvider.getRawInventory();
+		ForgeDirection extractOrientation = _sneakyDirection;
+		if(extractOrientation == ForgeDirection.UNKNOWN) {
+			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
+		}
+		IInventoryUtil inventory = _invProvider.getSneakyInventory(extractOrientation);
 		if (inventory == null) return;
-		if (inventory instanceof net.minecraft.inventory.ISidedInventory) {
-			ForgeDirection extractOrientation = _sneakyDirection;
-			if(extractOrientation == ForgeDirection.UNKNOWN) {
-				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
-			}
-			inventory = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inventory, extractOrientation);	
-		}
-		if (inventory instanceof net.minecraftforge.common.ISidedInventory) {
-			ForgeDirection extractOrientation = _sneakyDirection;
-			if(extractOrientation == ForgeDirection.UNKNOWN) {
-				extractOrientation = _invProvider.inventoryOrientation().getOpposite();
-			}
-			inventory = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) inventory, extractOrientation);	
-		}
 
 		checkExtract(inventory);
 	}
 
-	private void checkExtract(IInventory inventory) {
-		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inventory);
-		if(invUtil instanceof SpecialInventoryHandler){
-			HashMap<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
-			for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
-				if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
-					continue;
-				List<Integer> jamList = new LinkedList<Integer>();
-				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
-				if (reply == null) continue;
+	private void checkExtract(IInventoryUtil invUtil) {
+		Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
+		for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
+			if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
+				continue;
+			List<Integer> jamList = new LinkedList<Integer>();
+			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
+			if (reply == null) continue;
 
-				int itemsleft = itemsToExtract();
-				while(reply != null) {
-					int count = Math.min(itemsleft, item.getValue());
-					if(reply.getValue2().maxNumberOfItems > 0) {
-						count = Math.min(count, reply.getValue2().maxNumberOfItems);
-					}
-
-					while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
-						count--;
-					}
-
-					if(count <= 0) {
-						break;
-					}
-
-					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), item.getValue());
-					_itemSender.sendStack(stackToSend, reply, itemSendMode());
-					itemsleft -= count;
-					if(itemsleft <= 0) break;
-					if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
-
-
-					jamList.add(reply.getValue1());
-					reply = _itemSender.hasDestination(item.getKey(), true, jamList);
+			int itemsleft = itemsToExtract();
+			while(reply != null) {
+				int count = Math.min(itemsleft, item.getValue());
+				if(reply.getValue2().maxNumberOfItems > 0) {
+					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
-				return;
 
+				while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
+					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
+					count--;
+				}
+
+				if(count <= 0) {
+					break;
+				}
+
+				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), item.getValue());
+				_itemSender.sendStack(stackToSend, reply, itemSendMode());
+				itemsleft -= count;
+				if(itemsleft <= 0) break;
+				if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
+
+
+				jamList.add(reply.getValue1());
+				reply = _itemSender.hasDestination(item.getKey(), true, jamList);
 			}
-		} else {
-			IInventory inv = InventoryHelper.getInventory(inventory);
-			for (int k = 0; k < inv.getSizeInventory(); k++) {
-				if ((inv.getStackInSlot(k) == null) || (inventory.getStackInSlot(k).stackSize <= 0)) {
-					continue;
-				}
-	
-				ItemStack slot = inv.getStackInSlot(k);
-				if ((slot != null) && (slot.stackSize > 0) && (CanExtract(slot))) {
-					List<Integer> jamList = new LinkedList<Integer>();
-					Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
-					if (reply == null) continue;
-	
-					int itemsleft = itemsToExtract();
-					while(reply != null) {
-						int count = Math.min(itemsleft, slot.stackSize);
-						if(reply.getValue2().maxNumberOfItems > 0) {
-							count = Math.min(count, reply.getValue2().maxNumberOfItems);
-						}
-	
-						while(!_power.useEnergy(neededEnergy() * count) && count > 0) {
-							MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
-							count--;
-						}
-	
-						if(count <= 0) {
-							break;
-						}
-	
-						ItemStack stackToSend = inv.decrStackSize(k, count);
-						_itemSender.sendStack(stackToSend, reply, itemSendMode());
-						itemsleft -= count;
-						if(itemsleft <= 0) break;
-						if(!SimpleServiceLocator.buildCraftProxy.checkMaxItems()) break;
-						slot = inv.getStackInSlot(k);
-						if (slot == null) break;
-						jamList.add(reply.getValue1());
-						reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
-					}
-					return;
-				}
-			}
+			return;
 		}
 	}
 

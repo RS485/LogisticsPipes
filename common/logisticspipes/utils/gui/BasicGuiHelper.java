@@ -16,7 +16,6 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.util.Icon;
 import net.minecraftforge.client.ForgeHooksClient;
 
@@ -258,7 +257,7 @@ public class BasicGuiHelper {
 	                
 	                for (var11 = 0; var11 < var24.size(); ++var11)
 	                {
-	                    var12 = ModLoader.getMinecraftInstance().fontRenderer.getStringWidth(var24.get(var11));
+	                    var12 = FMLClientHandler.instance().getClient().fontRenderer.getStringWidth(var24.get(var11));
 
 	                    if (var12 > var10)
 	                    {
@@ -304,7 +303,7 @@ public class BasicGuiHelper {
 	                        var19 = "\u00a77" + var19;
 	                    }
 
-	                    ModLoader.getMinecraftInstance().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
+	                    FMLClientHandler.instance().getClient().fontRenderer.drawStringWithShadow(var19, var11, var12, -1);
 	        	        
 	                    if (var18 == 0)
 	                    {

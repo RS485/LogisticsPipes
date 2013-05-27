@@ -17,6 +17,7 @@ import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.workWeightedSorter;
@@ -29,7 +30,9 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.Pair3;
 
 public class RequestTreeNode {
 
@@ -67,6 +70,7 @@ public class RequestTreeNode {
 	private final RequestTreeNode parentNode;
 	protected final RequestTree root;
 	private List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
+	List<LiquidRequestTreeNode> liquidSubRequests = new ArrayList<LiquidRequestTreeNode>();
 	private List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	private List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
 	private SortedSet<CraftingTemplate> usedCrafters= new TreeSet<CraftingTemplate>();
@@ -135,15 +139,13 @@ public class RequestTreeNode {
 		return request.getItem();
 	}
 
-	private void remove(List<RequestTreeNode> subNodes) {
-		subRequests.removeAll(subNodes);
-		for(RequestTreeNode subnode:subNodes) {
-			subnode.removeSubPromisses();
-		}
-	}
-	
 	protected void remove(RequestTreeNode subNode) {
 		subRequests.remove(subNode);
+		subNode.removeSubPromisses();
+	}
+	
+	protected void remove(LiquidRequestTreeNode subNode) {
+		liquidSubRequests.remove(subNode);
 		subNode.removeSubPromisses();
 	}
 
@@ -211,6 +213,9 @@ public class RequestTreeNode {
 				((ICraftItems)promise.sender).registerExtras(promise);
 			}
 		}
+		for(LiquidRequestTreeNode subNode:liquidSubRequests) {
+			subNode.fullFill();
+		}
 	}
 
 	protected void sendMissingMessage(LinkedList<ItemMessage> missing) {
@@ -220,6 +225,9 @@ public class RequestTreeNode {
 			missing.add(new ItemMessage(stack));
 		}
 		for(RequestTreeNode subNode:subRequests) {
+			subNode.sendMissingMessage(missing);
+		}
+		for(LiquidRequestTreeNode subNode:liquidSubRequests) {
 			subNode.sendMissingMessage(missing);
 		}
 	}
@@ -468,8 +476,6 @@ outer:
 		private final int setSize;
 		private final int maxWorkSetsAvailable;
 		private final RequestTreeNode treeNode; // current node we are calculating
-		private List<RequestTreeNode> lastNode; // proposed children.
-		private int sizeOfLastNodeRequest; // to avoid recalc'ing when we request promises for the tree we already have .
 
 		public final Pair<CraftingTemplate, List<IFilter>> crafter;
 		public final int originalToDo;
@@ -479,7 +485,6 @@ outer:
 			this.treeNode = treeNode;
 			this.originalToDo = crafter.getValue1().getCrafter().getTodo();
 			this.stacksOfWorkRequested = 0;
-			this.sizeOfLastNodeRequest = 0;
 			this.setSize = crafter.getValue1().getResultStackSize();
 			this.maxWorkSetsAvailable = ((treeNode.getMissingItemCount()) + setSize - 1) / setSize;
 		}
@@ -494,8 +499,6 @@ outer:
 			
 			if(nCraftingSetsNeeded==0) // not sure how we get here, but i've seen a stack trace later where we try to create a 0 size promise.
 				return 0;
-			// update how many things are currently hanging in the tree.
-			sizeOfLastNodeRequest = nCraftingSetsNeeded;  
 			
 			CraftingTemplate template = crafter.getValue1();
 			int stacks= getSubRequests(nCraftingSetsNeeded, template);
@@ -553,13 +556,6 @@ outer:
 		public int currentToDo() {
 			return this.originalToDo+this.stacksOfWorkRequested*setSize;
 		}
-
-		public void clearWorkRequest() {
-			treeNode.remove(lastNode);
-			lastNode.clear();
-			stacksOfWorkRequested = 0;
-			sizeOfLastNodeRequest = 0;
-		}
 	}
 
 	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations, BitSet layer, List<IFilter> filters) {
@@ -611,8 +607,20 @@ outer:
 				failed = true;
 			}			
 		}
+		List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(nCraftingSets);
+		ArrayList<LiquidRequestTreeNode>lastLiquidNode = new ArrayList<LiquidRequestTreeNode>(liquids.size());
+		for(Pair3<LiquidIdentifier, Integer, IRequestLiquid> liquid:liquids) {
+			LiquidRequestTreeNode node = new LiquidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
+			lastLiquidNode.add(node);
+			if(!node.isDone()) {
+				failed = true;
+			}
+		}
 		if(failed) {
 			for (RequestTreeNode n:lastNode) {
+				n.destroy(); // drop the failed requests.
+			}
+			for (LiquidRequestTreeNode n:lastLiquidNode) {
 				n.destroy(); // drop the failed requests.
 			}
 			//save last tried template for filling out the tree
@@ -621,19 +629,24 @@ outer:
 			for(int i = 0; i < stacks.size(); i++) {
 				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() /stacks.get(i).getValue1().stackSize/nCraftingSets);
 			}
+			
+			for(int i = 0; i < liquids.size(); i++) {
+				workSetsAvailable = Math.min(workSetsAvailable, lastLiquidNode.get(i).getPromiseLiquidAmount() /liquids.get(i).getValue2()/nCraftingSets);
+			}
+			
 			return generateRequestTreeFor(workSetsAvailable, template);
 		}
 		return workSetsAvailable;
 	}
-	
 
 	private int generateRequestTreeFor(int workSets, CraftingTemplate template) {
 		
 		//and try it
 		ArrayList<RequestTreeNode> newChildren = new ArrayList<RequestTreeNode>();
+		ArrayList<LiquidRequestTreeNode> newLiquidChildren = new ArrayList<LiquidRequestTreeNode>();
 		if(workSets>0) {
 			//now set the amounts
-			
+
 			List<Pair<ItemIdentifierStack,IRequestItems>> stacks = template.getComponentItems(workSets);
 
 			boolean failed = false;
@@ -644,9 +657,20 @@ outer:
 					failed = true;
 				}			
 			}
+			List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(workSets);
+			for(Pair3<LiquidIdentifier, Integer, IRequestLiquid> liquid:liquids) {
+				LiquidRequestTreeNode node = new LiquidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
+				newLiquidChildren.add(node);
+				if(!node.isDone()) {
+					failed = true;
+				}
+			}
 			if(failed) {
 				for(RequestTreeNode c:newChildren) {
 					c.destroy();
+				}
+				for (LiquidRequestTreeNode n:newLiquidChildren) {
+					n.destroy();
 				}
 				return 0;
 			}
@@ -667,7 +691,13 @@ outer:
 		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = template.getComponentItems(nCraftingSetsNeeded);
 
 		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-			RequestTreeNode node = new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this);
+			new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this);
+		}
+
+		List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(nCraftingSetsNeeded);
+
+		for(Pair3<LiquidIdentifier, Integer, IRequestLiquid> liquid:liquids) {
+			new LiquidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 		}
 
 		this.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));

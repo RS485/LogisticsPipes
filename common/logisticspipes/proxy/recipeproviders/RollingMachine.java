@@ -2,12 +2,12 @@ package logisticspipes.proxy.recipeproviders;
 
 import java.lang.reflect.Method;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.src.ModLoader;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
@@ -21,7 +21,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			tileRollingMachineClass = Class.forName("railcraft.common.blocks.machine.alpha.TileRollingMachine");
 			getCraftMatrixMethod = tileRollingMachineClass.getMethod("getCraftMatrix");
 		} catch (Exception ex) {
-			ModLoader.getLogger().fine("Necessary classes from Railcraft were not found");
+			LogisticsPipes.log.fine("Necessary classes from Railcraft were not found");
 			return false;
 		}
 		return true;
@@ -42,7 +42,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 			Method findMatchingRecipe = c.getMethod("findMatchingRecipe", InventoryCrafting.class, World.class);
 			return (ItemStack)findMatchingRecipe.invoke(instance, inventorycrafting, world);
 		} catch (Exception ex) {
-			ModLoader.getLogger().fine("getResult fail");
+			LogisticsPipes.log.fine("getResult fail");
 		}		
 		return null;
 	}
@@ -51,7 +51,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		try {
 			return (InventoryCrafting) getCraftMatrixMethod.invoke(tile);
 		} catch (Exception ex) {
-			ModLoader.getLogger().fine("getCraftMatrix fail");
+			LogisticsPipes.log.fine("getCraftMatrix fail");
 		}		
 		return null;
 	}

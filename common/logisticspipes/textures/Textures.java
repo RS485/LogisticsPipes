@@ -29,7 +29,6 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_CRAFTER_TEXTURE					= empty;
 	public static TextureType LOGISTICSPIPE_SATELLITE_TEXTURE				= empty;
 	public static TextureType LOGISTICSPIPE_SUPPLIER_TEXTURE				= empty;
-	public static TextureType LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE			= empty;
 	public static TextureType LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE			= empty;
 	public static TextureType LOGISTICSPIPE_ROUTED_TEXTURE					= empty;
 	public static TextureType LOGISTICSPIPE_NOTROUTED_TEXTURE				= empty;
@@ -62,6 +61,7 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_PROVIDER					= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_REQUEST					= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
+	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
 	
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR						= 0;
 	public static Icon LOGISTICSACTIONTRIGGERS_DISABLED ;
@@ -85,7 +85,6 @@ public class Textures {
 	public static String LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE =  "pipes/crafting_mk2";
 	public static String LOGISTICSPIPE_SATELLITE_TEXTURE_FILE =  "pipes/satellite";
 	public static String LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE =  "pipes/supplier";
-	public static String LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE	=  "pipes/builder_supplier";
 	public static String LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE	=  "pipes/liquid_supplier";
 	public static String LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE	=  "pipes/remote_orderer";
 	public static String LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE =  "pipes/analyzer";
@@ -105,6 +104,7 @@ public class Textures {
 	public static String LOGISTICSPIPE_LIQUID_PROVIDER_FILE =  "pipes/liquid_provider";
 	public static String LOGISTICSPIPE_LIQUID_REQUEST_FILE =  "pipes/liquid_request";
 	public static String LOGISTICSPIPE_LIQUID_EXTRACTOR_FILE =  "pipes/liquid_extractor";
+	public static String LOGISTICSPIPE_LIQUID_SATELLITE_FILE =  "pipes/liquid_satellite";
 	
 	// Status overlay
 	public static String LOGISTICSPIPE_ROUTED_TEXTURE_FILE = "pipes/status_overlay/routed";
@@ -150,7 +150,6 @@ public class Textures {
 		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
 		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_BUILDERSUPPLIER_TEXTURE_FILE);
 		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
 		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
@@ -173,6 +172,7 @@ public class Textures {
 		LOGISTICSPIPE_LIQUID_PROVIDER				= registerTexture(LOGISTICSPIPE_LIQUID_PROVIDER_FILE);
 		LOGISTICSPIPE_LIQUID_REQUEST				= registerTexture(LOGISTICSPIPE_LIQUID_REQUEST_FILE);
 		LOGISTICSPIPE_LIQUID_EXTRACTOR				= registerTexture(LOGISTICSPIPE_LIQUID_EXTRACTOR_FILE);
+		LOGISTICSPIPE_LIQUID_SATELLITE				= registerTexture(LOGISTICSPIPE_LIQUID_SATELLITE_FILE);
 		
 		//Chassi
 		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);

@@ -1110,6 +1110,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		crashReportCategory.addCrashSection("Router", this.getRouter().toString());
 	}
 	
+	public boolean isLiquidPipe() {
+		return false;
+	}
+	
 	/* --- Trigger --- */
 	@Override
 	public LinkedList<IAction> getActions() {

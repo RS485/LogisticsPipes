@@ -30,6 +30,7 @@ import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -59,6 +60,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SidedInventoryForgeAdapter;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
@@ -130,6 +132,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		_cachedCrafters=crafters;
 		return _cachedCrafters;
 	}
+	
 	public void clearCraftersCache() {
 		_cachedCrafters = null;
 	}
@@ -430,7 +433,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!hasSatellite) return null;
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(craftingLogic.satelliteId != 0) {
-				IRequestItems sat = craftingLogic.getSatelliteRouter(-1, -1).getPipe();
+				IRequestItems sat = craftingLogic.getSatelliteRouter(-1).getPipe();
 				for(int i=6;i<9;i++) {
 					target[i] = sat;
 				}
@@ -438,7 +441,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		} else {
 			for(int i=0;i<9;i++) {
 				if(craftingLogic.advancedSatelliteIdArray[i] != 0) {
-					target[i] = craftingLogic.getSatelliteRouter(i, -1).getPipe();
+					target[i] = craftingLogic.getSatelliteRouter(i).getPipe();
 				}
 			}
 		}
@@ -450,8 +453,33 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			ItemStack resourceStack = craftingLogic.getMaterials(i);
 			if (resourceStack == null || resourceStack.stackSize == 0) continue;
 			template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), target[i]);
-				
 		}
+		
+		int liquidCrafter = this.getUpgradeManager().getLiquidCrafter();
+		IRequestLiquid[] liquidTarget = new IRequestLiquid[liquidCrafter];
+		
+		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
+			if(craftingLogic.liquidSatelliteId != 0) {
+				IRequestLiquid sat = (IRequestLiquid) craftingLogic.getLiquidSatelliteRouter(-1).getPipe();
+				for(int i=0;i<liquidCrafter;i++) {
+					liquidTarget[i] = sat;
+				}
+			}
+		} else {
+			for(int i=0;i<liquidCrafter;i++) {
+				if(craftingLogic.liquidSatelliteIdArray[i] != 0) {
+					liquidTarget[i] = (IRequestLiquid) craftingLogic.getLiquidSatelliteRouter(i).getPipe();
+				}
+			}
+		}
+		
+		for (int i = 0; i < liquidCrafter; i++){
+			LiquidIdentifier liquid = craftingLogic.getLiquidMaterial(i);
+			int amount = craftingLogic.getLiquidAmount()[i];
+			if (liquid == null || amount <= 0 || liquidTarget[i] == null) continue;
+			template.addRequirement(liquid, amount, liquidTarget[i]);
+		}
+		
 		return template;
 	}
 
@@ -631,8 +659,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					MainProxy.sendPacketToPlayer(packetA, (Player)player);
 					MainProxy.sendPacketToPlayer(packetB, (Player)player);
 				}
-				MainProxy.sendPacketToAllAround(getX(), getY(), getZ(), 64, MainProxy.getDimensionForWorld(worldObj), packetA);
-				MainProxy.sendPacketToAllAround(getX(), getY(), getZ(), 64, MainProxy.getDimensionForWorld(worldObj), packetB);
+				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(worldObj), packetA);
+				MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(worldObj), packetB);
 				this.refreshRender(false);
 				return true;
 			}

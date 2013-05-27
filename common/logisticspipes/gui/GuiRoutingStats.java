@@ -15,6 +15,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiRoutingStats extends KraphtBaseGuiScreen {

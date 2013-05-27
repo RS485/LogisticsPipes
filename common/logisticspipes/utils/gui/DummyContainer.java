@@ -13,6 +13,7 @@ import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Colors;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
@@ -107,6 +108,10 @@ public class DummyContainer extends Container{
 		addSlotToContainer(new LiquidSlot(inventory, slotId, xCoord, yCoord));
 	}
 	
+	public void addColorSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		addSlotToContainer(new ColorSlot(inventory, slotId, xCoord, yCoord));
+	}
+	
 	/**
 	 * Disable shift-clicking to transfer items
 	 */
@@ -127,7 +132,7 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot))) {
+		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot) && !(slot instanceof ColorSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
 			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
@@ -171,6 +176,22 @@ public class DummyContainer extends Container{
 			} else {
 				slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
 			}
+			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
+				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
+			}
+			return currentlyEquippedStack;
+		}
+		
+		if(slot instanceof ColorSlot) {
+			Colors color = Colors.getColor(slot.getStack());
+			if(mouseButton == 0) {
+				color = color.getNext();
+			} else if(mouseButton == 1) {
+				color = color.getPrev();
+			} else {
+				color = Colors.BLANK;
+			}
+			slot.putStack(color.getItemStack());
 			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
 			}

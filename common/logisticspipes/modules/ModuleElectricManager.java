@@ -9,6 +9,7 @@ import logisticspipes.gui.hud.modules.HUDElectricManager;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.interfaces.IHUDModuleRenderer;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleInventoryReceive;
@@ -130,7 +131,7 @@ public class ModuleElectricManager implements ILogisticsGuiModule, IClientInform
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 
-		IInventory inv = _invProvider.getPointedInventory();
+		IInventoryUtil inv = _invProvider.getSneakyInventory();
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);

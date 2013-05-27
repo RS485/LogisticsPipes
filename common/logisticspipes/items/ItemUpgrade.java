@@ -7,6 +7,7 @@ import java.util.List;
 import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import logisticspipes.pipes.upgrades.LiquidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
@@ -49,6 +50,10 @@ public class ItemUpgrade extends LogisticsItem {
 	
 	//Crafting Upgrades
 	public static final int ADVANCED_SAT_CRAFTINGPIPE = 21;
+	public static final int LIQUID_CRAFTING = 22;
+	
+	//Values
+	public static final int MAX_LIQUID_CRAFTER = 3;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
 	private static Icon[] icons;
@@ -128,8 +133,9 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(CONNECTION_SOUTH, "Disconnection Upgrade (SOUTH)", ConnectionUpgradeSOUTH.class, 11);
 		registerUpgrade(CONNECTION_EAST, "Disconnection Upgrade (EAST)", ConnectionUpgradeEAST.class, 12);
 		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 13);
-		
+
 		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 14);
+		registerUpgrade(LIQUID_CRAFTING, "Liquid Crafting Upgrade", LiquidCraftingUpgrade.class, 15);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
@@ -215,7 +221,7 @@ public class ItemUpgrade extends LogisticsItem {
 	@Override
 	public void registerIcons(IconRegister par1IconRegister)
 	{
-		icons=new Icon[16];
+		icons=new Icon[17];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
 		icons[2]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyNORTH");
@@ -232,9 +238,10 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[11]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisSOUTH");
 		icons[12]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisEAST");
 		icons[13]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
-		
+
 		icons[14]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
-		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/UNKNOWN01");
+		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/LiquidCrafting");
+		icons[16]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/UNKNOWN01");
 	}
 	@Override
 	public Icon getIconFromDamage(int i) {

@@ -28,6 +28,7 @@ import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.logic.BaseLogicCrafting;
+import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicProvider;
@@ -369,6 +370,16 @@ public class ClientPacketHandler {
 					packetBh.readData(data);
 					onSetSecurityDestroy(packetBh);
 					break;
+				case NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED:
+					final PacketModuleInteger packetBi = new PacketModuleInteger();
+					packetBi.readData(data);
+					onCraftingPipeSetLiquidSatelliteAdvanced(packetBi);
+					break;
+				case NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT:
+					final PacketModuleInteger packetBn = new PacketModuleInteger();
+					packetBn.readData(data);
+					onCraftingPipeLiquidAmountChange(packetBn);
+					break;
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
@@ -385,7 +396,7 @@ public class ClientPacketHandler {
 			return;
 		}
 
-		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, -1, -1);
+		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, -1);
 	}
 
 	private static void onCraftingPipeSetImport(PacketInventoryChange packet) {
@@ -410,11 +421,12 @@ public class ClientPacketHandler {
 			return;
 		}
 
-		if (!(pipe.pipe.logic instanceof BaseLogicSatellite)) {
-			return;
+		if (pipe.pipe.logic instanceof BaseLogicSatellite) {
+			((BaseLogicSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
 		}
-
-		((BaseLogicSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
+		if (pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
+			((BaseLogicLiquidSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
+		}
 	}
 
 	private static void onOrdererRefreshAnswer(PacketRequestGuiContent packet) {
@@ -973,7 +985,7 @@ public class ClientPacketHandler {
 			return;
 		}
 
-		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, packet.slot, -1);
+		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, packet.slot);
 	}
 
 	private static void onCCIDs(PacketNBT packet) {
@@ -991,6 +1003,32 @@ public class ClientPacketHandler {
 				((GuiSecurityStation)FMLClientHandler.instance().getClient().currentScreen).refreshCheckBoxes();
 			}
 		}
+	}
+
+	private static void onCraftingPipeSetLiquidSatelliteAdvanced(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).setLiquidSatelliteId(packet.integer, packet.slot);
+	}
+
+	private static void onCraftingPipeLiquidAmountChange(PacketModuleInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+			return;
+		}
+
+		((BaseLogicCrafting) pipe.pipe.logic).defineLiquidAmount(packet.integer, packet.slot);
 	}
 	
 	// BuildCraft method

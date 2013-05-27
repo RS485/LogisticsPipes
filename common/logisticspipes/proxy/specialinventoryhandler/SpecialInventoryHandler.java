@@ -1,6 +1,6 @@
 package logisticspipes.proxy.specialinventoryhandler;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.utils.ItemIdentifier;
@@ -15,7 +15,7 @@ public abstract class SpecialInventoryHandler implements IInventoryUtil, ITransa
 
 	@Override
 	public int itemCount(ItemIdentifier itemIdent) {
-		HashMap<ItemIdentifier, Integer> map = getItemsAndCount();
+		Map<ItemIdentifier, Integer> map = getItemsAndCount();
 		Integer count = map.get(itemIdent);
 		if(count==null) {
 			return 0;

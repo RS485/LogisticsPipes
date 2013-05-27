@@ -60,9 +60,8 @@ public class ChassiModule implements ILogisticsGuiModule{
 
 		if (bestresult == null) return null;
 		//Always deny items when we can't put the item anywhere
-		IInventory inv = _parentPipe.getSneakyInventory();
-		if (inv == null) return null;
-		IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+		IInventoryUtil invUtil = _parentPipe.getSneakyInventory();
+		if (invUtil == null) return null;
 		int roomForItem = invUtil.roomForItem(item); 
 		if (roomForItem < 1) return null;
 		if(includeInTransit) {

@@ -9,6 +9,7 @@
 package logisticspipes.logic;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
@@ -105,7 +106,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
 			
 			//How many do I have?
-			HashMap<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
+			Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
 			//How many do I have?
 			HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
 			for (Entry<ItemIdentifier, Integer> item : have.entrySet()){

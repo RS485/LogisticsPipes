@@ -13,7 +13,8 @@ public class LogisticsLiquidOrderManager {
 	private LinkedList<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> queue = new LinkedList<Pair3<LiquidIdentifier, Integer, IRequestLiquid>>();
 	
 	public void add(LiquidLogisticsPromise promise, IRequestLiquid destination) {
-		queue.addLast(new Pair3<LiquidIdentifier, Integer, IRequestLiquid>(promise.item, promise.amount, destination));
+		if(promise.amount < 0) throw new RuntimeException("The amount can't be less than zero");
+		queue.addLast(new Pair3<LiquidIdentifier, Integer, IRequestLiquid>(promise.liquid, promise.amount, destination));
 	}
 
 	public boolean hasOrders() {

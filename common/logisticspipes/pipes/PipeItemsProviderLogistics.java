@@ -296,7 +296,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			if (tile.tile instanceof TileGenericPipe) continue;
 			IInventoryUtil inv = this.getAdaptedInventoryUtil(tile);
 			
-			HashMap<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
+			Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 outer:
 			for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
 				if(items.containsKey(currItem.getKey())) continue;

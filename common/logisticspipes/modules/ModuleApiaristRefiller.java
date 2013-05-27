@@ -88,7 +88,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	public void tick() {
 		if (++currentTickCount < ticksToOperation) return;
 		currentTickCount = 0;
-		IInventory inv = _invProvider.getRawInventory();
+		IInventory inv = _invProvider.getRealInventory();
 		if (!(inv instanceof ISpecialInventory)) return;
 		ISpecialInventory sinv = (ISpecialInventory) inv;
 		ForgeDirection direction = _invProvider.inventoryOrientation().getOpposite();

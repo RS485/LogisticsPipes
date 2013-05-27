@@ -27,7 +27,6 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
-import logisticspipes.pipes.PipeItemsBuilderSupplierLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
@@ -48,6 +47,7 @@ import logisticspipes.pipes.PipeLiquidExtractor;
 import logisticspipes.pipes.PipeLiquidInsertion;
 import logisticspipes.pipes.PipeLiquidProvider;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
+import logisticspipes.pipes.PipeLiquidSatelliteLogistics;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
@@ -233,7 +233,6 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsCraftingPipeMK3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
 		LogisticsPipes.LogisticsFirewall = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
 		
-		LogisticsPipes.LogisticsBuilderSupplierPipe = createPipe(Configs.LOGISTICSPIPE_BUILDERSUPPLIER_ID, PipeItemsBuilderSupplierLogistics.class, "Builder Supplier Logistics Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
 		
 		if(LogisticsPipes.DEBUG) {
@@ -243,6 +242,7 @@ public class BuildCraftProxy {
 			LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
 			LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
 			LogisticsPipes.LogisticsLiquidExtractor = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
+			LogisticsPipes.LogisticsLiquidSatellite = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatelliteLogistics.class, "Logistics Liquid Satellite Pipe", side);
 		}
 	}
 
@@ -254,6 +254,7 @@ public class BuildCraftProxy {
 	 * @param clas  Class name of the pipe block
 	 * @return the pipe
 	 */
+	@SuppressWarnings("unchecked")
 	public static ItemPipe registerPipe(int key, Class<? extends Pipe> clas) {
 		ItemPipe item = new ItemLogisticsPipe(key, clas);
 

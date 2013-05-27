@@ -150,7 +150,7 @@ public class HUDSatellite extends BasicHUDGui {
 
 	@Override
 	public boolean cursorOnWindow(int x, int y) {
-		if((pipe1 != null && pipe1.itemList.size() > 0) || pipe2.itemList.size() > 0) {
+		if((pipe1 != null && pipe1.itemList.size() > 0) || (pipe2 != null && pipe2.itemList.size() > 0)) {
 			return -50 < x && x < 50 && -50 < y && y < 50;
 		} else {
 			return -30 < x && x < 30 && -30 < y && y < 30;

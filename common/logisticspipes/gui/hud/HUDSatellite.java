@@ -70,7 +70,7 @@ public class HUDSatellite extends BasicHUDGui {
 	
 	@Override
 	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
-		if((pipe1 != null && pipe1.itemList.size() > 0) || pipe2.itemList.size() > 0) {
+		if((pipe1 != null && pipe1.itemList.size() > 0) || (pipe2 != null && pipe2.itemList.size() > 0)) {
 			if(day) {
 	        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
 	        } else {

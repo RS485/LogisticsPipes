@@ -18,7 +18,9 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraftforge.client.GuiIngameForge;
 
 import org.lwjgl.opengl.GL11;
 
@@ -143,7 +145,23 @@ public class LogisticsHUDRenderer {
 		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor && ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
 	}
 	
-	public void renderPlayerDisplay(long renderTicks) {}
+	private boolean displayCross = false;
+	
+	public void renderPlayerDisplay(long renderTicks) {
+		if(!displayRenderer()) return;
+		Minecraft mc = FMLClientHandler.instance().getClient();
+		if(displayCross) {
+			ScaledResolution res = new ScaledResolution(mc.gameSettings, mc.displayWidth, mc.displayHeight);
+	        int width = res.getScaledWidth();
+	        int height = res.getScaledHeight();
+	        if (GuiIngameForge.renderCrosshairs && mc.ingameGUI != null) {
+		        mc.renderEngine.bindTexture("/gui/icons.png");
+		        GL11.glColor4d(0.0D, 0.0D, 0.0D, 1.0D);
+		        GL11.glDisable(GL11.GL_BLEND);
+		        mc.ingameGUI.drawTexturedModalRect(width / 2 - 7, height / 2 - 7, 0, 0, 16, 16);
+		    }
+		}
+	}
 	
 	public void renderWorldRelative(long renderTicks, float partialTick) {
 		if(!displayRenderer()) return;
@@ -156,7 +174,9 @@ public class LogisticsHUDRenderer {
 			lastZPos = player.posZ;
 		}
 		boolean cursorHandled = false;
+		displayCross = false;
 		HUDConfig config = new HUDConfig(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		IHeadUpDisplayRendererProvider thisIsLast = null;
 		for(IHeadUpDisplayRendererProvider renderer:list) {
 			if(renderer.getRenderer() == null) continue;
 			if(renderer.getRenderer().display(config)) {
@@ -170,18 +190,34 @@ public class LogisticsHUDRenderer {
 				        GL11.glPopMatrix();
 						break;
 					}
-					cursorHandled = handleCursor(renderer);
+					int[] pos = getCursor(renderer);
+					if(pos.length == 2) {
+						if(renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
+							renderer.getRenderer().handleCursor(pos[0], pos[1]);
+							if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
+								thisIsLast = renderer;
+								displayCross = true;
+							}
+							cursorHandled = true;
+						}
+					}
 				}
-				//GL11.glPopMatrix();
-				//GL11.glPushMatrix();
 		        GL11.glEnable(GL11.GL_BLEND);
 		        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-				displayOneView(renderer, config, partialTick);
-		        GL11.glPopMatrix();
+				if(thisIsLast != renderer) {
+					displayOneView(renderer, config, partialTick);
+				}
+				GL11.glPopMatrix();
 			}
 		}
+		if(thisIsLast != null) {
+			GL11.glPushMatrix();
+	        GL11.glDisable(GL11.GL_BLEND);
+	        GL11.glDisable(GL11.GL_DEPTH_TEST);
+	        displayOneView(thisIsLast, config, partialTick);
+	        GL11.glPopMatrix();
+		}
 	}
-
 	
 	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config, float partialTick) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
@@ -215,7 +251,7 @@ public class LogisticsHUDRenderer {
 		return input;
 	}
 	
-	private boolean handleCursor(IHeadUpDisplayRendererProvider renderer) {
+	private int[] getCursor(IHeadUpDisplayRendererProvider renderer) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		
@@ -268,7 +304,7 @@ public class LogisticsHUDRenderer {
 		}
 		
 		if(panelScalVector1.Y == 0) {
-			return false;
+			return new int[]{};
 		}
 		
 		double cursorY = -viewPos.Y / panelScalVector1.Y;
@@ -295,11 +331,7 @@ public class LogisticsHUDRenderer {
 			cursorY *= -1;
 		}
 
-		if(renderer.getRenderer().cursorOnWindow((int) cursorX, (int)cursorY)) {
-			renderer.getRenderer().handleCursor((int) cursorX, (int)cursorY);
-			return true;
-		}
-		return false;
+		return new int[]{(int) cursorX, (int)cursorY};
 	}
 	
 	public boolean displayRenderer() {

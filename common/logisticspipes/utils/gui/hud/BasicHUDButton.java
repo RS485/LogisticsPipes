@@ -104,6 +104,8 @@ public abstract class BasicHUDButton implements IHUDButton {
 		if(hover && !clicked) {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
+		GL11.glTranslatef(0.0F, 0.0F, 0.001F);
+		minecraft.renderEngine.bindTexture("/gui/items.png");
 	}
 
 	@Override

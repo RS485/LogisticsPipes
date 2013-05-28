@@ -56,7 +56,6 @@ public class RenderTickHandler implements ITickHandler {
 					}
 				}
 				GL11.glPushMatrix();
-				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				//Orientation
 				try {
@@ -87,6 +86,9 @@ public class RenderTickHandler implements ITickHandler {
 						thread.resume();
 					}
 				}
+		        GL11.glPopMatrix();
+		        GL11.glPushMatrix();
+				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 		        GL11.glPopMatrix();
 			}
 		}

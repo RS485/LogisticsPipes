@@ -1,25 +1,25 @@
 package logisticspipes.proxy.recipeproviders;
 
+import buildcraft.silicon.TileAdvancedCraftingTable;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.silicon.TileAssemblyAdvancedWorkbench;
 
 public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 	@Override
 	public boolean canOpenGui(TileEntity tile) {
-		return (tile instanceof TileAssemblyAdvancedWorkbench);
+		return (tile instanceof TileAdvancedCraftingTable);
 	}
 
 	@Override
 	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
-		if (!(tile instanceof TileAssemblyAdvancedWorkbench))
+		if (!(tile instanceof TileAdvancedCraftingTable))
 			return false;
 
-		TileAssemblyAdvancedWorkbench bench = (TileAssemblyAdvancedWorkbench) tile;
-		ItemStack result = bench.getOutputSlot();
+		TileAdvancedCraftingTable bench = (TileAdvancedCraftingTable) tile;
+		ItemStack result = bench.getOutputSlot().getStackInSlot(0);
 
 		if (result == null)
 			return false;
@@ -36,13 +36,13 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 		}
 
 		// Compact
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			final ItemStack stackInSlot = inventory.getStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
 			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
-			for (int j = i + 1; j < inventory.getSizeInventory() - 1; j++) {
+			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
 				final ItemStack stackInOtherSlot = inventory.getStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
@@ -54,11 +54,11 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 			}
 		}
 
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {
 				continue;
 			}
-			for (int j = i + 1; j < inventory.getSizeInventory() - 1; j++) {
+			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
 				if (inventory.getStackInSlot(j) == null) {
 					continue;
 				}

@@ -3,13 +3,13 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
-import buildcraft.core.utils.SimpleInventory;
 import buildcraft.transport.Pipe;
 
 public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {

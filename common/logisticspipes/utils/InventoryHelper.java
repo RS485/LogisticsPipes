@@ -2,18 +2,16 @@ package logisticspipes.utils;
 
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
-import net.minecraft.tileentity.TileEntityFurnace;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.common.ISidedInventory;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.inventory.ITransactor;
-import buildcraft.core.inventory.TransactorForgeSided;
+import buildcraft.core.inventory.InventoryWrapper;
 import buildcraft.core.inventory.TransactorSimple;
 import buildcraft.core.inventory.TransactorSpecial;
-import buildcraft.core.inventory.TransactorVanillaSided;
 import buildcraft.core.utils.Utils;
 
 public class InventoryHelper {
@@ -52,18 +50,20 @@ public class InventoryHelper {
 			}
 		}
 
+		
 		if (object instanceof ISpecialInventory)
 			return new TransactorSpecial((ISpecialInventory) object);
 
-		else if (object instanceof net.minecraft.inventory.ISidedInventory)
-		    return new TransactorVanillaSided((net.minecraft.inventory.ISidedInventory) object);
-
 		else if (object instanceof ISidedInventory)
-			return new TransactorForgeSided((ISidedInventory) object);
+			return new TransactorSimple((ISidedInventory) object);
+
+		else if (object instanceof net.minecraftforge.common.ISidedInventory)
+			return new TransactorSimple(InventoryWrapper.getWrappedInventory(object));
 
 		else if (object instanceof IInventory)
 			return new TransactorSimple(getInventory((IInventory) object));
 
 		return null;
+
 	}
 }

@@ -3,12 +3,12 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
-import buildcraft.core.utils.SimpleInventory;
 import buildcraft.transport.Pipe;
 
 public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {

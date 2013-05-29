@@ -86,10 +86,10 @@ public class RenderTickHandler implements ITickHandler {
 						thread.resume();
 					}
 				}
-		        GL11.glPopMatrix();
-		        GL11.glPushMatrix();
+				GL11.glPopMatrix();
+				GL11.glPushMatrix();
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
-		        GL11.glPopMatrix();
+				GL11.glPopMatrix();
 			}
 		}
 	}

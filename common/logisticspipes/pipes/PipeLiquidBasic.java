@@ -13,13 +13,13 @@ import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.LiquidStack;
-import buildcraft.core.utils.SimpleInventory;
 
 public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	

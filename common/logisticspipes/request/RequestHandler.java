@@ -1,6 +1,7 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,6 +17,7 @@ import logisticspipes.network.packets.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
@@ -145,10 +147,17 @@ public class RequestHandler {
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
 				MainProxy.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
 			}
-		});
+		},RequestTree.defaultRequestFlags);
 	}
 
-	public static String computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe) {
+	public static String computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
+
+		EnumSet<ActiveRequestType> requestFlags;
+		if(craftingOnly){
+			requestFlags=EnumSet.of(ActiveRequestType.Craft);
+		} else {
+			requestFlags=EnumSet.of(ActiveRequestType.Craft,ActiveRequestType.Provide);			
+		}
 		if(!pipe.useEnergy(15)) {
 			return "NO_POWER";
 		}
@@ -168,7 +177,7 @@ public class RequestHandler {
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
 				//Not needed here
 			}
-		});
+		},false, false,true,false,requestFlags);
 		return status[0];
 	}
 

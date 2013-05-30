@@ -1,6 +1,7 @@
 package logisticspipes.request;
 
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +10,7 @@ import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
@@ -22,11 +24,21 @@ import logisticspipes.utils.LiquidIdentifier;
 
 public class RequestTree extends RequestTreeNode {
 
+	public static enum ActiveRequestType {
+		Provide,
+		Craft,
+		AcceptPartial, 
+		SimulateOnly, 
+		LogMissing, 
+		LogUsed	
+	}
+	
+	public static final EnumSet<ActiveRequestType> defaultRequestFlags=EnumSet.of(ActiveRequestType.Provide,ActiveRequestType.Craft);
 	private HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer> _promisetotals;
 	private HashMap<FinalPair<ILiquidProvider,LiquidIdentifier>,Integer> _promisetotalsliquid;
 
-	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent) {
-		super(item, requester, parent);
+	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent, EnumSet<ActiveRequestType> requestFlags) {
+		super(item, requester, parent, requestFlags);
 	}
 	
 	private int getExistingPromisesFor(FinalPair<IProvideItems, ItemIdentifier> key) {
@@ -162,13 +174,13 @@ public class RequestTree extends RequestTreeNode {
 		
 	}
 	
-	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log) {
+	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags) {
 		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
-		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester, null);
+		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester, null, requestFlags);
 		boolean isDone = true;
 		for(ItemIdentifierStack stack:items) {
 			messages.add(new ItemMessage(stack));
-			RequestTree node = new RequestTree(stack, requester, tree);
+			RequestTree node = new RequestTree(stack, requester, tree, requestFlags);
 			isDone = isDone && node.isDone();
 		}
 		if(isDone) {
@@ -185,8 +197,8 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 	
-	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed) {
-		RequestTree tree = new RequestTree(item, requester, null);
+	public static int request(ItemIdentifierStack item, IRequestItems requester, RequestLog log, boolean acceptPartial, boolean simulateOnly, boolean logMissing, boolean logUsed, EnumSet<ActiveRequestType> requestFlags) {
+		RequestTree tree = new RequestTree(item, requester, null, requestFlags);
 		if(!simulateOnly &&(tree.isDone() || ((tree.getPromiseItemCount() > 0) && acceptPartial))) {
 			tree.fullFillAll();
 			if(log != null) {
@@ -209,15 +221,15 @@ public class RequestTree extends RequestTreeNode {
 
 	public static int request(ItemIdentifierStack item,
 			IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, false, false,true,false);
+		return request( item, requester, log, false, false,true,false,defaultRequestFlags);
 	}
 	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
-		return request( item, requester, null, true, false,true,false);
+		return request( item, requester, null, true, false,true,false,defaultRequestFlags);
 	}
 
 	public static int simulate(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, true, true, false, true);
+		return request( item, requester, log, true, true, false, true,defaultRequestFlags);
 	}
 	
 	public static int requestLiquidPartial(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log) {

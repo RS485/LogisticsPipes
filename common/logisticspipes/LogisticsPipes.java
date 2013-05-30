@@ -108,7 +108,7 @@ import cpw.mods.fml.relauncher.Side;
 @Mod(
 		modid = "LogisticsPipes|Main",
 		name = "Logistics Pipes",
-		version = "%VERSION%",
+		version = "0.7.2.${BUILD_NUMBER}",
 		/* %------------CERTIFICATE-SUM-----------% */
 		dependencies = "required-after:Forge@[6.5.0.0,);" +
 				"required-after:BuildCraft|Core;" +
@@ -138,10 +138,10 @@ public class LogisticsPipes {
 	//Log Requests
 	public static boolean DisplayRequests;
 
-	public static boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
+	public static boolean DEBUG = "${DEBUG}".equals("%" + "DEBUG" + "%") || "${DEBUG}".equals("true");
 	public static boolean DEBUG_OVGEN = false;
-	public static final String MCVersion = "%MCVERSION%";
-	public static final String VERSION = "%VERSION%:%DEBUG%";
+	public static final String MCVersion = "1.5.2";
+	public static final String VERSION = "0.7.2.${BUILD_NUMBER}:${DEBUG}";
 	
 	private boolean certificateError = false;
 

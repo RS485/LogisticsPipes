@@ -3,6 +3,7 @@ package logisticspipes.request;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -20,6 +21,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -36,13 +38,14 @@ import logisticspipes.utils.Pair3;
 
 public class RequestTreeNode {
 
-	protected RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
-		this(null,item,requester,parentNode);
+	protected RequestTreeNode(ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags) {
+		this(null,item,requester,parentNode,requestFlags);
 	}
-	private RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode) {
+	private RequestTreeNode(CraftingTemplate template, ItemIdentifierStack item, IRequestItems requester, RequestTreeNode parentNode, EnumSet<ActiveRequestType> requestFlags) {
 		this.request = item;
 		this.target = requester;
 		this.parentNode=parentNode;
+//		this.requestFlags=requestFlags;
 		if(parentNode!=null) {
 			parentNode.subRequests.add(this);
 			this.root = parentNode.root;
@@ -53,18 +56,18 @@ public class RequestTreeNode {
 			this.declareCrafterUsed(template);
 		}
 		
-		if(checkProvider()){
+		if(requestFlags.contains(ActiveRequestType.Provide) && checkProvider()){
 			return;
 		}
 		
-		if(checkExtras()) {
-			return;
+		if(requestFlags.contains(ActiveRequestType.Craft) && checkExtras() && checkCrafting()) {
+			return;// crafting was able to complete
 		}
-		checkCrafting();
 		
+		// crafting is not done!
 	}
 
-	
+//	private final EnumSet<ActiveRequestType> requestFlags;
 	private final IRequestItems target;
 	private final ItemIdentifierStack request;
 	private final RequestTreeNode parentNode;
@@ -607,7 +610,7 @@ outer:
 		int workSetsAvailable = nCraftingSets;
 		ArrayList<RequestTreeNode>lastNode = new ArrayList<RequestTreeNode>(stacks.size());
 		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-			RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this);
+			RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
 			lastNode.add(node);
 			if(!node.isDone()) {
 				failed = true;
@@ -665,7 +668,7 @@ outer:
 
 			boolean failed = false;
 			for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this);
+				RequestTreeNode node = new RequestTreeNode(template,stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
 				newChildren.add(node);
 				if(!node.isDone()) {
 					failed = true;
@@ -713,7 +716,7 @@ outer:
 		List<Pair<ItemIdentifierStack, IRequestItems>> stacks = template.getComponentItems(nCraftingSetsNeeded);
 
 		for(Pair<ItemIdentifierStack,IRequestItems> stack:stacks) {
-			new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this);
+			new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
 		}
 
 		List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(nCraftingSetsNeeded);

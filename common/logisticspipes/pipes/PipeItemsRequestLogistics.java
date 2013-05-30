@@ -185,9 +185,16 @@ outer:
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	@CCQueued
 	public String makeRequest(Double itemId, Double amount) throws Exception {
+		return makeRequest(itemId, amount, false);
+	}
+	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
+	@CCQueued
+	public String makeRequest(Double itemId, Double amount, Boolean forceCrafting) throws Exception {
+		if(forceCrafting==null)
+			forceCrafting=false;
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
-		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this);
+		return RequestHandler.computerRequest(item.makeStack((int)Math.floor(amount)), this,forceCrafting);
 	}
 
 	@CCCommand(description="Asks for all available ItemIdentifier inside the Logistics Network")

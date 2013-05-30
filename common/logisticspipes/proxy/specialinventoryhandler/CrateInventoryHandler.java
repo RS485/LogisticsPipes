@@ -254,6 +254,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack getStackInSlot(int i) {
 		if(cached == null) initCache();
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
+		if(entry.getValue() == 0) return null;
 		return entry.getKey().makeNormalStack(entry.getValue());
 	}
 
@@ -261,7 +262,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 	public ItemStack decrStackSize(int i, int j) {
 		if(cached == null) initCache();
 		Entry<ItemIdentifier, Integer> entry = cached.get(i);
-		ItemStack stack = entry.getKey().makeNormalStack(entry.getValue());
+		ItemStack stack = entry.getKey().makeNormalStack(j);
 		ItemStack extracted = null;
 		try {
 			Object cratePileData = getPileData.invoke(_tile, new Object[]{});
@@ -275,7 +276,7 @@ public class CrateInventoryHandler extends SpecialInventoryHandler {
 		} catch (InvocationTargetException e) {
 			e.printStackTrace();
 		}
-		initCache();
+		entry.setValue(entry.getValue() - j);
 		return extracted;
 	}
 }

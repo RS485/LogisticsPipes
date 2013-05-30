@@ -115,4 +115,5 @@ public class NetworkConstants {
 	public static final int LIQUID_CRAFTING_PIPE_PREV_SATELLITE_ADVANCED = 110;
 	public static final int LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED = 111;
 	public static final int LIQUID_CRAFTING_PIPE_AMOUNT = 112;
+	public static final int LIQUID_SUPPLIER_LIQUID_AMOUNT = 113;
 }

@@ -227,4 +227,9 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	public boolean isLiquidPipe() {
 		return true;
 	}
+	
+	public boolean sharesTankWith(LiquidRoutedPipe other){
+		//TODO
+		return false;
+	}
 }

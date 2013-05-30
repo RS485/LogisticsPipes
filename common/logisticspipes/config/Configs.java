@@ -55,6 +55,7 @@ public class Configs {
 	public static int LOGISTICSPIPE_LIQUID_REQUEST = 6905;
 	public static int LOGISTICSPIPE_LIQUID_EXTRACTOR = 6906;
 	public static int LOGISTICSPIPE_LIQUID_SATELLITE = 6907;
+	public static int LOGISTICSPIPE_LIQUID_SUPPLIER_MK2 = 6908;
 
 	public static int LOGISTICSCRAFTINGSIGNCREATOR_ID = 6900;
 
@@ -242,6 +243,10 @@ public class Configs {
 					"logisticPipeLiquidSatellite.id",
 					LOGISTICSPIPE_LIQUID_SATELLITE,
 					"The item id for the liquid satellite pipe.").getInt();
+			LOGISTICSPIPE_LIQUID_SUPPLIER_MK2 = CONFIGURATION.getItem(
+					"logisticPipeLiquidSupplierMk2.id",
+					LOGISTICSPIPE_LIQUID_SUPPLIER_MK2,
+					"The item id for the liquid supplier pipe mk2.").getInt();
 		}
 
 		LOGISTICS_DETECTION_LENGTH = CONFIGURATION

@@ -1,11 +1,3 @@
-/** 
- * Copyright (c) Krapht, 2011
- * 
- * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
- * License 1.0, or MMPL. Please check the contents of the license located in
- * http://www.mod-buildcraft.com/MMPL-1.0.txt
- */
-
 package logisticspipes.logic;
 
 import java.util.HashMap;
@@ -14,50 +6,49 @@ import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.pipes.PipeItemsLiquidSupplier;
+import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.ItemStack;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ILiquidTank;
 import net.minecraftforge.liquids.ITankContainer;
-import net.minecraftforge.liquids.LiquidContainerRegistry;
-import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
-public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireReliableTransport{
+public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequireReliableLiquidTransport {
+
+	private SimpleInventory dummyInventory = new SimpleInventory(1, "Liquid to keep stocked", 127);
+	private int amount = 0;
 	
-	private SimpleInventory dummyInventory = new SimpleInventory(9, "Liquids to keep stocked", 127);
-	
-	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
+	private final Map<LiquidIdentifier, Integer> _requestedItems = new HashMap<LiquidIdentifier, Integer>();
 	
 	private boolean _requestPartials = false;
 	
 	public IRoutedPowerProvider _power;
 
-	public LogicLiquidSupplier(){
+	public LogicLiquidSupplierMk2(){
 		throttleTime = 100;
 	}
-	
-	@Override
-	public void destroy() {}
 
-	
 	@Override
 	public void throttledUpdateEntity() {
 		if (MainProxy.isClient(worldObj)) return;
 		super.throttledUpdateEntity();
+		if(dummyInventory.getStackInSlot(0) == null) return;
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof ITankContainer) || tile.tile instanceof TileGenericPipe) continue;
@@ -65,14 +56,8 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;
 			
 			//How much do I want?
-			Map<ItemIdentifier, Integer> wantContainers = dummyInventory.getItemsAndCount();
-			HashMap<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
-			for (Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()){
-				ItemStack wantItem = item.getKey().unsafeMakeNormalStack(1);
-				LiquidStack liquidstack = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
-				if (liquidstack == null) continue;
-				wantLiquids.put(LiquidIdentifier.get(liquidstack), item.getValue() * liquidstack.amount);
-			}
+			Map<LiquidIdentifier, Integer> wantLiquids = new HashMap<LiquidIdentifier, Integer>();
+			wantLiquids.put(ItemIdentifier.get(dummyInventory.getStackInSlot(0)).getLiquidIdentifier(), amount);
 
 			//How much do I have?
 			HashMap<LiquidIdentifier, Integer> haveLiquids = new HashMap<LiquidIdentifier, Integer>();
@@ -95,25 +80,19 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				if (haveCount != null){
 					liquidId.setValue(liquidId.getValue() - haveCount);
 				}
-				for (Entry<ItemIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
-					if(requestedItem.getKey().getLiquidIdentifier() == liquidId.getKey()) {
-						ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
-						LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(wantItem);
-						if (requestedLiquidId == null) continue;
-						liquidId.setValue(liquidId.getValue() - requestedItem.getValue() * requestedLiquidId.amount);
+				for (Entry<LiquidIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
+					if(requestedItem.getKey() == liquidId.getKey()) {
+						liquidId.setValue(liquidId.getValue() - requestedItem.getValue());
 					}
 				}
 			}
 			
-			((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(false);
+			((PipeLiquidSupplierMk2)this.container.pipe).setRequestFailed(false);
 			
 			//Make request
 			
-			for (ItemIdentifier need : wantContainers.keySet()){
-				LiquidStack requestedLiquidId = LiquidContainerRegistry.getLiquidForFilledItem(need.unsafeMakeNormalStack(1));
-				if (requestedLiquidId == null) continue;
-				if (!wantLiquids.containsKey(LiquidIdentifier.get(requestedLiquidId))) continue;
-				int countToRequest = wantLiquids.get(LiquidIdentifier.get(requestedLiquidId)) / requestedLiquidId.amount;
+			for (LiquidIdentifier need : wantLiquids.keySet()){
+				int countToRequest = wantLiquids.get(need);
 				if (countToRequest < 1) continue;
 				
 				if(!_power.useEnergy(11)) {
@@ -123,12 +102,12 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 				boolean success = false;
 
 				if(_requestPartials) {
-					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) this.container.pipe);
+					countToRequest = RequestTree.requestLiquidPartial(need, countToRequest, (IRequestLiquid) this.container.pipe, null);
 					if(countToRequest > 0) {
 						success = true;
 					}
 				} else {
-					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null)>0;
+					success = RequestTree.requestLiquid(need, countToRequest, (IRequestLiquid) this.container.pipe, null)>0;
 				}
 				
 				if (success){
@@ -139,7 +118,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else{
-					((PipeItemsLiquidSupplier)this.container.pipe).setRequestFailed(true);
+					((PipeLiquidSupplierMk2)this.container.pipe).setRequestFailed(true);
 				}
 			}
 		}
@@ -150,6 +129,7 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 		super.readFromNBT(nbttagcompound);	
 		dummyInventory.readFromNBT(nbttagcompound, "");
 		_requestPartials = nbttagcompound.getBoolean("requestpartials");
+		amount = nbttagcompound.getInteger("amount");
     }
 
 	@Override
@@ -157,22 +137,22 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
     	super.writeToNBT(nbttagcompound);
     	dummyInventory.writeToNBT(nbttagcompound, "");
     	nbttagcompound.setBoolean("requestpartials", _requestPartials);
+    	nbttagcompound.setInteger("amount", amount);
     }
 	
-	private void decreaseRequested(ItemIdentifierStack item) {
-		int remaining = item.stackSize;
+	private void decreaseRequested(LiquidIdentifier liquid, int remaining) {
 		//see if we can get an exact match
-		Integer count = _requestedItems.get(item.getItem());
+		Integer count = _requestedItems.get(liquid);
 		if (count != null) {
-			_requestedItems.put(item.getItem(), Math.max(0, count - remaining));
+			_requestedItems.put(liquid, Math.max(0, count - remaining));
 			remaining -= count;
 		}
 		if(remaining <= 0) {
 			return;
 		}
 		//still remaining... was from fuzzyMatch on a crafter
-		for(Entry<ItemIdentifier, Integer> e : _requestedItems.entrySet()) {
-			if(e.getKey().itemID == item.getItem().itemID && e.getKey().itemDamage == item.getItem().itemDamage) {
+		for(Entry<LiquidIdentifier, Integer> e : _requestedItems.entrySet()) {
+			if(e.getKey().itemId == liquid.itemId && e.getKey().itemMeta == liquid.itemMeta) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
 				remaining -= expected;
@@ -182,17 +162,17 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 			}
 		}
 		//we have no idea what this is, log it.
-		LogisticsPipes.requestLog.info("liquid supplier got unexpected item " + item.toString());
+		LogisticsPipes.requestLog.info("liquid supplier got unexpected item " + liquid.toString());
 	}
 
 	@Override
-	public void itemLost(ItemIdentifierStack item) {
-		decreaseRequested(item);
+	public void itemLost(LiquidIdentifier item, int amount) {
+		decreaseRequested(item, amount);
 	}
 
 	@Override
-	public void itemArrived(ItemIdentifierStack item) {
-		decreaseRequested(item);
+	public void itemArrived(LiquidIdentifier item, int amount) {
+		decreaseRequested(item, amount);
 		delayThrottle();
 	}
 	
@@ -207,12 +187,33 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if(MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_LiquidSupplier_ID, worldObj, xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_LiquidSupplier_MK2_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}
-	
-	/*** GUI ***/
-	public SimpleInventory getDummyInventory() {
+
+	@Override
+	public void destroy() {}
+
+	public IInventory getDummyInventory() {
 		return dummyInventory;
+	}
+
+	public int getAmount() {
+		return amount;
+	}
+
+	public void setAmount(int amount) {
+		if(MainProxy.isClient(this.worldObj)) {
+			this.amount = amount;
+		}
+	}
+
+	public void changeLiquidAmount(int change, EntityPlayerMP player) {
+		amount += change;
+		if(amount <= 0) {
+			amount = 0;
+		}
+		final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, xCoord, yCoord, zCoord, amount);
+		MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 	}
 }

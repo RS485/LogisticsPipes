@@ -22,6 +22,7 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
+import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
@@ -59,6 +60,7 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -426,6 +428,11 @@ public class ServerPacketHandler {
 					final PacketModuleInteger packetBn = new PacketModuleInteger();
 					packetBn.readData(data);
 					onCraftingPipeLiquidAmountChange(player, packetBn);
+					break;
+				case NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT:
+					final PacketPipeInteger packetBo = new PacketPipeInteger();
+					packetBo.readData(data);
+					onLiquidSuppierPipeAmount(player, packetBo);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -1098,10 +1105,14 @@ public class ServerPacketHandler {
 		if(pipe == null) {
 			return;
 		}
-		
+
 		if(pipe.pipe instanceof PipeItemsLiquidSupplier) {
 			PipeItemsLiquidSupplier liquid = (PipeItemsLiquidSupplier) pipe.pipe;
 			((LogicLiquidSupplier)liquid.logic).setRequestingPartials((packet.integer % 10) == 1);
+		}
+		if(pipe.pipe instanceof PipeLiquidSupplierMk2) {
+			PipeLiquidSupplierMk2 liquid = (PipeLiquidSupplierMk2) pipe.pipe;
+			((LogicLiquidSupplierMk2)liquid.logic).setRequestingPartials((packet.integer % 10) == 1);
 		}
 	}
 
@@ -1579,6 +1590,19 @@ public class ServerPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).changeLiquidAmount(packet.integer, packet.slot, player);
+	}
+
+	private static void onLiquidSuppierPipeAmount(EntityPlayerMP player, PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof LogicLiquidSupplierMk2)) {
+			return;
+		}
+
+		((LogicLiquidSupplierMk2) pipe.pipe.logic).changeLiquidAmount(packet.integer, player);
 	}
 	
 	// BuildCraft method

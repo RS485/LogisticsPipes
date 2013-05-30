@@ -8,6 +8,7 @@ import java.util.List;
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -82,13 +83,16 @@ public class LiquidRequestTreeNode {
 	
 	private boolean checkLiquidProvider() {
 		boolean done = true;
+		LiquidRoutedPipe thisPipe = (LiquidRoutedPipe) this.target;
 		List<ILiquidProvider> providers = getLiquidProviders();
 		for(ILiquidProvider provider:providers) {
-			int alreadyRequested = 0;
-			if(root != null) {
-				alreadyRequested = root.getAllPromissesFor(provider, getLiquid());
+			if(!thisPipe.sharesTankWith((LiquidRoutedPipe) provider)) {
+				int alreadyRequested = 0;
+				if(root != null) {
+					alreadyRequested = root.getAllPromissesFor(provider, getLiquid());
+				}
+				provider.canProvide(this, alreadyRequested);
 			}
-			provider.canProvide(this, alreadyRequested);
 		}
 		if(!isDone()) {
 			done = false;

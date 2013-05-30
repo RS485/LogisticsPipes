@@ -178,6 +178,7 @@ public class LogisticsPipes {
 	public static Item LogisticsLiquidRequest;
 	public static Item LogisticsLiquidExtractor;
 	public static Item LogisticsLiquidSatellite;
+	public static Item LogisticsLiquidSupplierMk2;
 	
 	
 	public static Item LogisticsNetworkMonitior;

@@ -52,6 +52,8 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.proxy.cc.interfaces.CCCommand;
+import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.security.SecuritySettings;
@@ -81,6 +83,7 @@ import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
+@CCType(name="LogisticsChassiePipe")
 public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
@@ -690,4 +693,15 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		}
 		return false;
 	}
+	/*
+	@CCCommand(description="Returns the LogisticsModule for the givven slot number starting by 1")
+	public ILogisticsModule getModule(Integer i) {
+		return _module.getSubModule(i - 1);
+	}
+	
+	@CCCommand(description="Returns the size of this Chassie pipe")
+	public Integer getChassieSize() {
+		return this.getChassiSize();
+	}
+	*/
 }

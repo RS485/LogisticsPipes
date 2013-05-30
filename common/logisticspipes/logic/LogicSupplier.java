@@ -132,33 +132,6 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			}
 			
 			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
-			
-			//List<ExitRoute> valid = getRouter().getIRoutersByCost();
-			
-			/*
-			//TODO Double Chests, Simplyfication
-			// Filter out providers attached to this inventory so that we don't get stuck in an
-			// endless supply/provide loop on this inventory.
-
-			WorldUtil invWU = new WorldUtil(tile.tile.worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord);
-			ArrayList<IProvideItems> invProviders = new ArrayList<IProvideItems>();
-
-			for (AdjacentTile atile : invWU.getAdjacentTileEntities()) {
-				if ((atile.tile instanceof TileGenericPipe)) {
-					Pipe p = ((TileGenericPipe) atile.tile).pipe;
-					if ((p instanceof IProvideItems)) {
-						invProviders.add((IProvideItems) p);
-					}
-				}
-			}
-
-			for (IRouter r : valid) {
-				CoreRoutedPipe cp = r.getPipe();
-				if (((cp instanceof IProvideItems)) && (invProviders.contains((IProvideItems) cp))) {
-					valid.remove(r);
-				}
-			}
-			*/
 
 			//Make request
 			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){

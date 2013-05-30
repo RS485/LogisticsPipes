@@ -31,6 +31,7 @@ import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
+import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.modules.ModuleAdvancedExtractor;
@@ -69,6 +70,7 @@ import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -376,9 +378,14 @@ public class ClientPacketHandler {
 					onCraftingPipeSetLiquidSatelliteAdvanced(packetBi);
 					break;
 				case NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT:
-					final PacketModuleInteger packetBn = new PacketModuleInteger();
-					packetBn.readData(data);
-					onCraftingPipeLiquidAmountChange(packetBn);
+					final PacketModuleInteger packetBj = new PacketModuleInteger();
+					packetBj.readData(data);
+					onCraftingPipeLiquidAmountChange(packetBj);
+					break;
+				case NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT:
+					final PacketPipeInteger packetBk = new PacketPipeInteger();
+					packetBk.readData(data);
+					onLiquidSuppierPipeAmount(packetBk);
 					break;
 			}
 		} catch (final Exception ex) {
@@ -651,6 +658,9 @@ public class ClientPacketHandler {
 		}
 		if(tile.pipe instanceof PipeItemsLiquidSupplier && tile.pipe.logic instanceof LogicLiquidSupplier) {
 			((LogicLiquidSupplier)tile.pipe.logic).setRequestingPartials((packet.integer % 10) == 1);		
+		}
+		if(tile.pipe instanceof PipeLiquidSupplierMk2 && tile.pipe.logic instanceof LogicLiquidSupplierMk2) {
+			((LogicLiquidSupplierMk2)tile.pipe.logic).setRequestingPartials((packet.integer % 10) == 1);		
 		}
 	}
 	
@@ -1029,6 +1039,19 @@ public class ClientPacketHandler {
 		}
 
 		((BaseLogicCrafting) pipe.pipe.logic).defineLiquidAmount(packet.integer, packet.slot);
+	}
+
+	private static void onLiquidSuppierPipeAmount(PacketPipeInteger packet) {
+		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
+		if (pipe == null) {
+			return;
+		}
+
+		if (!(pipe.pipe.logic instanceof LogicLiquidSupplierMk2)) {
+			return;
+		}
+
+		((LogicLiquidSupplierMk2) pipe.pipe.logic).setAmount(packet.integer);
 	}
 	
 	// BuildCraft method

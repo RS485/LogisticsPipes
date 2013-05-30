@@ -14,6 +14,7 @@ import logisticspipes.gui.GuiFirewall;
 import logisticspipes.gui.GuiFreqCardContent;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLiquidBasic;
+import logisticspipes.gui.GuiLiquidSupplierMk2Pipe;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
 import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
@@ -51,6 +52,7 @@ import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logic.LogicLiquidSupplier;
+import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
@@ -150,7 +152,7 @@ public class GuiHandler implements IGuiHandler {
 		        }
 		        
 				return dummy;
-			
+
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;
 				dummy = new DummyContainer(player.inventory, ((LogicLiquidSupplier)pipe.pipe.logic).getDummyInventory());
@@ -166,6 +168,15 @@ public class GuiHandler implements IGuiHandler {
 				}
 				
 				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplier)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
+			    return dummy;
+
+			case GuiIDs.GUI_LiquidSupplier_MK2_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplierMk2)) return null;
+				dummy = new DummyContainer(player.inventory, ((LogicLiquidSupplierMk2)pipe.pipe.logic).getDummyInventory());
+				dummy.addNormalSlotsForPlayerInventory(18, 97);
+				dummy.addLiquidSlot(0, ((LogicLiquidSupplierMk2)pipe.pipe.logic).getDummyInventory(), 0, 0);
+				
+				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplierMk2)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
 			    return dummy;
 				
 			case GuiIDs.GUI_ProviderPipe_ID:
@@ -712,6 +723,10 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_LiquidSupplier_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplier)) return null;
 				return new GuiLiquidSupplierPipe(player.inventory, ((LogicLiquidSupplier)pipe.pipe.logic).getDummyInventory(), (LogicLiquidSupplier)pipe.pipe.logic);
+			
+			case GuiIDs.GUI_LiquidSupplier_MK2_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicLiquidSupplierMk2)) return null;
+				return new GuiLiquidSupplierMk2Pipe(player.inventory, ((LogicLiquidSupplierMk2)pipe.pipe.logic).getDummyInventory(), (LogicLiquidSupplierMk2)pipe.pipe.logic);
 				
 			case GuiIDs.GUI_ProviderPipe_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe.logic instanceof LogicProvider)) return null;

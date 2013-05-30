@@ -146,8 +146,8 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	
 	public void initCache() {
 		Map<ItemIdentifier, Integer> map = getItemsAndCount(true);
+		cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
 		for(Entry<ItemIdentifier, Integer> e:map.entrySet()) {
-			cached = new LinkedList<Map.Entry<ItemIdentifier,Integer>>();
 			cached.add(e);
 		}
 	}

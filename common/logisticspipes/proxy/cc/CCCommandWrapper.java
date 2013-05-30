@@ -2,128 +2,49 @@ package logisticspipes.proxy.cc;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
-import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCQueued;
-import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.security.PermissionException;
 import logisticspipes.ticks.QueuedTasks;
-import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.WorldUtil;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.ForgeDirection;
-import dan200.computer.api.IComputerAccess;
-import dan200.computer.api.IPeripheral;
+import dan200.computer.core.ILuaObject;
 
-public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implements IPeripheral {
+public class CCCommandWrapper implements ILuaObject {
 	
-	private boolean turtleConnect[] = new boolean[7];
-	
-	private HashMap<IComputerAccess, ForgeDirection> connections = new HashMap<IComputerAccess, ForgeDirection>();
-	
-	private boolean init = false;
-	private HashMap<Integer, String> commandMap = new HashMap<Integer, String>();
-	private Map<Integer, Method> commands = new LinkedHashMap<Integer, Method>();
-	private String typeName = "";
-	
-	private IComputerAccess lastPC = null;
-	
-	private CCType getType(Class<?> clazz) {
-		while(true) {
-			CCType type = clazz.getAnnotation(CCType.class);
-			if(type != null) return type;
-			if(clazz.getSuperclass() == Object.class) return null;
-			clazz = clazz.getSuperclass();
-		}
+	private CCInfos info;
+	private Object object;
+
+	public CCCommandWrapper(CCInfos info2, Object object2) {
+		info = info2;
+		object = object2;
 	}
-	
-	private void init() {
-		if(!init) {
-			init = true;
-			CoreRoutedPipe pipe = getCPipe();
-			if(pipe == null) return;
-			CCType type = getType(pipe.getClass());
-			if(type == null) return;
-			typeName = type.name();
-			int i = 0;
-			Class<?> clazz = pipe.getClass();
-			while(true) {
-				for(Method method:clazz.getDeclaredMethods()) {
-					if(!method.isAnnotationPresent(CCCommand.class)) continue;
-					for(Class<?> param:method.getParameterTypes()) {
-						if(!param.getName().startsWith("java")) {
-							throw new InternalError("Internal Excption (Code: 2)");
-						}
-					}
-					commandMap.put(i, method.getName());
-					commands.put(i, method);
-					i++;
-				}
-				if(clazz.getSuperclass() == Object.class) break;
-				clazz = clazz.getSuperclass();
-			}
-		}
-	}
-	
-	private boolean argumentsMatch(Method method, Object[] arguments) {
-		int i=0;
-		for(Class<?> args:method.getParameterTypes()) {
-			if(!arguments[i].getClass().equals(args)) return false;
-			i++;
-		}
-		return true;
-	}
-	
-	@Override
-	public boolean arePipesConnected(TileEntity with, ForgeDirection dir) {
-		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
-		return super.arePipesConnected(with, dir);
-	}
-	
-	@Override
-	public String getType() {
-		init();
-		return typeName;
-	}
-	
+
 	@Override
 	public String[] getMethodNames() {
-		init();
 		LinkedList<String> list = new LinkedList<String>();
 		list.add("help");
 		list.add("commandHelp");
 		list.add("getType");
-		for(int i=0;i<commandMap.size();i++) {
-			list.add(commandMap.get(i));
+		for(int i=0;i<info.commandMap.size();i++) {
+			list.add(info.commandMap.get(i));
 		}
 		return list.toArray(new String[list.size()]);
 	}
-
+	
 	@Override
-	public Object[] callMethod(IComputerAccess computer, int methodId, Object[] arguments) throws Exception {
-		if(getCPipe() == null) throw new InternalError("Pipe is not a LogisticsPipe");
-		init();
-		lastPC = computer;
+	public Object[] callMethod(int methodId, Object[] arguments) throws Exception {
 		if(methodId == 0) {
 			StringBuilder help = new StringBuilder();
 			StringBuilder head = new StringBuilder();
 			StringBuilder head2 = new StringBuilder();
-			head.append("PipeType: ");
-			head.append(typeName);
+			head.append("Type: ");
+			head.append(info.type);
 			head.append("\n");
 			head2.append("Commands: \n");
-			for(Integer num:commands.keySet()) {
-				Method method = commands.get(num);
+			for(Integer num:info.commands.keySet()) {
+				Method method = info.commands.get(num);
 				StringBuilder command = new StringBuilder();
 				if(help.length() != 0) {
 					command.append("\n");
@@ -203,8 +124,8 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			if(arguments.length != 1) return new Object[]{"Wrong Argument Count"};
 			if(!(arguments[0] instanceof Double)) return new Object[]{"Wrong Argument Type"};
 			Integer number = (int) Math.floor(((Double)arguments[0]));
-			if(!commands.containsKey(number)) return new Object[]{"No command with that index"};
-			Method method = commands.get(number);
+			if(!info.commands.containsKey(number)) return new Object[]{"No command with that index"};
+			Method method = info.commands.get(number);
 			StringBuilder help = new StringBuilder();
 			help.append("---------------------------------\n");
 			help.append("Command: ");
@@ -235,14 +156,14 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 
 		methodId--;
 		if(methodId == 0) {
-			return CCHelper.createArray(CCHelper.getAnswer(getType()));
+			return CCHelper.createArray(CCHelper.getAnswer(info.type));
 		}
 		methodId--;
-		String name = commandMap.get(methodId);
+		String name = info.commandMap.get(methodId);
 		
 		Method match = null;
 		
-		for(Method method:commands.values()) {
+		for(Method method:info.commands.values()) {
 			if(!method.getName().equalsIgnoreCase(name)) continue;
 			if(!argumentsMatch(method, arguments)) continue;
 			match = method;
@@ -253,7 +174,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			StringBuilder error = new StringBuilder();
 			error.append("No such method.");
 			boolean handled = false;
-			for(Method method:commands.values()) {
+			for(Method method:info.commands.values()) {
 				if(!method.getName().equalsIgnoreCase(name)) continue;
 				if(handled) {
 					error.append("\n");
@@ -280,17 +201,12 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			throw new UnsupportedOperationException(error.toString());
 		}
 		
-		if(match.getAnnotation(CCCommand.class).needPermission()) {
-			getCPipe().checkCCAccess();
-		}
-		
 		if(match.getAnnotation(CCQueued.class) != null) {
 			final Method m = match;
 			String prefunction = null;
 			if(!(prefunction = match.getAnnotation(CCQueued.class).prefunction()).equals("")) {
-				//CoreRoutedPipe pipe = getCPipe();
-				if(pipe != null) {
-					Class<?> clazz = pipe.getClass();
+				if(object != null) {
+					Class<?> clazz = object.getClass();
 					while(true) {
 						for(Method method:clazz.getDeclaredMethods()) {
 							if(method.getName().equals(prefunction)) {
@@ -298,7 +214,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 									throw new InternalError("Internal Excption (Code: 3)");
 								}
 								try {
-									method.invoke(pipe, new Object[]{});
+									method.invoke(object, new Object[]{});
 								} catch(InvocationTargetException e) {
 									if(e.getTargetException() instanceof Exception) {
 										throw (Exception) e.getTargetException();
@@ -322,7 +238,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 				@Override
 				public Object call() throws Exception {
 					try {
-						Object result = m.invoke(pipe, a);
+						Object result = m.invoke(object, a);
 						if(result != null) {
 							resultArray[0] = result;
 						}
@@ -345,8 +261,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 				count++;
 			}
 			if(count >= 199) {
-				CoreRoutedPipe pipe = getCPipe();
-				new Exception("Took too long (" + m.getName() + "," + pipe.getClass().getName() + ")").printStackTrace();
+				new Exception("Took too long (" + m.getName() + "," + object.getClass().getName() + ")").printStackTrace();
 				throw new Exception("Took too long");
 			}
 			if(m.getReturnType().equals(Void.class)) {
@@ -360,7 +275,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		}
 		Object result;
 		try {
-			result = match.invoke(pipe, arguments);
+			result = match.invoke(object, arguments);
 		} catch(InvocationTargetException e) {
 			if(e.getTargetException() instanceof Exception) {
 				throw (Exception) e.getTargetException();
@@ -369,80 +284,13 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 		}
 		return CCHelper.createArray(CCHelper.getAnswer(result));
 	}
-
-	@Override
-	public void scheduleNeighborChange() {
-		super.scheduleNeighborChange();
-		boolean connected[] = new boolean[6];
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
-		for(AdjacentTile aTile: adjacent) {
-			if(SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {
-				connected[aTile.orientation.ordinal()] = true;
-			}
+	
+	private boolean argumentsMatch(Method method, Object[] arguments) {
+		int i=0;
+		for(Class<?> args:method.getParameterTypes()) {
+			if(!arguments[i].getClass().equals(args)) return false;
+			i++;
 		}
-		for(int i=0; i<6;i++) {
-			if(!connected[i]) {
-				turtleConnect[i] = false;
-			}
-		}
-	}
-
-	@Override
-	public boolean canAttachToSide(int side) {
-		//All Sides are valid
 		return true;
-	}
-
-	@Override
-	public void attach(IComputerAccess computer) {
-		ForgeDirection ori = SimpleServiceLocator.ccProxy.getOrientation(computer, this);
-		connections.put(computer, ori);
-		this.scheduleNeighborChange();
-	}
-
-	@Override
-	public void detach(IComputerAccess computer) {
-		connections.remove(computer);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		for(int i=0;i<turtleConnect.length;i++) {
-			nbttagcompound.setBoolean("turtleConnect_" + i, turtleConnect[i]);
-		}
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		for(int i=0;i<turtleConnect.length;i++) {
-			turtleConnect[i] = nbttagcompound.getBoolean("turtleConnect_" + i);
-		}
-	}
-	
-	@Override
-	public void queueEvent(String event, Object[] arguments) {
-		for(IComputerAccess computer: connections.keySet()) {
-			computer.queueEvent(event, arguments);
-		}
-	}
-	
-	@Override
-	public void setTurtrleConnect(boolean flag) {
-		turtleConnect[connections.get(lastPC).ordinal()] = flag;
-		scheduleNeighborChange();
-	}
-
-	@Override
-	public boolean getTurtrleConnect() {
-		return turtleConnect[connections.get(lastPC).ordinal()];
-	}
-
-	@Override
-	public int getLastCCID() {
-		if(lastPC == null) return -1;
-		return lastPC.getID();
 	}
 }

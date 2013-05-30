@@ -1,11 +1,11 @@
 package logisticspipes.proxy.recipeproviders;
 
-import buildcraft.silicon.TileAdvancedCraftingTable;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.silicon.TileAdvancedCraftingTable;
 
 public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 	@Override

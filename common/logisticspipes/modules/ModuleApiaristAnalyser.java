@@ -6,8 +6,6 @@ import java.util.List;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IClientInformationProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILogisticsGuiModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -31,7 +29,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInformationProvider, IModuleWatchReciver {
+public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClientInformationProvider, IModuleWatchReciver {
 
 	private IInventoryProvider _invProvider;
 	private ISendRoutedItem _itemSender;
@@ -84,7 +82,7 @@ public class ModuleApiaristAnalyser implements ILogisticsGuiModule, IClientInfor
 	}
 
 	@Override
-	public ILogisticsModule getSubModule(int slot) {
+	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

@@ -4,7 +4,6 @@ import java.util.Collection;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -26,7 +25,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 //IHUDModuleHandler, 
-public class ModuleSatelite implements ILogisticsModule{
+public class ModuleSatelite extends LogisticsModule{
 	
 	private final CoreRoutedPipe pipe;
 
@@ -82,7 +81,7 @@ public class ModuleSatelite implements ILogisticsModule{
 	}
 	
 	@Override
-	public ILogisticsModule getSubModule(int slot) {return null;}
+	public LogisticsModule getSubModule(int slot) {return null;}
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {}

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.tileentity.TileEntity;
@@ -134,7 +134,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ILogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		CoreRoutedPipe pipe = this.getPipe();
 		if (pipe == null) return null;
 		return pipe.getLogisticsModule();

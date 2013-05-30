@@ -7,12 +7,9 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Delayed;
-import java.util.concurrent.TimeUnit;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;

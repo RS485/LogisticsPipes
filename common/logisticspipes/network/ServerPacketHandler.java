@@ -12,7 +12,6 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
-import logisticspipes.interfaces.ILogisticsGuiModule;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
@@ -29,6 +28,7 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
+import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
@@ -519,9 +519,9 @@ public class ServerPacketHandler {
 
 		final PipeLogisticsChassi cassiPipe = (PipeLogisticsChassi) pipe.pipe;
 		
-		if(!(cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ILogisticsGuiModule)) return;
+		if(!(cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof LogisticsGuiModule)) return;
 		
-		player.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getGuiHandlerID()
+		player.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getGuiHandlerID()
 				+ (100 * (packet.integer + 1)), player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ, packet.integer,

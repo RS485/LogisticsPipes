@@ -2,8 +2,8 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.EntrencsLogic;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -42,7 +42,7 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public ILogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return null;
 	}
 

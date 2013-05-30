@@ -9,9 +9,9 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.interfaces.ILogisticsGuiModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.items.ItemModule;
+import logisticspipes.modules.LogisticsGuiModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -87,7 +87,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)buttonList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
 			}
 		}
 	}
@@ -96,7 +96,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 	protected void actionPerformed(GuiButton guibutton) {
 		
 		if (guibutton.id >= 0 && guibutton.id <= 7){
-			ILogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
+			LogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null){
 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID,_chassiPipe.xCoord,_chassiPipe.yCoord,_chassiPipe.zCoord,guibutton.id).getPacket());
 			}
@@ -112,7 +112,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if(module == null || _chassiPipe.getLogisticsModule().getSubModule(i) == null) {
 				((SmallGuiButton)buttonList.get(i)).drawButton = false;
 			} else {
-				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof ILogisticsGuiModule;
+				((SmallGuiButton)buttonList.get(i)).drawButton = _chassiPipe.getLogisticsModule().getSubModule(i) instanceof LogisticsGuiModule;
 			}
 		}
 		if (_chassiPipe.getChassiSize() > 0) {

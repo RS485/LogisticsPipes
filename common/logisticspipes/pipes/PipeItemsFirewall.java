@@ -8,11 +8,11 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.RouteLayerFirewall;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketPipeBitSet;
@@ -171,7 +171,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public ILogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return null;
 	}
 	

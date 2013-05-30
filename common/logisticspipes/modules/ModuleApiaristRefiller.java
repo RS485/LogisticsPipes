@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -26,7 +25,7 @@ import buildcraft.api.inventory.ISpecialInventory;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleApiaristRefiller implements ILogisticsModule {
+public class ModuleApiaristRefiller extends LogisticsModule {
 
 	private IInventoryProvider _invProvider;
 	private IRoutedPowerProvider _power;
@@ -54,7 +53,7 @@ public class ModuleApiaristRefiller implements ILogisticsModule {
 	}
 
 	@Override
-	public ILogisticsModule getSubModule(int slot) {
+	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

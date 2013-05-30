@@ -3,7 +3,6 @@ package logisticspipes.modules;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -18,7 +17,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleApiaristTerminus implements ILogisticsModule {
+public class ModuleApiaristTerminus extends LogisticsModule {
 
 	private IRoutedPowerProvider _power;
 	
@@ -72,7 +71,7 @@ public class ModuleApiaristTerminus implements ILogisticsModule {
 	}
 
 	@Override
-	public ILogisticsModule getSubModule(int slot) {
+	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

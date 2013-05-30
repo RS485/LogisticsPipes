@@ -4,31 +4,29 @@ import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILogisticsGuiModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.modules.LogisticsGuiModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.Icon;
 
-public class ChassiModule implements ILogisticsGuiModule{
+public class ChassiModule extends LogisticsGuiModule{
 	
-	private final ILogisticsModule[] _modules;
+	private final LogisticsModule[] _modules;
 	private final PipeLogisticsChassi _parentPipe;
 	
 	public ChassiModule(int moduleCount,PipeLogisticsChassi parentPipe){
-		_modules = new ILogisticsModule[moduleCount];
+		_modules = new LogisticsModule[moduleCount];
 		_parentPipe = parentPipe;
 	}
 	
-	public void installModule(int slot, ILogisticsModule module){
+	public void installModule(int slot, LogisticsModule module){
 		_modules[slot] = module;
 	}
 	
@@ -36,7 +34,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 		_modules[slot] = null;
 	}
 	
-	public ILogisticsModule getModule(int slot){
+	public LogisticsModule getModule(int slot){
 		return _modules[slot];
 	}
 	
@@ -47,7 +45,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		SinkReply bestresult = null;
-		for (ILogisticsModule module : _modules){
+		for (LogisticsModule module : _modules){
 			if (module != null){
 				SinkReply result = module.sinksItem(item, bestPriority, bestCustomPriority, allowDefault, includeInTransit);
 				if (result != null) {
@@ -82,7 +80,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 	}
 	
 	@Override
-	public ILogisticsModule getSubModule(int slot) {
+	public LogisticsModule getSubModule(int slot) {
 		if (slot < 0 || slot >= _modules.length) return null;
 		return _modules[slot];
 	}
@@ -112,7 +110,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 
 	@Override
 	public void tick() {
-		for (ILogisticsModule module : _modules){
+		for (LogisticsModule module : _modules){
 			if (module == null) continue;
 			module.tick();
 		}
@@ -165,7 +163,7 @@ public class ChassiModule implements ILogisticsGuiModule{
 
 	@Override
 	public boolean recievePassive() {
-		for (ILogisticsModule module : _modules){
+		for (LogisticsModule module : _modules){
 			if(module != null && module.recievePassive())
 				return true;
 		}

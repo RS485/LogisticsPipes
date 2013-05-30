@@ -3,8 +3,6 @@ package logisticspipes.modules;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ILogisticsGuiModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
@@ -21,7 +19,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvider {
+public class ModuleApiaristSink extends LogisticsGuiModule implements INBTPacketProvider {
 
 	public enum FilterType {
 		Null("","anything",0),
@@ -276,7 +274,7 @@ public class ModuleApiaristSink implements ILogisticsGuiModule, INBTPacketProvid
 	}
 
 	@Override
-	public ILogisticsModule getSubModule(int slot) {
+	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

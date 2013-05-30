@@ -24,7 +24,6 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ILegacyActiveModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
@@ -42,6 +41,7 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.logisticspipes.TransportLayer;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.packets.PacketCoordinates;
 import logisticspipes.network.packets.PacketPipeInteger;
@@ -62,7 +62,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
@@ -78,7 +77,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.core.DefaultProps;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -347,7 +345,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		_moduleInventory.removeListener(this);
 		if(MainProxy.isServer(this.worldObj)) {
 			for (int i = 0; i < this.getChassiSize(); i++){
-				ILogisticsModule x = _module.getSubModule(i);
+				LogisticsModule x = _module.getSubModule(i);
 				if (x instanceof ILegacyActiveModule) {
 					ILegacyActiveModule y = (ILegacyActiveModule)x;
 					y.onBlockRemoval();
@@ -376,8 +374,8 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			}
 
 			if (stack.getItem() instanceof ItemModule){
-				ILogisticsModule current = _module.getModule(i);
-				ILogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this, this);
+				LogisticsModule current = _module.getModule(i);
+				LogisticsModule next = ((ItemModule)stack.getItem()).getModuleForItem(stack, _module.getModule(i), this, this, this, this);
 				next.registerSlot(i);
 				if (current != next){
 					_module.installModule(i, next);
@@ -400,7 +398,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			//register earlier provider modules with later ones, needed for the "who is the first whose filter allows that item" check
 			List<ILegacyActiveModule> prevModules = new LinkedList<ILegacyActiveModule>();
 			for (int i = 0; i < this.getChassiSize(); i++){
-				ILogisticsModule x = _module.getSubModule(i);
+				LogisticsModule x = _module.getSubModule(i);
 				if (x instanceof ILegacyActiveModule) {
 					ILegacyActiveModule y = (ILegacyActiveModule)x;
 					y.registerPreviousLegacyModules(new ArrayList(prevModules));
@@ -434,7 +432,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public abstract int getChassiSize();
 
 	@Override
-	public final ILogisticsModule getLogisticsModule() {
+	public final LogisticsModule getLogisticsModule() {
 		return _module;
 	}
 
@@ -497,7 +495,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			if(filter.isBlocked() == filter.isFilteredItem(tree.getStackItem().getUndamaged()) || filter.blockProvider()) return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule x = _module.getSubModule(i);
+			LogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				ILegacyActiveModule y = (ILegacyActiveModule)x;
 				if(y.filterAllowsItem(tree.getStackItem())) {
@@ -514,7 +512,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule x = _module.getSubModule(i);
+			LogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule){
 				ILegacyActiveModule y = (ILegacyActiveModule)x;
 				if(y.filterAllowsItem(promise.item)) {
@@ -532,7 +530,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			return;
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule x = _module.getSubModule(i);
+			LogisticsModule x = _module.getSubModule(i);
 			if (x instanceof ILegacyActiveModule) {
 				ILegacyActiveModule y = (ILegacyActiveModule)x;
 				y.getAllItems(list, filter);
@@ -621,7 +619,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
 		for (int i = 0; i < _moduleInventory.getSizeInventory(); i++){
-			ILogisticsModule current = _module.getModule(i);
+			LogisticsModule current = _module.getModule(i);
 			if(current != null) {
 				current.registerSlot(i);
 			}
@@ -639,7 +637,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		//if we don't have a pointed inventory we can't be interested in anything
 		if(getRealInventory() == null) return l1;
 		for (int moduleIndex = 0; moduleIndex < this.getChassiSize(); moduleIndex++){
-			ILogisticsModule module = _module.getSubModule(moduleIndex);
+			LogisticsModule module = _module.getSubModule(moduleIndex);
 			if(module!=null && module.interestedInAttachedInventory()) {
 				IInventory inv = getRealInventory();
 				if(inv instanceof net.minecraft.inventory.ISidedInventory) {
@@ -672,7 +670,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			} 
 		}
 		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule module = _module.getSubModule(i);
+			LogisticsModule module = _module.getSubModule(i);
 			if(module!=null) {
 				Collection<ItemIdentifier> current = module.getSpecificInterests();
 				if(current!=null)
@@ -686,22 +684,21 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public boolean hasGenericInterests() {
 		if(getRealInventory() == null) return false;
 		for (int i = 0; i < this.getChassiSize(); i++){
-			ILogisticsModule x = _module.getSubModule(i);
+			LogisticsModule x = _module.getSubModule(i);
 			
 			if(x!=null && x.hasGenericInterests())
 				return true;			
 		}
 		return false;
 	}
-	/*
+	
 	@CCCommand(description="Returns the LogisticsModule for the givven slot number starting by 1")
-	public ILogisticsModule getModule(Integer i) {
-		return _module.getSubModule(i - 1);
+	public LogisticsModule getModule(Double i) {
+		return _module.getSubModule((int) (i - 1));
 	}
 	
 	@CCCommand(description="Returns the size of this Chassie pipe")
 	public Integer getChassieSize() {
 		return this.getChassiSize();
 	}
-	*/
 }

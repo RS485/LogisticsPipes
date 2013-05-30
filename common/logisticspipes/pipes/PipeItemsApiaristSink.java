@@ -1,7 +1,7 @@
 package logisticspipes.pipes;
 
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logic.TemporaryLogic;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
@@ -24,7 +24,7 @@ public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	}
 
 	@Override
-	public ILogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return sinkModule;
 	}
 

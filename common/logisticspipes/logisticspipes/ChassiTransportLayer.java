@@ -1,6 +1,6 @@
 package logisticspipes.logisticspipes;
 
-import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.SinkReply;
@@ -23,7 +23,7 @@ public class ChassiTransportLayer extends TransportLayer{
 
 	@Override
 	public boolean stillWantItem(IRoutedItem item) {
-		ILogisticsModule module = _chassiPipe.getLogisticsModule();
+		LogisticsModule module = _chassiPipe.getLogisticsModule();
 		if (module == null) return false;
 		if (!_chassiPipe.isEnabled()) return false;
 		SinkReply reply = module.sinksItem(item.getIDStack().getItem(), -1, 0, true,false);

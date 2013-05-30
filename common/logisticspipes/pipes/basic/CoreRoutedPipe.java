@@ -29,8 +29,6 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gates.ActionDisableLogistics;
-import logisticspipes.interfaces.ILogisticsGuiModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
@@ -45,6 +43,8 @@ import logisticspipes.logisticspipes.ITrackStatistics;
 import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
+import logisticspipes.modules.LogisticsGuiModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.network.packets.PacketRoutingStats;
@@ -644,7 +644,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		super.onBlockPlaced();
 	}
 	
-	public abstract ILogisticsModule getLogisticsModule();
+	public abstract LogisticsModule getLogisticsModule();
 	
 	@Override
 	public final boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
@@ -682,10 +682,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	protected boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if (getLogisticsModule() != null && getLogisticsModule() instanceof ILogisticsGuiModule) {
+		if (getLogisticsModule() != null && getLogisticsModule() instanceof LogisticsGuiModule) {
 			if(MainProxy.isServer(world)) {
 				if (settings == null || settings.openGui) {
-					entityplayer.openGui(LogisticsPipes.instance, ((ILogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, getX(), getY(), getZ());
+					entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), world, getX(), getY(), getZ());
 				} else {
 					entityplayer.sendChatToPlayer("Permission denied");
 				}

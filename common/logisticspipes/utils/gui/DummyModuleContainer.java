@@ -1,8 +1,8 @@
 package logisticspipes.utils.gui;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.modules.LogisticsModule;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack;
 public class DummyModuleContainer extends DummyContainer {
 	
 	private ItemStack moduleStack;
-	private ILogisticsModule module;
+	private LogisticsModule module;
 	private int slot;
 	
 	public DummyModuleContainer(EntityPlayer player, int slot) {
@@ -23,7 +23,7 @@ public class DummyModuleContainer extends DummyContainer {
 		ItemModuleInformationManager.readInformation(moduleStack, module);
 	}
 	
-	public ILogisticsModule getModule() {
+	public LogisticsModule getModule() {
 		return module;
 	}
 

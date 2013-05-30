@@ -13,7 +13,6 @@ import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.SafeTimeTracker;
-import buildcraft.core.DefaultProps;
 import buildcraft.core.utils.Utils;
 
 public class PipeLiquidTransportLogistics extends PipeTransportLogistics implements ITankContainer {

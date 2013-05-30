@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -45,7 +45,7 @@ public interface IRouter {
 	public void displayRouteTo(int r);
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
-	public ILogisticsModule getLogisticsModule();
+	public LogisticsModule getLogisticsModule();
 	public void clearPipeCache();
 	
 	public IRouter getRouter(ForgeDirection insertOrientation);

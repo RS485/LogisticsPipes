@@ -6,11 +6,11 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.interfaces.ILogisticsGuiModule;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
+import logisticspipes.modules.LogisticsGuiModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleAdvancedExtractorMK2;
 import logisticspipes.modules.ModuleAdvancedExtractorMK3;
@@ -89,23 +89,23 @@ public class ItemModule extends LogisticsItem {
 	private class Module {
 		private String name;
 		private int id;
-		private Class<? extends ILogisticsModule> moduleClass;
+		private Class<? extends LogisticsModule> moduleClass;
 		private Icon moduleIcon = null;
 
-		private Module(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
+		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
 			this.name = name;
 			this.moduleClass = moduleClass;
 		}
 
-		private Module(int id, String name, Class<? extends ILogisticsModule> moduleClass, Icon textureIndex) {
+		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass, Icon textureIndex) {
 			this.id = id;
 			this.name = name;
 			this.moduleClass = moduleClass;
 			this.moduleIcon = textureIndex;
 		}
 
-		private ILogisticsModule getILogisticsModule() {
+		private LogisticsModule getILogisticsModule() {
 			if(moduleClass == null) return null;
 			try {
 				return moduleClass.getConstructor(new Class[]{}).newInstance(new Object[]{});
@@ -125,7 +125,7 @@ public class ItemModule extends LogisticsItem {
 			return null;
 		}
 
-		private Class<? extends ILogisticsModule> getILogisticsModuleClass() {
+		private Class<? extends LogisticsModule> getILogisticsModuleClass() {
 			return moduleClass;
 		}
 
@@ -146,7 +146,7 @@ public class ItemModule extends LogisticsItem {
 				this.moduleIcon = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.","") + "/blank");
 			} else {
 				try {
-					ILogisticsModule instance = moduleClass.newInstance();
+					LogisticsModule instance = moduleClass.newInstance();
 					this.moduleIcon = instance.getIconTexture(par1IconRegister);
 				} catch (InstantiationException e) {
 					e.printStackTrace();
@@ -187,7 +187,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class);
 	}
 
-	public void registerModule(int id, String name, Class<? extends ILogisticsModule> moduleClass) {
+	public void registerModule(int id, String name, Class<? extends LogisticsModule> moduleClass) {
 		boolean flag = true;
 		for(Module module:modules) {
 			if(module.getId() == id) {
@@ -226,10 +226,10 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	private void openConfigGui(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World) {
-		ILogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
-		if(module != null && module instanceof ILogisticsGuiModule) {
+		LogisticsModule module = getModuleForItem(par1ItemStack, null, null, null, null, null);
+		if(module != null && module instanceof LogisticsGuiModule) {
 			if(par1ItemStack != null && par1ItemStack.stackSize > 0) {
-				par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((ILogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
+				par2EntityPlayer.openGui(LogisticsPipes.instance, -1, par3World, ((LogisticsGuiModule)module).getGuiHandlerID(), -1 ,par2EntityPlayer.inventory.currentItem);
 			}
 		}
 	}
@@ -254,7 +254,7 @@ public class ItemModule extends LogisticsItem {
 		return true;
 	}
 
-	public ILogisticsModule getModuleForItem(ItemStack itemStack, ILogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider power){
+	public LogisticsModule getModuleForItem(ItemStack itemStack, LogisticsModule currentModule, IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider power){
 		if (itemStack == null) return null;
 		if (itemStack.itemID != this.itemID) return null;
 		for(Module module:modules) {
@@ -263,7 +263,7 @@ public class ItemModule extends LogisticsItem {
 				if(currentModule != null) {
 					if (module.getILogisticsModuleClass().equals(currentModule.getClass())) return currentModule;
 				}
-				ILogisticsModule newmodule = module.getILogisticsModule();
+				LogisticsModule newmodule = module.getILogisticsModule();
 				if(newmodule == null) return null;
 				newmodule.registerHandler(invProvider, itemSender, world, power);
 				return newmodule;

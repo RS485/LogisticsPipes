@@ -11,11 +11,9 @@ package logisticspipes.logisticspipes;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.Delayed;
 
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;

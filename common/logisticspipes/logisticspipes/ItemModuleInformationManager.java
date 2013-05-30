@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import logisticspipes.interfaces.IClientInformationProvider;
-import logisticspipes.interfaces.ILogisticsModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -23,7 +23,7 @@ public class ItemModuleInformationManager {
 		Filter.add("Random-Stack-Prevent");
 	}
 	
-	public static void saveInfotmation(ItemStack itemStack, ILogisticsModule module) {
+	public static void saveInfotmation(ItemStack itemStack, LogisticsModule module) {
 		if(module == null) return;
 		NBTTagCompound nbt = new NBTTagCompound();
         module.writeToNBT(nbt);
@@ -62,7 +62,7 @@ public class ItemModuleInformationManager {
 		stacktag.setDouble("Random-Stack-Prevent", new Random().nextDouble());
 	}
 	
-	public static void readInformation(ItemStack itemStack, ILogisticsModule module) {
+	public static void readInformation(ItemStack itemStack, LogisticsModule module) {
 		if(module == null) return;
 		if(itemStack.hasTagCompound()) {
 			NBTTagCompound nbt = itemStack.getTagCompound();

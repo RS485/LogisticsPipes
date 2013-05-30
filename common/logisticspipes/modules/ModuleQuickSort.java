@@ -7,7 +7,6 @@ import java.util.Map.Entry;
 
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
@@ -27,7 +26,7 @@ import net.minecraft.util.Icon;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ModuleQuickSort implements ILogisticsModule {
+public class ModuleQuickSort extends LogisticsModule {
 
 	private final int stalledDelay = 24;
 	private final int normalDelay = 6;
@@ -67,7 +66,7 @@ public class ModuleQuickSort implements ILogisticsModule {
 	}
 
 	@Override
-	public ILogisticsModule getSubModule(int slot) {
+	public LogisticsModule getSubModule(int slot) {
 		return null;
 	}
 

@@ -6,8 +6,8 @@ import java.util.List;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleHandler;
-import logisticspipes.interfaces.ILogisticsModule;
 import logisticspipes.logisticspipes.ChassiModule;
+import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
@@ -108,7 +108,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 		GL11.glTranslatef(0.0F, 0.0F,(float) (-0.00005F * distance));
 		super.renderHeadUpDisplay(distance, day, mc, config);
 		if(selected != -1) {
-			ILogisticsModule selectedmodule = module.getSubModule(selected);
+			LogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule == null) return;
 			
         	GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)64);
@@ -181,7 +181,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	private void moduleClicked(int number) {
 		selected = number;
 		if(selected != -1) {
-			ILogisticsModule selectedmodule = module.getSubModule(selected);
+			LogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule instanceof IHUDModuleHandler) {
 				((IHUDModuleHandler)selectedmodule).startWatching();
 			}
@@ -190,7 +190,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	
 	private void resetSelection() {
 		if(selected != -1) {
-			ILogisticsModule selectedmodule = module.getSubModule(selected);
+			LogisticsModule selectedmodule = module.getSubModule(selected);
 			if(selectedmodule instanceof IHUDModuleHandler) {
 				((IHUDModuleHandler)selectedmodule).stopWatching();
 			}

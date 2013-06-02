@@ -81,7 +81,7 @@ public class LogisticsTileGenericPipe_CC extends LogisticsTileGenericPipe implem
 			if(!arguments[i].getClass().equals(args)) return false;
 			i++;
 		}
-		return true;
+		return arguments.length == i;
 	}
 	
 	@Override

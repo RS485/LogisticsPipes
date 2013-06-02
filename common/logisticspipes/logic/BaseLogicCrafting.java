@@ -12,10 +12,13 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.CPipeNextSatellite;
+import logisticspipes.network.packets.CPipePrevSatellite;
+import logisticspipes.network.packets.CPipeSatelliteId;
+import logisticspipes.network.packets.CPipeSatelliteImport;
+import logisticspipes.network.packets.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.abstracts.CoordinatesPacket;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.network.packets.old.PacketGuiArgument;
-import logisticspipes.network.packets.old.PacketInventoryChange;
 import logisticspipes.network.packets.old.PacketModuleInteger;
 import logisticspipes.network.packets.old.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -159,7 +162,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 
@@ -176,11 +179,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void setPrevSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE, xCoord, yCoord, zCoord);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipePrevSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			satelliteId = getNextConnectSatelliteId(true, -1);
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 	}
@@ -444,11 +447,11 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		
 		if (MainProxy.isClient(player.worldObj)) {
 			// Send packet asking for import
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_IMPORT, xCoord, yCoord, zCoord);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else{
 			// Send inventory as packet
-			final PacketInventoryChange packet = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, xCoord, yCoord, zCoord, _dummyInventory);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 
 		}

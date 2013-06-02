@@ -24,22 +24,23 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
+import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
-import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.network.packets.CPipeSatelliteImportBack;
+import logisticspipes.network.packets.abstracts.CoordinatesPacket;
 import logisticspipes.network.packets.abstracts.ModernPacket;
 import logisticspipes.network.packets.old.PacketBufferTransfer;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.network.packets.old.PacketHUDSettings;
-import logisticspipes.network.packets.old.PacketInventoryChange;
 import logisticspipes.network.packets.old.PacketItem;
 import logisticspipes.network.packets.old.PacketModuleInteger;
 import logisticspipes.network.packets.old.PacketModuleNBT;
@@ -101,17 +102,6 @@ public class ServerPacketHandler {
 			}
 			
 			switch (packetID) {
-
-				case NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE:
-					final PacketCoordinates packetA = new PacketCoordinates();
-					packetA.readData(data);
-					onCraftingPipePrevSatellite(player, packetA);
-					break;
-				case NetworkConstants.CRAFTING_PIPE_IMPORT:
-					final PacketCoordinates packetB = new PacketCoordinates();
-					packetB.readData(data);
-					onCraftingPipeImport(player, packetB);
-					break;
 				case NetworkConstants.SATELLITE_PIPE_NEXT:
 					final PacketCoordinates packetC = new PacketCoordinates();
 					packetC.readData(data);
@@ -440,32 +430,6 @@ public class ServerPacketHandler {
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	private static void onCraftingPipePrevSatellite(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
-		}
-
-		((BaseLogicCrafting) pipe.pipe.logic).setPrevSatellite(player);
-	}
-
-	private static void onCraftingPipeImport(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
-		}
-
-		((BaseLogicCrafting) pipe.pipe.logic).importFromCraftingTable(player);
 	}
 
 	private static void onSatellitePipeNext(EntityPlayerMP player, PacketCoordinates packet) {
@@ -941,7 +905,7 @@ public class ServerPacketHandler {
 		MainProxy.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) player);
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe.logic instanceof BaseLogicCrafting) {
-				final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory());
+				final CoordinatesPacket newpacket = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord);
 				MainProxy.sendPacketToPlayer(newpacket.getPacket(), (Player)player);
 			}
 		}

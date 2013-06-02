@@ -36,8 +36,9 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleCrafter;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.old.PacketCoordinates;
-import logisticspipes.network.packets.old.PacketInventoryChange;
 import logisticspipes.network.packets.old.PacketPipeInteger;
 import logisticspipes.network.packets.old.PacketPipeInvContent;
 import logisticspipes.network.packets.old.PacketPipeUpdate;
@@ -658,7 +659,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			if(((BaseLogicCrafting)logic).craftingSigns[dir.ordinal()] != b) {
 				((BaseLogicCrafting)logic).craftingSigns[dir.ordinal()] = b;
 				final Packet packetA = new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,getX(),getY(),getZ(),getLogisticsNetworkPacket()).getPacket();
-				final Packet packetB = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, getX(), getY(), getZ(), ((BaseLogicCrafting)logic).getDummyInventory()).getPacket();
+				final Packet packetB = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((BaseLogicCrafting)logic).getDummyInventory()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket();
 				if(player != null) {
 					MainProxy.sendPacketToPlayer(packetA, (Player)player);
 					MainProxy.sendPacketToPlayer(packetB, (Player)player);

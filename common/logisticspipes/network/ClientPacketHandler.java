@@ -108,16 +108,6 @@ public class ClientPacketHandler {
 			}
 			
 			switch (packetID) {
-				case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID:
-					final PacketPipeInteger packetA1 = new PacketPipeInteger();
-					packetA1.readData(data);
-					onCraftingPipeSetSatellite(packetA1);
-					break;
-				case NetworkConstants.CRAFTING_PIPE_IMPORT_BACK:
-					final PacketInventoryChange packetA = new PacketInventoryChange();
-					packetA.readData(data);
-					onCraftingPipeSetImport(packetA);
-					break;
 				case NetworkConstants.SATELLITE_PIPE_SATELLITE_ID:
 					final PacketPipeInteger packetB = new PacketPipeInteger();
 					packetB.readData(data);
@@ -396,35 +386,6 @@ public class ClientPacketHandler {
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private static void onCraftingPipeSetSatellite(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
-		}
-
-		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(packet.integer, -1);
-	}
-
-	private static void onCraftingPipeSetImport(PacketInventoryChange packet) {
-		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
-		}
-
-		final BaseLogicCrafting craftingPipe = (BaseLogicCrafting) pipe.pipe.logic;
-		for (int i = 0; i < packet.itemStacks.size(); i++) {
-			craftingPipe.setDummyInventorySlot(i, packet.itemStacks.get(i));
 		}
 	}
 

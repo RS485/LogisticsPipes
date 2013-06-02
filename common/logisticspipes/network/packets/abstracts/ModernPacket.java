@@ -41,7 +41,7 @@ public abstract class ModernPacket implements
 	private final int id;
 
 	public ModernPacket(int id) {
-		channel = NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME;
+		this.channel = NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME;
 		this.id = id;
 	}
 

@@ -33,7 +33,7 @@ public class PacketHandler implements IPacketHandler {
 	@SuppressWarnings("unchecked")
 	public PacketHandler() {
 		try {
-			ImmutableSet<ClassInfo> classes = ClassPath.from(
+			final ImmutableSet<ClassInfo> classes = ClassPath.from(
 					this.getClass().getClassLoader()).getTopLevelClasses(
 					"logisticspipes.network.packets");
 
@@ -47,8 +47,8 @@ public class PacketHandler implements IPacketHandler {
 
 			for (ClassInfo c : classes) {
 
-				Class<?> cls = c.load();
-				ModernPacket instance = (ModernPacket) cls
+				final Class<?> cls = c.load();
+				final ModernPacket instance = (ModernPacket) cls
 						.getConstructors()[0].newInstance(currentid++);
 				packetlist.add(instance);
 				packetmap.put((Class<? extends ModernPacket>) cls, instance);

@@ -42,6 +42,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
+import logisticspipes.network.packets.abstracts.ModernPacket;
 import logisticspipes.network.packets.old.PacketBufferTransfer;
 import logisticspipes.network.packets.old.PacketCoordinatesUUID;
 import logisticspipes.network.packets.old.PacketCraftingLoop;
@@ -101,7 +102,9 @@ public class ClientPacketHandler {
 		try {
 			final int packetID = data.read();
 			if (packetID>=200){//TODO: Temporary until all packets get converted
-				PacketHandler.packetlist.get(packetID-200).template().readData(data);
+				ModernPacket<?> packet = PacketHandler.packetlist.get(packetID-200).template();
+				packet.readData(data);
+				packet.processPacket(null);
 			}
 			
 			switch (packetID) {

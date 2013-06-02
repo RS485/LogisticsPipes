@@ -35,6 +35,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.network.packets.abstracts.ModernPacket;
 import logisticspipes.network.packets.old.PacketBufferTransfer;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.network.packets.old.PacketHUDSettings;
@@ -92,17 +93,14 @@ public class ServerPacketHandler {
 		
 		try {
 			final int packetID = data.read();
+			
 			if (packetID>=200){//TODO: Temporary until all packets get converted
-				PacketHandler.packetlist.get(packetID-200).template().readData(data);
+				ModernPacket<?> packet = PacketHandler.packetlist.get(packetID-200).template();
+				packet.readData(data);
+				packet.processPacket(player);
 			}
 			
 			switch (packetID) {
-
-				case NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE:
-					final PacketCoordinates packet = new PacketCoordinates();
-					packet.readData(data);
-					onCraftingPipeNextSatellite(player, packet);
-					break;
 
 				case NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE:
 					final PacketCoordinates packetA = new PacketCoordinates();

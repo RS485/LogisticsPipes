@@ -37,7 +37,7 @@ public class PacketHandler implements IPacketHandler {
 		try {
 			ImmutableSet<ClassInfo> classes = ClassPath.from(
 					this.getClass().getClassLoader()).getTopLevelClasses(
-					"logisticpipes.network.packets");
+					"logisticspipes.network.packets");
 
 			packetlist = new ArrayList<ModernPacket<?>>(classes.size());
 			packetmap = new HashMap<Class<? extends ModernPacket<?>>, ModernPacket<?>>(
@@ -45,22 +45,13 @@ public class PacketHandler implements IPacketHandler {
 
 			int currentid = 200;// TODO: Only 200 until all packets get
 								// converted
-
+			System.out.println("Loading "+classes.size()+ "Packets");
+			
 			for (ClassInfo c : classes) {
 
 				Class<?> cls = c.load();
-				if (!cls.isInstance(ModernPacket.class)) {
-
-					if (LogisticsPipes.DEBUG && !cls.isSynthetic()
-							&& !cls.isAnonymousClass() && !cls.isLocalClass()
-							&& !cls.isMemberClass())
-						LogisticsPipes.log
-								.warning("The following class is in the wrong place: "
-										+ c.getName());
-					continue;
-				}
 				ModernPacket<?> instance = (ModernPacket<?>) cls
-						.getConstructor(Integer.class).newInstance(currentid++);
+						.getConstructors()[0].newInstance(currentid++);
 				packetlist.add(instance);
 				packetmap.put((Class<? extends ModernPacket<?>>) cls, instance);
 			}

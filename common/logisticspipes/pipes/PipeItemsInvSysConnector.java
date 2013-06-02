@@ -114,7 +114,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			if(tile.tile instanceof IInventory) {
 				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 				if(inv instanceof net.minecraft.inventory.ISidedInventory) {
-					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite());
+					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite(),false);
 				}
 				if(inv instanceof net.minecraftforge.common.ISidedInventory) {
 					inv = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory)inv, tile.orientation.getOpposite());

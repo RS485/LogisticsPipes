@@ -185,7 +185,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private IInventoryUtil getAdaptedInventoryUtil(AdjacentTile tile){
 		IInventory base = (IInventory) tile.tile;
 		if(base instanceof net.minecraft.inventory.ISidedInventory) {
-			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite());
+			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(),false);
 		}
 		if(base instanceof net.minecraftforge.common.ISidedInventory) {
 			base = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory)base, tile.orientation.getOpposite());

@@ -168,7 +168,7 @@ public class ModuleAdvancedExtractor implements ILogisticsGuiModule, ISneakyDire
 		if(extractOrientation == ForgeDirection.UNKNOWN) {
 			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
-		IInventoryUtil inventory = _invProvider.getSneakyInventory(extractOrientation);
+		IInventoryUtil inventory = _invProvider.getSneakyInventory(extractOrientation,true);
 		if (inventory == null) return;
 
 		checkExtract(inventory);

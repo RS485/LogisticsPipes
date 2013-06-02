@@ -4,19 +4,26 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
+
+@Accessors(chain = true)
 public abstract class CoordinatesPacket extends ModernPacket<CoordinatesPacket> {
 
-	public CoordinatesPacket(int id, int x, int y, int z) {
+	public CoordinatesPacket(int id) {
 		super(id);
-
-		posX = x;
-		posY = y;
-		posZ = z;
 	}
 
-	public int posX;
-	public int posY;
-	public int posZ;
+	@Getter
+	@Setter
+	private int posX;
+	@Getter
+	@Setter
+	private int posY;
+	@Getter
+	@Setter
+	private int posZ;
 
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {

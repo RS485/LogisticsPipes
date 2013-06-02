@@ -42,4 +42,31 @@ public abstract class CoordinatesPacket<T extends ModernPacket<T>> extends Moder
 
 	}
 
+	// BuildCraft method
+	/**
+	 * Retrieves pipe at specified coordinates if any.
+	 * 
+	 * @param world
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @return
+	 */
+	public static TileGenericPipe getPipe(World world, int x, int y, int z) {
+		if (world == null) {
+			return null;
+		}
+		if (!world.blockExists(x, y, z)) {
+			return null;
+		}
+
+		final TileEntity tile = world.getBlockTileEntity(x, y, z);
+		if (!(tile instanceof TileGenericPipe)) {
+			return null;
+		}
+
+		return (TileGenericPipe) tile;
+	}
+	// BuildCraft method end
+
 }

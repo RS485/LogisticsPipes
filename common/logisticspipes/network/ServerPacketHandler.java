@@ -442,19 +442,6 @@ public class ServerPacketHandler {
 		}
 	}
 
-	private static void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
-		}
-
-		((BaseLogicCrafting) pipe.pipe.logic).setNextSatellite(player);
-	}
-
 	private static void onCraftingPipePrevSatellite(EntityPlayerMP player, PacketCoordinates packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {

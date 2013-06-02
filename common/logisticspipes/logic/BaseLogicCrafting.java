@@ -10,6 +10,9 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.CPipeNextSatellite;
+import logisticspipes.network.packets.abstracts.CoordinatesPacket;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.network.packets.old.PacketGuiArgument;
 import logisticspipes.network.packets.old.PacketInventoryChange;
@@ -152,7 +155,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void setNextSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
+			final CoordinatesPacket<?> packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);

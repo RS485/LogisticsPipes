@@ -3,8 +3,8 @@ package logisticspipes.network.packets.abstracts;
 import logisticspipes.network.NetworkConstants;
 import buildcraft.core.network.BuildCraftPacket;
 
-public abstract class ModernPacket extends BuildCraftPacket implements
-		Comparable<ModernPacket> {
+public abstract class ModernPacket<T extends ModernPacket<T>> extends BuildCraftPacket implements
+		Comparable<ModernPacket<T>> {
 
 	private final int id;
 
@@ -13,7 +13,7 @@ public abstract class ModernPacket extends BuildCraftPacket implements
 		this.id = id;
 	}
 
-	public abstract ModernPacket template();
+	public abstract T template();
 
 	@Override
 	public int getID() {
@@ -21,7 +21,7 @@ public abstract class ModernPacket extends BuildCraftPacket implements
 	}
 
 	@Override
-	public int compareTo(ModernPacket o) {
+	public int compareTo(ModernPacket<T> o) {
 		return this.getClass().getSimpleName()
 				.compareTo(o.getClass().getSimpleName());
 	}

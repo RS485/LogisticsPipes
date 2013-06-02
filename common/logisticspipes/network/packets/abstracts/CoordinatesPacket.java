@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-public abstract class CoordinatesPacket extends ModernPacket {
+public abstract class CoordinatesPacket extends ModernPacket<CoordinatesPacket> {
 
 	public CoordinatesPacket(int id, int x, int y, int z) {
 		super(id);

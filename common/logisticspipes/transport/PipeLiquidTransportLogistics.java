@@ -2,7 +2,7 @@ package logisticspipes.transport;
 
 import java.util.BitSet;
 
-import logisticspipes.network.packets.PacketLiquidUpdate;
+import logisticspipes.network.packets.old.PacketLiquidUpdate;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;

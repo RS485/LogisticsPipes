@@ -11,9 +11,9 @@ import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
-import logisticspipes.network.packets.PacketItems;
-import logisticspipes.network.packets.PacketRequestGuiContent;
-import logisticspipes.network.packets.PacketRequestSubmit;
+import logisticspipes.network.packets.old.PacketItems;
+import logisticspipes.network.packets.old.PacketRequestGuiContent;
+import logisticspipes.network.packets.old.PacketRequestSubmit;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;

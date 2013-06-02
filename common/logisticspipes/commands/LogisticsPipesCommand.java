@@ -8,7 +8,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.LogisticsPipesPacket;
+import logisticspipes.network.packets.old.PacketLogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
@@ -48,7 +48,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Trying to Enable NBTDebug");
-        	MainProxy.sendPacketToPlayer(new LogisticsPipesPacket() {
+        	MainProxy.sendPacketToPlayer(new PacketLogisticsPipes() {
 				@Override public void writeData(DataOutputStream data) throws IOException {}
 				@Override public void readData(DataInputStream data) throws IOException {}
 				@Override public int getID() {return NetworkConstants.ACTIVATNBTDEBUG;}
@@ -62,7 +62,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Requesting Transfer");
-        	MainProxy.sendPacketToPlayer(new LogisticsPipesPacket() {
+        	MainProxy.sendPacketToPlayer(new PacketLogisticsPipes() {
 				@Override public void writeData(DataOutputStream data) throws IOException {}
 				@Override public void readData(DataInputStream data) throws IOException {}
 				@Override public int getID() {return NetworkConstants.REQUEST_UPDATE_NAMES;}

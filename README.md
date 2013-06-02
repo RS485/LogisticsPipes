@@ -22,6 +22,7 @@ Credits for the idea and basic code go to Krapht.
 
 2. Run `ant setup` or `ant vars package-simple` if you want to keep mcp/forge instance, but setup must be performed before
 
+3. Setup your IDE for [`lombok`](http://projectlombok.org/download.html)
 ###Extended Description
 
 Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.

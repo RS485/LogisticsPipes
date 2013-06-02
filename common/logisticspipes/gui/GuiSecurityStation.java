@@ -13,11 +13,11 @@ import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.LogisticsPipesPacket;
-import logisticspipes.network.packets.PacketCoordinates;
-import logisticspipes.network.packets.PacketNBT;
-import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.network.packets.PacketStringCoordinates;
+import logisticspipes.network.packets.old.PacketCoordinates;
+import logisticspipes.network.packets.old.PacketLogisticsPipes;
+import logisticspipes.network.packets.old.PacketNBT;
+import logisticspipes.network.packets.old.PacketPipeInteger;
+import logisticspipes.network.packets.old.PacketStringCoordinates;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
@@ -96,7 +96,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		this.buttonList.add(new GuiCheckBox(14, guiLeft + 160, guiTop + 164, 16, 16, _tile.allowAutoDestroy));
 		this.buttonList.add(new SmallGuiButton(15, guiLeft + 131, guiTop + 114, 30, 10, "Close"));
 		((GuiButton)this.buttonList.get(15)).drawButton = false;
-		MainProxy.sendPacketToServer(new LogisticsPipesPacket() {
+		MainProxy.sendPacketToServer(new PacketLogisticsPipes() {
 			@Override public void writeData(DataOutputStream data) throws IOException {}
 			@Override public void readData(DataInputStream data) throws IOException {}
 			@Override public int getID() {

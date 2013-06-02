@@ -35,24 +35,25 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
-import logisticspipes.network.packets.PacketBufferTransfer;
-import logisticspipes.network.packets.PacketCoordinates;
-import logisticspipes.network.packets.PacketHUDSettings;
-import logisticspipes.network.packets.PacketInventoryChange;
-import logisticspipes.network.packets.PacketItem;
-import logisticspipes.network.packets.PacketModuleInteger;
-import logisticspipes.network.packets.PacketModuleNBT;
-import logisticspipes.network.packets.PacketNBT;
-import logisticspipes.network.packets.PacketNameUpdatePacket;
-import logisticspipes.network.packets.PacketPipeBeePacket;
-import logisticspipes.network.packets.PacketPipeBitSet;
-import logisticspipes.network.packets.PacketPipeInteger;
-import logisticspipes.network.packets.PacketPipeString;
-import logisticspipes.network.packets.PacketPipeUpdate;
-import logisticspipes.network.packets.PacketRequestGuiContent;
-import logisticspipes.network.packets.PacketRequestSubmit;
-import logisticspipes.network.packets.PacketStringCoordinates;
-import logisticspipes.network.packets.PacketStringList;
+import logisticspipes.network.packets.abstracts.ModernPacket;
+import logisticspipes.network.packets.old.PacketBufferTransfer;
+import logisticspipes.network.packets.old.PacketCoordinates;
+import logisticspipes.network.packets.old.PacketHUDSettings;
+import logisticspipes.network.packets.old.PacketInventoryChange;
+import logisticspipes.network.packets.old.PacketItem;
+import logisticspipes.network.packets.old.PacketModuleInteger;
+import logisticspipes.network.packets.old.PacketModuleNBT;
+import logisticspipes.network.packets.old.PacketNBT;
+import logisticspipes.network.packets.old.PacketNameUpdatePacket;
+import logisticspipes.network.packets.old.PacketPipeBeePacket;
+import logisticspipes.network.packets.old.PacketPipeBitSet;
+import logisticspipes.network.packets.old.PacketPipeInteger;
+import logisticspipes.network.packets.old.PacketPipeString;
+import logisticspipes.network.packets.old.PacketPipeUpdate;
+import logisticspipes.network.packets.old.PacketRequestGuiContent;
+import logisticspipes.network.packets.old.PacketRequestSubmit;
+import logisticspipes.network.packets.old.PacketStringCoordinates;
+import logisticspipes.network.packets.old.PacketStringList;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -92,13 +93,14 @@ public class ServerPacketHandler {
 		
 		try {
 			final int packetID = data.read();
+			
+			if (packetID>=200){//TODO: Temporary until all packets get converted
+				final ModernPacket packet = PacketHandler.packetlist.get(packetID-200).template();
+				packet.readData(data);
+				packet.processPacket(player);
+			}
+			
 			switch (packetID) {
-
-				case NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE:
-					final PacketCoordinates packet = new PacketCoordinates();
-					packet.readData(data);
-					onCraftingPipeNextSatellite(player, packet);
-					break;
 
 				case NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE:
 					final PacketCoordinates packetA = new PacketCoordinates();
@@ -438,19 +440,6 @@ public class ServerPacketHandler {
 		} catch (final Exception ex) {
 			ex.printStackTrace();
 		}
-	}
-
-	private static void onCraftingPipeNextSatellite(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
-			return;
-		}
-
-		((BaseLogicCrafting) pipe.pipe.logic).setNextSatellite(player);
 	}
 
 	private static void onCraftingPipePrevSatellite(EntityPlayerMP player, PacketCoordinates packet) {

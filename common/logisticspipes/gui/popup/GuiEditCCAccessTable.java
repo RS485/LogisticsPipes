@@ -4,7 +4,7 @@ import java.util.Collections;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.packets.old.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;

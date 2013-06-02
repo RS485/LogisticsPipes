@@ -12,7 +12,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import logisticspipes.network.ClientPacketHandler;
-import logisticspipes.network.packets.PacketBufferTransfer;
+import logisticspipes.network.packets.old.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Pair;
 import net.minecraft.network.packet.Packet250CustomPayload;

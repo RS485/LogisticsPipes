@@ -10,11 +10,14 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.GuiArgumentPacket;
-import logisticspipes.network.packets.PacketCoordinates;
-import logisticspipes.network.packets.PacketInventoryChange;
-import logisticspipes.network.packets.PacketModuleInteger;
-import logisticspipes.network.packets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.CPipeNextSatellite;
+import logisticspipes.network.packets.abstracts.CoordinatesPacket;
+import logisticspipes.network.packets.old.PacketCoordinates;
+import logisticspipes.network.packets.old.PacketGuiArgument;
+import logisticspipes.network.packets.old.PacketInventoryChange;
+import logisticspipes.network.packets.old.PacketModuleInteger;
+import logisticspipes.network.packets.old.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -152,7 +155,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void setNextSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE, xCoord, yCoord, zCoord);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);
@@ -322,7 +325,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-			MainProxy.sendPacketToPlayer(new GuiArgumentPacket(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}).getPacket(),  (Player) entityplayer);
+			MainProxy.sendPacketToPlayer(new PacketGuiArgument(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}).getPacket(),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}

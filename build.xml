@@ -42,6 +42,7 @@
 	<property name="thaumcraft.version.api" value="0.0.5"/>
 	<property name="thaumcraft.version.mod" value="3.0.4b"/>
 	<property name="te.version"           value="2.3.0"/>
+	<property name="lombok.version"       value="0.11.8"/>
 	<property name="lp.version"           value="0.7.3"/>
 	
 	<!-- Targets -->
@@ -128,7 +129,8 @@
 				<include name="ThermalExpansion-API-${te.version}.zip"/>
 			</fileset>
 		</unzip>
-
+		
+		
 		<echo message="Unpacking finished"/>
 
 		<chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
@@ -148,6 +150,8 @@
 		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
 			<arg value="install.sh"/>
 		</exec>
+		
+		<get src="${downloadserver.full}lombok-${lombok.version}.jar" dest="${mcp.dir}/lib" usetimestamp="True"/>
 		
 		<echo message="Decompile finished"/>
 		<!-- Copy BC source -->

@@ -9,7 +9,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(chain = true)
-public abstract class CoordinatesPacket extends ModernPacket<CoordinatesPacket> {
+public abstract class CoordinatesPacket<T extends ModernPacket<T>> extends ModernPacket<T> {
 
 	public CoordinatesPacket(int id) {
 		super(id);

@@ -15,7 +15,7 @@ import logisticspipes.logisticspipes.RouteLayerFirewall;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.PacketPipeBitSet;
+import logisticspipes.network.packets.old.PacketPipeBitSet;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;

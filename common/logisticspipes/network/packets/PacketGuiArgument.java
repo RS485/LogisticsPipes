@@ -12,16 +12,16 @@ import java.io.ObjectOutputStream;
 
 import logisticspipes.network.NetworkConstants;
 
-public class GuiArgumentPacket extends LogisticsPipesPacket {
+public class PacketGuiArgument extends PacketLogisticsPipes {
 	
 	public Object[] args;
 	public int guiID = 0;
 	
-	public GuiArgumentPacket() {
+	public PacketGuiArgument() {
 		super();
 	}
 	
-	public GuiArgumentPacket(int Id, Object... arg) {
+	public PacketGuiArgument(int Id, Object... arg) {
 		super();
 		args = arg;
 		guiID = Id;

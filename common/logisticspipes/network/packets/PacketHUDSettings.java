@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import logisticspipes.network.NetworkConstants;
 
-public class PacketHUDSettings extends LogisticsPipesPacket {
+public class PacketHUDSettings extends PacketLogisticsPipes {
 
 	public int buttonId;
 	public boolean state;

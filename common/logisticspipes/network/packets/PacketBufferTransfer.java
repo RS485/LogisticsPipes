@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import logisticspipes.network.NetworkConstants;
 
-public class PacketBufferTransfer extends LogisticsPipesPacket {
+public class PacketBufferTransfer extends PacketLogisticsPipes {
 	
 	public byte[] content;
 	

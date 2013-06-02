@@ -9,7 +9,7 @@ import java.util.List;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.utils.ItemMessage;
 
-public class PacketSimulate extends LogisticsPipesPacket {
+public class PacketSimulate extends PacketLogisticsPipes {
 	public List<ItemMessage> used = new LinkedList<ItemMessage>();
 	public List<ItemMessage> missing = new LinkedList<ItemMessage>();
 	private int ID = NetworkConstants.COMPONENT_LIST;

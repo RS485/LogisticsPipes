@@ -42,7 +42,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
-import logisticspipes.network.packets.GuiArgumentPacket;
+import logisticspipes.network.packets.PacketGuiArgument;
 import logisticspipes.network.packets.PacketBufferTransfer;
 import logisticspipes.network.packets.PacketCoordinatesUUID;
 import logisticspipes.network.packets.PacketCraftingLoop;
@@ -343,7 +343,7 @@ public class ClientPacketHandler {
 					onSetSecurityCC(packetBb);
 					break;
 				case NetworkConstants.GUI_ARGUMENT_PACKET:
-					final GuiArgumentPacket packetBc = new GuiArgumentPacket();
+					final PacketGuiArgument packetBc = new PacketGuiArgument();
 					packetBc.readData(data);
 					GuiHandler.argumentQueue.put(packetBc.guiID, packetBc.args);
 					break;

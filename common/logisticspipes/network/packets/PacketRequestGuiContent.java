@@ -12,7 +12,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class PacketRequestGuiContent extends LogisticsPipesPacket {
+public class PacketRequestGuiContent extends PacketLogisticsPipes {
 
 	public Collection<ItemIdentifierStack> _allItems;
 	private int id;

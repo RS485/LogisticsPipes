@@ -9,7 +9,7 @@ import java.util.List;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.utils.ItemMessage;
 
-public class PacketItems extends LogisticsPipesPacket {
+public class PacketItems extends PacketLogisticsPipes {
 	
 	public List<ItemMessage> items = new LinkedList<ItemMessage>();
 	public boolean error = true;

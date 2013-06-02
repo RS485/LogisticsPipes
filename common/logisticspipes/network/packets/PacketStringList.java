@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class PacketStringList extends LogisticsPipesPacket {
+public class PacketStringList extends PacketLogisticsPipes {
 	
 	private final int id;
 	public List<String> list;

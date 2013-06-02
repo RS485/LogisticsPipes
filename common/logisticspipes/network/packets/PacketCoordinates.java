@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 
-public class PacketCoordinates extends LogisticsPipesPacket {
+public class PacketCoordinates extends PacketLogisticsPipes {
 
 	private int id;
 

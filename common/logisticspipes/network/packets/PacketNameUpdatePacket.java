@@ -7,7 +7,7 @@ import java.io.IOException;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.utils.ItemIdentifier;
 
-public class PacketNameUpdatePacket extends LogisticsPipesPacket {
+public class PacketNameUpdatePacket extends PacketLogisticsPipes {
 	
 	public ItemIdentifier item;
 	public String name;

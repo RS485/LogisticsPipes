@@ -19,7 +19,7 @@ public class CPipeNextSatellite extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayerMP player) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, getPosX(), getPosY(), getPosZ());
+		final TileGenericPipe pipe = getPipe(player.worldObj);
 		if (pipe == null) {
 			return;
 		}

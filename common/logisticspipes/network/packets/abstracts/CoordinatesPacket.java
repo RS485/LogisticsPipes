@@ -57,15 +57,15 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @param z
 	 * @return
 	 */
-	public static TileGenericPipe getPipe(World world, int x, int y, int z) {
+	public TileGenericPipe getPipe(World world) {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(x, y, z)) {
+		if (!world.blockExists(posX, posY, posZ)) {
 			return null;
 		}
 
-		final TileEntity tile = world.getBlockTileEntity(x, y, z);
+		final TileEntity tile = world.getBlockTileEntity(posX, posY, posZ);
 		if (!(tile instanceof TileGenericPipe)) {
 			return null;
 		}

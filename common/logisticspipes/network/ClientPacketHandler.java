@@ -99,8 +99,11 @@ public class ClientPacketHandler {
 	
 	public static void onPacketData(DataInputStream data, Player player) {
 		try {
-
 			final int packetID = data.read();
+			if (packetID>=200){//TODO: Temporary until all packets get converted
+				PacketHandler.packetlist.get(packetID-200).template().readData(data);
+			}
+			
 			switch (packetID) {
 				case NetworkConstants.CRAFTING_PIPE_SATELLITE_ID:
 					final PacketPipeInteger packetA1 = new PacketPipeInteger();

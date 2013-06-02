@@ -92,6 +92,10 @@ public class ServerPacketHandler {
 		
 		try {
 			final int packetID = data.read();
+			if (packetID>=200){//TODO: Temporary until all packets get converted
+				PacketHandler.packetlist.get(packetID-200).template().readData(data);
+			}
+			
 			switch (packetID) {
 
 				case NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE:

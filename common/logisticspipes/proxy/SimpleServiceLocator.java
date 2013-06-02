@@ -24,6 +24,7 @@ import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
+import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
@@ -113,6 +114,11 @@ public final class SimpleServiceLocator {
 	public static IBetterStorageProxy betterStorageProxy;
 	public static void setBetterStorageProxy(IBetterStorageProxy proxy) {
 		betterStorageProxy = proxy;
+	}
+	
+	public static SpecialTankHandler specialTankHandler;
+	public static void setSpecialTankHandler(SpecialTankHandler proxy) {
+		specialTankHandler = proxy;
 	}
 
 	public static ClientPacketBufferHandlerThread clientBufferHandler;

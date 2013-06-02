@@ -20,6 +20,7 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityNote;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
@@ -229,7 +230,20 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	}
 	
 	public boolean sharesTankWith(LiquidRoutedPipe other){
-		//TODO
+		List<TileEntity> theirs = other.getAllTankTiles();
+		for(TileEntity tile:this.getAllTankTiles()) {
+			if(theirs.contains(tile)) {
+				return true;
+			}
+		}
 		return false;
+	}
+	
+	public List<TileEntity> getAllTankTiles() {
+		List<TileEntity> list = new ArrayList<TileEntity>();
+		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
+			list.addAll(SimpleServiceLocator.specialTankHandler.getBaseTileFor(pair.getValue1()));
+		}
+		return list;
 	}
 }

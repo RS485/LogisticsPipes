@@ -59,6 +59,8 @@ import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialconnection.TeleportPipes;
 import logisticspipes.proxy.specialconnection.TesseractConnection;
+import logisticspipes.proxy.specialtankhandler.BuildCraftTankHandler;
+import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.renderer.LiquidContainerRenderer;
@@ -224,6 +226,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
 		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
+		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
 		
 		if(event.getSide().isClient()) {
 			SimpleServiceLocator.buildCraftProxy.registerLocalization();
@@ -285,6 +288,7 @@ public class LogisticsPipes {
 
 		SimpleServiceLocator.specialpipeconnection.registerHandler(new TeleportPipes());
 		SimpleServiceLocator.specialtileconnection.registerHandler(new TesseractConnection());
+		SimpleServiceLocator.specialTankHandler.registerHandler(new BuildCraftTankHandler());
 		
 		Object renderer = null;
 		if(isClient) {

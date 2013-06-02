@@ -5,6 +5,8 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.BitSet;
 
+import logisticspipes.network.BitSetHelper;
+
 public class PacketPipeBitSet extends PacketCoordinates {
 	
 	public BitSet flags;

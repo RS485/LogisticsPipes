@@ -1,4 +1,4 @@
-package logisticspipes.network.packets;
+package logisticspipes.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

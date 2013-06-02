@@ -130,8 +130,7 @@ import cpw.mods.fml.relauncher.Side;
 @NetworkMod(
 		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},
 		packetHandler = PacketHandler.class,
-		clientSideRequired = true,
-		serverSideRequired = true)
+		clientSideRequired = true)
 public class LogisticsPipes {
 
 	@Instance("LogisticsPipes|Main")

@@ -80,7 +80,7 @@ public class ModuleQuickSort extends LogisticsModule {
 			currentTick = normalDelay;
 		
 		//Extract Item
-		IInventoryUtil invUtil = _invProvider.getPointedInventory();
+		IInventoryUtil invUtil = _invProvider.getPointedInventory(true);
 		if (invUtil == null) return;
 
 		if(!_power.canUseEnergy(500)) {

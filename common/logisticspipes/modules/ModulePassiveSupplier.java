@@ -69,7 +69,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
 
-		IInventoryUtil targetUtil = _invProvider.getSneakyInventory();
+		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(false);
 		if (targetUtil == null) return null;
 		
 		if (!_filterInventory.containsItem(item)) return null;

@@ -129,7 +129,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 		if (++currentTick  < ticksToAction) return;
 		currentTick = 0;
 
-		IInventoryUtil inv = _invProvider.getSneakyInventory();
+		IInventoryUtil inv = _invProvider.getSneakyInventory(true);
 		if(inv == null) return;
 		for(int i=0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);

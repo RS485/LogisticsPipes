@@ -154,7 +154,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			extractOrientation = _invProvider.inventoryOrientation().getOpposite();
 		}
 
-		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(extractOrientation);
+		IInventoryUtil targetUtil = _invProvider.getSneakyInventory(extractOrientation,true);
 		
 		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()){
 			ItemStack[] stack = ((ISpecialInventory) realInventory).extractItem(false, extractOrientation, 1);
@@ -173,7 +173,9 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			return;
 		}
 
+		
 		for (int i = 0; i < targetUtil.getSizeInventory(); i++){
+			
 			ItemStack slot = targetUtil.getStackInSlot(i);
 			if (slot == null) continue;
 

@@ -261,7 +261,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				if (tile.tile instanceof ISpecialInventory) {
 					extracted = extractFromISpecialInventory((ISpecialInventory) tile.tile, nextOrder.getValue1().getItem(), maxtosend);
 				} else if (tile.tile instanceof net.minecraft.inventory.ISidedInventory) {
-					IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN);
+					IInventory sidedadapter = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN,true);
 					extracted = extractFromIInventory(sidedadapter, nextOrder.getValue1().getItem(), maxtosend);
 				} else if (tile.tile instanceof net.minecraftforge.common.ISidedInventory) {
 					IInventory sidedadapter = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) tile.tile, ForgeDirection.UNKNOWN);

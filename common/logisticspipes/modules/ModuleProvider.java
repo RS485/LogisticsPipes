@@ -204,9 +204,9 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 
 	@Override
 	public void getAllItems(Map<ItemIdentifier, Integer> items, List<IFilter> filters) {
-		if (_invProvider.getPointedInventory(_extractionMode) == null) return;
+		IInventoryUtil inv =_invProvider.getPointedInventory(_extractionMode,true);
+		if (inv == null) return;
 		
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode);
 		Map<ItemIdentifier, Integer> currentInv = inv.getItemsAndCount();
 
 		//Skip already added items from this provider, skip filtered items, Reduce what has been reserved, add.
@@ -236,11 +236,11 @@ outer:
 	// returns 0 on "unable to do this delivery"
 	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
 		ItemIdentifier item = stack.getItem();
-		if (_invProvider.getPointedInventory(_extractionMode) == null) {
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
+		if (inv == null) {
 			_orderManager.sendFailed();
 			return 0;
 		}
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode);
 		
 		int available = inv.itemCount(item);
 		if (available == 0) {
@@ -280,11 +280,11 @@ outer:
 	
 	private int getTotalItemCount(ItemIdentifier item) {
 		
-		if (_invProvider.getPointedInventory(_extractionMode) == null) return 0;
+		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
+		if (inv == null) return 0;
 		
 		if(!filterAllowsItem(item)) return 0;
 		
-		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode);
 		return inv.itemCount(item);
 	}
 	

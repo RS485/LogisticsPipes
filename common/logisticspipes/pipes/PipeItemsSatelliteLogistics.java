@@ -94,7 +94,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	
 	private IInventory getInventory(ForgeDirection ori) {
 		IInventory rawInventory = getRawInventory(ori);
-		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite());
+		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite(), false);
 		if (rawInventory instanceof net.minecraftforge.common.ISidedInventory) return new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) rawInventory, ori.getOpposite());
 		return rawInventory;
 	}

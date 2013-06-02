@@ -205,15 +205,15 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 
 	@Override
-	public IInventoryUtil getPointedInventory() {
-		return getSneakyInventory(this.getPointedOrientation().getOpposite());
+	public IInventoryUtil getPointedInventory(boolean forExtraction) {
+		return getSneakyInventory(this.getPointedOrientation().getOpposite(), forExtraction);
 	}
 
 	@Override
-	public IInventoryUtil getPointedInventory(ExtractionMode mode) {
+	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtraction) {
 		IInventory inv = getRealInventory();
 		if(inv == null) return null;
-		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, this.getPointedOrientation().getOpposite());
+		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, this.getPointedOrientation().getOpposite(), forExtraction);
 		if (inv instanceof net.minecraftforge.common.ISidedInventory) inv = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) inv, this.getPointedOrientation().getOpposite());
 		switch(mode){
 			case LeaveFirst:
@@ -233,20 +233,20 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory() {
+	public IInventoryUtil getSneakyInventory(boolean forExtraction) {
 		UpgradeManager manager = getUpgradeManager();
 		ForgeDirection insertion = this.getPointedOrientation().getOpposite();
 		if(manager.hasSneakyUpgrade()) {
 			insertion = manager.getSneakyOrientation();
 		}
-		return getSneakyInventory(insertion);
+		return getSneakyInventory(insertion, forExtraction);
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation) {
+	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtraction) {
 		IInventory inv = getRealInventory();
 		if(inv == null) return null;
-		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation);
+		if (inv instanceof net.minecraft.inventory.ISidedInventory) inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) inv, _sneakyOrientation, forExtraction);
 		if (inv instanceof net.minecraftforge.common.ISidedInventory) inv = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) inv, _sneakyOrientation);
 		return SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 	}
@@ -641,7 +641,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			if(module!=null && module.interestedInAttachedInventory()) {
 				IInventory inv = getRealInventory();
 				if(inv instanceof net.minecraft.inventory.ISidedInventory) {
-					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, ForgeDirection.UNKNOWN);
+					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, ForgeDirection.UNKNOWN,false);
 				}
 				if(inv instanceof net.minecraftforge.common.ISidedInventory) {
 					inv = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory)inv, ForgeDirection.UNKNOWN);

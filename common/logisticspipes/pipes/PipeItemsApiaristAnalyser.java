@@ -134,22 +134,22 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	@Override
-	public IInventoryUtil getPointedInventory() {
+	public IInventoryUtil getPointedInventory(boolean forExtract) {
 		return null; //Unused
 	}
 
 	@Override
-	public IInventoryUtil getPointedInventory(ExtractionMode mode) {
+	public IInventoryUtil getPointedInventory(ExtractionMode mode, boolean forExtract) {
 		return null; //Unused
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory() {
+	public IInventoryUtil getSneakyInventory(boolean forExtract) {
 		return null; //Unused
 	}
 
 	@Override
-	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation) {
+	public IInventoryUtil getSneakyInventory(ForgeDirection _sneakyOrientation, boolean forExtract) {
 		return null;
 	}
 

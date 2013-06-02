@@ -58,7 +58,7 @@ public class ChassiModule extends LogisticsGuiModule{
 
 		if (bestresult == null) return null;
 		//Always deny items when we can't put the item anywhere
-		IInventoryUtil invUtil = _parentPipe.getSneakyInventory();
+		IInventoryUtil invUtil = _parentPipe.getSneakyInventory(false);
 		if (invUtil == null) return null;
 		int roomForItem = invUtil.roomForItem(item); 
 		if (roomForItem < 1) return null;

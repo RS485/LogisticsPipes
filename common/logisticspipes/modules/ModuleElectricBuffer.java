@@ -92,7 +92,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 		if (++currentTickCount < ticksToAction) return;
 		currentTickCount = 0;
 
-		IInventoryUtil inv = _invProvider.getPointedInventory();
+		IInventoryUtil inv = _invProvider.getPointedInventory(true);
 		if (inv == null) return;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
 			ItemStack stack = inv.getStackInSlot(i);

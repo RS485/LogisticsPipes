@@ -33,7 +33,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;
-		IInventoryUtil targetInventory = _invProvider.getSneakyInventory();
+		IInventoryUtil targetInventory = _invProvider.getSneakyInventory(false);
 		if (targetInventory == null) return null;
 		
 		if (!targetInventory.containsUndamagedItem(item.getUndamaged())) return null;

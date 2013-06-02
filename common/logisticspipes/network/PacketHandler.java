@@ -43,7 +43,10 @@ public class PacketHandler implements IPacketHandler {
 
 				Class<?> cls = c.load();
 				if (!cls.isInstance(ModernPacket.class)) {
-					if (LogisticsPipes.DEBUG)
+
+					if (LogisticsPipes.DEBUG && !cls.isSynthetic()
+							&& !cls.isAnonymousClass() && !cls.isLocalClass()
+							&& !cls.isMemberClass())
 						LogisticsPipes.log
 								.warning("The following class is in the wrong place: "
 										+ c.getName());

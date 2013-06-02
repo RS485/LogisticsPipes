@@ -10,8 +10,8 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import logisticspipes.network.NetworkConstants;
 
-public abstract class ModernPacket<T extends ModernPacket<T>> implements
-		Comparable<ModernPacket<T>> {
+public abstract class ModernPacket implements
+		Comparable<ModernPacket> {
 
 	protected String channel;
 
@@ -45,14 +45,14 @@ public abstract class ModernPacket<T extends ModernPacket<T>> implements
 		this.id = id;
 	}
 
-	public abstract T template();
+	public abstract ModernPacket template();
 
 	public int getID() {
 		return id;
 	}
 
 	@Override
-	public int compareTo(ModernPacket<T> o) {
+	public int compareTo(ModernPacket o) {
 		return this.getClass().getSimpleName()
 				.compareTo(o.getClass().getSimpleName());
 	}

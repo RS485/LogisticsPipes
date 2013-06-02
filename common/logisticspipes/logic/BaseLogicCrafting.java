@@ -155,7 +155,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void setNextSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final CoordinatesPacket<?> packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
+			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);

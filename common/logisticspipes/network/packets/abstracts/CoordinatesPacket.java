@@ -4,12 +4,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
+
+import buildcraft.transport.TileGenericPipe;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(chain = true)
-public abstract class CoordinatesPacket<T extends ModernPacket<T>> extends ModernPacket<T> {
+public abstract class CoordinatesPacket extends ModernPacket {
 
 	public CoordinatesPacket(int id) {
 		super(id);

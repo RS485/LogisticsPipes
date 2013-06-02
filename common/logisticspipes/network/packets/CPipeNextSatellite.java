@@ -4,15 +4,16 @@ import buildcraft.transport.TileGenericPipe;
 import net.minecraft.entity.player.EntityPlayerMP;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.packets.abstracts.CoordinatesPacket;
+import logisticspipes.network.packets.abstracts.ModernPacket;
 
-public class CPipeNextSatellite extends CoordinatesPacket<CPipeNextSatellite> {
+public class CPipeNextSatellite extends CoordinatesPacket {
 
 	public CPipeNextSatellite(int id) {
 		super(id);
 	}
 
 	@Override
-	public CPipeNextSatellite template() {
+	public ModernPacket template() {
 		return new CPipeNextSatellite(getID());
 	}
 

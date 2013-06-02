@@ -22,18 +22,25 @@ import cpw.mods.fml.common.network.Player;
 
 public class PacketHandler implements IPacketHandler {
 
-	public static List<ModernPacket> packetlist;
+	public static List<ModernPacket<?>> packetlist;
 
-	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
+	public static Map<Class<? extends ModernPacket<?>>, ModernPacket<?>> packetmap;
 
+	public static <T extends ModernPacket<T>> T getPacket(Class<T> clazz) {
+		@SuppressWarnings("unchecked")
+		ModernPacket<T> t = (ModernPacket<T>) packetmap.get(clazz);
+		return t.template();
+	}
+
+	@SuppressWarnings("unchecked")
 	public PacketHandler() {
 		try {
 			ImmutableSet<ClassInfo> classes = ClassPath.from(
 					this.getClass().getClassLoader()).getTopLevelClasses(
 					"logisticpipes.network.packets");
 
-			packetlist = new ArrayList<ModernPacket>(classes.size());
-			packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(
+			packetlist = new ArrayList<ModernPacket<?>>(classes.size());
+			packetmap = new HashMap<Class<? extends ModernPacket<?>>, ModernPacket<?>>(
 					classes.size());
 
 			int currentid = 200;// TODO: Only 200 until all packets get
@@ -52,10 +59,10 @@ public class PacketHandler implements IPacketHandler {
 										+ c.getName());
 					continue;
 				}
-				ModernPacket instance = (ModernPacket) cls.getConstructor(
-						Integer.class).newInstance(currentid++);
+				ModernPacket<?> instance = (ModernPacket<?>) cls
+						.getConstructor(Integer.class).newInstance(currentid++);
 				packetlist.add(instance);
-				packetmap.put(cls.asSubclass(ModernPacket.class), instance);
+				packetmap.put((Class<? extends ModernPacket<?>>) cls, instance);
 			}
 			Collections.sort(packetlist);
 		} catch (Throwable e) {

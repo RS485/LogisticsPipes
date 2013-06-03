@@ -46,7 +46,8 @@ public class PacketHandler implements IPacketHandler {
 			System.out.println("Loading " + classes.size() + "Packets");
 
 			for (ClassInfo c : classes) {
-
+				
+				System.out.println("Loading packet: "+c.getSimpleName());
 				final Class<?> cls = c.load();
 				final ModernPacket instance = (ModernPacket) cls
 						.getConstructors()[0].newInstance(currentid++);

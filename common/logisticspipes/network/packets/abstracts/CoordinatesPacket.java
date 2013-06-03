@@ -58,11 +58,11 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		if (world == null) {
 			return null;
 		}
-		if (!world.blockExists(posX, posY, posZ)) {
+		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
 			return null;
 		}
 
-		final TileEntity tile = world.getBlockTileEntity(posX, posY, posZ);
+		final TileEntity tile = world.getBlockTileEntity(getPosX(), getPosY(), getPosZ());
 		if (!(tile instanceof TileGenericPipe)) {
 			return null;
 		}

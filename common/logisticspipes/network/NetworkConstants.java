@@ -4,7 +4,6 @@ public class NetworkConstants {
 	public static final String LOGISTICS_PIPES_CHANNEL_NAME = "BCLP"; // BCLP: Buildcraft-Logisticspipes
 
 	// Package names and IDs
-	public static final int SATELLITE_PIPE_NEXT = 6;
 	public static final int SATELLITE_PIPE_PREV = 7;
 	public static final int SATELLITE_PIPE_SATELLITE_ID = 8;
 	public static final int CHASSI_GUI_PACKET_ID = 9;

@@ -102,11 +102,6 @@ public class ServerPacketHandler {
 			}
 			
 			switch (packetID) {
-				case NetworkConstants.SATELLITE_PIPE_NEXT:
-					final PacketCoordinates packetC = new PacketCoordinates();
-					packetC.readData(data);
-					onSatellitePipeNext(player, packetC);
-					break;
 				case NetworkConstants.SATELLITE_PIPE_PREV:
 					final PacketCoordinates packetD = new PacketCoordinates();
 					packetD.readData(data);
@@ -429,20 +424,6 @@ public class ServerPacketHandler {
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private static void onSatellitePipeNext(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (pipe.pipe.logic instanceof BaseLogicSatellite) {
-			((BaseLogicSatellite) pipe.pipe.logic).setNextId(player);
-		}
-		if (pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
-			((BaseLogicLiquidSatellite) pipe.pipe.logic).setNextId(player);
 		}
 	}
 

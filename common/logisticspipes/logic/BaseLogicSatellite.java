@@ -15,6 +15,9 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.SatPipeNext;
+import logisticspipes.network.packets.abstracts.ModernPacket;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.network.packets.old.PacketPipeInteger;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
@@ -91,7 +94,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 		satelliteId = findId(1);
 		ensureAllSatelliteStatus();
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.SATELLITE_PIPE_NEXT, xCoord, yCoord, zCoord);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
 			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);

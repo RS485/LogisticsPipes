@@ -10,8 +10,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import logisticspipes.network.NetworkConstants;
 
-public abstract class ModernPacket implements
-		Comparable<ModernPacket> {
+public abstract class ModernPacket {
 
 	protected String channel;
 
@@ -51,9 +50,4 @@ public abstract class ModernPacket implements
 		return id;
 	}
 
-	@Override
-	public int compareTo(ModernPacket o) {
-		return this.getClass().getSimpleName()
-				.compareTo(o.getClass().getSimpleName());
-	}
 }

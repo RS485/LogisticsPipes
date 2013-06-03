@@ -2,6 +2,7 @@ package logisticspipes.network;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.reflect.ClassPath;
 import com.google.common.reflect.ClassPath.ClassInfo;
 
@@ -33,9 +33,16 @@ public class PacketHandler implements IPacketHandler {
 	@SuppressWarnings("unchecked")
 	public PacketHandler() {
 		try {
-			final ImmutableSet<ClassInfo> classes = ClassPath.from(
-					this.getClass().getClassLoader()).getTopLevelClasses(
-					"logisticspipes.network.packets");
+
+			final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath
+					.from(this.getClass().getClassLoader()).getTopLevelClasses(
+							"logisticspipes.network.packets"));
+			Collections.sort(classes, new Comparator<ClassInfo>() {
+				@Override
+				public int compare(ClassInfo o1, ClassInfo o2) {
+					return o1.getSimpleName().compareTo(o2.getSimpleName());
+				}
+			});
 
 			packetlist = new ArrayList<ModernPacket>(classes.size());
 			packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(
@@ -47,9 +54,10 @@ public class PacketHandler implements IPacketHandler {
 
 			for (ClassInfo c : classes) {
 				try {
+					currentid++;
 					final Class<?> cls = c.load();
 					final ModernPacket instance = (ModernPacket) cls
-							.getConstructors()[0].newInstance(currentid++);
+							.getConstructors()[0].newInstance(currentid);
 					packetlist.add(instance);
 					packetmap
 							.put((Class<? extends ModernPacket>) cls, instance);
@@ -60,9 +68,10 @@ public class PacketHandler implements IPacketHandler {
 					System.out.println("Not loading packet "
 							+ c.getSimpleName()
 							+ " (it is probably a client-side packet)");
+					packetlist.add(null);
 				}
 			}
-			Collections.sort(packetlist);
+
 		} catch (Throwable e) {
 			throw new RuntimeException(e);
 		}

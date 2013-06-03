@@ -28,7 +28,7 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 
 		// Import
 		for (int i = 0; i < bench.getSizeInventory(); i++) {
-			if (i >= inventory.getSizeInventory() - 1) {
+			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
 			final ItemStack newStack = bench.getStackInSlot(i) == null ? null : bench.getStackInSlot(i).copy();
@@ -38,13 +38,13 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 		}
 
 		// Compact
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			final ItemStack stackInSlot = inventory.getStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
 			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
-			for (int j = i + 1; j < inventory.getSizeInventory() - 1; j++) {
+			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
 				final ItemStack stackInOtherSlot = inventory.getStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
@@ -56,11 +56,11 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 			}
 		}
 
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {
 				continue;
 			}
-			for (int j = i + 1; j < inventory.getSizeInventory() - 1; j++) {
+			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
 				if (inventory.getStackInSlot(j) == null) {
 					continue;
 				}

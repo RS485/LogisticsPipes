@@ -4,6 +4,7 @@
 	<!-- Properties -->
 	<property name="build.dir"            value="build"/>
 	<property name="src.dir"              value="src"/>
+	<property name="test.dir"             value="test"/>
 	<property name="sign.dir"             value="/home/jenkins/.sign"/>
 
 	<property name="download.dir"         value="download"/>
@@ -344,7 +345,19 @@
 	<target name="ci-dev" depends="vars-dev, init-msg, clean, setup, package-sign"/>
 	
 	<target name="ci" depends="vars, init-msg, clean, setup, package-sign"/>
-	
-	<target name="test" depends="vars-test, init-msg, clean, setup, compile"/>
+
+	<target name="test" depends="vars-test, init-msg, clean, setup, compile, package-simple">
+		<delete dir="${test.dir}"/>
+		<mkdir dir="${test.dir}"/>
+		<get src="http://ci.md-5.net/job/MCPC-Plus/lastStableBuild/artifact/target/mcpc-plus-1.5.2-R0.2-forge716-B510.jar" dest="${test.dir}/svr.jar" usetimestamp="True"/>
+		<mkdir dir="${test.dir}/mods"/>
+		<get src="http://forestry.sengir.net/files/buildcraft/releases/3.6.0/buildcraft-A-3.6.0.jar" dest="${test.dir}/mods" usetimestamp="True"/>
+		<get src="https://gist.github.com/GUIpsp/e2a5464a94d4c206c83e/raw/21a76e1bf1d5653ccdbe940d8edbf09b16273dc7/gistfile1.tcl" dest="${test.dir}/expect.tcl" usetimestamp="True"/>
+		<copy file="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" todir="${test.dir}/mods"/>
+		
+		<exec dir="${test.dir}" executable="expect" osfamily="unix" failonerror="true">
+			<arg value="expect.tcl"/>
+		</exec>
+	</target>
 	
 </project>

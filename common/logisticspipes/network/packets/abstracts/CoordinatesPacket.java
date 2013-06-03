@@ -49,12 +49,9 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	// BuildCraft method
 	/**
-	 * Retrieves pipe at specified coordinates if any.
+	 * Retrieves pipe at packet coordinates if any.
 	 * 
 	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
 	 * @return
 	 */
 	public TileGenericPipe getPipe(World world) {

@@ -102,11 +102,6 @@ public class ServerPacketHandler {
 			}
 			
 			switch (packetID) {
-				case NetworkConstants.SATELLITE_PIPE_PREV:
-					final PacketCoordinates packetD = new PacketCoordinates();
-					packetD.readData(data);
-					onSatellitePipePrev(player, packetD);
-					break;
 				case NetworkConstants.CHASSI_GUI_PACKET_ID:
 					final PacketPipeInteger packetE = new PacketPipeInteger();
 					packetE.readData(data);

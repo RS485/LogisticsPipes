@@ -4,7 +4,6 @@ public class NetworkConstants {
 	public static final String LOGISTICS_PIPES_CHANNEL_NAME = "BCLP"; // BCLP: Buildcraft-Logisticspipes
 
 	// Package names and IDs
-	//public static final int SATELLITE_PIPE_PREV = 7;
 	public static final int SATELLITE_PIPE_SATELLITE_ID = 8;
 	public static final int CHASSI_GUI_PACKET_ID = 9;
 	public static final int GUI_BACK_PACKET = 10;
@@ -15,11 +14,8 @@ public class NetworkConstants {
 	public static final int CRAFTING_LOOP = 15;
 	public static final int ITEM_SINK_DEFAULT = 16;
 	public static final int ITEM_SINK_STATUS = 17;
-	public static final int PROVIDER_PIPE_NEXT_MODE = 18;
-	public static final int PROVIDER_PIPE_CHANGE_INCLUDE = 19;
 	public static final int PROVIDER_PIPE_MODE_CONTENT = 20;
 	public static final int PROVIDER_PIPE_INCLUDE_CONTENT = 21;
-	public static final int SUPPLIER_PIPE_MODE_CHANGE = 22;
 	public static final int SUPPLIER_PIPE_MODE_RESPONSE = 23;
 	public static final int EXTRACTOR_MODULE_DIRECTION_SET = 24;
 	public static final int EXTRACTOR_MODULE_RESPONSE = 25;

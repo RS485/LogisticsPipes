@@ -12,6 +12,9 @@ import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.ProvPipeNextMode;
+import logisticspipes.network.packets.abstracts.ModernPacket;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
@@ -62,10 +65,12 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			final ModernPacket packet = PacketHandler.getPacket(ProvPipeNextMode.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord);
+			MainProxy.sendPacketToServer(packet.getPacket());
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			final ModernPacket packet = PacketHandler.getPacket(ProvPipeNextMode.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord);
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 		super.actionPerformed(guibutton);
 	}

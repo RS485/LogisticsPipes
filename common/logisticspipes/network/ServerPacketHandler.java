@@ -127,21 +127,6 @@ public class ServerPacketHandler {
 					packetI.readData(data);
 					onItemSinkDefault(player, packetI);
 					break;
-				case NetworkConstants.PROVIDER_PIPE_NEXT_MODE:
-					final PacketCoordinates packetJ = new PacketCoordinates();
-					packetJ.readData(data);
-					onProviderModeChange(player, packetJ);
-					break;
-				case NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE:
-					final PacketCoordinates packetK = new PacketCoordinates();
-					packetK.readData(data);
-					onProviderIncludeChange(player, packetK);
-					break;
-				case NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE:
-					final PacketCoordinates packetL = new PacketCoordinates();
-					packetL.readData(data);
-					onSupplierModeChange(player, packetL);
-					break;
 				case NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET:
 					final PacketPipeInteger packetM = new PacketPipeInteger();
 					packetM.readData(data);
@@ -422,20 +407,6 @@ public class ServerPacketHandler {
 		}
 	}
 
-	private static void onSatellitePipePrev(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (pipe.pipe.logic instanceof BaseLogicSatellite) {
-			((BaseLogicSatellite) pipe.pipe.logic).setPrevId(player);
-		}
-		if (pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
-			((BaseLogicLiquidSatellite) pipe.pipe.logic).setPrevId(player);
-		}
-	}
-
 	private static void onModuleGuiOpen(EntityPlayerMP player, PacketPipeInteger packet) {
 		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
 		if (pipe == null) {
@@ -582,49 +553,6 @@ public class ServerPacketHandler {
 		}
 	}
 
-	private static void onProviderModeChange(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe instanceof PipeItemsProviderLogistics)) {
-			return;
-		}
-		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
-		final LogicProvider logic = (LogicProvider)providerpipe.logic;
-		logic.nextExtractionMode();
-		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.getExtractionMode().ordinal()).getPacket(), (Player)player);
-	}
-
-	private static void onProviderIncludeChange(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe instanceof PipeItemsProviderLogistics)) {
-			return;
-		}
-		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
-		final LogicProvider logic = (LogicProvider)providerpipe.logic;
-		logic.setFilterExcluded(!logic.isExcludeFilter());
-		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
-	}
-
-	private static void onSupplierModeChange(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe.logic instanceof LogicSupplier)) {
-			return;
-		}
-		final LogicSupplier logic = (LogicSupplier) pipe.pipe.logic;
-		logic.setRequestingPartials(!logic.isRequestingPartials());
-		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, packet.posX, packet.posY, packet.posZ, logic.isRequestingPartials() ? 1 : 0).getPacket(), (Player)player);
-	}
 
 	private static void onExtractorModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
 		final int value = ((packet.integer % 10) + 10) % 10;

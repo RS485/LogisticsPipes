@@ -4,7 +4,7 @@ jdk:
   - openjdk7
   - openjdk6
 before_script:
-  - sudo apt-get install astyle
+  - sudo apt-get install astyle expect
   - mkdir src
   - mv common src/
   - mv dummy src/

@@ -198,7 +198,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	@Override 
 	public final int getY() {
 		if(slot>=0)
-			return this._invProvider.getX();
+			return this._invProvider.getY();
 		else 
 			return -1;
 	}
@@ -206,7 +206,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	@Override 
 	public final int getZ() {
 		if(slot>=0)
-			return this._invProvider.getX();
+			return this._invProvider.getZ();
 		else 
 			return -1-slot;
 	}

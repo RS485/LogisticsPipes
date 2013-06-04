@@ -62,12 +62,12 @@ public class ModuleElectricBuffer extends LogisticsModule {
 	}
 	@Override 
 	public final int getY() {
-		return this._power.getX();
+		return this._power.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this._power.getX();
+		return this._power.getZ();
 	}
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 0);

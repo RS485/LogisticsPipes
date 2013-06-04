@@ -63,7 +63,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	@Override 
 	public final int getY() {
 		if(slot>=0)
-			return this._power.getX();
+			return this._power.getY();
 		else 
 			return -1;
 	}
@@ -71,7 +71,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	@Override 
 	public final int getZ() {
 		if(slot>=0)
-			return this._power.getX();
+			return this._power.getZ();
 		else 
 			return -1-slot;
 	}

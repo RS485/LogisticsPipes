@@ -63,12 +63,12 @@ public class ModuleCrafter extends LogisticsModule{
 	}
 	@Override 
 	public final int getY() {
-		return this.pipe.getX();
+		return this.pipe.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this.pipe.getX();
+		return this.pipe.getZ();
 	}
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);

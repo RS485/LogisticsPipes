@@ -93,12 +93,12 @@ public class ModuleLiquidSupplier extends LogisticsGuiModule implements IClientI
 	}
 	@Override 
 	public final int getY() {
-		return this._power.getX();
+		return this._power.getY();
 	}
 	
 	@Override 
 	public final int getZ() {
-		return this._power.getX();
+		return this._power.getZ();
 	}
 
 	@Override

@@ -306,7 +306,7 @@
         classpath="{download.dir}/jarjar-${jarjar.version}.jar"/>
 
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
-				<zipfileset src="{download.dir}/maven-${maven.version}.jar"/>
+				<zipfileset src="{download.dir}/jarjar-${jarjar.version}.jar"/>
 				<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
 		</jarjar>
 
@@ -323,7 +323,7 @@
         classpath="${download.dir}/jarjar-${jarjar.version}.jar"/>
 
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
-			<zipfileset src="{download.dir}/maven-${maven.version}.jar"/>
+			<zipfileset src="{download.dir}/jarjar-${jarjar.version}.jar"/>
 			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
 
 			<manifest>

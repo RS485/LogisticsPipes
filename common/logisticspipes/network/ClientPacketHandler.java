@@ -103,7 +103,7 @@ public class ClientPacketHandler {
 		try {
 			final int packetID = data.read();
 			if (packetID>=200){//TODO: Temporary until all packets get converted
-				final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
+				final ModernPacket packet = PacketHandler.packetlist.get(packetID-200).template();
 				packet.readData(data);
 				packet.processPacket((EntityPlayer)player);
 			}

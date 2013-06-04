@@ -303,7 +303,7 @@
 		<echo message="Packing version ${lp.version.full}"/>
 
 		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
-        classpath="{download.dir}/jarjar-${jarjar.version}.jar"/>
+        classpath="${download.dir}/jarjar-${jarjar.version}.jar"/>
 
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
 				<zipfileset src="${download.dir}/guava-${guava.version}.jar"/>

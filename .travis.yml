@@ -11,5 +11,6 @@ before_script:
   - mv resources src/
   - mv .gitignore src/
   - mv build.xml src/
+  - mv expect.tcl src/
   - cd src
 script: ant test

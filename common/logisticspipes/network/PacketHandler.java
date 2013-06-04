@@ -53,22 +53,13 @@ public class PacketHandler implements IPacketHandler {
 			System.out.println("Loading " + classes.size() + " Packets");
 
 			for (ClassInfo c : classes) {
-				try {
-					final Class<?> cls = c.load();
-					final ModernPacket instance = (ModernPacket) cls
-							.getConstructors()[0].newInstance(currentid);
-					packetlist.add(instance);
-					packetmap
-							.put((Class<? extends ModernPacket>) cls, instance);
+				final Class<?> cls = c.load();
+				final ModernPacket instance = (ModernPacket) cls
+						.getConstructors()[0].newInstance(currentid);
+				packetlist.add(instance);
+				packetmap.put((Class<? extends ModernPacket>) cls, instance);
 
-					System.out.println("Packet: " + c.getSimpleName()
-							+ " loaded");
-				} catch (NoClassDefFoundError e) {
-					System.out.println("Not loading packet "
-							+ c.getSimpleName()
-							+ " (it is probably a client-side packet)");
-					packetlist.add(null);
-				}
+				System.out.println("Packet: " + c.getSimpleName() + " loaded");
 				currentid++;
 			}
 

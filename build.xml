@@ -44,6 +44,8 @@
 	<property name="thaumcraft.version.mod" value="3.0.4b"/>
 	<property name="te.version"           value="2.3.0"/>
 	<property name="lombok.version"       value="0.11.8"/>
+	<property name="jarjar.version"       value="1.4"/>
+	<property name="guava.version"        value="14.0.1"/>
 	<property name="lp.version"           value="0.7.3"/>
 	
 	<!-- Targets -->
@@ -67,6 +69,8 @@
 		<get src="${downloadserver.full}ThaumcraftApi-${thaumcraft.version.api}-for-${thaumcraft.version.mod}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ThermalExpansion-API-${te.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}guava-${guava.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 
 		<echo message="Download finished"/>
 
@@ -298,7 +302,13 @@
 	<target name="package-simple" depends="compile">
 		<echo message="Packing version ${lp.version.full}"/>
 
-		<jar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client"/>
+		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+        classpath="{download.dir}/jarjar-${jarjar.version}.jar"/>
+
+		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
+				<zipfileset src="{download.dir}/maven-${maven.version}.jar"/>
+				<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
+		</jarjar>
 
 		<echo message="Packing finished"/>
 	</target>
@@ -309,14 +319,21 @@
 
 		<echo message="Packing version ${lp.version.full}"/>
 
-		<jar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
+		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+        classpath="${download.dir}/jarjar-${jarjar.version}.jar"/>
+
+		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
+			<zipfileset src="{download.dir}/maven-${maven.version}.jar"/>
+			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
+
 			<manifest>
 				<attribute name="Built-By" value="RS485-Jenkins"/>
 				<attribute name="Implementation-Vendor" value="RS485"/>
 				<attribute name="Implementation-Title" value="LogisticsPipes"/>
 				<attribute name="Implementation-Version" value="${lp.version.full}"/>
 			</manifest>
-		</jar>
+		</jarjar>
+
 		<signjar jar="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" alias="RS485" keystore="${sign.dir}/.keystore" storepass="${key}"/>
 
 		<echo message="Packing finished"/>

@@ -53,7 +53,6 @@ public class PacketHandler implements IPacketHandler {
 			System.out.println("Loading " + classes.size() + " Packets");
 
 			for (ClassInfo c : classes) {
-				currentid++;
 				try {
 					final Class<?> cls = c.load();
 					final ModernPacket instance = (ModernPacket) cls
@@ -70,6 +69,7 @@ public class PacketHandler implements IPacketHandler {
 							+ " (it is probably a client-side packet)");
 					packetlist.add(null);
 				}
+				currentid++;
 			}
 
 		} catch (Throwable e) {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +22,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PacketHandler implements IPacketHandler {
 
-	public static List<ModernPacket> packetlist;
+	public static Map<Integer, ModernPacket> packetlist;
 
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 
@@ -44,21 +45,21 @@ public class PacketHandler implements IPacketHandler {
 				}
 			});
 
-			packetlist = new ArrayList<ModernPacket>(classes.size());
+			packetlist = new HashMap<Integer, ModernPacket>(classes.size());
 			packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(
 					classes.size());
 
 			int currentid = 200;// TODO: Only 200 until all packets get
 								// converted
-			System.out.println("Loading " + classes.size() + "Packets");
+			System.out.println("Loading " + classes.size() + " Packets");
 
 			for (ClassInfo c : classes) {
+				currentid++;
 				try {
-					currentid++;
 					final Class<?> cls = c.load();
 					final ModernPacket instance = (ModernPacket) cls
 							.getConstructors()[0].newInstance(currentid);
-					packetlist.add(instance);
+					packetlist.put(currentid, instance);
 					packetmap
 							.put((Class<? extends ModernPacket>) cls, instance);
 
@@ -68,7 +69,7 @@ public class PacketHandler implements IPacketHandler {
 					System.out.println("Not loading packet "
 							+ c.getSimpleName()
 							+ " (it is probably a client-side packet)");
-					packetlist.add(null);
+					//packetlist.add(null);
 				}
 			}
 

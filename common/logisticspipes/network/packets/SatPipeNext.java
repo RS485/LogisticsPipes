@@ -1,11 +1,11 @@
 package logisticspipes.network.packets;
 
-import buildcraft.transport.TileGenericPipe;
-import net.minecraft.entity.player.EntityPlayerMP;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.network.packets.abstracts.CoordinatesPacket;
 import logisticspipes.network.packets.abstracts.ModernPacket;
+import net.minecraft.entity.player.EntityPlayer;
+import buildcraft.transport.TileGenericPipe;
 
 public class SatPipeNext extends CoordinatesPacket {
 
@@ -19,7 +19,7 @@ public class SatPipeNext extends CoordinatesPacket {
 	}
 
 	@Override
-	public void processPacket(EntityPlayerMP player) {
+	public void processPacket(EntityPlayer player) {
 		final TileGenericPipe pipe = getPipe(player.worldObj);
 		if (pipe == null) {
 			return;

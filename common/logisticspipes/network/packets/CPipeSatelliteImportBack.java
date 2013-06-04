@@ -12,11 +12,10 @@ import logisticspipes.network.packets.abstracts.ModernPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.client.FMLClientHandler;
 
 @Accessors(chain=true)
 public class CPipeSatelliteImportBack extends CoordinatesPacket {
@@ -81,8 +80,8 @@ public class CPipeSatelliteImportBack extends CoordinatesPacket {
 	}
 
 	@Override
-	public void processPacket(EntityPlayerMP player) {
-		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld);
+	public void processPacket(EntityPlayer player) {
+		final TileGenericPipe pipe = getPipe(player.worldObj);
 		if (pipe == null) {
 			return;
 		}

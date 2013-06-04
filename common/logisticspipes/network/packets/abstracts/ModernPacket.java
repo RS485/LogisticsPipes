@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -16,7 +17,7 @@ public abstract class ModernPacket {
 
 	public abstract void readData(DataInputStream data) throws IOException;
 
-	public abstract void processPacket(EntityPlayerMP player);
+	public abstract void processPacket(EntityPlayer player);
 
 	public abstract void writeData(DataOutputStream data) throws IOException;
 

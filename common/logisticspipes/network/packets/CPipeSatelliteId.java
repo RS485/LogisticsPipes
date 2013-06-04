@@ -4,15 +4,14 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.client.FMLClientHandler;
-import net.minecraft.entity.player.EntityPlayerMP;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.packets.abstracts.CoordinatesPacket;
 import logisticspipes.network.packets.abstracts.ModernPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.player.EntityPlayer;
+import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class CPipeSatelliteId extends CoordinatesPacket {
@@ -43,8 +42,8 @@ public class CPipeSatelliteId extends CoordinatesPacket {
 	}
 
 	@Override
-	public void processPacket(EntityPlayerMP player) {
-		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld);
+	public void processPacket(EntityPlayer player) {
+		final TileGenericPipe pipe = getPipe(player.worldObj);
 		if (pipe == null) {
 			return;
 		}

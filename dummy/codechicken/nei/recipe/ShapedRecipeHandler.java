@@ -24,4 +24,6 @@ public class ShapedRecipeHandler extends TemplateRecipeHandler {
 	public void loadCraftingRecipes(ItemStack result) {}
 
 	public boolean hasOverlay(GuiContainer gui, Container container, int recipe) {return false;}
+
+	public ArrayList<PositionedStack> getIngredientStacks(int recipeIndex) {return null;}
 }

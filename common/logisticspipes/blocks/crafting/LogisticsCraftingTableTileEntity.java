@@ -29,7 +29,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 		matrix.setInventorySlotContents(9, null);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory();
 		for(int i=0; i<9;i++) {
-			craftInv.stackList[i] = matrix.getStackInSlot(i);
+			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
 		for(IRecipe r : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
 			if(r.matches(craftInv, worldObj)) {
@@ -68,7 +68,7 @@ outer:
 		AutoCraftingInventory crafter = new AutoCraftingInventory();
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];
-			crafter.stackList[i] = inv.getStackInSlot(j);
+			crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
 		}
 		ItemStack result = cache.getCraftingResult(crafter);
 		if(result == null) return null;
@@ -76,7 +76,6 @@ outer:
 		crafter = new AutoCraftingInventory();
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];
-			crafter.stackList[i] = inv.decrStackSize(j, 1);
 		}
 		result = cache.getCraftingResult(crafter);
 		//TODO FakePlayer

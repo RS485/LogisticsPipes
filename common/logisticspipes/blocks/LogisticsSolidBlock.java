@@ -1,6 +1,7 @@
 package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
@@ -23,8 +24,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 	public static final int SOLDERING_STATION = 0;
 	public static final int LOGISTICS_POWER_JUNCTION = 1;
 	public static final int LOGISTICS_SECURITY_STATION = 2;
+	public static final int LOGISTICS_AUTOCRAFTING_TABLE = 3;
 	
-	private static final Icon[] icons = new Icon[10];
+	private static final Icon[] icons = new Icon[13];
 	
 	public LogisticsSolidBlock(int par1) {
 		super(par1, Material.iron);
@@ -50,10 +52,18 @@ public class LogisticsSolidBlock extends BlockContainer {
 			case LOGISTICS_SECURITY_STATION:
 				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Security_Station_ID, par1World, par2, par3, par4);
 				return true;
+			case LOGISTICS_AUTOCRAFTING_TABLE:
+				par5EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Auto_Crafting_ID, par1World, par2, par3, par4);
+				return true;
 				default:break;
 			}
 			return false;
 		} else {
+			if(par1World.getBlockMetadata(par2, par3, par4) == LOGISTICS_AUTOCRAFTING_TABLE) {
+				TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
+				((LogisticsCraftingTableTileEntity)tile).debug();
+				return true;
+			}
 			return false;
 		}
 	}
@@ -120,6 +130,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 	    		return instance;
 	    	case LOGISTICS_SECURITY_STATION:
 	    		return new LogisticsSecurityTileEntity();
+			case LOGISTICS_AUTOCRAFTING_TABLE:
+				return new LogisticsCraftingTableTileEntity();
         	default: 
         		return null;
         }
@@ -131,6 +143,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 		case SOLDERING_STATION:
 		case LOGISTICS_POWER_JUNCTION:
 		case LOGISTICS_SECURITY_STATION:
+		case LOGISTICS_AUTOCRAFTING_TABLE:
 			return par1;
 		}
 		return super.damageDropped(par1);
@@ -152,7 +165,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister par1IconRegister)
 	{
-		for(int i=0;i<10;i++)
+		for(int i=0;i<13;i++)
 		{
 			icons[i]=par1IconRegister.registerIcon("logisticspipes:lpsolidblock/"+i);
 		}
@@ -230,6 +243,15 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return icons[5];
 			default: //Front
 				return icons[6];
+			}
+		case LOGISTICS_AUTOCRAFTING_TABLE:
+			switch (side) {
+			case 1: //TOP
+				return icons[11];
+			case 0: //Bottom
+				return icons[12];
+			default: //Front
+				return icons[10];
 			}
 		default:
 			return icons[0];

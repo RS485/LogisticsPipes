@@ -528,6 +528,18 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return LiquidIdentifier.get(itemID, itemDamage);
 	}
 
+	public boolean equalsForCrafting(ItemIdentifier item) {
+		return this.itemID == item.itemID && (item.isDamagable() ? this.itemDamage == item.itemDamage : true);
+	}
+
+	public boolean equalsWithoutNBT(ItemIdentifier item) {
+		return this.itemID == item.itemID && this.itemDamage == item.itemDamage;
+	}
+
+	public boolean isDamagable() {
+		return this.makeNormalStack(0).getItem().isDamageable();
+	}
+
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
 		if((item.getMaxStackSize() > 1 || LogisticsPipes.DEBUG) && nbt.getName() == "") {
 			LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : Root NBTTag has no name");

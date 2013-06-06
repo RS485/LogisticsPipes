@@ -7,6 +7,7 @@ import java.util.Comparator;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
+import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import net.minecraft.item.Item;
 import codechicken.nei.MultiItemRange;
@@ -70,6 +71,7 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 
 		API.registerRecipeHandler(new NEISolderingStationRecipeManager());
 		API.registerUsageHandler(new NEISolderingStationRecipeManager());
+		API.registerGuiOverlayHandler(GuiLogisticsCraftingTable.class, new LogisticsCraftingOverlayHandler(), "crafting");
 	}
 
 	@Override

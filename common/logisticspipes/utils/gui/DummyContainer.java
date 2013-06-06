@@ -111,6 +111,10 @@ public class DummyContainer extends Container{
 	public void addColorSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
 		addSlotToContainer(new ColorSlot(inventory, slotId, xCoord, yCoord));
 	}
+
+	public void addUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		addSlotToContainer(new UnmodifiableSlot(inventory, slotId, xCoord, yCoord));
+	}
 	
 	/**
 	 * Disable shift-clicking to transfer items

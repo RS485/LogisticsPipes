@@ -28,6 +28,8 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 			return "Logistics Power Junction";
 		case LogisticsSolidBlock.LOGISTICS_SECURITY_STATION:
 			return "Logistics Security Station";
+		case LogisticsSolidBlock.LOGISTICS_AUTOCRAFTING_TABLE:
+			return "Logistics Crafting Table";
 		}
 		return super.getItemDisplayName(stack);
 	}
@@ -50,6 +52,7 @@ public class LogisticsSolidBlockItem extends ItemBlock {
 		if(LogisticsPipes.DEBUG) {
 			par3List.add(new ItemStack(this,1,2));
 		}
+		par3List.add(new ItemStack(this,1,3));
 	}
 
 	@Override

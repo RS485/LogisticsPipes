@@ -222,6 +222,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	}
 	
 	public int addCompressed(ItemStack stack) {
+		if(stack == null) return 0;
 		stack = stack.copy();
 		for(int i=0; i<this._contents.length;i++) {
 			if(stack.stackSize <= 0) {

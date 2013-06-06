@@ -6,6 +6,7 @@ import java.util.Map;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
 import logisticspipes.gui.GuiCardManager;
 import logisticspipes.gui.GuiChassiPipe;
@@ -16,6 +17,7 @@ import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLiquidBasic;
 import logisticspipes.gui.GuiLiquidSupplierMk2Pipe;
 import logisticspipes.gui.GuiLiquidSupplierPipe;
+import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
 import logisticspipes.gui.GuiRoutingStats;
@@ -471,6 +473,24 @@ public class GuiHandler implements IGuiHandler {
 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, 0, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).getPacket(), (Player)player);
 				return new DummyContainer(player.inventory, null);
 				
+			case GuiIDs.GUI_Auto_Crafting_ID:
+				if(!(tile instanceof LogisticsCraftingTableTileEntity)) return null;
+				dummy = new DummyContainer(player.inventory, ((LogisticsCraftingTableTileEntity)tile).matrix);
+
+				for(int X=0;X<3;X++) {
+					for(int Y=0;Y<3;Y++) {
+						dummy.addDummySlot(Y*3 + X, 35 + X*18, 10 + Y*18);
+					}
+				}
+				dummy.addUnmodifiableSlot(9, ((LogisticsCraftingTableTileEntity)tile).matrix, 125, 28);
+				for(int X=0;X<9;X++) {
+					for(int Y=0;Y<2;Y++) {
+						dummy.addNormalSlot(Y*9 + X, ((LogisticsCraftingTableTileEntity)tile).inv, 8 + X*18, 80 + Y*18);
+					}
+				}
+				dummy.addNormalSlotsForPlayerInventory(8, 135);
+				return dummy;
+				
 			default:break;
 			}
 		} else {
@@ -849,7 +869,11 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
 				return new GuiApiaristAnalyser((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule(), pipe.pipe, FMLClientHandler.instance().getClient().currentScreen, player.inventory);
-				
+			
+			case GuiIDs.GUI_Auto_Crafting_ID:
+				if(!(tile instanceof LogisticsCraftingTableTileEntity)) return null;
+				return new GuiLogisticsCraftingTable(player, (LogisticsCraftingTableTileEntity)tile);
+	
 			default:break;
 			}
 		} else {

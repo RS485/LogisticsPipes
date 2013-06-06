@@ -2,7 +2,6 @@ package logisticspipes.network.packets;
 
 import buildcraft.transport.TileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.packets.abstracts.CoordinatesPacket;
 import logisticspipes.network.packets.abstracts.ModernPacket;

@@ -47,14 +47,15 @@ public abstract class CoordinatesPacket extends ModernPacket {
 
 	}
 
-	// BuildCraft method
+	@SuppressWarnings("unchecked")
 	/**
-	 * Retrieves pipe at packet coordinates if any.
+	 * Retrieves tileEntity at packet coordinates if any.
 	 * 
 	 * @param world
-	 * @return
+	 * @param clazz
+	 * @return TileEntity
 	 */
-	public TileGenericPipe getPipe(World world) {
+	public <T extends TileEntity> T getTile(World world, Class<T> clazz) {
 		if (world == null) {
 			return null;
 		}
@@ -63,12 +64,17 @@ public abstract class CoordinatesPacket extends ModernPacket {
 		}
 
 		final TileEntity tile = world.getBlockTileEntity(getPosX(), getPosY(), getPosZ());
-		if (!(tile instanceof TileGenericPipe)) {
-			return null;
-		}
-
-		return (TileGenericPipe) tile;
+		if(!(clazz.isAssignableFrom(tile.getClass()))) return null;
+		return (T) tile;
 	}
-	// BuildCraft method end
 
+	/**
+	 * Retrieves pipe at packet coordinates if any.
+	 * 
+	 * @param world
+	 * @return
+	 */
+	public TileGenericPipe getPipe(World world) {
+		return getTile(world, TileGenericPipe.class);
+	}
 }

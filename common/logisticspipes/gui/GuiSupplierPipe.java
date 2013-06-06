@@ -12,6 +12,9 @@ import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.SupPipeNextMode;
+import logisticspipes.network.packets.abstracts.ModernPacket;
 import logisticspipes.network.packets.old.PacketCoordinates;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
@@ -79,7 +82,8 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			final ModernPacket packet = PacketHandler.getPacket(SupPipeNextMode.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord);
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 		super.actionPerformed(guibutton);
 		

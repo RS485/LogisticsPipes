@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.WeakHashMap;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.config.Configs;
 import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.NetworkConstants;
@@ -18,6 +19,7 @@ import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.ServerListenThread;
 import net.minecraft.server.ThreadMinecraftServer;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -234,5 +236,9 @@ public class MainProxy {
 	public static void spawnParticle(int particle, int xCoord, int yCoord, int zCoord, int amount) {
 		if(!Configs.ENABLE_PARTICLE_FX || !Minecraft.isFancyGraphicsEnabled()) return;
 		PipeFXRenderHandler.spawnGenericParticle(particle, xCoord, yCoord, zCoord, amount);
+	}
+	
+	public static EntityPlayer getFakePlayer(TileEntity tile) {
+		return new FakePlayer(tile);
 	}
 }

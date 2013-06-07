@@ -57,15 +57,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 				return true;
 				default:break;
 			}
-			return false;
-		} else {
-			if(par1World.getBlockMetadata(par2, par3, par4) == LOGISTICS_AUTOCRAFTING_TABLE) {
-				TileEntity tile = par1World.getBlockTileEntity(par2, par3, par4);
-				((LogisticsCraftingTableTileEntity)tile).debug();
-				return true;
-			}
-			return false;
 		}
+		return false;
 	}
 
 	@Override

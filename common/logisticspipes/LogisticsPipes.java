@@ -53,6 +53,7 @@ import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft
 import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
+import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
 import logisticspipes.proxy.recipeproviders.RollingMachine;
 import logisticspipes.proxy.recipeproviders.SolderingStation;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
@@ -377,6 +378,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
+		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
 		if (RollingMachine.load())
 			SimpleServiceLocator.addCraftingRecipeProvider(new RollingMachine());
 		

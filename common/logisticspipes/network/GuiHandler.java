@@ -482,7 +482,7 @@ public class GuiHandler implements IGuiHandler {
 						dummy.addDummySlot(Y*3 + X, 35 + X*18, 10 + Y*18);
 					}
 				}
-				dummy.addUnmodifiableSlot(9, ((LogisticsCraftingTableTileEntity)tile).matrix, 125, 28);
+				dummy.addUnmodifiableSlot(0, ((LogisticsCraftingTableTileEntity)tile).resultInv, 125, 28);
 				for(int X=0;X<9;X++) {
 					for(int Y=0;Y<2;Y++) {
 						dummy.addNormalSlot(Y*9 + X, ((LogisticsCraftingTableTileEntity)tile).inv, 8 + X*18, 80 + Y*18);

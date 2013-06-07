@@ -61,10 +61,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
-
-		delay = 10*20 + world.getTotalWorldTime(); //10 seconds, it should be delivered by then
-//		delay = 62; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
 		
+		if(world != null) {
+			delay = 10*20 + world.getTotalWorldTime(); //10 seconds, it should be delivered by then
+		} else {
+			delay = 62; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
+		}
 		
 		if(entityItem.getContribution("routingInformation") == null) {
 			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));

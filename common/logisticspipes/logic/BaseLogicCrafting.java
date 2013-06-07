@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.concurrent.DelayQueue;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.logistics.LogisticsManagerV2;
@@ -45,6 +46,8 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.ForgeDirection;
 import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;

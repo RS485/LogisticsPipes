@@ -20,7 +20,7 @@ public class GuiLogisticsCraftingTable extends KraphtBaseGuiScreen {
 				dummy.addDummySlot(y*3 + x, 35 + x*18, 10 + y*18);
 			}
 		}
-		dummy.addUnmodifiableSlot(9, crafter.matrix, 125, 28);
+		dummy.addUnmodifiableSlot(0, crafter.resultInv, 125, 28);
 		for(int x=0;x<9;x++) {
 			for(int y=0;y<2;y++) {
 				dummy.addNormalSlot(y*9 + x, crafter.inv, 8 + x*18, 80 + y*18);

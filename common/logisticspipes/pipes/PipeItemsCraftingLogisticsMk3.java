@@ -9,7 +9,7 @@ import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketPipeInvContent;
+import logisticspipes.network.oldpackets.PacketPipeInvContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;

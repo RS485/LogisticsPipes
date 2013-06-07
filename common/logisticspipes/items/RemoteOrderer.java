@@ -5,7 +5,7 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketInteger;
+import logisticspipes.network.oldpackets.PacketInteger;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.renderer.texture.IconRegister;

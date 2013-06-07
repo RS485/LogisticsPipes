@@ -11,7 +11,7 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketModuleInteger;
+import logisticspipes.network.oldpackets.PacketModuleInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;

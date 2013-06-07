@@ -2,7 +2,7 @@ package logisticspipes.gui.orderer;
 
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketCoordinates;
+import logisticspipes.network.oldpackets.PacketCoordinates;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;

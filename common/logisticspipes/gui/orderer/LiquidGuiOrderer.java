@@ -1,8 +1,8 @@
 package logisticspipes.gui.orderer;
 
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketPipeInteger;
-import logisticspipes.network.packets.old.PacketRequestSubmit;
+import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.oldpackets.PacketRequestSubmit;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;

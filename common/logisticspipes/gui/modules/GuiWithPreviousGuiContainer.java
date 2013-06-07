@@ -2,7 +2,7 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketPipeInteger;
+import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.client.gui.GuiScreen;

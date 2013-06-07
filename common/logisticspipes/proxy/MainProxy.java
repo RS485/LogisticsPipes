@@ -8,7 +8,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketRenderFX;
+import logisticspipes.network.oldpackets.PacketRenderFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;

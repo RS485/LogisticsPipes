@@ -10,7 +10,7 @@ import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketPipeInteger;
+import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;

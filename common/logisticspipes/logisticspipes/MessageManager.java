@@ -2,9 +2,9 @@ package logisticspipes.logisticspipes;
 
 import java.util.LinkedList;
 
-import logisticspipes.network.packets.old.PacketCraftingLoop;
-import logisticspipes.network.packets.old.PacketItems;
-import logisticspipes.network.packets.old.PacketSimulate;
+import logisticspipes.network.oldpackets.PacketCraftingLoop;
+import logisticspipes.network.oldpackets.PacketItems;
+import logisticspipes.network.oldpackets.PacketSimulate;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;

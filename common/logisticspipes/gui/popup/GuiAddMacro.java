@@ -5,7 +5,7 @@ import java.util.List;
 
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketItem;
+import logisticspipes.network.oldpackets.PacketItem;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;

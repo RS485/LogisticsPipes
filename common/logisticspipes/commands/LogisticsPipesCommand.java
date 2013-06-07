@@ -8,7 +8,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.packets.old.PacketLogisticsPipes;
+import logisticspipes.network.oldpackets.PacketLogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;

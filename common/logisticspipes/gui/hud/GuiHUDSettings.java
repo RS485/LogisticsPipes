@@ -3,7 +3,7 @@ package logisticspipes.gui.hud;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.packets.old.PacketHUDSettings;
+import logisticspipes.network.oldpackets.PacketHUDSettings;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;

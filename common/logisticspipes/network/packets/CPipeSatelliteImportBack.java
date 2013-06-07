@@ -7,8 +7,8 @@ import java.util.LinkedList;
 
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.SendNBTTagCompound;
-import logisticspipes.network.packets.abstracts.CoordinatesPacket;
-import logisticspipes.network.packets.abstracts.ModernPacket;
+import logisticspipes.network.abstractpackets.CoordinatesPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

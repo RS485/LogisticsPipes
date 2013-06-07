@@ -1,4 +1,4 @@
-package logisticspipes.network.packets.abstracts;
+package logisticspipes.network.abstractpackets;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;

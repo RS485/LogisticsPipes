@@ -42,7 +42,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
-import logisticspipes.network.packets.abstracts.ModernPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.old.PacketBufferTransfer;
 import logisticspipes.network.packets.old.PacketCoordinatesUUID;
 import logisticspipes.network.packets.old.PacketCraftingLoop;

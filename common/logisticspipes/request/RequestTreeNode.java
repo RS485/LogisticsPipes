@@ -59,8 +59,12 @@ public class RequestTreeNode {
 		if(requestFlags.contains(ActiveRequestType.Provide) && checkProvider()){
 			return;
 		}
+
+		if(requestFlags.contains(ActiveRequestType.Craft) && checkExtras()) {
+			return;// crafting was able to complete
+		}
 		
-		if(requestFlags.contains(ActiveRequestType.Craft) && checkExtras() && checkCrafting()) {
+		if(requestFlags.contains(ActiveRequestType.Craft) && checkCrafting()) {
 			return;// crafting was able to complete
 		}
 		

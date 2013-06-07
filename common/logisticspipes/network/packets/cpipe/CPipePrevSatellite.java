@@ -1,4 +1,4 @@
-package logisticspipes.network.packets;
+package logisticspipes.network.packets.cpipe;
 
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;

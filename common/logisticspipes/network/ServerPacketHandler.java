@@ -54,7 +54,7 @@ import logisticspipes.network.oldpackets.PacketRequestGuiContent;
 import logisticspipes.network.oldpackets.PacketRequestSubmit;
 import logisticspipes.network.oldpackets.PacketStringCoordinates;
 import logisticspipes.network.oldpackets.PacketStringList;
-import logisticspipes.network.packets.CPipeSatelliteImportBack;
+import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;

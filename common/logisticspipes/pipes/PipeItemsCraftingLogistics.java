@@ -41,7 +41,7 @@ import logisticspipes.network.oldpackets.PacketCoordinates;
 import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.network.oldpackets.PacketPipeInvContent;
 import logisticspipes.network.oldpackets.PacketPipeUpdate;
-import logisticspipes.network.packets.CPipeSatelliteImportBack;
+import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;

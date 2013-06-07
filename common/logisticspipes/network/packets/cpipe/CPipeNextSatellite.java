@@ -1,4 +1,4 @@
-package logisticspipes.network.packets;
+package logisticspipes.network.packets.cpipe;
 
 import buildcraft.transport.TileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;

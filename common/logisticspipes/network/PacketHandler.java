@@ -35,7 +35,8 @@ public class PacketHandler implements IPacketHandler {
 		try {
 
 			final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath
-					.from(this.getClass().getClassLoader()).getTopLevelClasses(
+					.from(this.getClass().getClassLoader())
+					.getTopLevelClassesRecursive(
 							"logisticspipes.network.packets"));
 			Collections.sort(classes, new Comparator<ClassInfo>() {
 				@Override

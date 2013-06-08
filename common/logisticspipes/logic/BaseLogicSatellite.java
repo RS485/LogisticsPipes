@@ -19,7 +19,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.oldpackets.PacketCoordinates;
 import logisticspipes.network.oldpackets.PacketPipeInteger;
-import logisticspipes.network.packets.SatPipeNext;
+import logisticspipes.network.packets.satpipe.SatPipeNext;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;

@@ -1,4 +1,4 @@
-package logisticspipes.network.packets;
+package logisticspipes.network.packets.satpipe;
 
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;

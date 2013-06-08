@@ -10,7 +10,6 @@ import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.LogisticsExtraPromise;

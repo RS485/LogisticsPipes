@@ -20,7 +20,6 @@ import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityNote;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;

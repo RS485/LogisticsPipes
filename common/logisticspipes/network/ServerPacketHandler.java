@@ -18,8 +18,6 @@ import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logic.BaseLogicCrafting;
-import logisticspipes.logic.BaseLogicLiquidSatellite;
-import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
@@ -102,11 +100,6 @@ public class ServerPacketHandler {
 			}
 			
 			switch (packetID) {
-				case NetworkConstants.SATELLITE_PIPE_PREV:
-					final PacketCoordinates packetD = new PacketCoordinates();
-					packetD.readData(data);
-					onSatellitePipePrev(player, packetD);
-					break;
 				case NetworkConstants.CHASSI_GUI_PACKET_ID:
 					final PacketPipeInteger packetE = new PacketPipeInteger();
 					packetE.readData(data);
@@ -424,20 +417,6 @@ public class ServerPacketHandler {
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private static void onSatellitePipePrev(EntityPlayerMP player, PacketCoordinates packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (pipe.pipe.logic instanceof BaseLogicSatellite) {
-			((BaseLogicSatellite) pipe.pipe.logic).setPrevId(player);
-		}
-		if (pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
-			((BaseLogicLiquidSatellite) pipe.pipe.logic).setPrevId(player);
 		}
 	}
 

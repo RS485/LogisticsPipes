@@ -11,7 +11,7 @@ import java.util.LinkedList;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.ClientPacketHandler;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.oldpackets.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Pair;
@@ -138,7 +138,11 @@ public class ClientPacketBufferHandlerThread {
 							}
 						}
 						if(flag) {
-							ClientPacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+							try {
+								PacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					} while(flag);
 				}

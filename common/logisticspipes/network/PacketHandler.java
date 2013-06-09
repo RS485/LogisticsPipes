@@ -82,6 +82,11 @@ public class PacketHandler implements IPacketHandler {
 		}
 		final DataInputStream data = new DataInputStream(
 				new ByteArrayInputStream(packet.data));
+		onPacketData(data, player);
+	}
+
+	public static void onPacketData(final DataInputStream data, final Player player)
+			throws IOException {
 		final int packetID = data.read();
 		if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
 			ClientPacketHandler.onPacketData(data, player, packetID);

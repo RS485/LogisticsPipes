@@ -14,7 +14,7 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import logisticspipes.network.ServerPacketHandler;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.oldpackets.PacketBufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Pair;
@@ -152,7 +152,11 @@ public class ServerPacketBufferHandlerThread {
 							}
 						}
 						if(flag) {
-							ServerPacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+							try {
+								PacketHandler.onPacketData(new DataInputStream(new ByteArrayInputStream(part.getValue2())), part.getValue1());
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
 						}
 					} while(flag);
 				}

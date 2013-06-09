@@ -11,6 +11,7 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -188,6 +189,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			return;
 		case 4:
 			_logic.openAttachedGui(_player);
+			RenderTickHandler.addGuiToReopen(_logic.xCoord, _logic.yCoord, _logic.zCoord, getGuiID());
 			return;
 		case 20:
 			_logic.priorityUp(_player);

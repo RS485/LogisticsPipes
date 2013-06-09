@@ -4,11 +4,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.GuiReopenPacket;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.ObfuscationHelper;
 import logisticspipes.utils.ObfuscationHelper.NAMES;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 
@@ -20,12 +28,29 @@ import cpw.mods.fml.common.TickType;
 
 public class RenderTickHandler implements ITickHandler {
 
+	@AllArgsConstructor
+	private static class GuiEntry {
+		@Getter
+		private final int xCoord;
+		@Getter
+		private final int yCoord;
+		@Getter
+		private final int zCoord;
+		@Getter
+		private final int guiID;
+		@Getter @Setter
+		private boolean isActive;
+	}
+	
+	private long renderTicks=0;
+	private static Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
+	private int emptyCounter = 0;
+	private int fullCounter = 0;
+
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {
 		
 	}
-	
-	private long renderTicks=0;
 	
 	private Method getSetupCameraTransformMethod() throws NoSuchMethodException {
 		Minecraft mc = FMLClientHandler.instance().getClient();
@@ -91,6 +116,29 @@ public class RenderTickHandler implements ITickHandler {
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 				GL11.glPopMatrix();
 			}
+			//Handle GuiRepoen
+			if(!guiPos.isEmpty()) {
+				if(FMLClientHandler.instance().getClient().currentScreen == null) {
+					fullCounter = 0;
+					emptyCounter++;
+					if(emptyCounter > 5) {
+						GuiEntry part = guiPos.peek();
+						if(part.isActive()) {
+							part = guiPos.poll();
+							MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()).getPacket());
+						}
+						emptyCounter = 0;
+					}
+				} else {
+					emptyCounter = 0;
+					fullCounter++;
+					if(fullCounter > 5) {
+						GuiEntry part = guiPos.peek();
+						part.setActive(true);
+						fullCounter = 0;
+					}
+				}
+			}
 		}
 	}
 	
@@ -102,5 +150,9 @@ public class RenderTickHandler implements ITickHandler {
 	@Override
 	public String getLabel() {
 		return "LogisticsPipes Renderer";
+	}
+	
+	public static void addGuiToReopen(int xCoord, int yCoord, int zCoord, int guiID) {
+		guiPos.add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
 	}
 }

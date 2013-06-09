@@ -1,6 +1,5 @@
 package logisticspipes.network;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.util.Collection;
@@ -71,8 +70,6 @@ import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.network.INetworkManager;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
@@ -82,11 +79,6 @@ import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler {
 
-	public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-		onPacketData(data, player);
-	}
-	
 	public static void onPacketData(DataInputStream data, Player playerFML) {
 		EntityPlayerMP player = (EntityPlayerMP) playerFML;
 		

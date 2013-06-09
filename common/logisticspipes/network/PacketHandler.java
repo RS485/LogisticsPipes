@@ -1,5 +1,7 @@
 package logisticspipes.network;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -75,10 +77,12 @@ public class PacketHandler implements IPacketHandler {
 		if (packet.data == null) {
 			new Exception("Packet content has been null").printStackTrace();
 		}
+		final DataInputStream data = new DataInputStream(
+				new ByteArrayInputStream(packet.data));
 		if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
-			ClientPacketHandler.onPacketData(manager, packet, player);
+			ClientPacketHandler.onPacketData(data, player);
 		} else {
-			ServerPacketHandler.onPacketData(manager, packet, player);
+			ServerPacketHandler.onPacketData(data, player);
 		}
 	}
 }

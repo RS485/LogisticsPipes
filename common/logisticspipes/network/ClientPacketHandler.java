@@ -1,6 +1,5 @@
 package logisticspipes.network;
 
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -83,7 +82,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -93,11 +91,6 @@ import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
 
 public class ClientPacketHandler {
-	
-	public static void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
-		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
-		onPacketData(data, player);
-	}
 	
 	public static void onPacketData(DataInputStream data, Player player) {
 		try {

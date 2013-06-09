@@ -94,6 +94,8 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		ItemStack[] stack = sinv.extractItem(false, direction, 1);
 		if (stack == null || stack.length < 1 || stack[0] == null) return;
 		if (!(_power.canUseEnergy(100))) return;
+		
+		currentTickCount = ticksToOperation;
 
 		if(reinsertBee(stack[0], sinv, direction))
 			return;

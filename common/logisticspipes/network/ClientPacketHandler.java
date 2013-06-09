@@ -599,11 +599,6 @@ public class ClientPacketHandler {
 	}
 
 	private static void handleBeePacketNBT(PacketModuleNBT packet) {
-		if(packet.slot < 0) {
-			//EntityPlayer player = FMLClientHandler.instance().getClient().thePlayer;
-			//ItemStack module = player.inventory.mainInventory[packet.posZ];
-			return;
-		}
 		final TileGenericPipe tile = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(tile == null) {
 			return;

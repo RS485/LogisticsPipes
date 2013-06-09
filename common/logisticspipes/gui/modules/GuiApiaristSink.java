@@ -84,13 +84,8 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.FilterTypeDown();
 			}
-			if(gui.slot > 0) {
-				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 3, setting.filterType.ordinal());
-				MainProxy.sendPacketToServer(packet.getPacket());
-			} else {
-				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, 0, -1, -1-slot, 20, row, 3, setting.filterType.ordinal());
-				MainProxy.sendPacketToServer(packet.getPacket());
-			}
+			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 3, setting.filterType.ordinal());
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
 		@Override
@@ -157,13 +152,8 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 			if(button == 1) {
 				setting.filterGroupDown();
 			}
-			if(gui.slot >= 0) {
-				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, 2, setting.filterGroup);
-				MainProxy.sendPacketToServer(packet.getPacket());
-			} else {
-				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 2, setting.filterGroup);
-				MainProxy.sendPacketToServer(packet.getPacket());
-			}
+			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 2, setting.filterGroup);
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
 		@Override
@@ -273,13 +263,8 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 					setting.secondBeeDown();
 				}
 			}
-			if(slot < 0) {
-				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, pipe.xCoord, pipe.yCoord, pipe.zCoord, gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
-				MainProxy.sendPacketToServer(packet.getPacket());
-			} else {
-				PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, slotNumber, 0);
-				MainProxy.sendPacketToServer(packet.getPacket());
-			}
+			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
 		@Override
@@ -299,7 +284,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 
 		@Override
 		public boolean drawSlotIcon() {
-			return drawSlotBackground() && (slotNumber == 0 ? setting.firstBee : setting.secondBee) != "";
+			return drawSlotBackground() && !(slotNumber == 0 ? setting.firstBee : setting.secondBee).isEmpty();
 		}
 
 		@Override

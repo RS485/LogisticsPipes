@@ -34,9 +34,4 @@ public class RestrictedSlot extends Slot {
     		return slotCheck.isStackAllowed(par1ItemStack);
     	}
     }
-
-	@Override
-	public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
-		return false;
-	}
 }

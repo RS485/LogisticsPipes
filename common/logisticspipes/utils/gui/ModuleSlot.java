@@ -29,9 +29,4 @@ public class ModuleSlot extends RestrictedSlot {
 		if(par1ItemStack.getItemDamage() == 0) return false;
 		return super.isItemValid(par1ItemStack);
 	}
-
-	@Override
-	public boolean canTakeStack(EntityPlayer par1EntityPlayer) {
-		return false;
-	}
 }

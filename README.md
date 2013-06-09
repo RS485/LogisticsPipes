@@ -12,6 +12,8 @@ Credits for the idea and basic code go to Krapht.
 
 [Jenkins recent releases](http://ci.thezorro266.com/job/LogisticsPipes/)
 
+[Jenkins dev builds (unstable!)](http://ci.thezorro266.com/job/LogisticsPipes-dev/)
+
 ##Builds
 
 [Jenkins] (http://ci.thezorro266.com/)

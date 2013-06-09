@@ -2,6 +2,7 @@ package logisticspipes.network;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
+import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -71,6 +73,7 @@ public class PacketHandler implements IPacketHandler {
 		}
 	}
 
+	@SneakyThrows(IOException.class)
 	@Override
 	public void onPacketData(INetworkManager manager,
 			Packet250CustomPayload packet, Player player) {
@@ -79,10 +82,11 @@ public class PacketHandler implements IPacketHandler {
 		}
 		final DataInputStream data = new DataInputStream(
 				new ByteArrayInputStream(packet.data));
+		final int packetID = data.read();
 		if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
-			ClientPacketHandler.onPacketData(data, player);
+			ClientPacketHandler.onPacketData(data, player, packetID);
 		} else {
-			ServerPacketHandler.onPacketData(data, player);
+			ServerPacketHandler.onPacketData(data, player, packetID);
 		}
 	}
 }

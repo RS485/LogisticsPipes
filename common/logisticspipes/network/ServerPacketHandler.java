@@ -79,12 +79,11 @@ import cpw.mods.fml.common.network.Player;
 
 public class ServerPacketHandler {
 
-	public static void onPacketData(DataInputStream data, Player playerFML) {
+	public static void onPacketData(final DataInputStream data,
+			final Player playerFML, final int packetID) {
 		EntityPlayerMP player = (EntityPlayerMP) playerFML;
 		
 		try {
-			final int packetID = data.read();
-			
 			if (packetID>=200){//TODO: Temporary until all packets get converted
 				final ModernPacket packet = PacketHandler.packetlist.get(packetID-200).template();
 				packet.readData(data);

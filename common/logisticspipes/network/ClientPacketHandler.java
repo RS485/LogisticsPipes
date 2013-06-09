@@ -92,9 +92,9 @@ import cpw.mods.fml.common.network.Player;
 
 public class ClientPacketHandler {
 	
-	public static void onPacketData(DataInputStream data, Player player) {
+	public static void onPacketData(final DataInputStream data,
+			final Player player, final int packetID) {
 		try {
-			final int packetID = data.read();
 			if (packetID>=200){//TODO: Temporary until all packets get converted
 				final ModernPacket packet = PacketHandler.packetlist.get(packetID-200).template();
 				packet.readData(data);

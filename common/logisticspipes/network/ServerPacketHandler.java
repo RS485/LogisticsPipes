@@ -33,7 +33,6 @@ import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.oldpackets.PacketBufferTransfer;
 import logisticspipes.network.oldpackets.PacketCoordinates;
 import logisticspipes.network.oldpackets.PacketHUDSettings;
@@ -84,12 +83,6 @@ public class ServerPacketHandler {
 		EntityPlayerMP player = (EntityPlayerMP) playerFML;
 		
 		try {
-			if (packetID>=200){//TODO: Temporary until all packets get converted
-				final ModernPacket packet = PacketHandler.packetlist.get(packetID-200).template();
-				packet.readData(data);
-				packet.processPacket(player);
-			}
-			
 			switch (packetID) {
 				case NetworkConstants.CHASSI_GUI_PACKET_ID:
 					final PacketPipeInteger packetE = new PacketPipeInteger();

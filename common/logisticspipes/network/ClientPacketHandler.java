@@ -41,7 +41,6 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
-import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.oldpackets.PacketBufferTransfer;
 import logisticspipes.network.oldpackets.PacketCoordinatesUUID;
 import logisticspipes.network.oldpackets.PacketCraftingLoop;
@@ -79,7 +78,6 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -95,12 +93,6 @@ public class ClientPacketHandler {
 	public static void onPacketData(final DataInputStream data,
 			final Player player, final int packetID) {
 		try {
-			if (packetID>=200){//TODO: Temporary until all packets get converted
-				final ModernPacket packet = PacketHandler.packetlist.get(packetID-200).template();
-				packet.readData(data);
-				packet.processPacket((EntityPlayer)player);
-			}
-			
 			switch (packetID) {
 				case NetworkConstants.SATELLITE_PIPE_SATELLITE_ID:
 					final PacketPipeInteger packetB = new PacketPipeInteger();

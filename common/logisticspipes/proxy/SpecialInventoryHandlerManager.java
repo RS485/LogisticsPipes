@@ -27,7 +27,7 @@ public class SpecialInventoryHandlerManager {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new AEInterfaceInventoryHandler());
 		}
 
-		if(Loader.isModLoaded("MFReloaded")) {
+		if(Loader.isModLoaded("MineFactoryReloaded")) {
 			SimpleServiceLocator.inventoryUtilFactory.registerHandler(new DSUInventoryHandler());
 		}
 

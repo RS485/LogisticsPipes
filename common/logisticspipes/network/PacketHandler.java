@@ -30,11 +30,14 @@ public class PacketHandler implements IPacketHandler {
 	public static Map<Class<? extends ModernPacket>, ModernPacket> packetmap;
 
 	@SuppressWarnings("unchecked")
+	// Suppressed because this cast should never fail.
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
 		return (T) packetmap.get(clazz).template();
 	}
 
 	@SuppressWarnings("unchecked")
+	// Suppressed because there shouldn't be non packet classes in the packets
+	// directory.
 	public PacketHandler() {
 		try {
 

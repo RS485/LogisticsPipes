@@ -42,7 +42,7 @@ public class GuiReopenPacket extends CoordinatesPacket {
 	
 	@Override
 	public ModernPacket template() {
-		return new GuiReopenPacket(getID());
+		return new GuiReopenPacket(getId());
 	}
 	
 }

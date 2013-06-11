@@ -15,7 +15,7 @@ public class SatPipeNext extends CoordinatesPacket {
 
 	@Override
 	public ModernPacket template() {
-		return new SatPipeNext(getID());
+		return new SatPipeNext(getId());
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import logisticspipes.network.NetworkConstants;
+import lombok.Getter;
 
 public abstract class ModernPacket {
 
@@ -25,7 +26,7 @@ public abstract class ModernPacket {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		DataOutputStream data = new DataOutputStream(bytes);
 		try {
-			data.writeByte(getID());
+			data.writeByte(getId());
 			writeData(data);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -37,6 +38,7 @@ public abstract class ModernPacket {
 		return packet;
 	}
 
+	@Getter
 	private final int id;
 
 	public ModernPacket(int id) {
@@ -45,9 +47,5 @@ public abstract class ModernPacket {
 	}
 
 	public abstract ModernPacket template();
-
-	public int getID() {
-		return id;
-	}
 
 }

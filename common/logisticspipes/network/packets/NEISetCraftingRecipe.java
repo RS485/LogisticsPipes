@@ -35,7 +35,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	
 	@Override
 	public ModernPacket template() {
-		return new NEISetCraftingRecipe(getID());
+		return new NEISetCraftingRecipe(getId());
 	}
 
 	@Override

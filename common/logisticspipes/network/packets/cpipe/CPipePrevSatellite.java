@@ -14,7 +14,7 @@ public class CPipePrevSatellite extends CoordinatesPacket {
 
 	@Override
 	public ModernPacket template() {
-		return new CPipePrevSatellite(getID());
+		return new CPipePrevSatellite(getId());
 	}
 
 	@Override

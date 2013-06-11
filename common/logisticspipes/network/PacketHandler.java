@@ -31,7 +31,7 @@ public class PacketHandler implements IPacketHandler {
 
 	@SuppressWarnings("unchecked")
 	public static <T extends ModernPacket> T getPacket(Class<T> clazz) {
-		return (T)packetmap.get(clazz).template();
+		return (T) packetmap.get(clazz).template();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -85,8 +85,8 @@ public class PacketHandler implements IPacketHandler {
 		onPacketData(data, player);
 	}
 
-	public static void onPacketData(final DataInputStream data, final Player player)
-			throws IOException {
+	public static void onPacketData(final DataInputStream data,
+			final Player player) throws IOException {
 		final int packetID = data.read();
 		if (packetID >= 200) {// TODO: Temporary until all packets get converted
 			final ModernPacket packet = PacketHandler.packetlist.get(

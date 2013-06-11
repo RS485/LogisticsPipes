@@ -126,6 +126,9 @@ public class WorldTickHandler implements ITickHandler {
 		LiquidIdentifier.initFromForge(true);
 		if(type.contains(TickType.SERVER)) {
 			HudUpdateTick.tick();
+			Watchdog.tickServer();
+		} else {
+			Watchdog.tickClient();
 		}
 	}
 

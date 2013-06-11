@@ -11,6 +11,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.oldpackets.PacketLogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.ticks.Watchdog;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
@@ -84,6 +85,16 @@ public class LogisticsPipesCommand extends CommandBase {
         	sender.sendChatToPlayer("- routingthread : Display Routing thread status information.");
         	sender.sendChatToPlayer("- transfernames : Sends all item names form the client to the server to update the Language Database.");//TODO
         	return;
+        } else if(LogisticsPipes.DEBUG) {
+			if(arguments[0].equalsIgnoreCase("thread")) {
+	        	sender.sendChatToPlayer("Toggled Detection");
+	        	Watchdog.toggledByCommand = true;
+	        	return;
+	        } else if(arguments[0].equalsIgnoreCase("watch")) {
+	        	new Watchdog(MainProxy.proxy.getSide().equals("Client"));
+	        	sender.sendChatToPlayer("Starting Watchdog");
+	        	return;
+	        }
         }
     	throw new WrongUsageException(this.getCommandUsage(sender));
 	}

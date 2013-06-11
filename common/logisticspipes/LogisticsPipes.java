@@ -146,6 +146,7 @@ public class LogisticsPipes {
 	public static final String MCVersion = "%MCVERSION%";
 	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;
+	public static boolean WATCHDOG = false;
 	
 	private boolean certificateError = false;
 
@@ -279,6 +280,7 @@ public class LogisticsPipes {
 		}
 		if(DEV_BUILD && !MainProxy.proxy.getSide().equals("Bukkit")) {
 			new Watchdog(evt.getSide() == Side.CLIENT);
+			WATCHDOG = true;
 		}
 	}
 	

@@ -86,12 +86,9 @@ public class LogisticsPipesCommand extends CommandBase {
         	sender.sendChatToPlayer("- transfernames : Sends all item names form the client to the server to update the Language Database.");//TODO
         	return;
         } else if(LogisticsPipes.DEBUG) {
-			if(arguments[0].equalsIgnoreCase("thread")) {
-	        	sender.sendChatToPlayer("Toggled Detection");
-	        	Watchdog.toggledByCommand = true;
-	        	return;
-	        } else if(arguments[0].equalsIgnoreCase("watch")) {
+			if(arguments[0].equalsIgnoreCase("watch")) {
 	        	new Watchdog(MainProxy.proxy.getSide().equals("Client"));
+				LogisticsPipes.WATCHDOG = true;
 	        	sender.sendChatToPlayer("Starting Watchdog");
 	        	return;
 	        }

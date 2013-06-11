@@ -12,11 +12,15 @@ import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
+import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleSatelite;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.network.oldpackets.PacketPipeInvContent;
+import logisticspipes.network.packets.satpipe.SatPipeSetID;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
@@ -138,7 +142,8 @@ public class PipeLiquidSatelliteLogistics extends LiquidRoutedPipe implements IR
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, getX(), getY(), getZ(), ((BaseLogicLiquidSatellite)this.logic).satelliteId).getPacket(), (Player)player);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(((BaseLogicSatellite)this.logic).satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
+			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);

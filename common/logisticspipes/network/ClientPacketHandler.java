@@ -27,8 +27,6 @@ import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.logic.BaseLogicCrafting;
-import logisticspipes.logic.BaseLogicLiquidSatellite;
-import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
@@ -94,11 +92,6 @@ public class ClientPacketHandler {
 			final Player player, final int packetID) {
 		try {
 			switch (packetID) {
-				case NetworkConstants.SATELLITE_PIPE_SATELLITE_ID:
-					final PacketPipeInteger packetB = new PacketPipeInteger();
-					packetB.readData(data);
-					onSatellitePipeSetSatellite(packetB);
-					break;
 				case NetworkConstants.ORDERER_CONTENT_ANSWER:
 					final PacketRequestGuiContent packetC = new PacketRequestGuiContent();
 					packetC.readData(data);
@@ -372,20 +365,6 @@ public class ClientPacketHandler {
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private static void onSatellitePipeSetSatellite(PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (pipe.pipe.logic instanceof BaseLogicSatellite) {
-			((BaseLogicSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
-		}
-		if (pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
-			((BaseLogicLiquidSatellite) pipe.pipe.logic).setSatelliteId(packet.integer);
 		}
 	}
 

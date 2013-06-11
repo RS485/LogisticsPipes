@@ -14,12 +14,11 @@ import java.util.LinkedList;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.network.packets.satpipe.SatPipeNext;
 import logisticspipes.network.packets.satpipe.SatPipePrev;
+import logisticspipes.network.packets.satpipe.SatPipeSetID;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -97,7 +96,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 		}
 		updateWatchers();
@@ -110,7 +109,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 			final ModernPacket packet = PacketHandler.getPacket(SatPipePrev.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet.getPacket());
 		} else {
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
 		updateWatchers();
@@ -118,7 +117,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 
 	private void updateWatchers() {
 		for(EntityPlayer player : ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers) {
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
 		}
 	}
@@ -135,7 +134,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 			// Send the satellite id when opening gui
-			final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.SATELLITE_PIPE_SATELLITE_ID, xCoord, yCoord, zCoord, satelliteId);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
 

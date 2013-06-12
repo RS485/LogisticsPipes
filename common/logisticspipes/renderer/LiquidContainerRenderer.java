@@ -62,11 +62,13 @@ public class LiquidContainerRenderer implements IItemRenderer {
 
 	@Override
 	public void renderItem(ItemRenderType type, ItemStack item, Object... data) {
+		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (item.getItem() instanceof LogisticsLiquidContainer) {
 			LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
 			if (liquid == null) {
 				doRenderItem(item, mc, type, data);
+				GL11.glPopMatrix();
 				return;
 			}
 			ItemStack liquidItem = liquid.asItemStack();
@@ -84,9 +86,15 @@ public class LiquidContainerRenderer implements IItemRenderer {
 		} else if(item.getItem() instanceof LogisticsItemCard) {
 			doRenderItem(item, mc, type, data);
 			NBTTagCompound nbt = item.getTagCompound();
-			if(nbt == null || !nbt.hasKey("colors")) return;
+			if(nbt == null || !nbt.hasKey("colors")) {
+				GL11.glPopMatrix();
+				return;
+			}
 			NBTTagCompound colors = nbt.getCompoundTag("colors");
-			if(colors == null) return;
+			if(colors == null) {
+				GL11.glPopMatrix();
+				return;
+			}
 			if(type == ItemRenderType.ENTITY) {
 				GL11.glScaled(0.07, 0.07, 1);
 				GL11.glTranslated(-3, 3.5, -0.025);
@@ -107,6 +115,7 @@ public class LiquidContainerRenderer implements IItemRenderer {
 				}
 			}
 		}
+		GL11.glPopMatrix();
 	}
 
 	public void doRenderItem(ItemStack itemstack, Minecraft mc, ItemRenderType type, Object[] data) {

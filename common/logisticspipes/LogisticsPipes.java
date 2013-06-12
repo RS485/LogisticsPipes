@@ -413,7 +413,7 @@ public class LogisticsPipes {
 			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
 		}
 		
-		MainProxy.proxy.registerTileEntitis();
+		MainProxy.proxy.registerTileEntities();
 
 		RecipeManager.loadRecipes();
 		

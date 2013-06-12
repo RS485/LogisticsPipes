@@ -9,7 +9,7 @@ import cpw.mods.fml.common.network.Player;
 public interface IProxy {
 	public String getSide();
 	public World getWorld();
-	public void registerTileEntitis();
+	public void registerTileEntities();
 	public EntityPlayer getClientPlayer();
 	public boolean isMainThreadRunning();
 	

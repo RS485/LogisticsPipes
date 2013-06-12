@@ -11,7 +11,8 @@ public class ObfuscationHelper {
 	public static enum NAMES {
 		tagMap("tagMap", "field_74784_a", NBTTagCompound.class),
 		tagList("tagList", "field_74747_a", NBTTagList.class),
-		setupCameraTransform("setupCameraTransform", "func_78479_a");
+		setupCameraTransform("setupCameraTransform", "func_78479_a"),
+		isGamePausedServer("isGamePaused", "field_71348_o");
 		String dev;
 		String srg;
 		Field field;

@@ -38,7 +38,7 @@ public class ForestryProxy implements IForestryProxy {
 	public ForestryProxy() {
 		boolean initsuccessful = false;
 		try {
-			analyserClass = Class.forName("forestry.core.gadgets.MachineAnalyzer");
+			analyserClass = Class.forName("forestry.core.gadgets.TileAnalyzer");
 			Class<?> stringUtil = Class.forName("forestry.core.utils.StringUtil");
 			localize = stringUtil.getDeclaredMethod("localize", new Class[]{String.class});
 			localize.setAccessible(true);
@@ -48,9 +48,7 @@ public class ForestryProxy implements IForestryProxy {
 			root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 			initsuccessful = true;
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 		has_all = initsuccessful;
 	}

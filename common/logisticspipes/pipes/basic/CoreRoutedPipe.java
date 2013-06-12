@@ -332,9 +332,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 		// remove old items _inTransit -- these should have arrived, but have probably been lost instead. In either case, it will allow a re-send so that another attempt to re-fill the inventory can be made.		
 		while(this._inTransitToMe.peek()!=null && this._inTransitToMe.peek().getTickToTimeOut()<=0){
+			final IRoutedItem p=_inTransitToMe.poll();
 			if (LogisticsPipes.DEBUG) {
-				final IRoutedItem p=_inTransitToMe.poll();
-				LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getItem().getFriendlyName());
+					LogisticsPipes.log.info("Timed Out: "+p.getIDStack().getItem().getFriendlyName());
 			}
 		}
 		//update router before ticking logic/transport

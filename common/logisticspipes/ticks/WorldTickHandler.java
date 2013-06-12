@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
@@ -126,6 +127,13 @@ public class WorldTickHandler implements ITickHandler {
 		LiquidIdentifier.initFromForge(true);
 		if(type.contains(TickType.SERVER)) {
 			HudUpdateTick.tick();
+			if(LogisticsPipes.WATCHDOG) {
+				Watchdog.tickServer();
+			}
+		} else {
+			if(LogisticsPipes.WATCHDOG) {
+				Watchdog.tickClient();
+			}
 		}
 	}
 

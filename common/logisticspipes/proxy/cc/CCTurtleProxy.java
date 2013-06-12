@@ -19,9 +19,7 @@ public class CCTurtleProxy extends CCProxy {
 			Turtle_m_computer.setAccessible(true);
 			
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 			valid = false;
 		}
 	}

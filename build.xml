@@ -37,7 +37,7 @@
 	<property name="mc.version"           value="1.5.2"/>
 	<property name="forge.version"        value="7.8.0.685"/>
 	<property name="bc.version"           value="3.6.0"/>
-	<property name="forestry.version"     value="2.2.4.3"/>
+	<property name="forestry.version"     value="2.2.6.2"/>
 	<property name="ic2.version"          value="1.115.304-lf"/>
 	<property name="cc.version"           value="1.52"/>
 	<property name="thaumcraft.version.api" value="0.0.5"/>

@@ -28,7 +28,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 			Class<?> tcConfig = Class.forName("thaumcraft.common.Config");
 			itemShard = (Item)tcConfig.getField("itemShard").get((Object)null);
 		} catch (Exception e) {
-			if (LogisticsPipes.DEBUG) e.printStackTrace();
+			e.printStackTrace();
 		}
 	}
 	

@@ -3,6 +3,7 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,44 +37,43 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	// Suppressed because there shouldn't be non packet classes in the packets
-	// directory.
-	public PacketHandler() {
-		try {
-
-			final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath
-					.from(this.getClass().getClassLoader())
-					.getTopLevelClassesRecursive(
-							"logisticspipes.network.packets"));
-			Collections.sort(classes, new Comparator<ClassInfo>() {
-				@Override
-				public int compare(ClassInfo o1, ClassInfo o2) {
-					return o1.getSimpleName().compareTo(o2.getSimpleName());
-				}
-			});
-
-			packetlist = new ArrayList<ModernPacket>(classes.size());
-			packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(
-					classes.size());
-
-			int currentid = 200;// TODO: Only 200 until all packets get
-								// converted
-			System.out.println("Loading " + classes.size() + " Packets");
-
-			for (ClassInfo c : classes) {
-				final Class<?> cls = c.load();
-				final ModernPacket instance = (ModernPacket) cls
-						.getConstructors()[0].newInstance(currentid);
-				packetlist.add(instance);
-				packetmap.put((Class<? extends ModernPacket>) cls, instance);
-
-				System.out.println("Packet: " + c.getSimpleName() + " loaded");
-				currentid++;
+	@SneakyThrows({ IOException.class, InvocationTargetException.class,
+			IllegalAccessException.class, InstantiationException.class })
+	// Suppression+sneakiness because these shouldn't ever fail, and if they do,
+	// it needs to fail.
+	private static final void intialize() {
+		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath
+				.from(PacketHandler.class.getClassLoader())
+				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
+		Collections.sort(classes, new Comparator<ClassInfo>() {
+			@Override
+			public int compare(ClassInfo o1, ClassInfo o2) {
+				return o1.getSimpleName().compareTo(o2.getSimpleName());
 			}
+		});
 
-		} catch (Throwable e) {
-			throw new RuntimeException(e);
+		packetlist = new ArrayList<ModernPacket>(classes.size());
+		packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(
+				classes.size());
+
+		int currentid = 200;// TODO: Only 200 until all packets get
+							// converted
+		System.out.println("Loading " + classes.size() + " Packets");
+
+		for (ClassInfo c : classes) {
+			final Class<?> cls = c.load();
+			final ModernPacket instance = (ModernPacket) cls.getConstructors()[0]
+					.newInstance(currentid);
+			packetlist.add(instance);
+			packetmap.put((Class<? extends ModernPacket>) cls, instance);
+
+			System.out.println("Packet: " + c.getSimpleName() + " loaded");
+			currentid++;
 		}
+	}
+
+	static {
+		intialize();
 	}
 
 	@SneakyThrows(IOException.class)

@@ -16,8 +16,8 @@ import cpw.mods.fml.common.FMLCommonHandler;
 // https://raw.github.com/MinecraftPortCentral/MCPC-Plus/1acfe8e4d668b3fbc91b8d835451c5c56c74e7db/src/minecraft/org/spigotmc/WatchdogThread.java
 public class Watchdog extends Thread {
 	private static final int TIMEOUT = 30000;
-	private static long timeStempServer = System.currentTimeMillis();
-	private static long timeStempClient = System.currentTimeMillis();
+	private static long timeStempServer = 0;
+	private static long timeStempClient = 0;
 	private final boolean isClient;
 	private Field isGamePaused = null;
 	
@@ -61,16 +61,20 @@ public class Watchdog extends Thread {
 							e.printStackTrace();
 						}
 					}
-					triggered |= (timeStempServer + TIMEOUT < System.currentTimeMillis() && !serverPaused && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning());
+					triggered |= (timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0 && !serverPaused && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning());
 				} else {
-					timeStempServer = System.currentTimeMillis();
+					if(timeStempServer != 0) {
+						timeStempServer = System.currentTimeMillis();
+					}
 				}
-				triggered |= timeStempClient + TIMEOUT < System.currentTimeMillis();
+				triggered |= timeStempClient + TIMEOUT < System.currentTimeMillis() && timeStempClient != 0;
 			} else {
 				if(FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning()) {
-					triggered |= timeStempServer + TIMEOUT < System.currentTimeMillis();
+					triggered |= timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0;
 				} else {
-					timeStempServer = System.currentTimeMillis();
+					if(timeStempServer != 0) {
+						timeStempServer = System.currentTimeMillis();
+					}
 				}
 			}
  			if(triggered) {

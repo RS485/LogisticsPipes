@@ -1,9 +1,5 @@
 package logisticspipes.proxy.side;
 
-import java.io.File;
-
-import javax.imageio.ImageIO;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSignTileEntity;
@@ -183,20 +179,5 @@ public class ClientProxy implements IProxy {
 		} else {
 			Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1.replace("pipes/", "pipes/overlay_gen/")+"/"+override2.replace("pipes/status_overlay/","")));
 		}
-		if(LogisticsPipes.DEBUG_OVGEN&&!flag)
-		{
-			try
-			{
-				File output=new File("mods/mods/logisticspipes/textures/blocks/"+override1.replace("pipes/", "pipes/overlay_gen/"),override2.replace("pipes/status_overlay/", "")+".png");
-				output.mkdirs();
-				
-				ImageIO.write(OverlayManager.generateOverlay(override1.replace("pipes/","pipes/original/")+".png", override2+".png"), "PNG", output);
-			}
-			catch(Exception e)
-			{
-				System.out.println("Could not save:/mods/logisticspipes/textures/blocks/"+override1+"/"+override2.replace("pipes/status_overlay/", "")+".png");
-			}
-		}
-		
 	}
 }

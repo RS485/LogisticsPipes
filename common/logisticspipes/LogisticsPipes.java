@@ -142,7 +142,6 @@ public class LogisticsPipes {
 	public static boolean DisplayRequests;
 
 	public static final boolean DEBUG = "%DEBUG%".equals("%" + "DEBUG" + "%") || "%DEBUG%".equals("true");
-	public static final boolean DEBUG_OVGEN = false;
 	public static final String MCVersion = "%MCVERSION%";
 	public static final String VERSION = "%VERSION%:%DEBUG%";
 	public static final boolean DEV_BUILD = VERSION.contains(".dev.") || DEBUG;

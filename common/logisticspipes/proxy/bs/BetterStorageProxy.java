@@ -1,6 +1,5 @@
 package logisticspipes.proxy.bs;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import net.minecraft.tileentity.TileEntity;
 

@@ -18,7 +18,6 @@ import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
-import logisticspipes.textures.OverlayManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.Minecraft;

@@ -291,6 +291,7 @@
 		</copy>
 
 		<replace file="${classes.dir}/client/mcmod.info" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${classes.dir}/client/mcmod.info" token="%MCVERSION%" value="${mc.version}"/>
 
 		<echo message="Compiling finished"/>
 

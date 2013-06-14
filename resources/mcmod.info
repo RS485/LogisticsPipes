@@ -1,21 +1,20 @@
-[
 {
-  "modid" : "LogisticsPipes|Main",
-  "name" : "Logistics Pipes",
-  "description" : "This is the unofficial SMP version with additional features for the minecraft modification Logistics Pipes.",
-  "version" : "%VERSION%",
-  "credits" : "All credits from the original mod go to Krapht. Thanks!",
-  "authors" : [
-    "davboecki",
-    "theZorro266"
-  ],
-  "logoFile" : "",
-  "url" : "https://github.com/RS485/LogisticsPipes",
-  "updateUrl" : "",
-  "parent" : "",
-  "screenshots" : [
-  ],
-  "dependencies": [
-  ]
+  "modinfoversion": 2,
+  "modlist": [{
+    "modid": "LogisticsPipes|Main",
+    "name": "Logistics Pipes",
+    "description": "Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.",
+    "version": "%VERSION%",
+    "mcversion": "%MCVERSION%",
+    "url": "http://www.minecraftforum.net/topic/1831791-",
+    "updateUrl": "",
+    "authors": [ "RS485", "LP Team" ],
+    "credits": "Contributors: https://github.com/RS485/LogisticsPipes/contributors . Original code and idea made by Krapht. Thanks!",
+    "logoFile": "",
+    "screenshots": [],
+    "requiredMods": [ "Forge", "BuildCraft|Core" ],
+    "dependencies": [ "BuildCraft|Core" ],
+    "dependants": [],
+    "useDependencyInformation": "true"
+  }]
 }
-]

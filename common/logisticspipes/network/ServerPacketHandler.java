@@ -21,13 +21,11 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.logic.LogicSupplier;
-import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleApiaristSink.FilterType;
 import logisticspipes.modules.ModuleElectricManager;
-import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleProvider;
@@ -84,11 +82,6 @@ public class ServerPacketHandler {
 		
 		try {
 			switch (packetID) {
-				case NetworkConstants.CHASSI_GUI_PACKET_ID:
-					final PacketPipeInteger packetE = new PacketPipeInteger();
-					packetE.readData(data);
-					onModuleGuiOpen(player, packetE);
-					break;
 				case NetworkConstants.GUI_BACK_PACKET:
 					final PacketPipeInteger packetF = new PacketPipeInteger();
 					packetF.readData(data);
@@ -401,39 +394,6 @@ public class ServerPacketHandler {
 			}
 		} catch (final Exception ex) {
 			ex.printStackTrace();
-		}
-	}
-
-	private static void onModuleGuiOpen(EntityPlayerMP player, PacketPipeInteger packet) {
-		final TileGenericPipe pipe = getPipe(player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (pipe == null) {
-			return;
-		}
-
-		if (!(pipe.pipe instanceof PipeLogisticsChassi)) {
-			return;
-		}
-
-		final PipeLogisticsChassi cassiPipe = (PipeLogisticsChassi) pipe.pipe;
-		
-		if(!(cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof LogisticsGuiModule)) return;
-		
-		player.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getGuiHandlerID()
-				+ (100 * (packet.integer + 1)), player.worldObj, packet.posX, packet.posY, packet.posZ);
-		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleItemSink) {
-			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, packet.posX, packet.posY, packet.posZ, packet.integer,
-					(((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isDefaultRoute() ? 1 : 0)).getPacket(), (Player)player);
-		}
-		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleExtractor) {
-			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, packet.integer,
-					(((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getSneakyDirection().ordinal())).getPacket(), (Player)player);
-		}
-		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleProvider) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, (((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).isExcludeFilter() ? 1 : 0)).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, (((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).getExtractionMode().ordinal())).getPacket(), (Player)player);
-		}
-		if (cassiPipe.getLogisticsModule().getSubModule(packet.integer) instanceof ModuleAdvancedExtractor) {
-			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, packet.posX, packet.posY, packet.posZ, packet.integer, (((ModuleAdvancedExtractor) cassiPipe.getLogisticsModule().getSubModule(packet.integer)).areItemsIncluded() ? 1 : 0)).getPacket(), (Player)player);
 		}
 	}
 

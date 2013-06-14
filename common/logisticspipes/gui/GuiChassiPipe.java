@@ -13,8 +13,9 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.chassis.ChassisGUI;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
@@ -98,7 +99,12 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 		if (guibutton.id >= 0 && guibutton.id <= 7){
 			LogisticsModule module = _chassiPipe.getLogisticsModule().getSubModule(guibutton.id);
 			if (module != null){
-				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CHASSI_GUI_PACKET_ID,_chassiPipe.xCoord,_chassiPipe.yCoord,_chassiPipe.zCoord,guibutton.id).getPacket());
+				final ModernPacket packet = PacketHandler
+						.getPacket(ChassisGUI.class).setButtonID(guibutton.id)
+						.setPosX(_chassiPipe.xCoord)
+						.setPosY(_chassiPipe.yCoord)
+						.setPosZ(_chassiPipe.zCoord);
+				MainProxy.sendPacketToServer(packet.getPacket());
 			}
 		}
 	}

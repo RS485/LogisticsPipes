@@ -2,35 +2,45 @@
 
 Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.
 
-If you have any questions or other things to discuss, we will gladly welcome you in our channel #RS485 on irc.esper.net!
+Look into the [Minecraft Forum Thread](http://www.minecraftforum.net/topic/1831791-) for more information.
+We advice anyone to go there, who is not a developer.
 
 You are free to use this mod in your modpack, because its released under the MMPL.
 
+Credits for the code go to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
 Credits for the idea and basic code go to Krapht.
 
-##Release
+##Download
 
-[Jenkins recent releases](http://ci.thezorro266.com/job/LogisticsPipes/)
+[Releases](http://ci.thezorro266.com/job/LogisticsPipes/)
 
-[Jenkins dev builds (unstable!)](http://ci.thezorro266.com/job/LogisticsPipes-dev/)
+[Developer builds](http://ci.thezorro266.com/job/LogisticsPipes-dev/)
+_Note: Developer builds are not always stable._
 
 ##Builds
 
-[Jenkins] (http://ci.thezorro266.com/)
+[Jenkins](http://ci.thezorro266.com/view/Logistics Pipes/)
 
-##Developing and building
+###Building
 
 1. Clone this repo to a folder named src inside an empty folder
-
 2. Run `ant setup` or `ant vars package-simple` if you want to keep mcp/forge instance, but setup must be performed before
 
+###Developing
+
+1. Set up Minecraft Forge and your IDE
+   * Add forge/mcp/src/minecraft as source
+   * Add all the libraries that come with Forge/Minecraft to the build path
+2. Clone this repo and the BuildCraft repo
+   * Add <buildcraft>/common as source
+   * Add <buildcraft>/buildcraft_resources as source
+   * Add <logisticspipes>/common as source
+   * Add <logisticspipes>/dummy as source
+   * Add <logisticspipes>/resources as source
 3. Setup your IDE for [`lombok`](http://projectlombok.org/download.html)
-###Extended Description
-
-Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.
-
-\- *Logistics Pipes Wiki* ( [http://logisticspipes.wikia.com](http://logisticspipes.wikia.com) )
-
-###Added Features
-
-[Wiki](https://github.com/RS485/LogisticsPipes/wiki/Added-Features)
+4. Get all the APIs and add them as source
+   * ComputerCraft API
+   * Forestry API
+   * IndustrialCraft 2 API
+   * Thaumcraft API
+   * Thermal Expansion API

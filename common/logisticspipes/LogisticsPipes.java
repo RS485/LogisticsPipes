@@ -214,8 +214,6 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
-	public static Icon teststuff;
-	public static Icon teststuff2;
 	@Init
 	public void init(FMLInitializationEvent event) {
 		

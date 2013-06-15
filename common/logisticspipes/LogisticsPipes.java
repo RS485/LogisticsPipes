@@ -71,6 +71,7 @@ import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.textures.Textures;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
+import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
@@ -256,6 +257,11 @@ public class LogisticsPipes {
 		textures.registerBlockIcons();
 		
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
+
+		if(event.getSide().equals(Side.CLIENT)) {
+			TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.CLIENT);
+		}
+		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
 	}
 	
 	@PreInit

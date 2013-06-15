@@ -6,16 +6,23 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.swing.text.html.parser.Entity;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.oldpackets.PacketLogisticsPipes;
+import logisticspipes.network.packets.debuggui.DebugAskForTarget;
+import logisticspipes.network.packets.debuggui.DebugTargetResponse;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.Watchdog;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
+import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.network.Player;
 
@@ -85,11 +92,34 @@ public class LogisticsPipesCommand extends CommandBase {
         	sender.sendChatToPlayer("- routingthread : Display Routing thread status information.");
         	sender.sendChatToPlayer("- transfernames : Sends all item names form the client to the server to update the Language Database.");//TODO
         	return;
-        } else if(LogisticsPipes.DEBUG) {
+        }
+		if(LogisticsPipes.DEBUG) {
 			if(arguments[0].equalsIgnoreCase("watch")) {
 	        	new Watchdog(MainProxy.proxy.getSide().equals("Client"));
 				LogisticsPipes.WATCHDOG = true;
 	        	sender.sendChatToPlayer("Starting Watchdog");
+	        	return;
+	        }
+		}
+		if(LogisticsPipes.DEBUG || sender.getCommandSenderName().equals("davboecki") || sender.getCommandSenderName().equals("theZorro266")) {
+			if(arguments[0].equalsIgnoreCase("debug")) {
+	        	try {
+	        		if(arguments[1].equalsIgnoreCase("me")) {
+	        			DebugGuiTickHandler.instance().startWatchingOf(sender, (Player)sender);
+	        			sender.sendChatToPlayer("Starting SelfDebuging");
+	        			return;
+	    	       	} else if(arguments[1].equalsIgnoreCase("look") || arguments[1].equalsIgnoreCase("watch") || arguments[1].equalsIgnoreCase("target")) {
+	        			if(sender instanceof EntityPlayer) {
+	        				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugAskForTarget.class).getPacket(), (Player) sender);
+	        				sender.sendChatToPlayer("Asking for Target.");
+	        			} else {
+	        				sender.sendChatToPlayer("No player asking!");
+	        			}
+	        			return;
+	        		}
+	        	} catch(Exception e) {
+	        		e.printStackTrace();
+	        	}
 	        	return;
 	        }
         }

@@ -148,7 +148,9 @@ public class InventoryUtil implements IInventoryUtil {
 		for (int i = 0; i < _inventory.getSizeInventory() && count > totalRoom; i++){
 			ItemStack stack = _inventory.getStackInSlot(i);
 			if (stack == null){
-				totalRoom += Math.min(stackLimit, item.getMaxStackSize());
+				if(_inventory.isStackValidForSlot(i, item.unsafeMakeNormalStack(1))) {
+					totalRoom += Math.min(stackLimit, item.getMaxStackSize());
+				}
 				continue;
 			}
 			if (ItemIdentifier.get(stack) != item) continue;

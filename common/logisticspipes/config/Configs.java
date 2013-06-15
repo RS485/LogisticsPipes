@@ -282,7 +282,7 @@ public class Configs {
 		LOGISTICS_POWER_USAGE_DISABLED = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "powerUsageDisabled",
 				LOGISTICS_POWER_USAGE_DISABLED,
-				"Diable the power usage trough LogisticsPipes").getBoolean(
+				"Disable the power usage trough LogisticsPipes").getBoolean(
 				false);
 		LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,

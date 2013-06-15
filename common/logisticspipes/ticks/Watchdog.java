@@ -11,6 +11,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.utils.ObfuscationHelper;
 import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.server.integrated.IntegratedServer;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
 // Based on
 // https://raw.github.com/MinecraftPortCentral/MCPC-Plus/1acfe8e4d668b3fbc91b8d835451c5c56c74e7db/src/minecraft/org/spigotmc/WatchdogThread.java
@@ -48,7 +49,8 @@ public class Watchdog extends Thread {
 	
 	public void run() {
 		while(true) {
-			boolean triggered = false;
+			boolean server = false;
+			boolean client = false;
 			if(isClient) {
 				boolean serverPaused = false;
 				if(FMLCommonHandler.instance().getMinecraftServerInstance() != null) {
@@ -61,26 +63,34 @@ public class Watchdog extends Thread {
 							e.printStackTrace();
 						}
 					}
-					triggered |= (timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0 && !serverPaused && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning());
+					if(FMLCommonHandler.instance().getMinecraftServerInstance().isServerStopped()) {
+						timeStempServer = 0;
+					}
+					server |= (timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0 && !serverPaused && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning());
 				} else {
 					if(timeStempServer != 0) {
 						timeStempServer = System.currentTimeMillis();
 					}
 				}
-				triggered |= timeStempClient + TIMEOUT < System.currentTimeMillis() && timeStempClient != 0;
+				if(!FMLClientHandler.instance().getClient().running) {
+					timeStempClient = 0;
+				}
+				client |= timeStempClient + TIMEOUT < System.currentTimeMillis() && timeStempClient != 0;
 			} else {
 				if(FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning()) {
-					triggered |= timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0;
+					server |= timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0;
 				} else {
 					if(timeStempServer != 0) {
 						timeStempServer = System.currentTimeMillis();
 					}
 				}
 			}
- 			if(triggered) {
+ 			if(server || client) {
 				Logger log = LogisticsPipes.log;
-				log.log(Level.SEVERE, "The server has stopped responding!");
-				log.log(Level.SEVERE, "Please report this to https://github.com/RS485/LogisticsPipes/issues");
+				if(server) log.log(Level.SEVERE, "The server has stopped responding!");
+				if(client) log.log(Level.SEVERE, "The client has stopped responding!");
+				log.log(Level.SEVERE, "This doesn't have to be a crash.");
+				log.log(Level.SEVERE, "But still, please report this to https://github.com/RS485/LogisticsPipes/issues");
 				log.log(Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports");
 				log.log(Level.SEVERE, "LP version: " + LogisticsPipes.VERSION);
 				log.log(Level.SEVERE, "Current Thread State:");

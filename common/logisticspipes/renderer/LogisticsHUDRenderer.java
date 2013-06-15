@@ -63,7 +63,7 @@ public class LogisticsHUDRenderer {
 	private void clearList(boolean flag) {
 		if(flag) {
 			for(IHeadUpDisplayRendererProvider renderer:list) {
-				renderer.stopWaitching();
+				renderer.stopWatching();
 			}
 		}
 		list.clear();
@@ -81,7 +81,7 @@ public class LogisticsHUDRenderer {
 				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,(IHeadUpDisplayRendererProvider)pipe));
 					if(!list.contains(pipe)) {
-						((IHeadUpDisplayRendererProvider)pipe).startWaitching();
+						((IHeadUpDisplayRendererProvider)pipe).startWatching();
 					}
 				}
 			}
@@ -91,12 +91,12 @@ public class LogisticsHUDRenderer {
 		for(IHeadUpDisplayBlockRendererProvider provider:providers) {
 			if(MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
 				double dis = Math.hypot(provider.getX() - x + 0.5,Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
-				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isInvalid() && provider.isExistend()) {
+				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isInvalid() && provider.isExistent()) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,provider));
 					if(!list.contains(provider)) {
-						provider.startWaitching();
+						provider.startWatching();
 					}
-				} else if(provider.isInvalid() || !provider.isExistend()) {
+				} else if(provider.isInvalid() || !provider.isExistent()) {
 					remove.add(provider);
 				}
 			}
@@ -132,7 +132,7 @@ public class LogisticsHUDRenderer {
 				}
 			}
 			if(!contains) {
-				part.stopWaitching();
+				part.stopWatching();
 			}
 		}
 		clearList(false);
@@ -185,7 +185,7 @@ public class LogisticsHUDRenderer {
 					double x = renderer.getX() + 0.5 - player.posX;
 					double y = renderer.getY() + 0.5 - player.posY;
 					double z = renderer.getZ() + 0.5 - player.posZ;
-					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isExistend()))) {
+					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isExistent()))) {
 						refreshList(player.posX,player.posY,player.posZ);
 				        GL11.glPopMatrix();
 						break;

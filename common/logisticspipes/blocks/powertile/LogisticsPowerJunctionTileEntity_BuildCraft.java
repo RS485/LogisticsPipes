@@ -239,12 +239,12 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 	}
 
 	@Override
-	public void startWaitching() {
+	public void startWatching() {
 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
 	@Override
-	public void stopWaitching() {
+	public void stopWatching() {
 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
@@ -260,7 +260,7 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 	}
 
 	@Override
-	public boolean isExistend() {
+	public boolean isExistent() {
 		return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	

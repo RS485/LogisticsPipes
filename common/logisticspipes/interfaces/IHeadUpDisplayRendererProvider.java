@@ -9,6 +9,6 @@ public interface IHeadUpDisplayRendererProvider {
 	public int getY();
 	public int getZ();
 	public World getWorld();
-	public void startWaitching();
-	public void stopWaitching();
+	public void startWatching();
+	public void stopWatching();
 }

@@ -357,12 +357,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	@Override
-	public void startWaitching() {
+	public void startWatching() {
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 	}
 
 	@Override
-	public void stopWaitching() {
+	public void stopWatching() {
 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 	}
 

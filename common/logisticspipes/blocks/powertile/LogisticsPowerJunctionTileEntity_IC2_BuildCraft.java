@@ -7,7 +7,7 @@ import ic2.api.energy.tile.IEnergySink;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.MinecraftForge;
 
-public class LogisticsPowerJuntionTileEntity_IC2_BuildCraft extends LogisticsPowerJuntionTileEntity_BuildCraft implements IEnergySink {
+public class LogisticsPowerJunctionTileEntity_IC2_BuildCraft extends LogisticsPowerJunctionTileEntity_BuildCraft implements IEnergySink {
 
 	public final int IC2Multiplier = 2;
 	

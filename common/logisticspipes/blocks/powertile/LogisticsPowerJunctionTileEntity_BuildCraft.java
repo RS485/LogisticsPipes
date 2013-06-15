@@ -28,7 +28,7 @@ import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
 
-public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
+public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
 	
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
@@ -47,7 +47,7 @@ public class LogisticsPowerJuntionTileEntity_BuildCraft extends TileEntity imple
 	private List<EntityPlayer> watcherList = new ArrayList<EntityPlayer>();
 	private IHeadUpDisplayRenderer HUD;
 	
-	public LogisticsPowerJuntionTileEntity_BuildCraft() {
+	public LogisticsPowerJunctionTileEntity_BuildCraft() {
 		powerFramework = PowerFramework.currentFramework.createPowerProvider();
 		powerFramework.configure(0, 1, 250, 1, 750);
 		HUD = new HUDPowerJunction(this);

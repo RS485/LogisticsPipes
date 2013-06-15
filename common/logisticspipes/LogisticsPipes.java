@@ -15,8 +15,8 @@ import java.util.logging.Logger;
 
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_IC2_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_IC2_BuildCraft;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.config.Configs;
 import logisticspipes.items.CraftingSignCreator;
@@ -202,7 +202,7 @@ public class LogisticsPipes {
 	
 	public static Textures textures = new Textures();
 	
-	public static Class<? extends LogisticsPowerJuntionTileEntity_BuildCraft> powerTileEntity;
+	public static Class<? extends LogisticsPowerJunctionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
@@ -403,13 +403,13 @@ public class LogisticsPipes {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
 				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
 			} else {
-				powerTileEntity = LogisticsPowerJuntionTileEntity_IC2_BuildCraft.class;
+				powerTileEntity = LogisticsPowerJunctionTileEntity_IC2_BuildCraft.class;
 			}
 		} else {
 			if(SimpleServiceLocator.ccProxy.isCC()) {
 				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_BuildCraft.class;
 			} else {
-				powerTileEntity = LogisticsPowerJuntionTileEntity_BuildCraft.class;
+				powerTileEntity = LogisticsPowerJunctionTileEntity_BuildCraft.class;
 			}
 		}
 		

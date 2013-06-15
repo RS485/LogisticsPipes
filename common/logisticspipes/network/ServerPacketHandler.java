@@ -8,7 +8,7 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_BuildCraft;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IModuleWatchReciver;
@@ -1257,8 +1257,8 @@ public class ServerPacketHandler {
 		}
 
 		final TileEntity tile = world.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
-		if (tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft) {
-			((LogisticsPowerJuntionTileEntity_BuildCraft) tile).addEnergy(100000);
+		if (tile instanceof LogisticsPowerJunctionTileEntity_BuildCraft) {
+			((LogisticsPowerJunctionTileEntity_BuildCraft) tile).addEnergy(100000);
 		}
 	}
 

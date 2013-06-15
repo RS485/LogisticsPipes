@@ -11,7 +11,7 @@ package logisticspipes.gates;
 import java.util.LinkedList;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_BuildCraft;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
@@ -52,7 +52,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider{
 	
 	@Override
 	public LinkedList<ITrigger> getNeighborTriggers(Block block, TileEntity tile) {
-		if(tile instanceof LogisticsPowerJuntionTileEntity_BuildCraft){
+		if(tile instanceof LogisticsPowerJunctionTileEntity_BuildCraft){
 			LinkedList<ITrigger> triggers = new  LinkedList<ITrigger>();
 			triggers.add(BuildCraftProxy.LogisticsNeedPowerTrigger);
 			return triggers;

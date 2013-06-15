@@ -1,11 +1,11 @@
 package logisticspipes.proxy.cc;
 
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity_IC2_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_IC2_BuildCraft;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.IPeripheral;
 
 public class LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft extends
-		LogisticsPowerJuntionTileEntity_IC2_BuildCraft implements IPeripheral {
+		LogisticsPowerJunctionTileEntity_IC2_BuildCraft implements IPeripheral {
 
 	@Override
 	public String getType() {

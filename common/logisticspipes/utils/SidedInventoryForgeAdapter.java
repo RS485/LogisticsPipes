@@ -180,13 +180,11 @@ outer:
 
 	@Override
 	public boolean isInvNameLocalized() {
-		// TODO Auto-generated method stub
-		return false;
+		return _sidedInventory.isInvNameLocalized();
 	}
 
 	@Override
 	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
-		// TODO Auto-generated method stub
-		return false;
+		return _sidedInventory.isStackValidForSlot(_slotMap[i], itemstack);
 	}
 }

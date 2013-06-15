@@ -53,8 +53,10 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 		for(int i = 0; i < 6; i++) {
 			int slots[] = _sidedInventory.getAccessibleSlotsFromSide(i);
 			for(int number:slots) {
-				if((!forExtraction || _sidedInventory.canExtractItem(number,_sidedInventory.getStackInSlot(number),i)) && !list.contains((Integer)number)) {
-					list.add(number);
+				ItemStack item=_sidedInventory.getStackInSlot(number);
+				if(!list.contains((Integer)number) && (!forExtraction || // check extract condition
+					(item!=null && _sidedInventory.canExtractItem(number,item,i)))){
+						list.add(number);
 				}
 			}
 		}

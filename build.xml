@@ -22,6 +22,7 @@
 	<property name="cc.dir"               value="${mcp.dir}/unpack/cc"/>
 	<property name="thaumcraft.dir"       value="${mcp.dir}/unpack/thaumcraft"/>
 	<property name="te.dir"               value="${mcp.dir}/unpack/te"/>
+	<property name="waila.dir"            value="${mcp.dir}/unpack/waila"/>
 
 	<property name="clientsrc.dir"        value="${mcp.dir}/src/minecraft"/>
 	<property name="commonsrc.dir"        value="${clientsrc.dir}"/>
@@ -46,6 +47,7 @@
 	<property name="lombok.version"       value="0.11.8"/>
 	<property name="jarjar.version"       value="1.4"/>
 	<property name="guava.version"        value="15.0-SNAPSHOT"/>
+	<property name="waila.version"        value="1.2.0"/>
 	<property name="lp.version"           value="0.7.3"/>
 	
 	<!-- Targets -->
@@ -68,6 +70,7 @@
 		<get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ThaumcraftApi-${thaumcraft.version.api}-for-${thaumcraft.version.mod}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ThermalExpansion-API-${te.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}Waila_API_${waila.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}guava-${guava.version}.jar" dest="${download.dir}" usetimestamp="True"/>
@@ -135,6 +138,12 @@
 			</fileset>
 		</unzip>
 		
+		<unzip dest="${waila.dir}" failOnEmptyArchive="true">
+			<fileset dir="${download.dir}">
+				<include name="Waila_API_${waila.version}.zip"/>
+			</fileset>
+		</unzip>
+
 		
 		<echo message="Unpacking finished"/>
 
@@ -206,6 +215,13 @@
 		</copy>
 
 		<echo message="Copied TE API"/>
+
+		<!-- Copy Waila API source -->
+		<copy todir="${commonsrc.dir}">
+			<fileset dir="${waila.dir}"/>
+		</copy>
+
+		<echo message="Copied waila API"/>
 
 		<!-- Copy Dummy classes source -->
 		<copy todir="${commonsrc.dir}">

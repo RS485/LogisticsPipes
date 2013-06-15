@@ -99,6 +99,7 @@ import cpw.mods.fml.common.Mod.ServerStarting;
 import cpw.mods.fml.common.Mod.ServerStopping;
 import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -260,6 +261,10 @@ public class LogisticsPipes {
 			TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.CLIENT);
 		}
 		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
+
+		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
+				.getPackage().getName()
+				+ ".waila.WailaRegister.register");
 	}
 	
 	@PreInit

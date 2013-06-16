@@ -13,6 +13,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.ticks.VersionChecker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -128,6 +129,10 @@ public class LogisticsEventListener implements IPlayerTracker {
 	public void onPlayerLogin(EntityPlayer player) {
 		if(MainProxy.isServer(player.worldObj)) {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
+		}
+		if(VersionChecker.hasNewVersion) {
+			player.sendChatToPlayer("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + ".");
+			player.sendChatToPlayer("Use \"/logisticspipes changelog\" to see a changelog.");
 		}
 	}
 

@@ -5,6 +5,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import net.minecraft.item.Item;
 import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
 
@@ -64,7 +65,9 @@ public class LiquidIdentifier {
 		this.name = name;
 		ItemKey key = new ItemKey(itemId, itemMeta);
 		_liquidIdentifierCache.put(key, this);
-		_liquidIdentifierKeyQueue.add(key);
+		if(this.isVaild()) {
+			_liquidIdentifierKeyQueue.add(key);
+		}
 	}
 	
 	public String getName() {
@@ -111,8 +114,13 @@ public class LiquidIdentifier {
 		return name + "/" + itemId + ":" + itemMeta;
 	}
 	
+	public boolean isVaild() {
+		return Item.itemsList.length > itemId && Item.itemsList[itemId] != null;
+	}
+	
 	public LiquidIdentifier next() {
 		ItemKey key = new ItemKey(itemId, itemMeta);
+		if(!_liquidIdentifierKeyQueue.contains(key)) return first();
 		key = _liquidIdentifierKeyQueue.higher(key);
 		if(key == null) {
 			return null;
@@ -122,6 +130,7 @@ public class LiquidIdentifier {
 	
 	public LiquidIdentifier prev() {
 		ItemKey key = new ItemKey(itemId, itemMeta);
+		if(!_liquidIdentifierKeyQueue.contains(key)) return last();
 		key = _liquidIdentifierKeyQueue.lower(key);
 		if(key == null) {
 			return null;

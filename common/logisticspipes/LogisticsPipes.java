@@ -286,9 +286,14 @@ public class LogisticsPipes {
 			log.severe("Certificate not correct");
 			log.severe("This in not a LogisticsPipes version from RS485.");
 		}
-		if(DEV_BUILD && !MainProxy.proxy.getSide().equals("Bukkit")) {
-			new Watchdog(evt.getSide() == Side.CLIENT);
-			WATCHDOG = true;
+		if (DEV_BUILD) {
+			log.fine("You are using a dev version.");
+			log.fine("While the dev versions contain cutting edge features, they may also contain more bugs.");
+			log.fine("Please report any you find to https://github.com/RS485/LogisticsPipes-Dev/issues");
+			if (!MainProxy.proxy.getSide().equals("Bukkit")) {
+				new Watchdog(evt.getSide() == Side.CLIENT);
+				WATCHDOG = true;
+			}
 		}
 	}
 	

@@ -34,7 +34,8 @@ public class SolidBlockProvider implements IWailaDataProvider {
 			EntityPlayer player, TileEntity entity, Block block,
 			MovingObjectPosition mop, List<String> currenttip,
 			IWailaConfigHandler config) {
-		if (entity instanceof LogisticsPowerJunctionTileEntity_BuildCraft) {
+		if (entity instanceof LogisticsPowerJunctionTileEntity_BuildCraft
+				&& config.getConfig("power")) {
 			final LogisticsPowerJunctionTileEntity_BuildCraft junctionEntity = (LogisticsPowerJunctionTileEntity_BuildCraft) entity;
 			currenttip.add(junctionEntity.getPowerLevel() + "/"
 					+ junctionEntity.MAX_STORAGE + " LP");

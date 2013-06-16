@@ -8,5 +8,6 @@ public class WailaRegister {
 	public static void register(IWailaRegistrar registrar) {
 		registrar.registerBodyProvider(new SolidBlockProvider(),
 				Configs.LOGISTICS_SOLID_BLOCK_ID);
+		registrar.addConfig("LogisticsPipes", "power", "Power Junction");
 	}
 }

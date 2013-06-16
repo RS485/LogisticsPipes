@@ -42,7 +42,6 @@ public class ModuleQuickSort extends LogisticsModule {
 
 
 	private IWorldProvider _world;
-	private ItemIdentifier lastItemKey;
 
 	public ModuleQuickSort() {}
 
@@ -89,21 +88,16 @@ public class ModuleQuickSort extends LogisticsModule {
 		}
 		
 		if(invUtil instanceof SpecialInventoryHandler){
-			int maxItemsToSend = 128;
 			Map<ItemIdentifier, Integer> items = invUtil.getItemsAndCount();
-			if(lastStackLookedAt>items.size())
-				lastStackLookedAt=0;
+			if(lastSuceededStack >= items.size())
+				lastSuceededStack = 0;
+			if (lastStackLookedAt >= items.size())
+				lastStackLookedAt = 0;
 			int lookedAt = 0;
 			for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
+				// spool to current place
 				lookedAt++;
-				if(item.getKey()==lastItemKey) {// spool to current place
-					lastStackLookedAt=lookedAt;
-					break;
-				}
-			}
-			lookedAt=0;
-			for (Entry<ItemIdentifier, Integer> item :items.entrySet()) {
-				if(lookedAt < lastStackLookedAt) // spool to current place
+				if(lookedAt <= lastStackLookedAt)
 					continue;
 				
 				LinkedList<Integer> jamList =  new LinkedList<Integer>();
@@ -122,20 +116,18 @@ public class ModuleQuickSort extends LogisticsModule {
 				}
 				stalled = false;
 		
-				boolean partialSend=false;
+				//send up to one stack
+				int maxItemsToSend = item.getKey().getMaxStackSize();
 				int availableItems = Math.min(maxItemsToSend, item.getValue());
 				while(reply != null) {
-					int count = Math.min(availableItems, reply.getValue2().maxNumberOfItems);
-					if(count == 0) {
-						count = Math.min(availableItems, item.getKey().getMaxStackSize());
-					} else {
-						count = Math.min(count, item.getKey().getMaxStackSize());
-					} 
-					ItemStack stackToSend = 
-					invUtil.getMultipleItems(item.getKey(), availableItems);
+					int count = availableItems;
+					if(reply.getValue2().maxNumberOfItems != 0) {
+						count = Math.min(count, reply.getValue2().maxNumberOfItems);
+					}
+					ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
 		
+					availableItems -= stackToSend.stackSize;
 					_itemSender.sendStack(stackToSend, reply, ItemSendMode.Fast);
-					availableItems-=stackToSend.stackSize;
 					
 					MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 8);
 		
@@ -145,11 +137,15 @@ public class ModuleQuickSort extends LogisticsModule {
 					jamList.add(reply.getValue1());
 					reply = _itemSender.hasDestination(item.getKey(), false, jamList);
 				}
-				lastSuceededStack=lastStackLookedAt-1;
-				if(lastStackLookedAt==-1)
-					lastStackLookedAt = items.size();
-
-				// no need to increment, as removing an item type from the list will pull the earlier ones down, or there is more left of this type to send, so we shouldn't move on.
+				if(availableItems > 0) { //if we didn't send maxItemsToSend, try next item next time
+					lastSuceededStack = lastStackLookedAt;
+					lastStackLookedAt++;
+				} else {
+					lastSuceededStack = lastStackLookedAt - 1;
+					if(lastSuceededStack < 0)
+						lastSuceededStack = items.size() - 1;
+				}
+				return;
 			}
 		} else {
 			

@@ -176,7 +176,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 			init = false;
 		}
 		if(!addedToEnergyNet) {
-			init = true;
+			init = false;
 		}
 	}
 

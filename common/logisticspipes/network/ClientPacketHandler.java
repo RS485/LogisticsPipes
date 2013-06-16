@@ -8,7 +8,7 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiProviderPipe;
@@ -732,8 +732,8 @@ public class ClientPacketHandler {
 
 	private static void onPowerLevel(PacketPipeInteger packet) {
 		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
-		if(tile instanceof LogisticsPowerJuntionTileEntity) {
-			((LogisticsPowerJuntionTileEntity)tile).handlePowerPacket(packet);
+		if(tile instanceof LogisticsPowerJunctionTileEntity) {
+			((LogisticsPowerJunctionTileEntity)tile).handlePowerPacket(packet);
 		}
 	}
 

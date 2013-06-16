@@ -1,6 +1,6 @@
 package logisticspipes.gui.hud;
 
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -11,9 +11,9 @@ import org.lwjgl.opengl.GL11;
 
 public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRenderer {
 	
-	private final LogisticsPowerJuntionTileEntity junction;
+	private final LogisticsPowerJunctionTileEntity junction;
 	
-	public HUDPowerJunction(LogisticsPowerJuntionTileEntity junction) {
+	public HUDPowerJunction(LogisticsPowerJunctionTileEntity junction) {
 		this.junction = junction;
 	}
 	

@@ -1,7 +1,7 @@
 package logisticspipes.gates;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -30,8 +30,8 @@ public class TriggerNeedsPower extends LPTrigger{
 	}
 	@Override
 	public boolean isTriggerActive(ForgeDirection side, TileEntity tile, ITriggerParameter parameter) {
-		if(tile instanceof LogisticsPowerJuntionTileEntity) {
-			LogisticsPowerJuntionTileEntity LPJTE = (LogisticsPowerJuntionTileEntity)tile;
+		if(tile instanceof LogisticsPowerJunctionTileEntity) {
+			LogisticsPowerJunctionTileEntity LPJTE = (LogisticsPowerJunctionTileEntity)tile;
 			return LPJTE.needMorePowerTriggerCheck;
 		}
 		if(tile instanceof LogisticsSolderingTileEntity) {

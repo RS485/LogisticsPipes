@@ -1,7 +1,7 @@
 package logisticspipes.gui;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.oldpackets.PacketCoordinates;
@@ -14,9 +14,9 @@ import org.lwjgl.opengl.GL11;
 
 public class GuiPowerJunction extends KraphtBaseGuiScreen {
 
-	private final LogisticsPowerJuntionTileEntity junction;
+	private final LogisticsPowerJunctionTileEntity junction;
 	
-	public GuiPowerJunction(EntityPlayer player, LogisticsPowerJuntionTileEntity junction) {
+	public GuiPowerJunction(EntityPlayer player, LogisticsPowerJunctionTileEntity junction) {
 		super(176, 166, 0, 0);
 		this.inventorySlots = junction.createContainer(player);
 		this.junction = junction;

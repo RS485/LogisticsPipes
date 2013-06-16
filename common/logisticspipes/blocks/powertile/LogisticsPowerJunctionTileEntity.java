@@ -37,7 +37,7 @@ import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "ComputerCraft"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral"})
-public class LogisticsPowerJuntionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral {
+public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral {
 
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
@@ -60,7 +60,7 @@ public class LogisticsPowerJuntionTileEntity extends TileEntity implements IPowe
 	private List<EntityPlayer> watcherList = new ArrayList<EntityPlayer>();
 	private IHeadUpDisplayRenderer HUD;
 	
-	public LogisticsPowerJuntionTileEntity() {
+	public LogisticsPowerJunctionTileEntity() {
 		powerFramework = PowerFramework.currentFramework.createPowerProvider();
 		powerFramework.configure(0, 1, 250, 1, 750);
 		HUD = new HUDPowerJunction(this);
@@ -268,12 +268,12 @@ public class LogisticsPowerJuntionTileEntity extends TileEntity implements IPowe
 	}
 
 	@Override
-	public void startWaitching() {
+	public void startWatching() {
 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
 	@Override
-	public void stopWaitching() {
+	public void stopWatching() {
 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
@@ -289,7 +289,7 @@ public class LogisticsPowerJuntionTileEntity extends TileEntity implements IPowe
 	}
 
 	@Override
-	public boolean isExistend() {
+	public boolean isExistent() {
 		return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	

@@ -482,22 +482,18 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 		connections.remove(computer);
 	}
 	
-	@ModDependentMethod(modId="ComputerCraft")
 	public void queueEvent(String event, Object[] arguments) {
 		SimpleServiceLocator.ccProxy.queueEvent(event, arguments, this);
 	}
 	
-	@ModDependentMethod(modId="ComputerCraft")
 	public void setTurtrleConnect(boolean flag) {
 		SimpleServiceLocator.ccProxy.setTurtrleConnect(flag, this);
 	}
 
-	@ModDependentMethod(modId="ComputerCraft")
 	public boolean getTurtrleConnect() {
 		return SimpleServiceLocator.ccProxy.getTurtrleConnect(this);
 	}
 
-	@ModDependentMethod(modId="ComputerCraft")
 	public int getLastCCID() {
 		return SimpleServiceLocator.ccProxy.getLastCCID(this);
 	}

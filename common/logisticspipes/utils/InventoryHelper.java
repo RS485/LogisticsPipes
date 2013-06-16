@@ -15,27 +15,31 @@ public class InventoryHelper {
 	public static IInventory getInventory(IInventory inv) {
 		if (inv instanceof TileEntityChest) {
 			TileEntityChest chest = (TileEntityChest) inv;
-			
-			TileEntityChest adjacent = null;
+			TileEntityChest lower = null;
+			TileEntityChest upper = null;
 			
 			if (chest.adjacentChestXNeg != null){
-				adjacent = chest.adjacentChestXNeg;  
+				upper = chest.adjacentChestXNeg;
+				lower = chest;
 			}
 			
 			if (chest.adjacentChestXPos != null){
-				adjacent = chest.adjacentChestXPos;  
+				upper = chest;
+				lower = chest.adjacentChestXPos;
 			}
 			
 			if (chest.adjacentChestZNeg != null){
-				adjacent = chest.adjacentChestZNeg;  
+				upper = chest.adjacentChestZNeg;
+				lower = chest;
 			}
 			
 			if (chest.adjacentChestZPosition != null){
-				adjacent = chest.adjacentChestZPosition;  
+				upper = chest;
+				lower = chest.adjacentChestZPosition;
 			}
 			
-			if (adjacent != null){
-				return new InventoryLargeChestLogistics("", inv, adjacent);
+			if (lower != null && upper != null){
+				return new InventoryLargeChestLogistics("", upper, lower);
 			}
 			return inv;
 		}

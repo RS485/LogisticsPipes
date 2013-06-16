@@ -4,10 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
-
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.ModuleAdvancedExtractor;
@@ -24,6 +20,9 @@ import logisticspipes.proxy.MainProxy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
+import net.minecraft.entity.player.EntityPlayer;
+import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
 public class ChassisGUI extends CoordinatesPacket {

@@ -1,5 +1,8 @@
 package logisticspipes.proxy.ic2;
 
+import ic2.api.energy.event.EnergyTileLoadEvent;
+import ic2.api.energy.event.EnergyTileUnloadEvent;
+import ic2.api.energy.tile.IEnergyTile;
 import ic2.api.item.IElectricItem;
 import ic2.api.item.Items;
 import ic2.api.recipe.Recipes;
@@ -8,6 +11,8 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraftforge.common.MinecraftForge;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
 
@@ -174,6 +179,24 @@ public class IC2Proxy implements IIC2Proxy {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 	}
+	
+	/**
+	 * Registers an TileEntity to the IC2 EnergyNet
+	 * @param has to be an instance of IEnergyTile
+	*/
+	@Override
+	public void registerToEneryNet(TileEntity tile) {
+		MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent((IEnergyTile) tile));
+	}
+
+	/**
+	 * Removes an TileEntity from the IC2 EnergyNet
+	 * @param has to be an instance of IEnergyTile
+	*/
+	@Override
+	public void unregisterToEneryNet(TileEntity tile) {
+		MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile) tile));
+	}
 
 	/**
 	 * @return If IC2 is loaded, returns true.
@@ -181,7 +204,4 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean hasIC2() {
 		return true;
-	}
-
-
-}
+	}}

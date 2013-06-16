@@ -10,13 +10,13 @@ package logisticspipes.utils;
 
 import java.util.ArrayList;
 
-import com.google.common.primitives.Ints;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
+
+import com.google.common.primitives.Ints;
 
 /**
  * This class is responsible for abstracting an ISidedInventory as a normal IInventory

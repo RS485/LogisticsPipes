@@ -244,7 +244,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	private boolean checkTileEntity(boolean force) {
 		if(worldObj.getWorldTime() % 10 == 0 || force) {
-			if(this.container.getClass() != BuildCraftProxy.logisticsTileGenericPipe) {
+			if(!(this.container instanceof LogisticsTileGenericPipe)) {
 				TileEntity tile = worldObj.getBlockTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
 					LogisticsPipes.log.severe("LocalCodeError");

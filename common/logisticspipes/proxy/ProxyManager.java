@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
 import logisticspipes.proxy.cc.CCTurtleProxy;
@@ -82,6 +83,8 @@ public class ProxyManager {
 				@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
 				@Override public void addCraftingRecipes() {}
 				@Override public boolean hasIC2() {return false;}
+				@Override public void registerToEneryNet(TileEntity tile) {}
+				@Override public void unregisterToEneryNet(TileEntity tile) {}
 			});
 			LogisticsPipes.log.info("Loaded IC2 DummyProxy");
 		}
@@ -101,6 +104,10 @@ public class ProxyManager {
 				@Override public boolean isCC() {return false;}
 				@Override public ForgeDirection getOrientation(Object computer, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
+				@Override public void queueEvent(String event, Object[] arguments, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
+				@Override public void setTurtrleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
+				@Override public boolean getTurtrleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
+				@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			});
 			LogisticsPipes.log.info("Loaded CC DummyProxy");
 		}

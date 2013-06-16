@@ -1,11 +1,11 @@
 package logisticspipes.network.packets.satpipe;
 
-import buildcraft.transport.TileGenericPipe;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
+import buildcraft.transport.TileGenericPipe;
 
 public class SatPipePrev extends CoordinatesPacket {
 

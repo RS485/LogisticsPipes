@@ -12,7 +12,6 @@ import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
-import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleSatelite;
 import logisticspipes.network.NetworkConstants;

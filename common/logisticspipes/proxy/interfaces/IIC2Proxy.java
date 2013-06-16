@@ -1,6 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 public interface IIC2Proxy {
 
@@ -19,5 +20,9 @@ public interface IIC2Proxy {
 	public abstract void addCraftingRecipes();
 
 	public abstract boolean hasIC2();
+
+	public abstract void registerToEneryNet(TileEntity tile);
+
+	public abstract void unregisterToEneryNet(TileEntity tile);
 
 }

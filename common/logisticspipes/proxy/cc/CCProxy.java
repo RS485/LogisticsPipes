@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.WorldUtil;
@@ -138,5 +139,29 @@ public class CCProxy implements ICCProxy {
 			return false;
 		}
 		return tar.getClass().getName().contains("org.luaj.vm2.LuaThread");
+	}
+
+	@Override
+	public void queueEvent(String event, Object[] arguments, LogisticsTileGenericPipe tile) {
+		for(IComputerAccess computer: tile.connections.keySet()) {
+			computer.queueEvent(event, arguments);
+		}
+	}
+
+	@Override
+	public void setTurtrleConnect(boolean flag, LogisticsTileGenericPipe tile) {
+		tile.turtleConnect[tile.connections.get(tile.lastPC).ordinal()] = flag;
+		tile.scheduleNeighborChange();
+	}
+
+	@Override
+	public boolean getTurtrleConnect(LogisticsTileGenericPipe tile) {
+		return tile.turtleConnect[tile.connections.get(tile.lastPC).ordinal()];
+	}
+
+	@Override
+	public int getLastCCID(LogisticsTileGenericPipe tile) {
+		if(tile.lastPC == null) return -1;
+		return tile.lastPC.getID();
 	}
 }

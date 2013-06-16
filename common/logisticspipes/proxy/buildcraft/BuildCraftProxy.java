@@ -86,8 +86,6 @@ import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {
 	
-	public static Class<? extends TileGenericPipe> logisticsTileGenericPipe = TileGenericPipe.class;
-
 	public static List<Item> pipelist = new ArrayList<Item>();
 
 	public static ITrigger LogisticsFailedTrigger;

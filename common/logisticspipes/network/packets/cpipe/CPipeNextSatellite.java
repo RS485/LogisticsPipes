@@ -1,10 +1,10 @@
 package logisticspipes.network.packets.cpipe;
 
-import buildcraft.transport.TileGenericPipe;
-import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import net.minecraft.entity.player.EntityPlayer;
+import buildcraft.transport.TileGenericPipe;
 
 public class CPipeNextSatellite extends CoordinatesPacket {
 

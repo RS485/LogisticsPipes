@@ -6,7 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.proxy.buildcraft.BuildCraftProxy;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.tileentity.TileEntity;
@@ -73,7 +73,7 @@ public class WorldTickHandler implements ITickHandler {
 					continue;
 				}
 
-				TileGenericPipe newTile = BuildCraftProxy.logisticsTileGenericPipe.newInstance();
+				TileGenericPipe newTile = new LogisticsTileGenericPipe();
 				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
 						field.setAccessible(true);
@@ -116,8 +116,6 @@ public class WorldTickHandler implements ITickHandler {
 					}
 				}
 				//newTile.scheduleNeighborChange();
-			} catch (InstantiationException e) {
-				e.printStackTrace();
 			} catch (IllegalAccessException e) {
 				e.printStackTrace();
 			}

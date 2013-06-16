@@ -41,7 +41,7 @@ public class PacketHandler implements IPacketHandler {
 			IllegalAccessException.class, InstantiationException.class })
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do,
 	// it needs to fail.
-	private static final void intialize() {
+	public static final void intialize() {
 		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath
 				.from(PacketHandler.class.getClassLoader())
 				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
@@ -70,10 +70,6 @@ public class PacketHandler implements IPacketHandler {
 			System.out.println("Packet: " + c.getSimpleName() + " loaded");
 			currentid++;
 		}
-	}
-
-	static {
-		intialize();
 	}
 
 	@SneakyThrows(IOException.class)

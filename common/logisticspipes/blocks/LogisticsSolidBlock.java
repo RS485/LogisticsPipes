@@ -2,7 +2,7 @@ package logisticspipes.blocks;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_BuildCraft;
+import logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.network.GuiIDs;
 import net.minecraft.block.BlockContainer;
@@ -113,14 +113,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 	    	case SOLDERING_STATION:
 	    		return new LogisticsSolderingTileEntity();
 	    	case LOGISTICS_POWER_JUNCTION:
-				LogisticsPowerJunctionTileEntity_BuildCraft instance;
-				try {
-					instance = LogisticsPipes.powerTileEntity.newInstance();
-				} catch (Exception e) {
-					e.printStackTrace();
-					instance = new LogisticsPowerJunctionTileEntity_BuildCraft();
-				}
-	    		return instance;
+	    		return new LogisticsPowerJuntionTileEntity();
 	    	case LOGISTICS_SECURITY_STATION:
 	    		return new LogisticsSecurityTileEntity();
 			case LOGISTICS_AUTOCRAFTING_TABLE:

@@ -16,7 +16,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import cpw.mods.fml.common.network.Player;
 @Accessors(chain=true)
 public class DebugTargetResponse extends ModernPacket {
 	

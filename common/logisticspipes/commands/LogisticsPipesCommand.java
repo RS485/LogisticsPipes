@@ -6,14 +6,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.swing.text.html.parser.Entity;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.oldpackets.PacketLogisticsPipes;
 import logisticspipes.network.packets.debuggui.DebugAskForTarget;
-import logisticspipes.network.packets.debuggui.DebugTargetResponse;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;

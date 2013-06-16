@@ -4,14 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import cpw.mods.fml.common.network.Player;
-
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.ticks.DebugGuiTickHandler;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class DebugSetVarContent extends ModernPacket {

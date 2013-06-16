@@ -5,11 +5,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.NetworkConstants;
+import lombok.Getter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
-import logisticspipes.network.NetworkConstants;
-import lombok.Getter;
 
 public abstract class ModernPacket {
 

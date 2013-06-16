@@ -15,8 +15,6 @@ import java.util.logging.Logger;
 
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_BuildCraft;
-import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity_IC2_BuildCraft;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.config.Configs;
 import logisticspipes.items.CraftingSignCreator;
@@ -42,15 +40,11 @@ import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
-import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_BuildCraft;
-import logisticspipes.proxy.cc.LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft;
-import logisticspipes.proxy.cc.LogisticsTileGenericPipe_CC;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
@@ -99,7 +93,6 @@ import cpw.mods.fml.common.Mod.ServerStarting;
 import cpw.mods.fml.common.Mod.ServerStopping;
 import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -110,6 +103,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
+import cpw.mods.fml.relauncher.RelaunchClassLoader;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(
@@ -138,6 +132,12 @@ import cpw.mods.fml.relauncher.Side;
 		clientSideRequired = true)
 public class LogisticsPipes {
 
+	public LogisticsPipes() {
+		RelaunchClassLoader loader = (RelaunchClassLoader)LogisticsPipes.class.getClassLoader();
+		loader.registerTransformer("logisticspipes.asm.LogisticsClassTransformer");
+		PacketHandler.intialize(); //To load PacketClasses after the ClassTransformer
+	}
+	
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
 
@@ -204,7 +204,6 @@ public class LogisticsPipes {
 	
 	public static Textures textures = new Textures();
 	
-	public static Class<? extends LogisticsPowerJunctionTileEntity_BuildCraft> powerTileEntity;
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
@@ -216,6 +215,8 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
+	public static Icon teststuff;
+	public static Icon teststuff2;
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
@@ -261,10 +262,6 @@ public class LogisticsPipes {
 			TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.CLIENT);
 		}
 		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
-
-		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
-				.getPackage().getName()
-				+ ".waila.WailaRegister.register");
 	}
 	
 	@PreInit
@@ -409,27 +406,6 @@ public class LogisticsPipes {
 		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		GameRegistry.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 		logisticsSign.setUnlocalizedName("logisticsSolidBlock");
-		//Power Junction
-		if(SimpleServiceLocator.IC2Proxy.hasIC2()) {
-			if(SimpleServiceLocator.ccProxy.isCC()) {
-				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_IC2_BuildCraft.class;
-			} else {
-				powerTileEntity = LogisticsPowerJunctionTileEntity_IC2_BuildCraft.class;
-			}
-		} else {
-			if(SimpleServiceLocator.ccProxy.isCC()) {
-				powerTileEntity = LogisticsPowerJuntionTileEntity_CC_BuildCraft.class;
-			} else {
-				powerTileEntity = LogisticsPowerJunctionTileEntity_BuildCraft.class;
-			}
-		}
-		
-		//LogisticsTileGenerticPipe
-		if(SimpleServiceLocator.ccProxy.isCC()) {
-			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe_CC.class;
-		} else if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			BuildCraftProxy.logisticsTileGenericPipe = LogisticsTileGenericPipe.class;
-		}
 		
 		MainProxy.proxy.registerTileEntities();
 

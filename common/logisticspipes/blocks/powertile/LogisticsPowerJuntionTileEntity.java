@@ -1,10 +1,15 @@
 package logisticspipes.blocks.powertile;
 
+import ic2.api.Direction;
+import ic2.api.energy.tile.IEnergySink;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.asm.ModDependentInterface;
+import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDPowerJunction;
 import logisticspipes.interfaces.IBlockWatchingHandler;
@@ -15,6 +20,7 @@ import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.oldpackets.PacketCoordinates;
 import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.crash.CrashReportCategory;
@@ -27,13 +33,17 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
+import dan200.computer.api.IComputerAccess;
+import dan200.computer.api.IPeripheral;
 
-public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler {
-	
+@ModDependentInterface(modId={"IC2", "ComputerCraft"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral"})
+public class LogisticsPowerJuntionTileEntity extends TileEntity implements IPowerReceptor, ILogisticsPowerProvider, IGuiOpenControler, IHeadUpDisplayBlockRendererProvider, IBlockWatchingHandler, IEnergySink, IPeripheral {
+
 	// true if it needs more power, turns off at full, turns on at 50%.
 	public boolean needMorePowerTriggerCheck = true;
 	
 	public final int BuildCraftMultiplier = 5;
+	public final int IC2Multiplier = 2;
 	public final int MAX_STORAGE = 2000000;
 	
 	private IPowerProvider powerFramework;
@@ -42,12 +52,15 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
+  	private int internalBuffer = 0;
+	
+  	private boolean addedToEnergyNet = false;
 	
 	private boolean init = false;
 	private List<EntityPlayer> watcherList = new ArrayList<EntityPlayer>();
 	private IHeadUpDisplayRenderer HUD;
 	
-	public LogisticsPowerJunctionTileEntity_BuildCraft() {
+	public LogisticsPowerJuntionTileEntity() {
 		powerFramework = PowerFramework.currentFramework.createPowerProvider();
 		powerFramework.configure(0, 1, 250, 1, 750);
 		HUD = new HUDPowerJunction(this);
@@ -62,7 +75,8 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 				needMorePowerTriggerCheck=true;
 			return true;
 		}
-		return false;	}
+		return false;
+	}
 
 	@Override
 	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
@@ -135,6 +149,10 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 			if(MainProxy.isClient(worldObj)) {
 				LogisticsHUDRenderer.instance().add(this);
 			}
+			if(!addedToEnergyNet) {
+				SimpleServiceLocator.IC2Proxy.registerToEneryNet(this);
+				addedToEnergyNet = true;
+			}
 			init = true;
 		}
 	}
@@ -145,6 +163,10 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 		if(MainProxy.isClient(this.worldObj)) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
+		if(addedToEnergyNet) {
+			SimpleServiceLocator.IC2Proxy.unregisterToEneryNet(this);
+			addedToEnergyNet = false;
+		}
 	}
 
 	@Override
@@ -153,6 +175,9 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 		if(MainProxy.isClient(this.worldObj)) {
 			init = false;
 		}
+		if(!addedToEnergyNet) {
+			init = true;
+		}
 	}
 
 	@Override
@@ -160,6 +185,10 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 		super.onChunkUnload();
 		if(MainProxy.isClient(this.worldObj)) {
 			LogisticsHUDRenderer.instance().remove(this);
+		}
+		if(addedToEnergyNet) {
+			SimpleServiceLocator.IC2Proxy.unregisterToEneryNet(this);
+			addedToEnergyNet = false;
 		}
 	}
 
@@ -239,12 +268,12 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 	}
 
 	@Override
-	public void startWatching() {
+	public void startWaitching() {
 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
 	@Override
-	public void stopWatching() {
+	public void stopWaitching() {
 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 	}
 
@@ -260,7 +289,7 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 	}
 
 	@Override
-	public boolean isExistent() {
+	public boolean isExistend() {
 		return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	
@@ -269,4 +298,78 @@ public class LogisticsPowerJunctionTileEntity_BuildCraft extends TileEntity impl
 		super.func_85027_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
+
+	@Override
+	@ModDependentMethod(modId="IC2")
+	public boolean acceptsEnergyFrom(TileEntity emitter, Direction direction) {
+		return true;
+	}
+
+	@Override
+	@ModDependentMethod(modId="IC2")
+	public boolean isAddedToEnergyNet() {
+		return addedToEnergyNet;
+	}
+
+	@Override
+	@ModDependentMethod(modId="IC2")
+	public int demandsEnergy() {
+		if(internalBuffer > 0 && freeSpace() > 0) {
+			internalBuffer = injectEnergy(null, internalBuffer);
+		}
+		return freeSpace();
+	}
+
+	@Override
+	@ModDependentMethod(modId="IC2")
+	public int injectEnergy(Direction directionFrom, int amount) {
+		int addAmount = Math.min(amount, freeSpace() / IC2Multiplier);
+		if(freeSpace() > 0 && addAmount == 0) {
+			addAmount = 1;
+		}
+		addEnergy(addAmount * IC2Multiplier);
+		if(addAmount == 0 && directionFrom != null) {
+			internalBuffer += amount;
+			return 0;
+		}
+		return amount - addAmount;
+	}
+
+	@Override
+	@ModDependentMethod(modId="IC2")
+	public int getMaxSafeInput() {
+		return Integer.MAX_VALUE;
+	}
+	
+	@Override
+	@ModDependentMethod(modId="ComputerCraft")
+	public String getType() {
+	return "LogisticsPowerJunction";
+	}
+	
+	@Override
+	@ModDependentMethod(modId="ComputerCraft")
+	public String[] getMethodNames() {
+	return new String[]{"getPowerLevel"};
+	}
+	
+	@Override
+	@ModDependentMethod(modId="ComputerCraft")
+	public Object[] callMethod(IComputerAccess computer, int method, Object[] arguments) throws Exception {
+	return new Object[]{this.getPowerLevel()};
+	}
+	
+	@Override
+	@ModDependentMethod(modId="ComputerCraft")
+	public boolean canAttachToSide(int side) {
+	return true;
+	}
+	
+	@Override
+	@ModDependentMethod(modId="ComputerCraft")
+	public void attach(IComputerAccess computer) {}
+	
+	@Override
+	@ModDependentMethod(modId="ComputerCraft")
+	public void detach(IComputerAccess computer) {}
 }

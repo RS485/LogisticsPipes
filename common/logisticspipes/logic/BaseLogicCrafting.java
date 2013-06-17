@@ -628,4 +628,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		}
 		return null;
 	}
+
+	@Override
+	public void destroy() {}
 }

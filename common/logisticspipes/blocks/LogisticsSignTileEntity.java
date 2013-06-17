@@ -46,9 +46,7 @@ public class LogisticsSignTileEntity extends TileEntity {
 	public PipeItemsCraftingLogistics getAttachedSignOwnerPipe() {
 		for(CoreRoutedPipe pipe:this.getNearRoutingPipes()) {
 			if(pipe instanceof PipeItemsCraftingLogistics) {
-				if(((PipeItemsCraftingLogistics)pipe).isAttachedSign(this)) {
-					return (PipeItemsCraftingLogistics)pipe;
-				}
+				return (PipeItemsCraftingLogistics)pipe;
 			}
 		}
 		return null;

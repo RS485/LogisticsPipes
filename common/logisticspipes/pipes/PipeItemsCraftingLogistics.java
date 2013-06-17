@@ -549,34 +549,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public LogisticsModule getLogisticsModule() {
 		return new ModuleCrafter(this);
 	}
-	
-	public boolean isAttachedSign(TileEntity entity) {
-		return entity.xCoord == ((BaseLogicCrafting)logic).signEntityX && entity.yCoord == ((BaseLogicCrafting)logic).signEntityY && entity.zCoord == ((BaseLogicCrafting)logic).signEntityZ;
-	}
-
-	/*
-	public void addSign(LogisticsSignTileEntity entity, EntityPlayer player) {
-		if(((BaseLogicCrafting)logic).signEntityX == 0 && ((BaseLogicCrafting)logic).signEntityY == 0 && ((BaseLogicCrafting)logic).signEntityZ == 0) {
-			((BaseLogicCrafting)logic).signEntityX = entity.getX();
-			((BaseLogicCrafting)logic).signEntityY = entity.getY();
-			((BaseLogicCrafting)logic).signEntityZ = entity.getZ();
-			MainProxy.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,getX(),getY(),getZ(),getLogisticsNetworkPacket()).getPacket(), (Player)player);
-			final PacketInventoryChange newpacket = new PacketInventoryChange(NetworkConstants.CRAFTING_PIPE_IMPORT_BACK, getX(), getY(), getZ(), ((BaseLogicCrafting)logic).getDummyInventory());
-			MainProxy.sendPacketToPlayer(newpacket.getPacket(), (Player)player);
-		}
-	}
-	
-	public boolean canRegisterSign() {
-		return ((BaseLogicCrafting)logic).signEntityX == 0 && ((BaseLogicCrafting)logic).signEntityY == 0 && ((BaseLogicCrafting)logic).signEntityZ == 0;
-	}
-	
-	public void removeRegisteredSign() {
-		((BaseLogicCrafting)logic).signEntityX = 0;
-		((BaseLogicCrafting)logic).signEntityY = 0;
-		((BaseLogicCrafting)logic).signEntityZ = 0;
-		MainProxy.sendToPlayerList(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,getX(),getY(),getZ(),this.getLogisticsNetworkPacket()).getPacket(), localModeWatchers);
-	}
-	*/
 
 	@Override
 	public ItemSendMode getItemSendMode() {

@@ -61,15 +61,6 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@TileNetworkData
 	public int liquidSatelliteId = 0;
 
-	
-	@TileNetworkData
-	public int signEntityX = 0;
-	@TileNetworkData
-	public int signEntityY = 0;
-	@TileNetworkData
-	public int signEntityZ = 0;
-	//public LogisticsTileEntiy signEntity;
-
 	@TileNetworkData(staticSize=6)
 	public boolean[] craftingSigns = new boolean[6];
 	
@@ -263,9 +254,6 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		_dummyInventory.readFromNBT(nbttagcompound, "");
 		_liquidInventory.readFromNBT(nbttagcompound, "LiquidInv");
 		satelliteId = nbttagcompound.getInteger("satelliteid");
-		signEntityX = nbttagcompound.getInteger("CraftingSignEntityX");
-		signEntityY = nbttagcompound.getInteger("CraftingSignEntityY");
-		signEntityZ = nbttagcompound.getInteger("CraftingSignEntityZ");
 		
 		priority = nbttagcompound.getInteger("priority");
 		for(int i=0;i<9;i++) {
@@ -296,10 +284,6 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		_liquidInventory.writeToNBT(nbttagcompound, "LiquidInv");
 		nbttagcompound.setInteger("satelliteid", satelliteId);
 		
-		nbttagcompound.setInteger("CraftingSignEntityX", signEntityX);
-		nbttagcompound.setInteger("CraftingSignEntityY", signEntityY);
-		nbttagcompound.setInteger("CraftingSignEntityZ", signEntityZ);
-		
 		nbttagcompound.setInteger("priority", priority);
 		for(int i=0;i<9;i++) {
 			nbttagcompound.setInteger("advancedSatelliteId" + i, advancedSatelliteIdArray[i]);
@@ -312,17 +296,6 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		}
 		nbttagcompound.setIntArray("LiquidAmount", amount);
 		nbttagcompound.setInteger("liquidSatelliteId", liquidSatelliteId);
-	}
-
-	@Override
-	public void destroy() {
-		if(signEntityX != 0 && signEntityY != 0 && signEntityZ != 0) {
-			//TODO not sure setBlockMetadataWithNotify(signEntityX, signEntityY, signEntityZ, 0, 0, 1);
-			worldObj.setBlockMetadataWithNotify(signEntityX, signEntityY, signEntityZ, 0, 1);
-			signEntityX = 0;
-			signEntityY = 0;
-			signEntityZ = 0;
-		}
 	}
 
 	@Override

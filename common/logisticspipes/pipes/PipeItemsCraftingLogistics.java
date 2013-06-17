@@ -198,6 +198,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, ItemIdentifier wanteditem, int count) {
+		ItemStack extracted = extractFromIInventory((IInventory)tile, wanteditem, count);
+		if(extracted != null) {
+			return extracted;
+		}
 		ItemStack retstack = null;
 		while(count > 0) {
 			ItemStack stack = tile.getOutput(wanteditem, this);

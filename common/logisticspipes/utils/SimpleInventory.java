@@ -228,6 +228,14 @@ public class SimpleInventory implements IInventory, ISaveState{
 			if(stack.stackSize <= 0) {
 				break;
 			}
+			if(_contents[i] == null) continue; //Skip Empty Slots on first attempt.
+			int added = tryAddToSlot(i, stack);
+			stack.stackSize -= added;
+		}
+		for(int i=0; i<this._contents.length;i++) {
+			if(stack.stackSize <= 0) {
+				break;
+			}
 			int added = tryAddToSlot(i, stack);
 			stack.stackSize -= added;
 		}

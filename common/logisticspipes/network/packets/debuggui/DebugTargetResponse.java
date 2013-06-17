@@ -35,7 +35,7 @@ public class DebugTargetResponse extends ModernPacket {
 	
 	@Getter
 	@Setter
-	private Object[] additions;
+	private Object[] additions = new Object[0];
 	
 	@Override
 	public void readData(DataInputStream data) throws IOException {

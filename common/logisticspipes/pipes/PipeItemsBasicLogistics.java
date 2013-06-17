@@ -66,7 +66,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if(isPowerProvider(connection)) {
+		if(isPowerProvider(connection) && isSideOrientation(connection)) {
 			return Textures.LOGISTICSPIPE_POWERED_TEXTURE;
 		}
 		if(isSecurityProvider(connection)) {

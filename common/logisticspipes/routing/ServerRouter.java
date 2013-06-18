@@ -317,22 +317,20 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 		}
 		
-		if(LogisticsPipes.DEBUG) {
-			boolean[] oldSideDisconnected = sideDisconnected;
-			sideDisconnected = new boolean[6];
-			checkSecurity(adjacent);
-			
-			boolean changed = false;
-			
-			for(int i=0;i<6;i++) {
-				changed |= sideDisconnected[i] != oldSideDisconnected[i];
-			}
-			if(changed) {
-				CoreRoutedPipe pipe = getPipe();
-				if (pipe != null) {
-					pipe.worldObj.notifyBlocksOfNeighborChange(pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj.getBlockId(pipe.xCoord, pipe.yCoord, pipe.zCoord));
-					pipe.refreshConnectionAndRender(false);
-				}
+		boolean[] oldSideDisconnected = sideDisconnected;
+		sideDisconnected = new boolean[6];
+		checkSecurity(adjacent);
+		
+		boolean changed = false;
+		
+		for(int i=0;i<6;i++) {
+			changed |= sideDisconnected[i] != oldSideDisconnected[i];
+		}
+		if(changed) {
+			CoreRoutedPipe pipe = getPipe();
+			if (pipe != null) {
+				pipe.worldObj.notifyBlocksOfNeighborChange(pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj.getBlockId(pipe.xCoord, pipe.yCoord, pipe.zCoord));
+				pipe.refreshConnectionAndRender(false);
 			}
 		}
 		

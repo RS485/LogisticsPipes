@@ -675,6 +675,16 @@ public class RecipeManager {
 			Character.valueOf('i'), Item.ingotIron
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.logisticsSolidBlock, 1, 3), new Object[] { 
+			"wCw", 
+			" G ", 
+			"wSw", 
+			Character.valueOf('w'), "plankWood",
+			Character.valueOf('C'), Block.workbench,
+			Character.valueOf('S'), Block.chest,
+			Character.valueOf('G'), BuildCraftCore.stoneGearItem
+		});
+		
 		craftingManager.addShapelessRecipe(new ItemStack(LogisticsPipes.LogisticsUpgradeManager, 1), new Object[] { 
 			LogisticsPipes.LogisticsNetworkMonitior,
 			BuildCraftCore.wrenchItem

@@ -426,7 +426,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			// Send inventory as packet
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
-
+			MainProxy.sendPacketToAllWatchingChunk(this.xCoord, this.zCoord, MainProxy.getDimensionForWorld(worldObj), packet.getPacket());
 		}
 	}
 

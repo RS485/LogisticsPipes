@@ -35,8 +35,6 @@ public class LiquidContainerRenderer implements IItemRenderer {
 				switch(type) {
 				case ENTITY:
 					return true;
-				case EQUIPPED:
-					return true;
 				case INVENTORY:
 					return true;
 				default:

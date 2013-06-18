@@ -8,6 +8,7 @@
 
 package logisticspipes.proxy.buildcraft;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.routing.RoutedEntityItem;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
@@ -82,6 +84,7 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
+import buildcraft.transport.render.RenderPipe;
 import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {
@@ -321,5 +324,22 @@ public class BuildCraftProxy {
 	
 	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
 		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.itemID;
+	}
+	
+	public void resetItemRotation(RenderPipe renderer) {
+		try {
+			Field f = RenderPipe.class.getDeclaredField("dummyEntityItem");
+			f.setAccessible(true);
+			EntityItem item = (EntityItem) f.get(renderer);
+			item.hoverStart = 0;
+		} catch(NoSuchFieldException e) {
+			e.printStackTrace();
+		} catch(SecurityException e) {
+			e.printStackTrace();
+		} catch(IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch(IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 }

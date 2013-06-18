@@ -17,6 +17,7 @@ import logisticspipes.pipefxhandlers.providers.EntityRedSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityVioletSparkleFXProvider;
 import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
@@ -24,6 +25,7 @@ import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.tileentity.TileEntityRenderer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.tileentity.TileEntity;
@@ -31,6 +33,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.render.RenderPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.common.network.Player;
@@ -63,6 +66,11 @@ public class ClientProxy implements IProxy {
 		}
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
+		SimpleServiceLocator.buildCraftProxy.resetItemRotation(lrp);
+		Object brp = TileEntityRenderer.instance.specialRendererMap.get(TileGenericPipe.class);
+		if(brp instanceof RenderPipe) {
+			SimpleServiceLocator.buildCraftProxy.resetItemRotation((RenderPipe) brp);
+		}
 	}
 
 	@Override

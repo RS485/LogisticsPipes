@@ -845,49 +845,46 @@ public class RecipeManager {
 			Character.valueOf('s'), Item.ingotIron
 		});
 		
-		//Liquid Routing
-		if(LogisticsPipes.DEBUG) {
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnector, 4), new Object[] { 
-				"GtG", 
-				"gPg", 
-				"GtG", 
-				Character.valueOf('P'), BuildCraftTransport.pipeLiquidsGold,
-				Character.valueOf('t'), Block.torchRedstoneActive, 
-				Character.valueOf('G'), Block.glass, 
-				Character.valueOf('g'), Item.ingotGold
-			});
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1), new Object[] { 
-				"wbw", 
-				"wBw", 
-				"wbw", 
-				Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1),
-				Character.valueOf('w'), BuildCraftTransport.pipeWaterproof, 
-				Character.valueOf('b'), Item.bucketEmpty
-			});
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidInsertion, 1), new Object[] { 
-				" g ", 
-				"gLg", 
-				" g ", 
-				Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
-				Character.valueOf('g'), Item.glassBottle
-			});
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidProvider, 1), new Object[] { 
-				"g", 
-				"L",
-				Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
-				Character.valueOf('g'), Item.glassBottle
-			});
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidRequest, 1), new Object[] {
-				"gLg",
-				Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
-				Character.valueOf('g'), Item.glassBottle
-			});
-			craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidExtractor, 1), new Object[] {
-				"w",
-				"I",
-				Character.valueOf('I'), new ItemStack(LogisticsPipes.LogisticsLiquidInsertion, 1),
-				Character.valueOf('w'), BuildCraftTransport.pipeLiquidsWood
-			});
-		}
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnector, 4), new Object[] { 
+			"GtG", 
+			"gPg", 
+			"GtG", 
+			Character.valueOf('P'), BuildCraftTransport.pipeLiquidsGold,
+			Character.valueOf('t'), Block.torchRedstoneActive, 
+			Character.valueOf('G'), Block.glass, 
+			Character.valueOf('g'), Item.ingotGold
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1), new Object[] { 
+			"wbw", 
+			"wBw", 
+			"wbw", 
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1),
+			Character.valueOf('w'), BuildCraftTransport.pipeWaterproof, 
+			Character.valueOf('b'), Item.bucketEmpty
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidInsertion, 1), new Object[] { 
+			" g ", 
+			"gLg", 
+			" g ", 
+			Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
+			Character.valueOf('g'), Item.glassBottle
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidProvider, 1), new Object[] { 
+			"g", 
+			"L",
+			Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
+			Character.valueOf('g'), Item.glassBottle
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidRequest, 1), new Object[] {
+			"gLg",
+			Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasic, 1),
+			Character.valueOf('g'), Item.glassBottle
+		});
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidExtractor, 1), new Object[] {
+			"w",
+			"I",
+			Character.valueOf('I'), new ItemStack(LogisticsPipes.LogisticsLiquidInsertion, 1),
+			Character.valueOf('w'), BuildCraftTransport.pipeLiquidsWood
+		});
 	}
 }

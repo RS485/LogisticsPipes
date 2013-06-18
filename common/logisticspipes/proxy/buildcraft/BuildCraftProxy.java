@@ -237,16 +237,14 @@ public class BuildCraftProxy {
 		
 		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
 		
-		if(LogisticsPipes.DEBUG) {
-			LogisticsPipes.LogisticsLiquidConnector = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
-			LogisticsPipes.LogisticsLiquidBasic = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
-			LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
-			LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
-			LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
-			LogisticsPipes.LogisticsLiquidExtractor = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
-			LogisticsPipes.LogisticsLiquidSatellite = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatelliteLogistics.class, "Logistics Liquid Satellite Pipe", side);
-			LogisticsPipes.LogisticsLiquidSupplierMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
-		}
+		LogisticsPipes.LogisticsLiquidConnector = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
+		LogisticsPipes.LogisticsLiquidBasic = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
+		LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
+		LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
+		LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
+		LogisticsPipes.LogisticsLiquidExtractor = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
+		LogisticsPipes.LogisticsLiquidSatellite = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatelliteLogistics.class, "Logistics Liquid Satellite Pipe", side);
+		LogisticsPipes.LogisticsLiquidSupplierMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
 	}
 
 	/**

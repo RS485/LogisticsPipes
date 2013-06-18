@@ -361,12 +361,10 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
-		if(DEBUG) {
-			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
-			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
-			if(isClient) {
-				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, (LiquidContainerRenderer)renderer);
-			}
+		LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
+		LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
+		if(isClient) {
+			MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, (LiquidContainerRenderer)renderer);
 		}
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
@@ -387,10 +385,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsBrokenItem,1,0), "en_US", "Logistics Broken Item");
-		
-		if(DEBUG) {
-			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
-		}
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
 		
 		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
 		

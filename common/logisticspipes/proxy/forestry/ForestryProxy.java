@@ -117,9 +117,7 @@ public class ForestryProxy implements IForestryProxy {
 				return true;
 			}
 		} catch (Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 		return false;
 	}
@@ -386,9 +384,7 @@ public class ForestryProxy implements IForestryProxy {
 		try {
 			return (String) localize.invoke(null, new Object[]{input.toLowerCase()});
 		} catch (Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 			return input;
 		}
 	}

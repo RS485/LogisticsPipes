@@ -346,4 +346,13 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	public void sendClientAuthorizationList(EntityPlayer player) {
 		MainProxy.sendCompressedPacketToPlayer(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket(), (Player)player);		
 	}
+
+	@Override
+	public void printAllRouters() {
+		for(IRouter router:_routersServer) {
+			if(router != null) {
+				System.out.println(router.toString());
+			}
+		}
+	}
 }

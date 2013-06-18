@@ -291,6 +291,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		_cachedAdjacentInventories=adjacent;
 		return _cachedAdjacentInventories;
 	}
+
+	/***
+	 * first tick just create a router and do nothing.
+	 */
+	public void firstInitialiseTick() {
+		getRouter();
+	}
 	
 	/*** 
 	 * Only Called Server Side
@@ -318,6 +325,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
 				}
 				//first tick just create a router and do nothing.
+				firstInitialiseTick();
 				getRouter();
 				return;
 			}

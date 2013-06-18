@@ -27,7 +27,7 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	@Override
 	public List<ExitRoute> getRouters() {
 		if(LogisticsPipes.DEBUG && ForgeDirection.UNKNOWN.equals(side)) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException(this.toString());
 		}
 		if(this.getPipe() instanceof PipeItemsFirewall) {
 			return ((PipeItemsFirewall)this.getPipe()).getRouters(this);
@@ -38,7 +38,7 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	@Override
 	public IFilter getFilter() {
 		if(LogisticsPipes.DEBUG && ForgeDirection.UNKNOWN.equals(side)) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException(this.toString());
 		}
 		if(this.getPipe() instanceof PipeItemsFirewall) {
 			return ((PipeItemsFirewall)this.getPipe()).getFilter(this.getId(), this.getSimpleID());
@@ -66,6 +66,9 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	@Override
 	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
 		boolean hasBeenReset=false;
+		if(hasBeenProcessed.get(this.simpleID))
+			return hasBeenReset;
+		hasBeenProcessed.set(this.simpleID);
 		if(!ForgeDirection.UNKNOWN.equals(side)) {
 			CoreRoutedPipe pipe = this.getPipe();
 			if(pipe != null) {
@@ -83,13 +86,8 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 				} else {
 					throw new RuntimeException("Why is the router null? (" + this.toString() + ")");
 				}
-			} else {
-				throw new RuntimeException("Why is the pipe null? (" + this.toString() + ")");
 			}
 		}
-		if(hasBeenProcessed.get(this.simpleID))
-			return hasBeenReset;
-		hasBeenProcessed.set(this.simpleID);
 		if(!actor.isInteresting(this))
 			return hasBeenReset;
 		if(actor.doTo(this)){

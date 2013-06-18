@@ -25,7 +25,6 @@ import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.routing.IFilteringRouter;
@@ -42,6 +41,9 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -161,6 +163,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	private final int _xCoord;
 	private final int _yCoord;
 	private final int _zCoord;
+	
+	@Getter
+	@Setter(value=AccessLevel.PRIVATE)
+	private boolean destroied = false;
 	
 	private WeakReference<CoreRoutedPipe> _myPipeCache=null;
 	@Override
@@ -656,6 +662,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		this.removeAllInterests();
 		
 		clearPipeCache();
+		setDestroied(true);
 		SimpleServiceLocator.routerManager.removeRouter(this.simpleID);
 		updateAdjacentAndLsa();
 		releaseSimpleID(simpleID);
@@ -970,6 +977,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		string.append(this._zCoord);
 		string.append("), Version: ");
 		string.append(_LSAVersion);
+		string.append("), Destroied: ");
+		string.append(isDestroied());
 		return string.append("}").toString();
 	}
 }

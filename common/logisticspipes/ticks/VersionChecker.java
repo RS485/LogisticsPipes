@@ -45,12 +45,14 @@ public class VersionChecker extends Thread {
 				LogisticsPipes.log.warning("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
 				LinkedTreeMap changeLog = (LinkedTreeMap) part.get("changelog");
 				List<String> changeLogList = new ArrayList<String>();
-				for(Object oVersion:changeLog.keySet()) {
-					String build = oVersion.toString();
-					changeLogList.add(new StringBuilder(build).append(": ").toString());
-					List<String> sub = (List<String>) changeLog.get(build);
-					for(String msg:sub) {
-						changeLogList.add(msg);
+				if(changeLog != null) {
+					for(Object oVersion:changeLog.keySet()) {
+						String build = oVersion.toString();
+						changeLogList.add(new StringBuilder(build).append(": ").toString());
+						List<String> sub = (List<String>) changeLog.get(build);
+						for(String msg:sub) {
+							changeLogList.add(msg);
+						}
 					}
 				}
 				VersionChecker.changeLog = changeLogList;

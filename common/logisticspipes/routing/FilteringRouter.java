@@ -11,10 +11,12 @@ import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ItemIdentifier;
+import lombok.Getter;
 import net.minecraftforge.common.ForgeDirection;
 
 public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	
+	@Getter
 	private ForgeDirection side;
 	
 	public FilteringRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir) {
@@ -69,7 +71,15 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			if(pipe != null) {
 				IRouter router = pipe.getRouter();
 				if(router != null) {
-					hasBeenReset = router.act(hasBeenProcessed, actor);
+					if(router instanceof FilteringRouter) {
+						if(ForgeDirection.UNKNOWN.equals(((FilteringRouter)router).side)) {
+							hasBeenReset = router.act(hasBeenProcessed, actor);
+						} else {
+							throw new RuntimeException("Why is the FilteringRouter not centered? (" + router.toString() + ")");
+						}
+					} else {
+						throw new RuntimeException("Why is the router not an FilteringRouter? (" + router.toString() + ")");
+					}
 				} else {
 					throw new RuntimeException("Why is the router null? (" + this.toString() + ")");
 				}

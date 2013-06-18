@@ -20,6 +20,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
+import logisticspipes.routing.FilteringRouter;
 import logisticspipes.routing.IRouter;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -98,6 +99,11 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 					routerId = UUID.randomUUID().toString();
 				}
 				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN);
+			}
+		}
+		if(router instanceof FilteringRouter) {
+			if(!(ForgeDirection.UNKNOWN.equals(((FilteringRouter)router).getSide()))) {
+				System.out.println("The Center Router is not centered (" + router.toString() + ")");
 			}
 		}
 		return router;

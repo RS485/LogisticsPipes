@@ -1,6 +1,7 @@
 package logisticspipes.pipes.basic.liquid;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
@@ -17,8 +18,10 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
@@ -120,6 +123,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 		if(!(tile instanceof ITankContainer)) return false;
 		if(!this.canPipeConnect(tile, dir)) return false;
 		if(tile instanceof TileGenericPipe) {
+			if(((TileGenericPipe)tile).pipe instanceof LiquidRoutedPipe) return false;
 			if(!flag) return false;
 			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return false;
 		}
@@ -170,6 +174,21 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 				}
 			}
 		}
+	}
+
+	public int countOnRoute(LiquidIdentifier ident) {
+		int amount = 0;
+		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			IRoutedItem next = iter.next();
+			ItemStack item = next.getItemStack();
+			if(item.getItem() instanceof LogisticsLiquidContainer) {
+				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+				if(LiquidIdentifier.get(liquid) == ident) {
+					amount += liquid.amount;
+				}
+			}
+		}
+		return amount;
 	}
 
 	public abstract boolean canInsertFromSideToTanks();

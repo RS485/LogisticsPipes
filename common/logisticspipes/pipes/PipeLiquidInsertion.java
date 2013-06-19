@@ -59,7 +59,7 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 			}
 			
 			Pair<Integer, Integer> result = SimpleServiceLocator.logisticsLiquidManager.getBestReply(stack, getRouter(), tempJamList);
-			if(result == null || result.getValue1() == null || result.getValue2() == 0) {
+			if(result == null || result.getValue1() == null || result.getValue1() == 0 || result.getValue2() == 0) {
 				nextSendMax[dir.ordinal()] = 100;
 				nextSendMin[dir.ordinal()] = 10;
 				continue;

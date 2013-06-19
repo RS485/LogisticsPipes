@@ -326,7 +326,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				}
 				//first tick just create a router and do nothing.
 				firstInitialiseTick();
-				getRouter();
 				return;
 			}
 		}

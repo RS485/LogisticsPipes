@@ -263,9 +263,9 @@ public class LogisticsPipes {
 		}
 		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
 		
-		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
-		 .getPackage().getName()
-		 + ".waila.WailaRegister.register"); 
+//		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
+//		 .getPackage().getName()
+//		 + ".waila.WailaRegister.register");
 	}
 	
 	@PreInit

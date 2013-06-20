@@ -73,6 +73,7 @@ public class PipeLiquidSatelliteLogistics extends LiquidRoutedPipe implements IR
 
 	@Override
 	public void enabledUpdateEntity() {
+		super.enabledUpdateEntity();
 		if(worldObj.getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}

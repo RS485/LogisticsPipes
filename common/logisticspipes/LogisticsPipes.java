@@ -83,6 +83,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
@@ -292,10 +293,6 @@ public class LogisticsPipes {
 			log.fine("You are using a dev version.");
 			log.fine("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			log.fine("Please report any you find to https://github.com/RS485/LogisticsPipes-Dev/issues");
-			if (!MainProxy.proxy.getSide().equals("Bukkit")) {
-				new Watchdog(evt.getSide() == Side.CLIENT);
-				WATCHDOG = true;
-			}
 		}
 	}
 	
@@ -422,6 +419,19 @@ public class LogisticsPipes {
 		LiquidIdentifier.initFromForge(false);
 		LiquidIdentifier.get(9, 0, "water");
 		LiquidIdentifier.get(11, 0, "lava");
+
+		boolean bukkit = false;
+		try {
+			Class<?> c = Class.forName("za.co.mcportcentral.MCPCCompatibilityMarker");
+			if(c != null) {
+				bukkit = true;
+			}
+		} catch(Exception e) {}
+		
+		if (!bukkit) {
+			new Watchdog(event.getSide() == Side.CLIENT);
+			WATCHDOG = true;
+		}
 	}
 	
 	@ServerStopping

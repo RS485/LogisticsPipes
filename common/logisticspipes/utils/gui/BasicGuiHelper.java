@@ -95,10 +95,7 @@ public class BasicGuiHelper {
 			int y = top + ySize * row;
 
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
-			//GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
-			if(itemStack.makeNormalStack().getDisplayName().equals("Blank Page")) {
-				System.out.print("");
-			}
+			//GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
 			
 			if(st != null && itemStack.getItem().isValid()) {
 				if(disableEffect) {

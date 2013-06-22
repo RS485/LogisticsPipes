@@ -37,7 +37,7 @@
 	<property name="mcp.version"          value="751"/>
 	<property name="mc.version"           value="1.5.2"/>
 	<property name="forge.version"        value="7.8.0.685"/>
-	<property name="bc.version"           value="3.6.0"/>
+	<property name="bc.version"           value="3.7.1"/>
 	<property name="forestry.version"     value="2.2.6.2"/>
 	<property name="ic2.version"          value="1.115.304-lf"/>
 	<property name="cc.version"           value="1.52"/>
@@ -48,6 +48,7 @@
 	<property name="jarjar.version"       value="1.4"/>
 	<property name="guava.version"        value="15.0-SNAPSHOT"/>
 	<property name="waila.version"        value="1.2.0"/>
+	<property name="gson.version"         value="2.2.4"/>
 	<property name="lp.version"           value="0.7.3"/>
 	
 	<!-- Targets -->
@@ -74,6 +75,8 @@
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}guava-${guava.version}.jar" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}gson-${gson.version}.jar" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}lombok-${lombok.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 
 		<echo message="Download finished"/>
 
@@ -165,7 +168,8 @@
 			<arg value="install.sh"/>
 		</exec>
 		
-		<get src="${downloadserver.full}lombok-${lombok.version}.jar" dest="${mcp.dir}/lib" usetimestamp="True"/>
+		<copy file="${download.dir}/lombok-${lombok.version}.jar" todir="${mcp.dir}/lib"/>
+		<copy file="${download.dir}/gson-${gson.version}.jar" todir="${mcp.dir}/lib"/>
 		
 		<echo message="Decompile finished"/>
 		<!-- Copy BC source -->
@@ -323,8 +327,10 @@
         classpath="${download.dir}/jarjar-${jarjar.version}.jar"/>
 
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
-				<zipfileset src="${download.dir}/guava-${guava.version}.jar"/>
-				<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
+			<zipfileset src="${download.dir}/guava-${guava.version}.jar"/>
+			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
+			<zipfileset src="${download.dir}/gson-${gson.version}.jar"/>
+			<rule pattern="com.google.gson.**" result="logisticspipes.com.google.gson.@1"/>
 		</jarjar>
 
 		<echo message="Packing finished"/>
@@ -342,6 +348,8 @@
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
 			<zipfileset src="${download.dir}/guava-${guava.version}.jar"/>
 			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
+			<zipfileset src="${download.dir}/gson-${gson.version}.jar"/>
+			<rule pattern="com.google.gson.**" result="logisticspipes.com.google.gson.@1"/>
 
 			<manifest>
 				<attribute name="Built-By" value="RS485-Jenkins"/>

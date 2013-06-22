@@ -130,13 +130,10 @@ public class Configs {
 				ITEM_BROKEN_ID, "The item id for the logistics broken item")
 				.getInt();
 	
-		// DEBUG (TEST) ONLY
-		if (LogisticsPipes.DEBUG) {
-			ITEM_LIQUID_CONTAINER_ID = CONFIGURATION.getItem(
-					"LogisticsLiquidContainer.id", ITEM_LIQUID_CONTAINER_ID,
-					"The item id for the logistics liquid container").getInt();
-		}
-
+		ITEM_LIQUID_CONTAINER_ID = CONFIGURATION.getItem(
+				"LogisticsLiquidContainer.id", ITEM_LIQUID_CONTAINER_ID,
+				"The item id for the logistics liquid container").getInt();
+		
 		LOGISTICSPIPE_BASIC_ID = CONFIGURATION.getItem("logisticsPipe.id",
 				LOGISTICSPIPE_BASIC_ID,
 				"The item id for the basic logistics pipe").getInt();
@@ -214,41 +211,38 @@ public class Configs {
 				"logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID,
 				"The item id for the firewall logistics pipe").getInt();
 
-		// DEBUG (TEST) ONLY (LIQUID)
-		if (LogisticsPipes.DEBUG) {
-			LOGISTICSPIPE_LIQUID_CONNECTOR = CONFIGURATION.getItem(
-					"logisticPipeLiquidConnector.id",
-					LOGISTICSPIPE_LIQUID_CONNECTOR,
-					"The item id for the liquid connector pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_BASIC = CONFIGURATION.getItem(
-					"logisticPipeLiquidBasic.id", LOGISTICSPIPE_LIQUID_BASIC,
-					"The item id for the liquid basic pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_INSERTION = CONFIGURATION.getItem(
-					"logisticPipeLiquidInsertion.id",
-					LOGISTICSPIPE_LIQUID_INSERTION,
-					"The item id for the liquid insertion pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_PROVIDER = CONFIGURATION.getItem(
-					"logisticPipeLiquidProvider.id",
-					LOGISTICSPIPE_LIQUID_PROVIDER,
-					"The item id for the liquid provider pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_REQUEST = CONFIGURATION.getItem(
-					"logisticPipeLiquidRequest.id",
-					LOGISTICSPIPE_LIQUID_REQUEST,
-					"The item id for the liquid requestor pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_EXTRACTOR = CONFIGURATION.getItem(
-					"logisticPipeLiquidExtractor.id",
-					LOGISTICSPIPE_LIQUID_EXTRACTOR,
-					"The item id for the liquid extractor pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_SATELLITE = CONFIGURATION.getItem(
-					"logisticPipeLiquidSatellite.id",
-					LOGISTICSPIPE_LIQUID_SATELLITE,
-					"The item id for the liquid satellite pipe.").getInt();
-			LOGISTICSPIPE_LIQUID_SUPPLIER_MK2 = CONFIGURATION.getItem(
-					"logisticPipeLiquidSupplierMk2.id",
-					LOGISTICSPIPE_LIQUID_SUPPLIER_MK2,
-					"The item id for the liquid supplier pipe mk2.").getInt();
-		}
-
+		LOGISTICSPIPE_LIQUID_CONNECTOR = CONFIGURATION.getItem(
+				"logisticPipeLiquidConnector.id",
+				LOGISTICSPIPE_LIQUID_CONNECTOR,
+				"The item id for the liquid connector pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_BASIC = CONFIGURATION.getItem(
+				"logisticPipeLiquidBasic.id", LOGISTICSPIPE_LIQUID_BASIC,
+				"The item id for the liquid basic pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_INSERTION = CONFIGURATION.getItem(
+				"logisticPipeLiquidInsertion.id",
+				LOGISTICSPIPE_LIQUID_INSERTION,
+				"The item id for the liquid insertion pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_PROVIDER = CONFIGURATION.getItem(
+				"logisticPipeLiquidProvider.id",
+				LOGISTICSPIPE_LIQUID_PROVIDER,
+				"The item id for the liquid provider pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_REQUEST = CONFIGURATION.getItem(
+				"logisticPipeLiquidRequest.id",
+				LOGISTICSPIPE_LIQUID_REQUEST,
+				"The item id for the liquid requestor pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_EXTRACTOR = CONFIGURATION.getItem(
+				"logisticPipeLiquidExtractor.id",
+				LOGISTICSPIPE_LIQUID_EXTRACTOR,
+				"The item id for the liquid extractor pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_SATELLITE = CONFIGURATION.getItem(
+				"logisticPipeLiquidSatellite.id",
+				LOGISTICSPIPE_LIQUID_SATELLITE,
+				"The item id for the liquid satellite pipe.").getInt();
+		LOGISTICSPIPE_LIQUID_SUPPLIER_MK2 = CONFIGURATION.getItem(
+				"logisticPipeLiquidSupplierMk2.id",
+				LOGISTICSPIPE_LIQUID_SUPPLIER_MK2,
+				"The item id for the liquid supplier pipe mk2.").getInt();
+		
 		LOGISTICS_DETECTION_LENGTH = CONFIGURATION
 				.get(Configuration.CATEGORY_GENERAL,
 						"detectionLength",

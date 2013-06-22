@@ -41,9 +41,7 @@ public class CCProxy implements ICCProxy {
 			target.setAccessible(true);
 			valid = true;
 		} catch(Exception e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 			valid = false;
 		}
 	}
@@ -97,17 +95,11 @@ public class CCProxy implements ICCProxy {
 					}
 				}
 			} catch (IllegalArgumentException e) {
-				if(LogisticsPipes.DEBUG) {
-						e.printStackTrace();
-				}
+				e.printStackTrace();
 			} catch (IllegalAccessException e) {
-				if(LogisticsPipes.DEBUG) {
-					e.printStackTrace();
-				}
+				e.printStackTrace();
 			} catch(ClassCastException e) {
-				if(LogisticsPipes.DEBUG) {
-					e.printStackTrace();
-				}
+				e.printStackTrace();
 			}
 		}
 		return ForgeDirection.UNKNOWN;
@@ -117,17 +109,11 @@ public class CCProxy implements ICCProxy {
 		try {
 			return (Runnable) target.get(thread);
 		} catch (SecurityException e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			if(LogisticsPipes.DEBUG) {
-				e.printStackTrace();
-			}
+			e.printStackTrace();
 		}
 		return null;
 	}

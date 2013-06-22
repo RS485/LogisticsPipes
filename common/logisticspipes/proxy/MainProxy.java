@@ -30,7 +30,7 @@ import cpw.mods.fml.relauncher.Side;
 
 public class MainProxy {
 	
-	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy", bukkitSide="logisticspipes.proxy.side.BukkitProxy")
+	@SidedProxy(clientSide="logisticspipes.proxy.side.ClientProxy", serverSide="logisticspipes.proxy.side.ServerProxy")
 	public static IProxy proxy;
 	
 	private static WeakHashMap<Thread, Side> threadSideMap = new WeakHashMap<Thread, Side>();

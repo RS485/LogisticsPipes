@@ -28,4 +28,5 @@ public interface IRouterManager {
 
 	boolean isRouterUnsafe(int id, boolean isClientSide);
 	IRouter getRouterUnsafe(Integer value1, boolean isClientSide);
+	void printAllRouters();
 }

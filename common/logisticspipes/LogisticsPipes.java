@@ -71,6 +71,7 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
+import logisticspipes.ticks.VersionChecker;
 import logisticspipes.ticks.Watchdog;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
@@ -82,6 +83,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
@@ -218,6 +220,7 @@ public class LogisticsPipes {
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
+		new VersionChecker();
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
@@ -261,9 +264,9 @@ public class LogisticsPipes {
 		}
 		TickRegistry.registerTickHandler(DebugGuiTickHandler.instance(), Side.SERVER);
 		
-		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
-		 .getPackage().getName()
-		 + ".waila.WailaRegister.register"); 
+//		FMLInterModComms.sendMessage("Waila", "register", this.getClass()
+//		 .getPackage().getName()
+//		 + ".waila.WailaRegister.register");
 	}
 	
 	@PreInit
@@ -290,10 +293,6 @@ public class LogisticsPipes {
 			log.fine("You are using a dev version.");
 			log.fine("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			log.fine("Please report any you find to https://github.com/RS485/LogisticsPipes-Dev/issues");
-			if (!MainProxy.proxy.getSide().equals("Bukkit")) {
-				new Watchdog(evt.getSide() == Side.CLIENT);
-				WATCHDOG = true;
-			}
 		}
 	}
 	
@@ -359,12 +358,10 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
-		if(DEBUG) {
-			LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
-			LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
-			if(isClient) {
-				MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, (LiquidContainerRenderer)renderer);
-			}
+		LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
+		LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
+		if(isClient) {
+			MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, (LiquidContainerRenderer)renderer);
 		}
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
@@ -385,10 +382,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsBrokenItem,1,0), "en_US", "Logistics Broken Item");
-		
-		if(DEBUG) {
-			LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
-		}
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
 		
 		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
 		
@@ -425,6 +419,19 @@ public class LogisticsPipes {
 		LiquidIdentifier.initFromForge(false);
 		LiquidIdentifier.get(9, 0, "water");
 		LiquidIdentifier.get(11, 0, "lava");
+
+		boolean bukkit = false;
+		try {
+			Class<?> c = Class.forName("za.co.mcportcentral.MCPCCompatibilityMarker");
+			if(c != null) {
+				bukkit = true;
+			}
+		} catch(Exception e) {}
+		
+		if (!bukkit) {
+			new Watchdog(event.getSide() == Side.CLIENT);
+			WATCHDOG = true;
+		}
 	}
 	
 	@ServerStopping

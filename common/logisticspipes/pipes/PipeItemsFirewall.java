@@ -73,9 +73,43 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 			getRouter(dir).update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		}
 	}
+
+	@Override
+	public void firstInitialiseTick() {
+		super.firstInitialiseTick();
+		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+			getRouter(dir);
+		}
+	}
+	
+	@Override
+	public void invalidate() {
+		for(int i=0;i<routers.length;i++) {
+			if(routers[i] != null) {
+				routers[i].destroy();
+				routers[i] = null;
+			}
+		}
+		super.invalidate();
+	}
+	
+	@Override
+	public void onChunkUnload() {
+		for(int i=0;i<routers.length;i++) {
+			if(routers[i] != null) {
+				routers[i].clearPipeCache();
+				routers[i].clearInterests();
+			}
+		}
+		super.onChunkUnload();
+	}
 	
 	@Override
 	public IRouter getRouter(ForgeDirection dir) {
+		if(stillNeedReplace) {
+			System.out.println("Hey, don't get routers for pipes that aren't ready");
+			new Throwable().printStackTrace();
+		}
 		if(dir.ordinal() < routers.length) {
 			if (routers[dir.ordinal()] == null){
 				synchronized (routerIdLock) {
@@ -92,6 +126,10 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	
 	@Override
 	public IRouter getRouter() {
+		if(stillNeedReplace) {
+			System.out.println("Hey, don't get routers for pipes that aren't ready");
+			new Throwable().printStackTrace();
+		}
 		if (router == null){
 			synchronized (routerIdLock) {
 				if (routerId == null || routerId == ""){

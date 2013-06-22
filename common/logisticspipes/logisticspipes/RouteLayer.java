@@ -54,6 +54,7 @@ public class RouteLayer {
 			}
 		}
 		
+		item.checkIDFromUUID();
 		//If we still have no destination or client side unroutable, drop it
 		if (item.getDestination() < 0) { 
 			return ForgeDirection.UNKNOWN;

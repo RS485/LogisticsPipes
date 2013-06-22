@@ -16,6 +16,7 @@ import java.util.TreeSet;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
+import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleItemSink;
@@ -44,7 +45,10 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 				if(super.canPipeConnect(tile, dir)) return true;
 				if(tile instanceof ILogisticsPowerProvider) {
 					ForgeDirection ori = OrientationsUtil.getOrientationOfTilewithPipe(this, tile);
-					if(ori == null || ori == ForgeDirection.UNKNOWN || ori == ForgeDirection.DOWN || ori == ForgeDirection.UP) {
+					if(ori == null || ori == ForgeDirection.UNKNOWN) {
+						return false;
+					}
+					if(tile instanceof LogisticsPowerJunctionTileEntity && (ori == ForgeDirection.DOWN || ori == ForgeDirection.UP)) {
 						return false;
 					}
 					return true;
@@ -76,12 +80,24 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	@Override
 	public boolean isLockedExit(ForgeDirection orientation) {
-		if(isPowerProvider(orientation) || isSecurityProvider(orientation)) {
+		if(isPowerJunction(orientation) || isSecurityProvider(orientation)) {
 			return true;
 		}
 		return super.isLockedExit(orientation);
 	}
 	
+	private boolean isPowerJunction(ForgeDirection ori) {
+		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
+			return false;
+		}
+
+		if(tilePipe instanceof LogisticsPowerJunctionTileEntity) {
+			return true;
+		}
+		return false;
+	}
+
 	private boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
 		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
@@ -141,8 +157,10 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 		WorldUtil world = new WorldUtil(this.worldObj, this.getX(), this.getY(), this.getZ());
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof ILogisticsPowerProvider && isSideOrientation(tile.orientation)) {
-				list.add((ILogisticsPowerProvider)tile.tile);
+			if(tile.tile instanceof ILogisticsPowerProvider) {
+				if(isSideOrientation(tile.orientation) || !(tile.tile instanceof LogisticsPowerJunctionTileEntity))  {
+					list.add((ILogisticsPowerProvider)tile.tile);
+				}
 			}
 		}
 		return list;

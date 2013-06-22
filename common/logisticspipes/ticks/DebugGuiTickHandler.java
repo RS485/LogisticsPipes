@@ -6,13 +6,15 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.Serializable;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -60,6 +62,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	transient private DefaultMutableTreeNode baseNode;
 	transient private JTree tree;
 	transient private JScrollPane treeView;
+	transient private VarType clientType;
 	
 	transient private Map<Player, ServerGuiSetting> serverInfo = new HashMap<Player, ServerGuiSetting>();
 	
@@ -75,6 +78,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		private static final long serialVersionUID = -8013762524305750292L;
 		String name;
 		Integer i;
+		transient ExtendedDefaultMutableTreeNode node;
 	}
 	@Data
 	@EqualsAndHashCode(callSuper=true)
@@ -100,7 +104,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		private static final long serialVersionUID = -5243734594523844526L;
 		Map<Integer, FieldPart> objectType = new HashMap<Integer, FieldPart>();
 		Map<Integer, MethodPart> methodType = new HashMap<Integer, MethodPart>();
-		transient Object watched;
+		transient WeakReference<Object> watched;
 		boolean extended;
 		String typeName;
 	}
@@ -109,7 +113,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	public class ArrayVarType extends ParentVarType {
 		private static final long serialVersionUID = -6335674162049738144L;
 		Map<Integer, VarType> objectType = new HashMap<Integer, VarType>();
-		transient Object[] watched;
+		transient WeakReference<Object[]> watched;
 	}
 	@Data
 	public class FieldPart implements Serializable {
@@ -156,12 +160,12 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		if(object == null) {
 			return;
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugPanelOpen.class).setName(object.getClass().getSimpleName()).getPacket(), player);
+		MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugPanelOpen.class).setName(object.getClass().getSimpleName()).getPacket(), player);
 		ServerGuiSetting setting = new ServerGuiSetting();
 		setting.var = resolveType(object, null, object.getClass().getSimpleName(), true, null);
 		setting.base = object;
 		serverInfo.put(player, setting);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(setting.var).getPacket(), player);
+		MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(setting.var).getPacket(), player);
 	}
 	
 	private boolean isPrimitive(Class<?> clazz) {
@@ -177,11 +181,6 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		Class<?> clazz = toInstect.getClass();
 		if(clazz.isPrimitive() || isPrimitive(clazz)) {
 			BasicVarType type = new BasicVarType();
-			if(prev instanceof BasicVarType) {
-				if(prev.name.equals(name)) {
-					return prev;
-				}
-			}
 			type.name = name;
 			type.watched = toInstect.toString();
 			return type;
@@ -189,14 +188,14 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		if(clazz.isArray() && toInstect instanceof Object[]) {
 			ArrayVarType type = new ArrayVarType();
 			type.i = 0;
-			type.watched = (Object[]) toInstect;
+			type.watched = new WeakReference<Object[]>((Object[]) toInstect);
 			type.name = name;
 			type.parent = parent;
 			if(prev instanceof ExtendedVarType) {
 				type.i = ((ExtendedVarType)prev).i;
 			}
-			for(int i=0;i<type.watched.length;i++) {
-				Object o = type.watched[i];
+			for(int i=0;i<type.watched.get().length;i++) {
+				Object o = type.watched.get()[i];
 				VarType tmp = null;
 				if(prev instanceof ArrayVarType) {
 					tmp = ((ArrayVarType)prev).objectType.get(i);
@@ -209,7 +208,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		}
 		ExtendedVarType type = new ExtendedVarType();
 		type.i = 0;
-		type.watched = toInstect;
+		type.watched =  new WeakReference<Object>(toInstect);
 		type.name = name;
 		type.extended = extended;
 		type.typeName = clazz.getSimpleName();
@@ -255,6 +254,11 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 						methodPart.method = m;
 						methodPart.name = m.getName();
 						methodPart.i = method;
+						List<String> params = new ArrayList<String>();
+						for(Class<?> par:m.getParameterTypes()) {
+							params.add(par.getSimpleName());
+						}
+						methodPart.param = params.toArray(new String[]{});
 						type.methodType.put(method++, methodPart);
 					} catch(Exception e) {
 						e.printStackTrace();
@@ -280,38 +284,18 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		localGui.setLocationRelativeTo(null);
 		localGui.pack();
 		localGui.setVisible(true);
-		System.out.println("Reset/Open GUi");
 	}
 	
 	public void handleServerGuiSetting(VarType setting, Integer[] pos) {
 		if(pos.length == 0 || pos.length == 1) {
+			clientType = setting;
 			for(int i = 0; i < baseNode.getChildCount(); i++) {
 				baseNode.remove(i);
 			}
 			addParts(baseNode, setting);
 			((DefaultTreeModel)tree.getModel()).reload(baseNode);
 		} else {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) baseNode;
-outer:
-			for(int i=0;i<pos.length;i++) {
-				@SuppressWarnings("unchecked") //Cast should be save
-				Enumeration<DefaultMutableTreeNode> children = node.children();
-				while(children.hasMoreElements()) {
-					DefaultMutableTreeNode lNode = children.nextElement();
-					if(lNode instanceof ExtendedDefaultMutableTreeNode && ((ExtendedDefaultMutableTreeNode)lNode).type != null) {
-						if(((ExtendedDefaultMutableTreeNode)lNode).type.i.equals(pos[i])) {
-							if(lNode.getChildCount() == 2 && ((DefaultMutableTreeNode)lNode.getChildAt(0)).getUserObject().equals("Fields:")) {
-								node = (DefaultMutableTreeNode) lNode.getChildAt(0);								
-							} else {
-								node = lNode;
-							}
-							continue outer;
-						}
-					}
-				}
-				//Nothing Found, Fall Back to old Method
-				node = (DefaultMutableTreeNode) node.getChildAt(pos[i]);
-			}
+			ExtendedDefaultMutableTreeNode node = getNodeForPathAndVarType(clientType, pos, setting);
 			while(node.getChildCount() > 0) {
 				node.remove(0);
 			}
@@ -331,46 +315,99 @@ outer:
 		}
 	}
 	
+	private ExtendedDefaultMutableTreeNode getNodeForPathAndVarType(VarType var, Integer[] pos, VarType toRefresh) {
+		VarType varPos = var;
+outer:
+		for(int i=1;i<pos.length;i++) {
+			if(varPos instanceof ExtendedVarType) {
+				ExtendedVarType eType = (ExtendedVarType) varPos;
+				for(int j=0;j<eType.objectType.size();j++) {
+					if(eType.objectType.get(j).type.i.equals(pos[i])) {
+						if(i + 1 == pos.length && toRefresh != null) {
+							varPos = eType.objectType.get(j).type;
+							toRefresh.node = varPos.node;
+							eType.objectType.get(j).type = toRefresh;
+							
+						} else {
+							varPos = eType.objectType.get(j).type;	
+						}
+						continue outer;
+					}
+				}
+			} else {
+				ArrayVarType aType = (ArrayVarType) varPos;
+				for(int j=0;j<aType.objectType.size();j++) {
+					if(aType.objectType.get(j).i.equals(pos[i])) {
+						if(i - 1 == pos.length && toRefresh != null) {
+							varPos = aType.objectType.get(j);
+							toRefresh.node = varPos.node;
+							aType.objectType.put(j, toRefresh);
+							
+						} else {
+							varPos = aType.objectType.get(j);
+						}
+						continue outer;
+					}
+				}
+			}
+		}
+		return varPos.node;
+	}
+
 	private void addParts(DefaultMutableTreeNode node, VarType type) {
 		try {
-		if(type instanceof BasicVarType) {
-			node.add(new ExtendedDefaultMutableTreeNode(type.name + ": " + ((BasicVarType)type).watched, type));
-		} else if(type instanceof NullVarType) {
-			node.add(new ExtendedDefaultMutableTreeNode(type.name + ": null", type));
-		} else if(type instanceof ExtendedVarType) {
-			ExtendedVarType eType = (ExtendedVarType) type;
-			if(eType.extended) {
-				ExtendedDefaultMutableTreeNode extendableNode = new ExtendedDefaultMutableTreeNode(eType.name + ": (" + eType.typeName + ")", eType);
-				ExtendedDefaultMutableTreeNode fieldNode = new ExtendedDefaultMutableTreeNode("Fields:", null);
-				ExtendedDefaultMutableTreeNode methodsNode = new ExtendedDefaultMutableTreeNode("Methods:", null);
-				for(int i=0;i<eType.objectType.size();i++) {
-					addParts(fieldNode, eType.objectType.get(i).type);
+			if(type instanceof BasicVarType) {
+				ExtendedDefaultMutableTreeNode var = new ExtendedDefaultMutableTreeNode(type.name + ": " + ((BasicVarType)type).watched, type);
+				type.node = var;
+				node.add(var);
+			} else if(type instanceof NullVarType) {
+				ExtendedDefaultMutableTreeNode var = new ExtendedDefaultMutableTreeNode(type.name + ": null", type);
+				type.node = var;
+				node.add(var);
+			} else if(type instanceof ExtendedVarType) {
+				ExtendedVarType eType = (ExtendedVarType) type;
+				if(eType.extended) {
+					ExtendedDefaultMutableTreeNode extendableNode = new ExtendedDefaultMutableTreeNode(eType.name + ": (" + eType.typeName + ")", eType);
+					ExtendedDefaultMutableTreeNode fieldNode = new ExtendedDefaultMutableTreeNode("Fields:", null);
+					ExtendedDefaultMutableTreeNode methodsNode = new ExtendedDefaultMutableTreeNode("Methods:", null);
+					for(int i=0;i<eType.objectType.size();i++) {
+						addParts(fieldNode, eType.objectType.get(i).type);
+					}
+					for(Integer i:eType.methodType.keySet()) {
+						MethodPart mPart = eType.methodType.get(i);
+						StringBuilder builder = new StringBuilder();
+						for(String param:mPart.param) {
+							if(builder.length() != 0) {
+								builder.append(", ");
+							}
+							builder.append(param);
+						}
+						MethodDefaultMutableTreeNode methodNode = new MethodDefaultMutableTreeNode(mPart.name + ": (" + builder + ")", mPart);
+						methodsNode.add(methodNode);
+					}
+					extendableNode.loaded = true;
+					extendableNode.add(fieldNode);
+					extendableNode.add(methodsNode);
+					type.node = extendableNode;
+					node.add(extendableNode);
+				} else {
+					ExtendedDefaultMutableTreeNode extendableNode = new ExtendedDefaultMutableTreeNode(eType.name + ": (" + eType.typeName + ")", eType);
+					extendableNode.add(new DefaultMutableTreeNode("Loading..."));
+					type.node = extendableNode;
+					node.add(extendableNode);
 				}
-				for(Integer i:eType.methodType.keySet()) {
-					MethodPart mPart = eType.methodType.get(i);
-					MethodDefaultMutableTreeNode methodNode = new MethodDefaultMutableTreeNode(mPart.name + ": (" + Arrays.toString(mPart.param) + ")", mPart);
-					methodsNode.add(methodNode);
+			} else if(type instanceof ArrayVarType) {
+				ArrayVarType aType = (ArrayVarType) type;
+				ExtendedDefaultMutableTreeNode extendableNode = new ExtendedDefaultMutableTreeNode(aType.name + ": ", aType);
+				for(int i=0;i<aType.objectType.size();i++) {
+					addParts(extendableNode, aType.objectType.get(i));
 				}
 				extendableNode.loaded = true;
-				extendableNode.add(fieldNode);
-				extendableNode.add(methodsNode);
+				type.node = extendableNode;
 				node.add(extendableNode);
-			} else {
-				ExtendedDefaultMutableTreeNode extendableNode = new ExtendedDefaultMutableTreeNode(eType.name + ": (" + eType.typeName + ")", eType);
-				extendableNode.add(new DefaultMutableTreeNode("Loading..."));
-				node.add(extendableNode);
+			} else{
+				throw new UnsupportedOperationException(type == null ? "null" : type.getClass().getSimpleName());
 			}
-		} else if(type instanceof ArrayVarType) {
-			ArrayVarType aType = (ArrayVarType) type;
-			ExtendedDefaultMutableTreeNode extendableNode = new ExtendedDefaultMutableTreeNode(aType.name + ": ", aType);
-			for(int i=0;i<aType.objectType.size();i++) {
-				addParts(extendableNode, aType.objectType.get(i));
-			}
-			extendableNode.loaded = true;
-			node.add(extendableNode);
-		} else{
-			throw new UnsupportedOperationException(type == null ? "null" : type.getClass().getSimpleName());
-		}
 		} catch(java.lang.IllegalStateException e) {
 			e.printStackTrace();
 		}
@@ -395,7 +432,7 @@ outer:
 		}
 		if(pos instanceof ExtendedVarType) {
 			((ExtendedVarType)pos).extended = true;
-			pos = resolveType(((ExtendedVarType)pos).watched, pos, ((ExtendedVarType)pos).name, true, (ParentVarType) prevPos);
+			pos = resolveType(((ExtendedVarType)pos).watched.get(), pos, ((ExtendedVarType)pos).name, true, (ParentVarType) prevPos);
 			if(prevPos != null) {
 				if(prevPos instanceof ExtendedVarType) {
 					((ExtendedVarType)prevPos).objectType.get(tree[tree.length - 1]).type = pos;
@@ -406,7 +443,7 @@ outer:
 				info.var = pos;
 			}
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(pos).setPos(tree).getPacket(), player);
+		MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(pos).setPos(tree).getPacket(), player);
 	}
 	
 	@Override
@@ -440,19 +477,19 @@ outer:
 			}
 			if(isModified) {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(DebugInfoUpdate.class).setPath(path.toArray(new Integer[]{})).setInformation(bType).getPacket(), player);
+				MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(DebugInfoUpdate.class).setPath(path.toArray(new Integer[]{})).setInformation(type).getPacket(), player);
 			}
 			return bType;
 		} else if(type instanceof NullVarType) {
 			if(newObject != null) {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
+				MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
 			}
 			return type;
 		} else if(type instanceof ArrayVarType) {
 			ArrayVarType aType = (ArrayVarType) type;
-			if(aType.watched != null) {
-				if(!aType.watched.equals(newObject)) {
+			if(aType.watched.get() != null) {
+				if(!aType.watched.get().equals(newObject)) {
 					isModified = true;
 				}
 			} else if(newObject != null) {
@@ -461,19 +498,21 @@ outer:
 			if(!isModified) {
 				for(int i=0;i<aType.objectType.size();i++) {
 					path.addLast(i);
-					aType.objectType.put(i, handleUpdate(aType.objectType.get(i), player, path, aType.watched[i], aType));
+					aType.objectType.put(i, handleUpdate(aType.objectType.get(i), player, path, aType.watched.get()[i], aType));
 					path.removeLast();
 				}
 			} else {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
+				MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
 			}
 			return type;
 		} else if(type instanceof ExtendedVarType) {
 			ExtendedVarType eType = (ExtendedVarType) type;
 			if(eType.watched != null) {
-				if(!eType.watched.equals(newObject)) {
-					isModified = true;
+				if(eType.watched.get() != null) {
+					if(!eType.watched.get().equals(newObject)) {
+						isModified = true;
+					}
 				}
 			}
 			if(newObject != null && !isModified) {
@@ -495,7 +534,7 @@ outer:
 				}
 			} else {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
+				MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
 			}
 			return type;
 		} else {
@@ -512,34 +551,7 @@ outer:
 			addParts(baseNode, setting);
 			((DefaultTreeModel)tree.getModel()).reload(baseNode);
 		} else {
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode) baseNode;
-outer:
-			for(int i=0;i<pos.length;i++) {
-				@SuppressWarnings("unchecked") //Cast should be save
-				Enumeration<DefaultMutableTreeNode> children = node.children();
-				while(children.hasMoreElements()) {
-					DefaultMutableTreeNode lNode = children.nextElement();
-					if(lNode instanceof ExtendedDefaultMutableTreeNode && ((ExtendedDefaultMutableTreeNode)lNode).type != null) {
-						if(((ExtendedDefaultMutableTreeNode)lNode).type.i.equals(pos[i])) {
-							if(lNode.getChildCount() == 2 && ((DefaultMutableTreeNode)lNode.getChildAt(0)).getUserObject().equals("Fields:")) {
-								node = (DefaultMutableTreeNode) lNode.getChildAt(0);								
-							} else {
-								node = lNode;
-							}
-							continue outer;
-						}
-					}
-				}
-				//Nothing Found, Fall Back to old Method
-				node = (DefaultMutableTreeNode) node.getChildAt(pos[i]);
-			}
-			/*for(int i = 0; i < node.getChildCount(); i++) {
-				node.remove(i);
-			}
-			addParts(node, setting, true);
-			if(node instanceof ExtendedDefaultMutableTreeNode) {
-				((ExtendedDefaultMutableTreeNode)node).loaded = true;
-			}*/
+			ExtendedDefaultMutableTreeNode node = getNodeForPathAndVarType(clientType,pos,null);
 			if(setting instanceof BasicVarType) {
 				node.setUserObject(setting.name + ": " + ((BasicVarType)setting).watched);
 			} else if(setting instanceof NullVarType) {
@@ -548,7 +560,6 @@ outer:
 				System.out.println("Can't directly Update this type.");
 			}
 			((DefaultTreeModel)tree.getModel()).reload(node);
-			//toRefresh.add(node);
 		}
 	}
 
@@ -570,13 +581,13 @@ outer:
 		if(pos instanceof ExtendedVarType) {
 			FieldPart f = ((ExtendedVarType)pos).objectType.get(path[path.length - 1]);
 			try {
-				f.field.set(((ExtendedVarType) pos).watched, getCasted(f.field.getType(), content));
+				f.field.set(((ExtendedVarType) pos).watched.get(), getCasted(f.field.getType(), content));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		} else if(pos instanceof ArrayVarType) {
 			try {
-				((ArrayVarType)pos).watched[path[path.length - 1]] = getCasted(((ArrayVarType)pos).watched.getClass().getComponentType(), content);
+				((ArrayVarType)pos).watched.get()[path[path.length - 1]] = getCasted(((ArrayVarType)pos).watched.get().getClass().getComponentType(), content);
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -623,11 +634,11 @@ outer:
 	public void handleTargetRequest() {
 		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
 		if(box == null) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.None).getPacket());
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.None).getPacket());
 		} else if(box.typeOfHit == EnumMovingObjectType.TILE) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[]{box.blockX,box.blockY,box.blockZ}).getPacket());	
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[]{box.blockX,box.blockY,box.blockZ}).getPacket());	
 		} else if(box.typeOfHit == EnumMovingObjectType.ENTITY) {
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[]{box.entityHit.entityId}).getPacket());	
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[]{box.entityHit.entityId}).getPacket());	
 		}
 	}
 
@@ -671,41 +682,56 @@ outer:
 				path.addFirst(type.i);
 				type = type.parent;
 			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugExpandPart.class).setTree(path.toArray(new Integer[]{})).getPacket());
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugExpandPart.class).setTree(path.toArray(new Integer[]{})).getPacket());
 		}
 	}
 	
 	@Override
 	public void mouseClicked(MouseEvent event) {
 		if(event.getButton() == MouseEvent.BUTTON3) {
-			final ExtendedDefaultMutableTreeNode node = (ExtendedDefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-			if(node.getUserObject().equals("Fields:") || node.getUserObject().equals("Methods:") || node.getChildCount() > 0 || !(node.base instanceof BasicVarType || node.base instanceof NullVarType)) return;
-			JPopupMenu popup = new JPopupMenu();
-			popup.setInvoker(tree);
-			JMenuItem edit = new JMenuItem("Edit");
-			edit.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					String old = "null";
-					if(node.base instanceof BasicVarType) {
-						old = ((BasicVarType)node.base).watched;
+			if(tree.getLastSelectedPathComponent() instanceof ExtendedDefaultMutableTreeNode) {
+				final ExtendedDefaultMutableTreeNode node = (ExtendedDefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+				if(node.getUserObject().equals("Fields:") || node.getUserObject().equals("Methods:") || node.getChildCount() > 0 || !(node.base instanceof BasicVarType || node.base instanceof NullVarType)) return;
+				JPopupMenu popup = new JPopupMenu();
+				popup.setInvoker(tree);
+				JMenuItem edit = new JMenuItem("Edit");
+				edit.addActionListener(new ActionListener() {
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						String old = "null";
+						if(node.base instanceof BasicVarType) {
+							old = ((BasicVarType)node.base).watched;
+						}
+						String s = (String)JOptionPane.showInputDialog(null, "Please enter the new content for " + node.base.name + ":", "Change Variable",  JOptionPane.PLAIN_MESSAGE, null, null, old);
+						LinkedList<Integer> path = new LinkedList<Integer>();
+						path.add(node.base.i);
+						ParentVarType type = ((ExtendedDefaultMutableTreeNode)node.getParent().getParent()).type;
+						while(type != null) {
+							path.addFirst(type.i);
+							type = type.parent;
+						}
+						MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugSetVarContent.class).setPath(path.toArray(new Integer[]{})).setContent(s).getPacket());
 					}
-					String s = (String)JOptionPane.showInputDialog(null, "Please enter the new content for " + node.base.name + ":", "Change Variable",  JOptionPane.PLAIN_MESSAGE, null, null, old);
-					System.out.println("New: " + s);
-					LinkedList<Integer> path = new LinkedList<Integer>();
-					path.add(node.base.i);
-					ParentVarType type = ((ExtendedDefaultMutableTreeNode)node.getParent().getParent()).type;
-					while(type != null) {
-						path.addFirst(type.i);
-						type = type.parent;
+				});
+				popup.add(edit);
+				popup.setLocation(event.getLocationOnScreen());
+				popup.setVisible(true);
+			}
+		} else if(event.getButton() == MouseEvent.BUTTON1) {
+			if(event.getClickCount() == 2) {
+				if(tree.getLastSelectedPathComponent() instanceof MethodDefaultMutableTreeNode) {
+					final MethodDefaultMutableTreeNode node = (MethodDefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+					Object[] args = new String[node.type.param.length];
+					for(int i=0;i<node.type.param.length;i++) {
+						Object[] proposal = null;
+						if(node.type.param[i].equals("boolean")) {
+							proposal = new Object[]{true, false};
+						}
+						args[i] = JOptionPane.showInputDialog(null, "Please enter the argument " + i + " of type " + node.type.param[i] + ":", "Enter Paramenter",  JOptionPane.PLAIN_MESSAGE, null, proposal, null);
 					}
-					MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugSetVarContent.class).setPath(path.toArray(new Integer[]{})).setContent(s).getPacket());
+					//TODO
 				}
-			});
-			popup.add(edit);
-			popup.setLocation(event.getLocationOnScreen());
-			popup.setVisible(true);
-			System.out.println("Click");
+			}
 		}
 	}
 

@@ -21,10 +21,9 @@ public class EntitySparkleFX extends EntityFX
     public EntitySparkleFX(World var1, double var2, double var4, double var6, float var8, float var9, float var10, float var11, int var12)
     {
         super(var1, var2, var4, var6, 0.0D, 0.0D, 0.0D);
-        this.multiplier = 4;
         this.shrink = false;
         this.particle = 0;
-        this.tinkle = true;
+        this.tinkle = false;
         this.blendmode = 1;
 
         if (var9 == 0.0F)
@@ -38,7 +37,7 @@ public class EntitySparkleFX extends EntityFX
         this.particleGravity = 0.0F;
         this.motionX = this.motionY = this.motionZ = 0.0D;
         this.particleScale *= var8;
-        this.particleMaxAge = 2 * var12;
+        this.particleMaxAge = 2 * var12 - 1;
         this.multiplier = var12;
         this.noClip = true;
     }
@@ -141,7 +140,7 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
         GL11.glPopMatrix();
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, Minecraft.getMinecraft().renderEngine.getTexture("/particles.png"));
+        Minecraft.getMinecraft().renderEngine.bindTexture("/particles.png");
         var1.startDrawingQuads();
     }
 

@@ -131,7 +131,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected RouteLayer _routeLayer;
 	protected TransportLayer _transportLayer;
-	private final PriorityBlockingQueue<IRoutedItem> _inTransitToMe = new PriorityBlockingQueue<IRoutedItem>(10,new IRoutedItem.DelayComparator());
+	protected final PriorityBlockingQueue<IRoutedItem> _inTransitToMe = new PriorityBlockingQueue<IRoutedItem>(10,new IRoutedItem.DelayComparator());
 	
 	private UpgradeManager upgradeManager = new UpgradeManager(this);
 	
@@ -291,6 +291,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		_cachedAdjacentInventories=adjacent;
 		return _cachedAdjacentInventories;
 	}
+
+	/***
+	 * first tick just create a router and do nothing.
+	 */
+	public void firstInitialiseTick() {
+		getRouter();
+	}
 	
 	/*** 
 	 * Only Called Server Side
@@ -318,7 +325,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 					item.getValue1().getEntityPassiveItem().setWorld(worldObj);
 				}
 				//first tick just create a router and do nothing.
-				getRouter();
+				firstInitialiseTick();
 				return;
 			}
 		}

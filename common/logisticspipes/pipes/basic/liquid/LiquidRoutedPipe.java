@@ -1,6 +1,7 @@
 package logisticspipes.pipes.basic.liquid;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
@@ -17,8 +18,10 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.transport.PipeTransportLogistics;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.liquids.ITankContainer;
@@ -120,6 +123,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 		if(!(tile instanceof ITankContainer)) return false;
 		if(!this.canPipeConnect(tile, dir)) return false;
 		if(tile instanceof TileGenericPipe) {
+			if(((TileGenericPipe)tile).pipe instanceof LiquidRoutedPipe) return false;
 			if(!flag) return false;
 			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return false;
 		}
@@ -172,6 +176,21 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 		}
 	}
 
+	public int countOnRoute(LiquidIdentifier ident) {
+		int amount = 0;
+		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
+			IRoutedItem next = iter.next();
+			ItemStack item = next.getItemStack();
+			if(item.getItem() instanceof LogisticsLiquidContainer) {
+				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+				if(LiquidIdentifier.get(liquid) == ident) {
+					amount += liquid.amount;
+				}
+			}
+		}
+		return amount;
+	}
+
 	public abstract boolean canInsertFromSideToTanks();
 	
 	public abstract boolean canInsertToTanks();
@@ -188,26 +207,28 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 		((PipeTransportLogistics)pipe).markChunkModified(tile);
 		if(canInsertToTanks() && MainProxy.isServer(worldObj)) {
-			if(!this.isConnectableTank(tile, data.output, false)) return;
 			if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
 			if(this.getRouter().getSimpleID() != ((IRoutedItem)data.item).getDestination()) return;
 			((PipeTransportItems)this.transport).scheduleRemoval(data.item);
+			int filled = 0;
 			LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.item.getItemStack());
-			List<Pair<TileEntity,ForgeDirection>> adjTanks = getAdjacentTanks(false);
-			//Try to put liquid into all adjacent tanks.
-			for (int i = 0; i < adjTanks.size(); i++) {
-				Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
-				ITankContainer tank = (ITankContainer) pair.getValue1();
-				ForgeDirection dir = pair.getValue2();
-				int filled = tank.fill(dir.getOpposite(), liquid, true);
+			if(this.isConnectableTank(tile, data.output, false)) {
+				List<Pair<TileEntity,ForgeDirection>> adjTanks = getAdjacentTanks(false);
+				//Try to put liquid into all adjacent tanks.
+				for (int i = 0; i < adjTanks.size(); i++) {
+					Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
+					ITankContainer tank = (ITankContainer) pair.getValue1();
+					ForgeDirection dir = pair.getValue2();
+					filled = tank.fill(dir.getOpposite(), liquid, true);
+					liquid.amount -= filled;
+					if (liquid.amount != 0) continue;
+					return;
+				}
+				//Try inserting the liquid into the pipe side tank
+				filled = ((PipeLiquidTransportLogistics)this.transport).sideTanks[data.output.ordinal()].fill(liquid, true);
+				if(filled == liquid.amount) return;
 				liquid.amount -= filled;
-				if (liquid.amount != 0) continue;
-				return;
 			}
-			//Try inserting the liquid into the pipe side tank
-			int filled = ((PipeLiquidTransportLogistics)this.transport).sideTanks[data.output.ordinal()].fill(liquid, true);
-			if(filled == liquid.amount) return;
-			liquid.amount -= filled;
 			//Try inserting the liquid into the pipe internal tank
 			filled = ((PipeLiquidTransportLogistics)this.transport).internalTank.fill(liquid, true);
 			if(filled == liquid.amount) return;

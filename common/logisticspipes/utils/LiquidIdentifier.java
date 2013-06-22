@@ -5,6 +5,12 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
+import logisticspipes.LogisticsPipes;
+
+import net.minecraft.item.Item;
+import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.ILiquidTank;
+import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidDictionary;
 import net.minecraftforge.liquids.LiquidStack;
 
@@ -64,7 +70,9 @@ public class LiquidIdentifier {
 		this.name = name;
 		ItemKey key = new ItemKey(itemId, itemMeta);
 		_liquidIdentifierCache.put(key, this);
-		_liquidIdentifierKeyQueue.add(key);
+		if(this.isVaild()) {
+			_liquidIdentifierKeyQueue.add(key);
+		}
 	}
 	
 	public String getName() {
@@ -76,10 +84,18 @@ public class LiquidIdentifier {
 	}
 	
 	public static LiquidIdentifier get(LiquidStack stack) {
+		if(stack.extra != null) {
+			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
+			new Exception().printStackTrace();
+		}
 		return get(stack.itemID, stack.itemMeta);
 	}
 	
 	public static LiquidIdentifier get(LiquidStack stack, String name) {
+		if(stack.extra != null) {
+			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
+			new Exception().printStackTrace();
+		}
 		return get(stack.itemID, stack.itemMeta, name);
 	}
 	
@@ -92,6 +108,37 @@ public class LiquidIdentifier {
 			return _liquidIdentifierCache.get(new ItemKey(itemID, itemMeta));
 		}
 		return new LiquidIdentifier(itemID, itemMeta, name);
+	}
+	
+	public LiquidStack makeLiquidStack(int amount) {
+		return new LiquidStack(itemId, amount, itemMeta);
+	}
+	
+	public int getFreeSpaceInsideTank(ITankContainer container, ForgeDirection dir) {
+		int free = 0;
+		ILiquidTank[] tanks = container.getTanks(dir);
+		if(tanks != null && tanks.length > 0) {
+			for(int i=0;i<tanks.length;i++) {
+				free += getFreeSpaceInsideTank(tanks[i]);
+			}
+		} else {
+			ILiquidTank tank = container.getTank(dir, this.makeLiquidStack(0));
+			if(tank != null) {
+				free += getFreeSpaceInsideTank(tank);
+			}
+		}
+		return free;
+	}
+	
+	public int getFreeSpaceInsideTank(ILiquidTank tank) {
+		LiquidStack liquid = tank.getLiquid();
+		if(liquid == null || liquid.itemID <= 0) {
+			return tank.getCapacity();
+		}
+		if(get(liquid) == this) {
+			return tank.getCapacity() - liquid.amount;
+		}
+		return 0;
 	}
 	
 	private static boolean init = false;
@@ -111,8 +158,13 @@ public class LiquidIdentifier {
 		return name + "/" + itemId + ":" + itemMeta;
 	}
 	
+	public boolean isVaild() {
+		return Item.itemsList.length > itemId && Item.itemsList[itemId] != null;
+	}
+	
 	public LiquidIdentifier next() {
 		ItemKey key = new ItemKey(itemId, itemMeta);
+		if(!_liquidIdentifierKeyQueue.contains(key)) return first();
 		key = _liquidIdentifierKeyQueue.higher(key);
 		if(key == null) {
 			return null;
@@ -122,6 +174,7 @@ public class LiquidIdentifier {
 	
 	public LiquidIdentifier prev() {
 		ItemKey key = new ItemKey(itemId, itemMeta);
+		if(!_liquidIdentifierKeyQueue.contains(key)) return last();
 		key = _liquidIdentifierKeyQueue.lower(key);
 		if(key == null) {
 			return null;

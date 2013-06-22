@@ -176,7 +176,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 			init = false;
 		}
 		if(!addedToEnergyNet) {
-			init = true;
+			init = false;
 		}
 	}
 
@@ -314,6 +314,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	@ModDependentMethod(modId="IC2")
 	public int demandsEnergy() {
+		if(!addedToEnergyNet) return 0;
 		if(internalBuffer > 0 && freeSpace() > 0) {
 			internalBuffer = injectEnergy(null, internalBuffer);
 		}
@@ -327,6 +328,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		if(freeSpace() > 0 && addAmount == 0) {
 			addAmount = 1;
 		}
+		if(!addedToEnergyNet) addAmount = 0;
 		addEnergy(addAmount * IC2Multiplier);
 		if(addAmount == 0 && directionFrom != null) {
 			internalBuffer += amount;

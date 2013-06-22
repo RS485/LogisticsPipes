@@ -22,6 +22,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
@@ -38,6 +39,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -215,30 +217,37 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 				validDestinations.add(e);
 		}
 		Collections.sort(validDestinations);
-		Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);
-
-		if (bestReply.getValue1() != null){
-			item.setBufferCounter(0);
-			item.setDestination(bestReply.getValue1());
-			if (bestReply.getValue2().isPassive){
-				if (bestReply.getValue2().isDefault){
-					item.setTransportMode(TransportMode.Default);
+		if(item.getItemStack() != null && item.getItemStack().getItem() instanceof LogisticsLiquidContainer) {
+			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsLiquidManager.getBestReply(SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item.getItemStack()), sourceRouter, item.getJamList());
+			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
+				item.setBufferCounter(0);
+				item.setDestination(bestReply.getValue1());
+			}
+			return item;
+		} else {
+			Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);	
+			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
+				item.setBufferCounter(0);
+				item.setDestination(bestReply.getValue1());
+				if (bestReply.getValue2().isPassive){
+					if (bestReply.getValue2().isDefault){
+						item.setTransportMode(TransportMode.Default);
+					} else {
+						item.setTransportMode(TransportMode.Passive);
+					}
 				} else {
-					item.setTransportMode(TransportMode.Passive);
+					item.setTransportMode(TransportMode.Active);
 				}
-			} else {
-				item.setTransportMode(TransportMode.Active);
-			}
-			List<IRelayItem> list = new LinkedList<IRelayItem>();
-			if(bestReply.getValue3() != null) {
-				for(IFilter filter:bestReply.getValue3()) {
-					list.add(filter);
+				List<IRelayItem> list = new LinkedList<IRelayItem>();
+				if(bestReply.getValue3() != null) {
+					for(IFilter filter:bestReply.getValue3()) {
+						list.add(filter);
+					}
 				}
+				item.addRelayPoints(list);
 			}
-			item.addRelayPoints(list);
+			return item;
 		}
-
-		return item;
 	}
 
 	/**

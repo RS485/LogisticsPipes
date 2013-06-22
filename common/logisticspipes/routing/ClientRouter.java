@@ -113,7 +113,7 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public UUID getId() {
-		return null;
+		return  UUID.randomUUID();
 	}
 
 	@Override

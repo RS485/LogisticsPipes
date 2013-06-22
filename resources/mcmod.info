@@ -12,8 +12,30 @@
     "credits": "Contributors: https://github.com/RS485/LogisticsPipes/contributors . Original code and idea made by Krapht. Thanks!",
     "logoFile": "",
     "screenshots": [],
-    "requiredMods": [ "Forge", "BuildCraft|Core" ],
-    "dependencies": [ "BuildCraft|Core" ],
+    "requiredMods": [
+        "Forge",
+        "BuildCraft|Core",
+        "BuildCraft|Transport",
+        "BuildCraft|Builders",
+        "BuildCraft|Silicon"
+    ],
+    "dependencies": [
+        "Forge",
+        "BuildCraft|Core",
+        "BuildCraft|Transport",
+        "BuildCraft|Builders",
+        "BuildCraft|Silicon",
+        "IC2",
+        "Forestry",
+        "Thaumcraft",
+        "CCTurtle",
+        "ComputerCraft",
+        "factorization",
+        "GregTech_Addon",
+        "AppliedEnergistics",
+        "ThermalExpansion",
+        "BetterStorage"
+    ],
     "dependants": [],
     "useDependencyInformation": "true"
   }]

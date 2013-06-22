@@ -66,6 +66,7 @@ public class BasicGuiHelper {
 	}
 
 	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color, boolean disableEffect) {
+		GL11.glPushMatrix();
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
@@ -95,6 +96,9 @@ public class BasicGuiHelper {
 
 			GL11.glDisable(2896 /*GL_LIGHTING*/);
 			//GL11.glDisable(2929 /*GL_DEPTH_TEST*/);	
+			if(itemStack.makeNormalStack().getDisplayName().equals("Blank Page")) {
+				System.out.print("");
+			}
 			
 			if(st != null && itemStack.getItem().isValid()) {
 				if(disableEffect) {
@@ -107,7 +111,9 @@ public class BasicGuiHelper {
 			        }
 
 				} else {
+					GL11.glTranslated(0, 0, 3.0);
 					renderItem.renderItemAndEffectIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+					GL11.glTranslated(0, 0, -3.0);
 				}
 			}
 			
@@ -149,6 +155,7 @@ public class BasicGuiHelper {
 			}
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
+		GL11.glPopMatrix();
 	}
 	
 

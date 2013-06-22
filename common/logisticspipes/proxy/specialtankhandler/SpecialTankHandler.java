@@ -15,6 +15,7 @@ public class SpecialTankHandler {
 	public void registerHandler(ISpecialTankHandler handler) {
 		try {
 			if(handler.init()) {
+				handlers.add(handler);
 				LogisticsPipes.log.info("Loaded SpecialTankHandler: " + handler.getClass().getName());
 			} else {
 				LogisticsPipes.log.warning("Didn't load SpecialTankHandler: " + handler.getClass().getName());

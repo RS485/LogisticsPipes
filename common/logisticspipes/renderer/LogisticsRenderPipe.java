@@ -293,6 +293,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	}
 	
 	private void renderItem(Icon par3Icon) {
+		if(par3Icon == null) return;
 		int par1 = 0;
 		int par2 = 0;
 		int par4 = 16;

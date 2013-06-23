@@ -11,7 +11,7 @@ public class LogisticsASMHelperClass {
 	public static void visitCanRecivePipeObject(MethodVisitor mv) {
 		Label l0 = new Label();
 		mv.visitLabel(l0);
-		mv.visitLineNumber(215, l0);
+		//mv.visitLineNumber(215, l0); //No line number because this in nonstandard code.
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitVarInsn(ALOAD, 2);
 		mv.visitVarInsn(ALOAD, 0);

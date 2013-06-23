@@ -3,6 +3,8 @@ package logisticspipes.asm;
 import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.LogisticsPipes;
+
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -14,12 +16,77 @@ import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.IClassTransformer;
 
 public class LogisticsClassTransformer implements IClassTransformer {
-	@Override
-	@SuppressWarnings("unchecked")
-	public byte[] transform(String name, String transformedName, byte[] bytes) {
-		if(!name.startsWith("logisticspipes.")) {
-			return bytes;
+	
+	public static boolean BUILDCRAFT_CHANGED = false;
+	
+	private abstract class LocalMethodVisitor extends MethodNode {
+
+		public LocalMethodVisitor(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
+			super(access, name, desc, signature, exceptions);
 		}
+
+		@Override
+		public void visitCode() {
+			super.visitCode();
+			addCode(this);
+		}
+		
+		protected abstract void addCode(MethodNode node);
+	}
+	
+	@Override
+	public byte[] transform(String name, String transformedName, byte[] bytes) {
+		try {
+			if(name.equals("buildcraft.transport.PipeTransportItems")) {
+				return handlePipeTransportItems(bytes);
+			}
+			if(!name.startsWith("logisticspipes.")) {
+				return bytes;
+			}
+			if(name.equals("logisticspipes.asm.LogisticsASMHelperClass")) { //Don't check the helper class
+				return bytes;
+			}
+			return handleLPTransformation(bytes);
+		} catch(Exception e) {
+			if(LogisticsPipes.DEBUG) { //For better Debugging
+				e.printStackTrace();
+				return bytes;
+			}
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private byte[] handlePipeTransportItems(byte[] bytes) {
+		ClassNode node = new ClassNode();
+		ClassReader reader = new ClassReader(bytes);
+		reader.accept(node, 0);
+		boolean handled = false;
+		for(MethodNode m:node.methods) {
+			if(m.name.equals("canReceivePipeObjects")) {
+				MethodNode newM = new LocalMethodVisitor(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+					@Override
+					protected void addCode(MethodNode node) {
+						LogisticsASMHelperClass.visitCanRecivePipeObject(node);
+					}
+				};
+				m.accept(newM);
+				node.methods.set(node.methods.indexOf(m), newM);
+				handled = true;
+				break;
+			}
+		}
+		if(!handled) {
+			throw new RuntimeException("Method 'canReceivePipeObjects' from 'buildcraft.transport.PipeTransportItems' could not be found.");
+		} else {
+			BUILDCRAFT_CHANGED = true;
+		}
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+
+	@SuppressWarnings("unchecked")
+	private byte[] handleLPTransformation(byte[] bytes) {
 		ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);

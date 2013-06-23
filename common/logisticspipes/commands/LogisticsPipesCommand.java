@@ -94,6 +94,10 @@ public class LogisticsPipesCommand extends CommandBase {
         	sender.sendChatToPlayer("- routingthread : Display Routing thread status information.");
         	sender.sendChatToPlayer("- transfernames : Sends all item names form the client to the server to update the Language Database.");//TODO
         	return;
+        } else if(arguments[0].equalsIgnoreCase("dump")) {
+			Watchdog.dump(false, false, true);
+			sender.sendChatToPlayer("Dump Created");
+        	return;
         }
 		if(LogisticsPipes.DEBUG) {
 			if(arguments[0].equalsIgnoreCase("watch")) {

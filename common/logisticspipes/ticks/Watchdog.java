@@ -86,38 +86,7 @@ public class Watchdog extends Thread {
 				}
 			}
  			if(server || client) {
-				Logger log = LogisticsPipes.log;
-				if(server) log.log(Level.SEVERE, "The server has stopped responding!");
-				if(client) log.log(Level.SEVERE, "The client has stopped responding!");
-				log.log(Level.SEVERE, "This doesn't have to be a crash.");
-				log.log(Level.SEVERE, "But still, please report this to https://github.com/RS485/LogisticsPipes/issues");
-				log.log(Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports");
-				log.log(Level.SEVERE, "LP version: " + LogisticsPipes.VERSION);
-				log.log(Level.SEVERE, "Current Thread State:");
-				ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
-				for(ThreadInfo thread: threads) {
-					log.log(Level.SEVERE, "------------------------------");
-					log.log(Level.SEVERE, "Current Thread: " + thread.getThreadName());
-					log.log(Level.SEVERE, "\tPID: " + thread.getThreadId()
-							+ " | Suspended: " + thread.isSuspended()
-							+ " | Native: " + thread.isInNative()
-							+ " | State: " + thread.getThreadState());
-					if(thread.getLockedMonitors().length != 0) {
-						log.log(Level.SEVERE, "\tThread is waiting on monitor(s):");
-						for(MonitorInfo monitor: thread.getLockedMonitors()) {
-							log.log(Level.SEVERE, "\t\tLocked on:" + monitor.getLockedStackFrame());
-						}
-					}
-					if(thread.getThreadState() == Thread.State.WAITING) {
-						log.log(Level.SEVERE, "\tWAITING ON: " + thread.getLockInfo().toString());
-					}
-					log.log(Level.SEVERE, "\tStack:");
-					StackTraceElement[] stack = thread.getStackTrace();
-					for(int line = 0; line < stack.length; line++) {
-						log.log(Level.SEVERE, "\t\t" + stack[line].toString());
-					}
-				}
-				log.log(Level.SEVERE, "------------------------------");
+ 				dump(server, client, false);
 				LogisticsPipes.WATCHDOG = false;
 				break;
 			}
@@ -125,5 +94,42 @@ public class Watchdog extends Thread {
 				Thread.sleep(10000);
 			} catch(Exception e) {}
 		}
+	}
+	
+	public static void dump(boolean server, boolean client, boolean dump) {
+		Logger log = LogisticsPipes.log;
+		if(server) log.log(Level.SEVERE, "The server has stopped responding!");
+		if(client) log.log(Level.SEVERE, "The client has stopped responding!");
+		if(!dump) {
+			log.log(Level.SEVERE, "This doesn't have to be a crash.");
+			log.log(Level.SEVERE, "But still, please report this to https://github.com/RS485/LogisticsPipes/issues");
+			log.log(Level.SEVERE, "Be sure to include ALL relevant console errors and Minecraft crash reports");
+		}
+		log.log(Level.SEVERE, "LP version: " + LogisticsPipes.VERSION);
+		log.log(Level.SEVERE, "Current Thread State:");
+		ThreadInfo[] threads = ManagementFactory.getThreadMXBean().dumpAllThreads(true, true);
+		for(ThreadInfo thread: threads) {
+			log.log(Level.SEVERE, "------------------------------");
+			log.log(Level.SEVERE, "Current Thread: " + thread.getThreadName());
+			log.log(Level.SEVERE, "\tPID: " + thread.getThreadId()
+					+ " | Suspended: " + thread.isSuspended()
+					+ " | Native: " + thread.isInNative()
+					+ " | State: " + thread.getThreadState());
+			if(thread.getLockedMonitors().length != 0) {
+				log.log(Level.SEVERE, "\tThread is waiting on monitor(s):");
+				for(MonitorInfo monitor: thread.getLockedMonitors()) {
+					log.log(Level.SEVERE, "\t\tLocked on:" + monitor.getLockedStackFrame());
+				}
+			}
+			if(thread.getThreadState() == Thread.State.WAITING) {
+				log.log(Level.SEVERE, "\tWAITING ON: " + thread.getLockInfo().toString());
+			}
+			log.log(Level.SEVERE, "\tStack:");
+			StackTraceElement[] stack = thread.getStackTrace();
+			for(int line = 0; line < stack.length; line++) {
+				log.log(Level.SEVERE, "\t\t" + stack[line].toString());
+			}
+		}
+		log.log(Level.SEVERE, "------------------------------");
 	}
 }

@@ -56,8 +56,10 @@ import logisticspipes.pipes.PipeLogisticsChassiMk3;
 import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
 import logisticspipes.routing.RoutedEntityItem;
+import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -338,6 +340,13 @@ public class BuildCraftProxy {
 			e.printStackTrace();
 		} catch(IllegalAccessException e) {
 			e.printStackTrace();
+		}
+	}
+
+	public void replaceBlockGenericPipe() {
+		if(Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
+			Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] = null;
+			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(BuildCraftTransport.genericPipeBlock.blockID);
 		}
 	}
 }

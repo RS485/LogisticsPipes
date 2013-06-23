@@ -218,7 +218,6 @@ public class LogisticsPipes {
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
-		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
@@ -267,7 +266,7 @@ public class LogisticsPipes {
 	}
 	
 	@PreInit
-	public void LoadConfig(FMLPreInitializationEvent evt) {
+	public void preInit(FMLPreInitializationEvent evt) {
 		Configs.load(evt);
 		log = evt.getModLog();
 		requestLog = Logger.getLogger("LogisticsPipes|Request");
@@ -291,11 +290,13 @@ public class LogisticsPipes {
 			log.fine("While the dev versions contain cutting edge features, they may also contain more bugs.");
 			log.fine("Please report any you find to https://github.com/RS485/LogisticsPipes-Dev/issues");
 		}
+		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
+		SimpleServiceLocator.buildCraftProxy.replaceBlockGenericPipe();
 	}
 	
 	@SuppressWarnings("deprecation")
 	@PostInit
-	public void PostLoad(FMLPostInitializationEvent event) {
+	public void postInit(FMLPostInitializationEvent event) {
 		
 		boolean isClient = MainProxy.isClient();
 		

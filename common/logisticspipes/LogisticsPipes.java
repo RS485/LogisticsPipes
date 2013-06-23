@@ -83,7 +83,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
-import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
@@ -94,7 +93,6 @@ import cpw.mods.fml.common.Mod.ServerStarting;
 import cpw.mods.fml.common.Mod.ServerStopping;
 import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
-import cpw.mods.fml.common.event.FMLInterModComms;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.event.FMLServerStartingEvent;
@@ -220,7 +218,6 @@ public class LogisticsPipes {
 	@Init
 	public void init(FMLInitializationEvent event) {
 		
-		new VersionChecker();
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		RouterManager manager = new RouterManager();
 		SimpleServiceLocator.setRouterManager(manager);
@@ -432,6 +429,7 @@ public class LogisticsPipes {
 			new Watchdog(event.getSide() == Side.CLIENT);
 			WATCHDOG = true;
 		}
+		new VersionChecker();
 	}
 	
 	@ServerStopping

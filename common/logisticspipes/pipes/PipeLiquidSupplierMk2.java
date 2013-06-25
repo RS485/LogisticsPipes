@@ -20,7 +20,7 @@ public class PipeLiquidSupplierMk2 extends LiquidRoutedPipe implements IRequestL
 	@Override
 	public void sendFailed(LiquidIdentifier value1, Integer value2) {
 		if(logic instanceof IRequireReliableLiquidTransport) {
-			((IRequireReliableLiquidTransport)logic).itemLost(value1, value2);
+			((IRequireReliableLiquidTransport)logic).liquidLost(value1, value2);
 		}
 	}
 

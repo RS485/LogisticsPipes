@@ -147,7 +147,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableLiquidTransport) {
 					if(item.getItem() instanceof LogisticsLiquidContainer) {
 						LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
-						((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).itemLost(LiquidIdentifier.get(liquid), liquid.amount);
+						((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).liquidLost(LiquidIdentifier.get(liquid), liquid.amount);
 					}
 				}
 			}
@@ -173,7 +173,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableLiquidTransport) {
 				if(item.getItem() instanceof LogisticsLiquidContainer) {
 					LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
-					((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).itemLost(LiquidIdentifier.get(liquid), liquid.amount);
+					((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).liquidLost(LiquidIdentifier.get(liquid), liquid.amount);
 				}
 			}
 		}

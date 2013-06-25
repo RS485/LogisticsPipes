@@ -166,15 +166,18 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 	}
 
 	@Override
-	public void itemLost(LiquidIdentifier item, int amount) {
+	public void liquidLost(LiquidIdentifier item, int amount) {
 		decreaseRequested(item, amount);
 	}
 
 	@Override
-	public void itemArrived(LiquidIdentifier item, int amount) {
+	public void liquidArrived(LiquidIdentifier item, int amount) {
 		decreaseRequested(item, amount);
 		delayThrottle();
 	}
+
+	@Override
+	public void liquidNotInserted(LiquidIdentifier item, int amount) {}
 	
 	public boolean isRequestingPartials(){
 		return _requestPartials;

@@ -82,7 +82,7 @@ public class PipeLiquidSatelliteLogistics extends LiquidRoutedPipe implements IR
 	@Override
 	public void sendFailed(LiquidIdentifier liquid, Integer amount) {
 		if(logic instanceof IRequireReliableLiquidTransport) {
-			((IRequireReliableLiquidTransport)logic).itemLost(liquid, amount);
+			((IRequireReliableLiquidTransport)logic).liquidLost(liquid, amount);
 		}
 	}
 	

@@ -173,7 +173,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 	}
 
 	@Override
-	public void itemLost(LiquidIdentifier item, int amount) {
+	public void liquidLost(LiquidIdentifier item, int amount) {
 		if(_lostItems.containsKey(item)) {
 			_lostItems.put(item, _lostItems.get(item) + amount);
 		} else {
@@ -182,5 +182,10 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 	}
 
 	@Override
-	public void itemArrived(LiquidIdentifier item, int amount) {}
+	public void liquidArrived(LiquidIdentifier item, int amount) {}
+
+	@Override
+	public void liquidNotInserted(LiquidIdentifier item, int amount) {
+		this.liquidLost(item, amount);
+	}
 }

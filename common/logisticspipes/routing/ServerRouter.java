@@ -622,7 +622,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			ItemStack stack = routedEntityItem.getItemStack();
 			if(stack.getItem() instanceof LogisticsLiquidContainer) {
 				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
-				((IRequireReliableLiquidTransport)pipe.logic).itemArrived(LiquidIdentifier.get(liquid), liquid.amount);				
+				((IRequireReliableLiquidTransport)pipe.logic).liquidArrived(LiquidIdentifier.get(liquid), liquid.amount);				
 			}
 		}
 	}

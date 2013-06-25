@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logic.TemporaryLogic;
@@ -235,6 +236,10 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 			//If liquids still exist,
 			liquid.amount -= filled;
 
+			if(logic instanceof IRequireReliableLiquidTransport) {
+				((IRequireReliableLiquidTransport)logic).liquidNotInserted(LiquidIdentifier.get(liquid), liquid.amount);
+			}
+			
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
 			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
 			int dest = replies.getValue1();

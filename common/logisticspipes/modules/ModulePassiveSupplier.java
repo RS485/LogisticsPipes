@@ -24,6 +24,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -48,7 +49,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	
 	private IHUDModuleRenderer HUD = new HUDPassiveSupplier(this);
 	
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);

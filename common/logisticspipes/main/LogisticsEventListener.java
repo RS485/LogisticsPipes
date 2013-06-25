@@ -1,7 +1,6 @@
 package logisticspipes.main;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +13,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
+import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -113,7 +113,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 	@ForgeSubscribe
 	public void watchChunk(Watch event) {
 		if(!watcherList.containsKey(event.chunk)) {
-			watcherList.put(event.chunk, new ArrayList<EntityPlayer>());
+			watcherList.put(event.chunk, new PlayerCollectionList());
 		}
 		watcherList.get(event.chunk).add(event.player);
 	}

@@ -1,6 +1,5 @@
 package logisticspipes.blocks;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -18,6 +17,7 @@ import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.crash.CrashReportCategory;
@@ -44,7 +44,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public int rotation = 0;
 	private boolean init = false;
 	
-	private List<EntityPlayer> listener = new ArrayList<EntityPlayer>();
+	private List<EntityPlayer> listener = new PlayerCollectionList();
 
 	public LogisticsSolderingTileEntity() {
 		provider = PowerFramework.currentFramework.createPowerProvider();

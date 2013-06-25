@@ -27,6 +27,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -37,7 +38,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeLiquidSatelliteLogistics extends LiquidRoutedPipe implements IRequestLiquid, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
-	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);

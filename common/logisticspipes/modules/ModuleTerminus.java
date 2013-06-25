@@ -23,6 +23,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -47,7 +48,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	
 	private IHUDModuleRenderer HUD = new HUDTerminatorModule(this);
 
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleTerminus() {
 		_filterInventory.addListener(this);

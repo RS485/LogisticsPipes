@@ -65,6 +65,7 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryForgeAdapter;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
@@ -93,7 +94,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	//HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	private HUDChassiePipe HUD;
 
 	public PipeLogisticsChassi(int itemID) {

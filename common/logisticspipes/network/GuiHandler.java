@@ -445,7 +445,17 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_Liquid_Basic_ID:
 				if(pipe == null || pipe.pipe == null || !((pipe.pipe instanceof PipeLiquidBasic))) return null;
-				dummy = new DummyContainer(player.inventory, ((PipeLiquidBasic)pipe.pipe).filterInv);
+				dummy = new DummyContainer(player, ((PipeLiquidBasic)pipe.pipe).filterInv, new IGuiOpenControler() {
+					@Override
+					public void guiOpenedByPlayer(EntityPlayer player) {
+						((PipeLiquidBasic)fpipe.pipe).guiOpenedByPlayer(player);
+					}
+
+					@Override
+					public void guiClosedByPlayer(EntityPlayer player) {
+						((PipeLiquidBasic)fpipe.pipe).guiClosedByPlayer(player);
+					}
+				});
 				dummy.addLiquidSlot(0, ((PipeLiquidBasic)pipe.pipe).filterInv, 28, 15);
 				dummy.addNormalSlotsForPlayerInventory(10, 45);
 				return dummy;

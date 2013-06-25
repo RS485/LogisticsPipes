@@ -1,5 +1,7 @@
 package logisticspipes.pipes;
 
+import java.util.List;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.network.GuiIDs;
@@ -13,6 +15,7 @@ import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -25,6 +28,7 @@ import net.minecraftforge.liquids.LiquidStack;
 public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	
 	public SimpleInventory filterInv = new SimpleInventory(1, "Dummy", 1);
+	private List<EntityPlayer> guiOpenedBy = new PlayerCollectionList();
 	
 	public PipeLiquidBasic(int itemID) {
 		super(itemID);
@@ -54,6 +58,7 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 
 	@Override
 	public int sinkAmount(LiquidStack stack) {
+		if(!guiOpenedBy.isEmpty()) return 0; //Don't sink when the gui is open
 		LiquidIdentifier ident = LiquidIdentifier.get(stack);
 		if(filterInv.getStackInSlot(0) == null) return 0;
 		if(ident != ItemIdentifier.get(filterInv.getStackInSlot(0)).getLiquidIdentifier()) return 0;
@@ -86,5 +91,12 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	public boolean canInsertToTanks() {
 		return true;
 	}
+	
+	public void guiOpenedByPlayer(EntityPlayer player) {
+		guiOpenedBy.add(player);
+	}
 
+	public void guiClosedByPlayer(EntityPlayer player) {
+		guiOpenedBy.remove(player);
+	}
 }

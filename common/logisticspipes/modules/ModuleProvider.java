@@ -41,6 +41,7 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -81,7 +82,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleProvider() {}
 

@@ -29,6 +29,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -58,7 +59,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 
 	private IHUDModuleRenderer HUD = new HUDElectricManager(this);
 
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 
 	public ModuleElectricManager() {
 		_filterInventory.addListener(this);

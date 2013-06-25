@@ -33,6 +33,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -62,7 +63,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 
 
 	public ModuleAdvancedExtractor() {

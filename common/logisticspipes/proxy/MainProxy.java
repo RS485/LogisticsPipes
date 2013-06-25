@@ -13,6 +13,7 @@ import logisticspipes.network.oldpackets.PacketRenderFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet;
@@ -212,7 +213,7 @@ public class MainProxy {
 	}
 
 	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
-		List<EntityPlayer> list = new ArrayList<EntityPlayer>();
+		List<EntityPlayer> list = new PlayerCollectionList();
 		if(worldObj != null) {
 			for(Object playerObject:worldObj.playerEntities) {
 				EntityPlayer player = (EntityPlayer) playerObject;

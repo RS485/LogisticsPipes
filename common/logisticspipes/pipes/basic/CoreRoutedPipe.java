@@ -74,6 +74,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -149,7 +150,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected final ArrayList<IPipedItem> queuedDataForUnroutedItems = new ArrayList<IPipedItem>();
 	
-	public final List<EntityPlayer> watchers = new ArrayList<EntityPlayer>();
+	public final List<EntityPlayer> watchers = new PlayerCollectionList();
 
 	protected List<IInventory> _cachedAdjacentInventories;
 	

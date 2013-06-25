@@ -13,6 +13,7 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryForgeAdapter;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
@@ -41,7 +42,7 @@ public class ModuleCrafter extends LogisticsModule{
 	private final PipeItemsCraftingLogistics pipe;
 //	private IRoutedPowerProvider _power;
 	
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
 		pipe=parent;

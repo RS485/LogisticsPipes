@@ -20,6 +20,7 @@ import logisticspipes.network.oldpackets.PacketModuleNBT;
 import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -44,7 +45,7 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;
 	
-	private final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerprovider) {

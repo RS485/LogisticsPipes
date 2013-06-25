@@ -51,6 +51,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryForgeAdapter;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SinkReply;
@@ -63,7 +64,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
-	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 
 	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();

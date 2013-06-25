@@ -33,6 +33,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryForgeAdapter;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,7 +46,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 	
-	public final List<EntityPlayer> localModeWatchers = new ArrayList<EntityPlayer>();
+	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);

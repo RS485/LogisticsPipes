@@ -15,6 +15,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -165,7 +166,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {
 		DummyContainer dummy = new DummyContainer(player, inv, new IGuiOpenControler() {
-			List<EntityPlayer> players = new ArrayList<EntityPlayer>();
+			List<EntityPlayer> players = new PlayerCollectionList();
 			@Override
 			public void guiOpenedByPlayer(EntityPlayer player) {
 				players.add(player);

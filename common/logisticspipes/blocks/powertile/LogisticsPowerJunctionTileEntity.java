@@ -3,7 +3,6 @@ package logisticspipes.blocks.powertile;
 import ic2.api.Direction;
 import ic2.api.energy.tile.IEnergySink;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
@@ -22,6 +21,7 @@ import logisticspipes.network.oldpackets.PacketPipeInteger;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
+import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,7 +48,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	private IPowerProvider powerFramework;
 	
-	private List<EntityPlayer> guiListener = new ArrayList<EntityPlayer>();
+	private List<EntityPlayer> guiListener = new PlayerCollectionList();
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
@@ -57,7 +57,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
   	private boolean addedToEnergyNet = false;
 	
 	private boolean init = false;
-	private List<EntityPlayer> watcherList = new ArrayList<EntityPlayer>();
+	private List<EntityPlayer> watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
 	
 	public LogisticsPowerJunctionTileEntity() {

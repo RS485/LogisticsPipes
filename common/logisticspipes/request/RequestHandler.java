@@ -22,6 +22,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
@@ -150,8 +151,10 @@ public class RequestHandler {
 		},RequestTree.defaultRequestFlags);
 	}
 
-	public static String computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
+	public static List computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
 
+		final List status = new LinkedList();
+		
 		EnumSet<ActiveRequestType> requestFlags;
 		if(craftingOnly){
 			requestFlags=EnumSet.of(ActiveRequestType.Craft);
@@ -159,18 +162,32 @@ public class RequestHandler {
 			requestFlags=EnumSet.of(ActiveRequestType.Craft,ActiveRequestType.Provide);			
 		}
 		if(!pipe.useEnergy(15)) {
-			return "NO_POWER";
+			status.add("NO_POWER");
+			return status;
 		}
-		final String[] status = new String[1];
 		RequestTree.request(makeStack, pipe, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
-				status[0] = "DONE";
+				status.add("DONE");
+				
+				List<Pair<ItemIdentifier, Integer>> itemList = new LinkedList<Pair<ItemIdentifier, Integer>>();
+				
+				itemList.add(new Pair<ItemIdentifier,Integer>(item.getItemIdentifier(), item.amount));
+				
+				status.add(itemList);
 			}
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				status[0] = "MISSING";
+				status.add("MISSING");
+				
+				List<Pair<ItemIdentifier, Integer>> itemList = new LinkedList<Pair<ItemIdentifier, Integer>>();
+				
+				for(ItemMessage item : list) {
+					itemList.add(new Pair<ItemIdentifier,Integer>(item.getItemIdentifier(), item.amount));
+				}
+				
+				status.add(itemList);
 			}
 
 			@Override
@@ -178,7 +195,8 @@ public class RequestHandler {
 				//Not needed here
 			}
 		},false, false,true,false,requestFlags);
-		return status[0];
+		
+		return status;
 	}
 
 	public static void refreshLiquid(EntityPlayerMP player, CoreRoutedPipe pipe) {

@@ -12,8 +12,10 @@ public class PlayerCollectionList extends ArrayList<EntityPlayer> {
 	 * 
 	 */
 	private static final long serialVersionUID = 5678512898054117833L;
+	private boolean checkingPlayers =false;
 
 	public void checkPlayers() {
+		checkingPlayers = true;
 		Iterator<EntityPlayer> players = super.iterator();
 		while(players.hasNext()) {
 			EntityPlayer player = players.next();
@@ -29,6 +31,7 @@ public class PlayerCollectionList extends ArrayList<EntityPlayer> {
 				players.remove();
 			}
 		}
+		checkingPlayers = false;
 	}
 	
 	@Override
@@ -39,7 +42,8 @@ public class PlayerCollectionList extends ArrayList<EntityPlayer> {
 	
 	@Override
 	public int size() {
-		checkPlayers();
+		if(!checkingPlayers)
+			checkPlayers();
 		return super.size();
 	}
 

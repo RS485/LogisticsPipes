@@ -117,8 +117,8 @@ public class SolderingStationRecipes {
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
 					null,
 					null,
-					new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK2,1),null }, 
-				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK3,1), null));
+					new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2,1),null }, 
+				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk3,1), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
 					new ItemStack(Block.netherBrick,1),
@@ -130,7 +130,7 @@ public class SolderingStationRecipes {
 					new ItemStack(Block.netherBrick,1),
 					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
 					new ItemStack(Block.netherBrick,1) }, 
-				new ItemStack(LogisticsPipes.LogisticsFirewall,1), null));
+				new ItemStack(LogisticsPipes.LogisticsFirewallPipe,1), null));
 	}
 	
 	public static List<SolderingStationRecipe> getRecipes() {

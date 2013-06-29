@@ -152,42 +152,48 @@ public class LogisticsPipes {
 	
 	private boolean certificateError = false;
 
-	// Items
+	// Logistics Pipes
 	public static Item LogisticsBasicPipe;
-	public static Item LogisticsRequestPipe;
-	public static Item LogisticsProviderPipe;
-	public static Item LogisticsCraftingPipe;
+	public static Item LogisticsRequestPipeMk1;
+	public static Item LogisticsRequestPipeMk2;
+	public static Item LogisticsProviderPipeMk1;
+	public static Item LogisticsProviderPipeMk2;
+	public static Item LogisticsCraftingPipeMk1;
+	public static Item LogisticsCraftingPipeMk2;
+	public static Item LogisticsCraftingPipeMk3;
 	public static Item LogisticsSatellitePipe;
 	public static Item LogisticsSupplierPipe;
-	public static Item LogisticsLiquidSupplierPipe;
-	public static Item LogisticsChassiPipe1;
-	public static Item LogisticsChassiPipe2;
-	public static Item LogisticsChassiPipe3;
-	public static Item LogisticsChassiPipe4;
-	public static Item LogisticsChassiPipe5;
-	public static Item LogisticsCraftingPipeMK2;
-	public static Item LogisticsRequestPipeMK2;
-	public static Item LogisticsProviderPipeMK2;
+	public static Item LogisticsChassisPipeMk1;
+	public static Item LogisticsChassisPipeMk2;
+	public static Item LogisticsChassisPipeMk3;
+	public static Item LogisticsChassisPipeMk4;
+	public static Item LogisticsChassisPipeMk5;
 	public static Item LogisticsRemoteOrdererPipe;
-	public static Item LogisticsApiaristAnalyserPipe;
+	public static Item LogisticsInvSysConPipe;
+	public static Item LogisticsEntrancePipe;
+	public static Item LogisticsDestinationPipe;
+	public static Item LogisticsFirewallPipe;
+	
+	// Logistics Apiarist's Pipes
+	public static Item LogisticsApiaristAnalyzerPipe;
 	public static Item LogisticsApiaristSinkPipe;
-	public static Item LogisticsInvSysCon;
-	public static Item LogisticsEntrance;
-	public static Item LogisticsDestination;
-	public static Item LogisticsCraftingPipeMK3;
-	public static Item LogisticsFirewall;
 	
-	//Liquid Pipes
-	public static Item LogisticsLiquidConnector;
-	public static Item LogisticsLiquidBasic;
-	public static Item LogisticsLiquidInsertion;
-	public static Item LogisticsLiquidProvider;
-	public static Item LogisticsLiquidRequest;
-	public static Item LogisticsLiquidExtractor;
-	public static Item LogisticsLiquidSatellite;
-	public static Item LogisticsLiquidSupplierMk2;
+	// Logistics Liquid Pipes
+	public static Item LogisticsLiquidBasicPipe;
+	public static Item LogisticsLiquidRequestPipe;
+	public static Item LogisticsLiquidProviderPipe;
+	public static Item LogisticsLiquidSatellitePipe;
+	public static Item LogisticsLiquidSupplierPipeMk1;
+	public static Item LogisticsLiquidSupplierPipeMk2;
+	public static Item LogisticsLiquidConnectorPipe;
+	public static Item LogisticsLiquidInsertionPipe;
+	public static Item LogisticsLiquidExtractorPipe;
+
+	// Logistics Modules/Upgrades
+	public static ItemModule ModuleItem;
+	public static ItemUpgrade UpgradeItem;
 	
-	
+	// Miscellaneous Items
 	public static Item LogisticsNetworkMonitior;
 	public static Item LogisticsRemoteOrderer;
 	public static Item LogisticsCraftingSignCreator;
@@ -198,19 +204,16 @@ public class LogisticsPipes {
 	public static Item LogisticsUpgradeManager;
 	public static Item LogisticsLiquidContainer;
 	public static Item LogisticsBrokenItem;
-
-	public static ItemModule ModuleItem;
-	public static ItemUpgrade UpgradeItem;
 	
+	// Logistics Blocks
+	public static Block LogisticsSign;
+	public static Block LogisticsSolidBlock;
+
 	public static Textures textures = new Textures();
 	
 	public static final String logisticsTileGenericPipeMapping = "logisticspipes.pipes.basic.LogisticsTileGenericPipe";
 	
 	public static CreativeTabLP LPCreativeTab = new CreativeTabLP();
-	
-	//Blocks
-	public static Block logisticsSign;
-	public static Block logisticsSolidBlock;
 	
 	public static Logger log;
 	public static Logger requestLog;
@@ -399,12 +402,12 @@ public class LogisticsPipes {
 		SolderingStationRecipes.loadRecipe();
 		
 		//Blocks
-		logisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
-		GameRegistry.registerBlock(logisticsSign, ItemBlock.class, null);
-		logisticsSign.setUnlocalizedName("logisticsSign");
-		logisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
-		GameRegistry.registerBlock(logisticsSolidBlock, LogisticsSolidBlockItem.class, null);
-		logisticsSign.setUnlocalizedName("logisticsSolidBlock");
+		LogisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
+		GameRegistry.registerBlock(LogisticsSign, ItemBlock.class, null);
+		LogisticsSign.setUnlocalizedName("logisticsSign");
+		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
+		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
+		LogisticsSign.setUnlocalizedName("logisticsSolidBlock");
 		
 		MainProxy.proxy.registerTileEntities();
 

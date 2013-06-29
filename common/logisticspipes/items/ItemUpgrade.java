@@ -52,7 +52,7 @@ public class ItemUpgrade extends LogisticsItem {
 	//Crafting Upgrades
 	public static final int ADVANCED_SAT_CRAFTINGPIPE = 21;
 	public static final int LIQUID_CRAFTING = 22;
-	public static final int CRAFTING_BYPRODUCT_CRAFTING = 23;
+	public static final int CRAFTING_BYPRODUCT_EXTRACTOR = 23;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -138,7 +138,7 @@ public class ItemUpgrade extends LogisticsItem {
 
 		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 14);
 		registerUpgrade(LIQUID_CRAFTING, "Liquid Crafting Upgrade", LiquidCraftingUpgrade.class, 15);
-		registerUpgrade(CRAFTING_BYPRODUCT_CRAFTING, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
+		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {

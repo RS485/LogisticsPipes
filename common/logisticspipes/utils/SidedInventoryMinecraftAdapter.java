@@ -26,20 +26,22 @@ import com.google.common.primitives.Ints;
 public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	public final ISidedInventory _sidedInventory;
+	private final int _side;
 	private final int _slotMap[];
 	
 	public SidedInventoryMinecraftAdapter(ISidedInventory sidedInventory, ForgeDirection side, boolean forExtraction) {
 		_sidedInventory = sidedInventory;
+		_side = side.ordinal();
 		if(side == ForgeDirection.UNKNOWN) {
 			_slotMap = buildAllSidedMap(sidedInventory,forExtraction);
 		} else {
 			ArrayList<Integer> list = new ArrayList<Integer>();
 
-			int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(side.ordinal());
+			int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
 			for(int number:allSlots) {
 				ItemStack item=_sidedInventory.getStackInSlot(number);
 				if(!list.contains((Integer)number) && (!forExtraction || // check extract condition
-					(item!=null && _sidedInventory.canExtractItem(number,item,side.ordinal())))){
+					(item!=null && _sidedInventory.canExtractItem(number,item,_side)))){
 						list.add(number);
 				}
 			}
@@ -131,6 +133,6 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 
 	@Override
 	public boolean isStackValidForSlot(int slot, ItemStack itemstack) {
-		return _sidedInventory.isStackValidForSlot(_slotMap[slot], itemstack);
+		return _sidedInventory.isStackValidForSlot(_slotMap[slot], itemstack) && _sidedInventory.canInsertItem(_slotMap[slot], itemstack, _side);
 	}
 }

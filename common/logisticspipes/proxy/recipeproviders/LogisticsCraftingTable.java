@@ -28,7 +28,7 @@ public class LogisticsCraftingTable implements ICraftingRecipeProvider {
 
 		// Import
 		for (int i = 0; i < bench.matrix.getSizeInventory(); i++) {
-			if (i >= inventory.getSizeInventory()) {
+			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
 			final ItemStack newStack = bench.matrix.getStackInSlot(i) == null ? null : bench.matrix.getStackInSlot(i).copy();

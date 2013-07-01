@@ -30,18 +30,21 @@ public class SolderingStation implements ICraftingRecipeProvider {
 
 		// Import
 		for (int i = 0; i < station.getRecipeForTaget().length; i++) {
+			if (i >= inventory.getSizeInventory() - 2) {
+				break;
+			}
 			final ItemStack newStack = station.getRecipeForTaget()[i] == null ? null : station.getRecipeForTaget()[i].copy();
 			inventory.setInventorySlotContents(i, newStack);
 		}
 
 		// Compact
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			final ItemStack stackInSlot = inventory.getStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
 			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
-			for (int j = i + 1; j < inventory.getSizeInventory() - 1; j++) {
+			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
 				final ItemStack stackInOtherSlot = inventory.getStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
@@ -53,11 +56,11 @@ public class SolderingStation implements ICraftingRecipeProvider {
 			}
 		}
 
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {
 				continue;
 			}
-			for (int j = i + 1; j < inventory.getSizeInventory() - 1; j++) {
+			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
 				if (inventory.getStackInSlot(j) == null) {
 					continue;
 				}
@@ -67,7 +70,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 			}
 		}
 		
-		for (int i = 0; i < inventory.getSizeInventory() - 1; i++) {
+		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
 			if (inventory.getStackInSlot(i) != null) {
 				continue;
 			}

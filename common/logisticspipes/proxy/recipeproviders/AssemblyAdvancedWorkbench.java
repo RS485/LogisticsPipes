@@ -28,7 +28,7 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 
 		// Import
 		for (int i = 0; i < bench.getCraftingSlots().getSizeInventory(); i++) {
-			if (i >= inventory.getSizeInventory() - 1) {
+			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
 			final ItemStack newStack = bench.getCraftingSlots().getStackInSlot(i) == null ? null : bench.getCraftingSlots().getStackInSlot(i).copy();

@@ -76,8 +76,7 @@ public class ProxyManager {
 			//DummyProxy
 			SimpleServiceLocator.setElectricItemProxy(new IIC2Proxy() {
 				@Override public boolean isElectricItem(ItemStack stack) {return false;}
-				@Override public int getCharge(ItemStack stack) {return 0;}
-				@Override public int getMaxCharge(ItemStack stack) {return 0;}
+				@Override public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {return false;}
 				@Override public boolean isFullyCharged(ItemStack stack) {return false;}
 				@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
 				@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}

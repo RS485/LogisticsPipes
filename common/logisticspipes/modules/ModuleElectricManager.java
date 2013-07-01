@@ -162,12 +162,10 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 
 	private boolean isOfInterest(ItemStack stack) {
 		if (!SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) return false;
-		String stackName = stack.getItemName();
 		for (int i = 0; i < _filterInventory.getSizeInventory(); i++) {
 			ItemStack fStack = _filterInventory.getStackInSlot(i);
 			if (fStack == null) continue;
-			String fStackName = fStack.getItemName();
-			if (stackName.equals(fStackName)) return true;
+			if (SimpleServiceLocator.IC2Proxy.isSimilarElectricItem(stack, fStack)) return true;
 		}
 		return false;
 	}	

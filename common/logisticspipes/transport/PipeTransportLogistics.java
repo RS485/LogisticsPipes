@@ -284,8 +284,12 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	//BC copy
 	private void handleTileReached(EntityData data, TileEntity tile) {
-		if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
-			SimpleServiceLocator.specialtileconnection.transmit(tile, data);
+		boolean isSpecialConnectionInformationTransition = false;
+		if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
+			if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
+				isSpecialConnectionInformationTransition = true;
+				SimpleServiceLocator.specialtileconnection.transmit(tile, data);
+			}
 		}
 		if (tile instanceof IPipeEntry)
 			((IPipeEntry) tile).entityEntering(data.item, data.output);
@@ -293,9 +297,11 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			TileGenericPipe pipe = (TileGenericPipe) tile;
 			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
-			if(!isItemExitable(data.item.getItemStack())) return;
 			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 				//LogisticsPipes start
+				if(!isSpecialConnectionInformationTransition && !isItemExitable(data.item.getItemStack())) {
+					return;
+				}
 				//last chance for chassi to back out
 				if(data.item instanceof IRoutedItem) {
 					IRoutedItem routed = (IRoutedItem) data.item;

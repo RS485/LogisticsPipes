@@ -138,11 +138,11 @@ public class SolderingStationRecipes {
 					new ItemStack(Block.netherBrick,1),
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
 					new ItemStack(Block.netherBrick,1),
-					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
+					null,
 					new ItemStack(LogisticsPipes.LogisticsBasicPipe,1),
-					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
+					null,
 					new ItemStack(Block.netherBrick,1),
-					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
+					null,
 					new ItemStack(Block.netherBrick,1) }, 
 				new ItemStack(LogisticsPipes.LogisticsFirewallPipe,1), null));
 	}

@@ -72,21 +72,23 @@ public class RecipeManager {
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBasicPipe, 8), new Object[] { 
 			"grg", 
-			"GdG", 
-			"grg", 
-			Character.valueOf('g'), Block.glass, 
+			"cdc", 
+			" G ", 
 			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond, 
+			Character.valueOf('g'), Block.glass,
+			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond,
+			Character.valueOf('c'), BuildCraftTransport.pipeItemsCobblestone,
 			Character.valueOf('r'), Block.torchRedstoneActive
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsBasicPipe, 8), new Object[] { 
 			"grg", 
-			"GdG", 
-			"grg", 
-			Character.valueOf('g'), Block.glass, 
+			"cdc", 
+			" G ", 
 			Character.valueOf('G'), BuildCraftCore.goldGearItem,
-			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond, 
+			Character.valueOf('g'), Block.glass,
+			Character.valueOf('d'), BuildCraftTransport.pipeItemsDiamond,
+			Character.valueOf('c'), BuildCraftTransport.pipeItemsCobblestone,
 			Character.valueOf('r'), Block.torchRedstoneActive
 		});
 

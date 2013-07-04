@@ -113,10 +113,13 @@ public class RecipeManager {
 			Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)
 		});
 
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk1, 1), new Object[] { 
-			"dPd", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('d'), Item.lightStoneDust
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk1, 1), new Object[] {
+			"r",
+			"P",
+			"S",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('S'), BuildCraftCore.stoneGearItem,
+			Character.valueOf('r'), Item.redstone
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSatellitePipe, 1), new Object[] { 

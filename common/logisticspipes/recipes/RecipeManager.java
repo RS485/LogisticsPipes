@@ -144,29 +144,37 @@ public class RecipeManager {
 			Character.valueOf('l'), "dyeBlue"
 		});
 
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), new Object[] { 
-			"gPg", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('g'), BuildCraftCore.goldGearItem
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), new Object[] {
+			"g",
+			"P",
+			"i",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('g'), BuildCraftCore.goldGearItem,
+			Character.valueOf('i'), BuildCraftCore.ironGearItem
 		});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), new Object[] { 
-			"gPg", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('g'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk1, 1), new Object[] {
+			"g",
+			"P",
+			"i",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('g'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('i'), BuildCraftCore.ironGearItem
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk2, 1), new Object[] {
-			"U", 
-			"B", 
-			Character.valueOf('B'), LogisticsPipes.LogisticsRequestPipeMk1, 
-			Character.valueOf('U'), BuildCraftCore.diamondGearItem
+			"U",
+			"B",
+			"r",
+			Character.valueOf('B'), LogisticsPipes.LogisticsRequestPipeMk1,
+			Character.valueOf('U'), BuildCraftCore.diamondGearItem,
+			Character.valueOf('r'), Item.redstone
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRequestPipeMk2, 1), new Object[] {
-			"U", 
-			"B", 
-			Character.valueOf('B'), LogisticsPipes.LogisticsRequestPipeMk1, 
+			"U",
+			"B",
+			Character.valueOf('B'), LogisticsPipes.LogisticsRequestPipeMk1,
 			Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)
 		});
 

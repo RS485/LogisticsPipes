@@ -404,23 +404,20 @@ public class RecipeManager {
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER), new Object[] { 
-			"CGC", 
-			"rBr", 
-			"CrC", 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER), new Object[] {
+			"CGC",
+			"rBr",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), BuildCraftCore.goldGearItem, 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone,
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER), new Object[] { 
-			" G ", 
-			"rBr", 
-			"CrC", 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.PROVIDER), new Object[] {
+			"CGC",
+			" B ",
 			Character.valueOf('C'), "dyeBlue",
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2), 
-			Character.valueOf('r'), Item.redstone, 
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK)
 		});
 		

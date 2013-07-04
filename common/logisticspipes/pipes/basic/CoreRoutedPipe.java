@@ -1155,14 +1155,14 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@CCCommand(description="Sets the TurtleConnect flag for this Turtle on this LogisticsPipe")
 	public void setTurtleConnect(Boolean flag) {
 		if(this.container instanceof LogisticsTileGenericPipe) {
-			((LogisticsTileGenericPipe)this.container).setTurtrleConnect(flag);
+			((LogisticsTileGenericPipe)this.container).setTurtleConnect(flag);
 		}
 	}
 
 	@CCCommand(description="Returns the TurtleConnect flag for this Turtle on this LogisticsPipe")
 	public boolean getTurtleConnect() {
 		if(this.container instanceof LogisticsTileGenericPipe) {
-			return ((LogisticsTileGenericPipe)this.container).getTurtrleConnect();
+			return ((LogisticsTileGenericPipe)this.container).getTurtleConnect();
 		}
 		return false;
 	}

@@ -104,8 +104,8 @@ public class ProxyManager {
 				@Override public ForgeDirection getOrientation(Object computer, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 				@Override public void queueEvent(String event, Object[] arguments, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
-				@Override public void setTurtrleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
-				@Override public boolean getTurtrleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
+				@Override public void setTurtleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
+				@Override public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
 				@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			});
 			LogisticsPipes.log.info("Loaded CC DummyProxy");

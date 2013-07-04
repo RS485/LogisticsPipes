@@ -36,14 +36,14 @@ import net.minecraftforge.liquids.ITankContainer;
 import net.minecraftforge.liquids.LiquidStack;
 import cpw.mods.fml.common.network.Player;
 
-public class PipeLiquidSatelliteLogistics extends LiquidRoutedPipe implements IRequestLiquid, IHeadUpDisplayRendererProvider, IChestContentReceiver {
+public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiquid, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 
 	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	
-	public PipeLiquidSatelliteLogistics(int itemID) {
+	public PipeLiquidSatellite(int itemID) {
 		super(new BaseLogicLiquidSatellite(), itemID);
 	}
 

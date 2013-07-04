@@ -48,7 +48,7 @@ import logisticspipes.pipes.PipeLiquidExtractor;
 import logisticspipes.pipes.PipeLiquidInsertion;
 import logisticspipes.pipes.PipeLiquidProvider;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
-import logisticspipes.pipes.PipeLiquidSatelliteLogistics;
+import logisticspipes.pipes.PipeLiquidSatellite;
 import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
@@ -245,7 +245,7 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsLiquidProviderPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
 		LogisticsPipes.LogisticsLiquidRequestPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
 		LogisticsPipes.LogisticsLiquidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
-		LogisticsPipes.LogisticsLiquidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatelliteLogistics.class, "Logistics Liquid Satellite Pipe", side);
+		LogisticsPipes.LogisticsLiquidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatellite.class, "Logistics Liquid Satellite Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
 	}
 

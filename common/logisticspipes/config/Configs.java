@@ -91,6 +91,7 @@ public class Configs {
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
 
 	public static int POWER_USAGE_MULTIPLIER = 1;
+	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
 	public static void load(FMLPreInitializationEvent event) {
 		File configFile = new File(event.getModConfigurationDirectory(), "LogisticsPipes.cfg");
@@ -354,6 +355,14 @@ public class Configs {
 					"powerUsageMultiplyer", POWER_USAGE_MULTIPLIER,
 					"A Multiplyer for the power usage.").set("1");
 		}
+
+		LOGISTICS_CRAFTING_TABLE_POWER_USAGE = Math
+				.max(CONFIGURATION
+						.get(Configuration.CATEGORY_GENERAL,
+								"logisticsCraftingTablePowerUsage",
+								LOGISTICS_CRAFTING_TABLE_POWER_USAGE,
+								"Number of LPower units the Logistics Crafting Table uses per craft.")
+						.getInt(), 0);
 
 		CONFIGURATION.save();
 	}

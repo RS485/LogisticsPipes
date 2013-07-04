@@ -3,6 +3,7 @@ package logisticspipes.blocks.crafting;
 import java.util.List;
 
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
@@ -82,7 +83,7 @@ outer:
 		if(result == null) return null;
 		if(!ItemIdentifier.get(resultInv.getStackInSlot(0)).equalsWithoutNBT(ItemIdentifier.get(result))) return null;
 		if(!wanted.equalsWithoutNBT(ItemIdentifier.get(result))) return null;
-		if(!power.useEnergy(20)) return null;
+		if(!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) return null;
 		crafter = new AutoCraftingInventory();
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];

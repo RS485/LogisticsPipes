@@ -32,15 +32,15 @@ public class SolderingStationRecipes {
 	
 	public static void loadRecipe() {
 		recipes.add(new SolderingStationRecipe(new ItemStack[] {
-					new ItemStack(Item.enderPearl,1),
+					new ItemStack(BuildCraftSilicon.redstoneChipset,1,1),
 					null,
+					new ItemStack(BuildCraftSilicon.redstoneChipset,1,1),
+					new ItemStack(LogisticsPipes.ModuleItem,1,0),
 					new ItemStack(Item.enderPearl,1),
-					null,
 					new ItemStack(LogisticsPipes.ModuleItem,1,0),
 					null,
-					new ItemStack(Item.enderPearl,1),
 					null,
-					new ItemStack(Item.enderPearl,1) }, 
+					null }, 
 				new ItemStack(LogisticsPipes.LogisticsItemCard,2,0), new ICraftingResultHandler() {
 			@Override
 			public void handleCrafting(ItemStack stack) {

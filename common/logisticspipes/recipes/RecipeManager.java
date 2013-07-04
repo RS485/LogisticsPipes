@@ -92,11 +92,21 @@ public class RecipeManager {
 			Character.valueOf('r'), Block.torchRedstoneActive
 		});
 
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk1, 1), new Object[] { 
-			"d", 
-			"P", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('d'), Item.lightStoneDust
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk1, 1), new Object[] {
+			" G ",
+			"rPr",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('G'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone
+		});
+
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk1, 1), new Object[] {
+			"G",
+			"P",
+			"r",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('r'), Block.torchRedstoneActive
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsProviderPipeMk2, 1), new Object[] {

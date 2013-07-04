@@ -865,14 +865,16 @@ public class RecipeManager {
 			Character.valueOf('G'), Block.glass, 
 			Character.valueOf('g'), Item.ingotGold
 		});
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidBasicPipe, 1), new Object[] { 
-			"wbw", 
-			"wBw", 
-			"wbw", 
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidBasicPipe, 1), new Object[] {
+			"w",
+			"B",
+			"b",
 			Character.valueOf('B'), new ItemStack(LogisticsPipes.LogisticsBasicPipe, 1),
-			Character.valueOf('w'), BuildCraftTransport.pipeWaterproof, 
+			Character.valueOf('w'), BuildCraftTransport.pipeWaterproof,
 			Character.valueOf('b'), Item.bucketEmpty
 		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidInsertionPipe, 1), new Object[] { 
 			" g ", 
 			"gLg", 

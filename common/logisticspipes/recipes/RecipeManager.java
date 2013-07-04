@@ -182,9 +182,11 @@ public class RecipeManager {
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsInvSysConPipe, 1), new Object[] {
-			"EPE", 
+			" E ",
+			"rPr",
 			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('E'), Item.enderPearl
+			Character.valueOf('E'), Item.enderPearl,
+			Character.valueOf('r'), Item.redstone
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsEntrancePipe, 1), new Object[] {

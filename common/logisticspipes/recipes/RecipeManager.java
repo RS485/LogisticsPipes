@@ -212,12 +212,12 @@ public class RecipeManager {
 			Character.valueOf('g'), Item.goldNugget
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new Object[] { 
-			"prp", 
-			"prp", 
-			"pgp", 
-			Character.valueOf('p'), Item.paper, 
-			Character.valueOf('r'), Item.redstone, 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.BLANK), new Object[] {
+			" p ",
+			"rpr",
+			" g ",
+			Character.valueOf('p'), Item.paper,
+			Character.valueOf('r'), Item.redstone,
 			Character.valueOf('g'), Item.goldNugget
 		});
 

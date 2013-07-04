@@ -54,11 +54,10 @@ public class RecipeManager {
 		LocalCraftingManager craftingManager = new LocalCraftingManager();
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSupplierPipeMk1, 1), new Object[] {
-			" B ", 
-			"lPl", 
-			" B ", 
-			Character.valueOf('l'), "dyeBlue", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
+			"lPl",
+			" B ",
+			Character.valueOf('l'), "dyeBlue",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
 			Character.valueOf('B'), Item.bucketEmpty
 		});
 		

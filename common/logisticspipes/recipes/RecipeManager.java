@@ -856,13 +856,12 @@ public class RecipeManager {
 			Character.valueOf('s'), Item.ingotIron
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnectorPipe, 4), new Object[] { 
-			"GtG", 
-			"gPg", 
-			"GtG", 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnectorPipe, 4), new Object[] {
+			"GPG",
+			"gLg",
+			Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasicPipe, 1),
 			Character.valueOf('P'), BuildCraftTransport.pipeLiquidsGold,
-			Character.valueOf('t'), Block.torchRedstoneActive, 
-			Character.valueOf('G'), Block.glass, 
+			Character.valueOf('G'), Block.glass,
 			Character.valueOf('g'), Item.ingotGold
 		});
 		

@@ -638,23 +638,12 @@ public class RecipeManager {
 			Character.valueOf('i'), Item.ingotIron
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, 1), new Object[] { 
-			"iGi", 
-			"rBr", 
-			"iii", 
-			Character.valueOf('G'), new ItemStack(BuildCraftCore.goldGearItem, 1),
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('i'), Item.ingotIron
-		});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, 1), new Object[] { 
-			"iGi", 
-			"rBr", 
-			"iii", 
-			Character.valueOf('G'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
-			Character.valueOf('r'), Item.redstone, 
-			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe, 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsSolidBlock, 1, 1), new Object[] {
+			"iii",
+			"rRr",
+			"iii",
+			Character.valueOf('R'), Block.blockRedstone,
+			Character.valueOf('r'), Item.redstone,
 			Character.valueOf('i'), Item.ingotIron
 		});
 		

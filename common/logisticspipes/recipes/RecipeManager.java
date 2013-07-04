@@ -179,16 +179,18 @@ public class RecipeManager {
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2, 1), new Object[] {
-			"U", 
-			"B", 
-			Character.valueOf('B'), LogisticsPipes.LogisticsCraftingPipeMk1, 
-			Character.valueOf('U'), BuildCraftCore.goldGearItem
+			"U",
+			"B",
+			"r",
+			Character.valueOf('B'), LogisticsPipes.LogisticsCraftingPipeMk1,
+			Character.valueOf('U'), BuildCraftCore.goldGearItem,
+			Character.valueOf('r'), Item.redstone
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2, 1), new Object[] {
-			"U", 
-			"B", 
-			Character.valueOf('B'), LogisticsPipes.LogisticsCraftingPipeMk1, 
+			"U",
+			"B",
+			Character.valueOf('B'), LogisticsPipes.LogisticsCraftingPipeMk1,
 			Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)
 		});
 		

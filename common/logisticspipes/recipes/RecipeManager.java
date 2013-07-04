@@ -195,10 +195,12 @@ public class RecipeManager {
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsRemoteOrdererPipe, 1), new Object[] {
-			"U", 
-			"B", 
-			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('U'), Item.enderPearl
+			"U",
+			"B",
+			"r",
+			Character.valueOf('B'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('U'), Item.enderPearl,
+			Character.valueOf('r'), Item.redstone
 		});
 		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsInvSysConPipe, 1), new Object[] {

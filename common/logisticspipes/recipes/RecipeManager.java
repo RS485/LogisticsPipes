@@ -874,6 +874,12 @@ public class RecipeManager {
 			Character.valueOf('b'), Item.bucketEmpty
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSatellitePipe, 1), new Object[] {
+			"rLr",
+			Character.valueOf('L'), new ItemStack(LogisticsPipes.LogisticsLiquidBasicPipe, 1),
+			Character.valueOf('r'), Item.redstone
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidInsertionPipe, 1), new Object[] { 
 			" g ", 
 			"gLg", 

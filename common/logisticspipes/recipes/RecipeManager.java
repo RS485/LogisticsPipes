@@ -476,73 +476,78 @@ public class RecipeManager {
 			}
 		}
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk1, 1), new Object[] { 
-			"iii", 
-			"iPi", 
-			"iii", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk1, 1), new Object[] {
+			"iii",
+			"uPu",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('u'), Item.ingotIron,
 			Character.valueOf('i'), Item.redstone
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk1, 1), new Object[] { 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk1, 1), new Object[] {
 			" i ",
-			"iPi", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
+			"uPu",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('u'), Item.ingotIron,
 			Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 0)
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk2, 1), new Object[] { 
-			"iii", 
-			"iPi", 
-			"iii", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk2, 1), new Object[] {
+			"iii",
+			"iPi",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
 			Character.valueOf('i'), Item.ingotIron
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk2, 1), new Object[] { 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk2, 1), new Object[] {
 			" i ",
-			"iPi", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
+			"uPu",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('u'), Item.ingotIron,
 			Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1)
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk3, 1), new Object[] { 
-			"iii", 
-			"iPi", 
-			"iii", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('i'), Item.ingotGold
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk3, 1), new Object[] {
+			"iii",
+			"iPi",
+			"iii",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('i'), Item.ingotIron
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk3, 1), new Object[] { 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk3, 1), new Object[] {
 			" i ",
-			"iPi", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)
-		});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk4, 1), new Object[] { 
-			"iii", 
-			"iPi", 
-			"iii", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('i'), Item.diamond
-		});
-		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk4, 1), new Object[] { 
+			"uPu",
 			" i ",
-			"iPi", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('u'), Item.ingotIron,
+			Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1)
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk5, 1), new Object[] { 
-			"gig", 
-			"iPi", 
-			"gig", 
-			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe, 
-			Character.valueOf('i'), Block.blockDiamond, 
-			Character.valueOf('g'), Block.blockGold
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk4, 1), new Object[] {
+			"iii",
+			"iPi",
+			"ggg",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('i'), Item.ingotIron,
+			Character.valueOf('g'), Item.ingotGold
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk4, 1), new Object[] {
+			" i ",
+			"uPu",
+			" g ",
+			Character.valueOf('P'), LogisticsPipes.LogisticsBasicPipe,
+			Character.valueOf('u'), Item.ingotIron,
+			Character.valueOf('i'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('g'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsChassisPipeMk5, 1), new Object[] {
+			"d",
+			"P",
+			Character.valueOf('P'), LogisticsPipes.LogisticsChassisPipeMk4,
+			Character.valueOf('d'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 3)
 		});
 
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsNetworkMonitior, 1), new Object[] { 

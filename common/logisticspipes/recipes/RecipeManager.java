@@ -879,6 +879,15 @@ public class RecipeManager {
 			Character.valueOf('r'), Item.redstone
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSupplierPipeMk2, 1), new Object[] {
+			" g ",
+			"lPl",
+			" g ",
+			Character.valueOf('l'), "dyeBlue",
+			Character.valueOf('P'), LogisticsPipes.LogisticsLiquidBasicPipe,
+			Character.valueOf('g'), Item.ingotGold
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidInsertionPipe, 1), new Object[] { 
 			" g ", 
 			"gLg", 

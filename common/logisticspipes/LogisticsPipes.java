@@ -83,6 +83,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.FingerprintWarning;
 import cpw.mods.fml.common.Mod.Init;
@@ -421,15 +422,7 @@ public class LogisticsPipes {
 		LiquidIdentifier.get(9, 0, "water");
 		LiquidIdentifier.get(11, 0, "lava");
 
-		boolean bukkit = false;
-		try {
-			Class<?> c = Class.forName("za.co.mcportcentral.MCPCCompatibilityMarker");
-			if(c != null) {
-				bukkit = true;
-			}
-		} catch(Exception e) {}
-		
-		if (!bukkit) {
+		if (!FMLCommonHandler.instance().getModName().contains("MCPC")) {
 			new Watchdog(event.getSide() == Side.CLIENT);
 			WATCHDOG = true;
 		}

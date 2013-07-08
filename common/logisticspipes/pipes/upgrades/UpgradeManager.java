@@ -1,6 +1,5 @@
 package logisticspipes.pipes.upgrades;
 
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;

@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
 
 public class SolderingStationRecipes {
 	

@@ -81,7 +81,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				}
 
 				ItemStack result = null;
-				for(IRecipe r : (List<IRecipe>) CraftingManager.getInstance().getRecipeList()) {
+				for(IRecipe r : getRecipeList()) {
 					if(r.matches(tempCraftingInv, tile.getWorldObj())) {
 						result = r.getCraftingResult(tempCraftingInv);
 					}
@@ -101,6 +101,13 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 			LogisticsPipes.log.finer(e.getMessage());
 		}
 		return false;
+	}
+
+	@SuppressWarnings("unchecked")
+	// Suppressed because getRecipeList shouldn't ever return something that
+	// isn't a recipe.
+	private List<IRecipe> getRecipeList() {
+		return (List<IRecipe>) CraftingManager.getInstance().getRecipeList();
 	}
 
 }

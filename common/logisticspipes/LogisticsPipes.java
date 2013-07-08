@@ -298,7 +298,6 @@ public class LogisticsPipes {
 		SimpleServiceLocator.buildCraftProxy.replaceBlockGenericPipe();
 	}
 	
-	@SuppressWarnings("deprecation")
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
 		

@@ -1,9 +1,8 @@
 package logisticspipes.proxy.recipeproviders;
 
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
@@ -11,7 +10,6 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.tileentity.TileEntity;
 
@@ -81,7 +79,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				}
 
 				ItemStack result = null;
-				for(IRecipe r : getRecipeList()) {
+				for(IRecipe r : CraftingUtil.getRecipeList()) {
 					if(r.matches(tempCraftingInv, tile.getWorldObj())) {
 						result = r.getCraftingResult(tempCraftingInv);
 						break;
@@ -102,13 +100,6 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 			LogisticsPipes.log.finer(e.getMessage());
 		}
 		return false;
-	}
-
-	@SuppressWarnings("unchecked")
-	// Suppressed because getRecipeList shouldn't ever return something that
-	// isn't a recipe.
-	private List<IRecipe> getRecipeList() {
-		return (List<IRecipe>) CraftingManager.getInstance().getRecipeList();
 	}
 
 }

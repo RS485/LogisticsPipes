@@ -301,7 +301,7 @@ public class LogisticsPipes {
 	@PostInit
 	public void postInit(FMLPostInitializationEvent event) {
 		
-		boolean isClient = MainProxy.isClient();
+		boolean isClient = event.getSide() == Side.CLIENT;
 		
 		ProxyManager.load();
 		SpecialInventoryHandlerManager.load();
@@ -421,8 +421,8 @@ public class LogisticsPipes {
 		LiquidIdentifier.get(9, 0, "water");
 		LiquidIdentifier.get(11, 0, "lava");
 
-		if (!FMLCommonHandler.instance().getModName().contains("MCPC")) {
-			new Watchdog(event.getSide() == Side.CLIENT);
+		if (!FMLCommonHandler.instance().getModName().contains("MCPC") && ((Configs.WATCHDOG_CLIENT && isClient) || Configs.WATCHDOG_SERVER)) {
+			new Watchdog(isClient);
 			WATCHDOG = true;
 		}
 		new VersionChecker();

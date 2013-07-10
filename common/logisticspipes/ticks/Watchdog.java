@@ -8,6 +8,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.utils.ObfuscationHelper;
 import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.server.integrated.IntegratedServer;
@@ -16,7 +17,6 @@ import cpw.mods.fml.common.FMLCommonHandler;
 // Based on
 // https://raw.github.com/MinecraftPortCentral/MCPC-Plus/1acfe8e4d668b3fbc91b8d835451c5c56c74e7db/src/minecraft/org/spigotmc/WatchdogThread.java
 public class Watchdog extends Thread {
-	private static final int TIMEOUT = 30000;
 	private static long timeStempServer = 0;
 	private static long timeStempClient = 0;
 	private final boolean isClient;
@@ -66,7 +66,7 @@ public class Watchdog extends Thread {
 					if(FMLCommonHandler.instance().getMinecraftServerInstance().isServerStopped()) {
 						timeStempServer = 0;
 					}
-					server |= (timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0 && !serverPaused && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning());
+					server |= (timeStempServer + Configs.WATCHDOG_TIMEOUT < System.currentTimeMillis() && timeStempServer != 0 && !serverPaused && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning());
 				} else {
 					if(timeStempServer != 0) {
 						timeStempServer = System.currentTimeMillis();
@@ -75,17 +75,17 @@ public class Watchdog extends Thread {
 				if(!FMLClientHandler.instance().getClient().running) {
 					timeStempClient = 0;
 				}
-				client |= timeStempClient + TIMEOUT < System.currentTimeMillis() && timeStempClient != 0;
+				client |= timeStempClient + Configs.WATCHDOG_TIMEOUT < System.currentTimeMillis() && timeStempClient != 0;
 			} else {
 				if(FMLCommonHandler.instance().getMinecraftServerInstance() != null && FMLCommonHandler.instance().getMinecraftServerInstance().isServerRunning()) {
-					server |= timeStempServer + TIMEOUT < System.currentTimeMillis() && timeStempServer != 0;
+					server |= timeStempServer + Configs.WATCHDOG_TIMEOUT < System.currentTimeMillis() && timeStempServer != 0;
 				} else {
 					if(timeStempServer != 0) {
 						timeStempServer = System.currentTimeMillis();
 					}
 				}
 			}
- 			if(server || client) {
+ 			if((server && Configs.WATCHDOG_SERVER) || (client && Configs.WATCHDOG_CLIENT)) {
  				dump(server, client, false);
 				LogisticsPipes.WATCHDOG = false;
 				break;

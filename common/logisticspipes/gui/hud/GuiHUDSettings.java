@@ -3,7 +3,8 @@ package logisticspipes.gui.hud;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.oldpackets.PacketHUDSettings;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.hud.HUDSettingsPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -52,7 +53,7 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		if(this.buttonList.get(button.id) instanceof GuiCheckBox) {
 			((GuiCheckBox)this.buttonList.get(button.id)).change();
-			MainProxy.sendPacketToServer(new PacketHUDSettings(button.id, ((GuiCheckBox)this.buttonList.get(button.id)).getState(), slot).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDSettingsPacket.class).setButtonId(button.id).setState(((GuiCheckBox)this.buttonList.get(button.id)).getState()).setSlot(slot).getPacket());
 		}
 		//super.actionPerformed(par1GuiButton);
 	}

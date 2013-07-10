@@ -11,8 +11,9 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicLiquidSupplierMk2;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.LiquidSupplierAmount;
+import logisticspipes.network.packets.pipe.LiquidSupplierMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -42,7 +43,8 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 		this.logic = logic;
 		xSize = 184;
 		ySize = 176;
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, 0).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, 0).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(0).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord).getPacket());
 	}
 	
 	@Override
@@ -89,13 +91,15 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
 		}
 		if((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;
 			if(guibutton.id % 10 == 1) change = -1;
 			change *= Math.pow(10, guibutton.id / 10 - 1);
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, change).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, change).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(change).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		

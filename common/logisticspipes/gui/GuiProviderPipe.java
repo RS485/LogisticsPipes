@@ -11,8 +11,9 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketCoordinates;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.ProviderPipeIncludePacket;
+import logisticspipes.network.packets.module.ProviderPipeNextModePacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
@@ -62,10 +63,12 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeNextModePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 	}

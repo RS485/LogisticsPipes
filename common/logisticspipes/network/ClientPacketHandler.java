@@ -39,7 +39,6 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.nei.LoadingHelper;
-import logisticspipes.network.oldpackets.PacketBufferTransfer;
 import logisticspipes.network.oldpackets.PacketCoordinatesUUID;
 import logisticspipes.network.oldpackets.PacketCraftingLoop;
 import logisticspipes.network.oldpackets.PacketGuiArgument;
@@ -201,11 +200,6 @@ public class ClientPacketHandler {
 					final PacketPipeInvContent packetX = new PacketPipeInvContent();
 					packetX.readData(data);
 					onOrderManagerContent(player, packetX);
-					break;
-				case NetworkConstants.BUFFERED_PACKET_TRANSFER:
-					final PacketBufferTransfer packetZ = new PacketBufferTransfer();
-					packetZ.readData(data);
-					onBufferTransfer(packetZ);
 					break;
 				case NetworkConstants.INC_SYS_CON_RESISTANCE:
 					final PacketPipeInteger packetAa = new PacketPipeInteger();
@@ -370,7 +364,7 @@ public class ClientPacketHandler {
 
 	private static void onOrdererRefreshAnswer(PacketRequestGuiContent packet) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handlePacket(packet);
+			((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handlePacket(packet._allItems);
 		}
 	}
 
@@ -498,13 +492,13 @@ public class ClientPacketHandler {
 
 	private static void onProviderModuleModeRecive(PacketPipeInteger packet) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProvider) {
-			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleModeRecive(packet);
+			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleModeRecive(packet.integer);
 		}
 	}
 
 	private static void onProviderModuleIncludeRecive(PacketPipeInteger packet) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProvider) {
-			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleIncludeRecive(packet);
+			((GuiProvider) FMLClientHandler.instance().getClient().currentScreen).handleModuleIncludeRecive(packet.integer);
 		}
 	}
 
@@ -649,10 +643,6 @@ public class ClientPacketHandler {
 		}
 	}
 
-	private static void onBufferTransfer(PacketBufferTransfer packet) {
-		SimpleServiceLocator.clientBufferHandler.handlePacket(packet);
-	}
-
 	private static void onInvSysConResistance(Player player, PacketPipeInteger packet) {
 		final TileGenericPipe pipe = getPipe(FMLClientHandler.instance().getClient().theWorld, packet.posX, packet.posY, packet.posZ);
 		if(pipe == null) {
@@ -733,7 +723,7 @@ public class ClientPacketHandler {
 	private static void onPowerLevel(PacketPipeInteger packet) {
 		TileEntity tile = FMLClientHandler.instance().getClient().theWorld.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsPowerJunctionTileEntity) {
-			((LogisticsPowerJunctionTileEntity)tile).handlePowerPacket(packet);
+			((LogisticsPowerJunctionTileEntity)tile).handlePowerPacket(packet.integer);
 		}
 	}
 
@@ -823,6 +813,7 @@ public class ClientPacketHandler {
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(true);
 		for(ItemIdentifier item:identList) {
+//TODO Must be handled manualy
 			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(item).getPacket());
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);
@@ -830,6 +821,7 @@ public class ClientPacketHandler {
 	}
 
 	private static void onItemNameRequest(PacketNameUpdatePacket packetAt) {
+//TODO Must be handled manualy
 		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(packetAt.item).getPacket());
 	}
 
@@ -928,7 +920,7 @@ public class ClientPacketHandler {
 	private static void onCCIDs(PacketNBT packet) {
 		TileEntity tile = MainProxy.getClientMainWorld().getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof LogisticsSecurityTileEntity) {
-			((LogisticsSecurityTileEntity)tile).handleListPacket(packet);
+			((LogisticsSecurityTileEntity)tile).handleListPacket(packet.tag);
 		}
 	}
 

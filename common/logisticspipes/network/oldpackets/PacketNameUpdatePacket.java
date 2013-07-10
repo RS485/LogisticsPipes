@@ -42,3 +42,4 @@ public class PacketNameUpdatePacket extends PacketLogisticsPipes {
 		data.writeUTF(name);
 	}
 }
+

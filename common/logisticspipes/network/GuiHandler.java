@@ -69,9 +69,15 @@ import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.modules.ModuleThaumicAspectSink;
-import logisticspipes.network.oldpackets.PacketModuleInteger;
-import logisticspipes.network.oldpackets.PacketModuleNBT;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.packets.module.ApiaristAnalyserMode;
+import logisticspipes.network.packets.module.ElectricManagetMode;
+import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
+import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
+import logisticspipes.network.packets.modules.BeeModule;
+import logisticspipes.network.packets.modules.ExtractorModuleMode;
+import logisticspipes.network.packets.modules.ItemSinkDefault;
+import logisticspipes.network.packets.pipe.InvSysConResistance;
+import logisticspipes.network.packets.pipe.LiquidSupplierMode;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
@@ -169,7 +175,8 @@ public class GuiHandler implements IGuiHandler {
 					}
 				}
 				
-				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplier)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplier)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((((LogicLiquidSupplier)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 			    return dummy;
 
 			case GuiIDs.GUI_LiquidSupplier_MK2_ID:
@@ -178,7 +185,8 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(18, 97);
 				dummy.addLiquidSlot(0, ((LogicLiquidSupplierMk2)pipe.pipe.logic).getDummyInventory(), 0, 0);
 				
-				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplierMk2)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, pipe.xCoord, pipe.yCoord, pipe.zCoord, (((LogicLiquidSupplierMk2)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((((LogicLiquidSupplierMk2)pipe.pipe.logic).isRequestingPartials() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 			    return dummy;
 				
 			case GuiIDs.GUI_ProviderPipe_ID:
@@ -222,7 +230,8 @@ public class GuiHandler implements IGuiHandler {
 				/*** Modules ***/
 			case GuiIDs.GUI_Module_Extractor_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ISneakyDirectionReceiver)) return null;
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, pipe.xCoord, pipe.yCoord, pipe.zCoord, -1, ((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getSneakyDirection().ordinal()).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, pipe.xCoord, pipe.yCoord, pipe.zCoord, -1, ((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getSneakyDirection().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(((ISneakyDirectionReceiver)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getSneakyDirection().ordinal()).setInteger(-1).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 				return new DummyContainer(player.inventory, null);
 				
 			case GuiIDs.GUI_Module_ItemSink_ID:
@@ -235,7 +244,8 @@ public class GuiHandler implements IGuiHandler {
 			    	dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 			    }
 			    
-			    MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, x, y, z, -1, ((ModuleItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
+//TODO 		    MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, x, y, z, -1, ((ModuleItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(((ModuleItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDefaultRoute() ? 1 : 0).setInteger(-1).setPosX(x).setPosY(y).setPosZ(z).getPacket(), (Player)player);
 			    
 			    return dummy;
 				
@@ -300,13 +310,15 @@ public class GuiHandler implements IGuiHandler {
 					dummy.addDummySlot(pipeSlot, 8 + pipeSlot * 18, 18);
 				}
 				
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, pipe.xCoord, pipe.yCoord, pipe.zCoord, -1, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, pipe.xCoord, pipe.yCoord, pipe.zCoord, -1, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).isDischargeMode() ? 1 : 0).setInteger(-1).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 				
 				return dummy;
 				
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristSink)) return null;
-				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,-1,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,-1,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BeeModule.class).setSlot(-1).readFromProvider((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 				return new DummyContainer(player.inventory, null);
 			    
 			case GuiIDs.GUI_ChassiModule_ID:
@@ -398,7 +410,8 @@ public class GuiHandler implements IGuiHandler {
 				
 				dummy.addNormalSlotsForPlayerInventory(0, 50);
 				
-				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((PipeItemsInvSysConnector)pipe.pipe).resistance).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, ((PipeItemsInvSysConnector)pipe.pipe).resistance).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(((PipeItemsInvSysConnector)pipe.pipe).resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 				
 				return dummy;
 			
@@ -480,7 +493,8 @@ public class GuiHandler implements IGuiHandler {
 
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule() instanceof ModuleApiaristAnalyser)) return null;
-				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, 0, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, 0, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule()).getExtractMode()).setInteger(0).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 				return new DummyContainer(player.inventory, null);
 				
 			case GuiIDs.GUI_Auto_Crafting_ID:
@@ -642,14 +656,16 @@ public class GuiHandler implements IGuiHandler {
 				}
 
 				if(slot >= 0) {
-					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, ((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(((ModuleElectricManager)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).isDischargeMode() ? 1 : 0).setInteger(slot).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 				}
 				return dummy;
 			
 			case GuiIDs.GUI_Module_Apiarist_Sink_ID:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristSink)) return null;
-					MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,slot,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getPacket(), (Player)player);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.BEE_MODULE_CONTENT,pipe.xCoord,pipe.yCoord,pipe.zCoord,slot,(ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BeeModule.class).setSlot(slot).readFromProvider((ModuleApiaristSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 					return new DummyContainer(player.inventory, null);
 				} else {
 					dummy = new DummyModuleContainer(player, z);
@@ -662,7 +678,8 @@ public class GuiHandler implements IGuiHandler {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleModBasedItemSink)) return null;
 					NBTTagCompound nbt = new NBTTagCompound();
 					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
-					MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
@@ -681,7 +698,8 @@ public class GuiHandler implements IGuiHandler {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleThaumicAspectSink)) return null;
 					NBTTagCompound nbt = new NBTTagCompound();
 					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
-					MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
@@ -698,7 +716,8 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
-					MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getExtractMode()).getPacket(), (Player)player);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, ((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getExtractMode()).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(((ModuleApiaristAnalyser)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot)).getExtractMode()).setInteger(slot).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket(), (Player)player);
 					return new DummyContainer(player.inventory, null);
 				} else {
 					dummy = new DummyModuleContainer(player, z);

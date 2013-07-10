@@ -18,7 +18,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class DebugInfoUpdate extends ModernPacket {
 	@Getter
 	@Setter
@@ -42,12 +42,12 @@ public class DebugInfoUpdate extends ModernPacket {
 		in = new ObjectInputStream(bis);
 		try {
 			information = (VarType) in.readObject();
-		} catch (ClassNotFoundException e) {
+		} catch(ClassNotFoundException e) {
 			throw new UnsupportedOperationException(e);
 		}
 		int size = data.readInt();
 		path = new Integer[size];
-		for(int i=0;i<size;i++) {
+		for(int i = 0; i < size; i++) {
 			path[i] = data.readInt();
 		}
 	}
@@ -57,20 +57,20 @@ public class DebugInfoUpdate extends ModernPacket {
 		try {
 			DebugGuiTickHandler.instance().handleContentUpdatePacket(path, getInformation());
 		} catch(Exception e) {
-    		e.printStackTrace();
-    	}
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutput out = new ObjectOutputStream(bos); 
+		ObjectOutput out = new ObjectOutputStream(bos);
 		out.writeObject(getInformation());
 		byte[] bytes = bos.toByteArray();
 		data.writeInt(bytes.length);
 		data.write(bytes);
 		data.writeInt(path.length);
-		for(int i=0;i<path.length;i++) {
+		for(int i = 0; i < path.length; i++) {
 			data.writeInt(path[i]);
 		}
 	}
@@ -80,3 +80,4 @@ public class DebugInfoUpdate extends ModernPacket {
 		return new DebugInfoUpdate(getId());
 	}
 }
+

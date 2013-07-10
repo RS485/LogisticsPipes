@@ -63,3 +63,4 @@ public class PacketRequestGuiContent extends PacketLogisticsPipes {
 	}
 
 }
+

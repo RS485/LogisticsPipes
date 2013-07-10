@@ -23,3 +23,4 @@ public class PacketCraftingLoop extends PacketItems {
 		return NetworkConstants.CRAFTING_LOOP;
 	}
 }
+

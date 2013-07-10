@@ -15,9 +15,9 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketModuleNBT;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.PlayerCollectionList;
@@ -146,12 +146,14 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
@@ -159,7 +161,8 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 	}
 
 	@Override
@@ -171,11 +174,13 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), localModeWatchers);
+//TODO 		MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 		} else {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-			MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket());	
+//TODO 		MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket());	
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 		}
 	}
 

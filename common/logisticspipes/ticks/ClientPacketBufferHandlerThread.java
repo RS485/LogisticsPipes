@@ -12,7 +12,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketBufferTransfer;
+import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Pair;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -62,12 +62,12 @@ public class ClientPacketBufferHandlerThread {
 							byte[] sendbuffer = Arrays.copyOf(clientBuffer, 1024 * 32);
 							clientBuffer = Arrays.copyOfRange(clientBuffer, 1024 * 32, clientBuffer.length);
 							byte[] compressed = compress(sendbuffer);
-							MainProxy.sendPacketToServer(new PacketBufferTransfer(compressed).getPacket());
+							MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket());
 						}
 						byte[] sendbuffer = clientBuffer;
 						clientBuffer = new byte[]{};
 						byte[] compressed = compress(sendbuffer);
-						MainProxy.sendPacketToServer(new PacketBufferTransfer(compressed).getPacket());
+						MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket());
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -199,9 +199,9 @@ public class ClientPacketBufferHandlerThread {
 			}
 		}
 
-		public void handlePacket(PacketBufferTransfer packet) {
+		public void handlePacket(byte[] content) {
 			synchronized(queue) {
-				queue.addLast(packet.content);
+				queue.addLast(content);
 				queue.notify();
 			}
 		}
@@ -219,8 +219,8 @@ public class ClientPacketBufferHandlerThread {
 		clientCompressorThread.addPacketToCompressor(packet);
 	}
 
-	public void handlePacket(PacketBufferTransfer packet) {
-		clientDecompressorThread.handlePacket(packet);
+	public void handlePacket(byte[] content) {
+		clientDecompressorThread.handlePacket(content);
 	}
 
 	private static byte[] compress(byte[] content){

@@ -3,7 +3,6 @@ package logisticspipes.pipes.basic;
 import java.util.ArrayList;
 
 import logisticspipes.LogisticsPipes;
-
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import buildcraft.transport.BlockGenericPipe;

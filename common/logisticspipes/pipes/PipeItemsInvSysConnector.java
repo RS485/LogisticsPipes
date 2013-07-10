@@ -1,6 +1,5 @@
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,9 +20,10 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
-import logisticspipes.network.oldpackets.PacketPipeInvContent;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
+import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -359,12 +359,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
@@ -376,7 +378,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		Set<ItemIdentifierStack> newList = getExpectedItems();
 		if(!newList.equals(oldList)) {
 			oldList=newList;
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), newList).getPacket(), localModeWatchers);
+//TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), newList).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentSet(newList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 		}
 	}
 
@@ -384,7 +387,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), getExpectedItems()).getPacket(), (Player)player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), getExpectedItems()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentSet(getExpectedItems()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
 		}

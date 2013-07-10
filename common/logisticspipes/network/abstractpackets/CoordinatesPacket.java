@@ -53,7 +53,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @param clazz
 	 * @return TileEntity
 	 */
-	public <T extends TileEntity> T getTile(World world, Class<T> clazz) {
+	public <T> T getTile(World world, Class<T> clazz) {
 		if (world == null) {
 			return null;
 		}

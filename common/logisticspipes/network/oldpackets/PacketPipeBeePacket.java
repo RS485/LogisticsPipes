@@ -66,3 +66,4 @@ public class PacketPipeBeePacket extends PacketCoordinates {
 		string1 = data.readUTF();
 	}
 }
+

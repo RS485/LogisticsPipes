@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -92,10 +91,11 @@ public class PacketHandler implements IPacketHandler {
 					packetID - 200).template();
 			packet.readData(data);
 			packet.processPacket((EntityPlayer) player);
-		} else if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
-			ClientPacketHandler.onPacketData(data, player, packetID);
-		} else {
-			ServerPacketHandler.onPacketData(data, player, packetID);
 		}
+//		else if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
+//			ClientPacketHandler.onPacketData(data, player, packetID);
+//		} else {
+//			ServerPacketHandler.onPacketData(data, player, packetID);
+//		}
 	}
 }

@@ -12,7 +12,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class DebugSetVarContent extends ModernPacket {
 	
 	@Getter
@@ -26,13 +26,13 @@ public class DebugSetVarContent extends ModernPacket {
 	public DebugSetVarContent(int id) {
 		super(id);
 	}
-
+	
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		content = data.readUTF();
 		int size = data.readInt();
 		path = new Integer[size];
-		for(int i=0;i<size;i++) {
+		for(int i = 0; i < size; i++) {
 			path[i] = data.readInt();
 		}
 	}
@@ -42,15 +42,15 @@ public class DebugSetVarContent extends ModernPacket {
 		try {
 			DebugGuiTickHandler.instance().handleVarChangePacket(path, content, (Player) player);
 		} catch(Exception e) {
-    		e.printStackTrace();
-    	}
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		data.writeUTF(content);
 		data.writeInt(path.length);
-		for(int i=0;i<path.length;i++) {
+		for(int i = 0; i < path.length; i++) {
 			data.writeInt(path[i]);
 		}
 	}
@@ -60,3 +60,4 @@ public class DebugSetVarContent extends ModernPacket {
 		return new DebugSetVarContent(getId());
 	}
 }
+

@@ -52,3 +52,4 @@ public class PacketSlotChange extends PacketCoordinates {
 	}
 
 }
+

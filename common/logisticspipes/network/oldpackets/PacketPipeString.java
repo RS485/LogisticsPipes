@@ -31,3 +31,4 @@ public class PacketPipeString extends PacketCoordinates {
 		string = data.readUTF();
 	}
 }
+

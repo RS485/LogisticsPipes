@@ -9,6 +9,7 @@
 package logisticspipes.gui.orderer;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -94,10 +95,10 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 
 	public abstract void refreshItems();
 
-	public void handlePacket(PacketRequestGuiContent packet) {
+	public void handlePacket(Collection<ItemIdentifierStack> allItems) {
 		listbyserver = true;
 		_allItems.clear();
-		_allItems.addAll(packet._allItems);
+		_allItems.addAll(allItems);
 		keepLastItemSelected();
 	}
 
@@ -497,6 +498,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				}
 				refreshItems();
 			} else {*/
+//TODO Must be handled manualy
 				MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
 				refreshItems();
 			//}
@@ -529,6 +531,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
+//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount, NetworkConstants.REQUEST_COMPONENTS).getPacket());
 		}
 		

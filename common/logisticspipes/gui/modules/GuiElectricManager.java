@@ -10,8 +10,8 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketModuleInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.ElectricManagerPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -50,9 +50,11 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 			case 0:
 				_module.setDischargeMode(!_module.isDischargeMode());
 				if(slot >= 0) {
-					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2((_module.isDischargeMode() ? 1 : 0)).setInteger(slot - 1).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 				} else {
-					MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, _module.getX(), _module.getY(), _module.getZ(), slot, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, _module.getX(), _module.getY(), _module.getZ(), slot, (_module.isDischargeMode() ? 1 : 0)).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2((_module.isDischargeMode() ? 1 : 0)).setInteger(slot).setPosX(_module.getX()).setPosY(_module.getY()).setPosZ(_module.getZ()).getPacket());
 				}
 				break;
 		}

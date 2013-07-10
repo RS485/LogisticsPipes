@@ -24,7 +24,7 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	public NEISetCraftingRecipe(int id) {
 		super(id);
 	}
-
+	
 	@Override
 	public void processPacket(EntityPlayer player) {
 		LogisticsCraftingTableTileEntity tile = getTile(player.worldObj, LogisticsCraftingTableTileEntity.class);
@@ -37,19 +37,19 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	public ModernPacket template() {
 		return new NEISetCraftingRecipe(getId());
 	}
-
+	
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
 		
 		data.writeInt(content.length);
 		
-		for (int i = 0; i < content.length; i++) {
+		for(int i = 0; i < content.length; i++) {
 			data.writeByte(i);
-
+			
 			final ItemStack itemstack = content[i];
-
-			if (itemstack != null) {
+			
+			if(itemstack != null) {
 				data.writeInt(itemstack.itemID);
 				data.writeInt(itemstack.stackSize);
 				data.writeInt(itemstack.getItemDamage());
@@ -58,9 +58,9 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 				data.writeInt(0);
 			}
 		}
-		data.writeByte(-1); // mark packet end
+		data.writeByte( -1); // mark packet end
 	}
-
+	
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
@@ -68,17 +68,18 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 		content = new ItemStack[data.readInt()];
 		
 		byte index = data.readByte();
-
-		while (index != -1) { // read until the end
+		
+		while(index != -1) { // read until the end
 			final int itemID = data.readInt();
-			if (itemID == 0) {
+			if(itemID == 0) {
 				content[index] = null;
 			} else {
 				ItemStack stack = new ItemStack(itemID, data.readInt(), data.readInt());
 				stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
 				content[index] = stack;
-			}			
+			}
 			index = data.readByte(); // read the next slot
 		}
 	}
 }
+

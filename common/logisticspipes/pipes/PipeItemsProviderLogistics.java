@@ -34,9 +34,11 @@ import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
-import logisticspipes.network.oldpackets.PacketPipeInvContent;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.hud.ChestContent;
+import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
+import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -338,12 +340,14 @@ outer:
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1 /*TODO*/).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1 /*TODO*/).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1 /*TODO*/).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1 /*TODO*/).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1 /*TODO*/).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1 /*TODO*/).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 	
 	private void updateInv(EntityPlayer player) {
@@ -360,9 +364,11 @@ outer:
 			oldList.clear();
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
-			MainProxy.sendCompressedToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), displayList).getPacket(), localModeWatchers);
+//TODO 		MainProxy.sendCompressedToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), displayList).getPacket(), localModeWatchers);
+			MainProxy.sendCompressedToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 		} else if(player != null) {
-			MainProxy.sendCompressedPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), displayList).getPacket(), (Player)player);
+//TODO 		MainProxy.sendCompressedPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), displayList).getPacket(), (Player)player);
+			MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(ChestContent.class).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 		}
 	}
 
@@ -377,9 +383,11 @@ outer:
 		if(!oldManagerList.equals(all)) {
 			oldManagerList.clear();
 			oldManagerList.addAll(all);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), all).getPacket(), localModeWatchers);
+//TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), all).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 		} else if(player != null) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), all).getPacket(), (Player)player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), all).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 		}
 	}
 	

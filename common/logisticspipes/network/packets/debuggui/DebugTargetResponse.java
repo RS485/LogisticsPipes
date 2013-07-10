@@ -16,13 +16,14 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-@Accessors(chain=true)
+
+@Accessors(chain = true)
 public class DebugTargetResponse extends ModernPacket {
 	
 	public DebugTargetResponse(int id) {
 		super(id);
 	}
-
+	
 	public enum TargetMode {
 		Block,
 		Entity,
@@ -42,7 +43,7 @@ public class DebugTargetResponse extends ModernPacket {
 		mode = TargetMode.values()[data.readByte()];
 		int size = data.readInt();
 		additions = new Object[size];
-		for(int i=0; i < size;i++) {
+		for(int i = 0; i < size; i++) {
 			int arraySize = data.readInt();
 			byte[] bytes = new byte[arraySize];
 			data.read(bytes);
@@ -52,9 +53,9 @@ public class DebugTargetResponse extends ModernPacket {
 			try {
 				Object o = in.readObject();
 				additions[i] = o;
-			} catch (ClassNotFoundException e) {
+			} catch(ClassNotFoundException e) {
 				throw new UnsupportedOperationException(e);
-			} 
+			}
 		}
 	}
 	
@@ -67,10 +68,10 @@ public class DebugTargetResponse extends ModernPacket {
 	public void writeData(DataOutputStream data) throws IOException {
 		data.writeByte(mode.ordinal());
 		data.writeInt(additions.length);
-		for(int i=0; i<additions.length;i++) {
+		for(int i = 0; i < additions.length; i++) {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutput out = null;
-			out = new ObjectOutputStream(bos); 
+			out = new ObjectOutputStream(bos);
 			out.writeObject(additions[i]);
 			byte[] bytes = bos.toByteArray();
 			data.writeInt(bytes.length);
@@ -83,3 +84,4 @@ public class DebugTargetResponse extends ModernPacket {
 		return new DebugTargetResponse(getId());
 	}
 }
+

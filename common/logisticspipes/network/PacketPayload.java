@@ -1,7 +1,6 @@
-package logisticspipes.network.oldpackets;
+package logisticspipes.network;
 
 import buildcraft.core.utils.Utils;
-
 
 public class PacketPayload {
 
@@ -37,3 +36,4 @@ public class PacketPayload {
 		this.intPayload = Utils.concat(this.intPayload, other);
 	}
 }
+

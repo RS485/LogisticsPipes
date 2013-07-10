@@ -50,3 +50,4 @@ public class PacketModuleNBT extends PacketCoordinates {
 		tag = SendNBTTagCompound.readNBTTagCompound(data);
 	}
 }
+

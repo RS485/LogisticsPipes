@@ -29,3 +29,4 @@ public class PacketModuleInteger extends PacketPipeInteger {
 		slot = data.readInt();
 	}
 }
+

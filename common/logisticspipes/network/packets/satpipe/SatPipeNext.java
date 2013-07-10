@@ -34,3 +34,4 @@ public class SatPipeNext extends CoordinatesPacket {
 	}
 	
 }
+

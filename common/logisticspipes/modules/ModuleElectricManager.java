@@ -17,10 +17,10 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketModuleInteger;
-import logisticspipes.network.oldpackets.PacketModuleInvContent;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
+import logisticspipes.network.packets.module.ElectricManagetMode;
+import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
@@ -74,7 +74,8 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 	public void setDischargeMode(boolean isDischargeMode){
 		_dischargeMode = isDischargeMode;
-		MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, getX(), getY(), getZ(), slot, isDischargeMode() ? 1 : 0).getPacket(), localModeWatchers);
+//TODO 	MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, getX(), getY(), getZ(), slot, isDischargeMode() ? 1 : 0).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ElectricManagetMode.class).setInteger(slot).setInteger(isDischargeMode() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 	}
 
 	@Override
@@ -215,19 +216,23 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, getX(), getY(), getZ(), slot, isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, getX(), getY(), getZ(), slot, isDischargeMode() ? 1 : 0).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ElectricManagetMode.class).setInteger2(slot).setInteger(isDischargeMode() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 	}
 
 	@Override
@@ -242,7 +247,8 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
-		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+//TODO 	MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 	}
 
 	@Override

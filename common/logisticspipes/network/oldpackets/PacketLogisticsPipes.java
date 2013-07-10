@@ -9,3 +9,4 @@ public abstract class PacketLogisticsPipes extends BuildCraftPacket {
 		channel = NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME;
 	}
 }
+

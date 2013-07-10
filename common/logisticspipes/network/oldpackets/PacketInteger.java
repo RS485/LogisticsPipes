@@ -35,3 +35,4 @@ public class PacketInteger extends PacketLogisticsPipes {
 	}
 
 }
+

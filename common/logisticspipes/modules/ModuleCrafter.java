@@ -1,6 +1,5 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -122,19 +121,23 @@ public class ModuleCrafter extends LogisticsModule{
 /*
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setInteger(slot).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setInteger(slot).getPacket());
 	}
 
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, getX(), getY(), getZ(), slot, isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(_filterInventory)).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, getX(), getY(), getZ(), slot, isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setInteger1(slot).setInteger2(isDefaultRoute() ? 1 : 0).getPacket(), (Player)player);
 	}
 
 	@Override
@@ -144,7 +147,8 @@ public class ModuleCrafter extends LogisticsModule{
 
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
-		MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+//TODO 	MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
 	}
 
 	@Override

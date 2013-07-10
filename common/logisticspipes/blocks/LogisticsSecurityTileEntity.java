@@ -13,10 +13,12 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketCoordinatesUUID;
-import logisticspipes.network.oldpackets.PacketNBT;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.SecurityStationAutoDestroy;
+import logisticspipes.network.packets.block.SecurityStationCC;
+import logisticspipes.network.packets.block.SecurityStationCCIDs;
+import logisticspipes.network.packets.block.SecurityStationId;
+import logisticspipes.network.packets.block.SecurityStationOpenPlayer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
@@ -24,7 +26,6 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
@@ -83,9 +84,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
-		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(new PacketCoordinatesUUID(NetworkConstants.SECURITY_STATION_ID, xCoord, yCoord, zCoord, getSecId()).getPacket(), (Player) player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player) player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player) player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketCoordinatesUUID(NetworkConstants.SECURITY_STATION_ID, xCoord, yCoord, zCoord, getSecId()).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player) player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}
@@ -217,7 +221,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		}
 	}
 
-	public void handleOpenSecurityPlayer(EntityPlayerMP player, String string) {
+	public void handleOpenSecurityPlayer(EntityPlayer player, String string) {
 		SecuritySettings setting = settingsList.get(string);
 		if(setting == null && string != "" && string != null) {
 			setting = new SecuritySettings(string);
@@ -225,7 +229,8 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		}
 		NBTTagCompound nbt = new NBTTagCompound();
 		setting.writeToNBT(nbt);
-		MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.OPEN_SECURITY_PLAYER, nbt).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.OPEN_SECURITY_PLAYER, nbt).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt).getPacket(), (Player)player);
 	}
 
 	public void saveNewSecuritySettings(NBTTagCompound tag) {
@@ -252,12 +257,14 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	public void changeCC() {
 		allowCC = !allowCC;
-		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), listener);
+//TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), listener);
 	}
 
 	public void changeDestroy() {
 		allowAutoDestroy = !allowAutoDestroy;
-		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), listener);
+//TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), listener);
 	}
 	
 	public void addCCToList(Integer id) {
@@ -278,12 +285,13 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			list.appendTag(new NBTTagInt("" + i, i));
 		}
 		tag.setTag("list", list);
-		MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.SEND_CC_IDS, xCoord, yCoord, zCoord, tag).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.SEND_CC_IDS, xCoord, yCoord, zCoord, tag).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 	}
 
-	public void handleListPacket(PacketNBT packet) {
+	public void handleListPacket(NBTTagCompound tag) {
 		excludedCC.clear();
-		NBTTagList list = packet.tag.getTagList("list");
+		NBTTagList list = tag.getTagList("list");
 		while(list.tagCount() > 0) {
 			NBTBase base = list.removeTag(0);
 			excludedCC.add(((NBTTagInt)base).data);

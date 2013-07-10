@@ -31,3 +31,4 @@ public class PacketCoordinatesUUID extends PacketCoordinates {
 		uuid = new UUID(data.readLong(), data.readLong());
 	}
 }
+

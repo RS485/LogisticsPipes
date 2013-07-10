@@ -42,3 +42,4 @@ public class PacketStringList extends PacketLogisticsPipes {
 		}
 	}
 }
+

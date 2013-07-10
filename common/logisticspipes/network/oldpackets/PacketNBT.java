@@ -37,3 +37,4 @@ public class PacketNBT extends PacketCoordinates {
 		tag = SendNBTTagCompound.readNBTTagCompound(data);
 	}
 }
+

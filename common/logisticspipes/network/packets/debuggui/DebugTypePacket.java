@@ -18,7 +18,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class DebugTypePacket extends ModernPacket {
 	
 	@Getter
@@ -32,7 +32,7 @@ public class DebugTypePacket extends ModernPacket {
 	public DebugTypePacket(int id) {
 		super(id);
 	}
-
+	
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		int arraySize = data.readInt();
@@ -43,12 +43,12 @@ public class DebugTypePacket extends ModernPacket {
 		in = new ObjectInputStream(bis);
 		try {
 			toTransmit = (VarType) in.readObject();
-		} catch (ClassNotFoundException e) {
+		} catch(ClassNotFoundException e) {
 			throw new UnsupportedOperationException(e);
 		}
 		int size = data.readInt();
 		pos = new Integer[size];
-		for(int i=0;i<size;i++) {
+		for(int i = 0; i < size; i++) {
 			pos[i] = data.readInt();
 		}
 	}
@@ -58,20 +58,20 @@ public class DebugTypePacket extends ModernPacket {
 		try {
 			DebugGuiTickHandler.instance().handleServerGuiSetting(toTransmit, pos);
 		} catch(Exception e) {
-    		e.printStackTrace();
-    	}
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		ObjectOutput out = new ObjectOutputStream(bos); 
+		ObjectOutput out = new ObjectOutputStream(bos);
 		out.writeObject(getToTransmit());
 		byte[] bytes = bos.toByteArray();
 		data.writeInt(bytes.length);
 		data.write(bytes);
 		data.writeInt(pos.length);
-		for(int i=0;i<pos.length;i++) {
+		for(int i = 0; i < pos.length; i++) {
 			data.writeInt(pos[i]);
 		}
 	}
@@ -79,5 +79,6 @@ public class DebugTypePacket extends ModernPacket {
 	@Override
 	public ModernPacket template() {
 		return new DebugTypePacket(getId());
-	}	
+	}
 }
+

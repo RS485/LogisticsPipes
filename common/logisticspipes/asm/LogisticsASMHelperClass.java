@@ -1,6 +1,11 @@
 package logisticspipes.asm;
 
-import static org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.ICONST_0;
+import static org.objectweb.asm.Opcodes.IFNE;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.IRETURN;
 
 import org.objectweb.asm.Label;
 import org.objectweb.asm.MethodVisitor;

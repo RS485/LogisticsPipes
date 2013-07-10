@@ -85,6 +85,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.FilterTypeDown();
 			}
 			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 3, setting.filterType.ordinal());
+//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
@@ -153,6 +154,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.filterGroupDown();
 			}
 			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 2, setting.filterGroup);
+//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 
@@ -264,6 +266,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				}
 			}
 			PacketPipeBeePacket packet = new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee);
+//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet.getPacket());
 		}
 

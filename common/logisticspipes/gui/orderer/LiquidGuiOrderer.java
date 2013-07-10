@@ -1,8 +1,9 @@
 package logisticspipes.gui.orderer;
 
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.oldpackets.PacketRequestSubmit;
+import logisticspipes.network.packets.orderer.RequestLiquidOrdererRefreshPacket;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
@@ -30,6 +31,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 				editsearchb = false;
 			}
 			clickWasButton = true;
+//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount, NetworkConstants.LIQUID_REQUEST_SUBMIT).getPacket());
 			refreshItems();
 		} else {
@@ -62,7 +64,8 @@ public class LiquidGuiOrderer extends GuiOrderer {
 	
 	@Override
 	public void refreshItems() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_LIQUID_REFRESH_REQUEST, xCoord, yCoord, zCoord, dimension).getPacket());		
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_LIQUID_REFRESH_REQUEST, xCoord, yCoord, zCoord, dimension).getPacket());		
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestLiquidOrdererRefreshPacket.class).setInteger(dimension).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 	}
 
 	@Override

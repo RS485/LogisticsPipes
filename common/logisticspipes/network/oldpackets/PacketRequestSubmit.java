@@ -54,3 +54,4 @@ public class PacketRequestSubmit extends PacketCoordinates {
 		dimension = data.readInt();
 	}
 }
+

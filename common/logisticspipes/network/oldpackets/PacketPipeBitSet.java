@@ -32,3 +32,4 @@ public class PacketPipeBitSet extends PacketCoordinates {
 		flags = BitSetHelper.read(data);
 	}
 }
+

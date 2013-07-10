@@ -31,3 +31,4 @@ public class PacketPipeInteger extends PacketCoordinates {
 		integer = data.readInt();
 	}
 }
+

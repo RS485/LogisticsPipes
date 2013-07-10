@@ -57,6 +57,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Trying to Enable NBTDebug");
+//TODO Must be handled manualy
         	MainProxy.sendPacketToPlayer(new PacketLogisticsPipes() {
 				@Override public void writeData(DataOutputStream data) throws IOException {}
 				@Override public void readData(DataInputStream data) throws IOException {}
@@ -71,6 +72,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Requesting Transfer");
+//TODO Must be handled manualy
         	MainProxy.sendPacketToPlayer(new PacketLogisticsPipes() {
 				@Override public void writeData(DataOutputStream data) throws IOException {}
 				@Override public void readData(DataInputStream data) throws IOException {}

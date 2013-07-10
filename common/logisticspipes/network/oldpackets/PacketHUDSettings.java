@@ -42,3 +42,4 @@ public class PacketHUDSettings extends PacketLogisticsPipes {
 		data.writeInt(slot);
 	}
 }
+

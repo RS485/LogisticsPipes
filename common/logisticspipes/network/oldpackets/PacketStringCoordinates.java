@@ -30,3 +30,4 @@ public class PacketStringCoordinates extends PacketCoordinates {
 		string = data.readUTF();
 	}
 }
+

@@ -32,3 +32,4 @@ public class PacketModuleInvContent extends PacketPipeInvContent {
 		slot = data.readInt();
 	}
 }
+

@@ -50,3 +50,4 @@ public class PacketRoutingStats extends PacketCoordinates {
 		server_routing_table_size = data.readInt();
 	}
 }
+

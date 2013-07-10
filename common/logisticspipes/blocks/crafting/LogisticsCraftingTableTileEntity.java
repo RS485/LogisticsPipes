@@ -188,6 +188,12 @@ outer:
 
 	@Override
 	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+		if(i < 9 && i >= 0) {
+			ItemStack stack = matrix.getStackInSlot(i);
+			if(stack != null && itemstack != null) {
+				return ItemIdentifier.get(stack).equalsWithoutNBT(ItemIdentifier.get(itemstack));
+			}
+		}
 		return true;
 	}
 }

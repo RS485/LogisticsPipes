@@ -1,11 +1,17 @@
 package logisticspipes.gui;
 
+import java.util.Arrays;
+
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
+
+import org.lwjgl.opengl.GL11;
 
 public class GuiLogisticsCraftingTable extends KraphtBaseGuiScreen {
 	
@@ -37,7 +43,8 @@ public class GuiLogisticsCraftingTable extends KraphtBaseGuiScreen {
 	}
 	
 	@Override
-	protected void drawGuiContainerBackgroundLayer(float f, int i, int j) {
+	protected void drawGuiContainerBackgroundLayer(float fA, int iA, int jA) {
+		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		BasicGuiHelper.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		for(int x=0;x<3;x++) {
 			for(int y=0;y<3;y++) {
@@ -51,5 +58,19 @@ public class GuiLogisticsCraftingTable extends KraphtBaseGuiScreen {
 			}
 		}
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + 135);
+		
+		ItemIdentifierStack[] items = new ItemIdentifierStack[9];
+		for(int i=0;i<9;i++) {
+			if(_crafter.matrix.getStackInSlot(i) != null) {
+				items[i] = ItemIdentifier.get(_crafter.matrix.getStackInSlot(i)).makeStack(1);
+			}
+		}
+		BasicGuiHelper.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 80, 9, 9, 18, 18, mc, false, false);
+		
+		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+		for(int a=0;a<9;a++) {
+			drawRect(guiLeft + 8 + (a * 18), guiTop + 80, guiLeft + 24 + (a * 18), guiTop + 96, 0xc08b8b8b);
+		}
+		GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
 	}
 }

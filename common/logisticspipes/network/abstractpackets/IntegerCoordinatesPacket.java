@@ -21,11 +21,13 @@ public abstract class IntegerCoordinatesPacket extends CoordinatesPacket {
 	
 	@Override
 	public void readData(DataInputStream data) throws IOException {
+		super.readData(data);
 		setInteger(data.readInt());
 	}
 
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
+		super.writeData(data);
 		data.writeInt(getInteger());
 	}
 }

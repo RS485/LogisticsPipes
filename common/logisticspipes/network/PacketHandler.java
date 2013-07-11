@@ -11,7 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.MainProxy;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -83,19 +85,23 @@ public class PacketHandler implements IPacketHandler {
 		onPacketData(data, player);
 	}
 
-	public static void onPacketData(final DataInputStream data,
-			final Player player) throws IOException {
+	public static void onPacketData(final DataInputStream data, final Player player) throws IOException {
 		final int packetID = data.read();
 		if (packetID >= 200) {// TODO: Temporary until all packets get converted
-			final ModernPacket packet = PacketHandler.packetlist.get(
-					packetID - 200).template();
+			final ModernPacket packet = PacketHandler.packetlist.get(packetID - 200).template();
 			packet.readData(data);
-			packet.processPacket((EntityPlayer) player);
+			try {
+				packet.processPacket((EntityPlayer) player);
+			} catch(Exception e) {
+				LogisticsPipes.log.severe(packet.toString());
+				throw new RuntimeException(e);
+			}
+		} else {
+			if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
+				ClientPacketHandler.onPacketData(data, player, packetID);
+			} else {
+				ServerPacketHandler.onPacketData(data, player, packetID);
+			}
 		}
-//		else if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
-//			ClientPacketHandler.onPacketData(data, player, packetID);
-//		} else {
-//			ServerPacketHandler.onPacketData(data, player, packetID);
-//		}
 	}
 }

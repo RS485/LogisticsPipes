@@ -6,12 +6,12 @@ import java.io.IOException;
 
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.abstractpackets.UniversalPacket;
+import logisticspipes.network.abstractpackets.GenericPacket;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
 
-public class GuiArgument extends UniversalPacket {
+public class GuiArgument extends GenericPacket {
 
 	@Getter
 	@Setter

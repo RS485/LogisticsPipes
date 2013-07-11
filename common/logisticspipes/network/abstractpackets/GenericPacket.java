@@ -15,13 +15,13 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 @Accessors(chain=true)
-public abstract class UniversalPacket extends ModernPacket {
+public abstract class GenericPacket extends ModernPacket {
 	
 	@Getter
 	@Setter
 	private Object[] args;
 	
-	public UniversalPacket(int id) {
+	public GenericPacket(int id) {
 		super(id);
 	}
 

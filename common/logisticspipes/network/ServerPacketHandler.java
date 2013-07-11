@@ -828,7 +828,7 @@ public class ServerPacketHandler {
 		}
 		if(!(pipe.pipe instanceof CoreRoutedPipe)) return;
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setPayload(((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPayload(((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player) player);
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe.logic instanceof BaseLogicCrafting) {
 				final CoordinatesPacket newpacket = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((BaseLogicCrafting)pipe.pipe.logic).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord);

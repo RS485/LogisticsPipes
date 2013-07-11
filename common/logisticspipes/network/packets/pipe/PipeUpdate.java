@@ -15,7 +15,7 @@ public class PipeUpdate extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private buildcraft.core.network.PacketPayload payload;
+	private PacketPayload payload;
 	
 	public PipeUpdate(int id) {
 		super(id);

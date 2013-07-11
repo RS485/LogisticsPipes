@@ -187,15 +187,24 @@ public class DummyContainer extends Container{
 		}
 		
 		if(slot instanceof ColorSlot) {
+			Colors equipped = Colors.getColor(currentlyEquippedStack);
 			Colors color = Colors.getColor(slot.getStack());
-			if(mouseButton == 0) {
-				color = color.getNext();
-			} else if(mouseButton == 1) {
-				color = color.getPrev();
+			if(Colors.BLANK.equals(equipped)) {
+				if(mouseButton == 0) {
+					color = color.getNext();
+				} else if(mouseButton == 1) {
+					color = color.getPrev();
+				} else {
+					color = Colors.BLANK;
+				}
+				slot.putStack(color.getItemStack());
 			} else {
-				color = Colors.BLANK;
+				if(mouseButton == 1) {
+					slot.putStack(Colors.BLANK.getItemStack());
+				} else {
+					slot.putStack(equipped.getItemStack());
+				}
 			}
-			slot.putStack(color.getItemStack());
 			if(entityplayer instanceof EntityPlayerMP && MainProxy.isServer(entityplayer.worldObj)) {
 				((EntityPlayerMP)entityplayer).sendSlotContents(this, slotId, slot.getStack());
 			}

@@ -29,11 +29,23 @@ public class IC2Proxy implements IIC2Proxy {
 	}
 
 	/**
+	 * @return Boolean, true if stack is the same type of ic2 electric item as template.
+	 * @param stack The stack to check
+	 * @param template The stack to compare to
+	 */
+	@Override
+	public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {
+		if (stack == null || template == null || !isElectricItem(template)) return false;
+		if (((IElectricItem) template.getItem()).getEmptyItemId(stack) == stack.itemID) return true;
+		if (((IElectricItem) template.getItem()).getChargedItemId(stack) == stack.itemID) return true;
+		return false;
+	}
+
+	/**
 	 * @return Int value of current charge on electric item.
 	 * @param stack The stack to get charge for.
 	 */
-	@Override
-	public int getCharge(ItemStack stack) {
+	private int getCharge(ItemStack stack) {
 		if ((stack.getItem() instanceof IElectricItem) && stack.hasTagCompound()) {
 			return stack.getTagCompound().getInteger("charge");
 		} else {
@@ -45,12 +57,9 @@ public class IC2Proxy implements IIC2Proxy {
 	 * @return Int value of maximum charge on electric item.
 	 * @param stack The stack to get max charge for.
 	 */
-	@Override
-	public int getMaxCharge(ItemStack stack) {
+	private int getMaxCharge(ItemStack stack) {
 		if (!(stack.getItem() instanceof IElectricItem)) return 0;
-		//TODO: fixme
-		return 0;
-		//return ((IElectricItem) stack.getItem()).getMaxCharge();
+		return ((IElectricItem) stack.getItem()).getMaxCharge(stack);
 	}
 
 	/**
@@ -60,6 +69,7 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean isFullyCharged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
+		if (((IElectricItem) stack.getItem()).getChargedItemId(stack) != stack.itemID) return false;
 		int charge = getCharge(stack);
 		int maxCharge = getMaxCharge(stack);
 		return charge == maxCharge;
@@ -72,17 +82,22 @@ public class IC2Proxy implements IIC2Proxy {
 	@Override
 	public boolean isFullyDischarged(ItemStack stack) {
 		if (!isElectricItem(stack)) return false;
+		if (((IElectricItem) stack.getItem()).getEmptyItemId(stack) != stack.itemID) return false;
 		int charge = getCharge(stack);
 		return charge == 0;
 	}
 	
 	/**
 	 * @return Boolean, true if electric item contains charge but is not full.
-	 * @param stack The stack to check if its partially chraged.
+	 * @param stack The stack to check if its partially charged.
 	 */
 	@Override
 	public boolean isPartiallyCharged(ItemStack stack) {
-		return (!isFullyCharged(stack) && !isFullyDischarged(stack));
+		if (!isElectricItem(stack)) return false;
+		if (((IElectricItem) stack.getItem()).getChargedItemId(stack) != stack.itemID) return false;
+		int charge = getCharge(stack);
+		int maxCharge = getMaxCharge(stack);
+		return charge != maxCharge;
 	}
 	
 	/**

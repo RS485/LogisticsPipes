@@ -486,12 +486,12 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 		SimpleServiceLocator.ccProxy.queueEvent(event, arguments, this);
 	}
 	
-	public void setTurtrleConnect(boolean flag) {
-		SimpleServiceLocator.ccProxy.setTurtrleConnect(flag, this);
+	public void setTurtleConnect(boolean flag) {
+		SimpleServiceLocator.ccProxy.setTurtleConnect(flag, this);
 	}
 
-	public boolean getTurtrleConnect() {
-		return SimpleServiceLocator.ccProxy.getTurtrleConnect(this);
+	public boolean getTurtleConnect() {
+		return SimpleServiceLocator.ccProxy.getTurtleConnect(this);
 	}
 
 	public int getLastCCID() {

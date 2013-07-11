@@ -9,8 +9,6 @@
 package logisticspipes.transport;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -53,7 +51,6 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	private final int _bufferTimeOut = 20 * 2; //2 Seconds
 	private CoreRoutedPipe _pipe = null;
 	private final HashMap<ItemStack,Pair<Integer /* Time */, Integer /* BufferCounter */>> _itemBuffer = new HashMap<ItemStack, Pair<Integer, Integer>>(); 
-	private Method _reverseItem = null;
 	private Field toRemove = null;
 	private Set<Integer> notToRemove = new HashSet<Integer>();
 	private Chunk chunk;
@@ -61,12 +58,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	public PipeTransportLogistics() {
 		allowBouncing = true;
 		try {
-			_reverseItem = PipeTransportItems.class.getDeclaredMethod("reverseItem", new Class[]{EntityData.class});
-			_reverseItem.setAccessible(true);
 			toRemove = PipeTransportItems.class.getDeclaredField("toRemove");
 			toRemove.setAccessible(true);
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchFieldException e) {
@@ -284,8 +277,12 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	//BC copy
 	private void handleTileReached(EntityData data, TileEntity tile) {
-		if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
-			SimpleServiceLocator.specialtileconnection.transmit(tile, data);
+		boolean isSpecialConnectionInformationTransition = false;
+		if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
+			if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
+				isSpecialConnectionInformationTransition = true;
+				SimpleServiceLocator.specialtileconnection.transmit(tile, data);
+			}
 		}
 		if (tile instanceof IPipeEntry)
 			((IPipeEntry) tile).entityEntering(data.item, data.output);
@@ -293,14 +290,16 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			TileGenericPipe pipe = (TileGenericPipe) tile;
 			((PipeTransportItems) pipe.pipe.transport).entityEntering(data.item, data.output);
 		} else if (tile instanceof IInventory) {
-			if(!isItemExitable(data.item.getItemStack())) return;
 			if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
 				//LogisticsPipes start
+				if(!isSpecialConnectionInformationTransition && !isItemExitable(data.item.getItemStack())) {
+					return;
+				}
 				//last chance for chassi to back out
 				if(data.item instanceof IRoutedItem) {
 					IRoutedItem routed = (IRoutedItem) data.item;
 					if (!getPipe().getTransportLayer().stillWantItem(routed)) {
-						logisticsReverseItem(data);
+						reverseItem(data);
 						return;
 					}
 				}
@@ -347,7 +346,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				//LogisticsPipes end
 
 				if(data.item.getItemStack().stackSize > 0) {
-					logisticsReverseItem(data);
+					reverseItem(data);
 				}
 			}
 		} else {
@@ -371,25 +370,6 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		return true;
 	}
 	
-	protected void logisticsReverseItem(EntityData data) {
-		if(_reverseItem != null) {
-			try {
-				_reverseItem.invoke(this, data);
-			} catch (IllegalAccessException e) {
-				e.printStackTrace();
-				_reverseItem = null;
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-				_reverseItem = null;
-			} catch (InvocationTargetException e) {
-				e.printStackTrace();
-				_reverseItem = null;
-			}
-		} else {
-			throw new UnsupportedOperationException("Failed calling reverseItem(EntityItem);");
-		}
-	}
-
 	protected void insertedItemStack(EntityData data, TileEntity tile) {}
 	
 	/* --- IItemTravelHook --- */

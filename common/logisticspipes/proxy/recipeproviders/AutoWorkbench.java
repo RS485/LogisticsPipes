@@ -29,7 +29,7 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 
 		// Import
 		for (int i = 0; i < bench.craftMatrix.getSizeInventory(); i++) {
-			if (i >= inventory.getSizeInventory() - 1) {
+			if (i >= inventory.getSizeInventory() - 2) {
 				break;
 			}
 			final ItemStack newStack = bench.craftMatrix.getStackInSlot(i) == null ? null : bench.craftMatrix.getStackInSlot(i).copy();

@@ -134,13 +134,13 @@ public class CCProxy implements ICCProxy {
 	}
 
 	@Override
-	public void setTurtrleConnect(boolean flag, LogisticsTileGenericPipe tile) {
+	public void setTurtleConnect(boolean flag, LogisticsTileGenericPipe tile) {
 		tile.turtleConnect[tile.connections.get(tile.lastPC).ordinal()] = flag;
 		tile.scheduleNeighborChange();
 	}
 
 	@Override
-	public boolean getTurtrleConnect(LogisticsTileGenericPipe tile) {
+	public boolean getTurtleConnect(LogisticsTileGenericPipe tile) {
 		return tile.turtleConnect[tile.connections.get(tile.lastPC).ordinal()];
 	}
 

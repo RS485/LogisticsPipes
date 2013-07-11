@@ -6,11 +6,6 @@ jdk:
 before_script:
   - sudo apt-get install astyle expect
   - mkdir src
-  - mv common src/
-  - mv dummy src/
-  - mv resources src/
-  - mv .gitignore src/
-  - mv build.xml src/
-  - mv expect.tcl src/
+  - find -maxdepth 1 -not -name src -not -name . -exec mv '{}' 'src/{}' \;
   - cd src
 script: ant test

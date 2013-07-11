@@ -22,7 +22,7 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.satpipe.SatPipeNext;
 import logisticspipes.network.packets.satpipe.SatPipePrev;
 import logisticspipes.network.packets.satpipe.SatPipeSetID;
-import logisticspipes.pipes.PipeLiquidSatelliteLogistics;
+import logisticspipes.pipes.PipeLiquidSatellite;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.LiquidIdentifier;
@@ -126,7 +126,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 
 	
 	private void updateWatchers() {
-		for(EntityPlayer player : ((PipeLiquidSatelliteLogistics)this.container.pipe).localModeWatchers) {
+		for(EntityPlayer player : ((PipeLiquidSatellite)this.container.pipe).localModeWatchers) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);

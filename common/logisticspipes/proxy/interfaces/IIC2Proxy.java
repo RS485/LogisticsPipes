@@ -7,9 +7,7 @@ public interface IIC2Proxy {
 
 	public abstract boolean isElectricItem(ItemStack stack);
 
-	public abstract int getCharge(ItemStack stack);
-
-	public abstract int getMaxCharge(ItemStack stack);
+	public abstract boolean isSimilarElectricItem(ItemStack stack, ItemStack template);
 
 	public abstract boolean isFullyCharged(ItemStack stack);
 	

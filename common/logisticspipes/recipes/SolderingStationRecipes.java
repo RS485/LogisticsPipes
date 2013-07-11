@@ -13,7 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.BuildCraftFactory;
 import buildcraft.BuildCraftSilicon;
-import buildcraft.BuildCraftTransport;
 
 public class SolderingStationRecipes {
 	
@@ -32,15 +31,15 @@ public class SolderingStationRecipes {
 	
 	public static void loadRecipe() {
 		recipes.add(new SolderingStationRecipe(new ItemStack[] {
-					new ItemStack(Item.enderPearl,1),
+					new ItemStack(BuildCraftSilicon.redstoneChipset,1,1),
 					null,
+					new ItemStack(BuildCraftSilicon.redstoneChipset,1,1),
+					new ItemStack(LogisticsPipes.ModuleItem,1,0),
 					new ItemStack(Item.enderPearl,1),
-					null,
 					new ItemStack(LogisticsPipes.ModuleItem,1,0),
 					null,
-					new ItemStack(Item.enderPearl,1),
 					null,
-					new ItemStack(Item.enderPearl,1) }, 
+					null }, 
 				new ItemStack(LogisticsPipes.LogisticsItemCard,2,0), new ICraftingResultHandler() {
 			@Override
 			public void handleCrafting(ItemStack stack) {
@@ -97,16 +96,30 @@ public class SolderingStationRecipes {
 					null }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,2), null));
 		
+		if(!BuildCraftFactory.hopperDisabled) {
+			recipes.add(new SolderingStationRecipe(new ItemStack[]{
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						null,
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						new ItemStack(BuildCraftFactory.hopperBlock,1),
+						new ItemStack(BuildCraftFactory.hopperBlock,1) }, 
+					new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
+		}
+
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1),
 					null,
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
-					new ItemStack(BuildCraftFactory.hopperBlock,1),
-					new ItemStack(BuildCraftFactory.hopperBlock,1) }, 
+					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1),
+					new ItemStack(Block.hopperBlock,1) }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
@@ -117,20 +130,20 @@ public class SolderingStationRecipes {
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
 					null,
 					null,
-					new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK2,1),null }, 
-				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMK3,1), null));
+					new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2,1),null }, 
+				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk3,1), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
 					new ItemStack(Block.netherBrick,1),
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
 					new ItemStack(Block.netherBrick,1),
-					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
+					null,
 					new ItemStack(LogisticsPipes.LogisticsBasicPipe,1),
-					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
+					null,
 					new ItemStack(Block.netherBrick,1),
-					new ItemStack(BuildCraftTransport.pipeItemsIron,1),
+					null,
 					new ItemStack(Block.netherBrick,1) }, 
-				new ItemStack(LogisticsPipes.LogisticsFirewall,1), null));
+				new ItemStack(LogisticsPipes.LogisticsFirewallPipe,1), null));
 	}
 	
 	public static List<SolderingStationRecipe> getRecipes() {

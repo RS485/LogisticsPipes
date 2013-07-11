@@ -4,7 +4,7 @@ import logisticspipes.hud.HUDConfig;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeLiquidSatelliteLogistics;
+import logisticspipes.pipes.PipeLiquidSatellite;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
@@ -14,18 +14,18 @@ import org.lwjgl.opengl.GL11;
 public class HUDSatellite extends BasicHUDGui {
 
 	private final PipeItemsSatelliteLogistics pipe1;
-	private final PipeLiquidSatelliteLogistics pipe2;
+	private final PipeLiquidSatellite pipe2;
 	private int page;
 
 	public HUDSatellite(final PipeItemsSatelliteLogistics pipe) {
 		this(pipe, null);
 	}
 	
-	public HUDSatellite(final PipeLiquidSatelliteLogistics pipe) {
+	public HUDSatellite(final PipeLiquidSatellite pipe) {
 		this(null, pipe);
 	}
 	
-	private HUDSatellite(PipeItemsSatelliteLogistics pPipe1, PipeLiquidSatelliteLogistics pPipe2) {
+	private HUDSatellite(PipeItemsSatelliteLogistics pPipe1, PipeLiquidSatellite pPipe2) {
 		this.pipe1 = pPipe1;
 		this.pipe2 = pPipe2;
 		this.addButton(new BasicHUDButton("<", -2, -40, 8, 8) {

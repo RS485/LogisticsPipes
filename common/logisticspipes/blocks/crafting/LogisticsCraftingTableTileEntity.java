@@ -1,9 +1,9 @@
 package logisticspipes.blocks.crafting;
 
-import java.util.List;
-
 import logisticspipes.api.IRoutedPowerProvider;
+import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
@@ -11,7 +11,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
@@ -28,7 +27,6 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 		matrix.addListener(this);
 	}
 	
-	@SuppressWarnings("unchecked")
 	public void cacheRecipe() {
 		cache = null;
 		resultInv.setInventorySlotContents(0, null);
@@ -36,7 +34,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
-		for(IRecipe r : (List<IRecipe>)CraftingManager.getInstance().getRecipeList()) {
+		for(IRecipe r : CraftingUtil.getRecipeList()) {
 			if(r.matches(craftInv, worldObj)) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
@@ -82,7 +80,7 @@ outer:
 		if(result == null) return null;
 		if(!ItemIdentifier.get(resultInv.getStackInSlot(0)).equalsWithoutNBT(ItemIdentifier.get(result))) return null;
 		if(!wanted.equalsWithoutNBT(ItemIdentifier.get(result))) return null;
-		if(!power.useEnergy(20)) return null;
+		if(!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) return null;
 		crafter = new AutoCraftingInventory();
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];

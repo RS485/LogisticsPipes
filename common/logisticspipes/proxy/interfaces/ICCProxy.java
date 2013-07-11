@@ -11,7 +11,7 @@ public interface ICCProxy {
 	public ForgeDirection getOrientation(Object computer, TileEntity pipe);
 	public boolean isLuaThread(Thread thread);
 	public void queueEvent(String event, Object[] arguments, LogisticsTileGenericPipe logisticsTileGenericPipe);
-	public void setTurtrleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe);
-	public boolean getTurtrleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe);
+	public void setTurtleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe);
+	public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe);
 	public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe);
 }

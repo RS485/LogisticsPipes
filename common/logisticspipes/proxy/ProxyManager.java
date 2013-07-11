@@ -76,8 +76,7 @@ public class ProxyManager {
 			//DummyProxy
 			SimpleServiceLocator.setElectricItemProxy(new IIC2Proxy() {
 				@Override public boolean isElectricItem(ItemStack stack) {return false;}
-				@Override public int getCharge(ItemStack stack) {return 0;}
-				@Override public int getMaxCharge(ItemStack stack) {return 0;}
+				@Override public boolean isSimilarElectricItem(ItemStack stack, ItemStack template) {return false;}
 				@Override public boolean isFullyCharged(ItemStack stack) {return false;}
 				@Override public boolean isFullyDischarged(ItemStack stack) {return false;}
 				@Override public boolean isPartiallyCharged(ItemStack stack) {return false;}
@@ -105,8 +104,8 @@ public class ProxyManager {
 				@Override public ForgeDirection getOrientation(Object computer, TileEntity tile) {return ForgeDirection.UNKNOWN;}
 				@Override public boolean isLuaThread(Thread thread) {return false;}
 				@Override public void queueEvent(String event, Object[] arguments, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
-				@Override public void setTurtrleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
-				@Override public boolean getTurtrleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
+				@Override public void setTurtleConnect(boolean flag, LogisticsTileGenericPipe logisticsTileGenericPipe) {}
+				@Override public boolean getTurtleConnect(LogisticsTileGenericPipe logisticsTileGenericPipe) {return false;}
 				@Override public int getLastCCID(LogisticsTileGenericPipe logisticsTileGenericPipe) {return 0;}
 			});
 			LogisticsPipes.log.info("Loaded CC DummyProxy");

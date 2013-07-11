@@ -48,7 +48,7 @@ import logisticspipes.pipes.PipeLiquidExtractor;
 import logisticspipes.pipes.PipeLiquidInsertion;
 import logisticspipes.pipes.PipeLiquidProvider;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
-import logisticspipes.pipes.PipeLiquidSatelliteLogistics;
+import logisticspipes.pipes.PipeLiquidSatellite;
 import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
@@ -215,38 +215,38 @@ public class BuildCraftProxy {
 
 	public void registerPipes(Side side) {
 		LogisticsPipes.LogisticsBasicPipe = createPipe(Configs.LOGISTICSPIPE_BASIC_ID, PipeItemsBasicLogistics.class, "Basic Logistics Pipe", side);
-		LogisticsPipes.LogisticsRequestPipe = createPipe(Configs.LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", side);
-		LogisticsPipes.LogisticsProviderPipe = createPipe(Configs.LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe", side);
-		LogisticsPipes.LogisticsCraftingPipe = createPipe(Configs.LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", side);
+		LogisticsPipes.LogisticsRequestPipeMk1 = createPipe(Configs.LOGISTICSPIPE_REQUEST_ID, PipeItemsRequestLogistics.class, "Request Logistics Pipe", side);
+		LogisticsPipes.LogisticsProviderPipeMk1 = createPipe(Configs.LOGISTICSPIPE_PROVIDER_ID, PipeItemsProviderLogistics.class, "Provider Logistics Pipe", side);
+		LogisticsPipes.LogisticsCraftingPipeMk1 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_ID, PipeItemsCraftingLogistics.class, "Crafting Logistics Pipe", side);
 		LogisticsPipes.LogisticsSatellitePipe = createPipe(Configs.LOGISTICSPIPE_SATELLITE_ID, PipeItemsSatelliteLogistics.class, "Satellite Logistics Pipe", side);
 		LogisticsPipes.LogisticsSupplierPipe = createPipe(Configs.LOGISTICSPIPE_SUPPLIER_ID, PipeItemsSupplierLogistics.class, "Supplier Logistics Pipe", side);
-		LogisticsPipes.LogisticsChassiPipe1 = createPipe(Configs.LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", side);
-		LogisticsPipes.LogisticsChassiPipe2 = createPipe(Configs.LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", side);
-		LogisticsPipes.LogisticsChassiPipe3 = createPipe(Configs.LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", side);
-		LogisticsPipes.LogisticsChassiPipe4 = createPipe(Configs.LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", side);
-		LogisticsPipes.LogisticsChassiPipe5 = createPipe(Configs.LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", side);
-		LogisticsPipes.LogisticsCraftingPipeMK2 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", side);
-		LogisticsPipes.LogisticsRequestPipeMK2 = createPipe(Configs.LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", side);
+		LogisticsPipes.LogisticsChassisPipeMk1 = createPipe(Configs.LOGISTICSPIPE_CHASSI1_ID, PipeLogisticsChassiMk1.class, "Logistics Chassi Mk1", side);
+		LogisticsPipes.LogisticsChassisPipeMk2 = createPipe(Configs.LOGISTICSPIPE_CHASSI2_ID, PipeLogisticsChassiMk2.class, "Logistics Chassi Mk2", side);
+		LogisticsPipes.LogisticsChassisPipeMk3 = createPipe(Configs.LOGISTICSPIPE_CHASSI3_ID, PipeLogisticsChassiMk3.class, "Logistics Chassi Mk3", side);
+		LogisticsPipes.LogisticsChassisPipeMk4 = createPipe(Configs.LOGISTICSPIPE_CHASSI4_ID, PipeLogisticsChassiMk4.class, "Logistics Chassi Mk4", side);
+		LogisticsPipes.LogisticsChassisPipeMk5 = createPipe(Configs.LOGISTICSPIPE_CHASSI5_ID, PipeLogisticsChassiMk5.class, "Logistics Chassi Mk5", side);
+		LogisticsPipes.LogisticsCraftingPipeMk2 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK2_ID, PipeItemsCraftingLogisticsMk2.class, "Crafting Logistics Pipe MK2", side);
+		LogisticsPipes.LogisticsRequestPipeMk2 = createPipe(Configs.LOGISTICSPIPE_REQUEST_MK2_ID, PipeItemsRequestLogisticsMk2.class, "Request Logistics Pipe MK2", side);
 		LogisticsPipes.LogisticsRemoteOrdererPipe = createPipe(Configs.LOGISTICSPIPE_REMOTE_ORDERER_ID, PipeItemsRemoteOrdererLogistics.class, "Remote Orderer Pipe", side);
-		LogisticsPipes.LogisticsProviderPipeMK2 = createPipe(Configs.LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", side);
-		LogisticsPipes.LogisticsApiaristAnalyserPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", side);
+		LogisticsPipes.LogisticsProviderPipeMk2 = createPipe(Configs.LOGISTICSPIPE_PROVIDER_MK2_ID, PipeItemsProviderLogisticsMk2.class, "Provider Logistics Pipe MK2", side);
+		LogisticsPipes.LogisticsApiaristAnalyzerPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_ANALYSER_ID, PipeItemsApiaristAnalyser.class, "Apiarist Logistics Analyser Pipe", side);
 		LogisticsPipes.LogisticsApiaristSinkPipe = createPipe(Configs.LOGISTICSPIPE_APIARIST_SINK_ID, PipeItemsApiaristSink.class, "Apiarist Logistics Analyser Pipe", side);
-		LogisticsPipes.LogisticsInvSysCon = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", side);
-		LogisticsPipes.LogisticsEntrance = createPipe(Configs.LOGISTICSPIPE_ENTRANCE_ID, PipeItemsSystemEntranceLogistics.class, "Logistics System Entrance Pipe", side);
-		LogisticsPipes.LogisticsDestination = createPipe(Configs.LOGISTICSPIPE_DESTINATION_ID, PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
-		LogisticsPipes.LogisticsCraftingPipeMK3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
-		LogisticsPipes.LogisticsFirewall = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
+		LogisticsPipes.LogisticsInvSysConPipe = createPipe(Configs.LOGISTICSPIPE_INVSYSCON_ID, PipeItemsInvSysConnector.class, "Logistics Inventory System Connector", side);
+		LogisticsPipes.LogisticsEntrancePipe = createPipe(Configs.LOGISTICSPIPE_ENTRANCE_ID, PipeItemsSystemEntranceLogistics.class, "Logistics System Entrance Pipe", side);
+		LogisticsPipes.LogisticsDestinationPipe = createPipe(Configs.LOGISTICSPIPE_DESTINATION_ID, PipeItemsSystemDestinationLogistics.class, "Logistics System Destination Pipe", side);
+		LogisticsPipes.LogisticsCraftingPipeMk3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
+		LogisticsPipes.LogisticsFirewallPipe = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
 		
-		LogisticsPipes.LogisticsLiquidSupplierPipe = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
+		LogisticsPipes.LogisticsLiquidSupplierPipeMk1 = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
 		
-		LogisticsPipes.LogisticsLiquidConnector = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
-		LogisticsPipes.LogisticsLiquidBasic = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
-		LogisticsPipes.LogisticsLiquidInsertion = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
-		LogisticsPipes.LogisticsLiquidProvider = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
-		LogisticsPipes.LogisticsLiquidRequest = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
-		LogisticsPipes.LogisticsLiquidExtractor = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
-		LogisticsPipes.LogisticsLiquidSatellite = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatelliteLogistics.class, "Logistics Liquid Satellite Pipe", side);
-		LogisticsPipes.LogisticsLiquidSupplierMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
+		LogisticsPipes.LogisticsLiquidConnectorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
+		LogisticsPipes.LogisticsLiquidBasicPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
+		LogisticsPipes.LogisticsLiquidInsertionPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
+		LogisticsPipes.LogisticsLiquidProviderPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
+		LogisticsPipes.LogisticsLiquidRequestPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
+		LogisticsPipes.LogisticsLiquidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
+		LogisticsPipes.LogisticsLiquidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatellite.class, "Logistics Liquid Satellite Pipe", side);
+		LogisticsPipes.LogisticsLiquidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
 	}
 
 	/**

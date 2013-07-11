@@ -49,17 +49,17 @@ public class NEILogisticsPipesConfig implements IConfigureNEI {
 		
 		MultiItemRange pipes = new MultiItemRange();
 		for(Item pipe: pipeArray) {
-			if(pipe != LogisticsPipes.LogisticsChassiPipe1 && pipe != LogisticsPipes.LogisticsChassiPipe2 && pipe != LogisticsPipes.LogisticsChassiPipe3 && pipe != LogisticsPipes.LogisticsChassiPipe4 && pipe != LogisticsPipes.LogisticsChassiPipe5) {
+			if(pipe != LogisticsPipes.LogisticsChassisPipeMk1 && pipe != LogisticsPipes.LogisticsChassisPipeMk2 && pipe != LogisticsPipes.LogisticsChassisPipeMk3 && pipe != LogisticsPipes.LogisticsChassisPipeMk4 && pipe != LogisticsPipes.LogisticsChassisPipeMk5) {
 				pipes.add(pipe);
 			}
 		}
 
 		MultiItemRange pipesChassi = new MultiItemRange();
-		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe1);
-		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe2);
-		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe3);
-		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe4);
-		pipesChassi.add(LogisticsPipes.LogisticsChassiPipe5);
+		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk1);
+		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk2);
+		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk3);
+		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk4);
+		pipesChassi.add(LogisticsPipes.LogisticsChassisPipeMk5);
 		
 		MultiItemRange modules = new MultiItemRange();
 		modules.add(LogisticsPipes.ModuleItem, 0, 1000);

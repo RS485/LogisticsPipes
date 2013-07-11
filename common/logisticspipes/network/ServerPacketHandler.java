@@ -69,6 +69,7 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestHandler;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -422,7 +423,7 @@ public class ServerPacketHandler {
 			return;
 		}
 		
-		RequestHandler.request(player, packet, (CoreRoutedPipe) pipe.pipe);
+		RequestHandler.request(player, ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), (CoreRoutedPipe) pipe.pipe);
 	}
 	
 	private static void onRequestComponents(EntityPlayerMP player, PacketRequestSubmit packet) {
@@ -435,7 +436,7 @@ public class ServerPacketHandler {
 			return;
 		}
 		
-		RequestHandler.simulate(player, packet, (CoreRoutedPipe) pipe.pipe);
+		RequestHandler.simulate(player, ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), (CoreRoutedPipe) pipe.pipe);
 	}
 
 	private static void onRefreshRequest(EntityPlayerMP player, PacketPipeInteger packet) {
@@ -1228,7 +1229,7 @@ public class ServerPacketHandler {
 			return;
 		}
 		
-		RequestHandler.requestLiquid(player, packet, (CoreRoutedPipe) pipe.pipe, (IRequestLiquid) pipe.pipe);
+		RequestHandler.requestLiquid(player, ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), (CoreRoutedPipe) pipe.pipe, (IRequestLiquid) pipe.pipe);
 	}
 
 	private static void onModBasedItemSinkList(EntityPlayerMP player, PacketModuleNBT packet) {

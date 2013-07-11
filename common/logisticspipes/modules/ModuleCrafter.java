@@ -41,7 +41,7 @@ public class ModuleCrafter extends LogisticsModule{
 	private final PipeItemsCraftingLogistics pipe;
 //	private IRoutedPowerProvider _power;
 	
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+//	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleCrafter(PipeItemsCraftingLogistics parent) {
 		pipe=parent;
@@ -72,7 +72,7 @@ public class ModuleCrafter extends LogisticsModule{
 	}
 	
 	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0);
-	private static final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
+//	private static final SinkReply _sinkReplyDefault = new SinkReply(FixedPriority.DefaultRoute, 0, true, true, 1, 0);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;

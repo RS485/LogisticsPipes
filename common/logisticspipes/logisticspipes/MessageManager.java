@@ -3,7 +3,6 @@ package logisticspipes.logisticspipes;
 import java.util.LinkedList;
 
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketCraftingLoop;
 import logisticspipes.network.oldpackets.PacketItems;
 import logisticspipes.network.oldpackets.PacketSimulate;
 import logisticspipes.network.packets.orderer.CraftingLoop;
@@ -11,7 +10,6 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemMessage;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.network.Player;
 

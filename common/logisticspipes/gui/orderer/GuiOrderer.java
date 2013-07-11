@@ -17,7 +17,6 @@ import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketRequestGuiContent;
 import logisticspipes.network.oldpackets.PacketRequestSubmit;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;

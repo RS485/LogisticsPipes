@@ -4,6 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.PacketPayload;
+
 public class PacketPipeUpdate extends PacketCoordinates {
 	
 	private PacketPayload payload;

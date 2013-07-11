@@ -46,6 +46,7 @@ import logisticspipes.network.oldpackets.PacketRequestGuiContent;
 import logisticspipes.network.oldpackets.PacketRequestSubmit;
 import logisticspipes.network.oldpackets.PacketStringCoordinates;
 import logisticspipes.network.packets.PlayerList;
+import logisticspipes.network.packets.block.Rotation;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
 import logisticspipes.network.packets.modules.AdvancedExtractorInclude;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;

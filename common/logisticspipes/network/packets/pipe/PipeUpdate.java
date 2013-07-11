@@ -3,7 +3,7 @@ package logisticspipes.network.packets.pipe;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketPayload;
+import logisticspipes.network.PacketPayload;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -15,7 +15,7 @@ public class PipeUpdate extends CoordinatesPacket {
 
 	@Getter
 	@Setter
-	private PacketPayload payload;
+	private buildcraft.core.network.PacketPayload payload;
 	
 	public PipeUpdate(int id) {
 		super(id);

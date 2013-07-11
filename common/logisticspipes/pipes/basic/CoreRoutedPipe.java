@@ -46,6 +46,7 @@ import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.PacketPayload;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
@@ -187,8 +188,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return upgradeManager;
 	}
 	
-	public logisticspipes.network.oldpackets.PacketPayload getLogisticsNetworkPacket() {
-		logisticspipes.network.oldpackets.PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(getX(), getY(), getZ(), new Object[] { container, transport, logic });
+	public PacketPayload getLogisticsNetworkPacket() {
+		PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(getX(), getY(), getZ(), new Object[] { container, transport, logic });
 
 		return payload;
 	}

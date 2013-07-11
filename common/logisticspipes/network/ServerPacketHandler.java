@@ -817,7 +817,7 @@ public class ServerPacketHandler {
 			return;
 		}
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,packet.posX,packet.posY,packet.posZ,((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) playerEntity);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setPayload(((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) playerEntity);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPayload(((CoreRoutedPipe)pipe.pipe).getLogisticsNetworkPacket()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player) playerEntity);
 		((CoreRoutedPipe)pipe.pipe).refreshRender(true);
 	}
 

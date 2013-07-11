@@ -525,7 +525,7 @@ public class ServerPacketHandler {
 		final LogicProvider logic = (LogicProvider)providerpipe.logic;
 		logic.nextExtractionMode();
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.getExtractionMode().ordinal()).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(logic.getExtractionMode().ordinal()).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(logic.getExtractionMode().ordinal()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 	}
 
 	private static void onProviderIncludeChange(EntityPlayerMP player, PacketCoordinates packet) {
@@ -541,7 +541,7 @@ public class ServerPacketHandler {
 		final LogicProvider logic = (LogicProvider)providerpipe.logic;
 		logic.setFilterExcluded(!logic.isExcludeFilter());
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, logic.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(logic.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(logic.isExcludeFilter() ? 1 : 0).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 	}
 
 	private static void onSupplierModeChange(EntityPlayerMP player, PacketCoordinates packet) {
@@ -556,7 +556,7 @@ public class ServerPacketHandler {
 		final LogicSupplier logic = (LogicSupplier) pipe.pipe.logic;
 		logic.setRequestingPartials(!logic.isRequestingPartials());
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, packet.posX, packet.posY, packet.posZ, logic.isRequestingPartials() ? 1 : 0).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(logic.isRequestingPartials() ? 1 : 0).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(logic.isRequestingPartials() ? 1 : 0).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 	}
 
 	private static void onExtractorModeChange(EntityPlayerMP player, PacketPipeInteger packet) {
@@ -569,7 +569,7 @@ public class ServerPacketHandler {
 					final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) dummy.getModule();
 					module.setSneakyDirection(ForgeDirection.getOrientation(value));
 //TODO 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(-1).setInteger2(module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(-1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 					
 				}
 			}
@@ -597,7 +597,7 @@ public class ServerPacketHandler {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule();
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(-1).setInteger2(module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(-1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -605,7 +605,7 @@ public class ServerPacketHandler {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(slot - 1).setInteger2(module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(slot - 1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -620,7 +620,7 @@ public class ServerPacketHandler {
 					final ModuleProvider module = (ModuleProvider)dummy.getModule();
 					module.nextExtractionMode();
 //TODO 				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, module.getExtractionMode().ordinal()).getPacket(), (Player)player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(module.getExtractionMode().ordinal()).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -646,7 +646,7 @@ public class ServerPacketHandler {
 				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule();
 				module.nextExtractionMode();
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, module.getExtractionMode().ordinal()).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(module.getExtractionMode().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -654,7 +654,7 @@ public class ServerPacketHandler {
 				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.nextExtractionMode();
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, packet.posX, packet.posY, packet.posZ, module.getExtractionMode().ordinal()).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(module.getExtractionMode().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -669,7 +669,7 @@ public class ServerPacketHandler {
 					final ModuleProvider module = (ModuleProvider)dummy.getModule();
 					module.setFilterExcluded(!module.isExcludeFilter());
 //TODO 				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, module.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(module.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -696,7 +696,7 @@ public class ServerPacketHandler {
 				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule();
 				module.setFilterExcluded(!module.isExcludeFilter());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, module.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(module.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -704,7 +704,7 @@ public class ServerPacketHandler {
 				final ModuleProvider module = (ModuleProvider)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setFilterExcluded(!module.isExcludeFilter());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, packet.posX, packet.posY, packet.posZ, (module.isExcludeFilter() ? 1 : 0)).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger((module.isExcludeFilter() ? 1 : 0)).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((module.isExcludeFilter() ? 1 : 0)).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -718,7 +718,7 @@ public class ServerPacketHandler {
 				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
 					((ModuleAdvancedExtractor)dummy.getModule()).setItemsIncluded(!((ModuleAdvancedExtractor)dummy.getModule()).areItemsIncluded());
 //TODO 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, packet.posX, packet.posY, packet.posZ, 20, ((ModuleAdvancedExtractor)dummy.getModule()).areItemsIncluded() ? 1 : 0).getPacket(), (Player)player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(20).setInteger2(((ModuleAdvancedExtractor)dummy.getModule()).areItemsIncluded() ? 1 : 0).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(((ModuleAdvancedExtractor)dummy.getModule()).areItemsIncluded() ? 1 : 0).setInteger(20).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -746,7 +746,7 @@ public class ServerPacketHandler {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor)piperouted.getLogisticsModule();
 				module.setItemsIncluded(!module.areItemsIncluded());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.areItemsIncluded() ? 1 : 0).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(-1).setInteger2(module.areItemsIncluded() ? 1 : 0).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(module.areItemsIncluded() ? 1 : 0).setInteger(-1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -754,7 +754,7 @@ public class ServerPacketHandler {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setItemsIncluded(!module.areItemsIncluded());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, (module.areItemsIncluded() ? 1 : 0)).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(slot - 1).setInteger2((module.areItemsIncluded() ? 1 : 0)).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2((module.areItemsIncluded() ? 1 : 0)).setInteger(slot - 1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -769,7 +769,7 @@ public class ServerPacketHandler {
 					player.closeScreen();
 					player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * packet.integer), player.worldObj, packet.posX, packet.posY, packet.posZ);
 //TODO 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, ((ModuleAdvancedExtractor)dummy.getModule()).getSneakyDirection().ordinal()).getPacket(), (Player)player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(-1).setInteger2(((ModuleAdvancedExtractor)dummy.getModule()).getSneakyDirection().ordinal()).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(((ModuleAdvancedExtractor)dummy.getModule()).getSneakyDirection().ordinal()).setInteger(-1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				}
 			}
 			return;
@@ -797,7 +797,7 @@ public class ServerPacketHandler {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor)piperouted.getLogisticsModule();
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * packet.integer), player.worldObj, packet.posX, packet.posY, packet.posZ);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, -1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(-1).setInteger2(module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(-1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		} else {
@@ -805,7 +805,7 @@ public class ServerPacketHandler {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor)piperouted.getLogisticsModule().getSubModule(slot - 1);
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * packet.integer), player.worldObj, packet.posX, packet.posY, packet.posZ);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, packet.posX, packet.posY, packet.posZ, slot - 1, module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger1(slot - 1).setInteger2(module.getSneakyDirection().ordinal()).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(slot - 1).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 				return;
 			}
 		}
@@ -1098,7 +1098,7 @@ public class ServerPacketHandler {
 		TileEntity tile = player.worldObj.getBlockTileEntity(packet.posX, packet.posY, packet.posZ);
 		if(tile instanceof IRotationProvider) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.ROTATION_SET, packet.posX, packet.posY, packet.posZ, ((IRotationProvider)tile).getRotation()).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).setInteger(((IRotationProvider)tile).getRotation()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setInteger(((IRotationProvider)tile).getRotation()).setPosX(packet.posX).setPosY(packet.posY).setPosZ(packet.posZ).getPacket(), (Player)player);
 		}
 	}
 

@@ -23,6 +23,8 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.liquids.LiquidContainerRegistry;
+import net.minecraftforge.liquids.LiquidStack;
 
 public class DummyContainer extends Container{
 	
@@ -156,6 +158,22 @@ public class DummyContainer extends Container{
 		}
 		
 		if(slot instanceof LiquidSlot) {
+			if(currentlyEquippedStack != null) {
+				LiquidStack liquidId = LiquidContainerRegistry.getLiquidForFilledItem(currentlyEquippedStack);
+				if (liquidId != null) {
+					LiquidIdentifier ident = LiquidIdentifier.get(liquidId);
+					if(mouseButton == 0) {
+						if(ident == null) {
+							slot.putStack(null);
+						} else {
+							slot.putStack(ident.getItemIdentifier().unsafeMakeNormalStack(1));
+						}
+					} else {
+						slot.putStack(null);
+					}
+					return currentlyEquippedStack;
+				}
+			}
 			LiquidIdentifier ident = null;
 			if(slot.getStack() != null) {
 				ident = ItemIdentifier.get(slot.getStack()).getLiquidIdentifier();

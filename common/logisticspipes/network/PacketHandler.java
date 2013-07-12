@@ -52,15 +52,12 @@ public class PacketHandler implements IPacketHandler {
 		packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(classes.size());
 
 		int currentid = 0;
-		System.out.println("Loading " + classes.size() + " Packets");
 
 		for (ClassInfo c : classes) {
 			final Class<?> cls = c.load();
 			final ModernPacket instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
 			packetlist.add(instance);
 			packetmap.put((Class<? extends ModernPacket>) cls, instance);
-
-			System.out.println("Packet: " + c.getSimpleName() + " loaded");
 			currentid++;
 		}
 	}

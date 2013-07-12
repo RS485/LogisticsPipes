@@ -4,6 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.gui.popup.GuiDiskPopup;
 import logisticspipes.network.abstractpackets.ItemPacket;
@@ -32,10 +33,11 @@ public class DiskMacroRequestResponse extends ItemPacket {
 	}
 
 	@Override
+	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
 			if(((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).getSubGui() instanceof GuiDiskPopup) {
-				((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(new ItemMessage(getStack().itemID, getStack().getItemDamage(), 1, null), isFlag(), ((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).getSubGui(),FMLClientHandler.instance().getClient().thePlayer);
+				((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(new ItemMessage(getStack().itemID, getStack().getItemDamage(), 1, null), isFlag(), ((GuiOrderer) FMLClientHandler.instance().getClient().currentScreen).getSubGui(), player);
 			}
 		}
 	}

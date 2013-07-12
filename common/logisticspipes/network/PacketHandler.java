@@ -68,7 +68,7 @@ public class PacketHandler implements IPacketHandler {
 				cls = c.load();
 				instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
 			} catch(Exception e) {
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			packetlist.add(instance);
 			packetmap.put((Class<? extends ModernPacket>) cls, instance);

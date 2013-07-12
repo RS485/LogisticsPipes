@@ -13,7 +13,6 @@ import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.packets.DummyPacket;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -38,14 +37,10 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class, InvocationTargetException.class,
-			IllegalAccessException.class, InstantiationException.class })
-	// Suppression+sneakiness because these shouldn't ever fail, and if they do,
-	// it needs to fail.
+	@SneakyThrows({ IOException.class, InvocationTargetException.class, IllegalAccessException.class, InstantiationException.class })
+	// Suppression+sneakiness because these shouldn't ever fail, and if they do, it needs to fail.
 	public static final void intialize() {
-		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath
-				.from(PacketHandler.class.getClassLoader())
-				.getTopLevelClassesRecursive("logisticspipes.network.packets"));
+		final List<ClassInfo> classes = new ArrayList<ClassInfo>(ClassPath.from(PacketHandler.class.getClassLoader()).getTopLevelClassesRecursive("logisticspipes.network.packets"));
 		Collections.sort(classes, new Comparator<ClassInfo>() {
 			@Override
 			public int compare(ClassInfo o1, ClassInfo o2) {
@@ -54,56 +49,41 @@ public class PacketHandler implements IPacketHandler {
 		});
 
 		packetlist = new ArrayList<ModernPacket>(classes.size());
-		packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(
-				classes.size());
+		packetmap = new HashMap<Class<? extends ModernPacket>, ModernPacket>(classes.size());
 
-		int currentid = 200;// TODO: Only 200 until all packets get
-							// converted
+		int currentid = 0;
 		System.out.println("Loading " + classes.size() + " Packets");
 
 		for (ClassInfo c : classes) {
-			System.out.println("Packet: " + c.getSimpleName() + " loading");
-			Class<?> cls = DummyPacket.class;
-			ModernPacket instance = new DummyPacket(currentid);
-			cls = c.load();
-			instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
+			final Class<?> cls = c.load();
+			final ModernPacket instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
 			packetlist.add(instance);
 			packetmap.put((Class<? extends ModernPacket>) cls, instance);
 
-			if(cls != DummyPacket.class) {
-				System.out.println("Packet: " + c.getSimpleName() + " loaded");
-			} else {
-				System.out.println("Packet: " + c.getSimpleName() + " could not be loaded.");
-			}
+			System.out.println("Packet: " + c.getSimpleName() + " loaded");
 			currentid++;
 		}
 	}
 
 	@SneakyThrows(IOException.class)
 	@Override
-	public void onPacketData(INetworkManager manager,
-			Packet250CustomPayload packet, Player player) {
+	public void onPacketData(INetworkManager manager, Packet250CustomPayload packet, Player player) {
 		if (packet.data == null) {
 			new Exception("Packet content has been null").printStackTrace();
 		}
-		final DataInputStream data = new DataInputStream(
-				new ByteArrayInputStream(packet.data));
+		final DataInputStream data = new DataInputStream(new ByteArrayInputStream(packet.data));
 		onPacketData(data, player);
 	}
 
 	public static void onPacketData(final DataInputStream data, final Player player) throws IOException {
 		final int packetID = data.readInt();
-		if (packetID >= 200) {// TODO: Temporary until all packets get converted
-			final ModernPacket packet = PacketHandler.packetlist.get(packetID - 200).template();
-			packet.readData(data);
-			try {
-				packet.processPacket((EntityPlayer) player);
-			} catch(Exception e) {
-				LogisticsPipes.log.severe(packet.toString());
-				throw new RuntimeException(e);
-			}
-		} else {
-			throw new UnsupportedOperationException("PacketID: " + packetID);
+		final ModernPacket packet = PacketHandler.packetlist.get(packetID).template();
+		packet.readData(data);
+		try {
+			packet.processPacket((EntityPlayer) player);
+		} catch(Exception e) {
+			LogisticsPipes.log.severe(packet.toString());
+			throw new RuntimeException(e);
 		}
 	}
 }

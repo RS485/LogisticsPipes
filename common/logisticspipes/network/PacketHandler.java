@@ -13,6 +13,8 @@ import java.util.Map;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.DummyPacket;
+import logisticspipes.utils.gui.DummyContainer;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -37,8 +39,8 @@ public class PacketHandler implements IPacketHandler {
 	}
 
 	@SuppressWarnings("unchecked")
-	@SneakyThrows({ IOException.class, InvocationTargetException.class,
-			IllegalAccessException.class, InstantiationException.class })
+	@SneakyThrows({ IOException.class/*, InvocationTargetException.class,
+			IllegalAccessException.class, InstantiationException.class */})
 	// Suppression+sneakiness because these shouldn't ever fail, and if they do,
 	// it needs to fail.
 	public static final void intialize() {
@@ -61,13 +63,23 @@ public class PacketHandler implements IPacketHandler {
 		System.out.println("Loading " + classes.size() + " Packets");
 
 		for (ClassInfo c : classes) {
-			final Class<?> cls = c.load();
-			final ModernPacket instance = (ModernPacket) cls.getConstructors()[0]
-					.newInstance(currentid);
+			System.out.println("Packet: " + c.getSimpleName() + " loading");
+			Class<?> cls = DummyPacket.class;
+			ModernPacket instance = new DummyPacket(currentid);
+			try {
+				cls = c.load();
+				instance = (ModernPacket) cls.getConstructors()[0].newInstance(currentid);
+			} catch(Exception e) {
+				e.printStackTrace();
+			}
 			packetlist.add(instance);
 			packetmap.put((Class<? extends ModernPacket>) cls, instance);
 
-			System.out.println("Packet: " + c.getSimpleName() + " loaded");
+			if(cls != DummyPacket.class) {
+				System.out.println("Packet: " + c.getSimpleName() + " loaded");
+			} else {
+				System.out.println("Packet: " + c.getSimpleName() + " could not be loaded.");
+			}
 			currentid++;
 		}
 	}

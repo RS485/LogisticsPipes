@@ -40,10 +40,10 @@ public class ComponentList extends ModernPacket {
 			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(getUsed(),getMissing(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer);
 		} else {
 			for (final ItemMessage items : getUsed()) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Used: " + items);
+				player.addChatMessage("Used: " + items);
 			}
 			for (final ItemMessage items : getMissing()) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Missing: " + items);
+				player.addChatMessage("Missing: " + items);
 			}
 		}
 	}

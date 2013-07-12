@@ -10,4 +10,8 @@ public class LogisitcsASMHookClass {
 		if(!(container.getTile(o) instanceof IPipeEntry || container.getTile(o) instanceof TileGenericPipe) && item.getItemStack() != null && item.getItemStack().getItem() instanceof logisticspipes.interfaces.IItemAdvancedExistance && !((logisticspipes.interfaces.IItemAdvancedExistance)item.getItemStack().getItem()).canExistInNormalInventory(item.getItemStack())) return false;
 		return true;
 	}
+	
+	public static void callingClearedMethod() {
+		throw new RuntimeException("This Method should never be called");
+	}
 }

@@ -3,7 +3,6 @@ package logisticspipes.network;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,7 +13,6 @@ import java.util.Map;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.DummyPacket;
-import logisticspipes.utils.gui.DummyContainer;
 import lombok.SneakyThrows;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.INetworkManager;
@@ -109,13 +107,6 @@ public class PacketHandler implements IPacketHandler {
 			}
 		} else {
 			throw new UnsupportedOperationException("PacketID: " + packetID);
-			/*
-			if (MainProxy.isClient(((EntityPlayer) player).worldObj)) {
-				ClientPacketHandler.onPacketData(data, player, packetID);
-			} else {
-				ServerPacketHandler.onPacketData(data, player, packetID);
-			}
-			*/
 		}
 	}
 }

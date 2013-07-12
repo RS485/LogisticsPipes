@@ -3,8 +3,10 @@ package logisticspipes.network.packets.orderer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
+import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.ItemMessage;
@@ -19,11 +21,11 @@ public class ComponentList extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<ItemMessage> used;
+	private List<ItemMessage> used = new ArrayList<ItemMessage>();
 	
 	@Getter
 	@Setter
-	private List<ItemMessage> missing;
+	private List<ItemMessage> missing = new ArrayList<ItemMessage>();
 	
 	public ComponentList(int id) {
 		super(id);
@@ -35,9 +37,10 @@ public class ComponentList extends ModernPacket {
 	}
 
 	@Override
+	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(getUsed(),getMissing(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer);
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(getUsed(),getMissing(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
 			for (final ItemMessage items : getUsed()) {
 				player.addChatMessage("Used: " + items);

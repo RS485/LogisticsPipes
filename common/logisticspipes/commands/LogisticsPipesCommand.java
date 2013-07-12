@@ -1,15 +1,12 @@
 package logisticspipes.commands;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketLogisticsPipes;
+import logisticspipes.network.packets.ActivatNBTDebug;
+import logisticspipes.network.packets.RequestUpdateNamesPacket;
 import logisticspipes.network.packets.debuggui.DebugAskForTarget;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.DebugGuiTickHandler;
@@ -57,12 +54,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Trying to Enable NBTDebug");
-//TODO Must be handled manualy
-        	MainProxy.sendPacketToPlayer(new PacketLogisticsPipes() {
-				@Override public void writeData(DataOutputStream data) throws IOException {}
-				@Override public void readData(DataInputStream data) throws IOException {}
-				@Override public int getID() {return NetworkConstants.ACTIVATNBTDEBUG;}
-			}.getPacket(), (Player)sender);
+        	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivatNBTDebug.class).getPacket(), (Player)sender);
         	return;
         } else if(arguments[0].equalsIgnoreCase("routingthread") || arguments[0].equalsIgnoreCase("rt")) {
         	sender.sendChatToPlayer("RoutingTableUpdateThread: TODO: " + RoutingTableUpdateThread.size());
@@ -72,12 +64,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Requesting Transfer");
-//TODO Must be handled manualy
-        	MainProxy.sendPacketToPlayer(new PacketLogisticsPipes() {
-				@Override public void writeData(DataOutputStream data) throws IOException {}
-				@Override public void readData(DataInputStream data) throws IOException {}
-				@Override public int getID() {return NetworkConstants.REQUEST_UPDATE_NAMES;}
-			}.getPacket(), (Player)sender);
+        	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestUpdateNamesPacket.class).getPacket(), (Player)sender);
         	MainProxy.proxy.sendNameUpdateRequest((Player)sender);
         	return;
         } else if(arguments[0].equalsIgnoreCase("name") && arguments.length == 3) {

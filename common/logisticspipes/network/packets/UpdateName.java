@@ -4,8 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketNameUpdatePacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import lombok.Getter;
@@ -36,7 +36,12 @@ public class UpdateName extends ModernPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(getIdent()).getPacket());
+		if(MainProxy.isClient(player.worldObj)) {
+//TODO		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(getIdent()).getPacket());
+			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(UpdateName.class).setIdent(getIdent()).setName(getIdent().getFriendlyName()).getPacket());
+		} else {
+			MainProxy.proxy.updateNames(getIdent(), getName());
+		}
 	}
 
 	@Override

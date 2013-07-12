@@ -21,9 +21,6 @@ public class ItemSinkDefault extends Integer2CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		if(getInteger2() < 0) {
-			return;
-		}
 		final TileGenericPipe pipe = this.getPipe(player.worldObj);
 		if (pipe == null) {
 			return;

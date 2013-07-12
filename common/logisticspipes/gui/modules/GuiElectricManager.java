@@ -51,10 +51,10 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 				_module.setDischargeMode(!_module.isDischargeMode());
 				if(slot >= 0) {
 //TODO 				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot - 1, (_module.isDischargeMode() ? 1 : 0)).getPacket());
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2((_module.isDischargeMode() ? 1 : 0)).setInteger(slot - 1).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2(slot - 1).setInteger((_module.isDischargeMode() ? 1 : 0)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_SET, _module.getX(), _module.getY(), _module.getZ(), slot, (_module.isDischargeMode() ? 1 : 0)).getPacket());
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2((_module.isDischargeMode() ? 1 : 0)).setInteger(slot).setPosX(_module.getX()).setPosY(_module.getY()).setPosZ(_module.getZ()).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(ElectricManagerPacket.class).setInteger2(slot).setInteger((_module.isDischargeMode() ? 1 : 0)).setPosX(_module.getX()).setPosY(_module.getY()).setPosZ(_module.getZ()).getPacket());
 				}
 				break;
 		}

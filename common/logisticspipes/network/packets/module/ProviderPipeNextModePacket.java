@@ -1,15 +1,15 @@
 package logisticspipes.network.packets.module;
 
-import cpw.mods.fml.common.network.Player;
 import logisticspipes.logic.LogicProvider;
-import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.packets.modules.ProviderPipeMode;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
 public class ProviderPipeNextModePacket extends CoordinatesPacket {
 
@@ -34,7 +34,8 @@ public class ProviderPipeNextModePacket extends CoordinatesPacket {
 		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
 		final LogicProvider logic = (LogicProvider) providerpipe.logic;
 		logic.nextExtractionMode();
-		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), logic.getExtractionMode().ordinal()).getPacket(), (Player) player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), logic.getExtractionMode().ordinal()).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(logic.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 	}
 }
 

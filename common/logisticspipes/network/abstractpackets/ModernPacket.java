@@ -5,14 +5,21 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.network.NetworkConstants;
+import logisticspipes.LogisticsPipes;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.network.packet.Packet250CustomPayload;
 
+@Accessors(chain=true)
 public abstract class ModernPacket {
 
+	@Getter
+	@Setter
+	private boolean isChunkDataPacket;
+	
 	protected String channel;
 
 	public abstract void readData(DataInputStream data) throws IOException;
@@ -26,7 +33,7 @@ public abstract class ModernPacket {
 		ByteArrayOutputStream bytes = new ByteArrayOutputStream();
 		DataOutputStream data = new DataOutputStream(bytes);
 		try {
-			data.writeByte(getId());
+			data.writeInt(getId());
 			writeData(data);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -35,6 +42,7 @@ public abstract class ModernPacket {
 		packet.channel = channel;
 		packet.data = bytes.toByteArray();
 		packet.length = packet.data.length;
+		packet.isChunkDataPacket = isChunkDataPacket();
 		return packet;
 	}
 
@@ -42,7 +50,7 @@ public abstract class ModernPacket {
 	private final int id;
 
 	public ModernPacket(int id) {
-		this.channel = NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME;
+		this.channel = LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME;
 		this.id = id;
 	}
 

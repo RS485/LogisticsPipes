@@ -10,11 +10,14 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleExtractor;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketModuleInteger;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.packets.modules.AdvancedExtractorInclude;
+import logisticspipes.network.packets.modules.ExtractorModuleMode;
+import logisticspipes.network.packets.modules.ItemSinkDefault;
+import logisticspipes.network.packets.modules.ProviderModuleInclude;
+import logisticspipes.network.packets.modules.ProviderModuleMode;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import lombok.Getter;
@@ -63,58 +66,24 @@ public class ChassisGUI extends CoordinatesPacket {
 		if( !(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof LogisticsGuiModule))
 			return;
 		
-		player.openGui(LogisticsPipes.instance,
-				((LogisticsGuiModule) cassiPipe.getLogisticsModule()
-						.getSubModule(getButtonID())).getGuiHandlerID()
-						+ (100 * (getButtonID() + 1)), player.worldObj,
-				getPosX(), getPosY(), getPosZ());
+		player.openGui(LogisticsPipes.instance,((LogisticsGuiModule) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getGuiHandlerID() + (100 * (getButtonID() + 1)), player.worldObj, getPosX(), getPosY(), getPosZ());
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleItemSink) {
-			MainProxy.sendPacketToPlayer(
-					new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS,
-							getPosX(), getPosY(), getPosZ(), getButtonID(),
-							(((ModuleItemSink) cassiPipe.getLogisticsModule()
-									.getSubModule(getButtonID()))
-									.isDefaultRoute() ? 1 : 0)).getPacket(),
-					(Player) player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, getPosX(), getPosY(), getPosZ(), getButtonID(), (((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isDefaultRoute() ? 1 : 0)).getPacket(), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(getButtonID()).setInteger((((ModuleItemSink) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isDefaultRoute() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 		}
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleExtractor) {
-			MainProxy.sendPacketToPlayer(
-					new PacketModuleInteger(
-							NetworkConstants.EXTRACTOR_MODULE_RESPONSE,
-							getPosX(), getPosY(), getPosZ(), getButtonID(),
-							(((ModuleExtractor) cassiPipe.getLogisticsModule()
-									.getSubModule(getButtonID()))
-									.getSneakyDirection().ordinal()))
-							.getPacket(), (Player) player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE,getPosX(), getPosY(), getPosZ(), getButtonID(),(((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getSneakyDirection().ordinal())).getPacket(), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(getButtonID()).setInteger((((ModuleExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getSneakyDirection().ordinal())).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 		}
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleProvider) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(
-					NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT,
-					getPosX(), getPosY(), getPosZ(),
-					(((ModuleProvider) cassiPipe.getLogisticsModule()
-							.getSubModule(getButtonID())).isExcludeFilter() ? 1
-							: 0)).getPacket(), (Player) player);
-			MainProxy.sendPacketToPlayer(
-					new PacketPipeInteger(
-							NetworkConstants.PROVIDER_MODULE_MODE_CONTENT,
-							getPosX(), getPosY(), getPosZ(),
-							(((ModuleProvider) cassiPipe.getLogisticsModule()
-									.getSubModule(getButtonID()))
-									.getExtractionMode().ordinal()))
-							.getPacket(), (Player) player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT,getPosX(), getPosY(), getPosZ(),(((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isExcludeFilter() ? 1 : 0)).getPacket(), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT,getPosX(), getPosY(), getPosZ(),(((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getExtractionMode().ordinal())).getPacket(), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger((((ModuleProvider) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).getExtractionMode().ordinal())).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 		}
 		if(cassiPipe.getLogisticsModule().getSubModule(getButtonID()) instanceof ModuleAdvancedExtractor) {
-			MainProxy
-					.sendPacketToPlayer(
-							new PacketModuleInteger(
-									NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE,
-									getPosX(), getPosY(), getPosZ(),
-									getButtonID(),
-									(((ModuleAdvancedExtractor) cassiPipe
-											.getLogisticsModule().getSubModule(
-													getButtonID()))
-											.areItemsIncluded() ? 1 : 0))
-									.getPacket(), (Player) player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE,getPosX(), getPosY(), getPosZ(),getButtonID(),(((ModuleAdvancedExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).areItemsIncluded() ? 1 : 0)).getPacket(), (Player) player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(getButtonID()).setInteger((((ModuleAdvancedExtractor) cassiPipe.getLogisticsModule().getSubModule(getButtonID())).areItemsIncluded() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 		}
 	}
 	

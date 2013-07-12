@@ -35,7 +35,7 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 					player.closeScreen();
 					player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
 //TODO				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getPosX(), getPosY(), getPosZ(), -1, ((ModuleAdvancedExtractor) dummy.getModule()).getSneakyDirection().ordinal()).getPacket(), (Player) player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(((ModuleAdvancedExtractor) dummy.getModule()).getSneakyDirection().ordinal()).setInteger(-1).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(((ModuleAdvancedExtractor) dummy.getModule()).getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 				}
 			}
 			return;
@@ -56,7 +56,7 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule();
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
 //TODO			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getPosX(), getPosY(), getPosZ(), -1, module.getSneakyDirection().ordinal()).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(-1).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 				return;
 			}
 		} else {
@@ -64,7 +64,7 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				player.openGui(LogisticsPipes.instance, GuiIDs.GUI_Module_Extractor_ID + (100 * getInteger()), player.worldObj, getPosX(), getPosY(), getPosZ());
 //TODO			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getPosX(), getPosY(), getPosZ(), slot - 1, module.getSneakyDirection().ordinal()).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(module.getSneakyDirection().ordinal()).setInteger(slot - 1).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 				return;
 			}
 		}

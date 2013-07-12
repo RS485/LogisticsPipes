@@ -9,22 +9,26 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
-import logisticspipes.network.oldpackets.PacketCoordinates;
-import logisticspipes.network.oldpackets.PacketGuiArgument;
-import logisticspipes.network.oldpackets.PacketModuleInteger;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.packets.block.CraftingPipeNextAdvancedSatellitePacket;
+import logisticspipes.network.packets.block.CraftingPipePrevAdvancedSatellitePacket;
 import logisticspipes.network.packets.cpipe.CPipeNextSatellite;
 import logisticspipes.network.packets.cpipe.CPipePrevSatellite;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteId;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImport;
 import logisticspipes.network.packets.cpipe.CPipeSatelliteImportBack;
+import logisticspipes.network.packets.cpipe.CraftingAdvancedSatelliteId;
+import logisticspipes.network.packets.cpipe.CraftingPipeOpenConnectedGuiPacket;
+import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityDownPacket;
 import logisticspipes.network.packets.pipe.CraftingPipePriorityUpPacket;
 import logisticspipes.network.packets.pipe.CraftingPipeStackMovePacket;
 import logisticspipes.network.packets.pipe.CraftingPriority;
+import logisticspipes.network.packets.pipe.LiquidCraftingAdvancedSatelliteId;
+import logisticspipes.network.packets.pipe.LiquidCraftingAmount;
+import logisticspipes.network.packets.pipe.LiquidCraftingPipeAdvancedSatelliteNextPacket;
+import logisticspipes.network.packets.pipe.LiquidCraftingPipeAdvancedSatellitePrevPacket;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -309,8 +313,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(new PacketGuiArgument(GuiIDs.GUI_CRAFTINGPIPE_ID, new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}).getPacket(),  (Player) entityplayer);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketGuiArgument(NetworkConstants.GUI_ARGUMENT_PACKET, GuiIDs.GUI_CRAFTINGPIPE_ID, ).getPacket(),  (Player) entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID).setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}).getPacket(),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}
@@ -358,9 +362,8 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			} else if(player instanceof EntityPlayerSP) {
 				((EntityPlayerSP)player).closeScreen();
 			}
-			final PacketCoordinates packet = new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+//TODO		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 			return;
 		}
 
@@ -525,27 +528,23 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void setNextSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i);
-			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 		}
 	}
 
 	public void setPrevSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i);
-			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 		}
 	}
 
@@ -555,56 +554,48 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 
 	public void changeLiquidAmount(int change, int slot, EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, xCoord, yCoord, zCoord, slot, change);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, xCoord, yCoord, zCoord, slot, change).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingAmount.class).setInteger2(slot).setInteger(change).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		} else {
 			amount[slot] += change;
 			if(amount[slot] <= 0) {
 				amount[slot] = 0;
 			}
-			final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, xCoord, yCoord, zCoord, slot, amount[slot]);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, xCoord, yCoord, zCoord, slot, amount[slot]).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 		}
 	}
 
 	public void setPrevLiquidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectLiquidSatelliteId(true, i);
-				final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteId);
-//TODO Must be handled manualy
-				MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteId).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectLiquidSatelliteId(true, i);
-				final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteIdArray[i]);
-//TODO Must be handled manualy
-				MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteIdArray[i]).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 			}
 		}
 	}
 
 	public void setNextLiquidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-			final PacketCoordinates packet = new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectLiquidSatelliteId(false, i);
-				final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteId);
-//TODO Must be handled manualy
-				MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);		
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteId).getPacket(), (Player)player);		
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectLiquidSatelliteId(false, i);
-				final PacketModuleInteger packet = new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteIdArray[i]);
-//TODO Must be handled manualy
-				MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteIdArray[i]).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 			}
 		}
 	}

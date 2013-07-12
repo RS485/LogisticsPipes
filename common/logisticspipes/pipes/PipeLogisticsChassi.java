@@ -42,13 +42,12 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.logisticspipes.ItemModuleInformationManager;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.LogisticsModule;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketPipeUpdate;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
 import logisticspipes.network.packets.module.RequestPipeUpdatePacket;
 import logisticspipes.network.packets.pipe.ChassiePipeModuleContent;
+import logisticspipes.network.packets.pipe.PipeUpdate;
 import logisticspipes.network.packets.pipe.SendQueueContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -150,7 +149,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		}
 		if(ChassiLogic.orientation != oldOrientation) {
 			clearCache();
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(worldObj), new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE,getX(), getY(), getZ(),getLogisticsNetworkPacket()).getPacket());
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(worldObj), PacketHandler.getPacket(PipeUpdate.class).setPayload(getLogisticsNetworkPacket()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 			refreshRender(true);
 		}
 	}

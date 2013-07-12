@@ -1,16 +1,16 @@
 package logisticspipes.network.packets.module;
 
-import cpw.mods.fml.common.network.Player;
 import logisticspipes.modules.ModuleProvider;
-import logisticspipes.network.NetworkConstants;
+import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.packets.modules.ProviderModuleMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
 public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 
@@ -32,7 +32,8 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ModuleProvider) {
 					final ModuleProvider module = (ModuleProvider) dummy.getModule();
 					module.nextExtractionMode();
-					MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 				}
 			}
 			return;
@@ -52,14 +53,16 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule() instanceof ModuleProvider) {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule();
 				module.nextExtractionMode();
-				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 				return;
 			}
 		} else {
 			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ModuleProvider) {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.nextExtractionMode();
-				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
 				return;
 			}
 		}

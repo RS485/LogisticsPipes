@@ -1,9 +1,6 @@
 package logisticspipes.gui;
 
 import java.awt.Color;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,15 +10,14 @@ import logisticspipes.gui.popup.GuiEditCCAccessTable;
 import logisticspipes.gui.popup.GuiSecurityStationPopup;
 import logisticspipes.interfaces.PlayerListReciver;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketLogisticsPipes;
-import logisticspipes.network.oldpackets.PacketStringCoordinates;
+import logisticspipes.network.packets.PlayerListRequest;
 import logisticspipes.network.packets.block.SecurityAuthorizationPacket;
 import logisticspipes.network.packets.block.SecurityCardPacket;
 import logisticspipes.network.packets.block.SecurityRequestCCIdsPacket;
 import logisticspipes.network.packets.block.SecurityStationAutoDestroy;
 import logisticspipes.network.packets.block.SecurityStationCC;
+import logisticspipes.network.packets.block.SecurityStationOpenPlayerRequest;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
@@ -90,14 +86,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		this.buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, "Authorize"));
 		this.buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, "Deauthorize"));
 		this.buttonList.add(new GuiCheckBox(9, guiLeft + 160, guiTop + 74, 16, 16, _tile.allowAutoDestroy));
-//TODO Must be handled manualy
-		MainProxy.sendPacketToServer(new PacketLogisticsPipes() {
-			@Override public void writeData(DataOutputStream data) throws IOException {}
-			@Override public void readData(DataInputStream data) throws IOException {}
-			@Override public int getID() {
-				return NetworkConstants.PLAYER_LIST;
-			}
-		}.getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerListRequest.class).getPacket());
 	}
 
 	@Override
@@ -107,8 +96,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityCardPacket.class).setInteger(button.id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord).getPacket());
 		} else if(button.id == 4) {
 			if (searchinput1+searchinput2 != null && ((searchinput1+searchinput2).length() != 0)) {
-//TODO Must be handled manualy
-				MainProxy.sendPacketToServer(new PacketStringCoordinates(NetworkConstants.OPEN_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, searchinput1 + searchinput2).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchinput1 + searchinput2).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.xCoord).getPacket());
 			}
 		} else if(button.id == 5) {
 			_tile.allowCC = !_tile.allowCC;

@@ -106,8 +106,8 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	private void sendItemIdentifierStack(ItemIdentifierStack item, DataOutputStream data) throws IOException {
 		if (item != null) {
 			data.writeInt(item.getItem().itemID);
-			data.writeInt(item.getItem().itemDamage);
 			data.writeInt(item.stackSize);
+			data.writeInt(item.getItem().itemDamage);
 			SendNBTTagCompound.writeNBTTagCompound(item.getItem().tag, data);
 		} else {
 			data.writeInt(0);

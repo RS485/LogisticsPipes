@@ -5,12 +5,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.network.GuiHandler;
-import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.GenericPacket;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
+@Accessors(chain=true)
 public class GuiArgument extends GenericPacket {
 
 	@Getter

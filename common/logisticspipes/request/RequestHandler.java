@@ -11,8 +11,9 @@ import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
-import logisticspipes.network.oldpackets.PacketItems;
-import logisticspipes.network.oldpackets.PacketRequestGuiContent;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.MissingItems;
+import logisticspipes.network.packets.orderer.OrdererContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -107,8 +108,8 @@ public class RequestHandler {
 			if (_availableItems.containsKey(item)) continue;
 			_allItems.add(item.makeStack(0));
 		}
-//TODO Must be handled manualy
-		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+//TODO	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems).getPacket(), (Player)player);
 	}
 	
 
@@ -134,8 +135,8 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-//TODO Must be handled manualy
-				MainProxy.sendPacketToPlayer(new PacketItems(items, false).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, items, false).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(items).setFlag(false).getPacket(), (Player)player);
 			}
 			
 			@Override
@@ -145,8 +146,8 @@ public class RequestHandler {
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-//TODO Must be handled manualy
-				MainProxy.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, list, true).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(list).setFlag(true).getPacket(), (Player)player);
 			}
 		},RequestTree.defaultRequestFlags);
 	}
@@ -184,8 +185,8 @@ public class RequestHandler {
 
 	public static void refreshLiquid(EntityPlayer player, CoreRoutedPipe pipe) {
 		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
-//TODO Must be handled manualy
-		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems).getPacket(), (Player)player);
 	}
 
 	public static void requestLiquid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestLiquid requester) {

@@ -11,15 +11,29 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyModuleContainer;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
 
+@Accessors(chain=true)
 public class BeeModuleSetBeePacket extends CoordinatesPacket {
 	
+	@Getter
+	@Setter
 	private int integer1 = 0;
+	@Getter
+	@Setter
 	private int integer2 = 0;
+	@Getter
+	@Setter
 	private int integer3 = 0;
+	@Getter
+	@Setter
 	private int integer4 = 0;
+	@Getter
+	@Setter
 	private String string1 = "";
 
 	public BeeModuleSetBeePacket(int id) {

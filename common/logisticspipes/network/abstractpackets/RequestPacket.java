@@ -10,8 +10,10 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.nbt.NBTTagCompound;
 
+@Accessors(chain=true)
 public abstract class RequestPacket extends CoordinatesPacket {
 
 	@Getter

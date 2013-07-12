@@ -9,7 +9,8 @@ import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.config.Configs;
-import logisticspipes.network.oldpackets.PacketNameUpdatePacket;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.UpdateName;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
@@ -194,7 +195,8 @@ public class ServerProxy implements IProxy {
 				}
 				int id = Integer.valueOf(itemPart);
 				int meta = Integer.valueOf(metaPart);
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) new PacketNameUpdatePacket(ItemIdentifier.get(id, meta, null), "-").getPacket(), player);
+				//SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) new PacketNameUpdatePacket(ItemIdentifier.get(id, meta, null), "-").getPacket(), player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) PacketHandler.getPacket(UpdateName.class).setIdent(ItemIdentifier.get(id, meta, null)).setName("-").getPacket(), player);
 			}
 		}
 	}

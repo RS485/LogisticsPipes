@@ -10,9 +10,11 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.ItemMessage;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.client.FMLClientHandler;
 
+@Accessors(chain=true)
 public class ComponentList extends ModernPacket {
 
 	@Getter

@@ -1,9 +1,8 @@
 package logisticspipes.gui.orderer;
 
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketRequestSubmit;
 import logisticspipes.network.packets.orderer.RequestLiquidOrdererRefreshPacket;
+import logisticspipes.network.packets.orderer.SubmitLiquidRequestPacket;
 import logisticspipes.pipes.PipeLiquidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
@@ -31,8 +30,8 @@ public class LiquidGuiOrderer extends GuiOrderer {
 				editsearchb = false;
 			}
 			clickWasButton = true;
-//TODO Must be handled manualy
-			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount, NetworkConstants.LIQUID_REQUEST_SUBMIT).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit( NetworkConstants.LIQUID_REQUEST_SUBMIT, xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitLiquidRequestPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 			refreshItems();
 		} else {
 			super.actionPerformed(guibutton);

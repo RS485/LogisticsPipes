@@ -39,16 +39,16 @@ public class MissingItems extends ModernPacket {
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(),!isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen,FMLClientHandler.instance().getClient().thePlayer);
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(),!isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if(isFlag()) {
 			for (final ItemMessage items : getItems()) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Missing: " + items);
+				player.addChatMessage("Missing: " + items);
 			}
 		} else {
 			for (final ItemMessage items : getItems()) {
-				FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Requested: " + items);
+				player.addChatMessage("Requested: " + items);
 			}
-			FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Request successful!");
+			player.addChatMessage("Request successful!");
 		}
 	}
 	@Override

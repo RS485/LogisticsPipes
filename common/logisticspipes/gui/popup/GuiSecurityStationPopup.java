@@ -85,7 +85,7 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 			NBTTagCompound nbt = new NBTTagCompound();
 			activeSetting.writeToNBT(nbt);
 //TODO 		MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord).getPacket());
 		} else if(button.id == 5) {
 			this.exitGui();
 		} else {

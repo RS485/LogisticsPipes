@@ -49,7 +49,11 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 			data.writeByte(-1); // mark packet end
 		} else if(stackList != null) {
 			data.writeByte(0);
-			
+			for (int i = 0; i < stackList.size(); i++) {
+				data.writeByte(i);
+				sendItemStack(stackList.get(i), data);
+			}
+			data.writeByte(-1); // mark packet end
 		} else if(identList != null) {
 			data.writeByte(1);
 			for(ItemIdentifierStack stack:identList) {

@@ -10,6 +10,8 @@ package logisticspipes.gui.orderer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -99,6 +101,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		listbyserver = true;
 		_allItems.clear();
 		_allItems.addAll(allItems);
+		Collections.sort(_allItems, new ItemIdentifierStack.orderedComparitor());
 		keepLastItemSelected();
 	}
 

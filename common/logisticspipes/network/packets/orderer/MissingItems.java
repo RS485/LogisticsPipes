@@ -3,6 +3,7 @@ package logisticspipes.network.packets.orderer;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
@@ -20,7 +21,7 @@ public class MissingItems extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<ItemMessage> items;
+	private List<ItemMessage> items = new ArrayList<ItemMessage>();
 	
 	@Setter
 	@Getter

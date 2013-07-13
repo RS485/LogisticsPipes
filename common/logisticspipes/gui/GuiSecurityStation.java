@@ -96,7 +96,7 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityCardPacket.class).setInteger(button.id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord).getPacket());
 		} else if(button.id == 4) {
 			if (searchinput1+searchinput2 != null && ((searchinput1+searchinput2).length() != 0)) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchinput1 + searchinput2).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.xCoord).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationOpenPlayerRequest.class).setString(searchinput1 + searchinput2).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord).getPacket());
 			}
 		} else if(button.id == 5) {
 			_tile.allowCC = !_tile.allowCC;

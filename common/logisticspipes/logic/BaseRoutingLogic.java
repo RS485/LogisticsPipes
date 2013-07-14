@@ -18,9 +18,12 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
@@ -71,7 +74,13 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		}
 		if (entityplayer.getCurrentEquippedItem() == null) {
 			if (!entityplayer.isSneaking()) return false;
-			//getRoutedPipe().getRouter().displayRoutes();
+			if(MainProxy.isClient(entityplayer.worldObj)) {
+				if(!LogisticsHUDRenderer.instance().hasLasers()) { //TODO remove old Lasers
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+				} else {
+					LogisticsHUDRenderer.instance().resetLasers();
+				}
+			}
 			if (LogisticsPipes.DEBUG) {
 				doDebugStuff(entityplayer);
 			}

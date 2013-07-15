@@ -43,7 +43,7 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 	
 	private SubGuiScreen subGui;
 	
-	private List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
+	protected List<IRenderSlot> slots = new ArrayList<IRenderSlot>();
 
 	public KraphtBaseGuiScreen(int xSize, int ySize, int xCenterOffset, int yCenterOffset){
 		this(new DummyContainer(null, null), xSize, ySize, xCenterOffset, yCenterOffset);

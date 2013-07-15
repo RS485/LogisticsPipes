@@ -29,7 +29,10 @@ import logisticspipes.utils.gui.IItemSearch;
 import logisticspipes.utils.gui.ISubGuiControler;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.renderer.OpenGlHelper;
+import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -38,6 +41,7 @@ import net.minecraft.item.ItemStack;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 
 public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSearch {
 
@@ -206,8 +210,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			}
 		}
 		
-		int ppi = 0;
-		
 		int panelxSize = 20;
 		int panelySize = 20;
 
@@ -217,61 +219,95 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		//}
 		
 		tooltip = null;
+
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
+
+		drawRect(10, 18, xSize - 10, ySize - 84, Colors.MiddleGrey);
+		int x = 12;
+		int y = 20;
+		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
+		int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
 		
-		drawRect(guiLeft + 6, guiTop + 16, right - 12, bottom - 84, Colors.MiddleGrey);
-		
-		if(!listbyserver) {
-			int graphic = ((int)(System.currentTimeMillis() / 250) % 5);
-//			GL11.glBindTexture(GL11.GL_TEXTURE_2D, this.mc.renderEngine.getTexture());
+		if (!listbyserver) {
+			int graphic = ((int) (System.currentTimeMillis() / 250) % 5);
+			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,
+			// this.mc.renderEngine.getTexture());
 			mc.renderEngine.bindTexture("/gui/icons.png");
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-            Tessellator var9 = Tessellator.instance;
-            var9.startDrawingQuads();
-            int xPosition = xCenter - 50;
-            int yPosition = guiTop + 40;
-            var9.addVertexWithUV(xPosition			, yPosition + 100		, zLevel, 0.04	, 0.72 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition + 100	, yPosition + 100		, zLevel, 0.08	, 0.72 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition + 100	, yPosition				, zLevel, 0.08	, 0.69 + (graphic * 0.03125));
-            var9.addVertexWithUV(xPosition			, yPosition				, zLevel, 0.04	, 0.69 + (graphic * 0.03125));
-            var9.draw();
+			Tessellator tesselator = Tessellator.instance;
+			tesselator.startDrawingQuads();
+			int xPosition = (xSize / 2) - 50;
+			int yPosition = 40;
+			tesselator.addVertexWithUV(xPosition, yPosition + 100, zLevel, 0.04, 0.72 + (graphic * 0.03125));
+			tesselator.addVertexWithUV(xPosition + 100, yPosition + 100, zLevel, 0.08, 0.72 + (graphic * 0.03125));
+			tesselator.addVertexWithUV(xPosition + 100, yPosition, zLevel, 0.08, 0.69 + (graphic * 0.03125));
+			tesselator.addVertexWithUV(xPosition, yPosition, zLevel, 0.04, 0.69 + (graphic * 0.03125));
+			tesselator.draw();
 		} else {
-			for(ItemIdentifierStack itemStack : _allItems) {
-				ItemIdentifier item = itemStack.getItem();
-				if(!itemSearched(item)) continue;
-				ppi++;
+			RenderHelper.enableGUIStandardItemLighting();
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
+			
+			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
+				ItemStack itemstack = itemIdentifierStack.makeNormalStack();
+				int realX = guiLeft + x;
+				int realY = guiTop + y;
 				
-				if (ppi <= 70 * page) continue;
-				if (ppi > 70 * (page+1)) break;
-				int row = ((ppi - 1) % 70) / 10;
-				int column = (ppi - 1) % 10;
-				ItemStack st = itemStack.unsafeMakeNormalStack();
-				int x = guiLeft + 10 + panelxSize * column;
-				int y = guiTop + 18 + panelySize * row;
-	
-				GL11.glDisable(2896 /*GL_LIGHTING*/);
-				int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
-	            int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
-				
-            	if (mouseX >= x && mouseX < x + panelxSize &&
-						mouseY >= y && mouseY < y + panelySize) {
-					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.Black);
-					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-					
-					tooltip = new Object[]{mouseX,mouseY,st};
+				if (mouseX >= realX && mouseX < realX + panelxSize && mouseY >= realY && mouseY < realY + panelySize) {
+					drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
+					drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.DarkGrey);
+
+					tooltip = new Object[] { mouseX, mouseY, itemstack };
+				}
+
+				if (lastClickedx >= realX && lastClickedx < realX + panelxSize && lastClickedy >= realY && lastClickedy < realY + panelySize) {
+					selectedItem = itemIdentifierStack;
+					drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
+					drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
+					drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
+					specialItemRendering(itemIdentifierStack.getItem(), x, y);
+				}
+
+				String s;
+				if (itemstack.stackSize == 1) {
+					s = "";
+				} else if (itemstack.stackSize < 1000) {
+					s = itemstack.stackSize + "";
+				} else if (itemstack.stackSize < 100000) {
+					s = itemstack.stackSize / 1000 + "K";
+				} else if (itemstack.stackSize < 1000000) {
+					s = "0M" + itemstack.stackSize / 100000;
+				} else {
+					s = itemstack.stackSize / 1000000 + "M";
 				}
 				
-				if (lastClickedx >= x && lastClickedx < x + panelxSize &&
-						lastClickedy >= y && lastClickedy < y + panelySize){
-					selectedItem = itemStack;
-					drawRect(x - 4, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
-					drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
-					specialItemRendering(item, x, y);
+
+				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
+				if (font == null)
+					font = fontRenderer;
+				GL11.glEnable(GL11.GL_LIGHTING);
+				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemstack, x, y);
+				// With empty string, because damage value indicator struggles
+				// with the depth
+				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemstack, x, y, "");
+				GL11.glDisable(GL11.GL_LIGHTING);
+
+				// Draw number
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);
+
+				x += panelxSize;
+				if (x > 200) {
+					x = 12;
+					y += panelySize;
 				}
 			}
-			BasicGuiHelper.renderItemIdentifierStackListIntoGui(_allItems, this, page, guiLeft + 10, guiTop + 18, 10, 70, panelxSize, panelySize, mc, true, false);
+			
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
-		GL11.glDisable(2896 /*GL_LIGHTING*/);
+		GL11.glPopMatrix();
 	}
 	
 	public abstract void specialItemRendering(ItemIdentifier item, int x, int y);

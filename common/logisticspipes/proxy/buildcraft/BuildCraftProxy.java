@@ -297,7 +297,7 @@ public class BuildCraftProxy {
 			
 			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
 		}
-		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID) {
+		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID && defaultID != Configs.LOGISTICSPIPE_LIQUID_CONNECTOR) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);
 		}
 		pipelist.add(res);

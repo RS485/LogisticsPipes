@@ -51,7 +51,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public final LinkedList<ItemIdentifierStack>_allItems = new LinkedList<ItemIdentifierStack>(); 
 	protected String searchinput1 = "";
 	protected String searchinput2 = "";
-	protected boolean editsearch = false;
+	protected boolean editsearch = true;
 	protected boolean editsearchb = false;
 	protected boolean displaycursor = true;
 	protected long oldSystemTime = 0;
@@ -59,8 +59,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	
 	protected RenderItem renderItem = new RenderItem();
 	
-	protected int lastClickedx = 0;
-	protected int lastClickedy = 0;
+	protected int lastClickedx = -10000000;
+	protected int lastClickedy = -10000000;
 	protected int lastClickedk = 0;
 	
 	protected final String _title = "Request items";
@@ -625,7 +625,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 
 	@Override
 	protected void keyTyped(char c, int i) {
-		if(editsearch) {
+		// Track everything except Escape when in search bar
+		if(editsearch && i != 1) {
 			if (c == 13) {
 				editsearch = false;
 				return;
@@ -650,8 +651,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					searchinput1 += searchinput2.substring(0,1);
 					searchinput2 = searchinput2.substring(1);
 				}
-			} else if(i == 1) { //ESC
-				editsearch = false;
 			} else if(i == 28) { //Enter
 				editsearch = false;
 			} else if(i == 199) { //Pos

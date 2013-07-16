@@ -39,10 +39,6 @@ public interface IRouter {
 	public boolean isInDim(int dimension);
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
 	public UUID getId();
-	@Deprecated
-	public void displayRoutes();
-	@Deprecated
-	public void displayRouteTo(int r);
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public LogisticsModule getLogisticsModule();

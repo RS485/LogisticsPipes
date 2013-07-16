@@ -890,15 +890,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			for(IFilter f:filters) {
 				if(f.blockPower()) canPassPower = false;
 			}
-			if(canPassPower) {
-				IRouter center = r.destination.getRouter(ForgeDirection.UNKNOWN);
-				if(center != null) {
+			IRouter center = r.destination.getRouter(ForgeDirection.UNKNOWN);
+			if(center != null) {
+				if(canPassPower) {
 					addAll(power, center.getPowerProvider());
 				}
+				List<ILogisticsPowerProvider> list = getRoutedPowerProviders(center, used, filters);
+				addAll(power, list);
 			}
-			List<ILogisticsPowerProvider> list = getRoutedPowerProviders(r.destination.getRouter(ForgeDirection.UNKNOWN), used, filters);
 			filters.remove(filter);
-			addAll(power, list);
 		}
 		return power;
 	}

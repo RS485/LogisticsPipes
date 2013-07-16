@@ -34,7 +34,7 @@ import buildcraft.transport.pipes.PipeStructureCobblestone;
 /**
  * Examines all pipe connections and their forks to locate all connected routers
  */
-class PathFinder {
+public class PathFinder {
 	/**
 	 * Recurse through all exists of a pipe to find instances of PipeItemsRouting. maxVisited and maxLength are safeguards for
 	 * recursion runaways.
@@ -55,7 +55,7 @@ class PathFinder {
 		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), side);
 	}
 	
-	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter) {
+	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter, EnumSet<PipeRoutingConnectionType> connectionType) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, pathPainter);
 		newSearch.setVisited.add(startPipe);
 		Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, startOrientation);
@@ -65,7 +65,7 @@ class PathFinder {
 			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}
 		
-		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
+		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, connectionType, startOrientation);
 	}
 	
 	private PathFinder(int maxVisited, int maxLength, IPaintPath pathPainter) {
@@ -243,9 +243,8 @@ class PathFinder {
 						pipeEntry.getValue().distanceToDestination += resistance;
 					}
 				}
-				if (foundPipes.size() > beforeRecurseCount && pathPainter != null){
-					Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction);
-					pathPainter.addLaser(startPipe.worldObj, p, direction);
+				if (foundPipes.size() > beforeRecurseCount && pathPainter != null) {
+					pathPainter.addLaser(startPipe.worldObj, new LaserData(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction, connectionFlags));
 				}
 			}
 		}

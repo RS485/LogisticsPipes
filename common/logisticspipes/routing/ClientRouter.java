@@ -117,18 +117,6 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void displayRoutes() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void displayRouteTo(int r) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void inboundItemArrived(RoutedEntityItem routedEntityItem) {
 		//Not On Client Side
 	}

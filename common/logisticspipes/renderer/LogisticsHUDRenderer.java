@@ -3,6 +3,7 @@ package logisticspipes.renderer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,10 +16,13 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.LaserData;
+import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.GuiIngameForge;
 
@@ -34,6 +38,8 @@ public class LogisticsHUDRenderer {
 	private double lastZPos = 0;
 	
 	private ArrayList<IHeadUpDisplayBlockRendererProvider> providers = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
+	
+	private List<LaserData> lasers = new ArrayList<LaserData>();
 	
 	private static LogisticsHUDRenderer renderer = null;
 
@@ -217,6 +223,138 @@ public class LogisticsHUDRenderer {
 	        displayOneView(thisIsLast, config, partialTick);
 	        GL11.glPopMatrix();
 		}
+		
+		//Render Laser
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		//GL11.glEnable(GL11.GL_LIGHTING);
+		for(LaserData data: lasers) {
+			GL11.glPushMatrix();
+			
+			double x = data.getPosX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
+			double y = data.getPosY() + 0.5 - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
+			double z = data.getPosZ() + 0.5 - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
+			GL11.glTranslatef((float)x, (float)y, (float)z);
+			
+			switch(data.getDir()) {
+				case NORTH:
+					GL11.glRotatef(90.0F, 0.0F, 1.0F, 0.0F);
+					break;
+				case SOUTH:
+					GL11.glRotatef(-90.0F, 0.0F, 1.0F, 0.0F);
+					break;
+				case EAST:
+					break;
+				case WEST:
+					GL11.glRotatef(180.0F, 0.0F, 1.0F, 0.0F);
+					break;
+				case UP:
+					GL11.glRotatef(90.0F, 0.0F, 0.0F, 1.0F);
+					break;
+				case DOWN:
+					GL11.glRotatef(-90.0F, 0.0F, 0.0F, 1.0F);
+					break;
+				default:
+					break;
+			}
+
+			GL11.glScalef(0.01F, 0.01F, 0.01F);
+
+			Tessellator tessellator = Tessellator.instance;
+
+			for(float i = 0; i < 6 * data.getLength(); i++) {
+				setColor(i, data.getConnectionType());
+				
+				float shift = 100f * i / 6f;
+				float start = 0.0f;
+				if(data.isStartPipe() && i == 0) {
+					start = -6.0f;
+				}
+
+				tessellator.startDrawingQuads();
+				tessellator.addVertex(19.7f + shift        , 3.0f, -3.0f);
+				tessellator.addVertex( 3.0f + shift + start, 3.0f, -3.0f);
+				tessellator.addVertex( 3.0f + shift + start, 3.0f,  3.0f);
+				tessellator.addVertex(19.7f + shift        , 3.0f,  3.0f);
+				tessellator.draw();
+
+				tessellator.startDrawingQuads();
+				tessellator.addVertex(19.7f + shift        , -3.0f,  3.0f);
+				tessellator.addVertex( 3.0f + shift + start, -3.0f,  3.0f);
+				tessellator.addVertex( 3.0f + shift + start, -3.0f, -3.0f);
+				tessellator.addVertex(19.7f + shift        , -3.0f, -3.0f);
+				tessellator.draw();
+
+				tessellator.startDrawingQuads();
+				tessellator.addVertex(19.7f + shift        ,  3.0f, 3.0f);
+				tessellator.addVertex( 3.0f + shift + start,  3.0f, 3.0f);
+				tessellator.addVertex( 3.0f + shift + start, -3.0f, 3.0f);
+				tessellator.addVertex(19.7f + shift        , -3.0f, 3.0f);
+				tessellator.draw();
+
+				tessellator.startDrawingQuads();
+				tessellator.addVertex(19.7f + shift        , -3.0f, -3.0f);
+				tessellator.addVertex( 3.0f + shift + start, -3.0f, -3.0f);
+				tessellator.addVertex( 3.0f + shift + start,  3.0f, -3.0f);
+				tessellator.addVertex(19.7f + shift        ,  3.0f, -3.0f);
+				tessellator.draw();
+			}
+
+			if(data.isStartPipe()) {
+				setColor(0, data.getConnectionType());
+				tessellator.startDrawingQuads();
+				tessellator.addVertex(-3.0f,  3.0f,  3.0f);
+				tessellator.addVertex(-3.0f,  3.0f, -3.0f);
+				tessellator.addVertex(-3.0f, -3.0f, -3.0f);
+				tessellator.addVertex(-3.0f, -3.0f,  3.0f);
+				tessellator.draw();
+			}
+
+			if(data.isFinalPipe()) {
+				setColor(6 * data.getLength() - 1, data.getConnectionType());
+				tessellator.startDrawingQuads();
+				tessellator.addVertex(100.0f * data.getLength() + 3f,  3.0f, -3.0f);
+				tessellator.addVertex(100.0f * data.getLength() + 3f,  3.0f,  3.0f);
+				tessellator.addVertex(100.0f * data.getLength() + 3f, -3.0f,  3.0f);
+				tessellator.addVertex(100.0f * data.getLength() + 3f, -3.0f, -3.0f);
+				tessellator.draw();
+			}
+
+			GL11.glPopMatrix();
+		}
+	}
+	
+	private void setColor(float i, EnumSet<PipeRoutingConnectionType> flags) {
+		GL11.glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+		if(!flags.isEmpty()) {
+			int k=0;
+			for(int j=0;j<PipeRoutingConnectionType.values.length;j++) {
+				PipeRoutingConnectionType type = PipeRoutingConnectionType.values[j];
+				if(flags.contains(type)) {
+					k++;
+				}
+				if(k - 1 == (int) i % flags.size()) {
+					setColor(type);
+				}
+			}
+		}
+	}
+	
+	private void setColor(PipeRoutingConnectionType type) {
+		switch (type) {
+			case canRouteTo:
+				GL11.glColor4f(1.0f, 1.0f, 0.0f, 0.5f);
+				break;
+			case canRequestFrom:
+				GL11.glColor4f(0.0f, 1.0f, 0.0f, 0.5f);
+				break;
+			case canPowerFrom:
+				GL11.glColor4f(0.0f, 0.0f, 1.0f, 0.5f);
+				break;
+			default:
+		}
 	}
 	
 	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config, float partialTick) {
@@ -234,9 +372,7 @@ public class LogisticsHUDRenderer {
 		
 		GL11.glScalef(0.01F, 0.01F, 1F);
 		
-		float light = mc.theWorld.getBlockLightValue(renderer.getX(), renderer.getY(), renderer.getZ());
-		boolean dark = light < 11;
-		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)),dark, mc, config);
+		renderer.getRenderer().renderHeadUpDisplay(Math.hypot(x,Math.hypot(y, z)), false, mc, config);
 	}
 	
 	private float getAngle(double x, double y) {
@@ -345,6 +481,19 @@ public class LogisticsHUDRenderer {
 	
 	private boolean displayHUD() {
 		return playerWearsHUD() && FMLClientHandler.instance().getClient().currentScreen == null && FMLClientHandler.instance().getClient().gameSettings.thirdPersonView == 0 && !FMLClientHandler.instance().getClient().gameSettings.hideGUI;
+	}
+	
+	public void resetLasers() {
+		lasers.clear();
+	}
+	
+	public void setLasers(List<LaserData> newLasers) {
+		lasers.clear();
+		lasers.addAll(newLasers);
+	}
+	
+	public boolean hasLasers() {
+		return !lasers.isEmpty();
 	}
 	
 	public static LogisticsHUDRenderer instance() {

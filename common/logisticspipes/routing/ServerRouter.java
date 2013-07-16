@@ -132,8 +132,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected LSA _myLsa = new LSA();
 
 	protected UpdateRouterRunnable updateThread = null;
-	
-	protected static RouteLaser _laser = new RouteLaser();
 
 	protected static final ReentrantReadWriteLock SharedLSADatabaseLock = new ReentrantReadWriteLock();
 	protected static final Lock SharedLSADatabasereadLock = SharedLSADatabaseLock.readLock();
@@ -180,7 +178,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		SharedLSADatabase = new LSA[0];
 		_lastLSAVersion = new int[0];
 		SharedLSADatabasewriteLock.unlock();
-		_laser = new RouteLaser();
 		simpleIdUsedSet.clear();
 		firstFreeId = 1;
 	}
@@ -598,16 +595,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			SharedLSADatabasereadLock.unlock();
 		}
 		routingTableUpdateWriteLock.unlock();
-	}
-	
-	@Override
-	public void displayRoutes(){
-		_laser.displayRoute(this);
-	}
-	
-	@Override
-	public void displayRouteTo(int r){
-		_laser.displayRoute(this, r);
 	}
 	
 	@Override

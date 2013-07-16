@@ -91,6 +91,7 @@ public class CCHelper {
 	}
 	
 	public static Object checkForAnnotations(Object object) {
+		if(object == null) return null;
 		CCInfos info = ccMapings.get(object.getClass());
 		if(info == null) {
 			info = new CCInfos();

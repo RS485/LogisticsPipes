@@ -223,7 +223,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
 
-		drawRect(10, 18, xSize - 10, ySize - 84, Colors.MiddleGrey);
+		drawRect(10, 18, xSize - 10, ySize - 82, Colors.MiddleGrey);
+		int ppi = 0;
 		int x = 12;
 		int y = 20;
 		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
@@ -251,7 +252,14 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
 			
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
-				ItemStack itemstack = itemIdentifierStack.makeNormalStack();
+				ItemIdentifier item = itemIdentifierStack.getItem();
+				if(!itemSearched(item)) continue;
+				ppi++;
+
+				if (ppi <= 70 * page) continue;
+				if (ppi > 70 * (page+1)) break;
+				
+				ItemStack itemstack = itemIdentifierStack.unsafeMakeNormalStack();
 				int realX = guiLeft + x;
 				int realY = guiTop + y;
 				
@@ -287,15 +295,15 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
 				if (font == null)
 					font = fontRenderer;
+				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				GL11.glEnable(GL11.GL_LIGHTING);
 				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemstack, x, y);
-				// With empty string, because damage value indicator struggles
-				// with the depth
+				// With empty string, because damage value indicator struggles with the depth
 				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemstack, x, y, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
+				GL11.glDisable(GL11.GL_DEPTH_TEST);
 
 				// Draw number
-				GL11.glDisable(GL11.GL_DEPTH_TEST);
 				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);
 
 				x += panelxSize;

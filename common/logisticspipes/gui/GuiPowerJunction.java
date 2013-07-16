@@ -3,8 +3,8 @@ package logisticspipes.gui;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketCoordinates;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.PowerJunctionCheatPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.client.gui.GuiButton;
@@ -64,7 +64,8 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 	protected void actionPerformed(GuiButton par1GuiButton) {
 		if(par1GuiButton.id == 0) {
 			junction.addEnergy(100000);
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CHEATJUNCTIONPOWER, junction.getX(), junction.getY(), junction.getZ()).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CHEATJUNCTIONPOWER, junction.getX(), junction.getY(), junction.getZ()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(PowerJunctionCheatPacket.class).setPosX(junction.getX()).setPosY(junction.getY()).setPosZ(junction.getZ()).getPacket());
 		} else {
 			super.actionPerformed(par1GuiButton);		
 		}

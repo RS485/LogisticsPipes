@@ -7,8 +7,8 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.config.Configs;
 import logisticspipes.main.LogisticsEventListener;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketRenderFX;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
@@ -227,7 +227,7 @@ public class MainProxy {
 	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
 		if(!Configs.ENABLE_PARTICLE_FX) return;
 		if(MainProxy.isServer(dimension)) {
-			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), new PacketRenderFX(NetworkConstants.PARTICLE_FX_RENDER_DATA, xCoord, yCoord, zCoord, particle, amount).getPacket());
+			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), PacketHandler.getPacket(ParticleFX.class).setInteger2(amount).setInteger(particle).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		} else {
 			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
 		}
@@ -242,3 +242,4 @@ public class MainProxy {
 		return new FakePlayer(tile);
 	}
 }
+

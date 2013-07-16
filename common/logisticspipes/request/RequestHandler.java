@@ -11,9 +11,9 @@ import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.logisticspipes.MessageManager;
-import logisticspipes.network.oldpackets.PacketItems;
-import logisticspipes.network.oldpackets.PacketRequestGuiContent;
-import logisticspipes.network.oldpackets.PacketRequestSubmit;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.MissingItems;
+import logisticspipes.network.packets.orderer.OrdererContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -23,7 +23,6 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import cpw.mods.fml.common.network.Player;
@@ -36,17 +35,17 @@ public class RequestHandler {
 		CraftOnly;
 	}
 	
-	public static void request(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
+	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		if(!pipe.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
-		RequestTree.request(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe
+		RequestTree.request(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.stackSize), pipe
 				, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
-				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
+				list.add(new ItemMessage(stack.getItem().itemID, stack.getItem().itemDamage, stack.stackSize, stack.getItem().tag));
 				MessageManager.requested(player, list);
 			}
 			
@@ -62,10 +61,10 @@ public class RequestHandler {
 		});
 	}
 	
-	public static void simulate(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe) {
+	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		final LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
 		final LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
-		RequestTree.simulate(ItemIdentifier.get(packet.itemID, packet.dataValue, packet.tag).makeStack(packet.amount), pipe, new RequestLog() {
+		RequestTree.simulate(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.stackSize), pipe, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				//Not needed
@@ -84,7 +83,7 @@ public class RequestHandler {
 		MessageManager.simulated(player, used, missing);
 	}
 	
-	public static void refresh(EntityPlayerMP player, CoreRoutedPipe pipe, DisplayOptions option) {
+	public static void refresh(EntityPlayer player, CoreRoutedPipe pipe, DisplayOptions option) {
 		Map<ItemIdentifier, Integer> _availableItems;
 		LinkedList<ItemIdentifier> _craftableItems;
 		
@@ -109,7 +108,8 @@ public class RequestHandler {
 			if (_availableItems.containsKey(item)) continue;
 			_allItems.add(item.makeStack(0));
 		}
-		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+//TODO	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems).getPacket(), (Player)player);
 	}
 	
 
@@ -135,7 +135,8 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				MainProxy.sendPacketToPlayer(new PacketItems(items, false).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, items, false).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(items).setFlag(false).getPacket(), (Player)player);
 			}
 			
 			@Override
@@ -145,7 +146,8 @@ public class RequestHandler {
 			
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				MainProxy.sendPacketToPlayer(new PacketItems(list, true).getPacket(), (Player)player);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, list, true).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(list).setFlag(true).getPacket(), (Player)player);
 			}
 		},RequestTree.defaultRequestFlags);
 	}
@@ -181,22 +183,23 @@ public class RequestHandler {
 		return status[0];
 	}
 
-	public static void refreshLiquid(EntityPlayerMP player, CoreRoutedPipe pipe) {
+	public static void refreshLiquid(EntityPlayer player, CoreRoutedPipe pipe) {
 		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
-		MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(_allItems).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems).getPacket(), (Player)player);
 	}
 
-	public static void requestLiquid(final EntityPlayerMP player, final PacketRequestSubmit packet, CoreRoutedPipe pipe, IRequestLiquid requester) {
+	public static void requestLiquid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestLiquid requester) {
 		if(!pipe.useEnergy(10)) {
 			player.sendChatToPlayer("No Energy");
 			return;
 		}
 		
-		RequestTree.requestLiquid(LiquidIdentifier.get(packet.itemID, packet.dataValue) , packet.amount, requester, new RequestLog() {
+		RequestTree.requestLiquid(LiquidIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage) , stack.stackSize, requester, new RequestLog() {
 			@Override
 			public void handleSucessfullRequestOf(ItemMessage item) {
 				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
-				list.add(new ItemMessage(packet.itemID, packet.dataValue, packet.amount, packet.tag));
+				list.add(new ItemMessage(stack.getItem().itemID, stack.getItem().itemDamage, stack.stackSize, stack.getItem().tag));
 				MessageManager.requested(player, list);
 			}
 			

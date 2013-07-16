@@ -2,7 +2,9 @@ package logisticspipes.transport;
 
 import java.util.BitSet;
 
-import logisticspipes.network.oldpackets.PacketLiquidUpdate;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.network.packets.pipe.PipeLiquidUpdate;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidSection;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.item.ItemStack;
@@ -159,7 +161,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 				init = true;
 			}
 			if(clientSyncCounter < 0) clientSyncCounter = 0;
-			PacketLiquidUpdate packet = computeLiquidUpdate(init, true);
+			ModernPacket packet = computeLiquidUpdate(init, true);
 			if (packet != null) {
 				MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), packet.getPacket());
 			}
@@ -175,7 +177,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 	 *            The render cache change is persisted
 	 * @return PacketLiquidUpdate liquid update packet
 	 */
-	private PacketLiquidUpdate computeLiquidUpdate(boolean initPacket, boolean persistChange) {
+	private ModernPacket computeLiquidUpdate(boolean initPacket, boolean persistChange) {
 
 		boolean changed = false;
 		BitSet delta = new BitSet(21);
@@ -256,10 +258,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 		}
 
 		if (changed || initPacket) {
-			PacketLiquidUpdate packet = new PacketLiquidUpdate(xCoord, yCoord, zCoord, initPacket);
-			packet.renderCache = renderCache;
-			packet.delta = delta;
-			return packet;
+			return PacketHandler.getPacket(PipeLiquidUpdate.class).setRenderCache(renderCache).setDelta(delta).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setChunkDataPacket(initPacket);
 		}
 
 		return null;

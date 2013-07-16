@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class GuiReopenPacket extends CoordinatesPacket {
 	
 	@Getter
@@ -24,17 +24,17 @@ public class GuiReopenPacket extends CoordinatesPacket {
 		super.writeData(data);
 		data.writeInt(getGuiID());
 	}
-
+	
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
 		guiID = data.readInt();
 	}
-
+	
 	public GuiReopenPacket(int id) {
 		super(id);
 	}
-
+	
 	@Override
 	public void processPacket(EntityPlayer player) {
 		player.openGui(LogisticsPipes.instance, getGuiID(), player.worldObj, getPosX(), getPosY(), getPosZ());
@@ -46,3 +46,4 @@ public class GuiReopenPacket extends CoordinatesPacket {
 	}
 	
 }
+

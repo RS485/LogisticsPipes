@@ -20,8 +20,8 @@ import java.util.WeakHashMap;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketStringList;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.SecurityStationAuthorizedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
@@ -339,12 +339,14 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	
 	@Override
 	public void sendClientAuthorizationList() {
-		MainProxy.sendToAllPlayers(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket());		
+//TODO 	MainProxy.sendToAllPlayers(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket());		
+		MainProxy.sendToAllPlayers(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized).getPacket());
 	}
 	
 	@Override
 	public void sendClientAuthorizationList(EntityPlayer player) {
-		MainProxy.sendCompressedPacketToPlayer(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket(), (Player)player);		
+//TODO 	MainProxy.sendCompressedPacketToPlayer(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket(), (Player)player);		
+		MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized).getPacket(), (Player)player);
 	}
 
 	@Override

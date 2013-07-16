@@ -8,9 +8,9 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.ISlotCheck;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketCoordinates;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.InvSysConContentRequest;
+import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -117,8 +117,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	}
 	
 	private void refreshPacket() {
-		PacketCoordinates packet = new PacketCoordinates(NetworkConstants.INC_SYS_CON_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord);
-		MainProxy.sendPacketToServer(packet.getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConContentRequest.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 	}
 	
 	private void pageDown() {
@@ -166,7 +165,8 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			}
 		} else if(button.id == 5) {
 			pipe.resistance = localresistance;
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 		}
 	}
 

@@ -11,8 +11,8 @@ package logisticspipes.gui;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicSupplier;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketCoordinates;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.SupplierPipeModePacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
@@ -75,11 +75,11 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		// TODO Auto-generated method stub
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeModePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
 		}
 		super.actionPerformed(guibutton);
 		

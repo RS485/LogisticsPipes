@@ -9,8 +9,8 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
 import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.LiquidSupplierAmount;
 import logisticspipes.pipes.PipeLiquidSupplierMk2;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
@@ -20,7 +20,6 @@ import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
@@ -211,12 +210,12 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 		}
 	}
 
-	public void changeLiquidAmount(int change, EntityPlayerMP player) {
+	public void changeLiquidAmount(int change, EntityPlayer player) {
 		amount += change;
 		if(amount <= 0) {
 			amount = 0;
 		}
-		final PacketPipeInteger packet = new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, xCoord, yCoord, zCoord, amount);
-		MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, xCoord, yCoord, zCoord, amount).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(amount).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
 	}
 }

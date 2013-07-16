@@ -11,7 +11,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class DebugPanelOpen extends ModernPacket {
 	
 	@Setter
@@ -46,3 +46,4 @@ public class DebugPanelOpen extends ModernPacket {
 		}
 	}
 }
+

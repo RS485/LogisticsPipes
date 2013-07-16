@@ -7,18 +7,22 @@ import logisticspipes.LogisticsPipes;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.relauncher.IClassTransformer;
+import cpw.mods.fml.relauncher.Side;
 
 public class LogisticsClassTransformer implements IClassTransformer {
 	
 	public static boolean BUILDCRAFT_CHANGED = false;
-	
+
 	private abstract class LocalMethodVisitor extends MethodNode {
 
 		public LocalMethodVisitor(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
@@ -130,6 +134,27 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							}
 						} else {
 							throw new UnsupportedOperationException("Can't parse the annotation correctly");
+						}
+					} else if(a.desc.equals("Llogisticspipes/asm/ClientSideOnlyMethodContent;")) {
+						if(FMLCommonHandler.instance().getSide().equals(Side.SERVER)) {
+							m.instructions.clear();
+							m.localVariables.clear();
+							m.tryCatchBlocks.clear();
+							m.visitCode();
+							Label l0 = new Label();
+							m.visitLabel(l0);
+							m.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisitcsASMHookClass", "callingClearedMethod", "()V");
+							Label l1 = new Label();
+							m.visitLabel(l1);
+							m.visitInsn(Opcodes.RETURN);
+							Label l2 = new Label();
+							m.visitLabel(l2);
+							m.visitLocalVariable("this", "Llogisticspipes/network/packets/DummyPacket;", null, l0, l2, 0);
+							m.visitLocalVariable("player", "Lnet/minecraft/entity/player/EntityPlayer;", null, l0, l2, 1);
+							m.visitMaxs(0, 2);
+							m.visitEnd();
+							changed = true;
+							break;
 						}
 					}
 				}

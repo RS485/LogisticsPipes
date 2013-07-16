@@ -1,8 +1,8 @@
 package logisticspipes.gui.modules;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.gui.GuiBackPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.client.gui.GuiScreen;
@@ -37,7 +37,8 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 		if (i == 1 || c == 'e') {
 			if (prevGuiID != -1) {
 				super.keyTyped(c,i);
-				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID + 10000).getPacket());
+//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID + 10000).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 			} else {
 				super.keyTyped(c, i);
 			}

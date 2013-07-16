@@ -3,8 +3,9 @@ package logisticspipes.gui.popup;
 import java.util.Collections;
 
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.SecurityAddCCIdPacket;
+import logisticspipes.network.packets.block.SecurityRemoveCCIdPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
@@ -182,7 +183,8 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		case 2: {
 			Integer id = Integer.valueOf(searchinput1 + searchinput2);
 			_tile.excludedCC.remove(id);
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REMOVE_CC_ID, _tile.xCoord, _tile.yCoord, _tile.zCoord, id).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REMOVE_CC_ID, _tile.xCoord, _tile.yCoord, _tile.zCoord, id).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRemoveCCIdPacket.class).setInteger(id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord).getPacket());
 			} break;
 		case 3: {
 			Integer id = Integer.valueOf(searchinput1 + searchinput2);
@@ -190,7 +192,8 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 				_tile.excludedCC.add(id);
 				Collections.sort(_tile.excludedCC);
 			}
-			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADD_CC_ID, _tile.xCoord, _tile.yCoord, _tile.zCoord, id).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADD_CC_ID, _tile.xCoord, _tile.yCoord, _tile.zCoord, id).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAddCCIdPacket.class).setInteger(id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord).getPacket());
 			} break;
 		case 4:
 			page--;

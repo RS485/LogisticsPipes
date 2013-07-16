@@ -4,14 +4,17 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import logisticspipes.LogisticsPipes;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain = true)
+@ToString
 public abstract class CoordinatesPacket extends ModernPacket {
 
 	public CoordinatesPacket(int id) {
@@ -53,16 +56,33 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @param clazz
 	 * @return TileEntity
 	 */
-	public <T extends TileEntity> T getTile(World world, Class<T> clazz) {
+	public <T> T getTile(World world, Class<T> clazz) {
 		if (world == null) {
 			return null;
 		}
 		if (!world.blockExists(getPosX(), getPosY(), getPosZ())) {
+			if(LogisticsPipes.DEBUG) {
+				LogisticsPipes.log.severe(this.toString());
+				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
+			}
 			return null;
 		}
 
 		final TileEntity tile = world.getBlockTileEntity(getPosX(), getPosY(), getPosZ());
-		if(!(clazz.isAssignableFrom(tile.getClass()))) return null;
+		if(tile != null) {
+			if(!(clazz.isAssignableFrom(tile.getClass()))) {
+				if(LogisticsPipes.DEBUG) {
+					LogisticsPipes.log.severe(this.toString());
+					new RuntimeException("Couldn't find " + clazz.getName() + ", found " + tile.getClass()).printStackTrace();
+				}
+				return null;
+			}
+		} else {
+			if(LogisticsPipes.DEBUG) {
+				LogisticsPipes.log.severe(this.toString());
+				new RuntimeException("Couldn't find " + clazz.getName()).printStackTrace();
+			}
+		}
 		return (T) tile;
 	}
 

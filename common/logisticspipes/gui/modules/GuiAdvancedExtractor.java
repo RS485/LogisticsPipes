@@ -10,8 +10,9 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.AdvancedExtractorIncludePacket;
+import logisticspipes.network.packets.module.AdvancedExtractorSneakyGuiPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -50,16 +51,20 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
 				if(slot >= 0) {
-					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 				} else {
-					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, 0, -1, 0, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());	
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, 0, -1, 0, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());	
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0).getPacket());
 				}
 				break;
 			case 1:
 				if(slot >= 0) {
-					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
 				} else {
-					MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, _advancedExtractor.getX(), -1, _advancedExtractor.getZ(), slot).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, _advancedExtractor.getX(), -1, _advancedExtractor.getZ(), slot).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(_advancedExtractor.getX()).setPosY(-1).setPosZ(_advancedExtractor.getZ()).getPacket());
 				}
 				break;
 		}

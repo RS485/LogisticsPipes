@@ -15,9 +15,10 @@ import logisticspipes.interfaces.IBlockWatchingHandler;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketCoordinates;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.block.PowerJunctionLevel;
+import logisticspipes.network.packets.hud.HUDStartBlockWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopBlockWatchingPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -94,8 +95,10 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 	
 	public void updateClients() {
-		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), guiListener);
-		MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), watcherList);
+//TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), guiListener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), guiListener);
+//TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), watcherList);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), watcherList);
 		lastUpdateStorage = internalStorage;
 	}
 	
@@ -236,9 +239,9 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		guiListener.remove(player);
 	}
 
-	public void handlePowerPacket(PacketPipeInteger packet) {
+	public void handlePowerPacket(int integer) {
 		if(MainProxy.isClient(this.worldObj)) {
-			internalStorage = packet.integer;
+			internalStorage = integer;
 		}
 	}
 
@@ -269,12 +272,14 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopBlockWatchingPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 	}
 
 	@Override

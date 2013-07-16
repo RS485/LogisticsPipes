@@ -18,8 +18,8 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.modules.SupplierPipeMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -64,7 +64,8 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
-			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)entityplayer);
 		}
 	}
 	

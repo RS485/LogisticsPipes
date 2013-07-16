@@ -12,8 +12,8 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketModuleInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -188,12 +188,15 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public void modeChanged() {
 		if(_world != null) {
 			if(MainProxy.isServer(_world.getWorld())) {
-				MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), localModeWatchers);
+//TODO 			MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), localModeWatchers);
+				MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 			} else {
-				MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
+//TODO 			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 			}
 		} else {
-			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 		}
 	}
 
@@ -208,7 +211,8 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), (Player)player);
+//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 	}
 
 	@Override

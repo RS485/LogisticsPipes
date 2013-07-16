@@ -12,13 +12,13 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import cpw.mods.fml.common.network.Player;
 
-@Accessors(chain=true)
+@Accessors(chain = true)
 public class DebugExpandPart extends ModernPacket {
 	
 	public DebugExpandPart(int id) {
 		super(id);
 	}
-
+	
 	@Getter
 	@Setter
 	public Integer[] tree;
@@ -27,7 +27,7 @@ public class DebugExpandPart extends ModernPacket {
 	public void readData(DataInputStream data) throws IOException {
 		int size = data.readInt();
 		tree = new Integer[size];
-		for(int i=0;i<size;i++) {
+		for(int i = 0; i < size; i++) {
 			tree[i] = data.readInt();
 		}
 	}
@@ -44,7 +44,7 @@ public class DebugExpandPart extends ModernPacket {
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		data.writeInt(tree.length);
-		for(int i=0;i<tree.length;i++) {
+		for(int i = 0; i < tree.length; i++) {
 			data.writeInt(tree[i]);
 		}
 	}
@@ -55,3 +55,4 @@ public class DebugExpandPart extends ModernPacket {
 	}
 	
 }
+

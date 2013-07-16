@@ -38,7 +38,6 @@ import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.GuiHandler;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
@@ -128,7 +127,7 @@ import cpw.mods.fml.relauncher.Side;
 				"after:ThermalExpansion;" +
 				"after:BetterStorage")
 @NetworkMod(
-		channels = {NetworkConstants.LOGISTICS_PIPES_CHANNEL_NAME},
+		channels = {LogisticsPipes.LOGISTICS_PIPES_CHANNEL_NAME},
 		packetHandler = PacketHandler.class,
 		clientSideRequired = true)
 public class LogisticsPipes {
@@ -141,6 +140,9 @@ public class LogisticsPipes {
 	
 	@Instance("LogisticsPipes|Main")
 	public static LogisticsPipes instance;
+	
+	//Network CHannel
+	public static final String LOGISTICS_PIPES_CHANNEL_NAME = "BCLP"; // BCLP: Buildcraft-Logisticspipes
 
 	//Log Requests
 	public static boolean DisplayRequests;

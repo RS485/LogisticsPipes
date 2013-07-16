@@ -30,3 +30,4 @@ public class DebugAskForTarget extends ModernPacket {
 		return new DebugAskForTarget(getId());
 	}
 }
+

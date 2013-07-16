@@ -15,7 +15,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 import logisticspipes.network.PacketHandler;
-import logisticspipes.network.oldpackets.PacketBufferTransfer;
+import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Pair;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -71,11 +71,11 @@ public class ServerPacketBufferHandlerThread {
 							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), 1024 * 32, player.getValue().length);
 							player.setValue(newbuffer);
 							byte[] compressed = compress(sendbuffer);
-							MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
+							MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket(), player.getKey());
 						}
 						byte[] sendbuffer = player.getValue();
 						byte[] compressed = compress(sendbuffer);
-						MainProxy.sendPacketToPlayer(new PacketBufferTransfer(compressed).getPacket(), player.getKey());
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket(), player.getKey());
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -243,14 +243,14 @@ public class ServerPacketBufferHandlerThread {
 			}
 		}
 
-		public void handlePacket(PacketBufferTransfer packet, Player player) {
+		public void handlePacket(byte[] content, Player player) {
 			synchronized(queue) {
 				LinkedList<byte[]> list=queue.get(player);
 				if(list == null) {
 					list = new LinkedList<byte[]>();
 					queue.put(player, list);
 				}
-				list.addLast(packet.content);
+				list.addLast(content);
 				queue.notify();
 			}
 		}
@@ -268,8 +268,8 @@ public class ServerPacketBufferHandlerThread {
 		serverCompressorThread.addPacketToCompressor(packet, player);
 	}
 
-	public void handlePacket(PacketBufferTransfer packet, Player player) {
-		serverDecompressorThread.handlePacket(packet, player);
+	public void handlePacket(byte[] content, Player player) {
+		serverDecompressorThread.handlePacket(content, player);
 	}
 
 	private static byte[] compress(byte[] content){

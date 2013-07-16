@@ -4,8 +4,8 @@ import java.util.List;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketInteger;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.pipe.RequestPipeDimension;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.renderer.texture.IconRegister;
@@ -82,7 +82,8 @@ public class RemoteOrderer extends Item {
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
 		if(pipe != null) {
 			if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
-				MainProxy.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
+//TODO 			MainProxy.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
 				par3EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.worldObj, pipe.xCoord, pipe.yCoord, pipe.zCoord);
 			}
 		}

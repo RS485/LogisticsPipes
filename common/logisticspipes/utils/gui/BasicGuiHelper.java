@@ -443,6 +443,7 @@ public class BasicGuiHelper {
     }
     
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
+    	if(icon == null) return;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
     	mc.renderEngine.bindTexture("/gui/items.png");
 		

@@ -30,6 +30,7 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 				stack[slot] = ps.items[0];
 			}
 		}
+//TODO Must be handled manualy
 		MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(c.xCoord).setPosY(c.yCoord).setPosZ(c.zCoord).getPacket());
 	}
 }

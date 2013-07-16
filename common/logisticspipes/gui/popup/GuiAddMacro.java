@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketItem;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.DiscContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -469,7 +469,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					list.appendTag(nbt);
 				}
 				this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
-				MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+//TODO 			MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord).getPacket());
 				this.exitGui();
 			} else if(macroItems.size() != 0) {
 				this.setSubGui(new GuiMessagePopup("Please enter a name"));

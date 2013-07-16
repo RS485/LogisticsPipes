@@ -13,11 +13,11 @@ import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.logic.BaseLogicLiquidSatellite;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleSatelite;
-import logisticspipes.network.NetworkConstants;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.network.oldpackets.PacketPipeInteger;
-import logisticspipes.network.oldpackets.PacketPipeInvContent;
+import logisticspipes.network.packets.hud.ChestContent;
+import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
+import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
 import logisticspipes.network.packets.satpipe.SatPipeSetID;
 import logisticspipes.pipes.basic.liquid.LiquidRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -112,7 +112,8 @@ public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiq
 		if(!itemList.equals(oldList) || force) {
 			oldList.clear();
 			oldList.addAll(itemList);
-			MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), itemList).getPacket(), localModeWatchers);
+//TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), itemList).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 		}
 	}
 	
@@ -130,12 +131,14 @@ public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiq
 
 	@Override
 	public void startWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 
 	@Override
 	public void stopWatching() {
-		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
 	}
 	
 	@Override
@@ -143,6 +146,7 @@ public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiq
 		if(mode == 1) {
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(((BaseLogicLiquidSatellite)this.logic).satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
+//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
 			updateInv(true);
 		} else {

@@ -9,15 +9,18 @@
 package logisticspipes.gui.orderer;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketRequestGuiContent;
-import logisticspipes.network.oldpackets.PacketRequestSubmit;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.RequestComponentPacket;
+import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -98,10 +101,11 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 
 	public abstract void refreshItems();
 
-	public void handlePacket(PacketRequestGuiContent packet) {
+	public void handlePacket(Collection<ItemIdentifierStack> allItems) {
 		listbyserver = true;
 		_allItems.clear();
-		_allItems.addAll(packet._allItems);
+		_allItems.addAll(allItems);
+		Collections.sort(_allItems, new ItemIdentifierStack.orderedComparitor());
 		keepLastItemSelected();
 	}
 
@@ -536,21 +540,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		clickWasButton = true;
 		
 		if (guibutton.id == 0 && selectedItem != null){
-			/*if(!CoreProxy.isRemote()) {
-				LogisticsRequest request = new LogisticsRequest(selectedItem, requestCount, this._itemRequester);
-				LinkedList<ItemMessage> errors = new LinkedList<ItemMessage>();
-				boolean result = LogisticsManager.Request(request, this._itemRequester.getRouter().getRoutersByCost(), errors, _entityPlayer);
-				if(result) {
-					handleRequestAnswer(new ItemMessage(selectedItem,requestCount),result, this, _entityPlayer);
-					refreshItems();
-				} else {
-					handleRequestAnswer(errors,result, this, _entityPlayer);
-				}
-				refreshItems();
-			} else {*/
-				MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
-				refreshItems();
-			//}
+//TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit(NetworkConstants.REQUEST_SUBMIT,xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			refreshItems();
 		} else if (guibutton.id == 1){
 			nextPage();
 		} else if (guibutton.id == 2) {
@@ -580,7 +572,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
-			MainProxy.sendPacketToServer(new PacketRequestSubmit(xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount, NetworkConstants.REQUEST_COMPONENTS).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit(NetworkConstants.REQUEST_COMPONENTS, xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
 		}
 		
 		super.actionPerformed(guibutton);

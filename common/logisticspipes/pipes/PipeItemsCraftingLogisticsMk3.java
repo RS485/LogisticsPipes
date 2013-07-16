@@ -8,8 +8,8 @@ import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCraftingMK3;
 import logisticspipes.interfaces.IChestContentReceiver;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
-import logisticspipes.network.NetworkConstants;
-import logisticspipes.network.oldpackets.PacketPipeInvContent;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.Textures;
@@ -143,14 +143,16 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
-		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), localModeWatchers);
+//TODO 	MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
 	}
 	
 	@Override
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		super.playerStartWatching(player, mode);
 		if(mode == 1) {
-			MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChestContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
 		}
 	}
 

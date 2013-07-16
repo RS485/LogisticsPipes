@@ -140,6 +140,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	public boolean blockActivated(World world, int i, int j, int k, EntityPlayer entityplayer) {
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == Configs.ItemHUDId + 256 && MainProxy.isServer()) {
 			if(getRoutedPowerProviders() != null && getRoutedPowerProviders().size() > 0) {
+//TODO Must be handled manualy
 				MainProxy.sendToAllPlayers(new Packet3Chat("Connected Power: " + getRoutedPowerProviders().get(0).getPowerLevel() + " LP"));
 			}
 			return true;

@@ -106,18 +106,24 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	}
 
 	private void keepLastItemSelected() {
-		if(selectedItem == null) return;
+		if (selectedItem == null)
+			return;
 		int itemindex = 0;
+		
+		// GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
+		// Field: 10, 18, xSize - 10, ySize - 82
 		int panelxSize = 20;
 		int panelySize = 20;
+		
 		ItemIdentifier selected = selectedItem.getItem();
-		for(ItemIdentifierStack itemStack : _allItems) {
+		for (ItemIdentifierStack itemStack : _allItems) {
 			ItemIdentifier item = itemStack.getItem();
-			if(!itemSearched(item)) continue;
-			if(item.equals(selected)) {
+			if (!itemSearched(item))
+				continue;
+			if (item.equals(selected)) {
 				page = itemindex / 70;
-				lastClickedy = guiTop + 18 + panelySize * ((itemindex % 70) / 10);
-				lastClickedx = guiLeft + 10 + panelxSize * (itemindex % 10);
+				lastClickedx = guiLeft + 10 + (panelxSize * (itemindex % 10));
+				lastClickedy = guiTop + 18 + (panelySize * ((itemindex % 70) / 10));
 				return;
 			}
 			itemindex++;
@@ -209,34 +215,27 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				editsearch = false;
 			}
 		}
-		
-		int panelxSize = 20;
-		int panelySize = 20;
-
-		//if (selectedItem != null){
-		//	String friendlyName = selectedItem.getFriendlyName();
-		//	fontRenderer.drawString(friendlyName, xCenter - fontRenderer.getStringWidth(friendlyName) / 2, bottom - 39, 0x404040);
-		//}
-		
-		tooltip = null;
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
-		
+		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+
 		drawRect(10, 18, xSize - 10, ySize - 82, Colors.MiddleGrey);
-		
+
+		tooltip = null;
 		int ppi = 0;
+		int panelxSize = 20;
+		int panelySize = 20;
 		int x = 12;
 		int y = 20;
 		int mouseX = Mouse.getX() * this.width / this.mc.displayWidth;
 		int mouseY = this.height - Mouse.getY() * this.height / this.mc.displayHeight - 1;
-		
+
 		if (!listbyserver) {
 			int graphic = ((int) (System.currentTimeMillis() / 250) % 5);
 			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,
 			// this.mc.renderEngine.getTexture());
 			mc.renderEngine.bindTexture("/gui/icons.png");
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			Tessellator tesselator = Tessellator.instance;
 			tesselator.startDrawingQuads();
 			int xPosition = (xSize / 2) - 50;
@@ -248,24 +247,27 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			tesselator.draw();
 		} else {
 			RenderHelper.enableGUIStandardItemLighting();
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			GL11.glDisable(GL11.GL_LIGHTING);
-			
+
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
-				if(!itemSearched(item)) continue;
+				if (!itemSearched(item))
+					continue;
 				ppi++;
 
-				if (ppi <= 70 * page) continue;
-				if (ppi > 70 * (page+1)) break;
-				
+				if (ppi <= 70 * page)
+					continue;
+				if (ppi > 70 * (page + 1))
+					break;
+
 				ItemStack itemstack = itemIdentifierStack.unsafeMakeNormalStack();
-				int realX = guiLeft + x;
-				int realY = guiTop + y;
-				
+				// -2 on both, because field starts there (see black rect below)
+				int realX = guiLeft + x - 2;
+				int realY = guiTop + y - 2;
+
 				if (mouseX >= realX && mouseX < realX + panelxSize && mouseY >= realY && mouseY < realY + panelySize) {
 					drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
 					drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.DarkGrey);
@@ -293,7 +295,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				} else {
 					s = itemstack.stackSize / 1000000 + "M";
 				}
-				
 
 				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
 				if (font == null)
@@ -318,7 +319,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 					y += panelySize;
 				}
 			}
-			
+
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 		GL11.glPopMatrix();

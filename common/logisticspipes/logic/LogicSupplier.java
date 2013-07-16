@@ -65,7 +65,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)entityplayer);
 		}
 	}
 	

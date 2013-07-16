@@ -85,11 +85,11 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
 //TODO 	MainProxy.sendPacketToPlayer(new PacketCoordinatesUUID(NetworkConstants.SECURITY_STATION_ID, xCoord, yCoord, zCoord, getSecId()).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationId.class).setUuid(getSecId()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player) player);
 		SimpleServiceLocator.securityStationManager.sendClientAuthorizationList();
 		listener.add(player);
 	}
@@ -230,7 +230,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		NBTTagCompound nbt = new NBTTagCompound();
 		setting.writeToNBT(nbt);
 //TODO 	MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.OPEN_SECURITY_PLAYER, nbt).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationOpenPlayer.class).setTag(nbt), (Player)player);
 	}
 
 	public void saveNewSecuritySettings(NBTTagCompound tag) {
@@ -258,13 +258,13 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public void changeCC() {
 		allowCC = !allowCC;
 //TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, xCoord, yCoord, zCoord, allowCC?1:0).getPacket(), listener);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationCC.class).setInteger(allowCC?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 	}
 
 	public void changeDestroy() {
 		allowAutoDestroy = !allowAutoDestroy;
 //TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, xCoord, yCoord, zCoord, allowAutoDestroy?1:0).getPacket(), listener);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), listener);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(allowAutoDestroy?1:0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 	}
 	
 	public void addCCToList(Integer id) {
@@ -286,7 +286,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 		}
 		tag.setTag("list", list);
 //TODO 	MainProxy.sendPacketToPlayer(new PacketNBT(NetworkConstants.SEND_CC_IDS, xCoord, yCoord, zCoord, tag).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationCCIDs.class).setTag(tag).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 	}
 
 	public void handleListPacket(NBTTagCompound tag) {

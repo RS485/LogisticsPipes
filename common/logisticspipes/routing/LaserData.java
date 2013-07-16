@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

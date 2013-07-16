@@ -36,9 +36,9 @@ public class LogicProvider extends BaseRoutingLogic{
 			//GuiProxy.openGuiProviderPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, worldObj, xCoord, yCoord, zCoord);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, xCoord, yCoord, zCoord, getExtractionMode().ordinal()).getPacket(), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)entityplayer);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, xCoord, yCoord, zCoord, isExcludeFilter() ? 1 : 0).getPacket(), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)entityplayer);
 		}	
 	}
 	

@@ -24,7 +24,7 @@ public class RequestRotationPacket extends CoordinatesPacket {
 		IRotationProvider tile = this.getTile(player.worldObj, IRotationProvider.class);
 		if(tile != null) {
 //TODO		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.ROTATION_SET, getPosX(), getPosY(), getPosZ(), tile.getRotation()).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setInteger(tile.getRotation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(Rotation.class).setInteger(tile.getRotation()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
 		}
 	}
 }

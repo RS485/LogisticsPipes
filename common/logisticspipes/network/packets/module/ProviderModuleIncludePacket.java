@@ -33,7 +33,7 @@ public class ProviderModuleIncludePacket extends IntegerCoordinatesPacket {
 					final ModuleProvider module = (ModuleProvider) dummy.getModule();
 					module.setFilterExcluded(!module.isExcludeFilter());
 //TODO 				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, getPosX(), getPosY(), getPosZ(), module.isExcludeFilter() ? 1 : 0).getPacket(), (Player) player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				}
 			}
 			return;
@@ -54,7 +54,7 @@ public class ProviderModuleIncludePacket extends IntegerCoordinatesPacket {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule();
 				module.setFilterExcluded( !module.isExcludeFilter());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, getPosX(), getPosY(), getPosZ(), module.isExcludeFilter() ? 1 : 0).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger(module.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		} else {
@@ -62,7 +62,7 @@ public class ProviderModuleIncludePacket extends IntegerCoordinatesPacket {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setFilterExcluded( !module.isExcludeFilter());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_INCLUDE_CONTENT, getPosX(), getPosY(), getPosZ(), (module.isExcludeFilter() ? 1 : 0)).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((module.isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleInclude.class).setInteger((module.isExcludeFilter() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		}

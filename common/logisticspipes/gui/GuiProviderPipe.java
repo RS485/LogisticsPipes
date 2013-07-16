@@ -64,11 +64,11 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeNextModePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeNextModePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
 		}
 		super.actionPerformed(guibutton);
 	}

@@ -32,7 +32,7 @@ public class AdvancedExtractorIncludePacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ModuleAdvancedExtractor) {
 					((ModuleAdvancedExtractor) dummy.getModule()).setItemsIncluded( !((ModuleAdvancedExtractor) dummy.getModule()).areItemsIncluded());
 //TODO				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, getPosX(), getPosY(), getPosZ(), 20, ((ModuleAdvancedExtractor) dummy.getModule()).areItemsIncluded() ? 1 : 0).getPacket(), (Player) player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(20).setInteger(((ModuleAdvancedExtractor) dummy.getModule()).areItemsIncluded() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(20).setInteger(((ModuleAdvancedExtractor) dummy.getModule()).areItemsIncluded() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				}
 			}
 			return;
@@ -53,7 +53,7 @@ public class AdvancedExtractorIncludePacket extends IntegerCoordinatesPacket {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule();
 				module.setItemsIncluded( !module.areItemsIncluded());
 //TODO			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, getPosX(), getPosY(), getPosZ(), -1, module.areItemsIncluded() ? 1 : 0).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(-1).setInteger(module.areItemsIncluded() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(-1).setInteger(module.areItemsIncluded() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		} else {
@@ -61,7 +61,7 @@ public class AdvancedExtractorIncludePacket extends IntegerCoordinatesPacket {
 				final ModuleAdvancedExtractor module = (ModuleAdvancedExtractor) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setItemsIncluded( !module.areItemsIncluded());
 //TODO			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, getPosX(), getPosY(), getPosZ(), slot - 1, (module.areItemsIncluded() ? 1 : 0)).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot - 1).setInteger((module.areItemsIncluded() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot - 1).setInteger((module.areItemsIncluded() ? 1 : 0)).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		}

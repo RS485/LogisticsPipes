@@ -16,7 +16,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class RequestUpdateNamesPacket extends ModernPacket {
@@ -50,7 +49,7 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 		SimpleServiceLocator.clientBufferHandler.setPause(true);
 		for(ItemIdentifier item:identList) {
 //TODO 		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) new PacketNameUpdatePacket(NetworkConstants.UPDATE_NAMES, item).getPacket());
-			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()));
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);
 		FMLClientHandler.instance().getClient().thePlayer.addChatMessage("Names in send Queue");

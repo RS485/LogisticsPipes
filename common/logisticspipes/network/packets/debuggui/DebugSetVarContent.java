@@ -59,5 +59,10 @@ public class DebugSetVarContent extends ModernPacket {
 	public ModernPacket template() {
 		return new DebugSetVarContent(getId());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

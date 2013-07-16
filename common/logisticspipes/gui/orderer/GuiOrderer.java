@@ -11,7 +11,6 @@ package logisticspipes.gui.orderer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -541,7 +540,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		
 		if (guibutton.id == 0 && selectedItem != null){
 //TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit(NetworkConstants.REQUEST_SUBMIT,xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			refreshItems();
 		} else if (guibutton.id == 1){
 			nextPage();
@@ -573,7 +572,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
 //TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit(NetworkConstants.REQUEST_COMPONENTS, xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		}
 		
 		super.actionPerformed(guibutton);

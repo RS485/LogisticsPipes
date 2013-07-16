@@ -66,7 +66,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	private void writeDiskName() {
 		editname = false;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeString(NetworkConstants.DISK_SET_NAME, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, name1 + name2).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord));
 		NBTTagCompound nbt = new NBTTagCompound("tag");
 		if(mainGui.getDisk().hasTagCompound()) {
 			nbt = mainGui.getDisk().getTagCompound();
@@ -176,7 +176,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 	private void handleRequest() {
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.DISK_MACRO_REQUEST, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, selected).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskMacroRequestPacket.class).setInteger(selected).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskMacroRequestPacket.class).setInteger(selected).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord));
 	}
 
 	private void handleDelete() {
@@ -202,7 +202,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		selected = -1;
 		nbt.setTag("macroList", listnew);
 //TODO 	MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord));
 	}
 
 	private void handleAddEdit() {

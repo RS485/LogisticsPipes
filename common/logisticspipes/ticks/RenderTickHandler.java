@@ -125,7 +125,7 @@ public class RenderTickHandler implements ITickHandler {
 						GuiEntry part = guiPos.peek();
 						if(part.isActive()) {
 							part = guiPos.poll();
-							MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()).getPacket());
+							MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
 						}
 						emptyCounter = 0;
 					}

@@ -76,7 +76,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			if (!entityplayer.isSneaking()) return false;
 			if(MainProxy.isClient(entityplayer.worldObj)) {
 				if(!LogisticsHUDRenderer.instance().hasLasers()) { //TODO remove old Lasers
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				} else {
 					LogisticsHUDRenderer.instance().resetLasers();
 				}

@@ -31,6 +31,6 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 			}
 		}
 //TODO Must be handled manualy
-		MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(c.xCoord).setPosY(c.yCoord).setPosZ(c.zCoord).getPacket());
+		MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(c.xCoord).setPosY(c.yCoord).setPosZ(c.zCoord));
 	}
 }

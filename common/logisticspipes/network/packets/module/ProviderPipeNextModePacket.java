@@ -35,7 +35,7 @@ public class ProviderPipeNextModePacket extends CoordinatesPacket {
 		final LogicProvider logic = (LogicProvider) providerpipe.logic;
 		logic.nextExtractionMode();
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), logic.getExtractionMode().ordinal()).getPacket(), (Player) player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(logic.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(logic.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 	}
 }
 

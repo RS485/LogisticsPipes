@@ -226,24 +226,24 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 	
 	private void updateHeat() {
-		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		for(EntityPlayer player:listener) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 
 	private void updateProgress() {
 		for(EntityPlayer player:listener) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_PROGRESS, xCoord, yCoord, zCoord, this.progress).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(this.progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(this.progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 	
 	private void updateInventory() {
 		for(EntityPlayer player:listener) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.SOLDERING_UPDATE_INVENTORY, xCoord, yCoord, zCoord, this).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 	
@@ -252,7 +252,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		if(MainProxy.isClient(worldObj)) {
 			if(!init) {
 //TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.ROTATION_REQUEST, xCoord, yCoord, zCoord).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				init = true;
 			}
 			return;

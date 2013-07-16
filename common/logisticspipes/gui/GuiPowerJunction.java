@@ -65,7 +65,7 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		if(par1GuiButton.id == 0) {
 			junction.addEnergy(100000);
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CHEATJUNCTIONPOWER, junction.getX(), junction.getY(), junction.getZ()).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(PowerJunctionCheatPacket.class).setPosX(junction.getX()).setPosY(junction.getY()).setPosZ(junction.getZ()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(PowerJunctionCheatPacket.class).setPosX(junction.getX()).setPosY(junction.getY()).setPosZ(junction.getZ()));
 		} else {
 			super.actionPerformed(par1GuiButton);		
 		}

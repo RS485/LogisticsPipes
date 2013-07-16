@@ -45,5 +45,10 @@ public class DebugPanelOpen extends ModernPacket {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

@@ -29,5 +29,10 @@ public class DebugAskForTarget extends ModernPacket {
 	public ModernPacket template() {
 		return new DebugAskForTarget(getId());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

@@ -53,6 +53,10 @@ public class DebugExpandPart extends ModernPacket {
 	public ModernPacket template() {
 		return new DebugExpandPart(getId());
 	}
-	
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

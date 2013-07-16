@@ -38,7 +38,7 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 			if (prevGuiID != -1) {
 				super.keyTyped(c,i);
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.xCoord, pipe.yCoord, pipe.zCoord, prevGuiID + 10000).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 			} else {
 				super.keyTyped(c, i);
 			}

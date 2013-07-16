@@ -8,15 +8,13 @@ import logisticspipes.blocks.crafting.FakePlayer;
 import logisticspipes.config.Configs;
 import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
-import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.packet.Packet;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.server.ServerListenThread;
 import net.minecraft.server.ThreadMinecraftServer;
 import net.minecraft.tileentity.TileEntity;
@@ -103,46 +101,29 @@ public class MainProxy {
 	}
 	
 	public static int getDimensionForWorld(World world) {
-		/*
-		if(world instanceof WorldServer) {
-			return ((WorldServer)world).provider.dimensionId;
-		}
-		if(world instanceof WorldClient) {
-			return ((WorldClient)world).provider.dimensionId;
-		}
-		return world.getWorldInfo().getDimension();
-		*/
 		return proxy.getDimensionForWorld(world);
 	}
 
-	public static void sendPacketToServer(Packet packet) {
-		if(!isDirectSendPacket(packet)) {
-			new Exception("Packet size too big").printStackTrace();
-		}
-		PacketDispatcher.sendPacketToServer(packet);
-	}
-
-	public static void sendCompressedPacketToServer(Packet250CustomPayload packet) {
-		SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet);
-	}
-
-	public static void sendPacketToPlayer(Packet packet, Player player) {
-		if(!isDirectSendPacket(packet)) {
-			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, player);
+	public static void sendPacketToServer(ModernPacket packet) {
+		packet.create();
+		if(packet.isCompressable() || needsToBeCompressed(packet)) {
+			SimpleServiceLocator.clientBufferHandler.addPacketToCompressor(packet.getPacket());
 		} else {
-			PacketDispatcher.sendPacketToPlayer(packet, player);
+			PacketDispatcher.sendPacketToServer(packet.getPacket());
 		}
 	}
 
-	public static void sendCompressedPacketToPlayer(Packet packet, Player player) {
-		if(packet instanceof Packet250CustomPayload) {
-			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, player);
+	public static void sendPacketToPlayer(ModernPacket packet, Player player) {
+		packet.create();
+		if(packet.isCompressable() || needsToBeCompressed(packet)) {
+			SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
 		} else {
-			PacketDispatcher.sendPacketToPlayer(packet, player);
+			PacketDispatcher.sendPacketToPlayer(packet.getPacket(), player);
 		}
 	}
 
-	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, Packet packet) {
+	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
+		packet.create();
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
 		List<EntityPlayer> players = LogisticsEventListener.watcherList.get(chunk);
 		if(players != null) {
@@ -153,81 +134,48 @@ public class MainProxy {
 			}
 			return;
 		}
-		if(!isDirectSendPacket(packet)) {
-			new Exception("Packet size too big").printStackTrace();
-		}
-		PacketDispatcher.sendPacketToAllAround(X, 64, Z, 128, dimensionId, packet);
 	}
 	
-	public static void sendToPlayerList(Packet packet, List<EntityPlayer> players) {
-		if(!isDirectSendPacket(packet)) {
+	public static void sendToPlayerList(ModernPacket packet, List<EntityPlayer> players) {
+		packet.create();
+		if(packet.isCompressable() || needsToBeCompressed(packet)) {
 			for(EntityPlayer player:players) {
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
+				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), (Player) player);
 			}
 		} else {
 			for(EntityPlayer player:players) {
-				PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
+				PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player) player);
 			}
 		}
 	}
 
-	public static void sendCompressedToPlayerList(Packet packet, List<EntityPlayer> players) {
-		if(packet instanceof Packet250CustomPayload) {
-			for(EntityPlayer player:players) {
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor((Packet250CustomPayload) packet, (Player) player);
+	public static void sendToAllPlayers(ModernPacket packet) {
+		packet.create();
+		if(packet.isCompressable() || needsToBeCompressed(packet)) {
+			for(World world: DimensionManager.getWorlds()) {
+				for(Object playerObject:world.playerEntities) {
+					Player player = (Player) playerObject;
+					SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), player);
+				}
 			}
 		} else {
-			for(EntityPlayer player:players) {
-				PacketDispatcher.sendPacketToPlayer(packet, (Player) player);
-			}
+			PacketDispatcher.sendPacketToAllPlayers(packet.getPacket());
 		}
 	}
 
-	public static void sendToAllPlayers(Packet packet) {
-		if(!isDirectSendPacket(packet)) {
-			new Exception("Packet size to big").printStackTrace();
-		}
-		PacketDispatcher.sendPacketToAllPlayers(packet);
-	}
-
-	public static void sendCompressedToAllPlayers(Packet250CustomPayload packet) {
-		for(World world: DimensionManager.getWorlds()) {
-			for(Object playerObject:world.playerEntities) {
-				Player player = (Player) playerObject;
-				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet, player);
+	private static boolean needsToBeCompressed(ModernPacket packet) {
+		if(packet.getData() != null) {
+			if(packet.getData().length > 32767) {
+				return true; // Packet is to big
 			}
 		}
-	}
-
-	private static boolean isDirectSendPacket(Packet packet) {
-		if(packet instanceof Packet250CustomPayload) {
-			Packet250CustomPayload packet250 = (Packet250CustomPayload) packet;
-			if(packet250.data != null) {
-				if(packet250.data.length > 32767 && packet250.channel.equals("BCLP")) {
-					return false;
-				}
-			}
-		}
-		return true;
-	}
-
-	public static List<EntityPlayer> getPlayerArround(World worldObj, int xCoord, int yCoord, int zCoord, int distance) {
-		List<EntityPlayer> list = new PlayerCollectionList();
-		if(worldObj != null) {
-			for(Object playerObject:worldObj.playerEntities) {
-				EntityPlayer player = (EntityPlayer) playerObject;
-				if(Math.hypot(player.posX - xCoord, Math.hypot(player.posY - yCoord, player.posZ - zCoord)) < distance) {
-					list.add(player);
-				}
-			}
-		}
-		return list;
+		return false;
 	}
 
 	public static void sendSpawnParticlePacket(int particle, int xCoord, int yCoord, int zCoord, World dimension, int amount) {
 		if(!Configs.ENABLE_PARTICLE_FX) return;
 		if(MainProxy.isServer(dimension)) {
-			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), PacketHandler.getPacket(ParticleFX.class).setInteger2(amount).setInteger(particle).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(dimension), PacketHandler.getPacket(ParticleFX.class).setInteger2(amount).setInteger(particle).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			LogisticsPipes.log.severe("Server only method on Client (Particle Spawning)");
 		}

@@ -31,7 +31,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 			}
 			clickWasButton = true;
 //TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit( NetworkConstants.LIQUID_REQUEST_SUBMIT, xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitLiquidRequestPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitLiquidRequestPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			refreshItems();
 		} else {
 			super.actionPerformed(guibutton);
@@ -64,7 +64,7 @@ public class LiquidGuiOrderer extends GuiOrderer {
 	@Override
 	public void refreshItems() {
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_LIQUID_REFRESH_REQUEST, xCoord, yCoord, zCoord, dimension).getPacket());		
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestLiquidOrdererRefreshPacket.class).setInteger(dimension).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestLiquidOrdererRefreshPacket.class).setInteger(dimension).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 	}
 
 	@Override

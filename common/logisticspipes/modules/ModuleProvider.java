@@ -379,23 +379,23 @@ outer:
 			oldList.ensureCapacity(displayList.size());
 			oldList.addAll(displayList);
 //TODO 		MainProxy.sendCompressedToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, displayList).getPacket(), localModeWatchers);
-			MainProxy.sendCompressedToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setCompressable(true), localModeWatchers);
 		} else if(player != null) {
 //TODO 		MainProxy.sendCompressedPacketToPlayer(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, displayList).getPacket(), (Player)player);
-			MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(displayList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).setCompressable(true), (Player)player);
 		}
 	}
 
 	@Override
 	public void startWatching() {
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING_MODULE, getX(), getY(), getZ(), slot).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket.class).setInteger(slot).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override

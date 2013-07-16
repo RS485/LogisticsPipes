@@ -33,7 +33,7 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 					final ModuleProvider module = (ModuleProvider) dummy.getModule();
 					module.nextExtractionMode();
 //TODO 				MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
-					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				}
 			}
 			return;
@@ -54,7 +54,7 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule();
 				module.nextExtractionMode();
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		} else {
@@ -62,7 +62,7 @@ public class ProviderModuleNextModePacket extends IntegerCoordinatesPacket {
 				final ModuleProvider module = (ModuleProvider) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.nextExtractionMode();
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), module.getExtractionMode().ordinal()).getPacket(), (Player) player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderModuleMode.class).setInteger(module.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
 		}

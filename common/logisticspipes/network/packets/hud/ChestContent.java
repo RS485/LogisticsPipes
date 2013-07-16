@@ -27,5 +27,10 @@ public class ChestContent extends InventoryCoordinatesPacket {
 			((IChestContentReceiver) tile.pipe).setReceivedChestContent(getIdentList());
 		}
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

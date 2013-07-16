@@ -163,7 +163,7 @@ public class PipeLiquidTransportLogistics extends PipeTransportLogistics impleme
 			if(clientSyncCounter < 0) clientSyncCounter = 0;
 			ModernPacket packet = computeLiquidUpdate(init, true);
 			if (packet != null) {
-				MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), packet.getPacket());
+				MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), packet);
 			}
 		}
 	}

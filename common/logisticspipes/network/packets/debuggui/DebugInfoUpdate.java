@@ -79,5 +79,10 @@ public class DebugInfoUpdate extends ModernPacket {
 	public ModernPacket template() {
 		return new DebugInfoUpdate(getId());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

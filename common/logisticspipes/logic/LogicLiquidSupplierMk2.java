@@ -216,6 +216,6 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 			amount = 0;
 		}
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, xCoord, yCoord, zCoord, amount).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(amount).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(amount).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 	}
 }

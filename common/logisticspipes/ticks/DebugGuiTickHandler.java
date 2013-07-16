@@ -44,7 +44,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.packet.Packet250CustomPayload;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
@@ -160,12 +159,12 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		if(object == null) {
 			return;
 		}
-		MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugPanelOpen.class).setName(object.getClass().getSimpleName()).getPacket(), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugPanelOpen.class).setName(object.getClass().getSimpleName()), player);
 		ServerGuiSetting setting = new ServerGuiSetting();
 		setting.var = resolveType(object, null, object.getClass().getSimpleName(), true, null);
 		setting.base = object;
 		serverInfo.put(player, setting);
-		MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(setting.var).getPacket(), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(setting.var), player);
 	}
 	
 	private boolean isPrimitive(Class<?> clazz) {
@@ -443,7 +442,7 @@ outer:
 				info.var = pos;
 			}
 		}
-		MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(pos).setPos(tree).getPacket(), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(pos).setPos(tree), player);
 	}
 	
 	@Override
@@ -477,13 +476,13 @@ outer:
 			}
 			if(isModified) {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(DebugInfoUpdate.class).setPath(path.toArray(new Integer[]{})).setInformation(type).getPacket(), player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugInfoUpdate.class).setPath(path.toArray(new Integer[]{})).setInformation(type), player);
 			}
 			return bType;
 		} else if(type instanceof NullVarType) {
 			if(newObject != null) {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})), player);
 			}
 			return type;
 		} else if(type instanceof ArrayVarType) {
@@ -503,7 +502,7 @@ outer:
 				}
 			} else {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})), player);
 			}
 			return type;
 		} else if(type instanceof ExtendedVarType) {
@@ -534,7 +533,7 @@ outer:
 				}
 			} else {
 				type = resolveType(newObject, type, type.name, true, parent);
-				MainProxy.sendCompressedPacketToPlayer((Packet250CustomPayload)PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})).getPacket(), player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugTypePacket.class).setToTransmit(type).setPos(path.toArray(new Integer[]{})), player);
 			}
 			return type;
 		} else {
@@ -634,11 +633,11 @@ outer:
 	public void handleTargetRequest() {
 		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
 		if(box == null) {
-			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.None).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.None));
 		} else if(box.typeOfHit == EnumMovingObjectType.TILE) {
-			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[]{box.blockX,box.blockY,box.blockZ}).getPacket());	
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Block).setAdditions(new Object[]{box.blockX,box.blockY,box.blockZ}));	
 		} else if(box.typeOfHit == EnumMovingObjectType.ENTITY) {
-			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[]{box.entityHit.entityId}).getPacket());	
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugTargetResponse.class).setMode(TargetMode.Entity).setAdditions(new Object[]{box.entityHit.entityId}));	
 		}
 	}
 
@@ -682,7 +681,7 @@ outer:
 				path.addFirst(type.i);
 				type = type.parent;
 			}
-			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugExpandPart.class).setTree(path.toArray(new Integer[]{})).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugExpandPart.class).setTree(path.toArray(new Integer[]{})));
 		}
 	}
 	
@@ -710,7 +709,7 @@ outer:
 							path.addFirst(type.i);
 							type = type.parent;
 						}
-						MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(DebugSetVarContent.class).setPath(path.toArray(new Integer[]{})).setContent(s).getPacket());
+						MainProxy.sendPacketToServer(PacketHandler.getPacket(DebugSetVarContent.class).setPath(path.toArray(new Integer[]{})).setContent(s));
 					}
 				});
 				popup.add(edit);

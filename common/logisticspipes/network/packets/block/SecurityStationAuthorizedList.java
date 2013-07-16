@@ -22,5 +22,10 @@ public class SecurityStationAuthorizedList extends StringListPacket {
 	public void processPacket(EntityPlayer player) {
 		SimpleServiceLocator.securityStationManager.setClientAuthorizationList(getStringList());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

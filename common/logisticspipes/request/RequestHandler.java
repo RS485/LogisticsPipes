@@ -109,7 +109,7 @@ public class RequestHandler {
 			_allItems.add(item.makeStack(0));
 		}
 //TODO	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
 	}
 	
 
@@ -136,7 +136,7 @@ public class RequestHandler {
 			@Override
 			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
 //TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, items, false).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(items).setFlag(false).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(items).setFlag(false), (Player)player);
 			}
 			
 			@Override
@@ -147,7 +147,7 @@ public class RequestHandler {
 			@Override
 			public void handleMissingItems(LinkedList<ItemMessage> list) {
 //TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, list, true).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(list).setFlag(true).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(list).setFlag(true), (Player)player);
 			}
 		},RequestTree.defaultRequestFlags);
 	}
@@ -186,7 +186,7 @@ public class RequestHandler {
 	public static void refreshLiquid(EntityPlayer player, CoreRoutedPipe pipe) {
 		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsLiquidManager.getAvailableLiquid(pipe.getRouter().getIRoutersByCost());
 //TODO 	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
 	}
 
 	public static void requestLiquid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestLiquid requester) {

@@ -80,5 +80,10 @@ public class DebugTypePacket extends ModernPacket {
 	public ModernPacket template() {
 		return new DebugTypePacket(getId());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

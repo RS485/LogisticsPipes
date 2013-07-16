@@ -35,7 +35,7 @@ public class ProviderPipeIncludePacket extends CoordinatesPacket {
 		final LogicProvider logic = (LogicProvider)providerpipe.logic;
 		logic.setFilterExcluded(!logic.isExcludeFilter());
 //TODO	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, getPosX(), getPosY(), getPosZ(), logic.isExcludeFilter() ? 1 : 0).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(logic.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(logic.isExcludeFilter() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
 	}
 }
 

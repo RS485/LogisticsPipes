@@ -71,11 +71,11 @@ public class ServerPacketBufferHandlerThread {
 							byte[] newbuffer = Arrays.copyOfRange(player.getValue(), 1024 * 32, player.getValue().length);
 							player.setValue(newbuffer);
 							byte[] compressed = compress(sendbuffer);
-							MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket(), player.getKey());
+							MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed), player.getKey());
 						}
 						byte[] sendbuffer = player.getValue();
 						byte[] compressed = compress(sendbuffer);
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket(), player.getKey());
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed), player.getKey());
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

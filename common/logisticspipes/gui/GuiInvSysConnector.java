@@ -117,7 +117,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 	}
 	
 	private void refreshPacket() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConContentRequest.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConContentRequest.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 	}
 	
 	private void pageDown() {
@@ -166,7 +166,7 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 		} else if(button.id == 5) {
 			pipe.resistance = localresistance;
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.resistance).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 		}
 	}
 

@@ -27,7 +27,7 @@ public class InvSysConContentRequest extends CoordinatesPacket {
 			return;
 		}
 		if(pipe.pipe instanceof PipeItemsInvSysConnector) {
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConContent.class).setIdentSet(((PipeItemsInvSysConnector)pipe.pipe).getExpectedItems()).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConContent.class).setIdentSet(((PipeItemsInvSysConnector)pipe.pipe).getExpectedItems()), (Player)player);
 		}
 	}
 }

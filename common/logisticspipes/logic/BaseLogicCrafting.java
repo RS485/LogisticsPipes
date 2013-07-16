@@ -159,12 +159,12 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (MainProxy.isClient(player.worldObj)) {
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 
 	}
@@ -182,12 +182,12 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (MainProxy.isClient(player.worldObj)) {
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipePrevSatellite.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(true, -1);
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 	}
 
@@ -314,7 +314,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketGuiArgument(NetworkConstants.GUI_ARGUMENT_PACKET, GuiIDs.GUI_CRAFTINGPIPE_ID, ).getPacket(),  (Player) entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID).setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}).getPacket(),  (Player) entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID).setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}
@@ -363,7 +363,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				((EntityPlayerSP)player).closeScreen();
 			}
 //TODO		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, xCoord, yCoord, zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			return;
 		}
 
@@ -434,19 +434,19 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (MainProxy.isClient(player.worldObj)) {
 			// Send packet asking for import
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
-			MainProxy.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet);
 		} else{
 			// Send inventory as packet
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
-			MainProxy.sendPacketToAllWatchingChunk(this.xCoord, this.zCoord, MainProxy.getDimensionForWorld(worldObj), packet.getPacket());
+			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			MainProxy.sendPacketToAllWatchingChunk(this.xCoord, this.zCoord, MainProxy.getDimensionForWorld(worldObj), packet);
 		}
 	}
 
 	public void handleStackMove(int number) {
 		if(MainProxy.isClient(this.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeStackMovePacket.class).setInteger(number).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeStackMovePacket.class).setInteger(number).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		}
 		ItemStack stack = _dummyInventory.getStackInSlot(number);
 		if(stack == null ) return;
@@ -464,10 +464,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		priority++;
 		if(MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, xCoord, yCoord, zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 	
@@ -475,10 +475,10 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		priority--;
 		if(MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, xCoord, yCoord, zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, xCoord, yCoord, zCoord, priority).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 	
@@ -529,22 +529,22 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public void setNextSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 
 	public void setPrevSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, advancedSatelliteIdArray[i]).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 
@@ -555,30 +555,30 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public void changeLiquidAmount(int change, int slot, EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, xCoord, yCoord, zCoord, slot, change).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingAmount.class).setInteger2(slot).setInteger(change).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingAmount.class).setInteger2(slot).setInteger(change).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			amount[slot] += change;
 			if(amount[slot] <= 0) {
 				amount[slot] = 0;
 			}
 //TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, xCoord, yCoord, zCoord, slot, amount[slot]).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 		}
 	}
 
 	public void setPrevLiquidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectLiquidSatelliteId(true, i);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteId).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectLiquidSatelliteId(true, i);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteIdArray[i]).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 			}
 		}
 	}
@@ -586,16 +586,16 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	public void setNextLiquidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, xCoord, yCoord, zCoord, i).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectLiquidSatelliteId(false, i);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteId).getPacket(), (Player)player);		
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectLiquidSatelliteId(false, i);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, xCoord, yCoord, zCoord, i, liquidSatelliteIdArray[i]).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).getPacket(), (Player)player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(LiquidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
 			}
 		}
 	}

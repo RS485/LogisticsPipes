@@ -35,13 +35,13 @@ public class PipeLiquidUpdate extends CoordinatesPacket {
 
 	@Getter(value=AccessLevel.PRIVATE)
 	@Setter(value=AccessLevel.PRIVATE)
-	private DataInputStream data;
+	private DataInputStream dataStream;
 	
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
 		delta = BitSetHelper.read(data);
-		this.setData(data);
+		this.setDataStream(data);
 	}
 
 	@Override
@@ -90,17 +90,17 @@ public class PipeLiquidUpdate extends CoordinatesPacket {
 				}
 				
 				if (delta.get(dir.ordinal() * 3 + 0)) {
-					renderCache[dir.ordinal()]=new LiquidStack(getData().readShort(),renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()]=new LiquidStack(getDataStream().readShort(),renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 1)) {
 					
-					renderCache[dir.ordinal()]= new LiquidStack(renderCache[dir.ordinal()].itemID, renderCache[dir.ordinal()].amount, getData().readShort());
+					renderCache[dir.ordinal()]= new LiquidStack(renderCache[dir.ordinal()].itemID, renderCache[dir.ordinal()].amount, getDataStream().readShort());
 				}
 				if (delta.get(dir.ordinal() * 3 + 2)) {
 					if(dir != ForgeDirection.UNKNOWN) {
-						renderCache[dir.ordinal()].amount = Math.min(((PipeLiquidTransportLogistics) pipe.pipe.transport).getSideCapacity(), getData().readShort());
+						renderCache[dir.ordinal()].amount = Math.min(((PipeLiquidTransportLogistics) pipe.pipe.transport).getSideCapacity(), getDataStream().readShort());
 					} else {
-						renderCache[dir.ordinal()].amount = Math.min(((PipeLiquidTransportLogistics) pipe.pipe.transport).getInnerCapacity(), getData().readShort());
+						renderCache[dir.ordinal()].amount = Math.min(((PipeLiquidTransportLogistics) pipe.pipe.transport).getInnerCapacity(), getDataStream().readShort());
 					}
 				}
 			}
@@ -112,5 +112,10 @@ public class PipeLiquidUpdate extends CoordinatesPacket {
 	@Override
 	public ModernPacket template() {
 		return new PipeLiquidUpdate(getId());
+	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
 	}
 }

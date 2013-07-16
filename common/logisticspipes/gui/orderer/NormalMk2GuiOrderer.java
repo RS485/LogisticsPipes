@@ -24,7 +24,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		super(RequestPipeMK2.xCoord, RequestPipeMK2.yCoord, RequestPipeMK2.zCoord, MainProxy.getDimensionForWorld(RequestPipeMK2.worldObj), entityPlayer);
 		pipe = RequestPipeMK2;
 //TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -53,7 +53,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
 			if (lastClickedx >= right - 39 && lastClickedx < right - 19 && lastClickedy >= bottom - 47 && lastClickedy < bottom - 27) {
 //TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
 			}
@@ -80,7 +80,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 			this.setSubGui(new GuiDiskPopup(this));
 		}
 	}

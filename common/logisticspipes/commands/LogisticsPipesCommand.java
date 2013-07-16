@@ -54,7 +54,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Trying to Enable NBTDebug");
-        	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivatNBTDebug.class).getPacket(), (Player)sender);
+        	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivatNBTDebug.class), (Player)sender);
         	return;
         } else if(arguments[0].equalsIgnoreCase("routingthread") || arguments[0].equalsIgnoreCase("rt")) {
         	sender.sendChatToPlayer("RoutingTableUpdateThread: TODO: " + RoutingTableUpdateThread.size());
@@ -64,7 +64,7 @@ public class LogisticsPipesCommand extends CommandBase {
         		throw new WrongUsageException("You can't use this command.");
         	}
         	sender.sendChatToPlayer("Requesting Transfer");
-        	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestUpdateNamesPacket.class).getPacket(), (Player)sender);
+        	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestUpdateNamesPacket.class), (Player)sender);
         	MainProxy.proxy.sendNameUpdateRequest((Player)sender);
         	return;
         } else if(arguments[0].equalsIgnoreCase("name") && arguments.length == 3) {
@@ -105,7 +105,7 @@ public class LogisticsPipesCommand extends CommandBase {
 	        			return;
 	    	       	} else if(arguments[1].equalsIgnoreCase("look") || arguments[1].equalsIgnoreCase("watch") || arguments[1].equalsIgnoreCase("target")) {
 	        			if(sender instanceof EntityPlayer) {
-	        				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugAskForTarget.class).getPacket(), (Player) sender);
+	        				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugAskForTarget.class), (Player) sender);
 	        				sender.sendChatToPlayer("Asking for Target.");
 	        			} else {
 	        				sender.sendChatToPlayer("No player asking!");

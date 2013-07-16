@@ -98,11 +98,11 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 		if (MainProxy.isClient(player.worldObj)) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeNext.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 		updateWatchers();
 	}
@@ -115,11 +115,11 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 					.getPacket(SatPipePrev.class).setPosX(xCoord)
 					.setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToServer(packet.getPacket());
+			MainProxy.sendPacketToServer(packet);
 		} else {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
+			MainProxy.sendPacketToPlayer(packet,(Player) player);
 		}
 		updateWatchers();
 	}
@@ -129,7 +129,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 		for(EntityPlayer player : ((PipeLiquidSatellite)this.container.pipe).localModeWatchers) {
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(),(Player) player);
+			MainProxy.sendPacketToPlayer(packet,(Player) player);
 		}
 	}
 	
@@ -148,7 +148,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 			// Send the satellite id when opening gui
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
 		}
 	}

@@ -85,7 +85,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.FilterTypeDown();
 			}
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 3, setting.filterType.ordinal()).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(3).setInteger4(setting.filterType.ordinal()).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(3).setInteger4(setting.filterType.ordinal()).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
 		}
 
 		@Override
@@ -153,7 +153,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 				setting.filterGroupDown();
 			}
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, 2, setting.filterGroup).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(2).setInteger4(setting.filterGroup).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(2).setInteger4(setting.filterGroup).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
 		}
 
 		@Override
@@ -263,8 +263,8 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 					setting.secondBeeDown();
 				}
 			}
-			//TODO 		MainProxy.sendPacketToServer(new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(slotNumber).setString1(slotNumber == 0 ? setting.firstBee : setting.secondBee).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()).getPacket());
+			//TODO 		MainProxy.sendPacketToServer(new PacketPipeBeePacket(NetworkConstants.BEE_MODULE_SET_BEE, module.getX(), module.getY(), module.getZ(), gui.slot, row, slotNumber, slotNumber == 0 ? setting.firstBee : setting.secondBee));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(BeeModuleSetBeePacket.class).setInteger1(gui.slot).setInteger2(row).setInteger3(slotNumber).setString1(slotNumber == 0 ? setting.firstBee : setting.secondBee).setPosX(module.getX()).setPosY(module.getY()).setPosZ(module.getZ()));
 		}
 
 		@Override

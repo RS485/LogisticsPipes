@@ -79,13 +79,13 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	@Override
 	public void startWatching() {
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 	
 	private IInventory getRawInventory(ForgeDirection ori) {
@@ -130,7 +130,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			oldList.clear();
 			oldList.addAll(itemList);
 //TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), itemList).getPacket(), localModeWatchers);
-			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), localModeWatchers);
+			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}
 	
@@ -140,7 +140,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			localModeWatchers.add(player);
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(((BaseLogicSatellite)this.logic).satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet.getPacket(), (Player)player);
+			MainProxy.sendPacketToPlayer(packet, (Player)player);
 			updateInv(true);
 		} else {
 			super.playerStartWatching(player, mode);

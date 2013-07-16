@@ -12,7 +12,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.network.packet.Packet250CustomPayload;
 
 @Accessors(chain=true)
 public class UpdateName extends ModernPacket {
@@ -38,7 +37,7 @@ public class UpdateName extends ModernPacket {
 	public void processPacket(EntityPlayer player) {
 		if(MainProxy.isClient(player.worldObj)) {
 //TODO		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload)new PacketNameUpdatePacket(getIdent()).getPacket());
-			MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) PacketHandler.getPacket(UpdateName.class).setIdent(getIdent()).setName(getIdent().getFriendlyName()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(getIdent()).setName(getIdent().getFriendlyName()));
 		} else {
 			MainProxy.proxy.updateNames(getIdent(), getName());
 		}
@@ -55,6 +54,11 @@ public class UpdateName extends ModernPacket {
 		data.writeInt(ident.itemID);
 		data.writeInt(ident.itemDamage);
 		data.writeUTF(name);
+	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
 	}
 }
 

@@ -62,12 +62,12 @@ public class ClientPacketBufferHandlerThread {
 							byte[] sendbuffer = Arrays.copyOf(clientBuffer, 1024 * 32);
 							clientBuffer = Arrays.copyOfRange(clientBuffer, 1024 * 32, clientBuffer.length);
 							byte[] compressed = compress(sendbuffer);
-							MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket());
+							MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed));
 						}
 						byte[] sendbuffer = clientBuffer;
 						clientBuffer = new byte[]{};
 						byte[] compressed = compress(sendbuffer);
-						MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed).getPacket());
+						MainProxy.sendPacketToServer(PacketHandler.getPacket(BufferTransfer.class).setContent(compressed));
 					}
 				} catch (IOException e) {
 					e.printStackTrace();

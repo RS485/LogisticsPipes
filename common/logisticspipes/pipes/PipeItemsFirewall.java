@@ -60,7 +60,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket(), (Player) entityplayer);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket(), (Player) entityplayer);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) entityplayer);
 			} else {
 				entityplayer.sendChatToPlayer("Permission denied");
 			}
@@ -276,7 +276,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	public void setBlockProvider(boolean blockProvider) {
 		this.blockProvider = blockProvider;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlockCrafer() {
@@ -286,7 +286,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	public void setBlockCrafer(boolean blockCrafer) {
 		this.blockCrafer = blockCrafer;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlockSorting() {
@@ -296,7 +296,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	public void setBlockSorting(boolean blockSorting) {
 		this.blockSorting = blockSorting;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlockPower() {
@@ -306,7 +306,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	public void setBlockPower(boolean blockPower) {
 		this.blockPower = blockPower;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlocking() {
@@ -316,7 +316,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	public void setBlocking(boolean isBlocking) {
 		this.isBlocking = isBlocking;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 	
 	private BitSet getFlags() {

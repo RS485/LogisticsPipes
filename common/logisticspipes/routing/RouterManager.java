@@ -340,13 +340,13 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	@Override
 	public void sendClientAuthorizationList() {
 //TODO 	MainProxy.sendToAllPlayers(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket());		
-		MainProxy.sendToAllPlayers(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized).getPacket());
+		MainProxy.sendToAllPlayers(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized));
 	}
 	
 	@Override
 	public void sendClientAuthorizationList(EntityPlayer player) {
 //TODO 	MainProxy.sendCompressedPacketToPlayer(new PacketStringList(NetworkConstants.SECURITY_AUTHORIZEDLIST_UPDATE, this._authorized).getPacket(), (Player)player);		
-		MainProxy.sendCompressedPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SecurityStationAuthorizedList.class).setStringList(this._authorized), (Player)player);
 	}
 
 	@Override

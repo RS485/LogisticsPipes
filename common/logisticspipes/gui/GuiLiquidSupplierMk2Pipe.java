@@ -44,7 +44,7 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 		xSize = 184;
 		ySize = 176;
 //TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, 0).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(0).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(0).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord));
 	}
 	
 	@Override
@@ -92,14 +92,14 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
 		}
 		if((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;
 			if(guibutton.id % 10 == 1) change = -1;
 			change *= Math.pow(10, guibutton.id / 10 - 1);
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, change).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(change).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(change).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord));
 		}
 		super.actionPerformed(guibutton);
 		

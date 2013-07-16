@@ -83,5 +83,10 @@ public class DebugTargetResponse extends ModernPacket {
 	public ModernPacket template() {
 		return new DebugTargetResponse(getId());
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

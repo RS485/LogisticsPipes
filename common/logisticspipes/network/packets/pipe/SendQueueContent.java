@@ -28,5 +28,10 @@ public class SendQueueContent extends InventoryCoordinatesPacket {
 			receiver.handleSendQueueItemIdentifierList(getIdentList());
 		}
 	}
+
+	@Override
+	public boolean isCompressable() {
+		return true;
+	}
 }
 

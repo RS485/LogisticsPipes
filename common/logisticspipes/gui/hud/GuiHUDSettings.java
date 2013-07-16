@@ -53,7 +53,7 @@ public class GuiHUDSettings extends KraphtBaseGuiScreen {
 	protected void actionPerformed(GuiButton button) {
 		if(this.buttonList.get(button.id) instanceof GuiCheckBox) {
 			((GuiCheckBox)this.buttonList.get(button.id)).change();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDSettingsPacket.class).setButtonId(button.id).setState(((GuiCheckBox)this.buttonList.get(button.id)).getState()).setSlot(slot).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDSettingsPacket.class).setButtonId(button.id).setState(((GuiCheckBox)this.buttonList.get(button.id)).getState()).setSlot(slot));
 		}
 		//super.actionPerformed(par1GuiButton);
 	}

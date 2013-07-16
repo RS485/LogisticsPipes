@@ -105,7 +105,7 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 						.setPosY(_chassiPipe.yCoord)
 						.setPosZ(_chassiPipe.zCoord);
 //TODO Must be handled manualy
-				MainProxy.sendPacketToServer(packet.getPacket());
+				MainProxy.sendPacketToServer(packet);
 			}
 		}
 	}

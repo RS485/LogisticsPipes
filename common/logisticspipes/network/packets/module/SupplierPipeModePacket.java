@@ -33,7 +33,7 @@ public class SupplierPipeModePacket extends CoordinatesPacket {
 		final LogicSupplier logic = (LogicSupplier) pipe.pipe.logic;
 		logic.setRequestingPartials(!logic.isRequestingPartials());
 //TODO	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, getPosX(), getPosY(), getPosZ(), logic.isRequestingPartials() ? 1 : 0).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(logic.isRequestingPartials() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()).getPacket(), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(logic.isRequestingPartials() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
 	}
 }
 

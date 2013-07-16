@@ -222,8 +222,9 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
-
+		
 		drawRect(10, 18, xSize - 10, ySize - 82, Colors.MiddleGrey);
+		
 		int ppi = 0;
 		int x = 12;
 		int y = 20;
@@ -250,6 +251,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glDisable(GL11.GL_LIGHTING);
 			
 			for (ItemIdentifierStack itemIdentifierStack : _allItems) {
 				ItemIdentifier item = itemIdentifierStack.getItem();
@@ -295,6 +298,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				FontRenderer font = itemstack.getItem().getFontRenderer(itemstack);
 				if (font == null)
 					font = fontRenderer;
+
+				itemRenderer.zLevel = 100.0F;
 				GL11.glEnable(GL11.GL_DEPTH_TEST);
 				GL11.glEnable(GL11.GL_LIGHTING);
 				itemRenderer.renderItemAndEffectIntoGUI(font, this.mc.renderEngine, itemstack, x, y);
@@ -302,6 +307,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				itemRenderer.renderItemOverlayIntoGUI(font, this.mc.renderEngine, itemstack, x, y, "");
 				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glDisable(GL11.GL_DEPTH_TEST);
+				itemRenderer.zLevel = 0.0F;
 
 				// Draw number
 				font.drawStringWithShadow(s, x + 19 - 2 - font.getStringWidth(s), y + 6 + 3, 16777215);

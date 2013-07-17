@@ -318,9 +318,10 @@ public class RequestTreeNode {
 		for(ExitRoute r:firewalls) {
 			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
 			filters.add(filter);
-			List<Pair<IProvideItems,List<IFilter>>> list = getProviders(r.destination,item, used, filters);
+			for(ExitRoute router:((IFilteringRouter)r.destination).getRouters()) {
+				providers.addAll(getProviders(router.destination, item, used, filters));
+			}
 			filters.remove(filter);
-			providers.addAll(list);
 		}
 		return providers;
 	}

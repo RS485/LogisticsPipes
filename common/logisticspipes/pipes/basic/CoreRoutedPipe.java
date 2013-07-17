@@ -1172,6 +1172,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	@CCCommand(description="Returns the Item Id for given ItemIdentifier Id.")
 	public int getItemID(Double itemId) throws Exception {
+		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(item == null) throw new Exception("Invalid ItemIdentifierID");
 		return item.itemID;
@@ -1179,6 +1180,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	@CCCommand(description="Returns the Item damage for the given ItemIdentifier Id.")
 	public int getItemDamage(Double itemId) throws Exception {
+		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.itemDamage;
@@ -1198,6 +1200,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	@CCCommand(description="Returns the name of the item for the given ItemIdentifier Id.")
 	public String getUnlocalizedName(Double itemId) throws Exception {
+		if(itemId == null) throw new Exception("Invalid ItemIdentifierID");
 		ItemIdentifier itemd = ItemIdentifier.getForId((int)Math.floor(itemId));
 		if(itemd == null) throw new Exception("Invalid ItemIdentifierID");
 		return itemd.getFriendlyNameCC();

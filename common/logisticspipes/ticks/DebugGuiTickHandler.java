@@ -47,6 +47,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
@@ -168,7 +169,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	}
 	
 	private boolean isPrimitive(Class<?> clazz) {
-		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class;
+		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class;
 	}
 	
 	private VarType resolveType(Object toInstect, VarType prev, String name, boolean extended, ParentVarType parent) {

@@ -53,7 +53,7 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 						int amount = Math.min(liquid.amount, amountToSend);
 						amountToSend -= amount;
 						LiquidStack drained = ((ITankContainer)pair.getValue1()).drain(pair.getValue2(), amount, false);
-						if(order.getValue1() == LiquidIdentifier.get(drained)) {
+						if(drained != null && order.getValue1() == LiquidIdentifier.get(drained)) {
 							drained = ((ITankContainer)pair.getValue1()).drain(pair.getValue2(), amount, true);
 							ItemStack stack = SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(drained);
 							IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, worldObj);

@@ -641,11 +641,11 @@ outer:
 			this.lastCrafterTried = template;
 			//figure out how many we can actually get
 			for(int i = 0; i < stacks.size(); i++) {
-				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() /stacks.get(i).getValue1().stackSize/nCraftingSets);
+				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / (stacks.get(i).getValue1().stackSize / nCraftingSets));
 			}
 			
 			for(int i = 0; i < liquids.size(); i++) {
-				workSetsAvailable = Math.min(workSetsAvailable, lastLiquidNode.get(i).getPromiseLiquidAmount() /liquids.get(i).getValue2()/nCraftingSets);
+				workSetsAvailable = Math.min(workSetsAvailable, lastLiquidNode.get(i).getPromiseLiquidAmount() / (liquids.get(i).getValue2() / nCraftingSets));
 			}
 			
 			return generateRequestTreeFor(workSetsAvailable, template);

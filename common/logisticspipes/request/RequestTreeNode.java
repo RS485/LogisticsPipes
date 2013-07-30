@@ -336,7 +336,7 @@ public class RequestTreeNode {
 				continue;
 			boolean valid = false;
 			ExitRoute source = extraPromise.sender.getRouter().getRouteTable().get(this.target.getRouter().getSimpleID());
-			if(source != null && !source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+			if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
 				for(ExitRoute node:this.target.getRouter().getIRoutersByCost()) {
 					if(node.destination == extraPromise.sender.getRouter()) {
 						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
@@ -389,8 +389,8 @@ outer:
 				if(lastCrafter == null){
 					lastCrafter = iterAllCrafters.next();
 				}
-			}else {
-				done=true;				
+			} else if(lastCrafter == null) {
+				done=true;
 			}
 			
 			int itemsNeeded = this.getMissingItemCount();
@@ -412,7 +412,7 @@ outer:
 					craftersSamePriority.add(cn);
 				continue;
 			}
-			if(craftersToBalance==null && (craftersSamePriority == null || craftersSamePriority.isEmpty())) {
+			if(craftersToBalance.isEmpty() && (craftersSamePriority == null || craftersSamePriority.isEmpty())) {
 				continue; //nothing at this priority was available for crafting
 			}
 			/// end of crafter prioriy selection.

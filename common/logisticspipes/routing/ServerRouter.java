@@ -552,7 +552,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		ArrayList<ExitRoute> routeTable = new ArrayList<ExitRoute>(ServerRouter.getBiggestSimpleID()+1);
 		while (simpleID >= routeTable.size())
 			routeTable.add(null);
-		routeTable.set(simpleID, new ExitRoute(this,this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.noneOf(PipeRoutingConnectionType.class)));
+		routeTable.set(simpleID, new ExitRoute(this,this, ForgeDirection.UNKNOWN, ForgeDirection.UNKNOWN,0,EnumSet.allOf(PipeRoutingConnectionType.class)));
 
 //		List<ExitRoute> noDuplicateRouteCosts = new ArrayList<ExitRoute>(routeCosts.size());
 		Iterator<ExitRoute> itr = routeCosts.iterator();

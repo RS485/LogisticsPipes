@@ -324,6 +324,7 @@ public class LogisticsHUDRenderer {
 
 			GL11.glPopMatrix();
 		}
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 	}
 	
 	private void setColor(float i, EnumSet<PipeRoutingConnectionType> flags) {

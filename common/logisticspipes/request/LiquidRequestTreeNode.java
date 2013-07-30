@@ -54,7 +54,9 @@ public class LiquidRequestTreeNode {
 	}
 
 	public void sendMissingMessage(LinkedList<ItemMessage> missing) {
-		missing.add(new ItemMessage(liquid.getItemIdentifier(), amountLeft()));
+		if(amountLeft() != 0) {
+			missing.add(new ItemMessage(liquid.getItemIdentifier(), amountLeft()));
+		}
 	}
 
 	public void fullFill() {

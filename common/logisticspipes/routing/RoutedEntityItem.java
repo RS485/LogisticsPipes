@@ -100,18 +100,20 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 				return null;
 			}
 
-			//detect items spawning in the center of pipes and move them to the exit side
-			if(position.x == container.xCoord + 0.5 && position.y == container.yCoord + 0.25 && position.z == container.zCoord + 0.5) {
-				position.orientation = dir;
-				//N, W and down need to move a tiny bit beyond the block end because vanilla uses floor(coord) to determine block x/y/z
-				if(dir == ForgeDirection.DOWN) {
-					position.moveForwards(0.251);
-				} else  if(dir == ForgeDirection.UP) {
-					position.moveForwards(0.75);
-				} else if(dir == ForgeDirection.NORTH || dir == ForgeDirection.WEST) {
-					position.moveForwards(0.501);
-				} else {
-					position.moveForwards(0.5);
+			if(container != null) {
+				//detect items spawning in the center of pipes and move them to the exit side
+				if(position.x == container.xCoord + 0.5 && position.y == container.yCoord + 0.25 && position.z == container.zCoord + 0.5) {
+					position.orientation = dir;
+					//N, W and down need to move a tiny bit beyond the block end because vanilla uses floor(coord) to determine block x/y/z
+					if(dir == ForgeDirection.DOWN) {
+						position.moveForwards(0.251);
+					} else  if(dir == ForgeDirection.UP) {
+						position.moveForwards(0.75);
+					} else if(dir == ForgeDirection.NORTH || dir == ForgeDirection.WEST) {
+						position.moveForwards(0.501);
+					} else {
+						position.moveForwards(0.5);
+					}
 				}
 			}
 

@@ -55,10 +55,4 @@ public class HUDInvSysConnector extends BasicHUDGui {
 	public boolean cursorOnWindow(int x, int y) {
 		return (-50 < x && x < 50 && -50 < y && y < 50);
 	}
-
-	@Override
-	public void handleCursor(int x, int y) {
-		super.handleCursor(x, y);
-	}
-
 }

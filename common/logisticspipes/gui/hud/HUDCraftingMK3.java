@@ -90,11 +90,16 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 
 	@Override
 	public boolean cursorOnWindow(int x, int y) {
-		return -50 < x && x < 50 && -50 < y && y < 50;
-	}
-
-	@Override
-	public void handleCursor(int x, int y) {
-		super.handleCursor(x, y);
+		int bufferSize = (pipe.bufferList.size() / 4) + 1;
+		if(pipe.bufferList.size() % 4 == 0) {
+			bufferSize--;
+		}
+		if(pipe.displayList.size() > 0 && pipe.bufferList.size() == 0) {
+			return -50 < x && x < 50 && -28 < y && y < 30;
+		} else if(pipe.bufferList.size() > 0) {
+			return -50 < x && x < 50 && -50 < y && y < bufferSize * 20 + 10;
+		} else {
+			return -30 < x && x < 30 && -22 < y && y < 25;
+		}
 	}
 }

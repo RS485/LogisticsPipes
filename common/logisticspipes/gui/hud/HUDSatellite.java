@@ -156,9 +156,4 @@ public class HUDSatellite extends BasicHUDGui {
 			return -30 < x && x < 30 && -30 < y && y < 30;
 		}
 	}
-
-	@Override
-	public void handleCursor(int x, int y) {
-		super.handleCursor(x, y);
-	}
 }

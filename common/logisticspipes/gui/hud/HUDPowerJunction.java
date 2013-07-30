@@ -63,7 +63,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 
 	@Override
 	public boolean cursorOnWindow(int x, int y) {
-		return -50 < x && x < 50 && -50 < y && y < 50;
+		return -60 < x && x < 60 && -40 < y && y < 40;
 	}
 
 }

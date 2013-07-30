@@ -74,11 +74,10 @@ public class HUDCrafting extends BasicHUDGui {
 
 	@Override
 	public boolean cursorOnWindow(int x, int y) {
-		return -50 < x && x < 50 && -50 < y && y < 50;
-	}
-
-	@Override
-	public void handleCursor(int x, int y) {
-		super.handleCursor(x, y);
+		if(pipe.displayList.size() > 0) {
+			return -50 < x && x < 50 && -28 < y && y < 30;
+		} else {
+			return -30 < x && x < 30 && -22 < y && y < 25;
+		}
 	}
 }

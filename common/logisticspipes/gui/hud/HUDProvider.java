@@ -144,9 +144,4 @@ public class HUDProvider extends BasicHUDGui {
 	public boolean cursorOnWindow(int x, int y) {
 		return -50 < x && x < 50 && -55 < y && y < 55;
 	}
-
-	@Override
-	public void handleCursor(int x, int y) {
-		super.handleCursor(x, y);
-	}
 }

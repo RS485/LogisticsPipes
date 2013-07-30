@@ -125,16 +125,6 @@ public class RenderTickHandler implements ITickHandler {
 		if(type.contains(TickType.RENDER)) {
 			renderTicks++;
 			if(LogisticsHUDRenderer.instance().displayRenderer()) {
-				//Saveguard List
-				List<UnlockThreadSecure> suspendedThread = new ArrayList<UnlockThreadSecure>();
-				//Suspend Rei Mini Map
-				for(Thread thread:Thread.getAllStackTraces().keySet()) {
-					if(thread.getClass().getName().equals("reifnsk.minimap.ReiMinimap")) {
-						//Start saveguard
-						suspendedThread.add(new UnlockThreadSecure(1000, thread));
-						thread.suspend();
-					}
-				}
 				GL11.glPushMatrix();
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				//Orientation
@@ -156,16 +146,6 @@ public class RenderTickHandler implements ITickHandler {
 				}
 				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks, (Float) tickData[0]);
 				mc.entityRenderer.setupOverlayRendering();
-				//Stop saveguard
-				for(UnlockThreadSecure thread:suspendedThread) {
-					thread.running = false;
-				}
-				//Restart Rei Mini Map
-				for(Thread thread:Thread.getAllStackTraces().keySet()) {
-					if(thread.getClass().getName().equals("reifnsk.minimap.ReiMinimap")) {
-						thread.resume();
-					}
-				}
 				GL11.glPopMatrix();
 				GL11.glPushMatrix();
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);

@@ -2,8 +2,10 @@ package logisticspipes.request;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IRequestLiquid;
@@ -14,8 +16,8 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LiquidLogisticsPromise;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 
 public class LiquidRequestTreeNode {
@@ -53,9 +55,14 @@ public class LiquidRequestTreeNode {
 		}
 	}
 
-	public void sendMissingMessage(LinkedList<ItemMessage> missing) {
+	protected void buildMissingMap(Map<ItemIdentifier,Integer> missing) {
 		if(amountLeft() != 0) {
-			missing.add(new ItemMessage(liquid.getItemIdentifier(), amountLeft()));
+			ItemIdentifier item = liquid.getItemIdentifier();
+			Integer count = missing.get(item);
+			if(count == null)
+				count = 0;
+			count += amountLeft();
+			missing.put(item, count);
 		}
 	}
 
@@ -141,9 +148,9 @@ public class LiquidRequestTreeNode {
 	}
 
 	public void sendMissingMessage(RequestLog log) {
-		LinkedList<ItemMessage> mes = new LinkedList<ItemMessage>();
-		mes.add(new ItemMessage(liquid.getItemIdentifier(), amountLeft()));
-		log.handleMissingItems(mes);
+		Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
+		missing.put(liquid.getItemIdentifier(), amountLeft());
+		log.handleMissingItems(missing);
 	}
 	
 	public int getPromiseLiquidAmount() {

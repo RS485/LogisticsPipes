@@ -8,11 +8,9 @@
 
 package logisticspipes.gui.orderer;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
@@ -23,7 +21,6 @@ import logisticspipes.network.packets.orderer.RequestSubmitPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiCheckBox;
@@ -470,59 +467,22 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(List<ItemMessage> items, boolean error, ISubGuiControler control, EntityPlayer player) {
-		if (!error){
-			ArrayList<String> msg = new ArrayList<String>();
-			msg.add("You are missing:");
-			for (ItemMessage item : items){
-				if(!Configs.DISPLAY_POPUP) {
-					player.addChatMessage("Missing: " + item.toString());
-				} else {
-					msg.add(item.toString());
-				}
-			}
-			if(Configs.DISPLAY_POPUP) {
-				control.setSubGui(new GuiRequestPopup(_entityPlayer, msg.toArray()));
-			}
+	public void handleRequestAnswer(Collection<ItemIdentifierStack> items, boolean error, ISubGuiControler control, EntityPlayer player) {
+		while(control.hasSubGui()) {
+			control = control.getSubGui();
+		}
+		if (error) {
+			control.setSubGui(new GuiRequestPopup(_entityPlayer, "You are missing:", items));
 		} else {
-			if(Configs.DISPLAY_POPUP) {
-				if(control.hasSubGui()) {
-					ISubGuiControler newcontroller = control;
-					while(newcontroller.hasSubGui()) {
-						newcontroller = newcontroller.getSubGui();
-					}
-					newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
-				} else {
-					control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!",items.toArray()));
-				}
-			} else {
-				for(ItemMessage item:items) {
-					player.addChatMessage("Requested: " + item);
-				}
-				player.addChatMessage("Request successful!");
-			}
+			control.setSubGui(new GuiRequestPopup(_entityPlayer, "Request successful!", items));
 		}
 	}
 
-	public void handleSimulateAnswer(List<ItemMessage> used, List<ItemMessage> missing, ISubGuiControler control, EntityPlayer player) {
-		if(Configs.DISPLAY_POPUP) {
-			if(control.hasSubGui()) {
-				ISubGuiControler newcontroller = control;
-				while(newcontroller.hasSubGui()) {
-					newcontroller = newcontroller.getSubGui();
-				}
-				newcontroller.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used.toArray(), "Missing: ", missing.toArray()));
-			} else {
-				control.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used.toArray(), "Missing: ", missing.toArray()));
-			}
-		} else {
-			for(ItemMessage item:used) {
-				player.addChatMessage("Component: " + item);
-			}
-			for(ItemMessage item:missing) {
-				player.addChatMessage("Missing: " + item);
-			}
+	public void handleSimulateAnswer(Collection<ItemIdentifierStack> used, Collection<ItemIdentifierStack> missing, ISubGuiControler control, EntityPlayer player) {
+		while(control.hasSubGui()) {
+			control = control.getSubGui();
 		}
+		control.setSubGui(new GuiRequestPopup(_entityPlayer, "Components: ", used, "Missing: ", missing));
 	}
 
 	@Override

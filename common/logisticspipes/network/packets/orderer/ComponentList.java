@@ -4,13 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.orderer.GuiOrderer;
-import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -22,11 +22,11 @@ public class ComponentList extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<ItemMessage> used = new ArrayList<ItemMessage>();
+	private Collection<ItemIdentifierStack> used = new ArrayList<ItemIdentifierStack>();
 	
 	@Getter
 	@Setter
-	private List<ItemMessage> missing = new ArrayList<ItemMessage>();
+	private Collection<ItemIdentifierStack> missing = new ArrayList<ItemIdentifierStack>();
 	
 	public ComponentList(int id) {
 		super(id);
@@ -40,34 +40,28 @@ public class ComponentList extends ModernPacket {
 	@Override
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
-		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(getUsed(),getMissing(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleSimulateAnswer(used, missing, (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else {
-			for (final ItemMessage items : getUsed()) {
-				player.addChatMessage("Used: " + items);
+			for(ItemIdentifierStack item:used) {
+				player.addChatMessage("Component: " + item.getFriendlyName());
 			}
-			for (final ItemMessage items : getMissing()) {
-				player.addChatMessage("Missing: " + items);
+			for(ItemIdentifierStack item:missing) {
+				player.addChatMessage("Missing: " + item.getFriendlyName());
 			}
 		}
 	}
 	
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
-		for(ItemMessage msg:used) {
+		for(ItemIdentifierStack item:used) {
 			data.write(1);
-			data.writeInt(msg.id);
-			data.writeInt(msg.data);
-			data.writeInt(msg.amount);
-			SendNBTTagCompound.writeNBTTagCompound(msg.tag, data);
+			item.write(data);
 		}
 		data.write(0);
-		for(ItemMessage msg:missing) {
+		for(ItemIdentifierStack item:missing) {
 			data.write(1);
-			data.writeInt(msg.id);
-			data.writeInt(msg.data);
-			data.writeInt(msg.amount);
-			SendNBTTagCompound.writeNBTTagCompound(msg.tag, data);
+			item.write(data);
 		}
 		data.write(0);
 	}
@@ -75,20 +69,10 @@ public class ComponentList extends ModernPacket {
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		while(data.read() != 0) {
-			ItemMessage msg = new ItemMessage();
-			msg.id = data.readInt();
-			msg.data = data.readInt();
-			msg.amount = data.readInt();
-			msg.tag = SendNBTTagCompound.readNBTTagCompound(data);
-			used.add(msg);
+			used.add(ItemIdentifierStack.read(data));
 		}
 		while(data.read() != 0) {
-			ItemMessage msg = new ItemMessage();
-			msg.id = data.readInt();
-			msg.data = data.readInt();
-			msg.amount = data.readInt();
-			msg.tag = SendNBTTagCompound.readNBTTagCompound(data);
-			missing.add(msg);
+			missing.add(ItemIdentifierStack.read(data));
 		}
 	}
 }

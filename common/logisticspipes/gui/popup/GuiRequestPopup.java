@@ -1,8 +1,10 @@
 package logisticspipes.gui.popup;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SubGuiScreen;
 import net.minecraft.client.gui.GuiButton;
@@ -18,9 +20,13 @@ public class GuiRequestPopup extends SubGuiScreen {
 		super(200, (message.length * 10) + 40, 0, 0);
 		List<String> textArray = new ArrayList<String>();
 		for(Object o:message) {
-			if(o instanceof Object[]) {
-				for(Object oZwei:(Object[])o) {
-					textArray.add(oZwei.toString());
+			if(o instanceof String) {
+				textArray.add((String)o);
+			} else if(o instanceof Collection<?>) {
+				for(Object oZwei:(Collection<?>)o) {
+					if(oZwei instanceof ItemIdentifierStack) {
+						textArray.add(((ItemIdentifierStack)oZwei).getFriendlyName());
+					}
 				}
 			} else {
 				textArray.add(o.toString());

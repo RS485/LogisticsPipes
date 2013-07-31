@@ -4,14 +4,11 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import net.minecraft.nbt.NBTTagCompound;
 
 @Accessors(chain=true)
 public abstract class RequestPacket extends CoordinatesPacket {
@@ -36,21 +33,14 @@ public abstract class RequestPacket extends CoordinatesPacket {
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
 		super.writeData(data);
-		data.writeInt(getStack().getItem().itemID);
-		data.writeInt(getStack().getItem().itemDamage);
-		data.writeInt(getStack().stackSize);
-		SendNBTTagCompound.writeNBTTagCompound(getStack().getItem().tag, data);
+		stack.write(data);
 		data.writeInt(dimension);
 	}
 
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		super.readData(data);
-		int itemID = data.readInt();
-		int dataValue = data.readInt();
-		int amount = data.readInt();
-		NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
-		setStack(ItemIdentifier.get(itemID, dataValue, tag).makeStack(amount));
+		stack = ItemIdentifierStack.read(data);
 		dimension = data.readInt();
 	}
 }

@@ -9,6 +9,7 @@
 package logisticspipes.pipes;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,6 @@ import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -120,63 +120,76 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public SimulationResult simulateRequest(ItemStack wanted) {
-		final List<ItemStack> used = new LinkedList<ItemStack>();
-		final List<ItemStack> missing = new LinkedList<ItemStack>();
+		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
+		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
 		RequestTree.simulate(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				for(ItemMessage msg:list) {
-					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
-					is.setTagCompound(msg.tag);
-					missing.add(is);
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					Integer count = missing.get(e.getKey());
+					if(count == null)
+						count = 0;
+					count += e.getValue();
+					missing.put(e.getKey(), count);
 				}
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				for(ItemMessage msg:items) {
-					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
-					is.setTagCompound(msg.tag);
-					used.add(is);
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					Integer count = used.get(e.getKey());
+					if(count == null)
+						count = 0;
+					count += e.getValue();
+					used.put(e.getKey(), count);
 				}
 			}
 		});
+		List<ItemStack> usedList = new ArrayList<ItemStack>(used.size());
+		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
+		for(Entry<ItemIdentifier,Integer>e:used.entrySet()) {
+			usedList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
+		}
+		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
+			missingList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
+		}
+		
 		SimulationResult r = new SimulationResult();
-		r.used = used;
-		r.missing = missing;
+		r.used = usedList;
+		r.missing = missingList;
 		return r;
 	}
 
 	@Override
 	public List<ItemStack> performRequest(ItemStack wanted) {
-		final List<ItemStack> missing = new LinkedList<ItemStack>();
+		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
 		RequestTree.request(ItemIdentifier.get(wanted.itemID, wanted.getItemDamage(), wanted.getTagCompound()).makeStack(wanted.stackSize), this, new RequestLog() {
 			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
-outer:
-				for(ItemMessage msg:list) {
-					ItemStack is = new ItemStack(msg.id, msg.amount, msg.data);
-					is.setTagCompound(msg.tag);
-					for(ItemStack seen : missing) {
-						if(seen.isItemEqual(is) && ItemStack.areItemStackTagsEqual(seen, is)) {
-							seen.stackSize += is.stackSize;
-							continue outer;
-						}
-					}
-					missing.add(is);
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					Integer count = missing.get(e.getKey());
+					if(count == null)
+						count = 0;
+					count += e.getValue();
+					missing.put(e.getKey(), count);
 				}
 			}
 
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {}
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
 		});
-		return missing;
+		List<ItemStack> missingList = new ArrayList<ItemStack>(missing.size());
+		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
+			missingList.add(e.getKey().unsafeMakeNormalStack(e.getValue()));
+		}
+
+		return missingList;
 	}
 
 

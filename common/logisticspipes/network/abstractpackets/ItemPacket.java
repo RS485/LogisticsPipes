@@ -40,7 +40,9 @@ public abstract class ItemPacket extends CoordinatesPacket {
 		
 		final int itemID = data.readInt();
 		if(itemID != 0) {
-			setStack(new ItemStack(itemID, data.readInt(), data.readInt()));
+			int stackSize = data.readInt();
+			int damage = data.readInt();
+			setStack(new ItemStack(itemID, stackSize, damage));
 			getStack().setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
 		} else {
 			setStack(null);

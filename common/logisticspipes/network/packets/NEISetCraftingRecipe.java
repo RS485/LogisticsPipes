@@ -45,17 +45,14 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 		data.writeInt(content.length);
 		
 		for(int i = 0; i < content.length; i++) {
-			data.writeByte(i);
-			
 			final ItemStack itemstack = content[i];
 			
 			if(itemstack != null) {
+				data.writeByte(i);
 				data.writeInt(itemstack.itemID);
 				data.writeInt(itemstack.stackSize);
 				data.writeInt(itemstack.getItemDamage());
 				SendNBTTagCompound.writeNBTTagCompound(itemstack.getTagCompound(), data);
-			} else {
-				data.writeInt(0);
 			}
 		}
 		data.writeByte( -1); // mark packet end
@@ -71,13 +68,11 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 		
 		while(index != -1) { // read until the end
 			final int itemID = data.readInt();
-			if(itemID == 0) {
-				content[index] = null;
-			} else {
-				ItemStack stack = new ItemStack(itemID, data.readInt(), data.readInt());
-				stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
-				content[index] = stack;
-			}
+			int stackSize = data.readInt();
+			int damage = data.readInt();
+			ItemStack stack = new ItemStack(itemID, stackSize, damage);
+			stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
+			content[index] = stack;
 			index = data.readByte(); // read the next slot
 		}
 	}

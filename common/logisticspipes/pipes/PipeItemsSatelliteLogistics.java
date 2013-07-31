@@ -10,7 +10,6 @@ package logisticspipes.pipes;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
 import logisticspipes.gui.hud.HUDSatellite;
 import logisticspipes.interfaces.IChestContentReceiver;

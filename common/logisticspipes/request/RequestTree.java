@@ -5,6 +5,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import logisticspipes.interfaces.routing.ILiquidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
@@ -18,7 +19,6 @@ import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 
 public class RequestTree extends RequestTreeNode {
@@ -82,18 +82,15 @@ public class RequestTree extends RequestTreeNode {
 	}
 	
 	public void sendMissingMessage(RequestLog log) {
-		LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
-		sendMissingMessage(missing);
-		ItemMessage.compress(missing);
+		Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
+		buildMissingMap(missing);
 		log.handleMissingItems(missing);
 	}
 
 	public void sendUsedMessage(RequestLog log) {
-		LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
-		LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
-		sendUsedMessage(used, missing);
-		ItemMessage.compress(used);
-		ItemMessage.compress(missing);
+		Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
+		Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
+		buildUsedMap(used, missing);
 		log.handleSucessfullRequestOfList(used);
 		log.handleMissingItems(missing);
 	}
@@ -174,11 +171,16 @@ public class RequestTree extends RequestTreeNode {
 	}
 	
 	public static boolean request(List<ItemIdentifierStack> items, IRequestItems requester, RequestLog log, EnumSet<ActiveRequestType> requestFlags) {
-		LinkedList<ItemMessage> messages = new LinkedList<ItemMessage>();
+		Map<ItemIdentifier,Integer> messages = new HashMap<ItemIdentifier,Integer>();
 		RequestTree tree = new RequestTree(new ItemIdentifierStack(ItemIdentifier.get(1,0,null), 0), requester, null, requestFlags);
 		boolean isDone = true;
 		for(ItemIdentifierStack stack:items) {
-			messages.add(new ItemMessage(stack));
+			ItemIdentifier item = stack.getItem();
+			Integer count = messages.get(item);
+			if(count == null)
+				count = 0;
+			count += stack.stackSize;
+			messages.put(item, count);
 			RequestTree node = new RequestTree(stack, requester, tree, requestFlags);
 			isDone = isDone && node.isDone();
 		}
@@ -201,7 +203,7 @@ public class RequestTree extends RequestTreeNode {
 		if(!simulateOnly &&(tree.isDone() || ((tree.getPromiseItemCount() > 0) && acceptPartial))) {
 			tree.fullFillAll();
 			if(log != null) {
-				log.handleSucessfullRequestOf(new ItemMessage(item));
+				log.handleSucessfullRequestOf(item.getItem(), item.stackSize);
 			}
 			return tree.getPromiseItemCount();
 		} else {
@@ -244,7 +246,7 @@ public class RequestTree extends RequestTreeNode {
 		if(request.isDone() || acceptPartial) {
 			request.fullFill();
 			if(log != null) {
-				log.handleSucessfullRequestOf(new ItemMessage(request.getStack()));
+				log.handleSucessfullRequestOf(request.getLiquid().getItemIdentifier(), request.getAmount());
 			}
 			return request.getPromiseLiquidAmount();
 		} else {

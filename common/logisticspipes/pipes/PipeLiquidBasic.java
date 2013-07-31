@@ -1,7 +1,5 @@
 package logisticspipes.pipes;
 
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ILiquidSink;
 import logisticspipes.network.GuiIDs;

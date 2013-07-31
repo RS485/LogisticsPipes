@@ -1,6 +1,7 @@
 package logisticspipes.request;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,8 +11,8 @@ import java.util.Map.Entry;
 import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.logisticspipes.MessageManager;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.orderer.ComponentList;
 import logisticspipes.network.packets.orderer.MissingItems;
 import logisticspipes.network.packets.orderer.OrdererContent;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -20,7 +21,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
@@ -43,44 +43,64 @@ public class RequestHandler {
 		RequestTree.request(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.stackSize), pipe
 				, new RequestLog() {
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {
-				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
-				list.add(new ItemMessage(stack.getItem().itemID, stack.getItem().itemDamage, stack.stackSize, stack.getItem().tag));
-				MessageManager.requested(player, list);
-			}
-			
-			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				MessageManager.errors(player, list);
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				}
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
 			}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				//Not needed here
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+				Collection<ItemIdentifierStack> coll = new ArrayList(1);
+				coll.add(new ItemIdentifierStack(item, count));
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}
+			
+			@Override
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
 		});
 	}
 	
 	public static void simulate(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
-		final LinkedList<ItemMessage> used = new LinkedList<ItemMessage>();
-		final LinkedList<ItemMessage> missing = new LinkedList<ItemMessage>();
+		final Map<ItemIdentifier,Integer> used = new HashMap<ItemIdentifier,Integer>();
+		final Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
 		RequestTree.simulate(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.stackSize), pipe, new RequestLog() {
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {
-				//Not needed
-			}
-			
-			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				missing.addAll(list);
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					Integer count = missing.get(e.getKey());
+					if(count == null)
+						count = 0;
+					count += e.getValue();
+					missing.put(e.getKey(), count);
+				}
 			}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				used.addAll(items);
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
+			
+			@Override
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					Integer count = used.get(e.getKey());
+					if(count == null)
+						count = 0;
+					count += e.getValue();
+					used.put(e.getKey(), count);
+				}
 			}
 		});
-		MessageManager.simulated(player, used, missing);
+		List<ItemIdentifierStack> usedList = new ArrayList<ItemIdentifierStack>(used.size());
+		List<ItemIdentifierStack> missingList = new ArrayList<ItemIdentifierStack>(missing.size());
+		for(Entry<ItemIdentifier,Integer>e:used.entrySet()) {
+			usedList.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+		}
+		for(Entry<ItemIdentifier,Integer>e:missing.entrySet()) {
+			missingList.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+		}
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ComponentList.class).setUsed(usedList).setMissing(missingList), (Player)player);
 	}
 	
 	public static void refresh(EntityPlayer player, CoreRoutedPipe pipe, DisplayOptions option) {
@@ -119,8 +139,7 @@ public class RequestHandler {
 			return;
 		}
 		NBTTagList list = itemlist.getTagList("inventar");
-		LinkedList<ItemIdentifierStack> transaction = new LinkedList<ItemIdentifierStack>();
-		List<ItemMessage> items = new ArrayList<ItemMessage>();
+		List<ItemIdentifierStack> transaction = new ArrayList<ItemIdentifierStack>(list.tagCount());
 		for(int i = 0;i < list.tagCount();i++) {
 			NBTTagCompound itemnbt = (NBTTagCompound) list.tagAt(i);
 			NBTTagCompound itemNBTContent = itemnbt.getCompoundTag("nbt");
@@ -129,25 +148,27 @@ public class RequestHandler {
 			}
 			ItemIdentifierStack stack = ItemIdentifier.get(itemnbt.getInteger("id"),itemnbt.getInteger("data"),itemNBTContent).makeStack(itemnbt.getInteger("amount"));
 			transaction.add(stack);
-			items.add(new ItemMessage(stack));
 		}
 		RequestTree.request(transaction, requester, new RequestLog() {
-			
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-//TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, items, false).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(items).setFlag(false), (Player)player);
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				}
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
 			}
 			
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {
-				//Not used here
-			}
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
 			
 			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
-//TODO 			MainProxy.sendPacketToPlayer(new PacketItems(NetworkConstants.MISSING_ITEMS, list, true).getPacket(), (Player)player);
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(list).setFlag(true), (Player)player);
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				}
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}
 		},RequestTree.defaultRequestFlags);
 	}
@@ -166,19 +187,17 @@ public class RequestHandler {
 		final String[] status = new String[1];
 		RequestTree.request(makeStack, pipe, new RequestLog() {
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {
-				status[0] = "DONE";
-			}
-			
-			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				status[0] = "MISSING";
 			}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				//Not needed here
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+				status[0] = "DONE";
 			}
+			
+			@Override
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
 		},false, false,true,false,requestFlags);
 		return status[0];
 	}
@@ -197,21 +216,23 @@ public class RequestHandler {
 		
 		RequestTree.requestLiquid(LiquidIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage) , stack.stackSize, requester, new RequestLog() {
 			@Override
-			public void handleSucessfullRequestOf(ItemMessage item) {
-				LinkedList<ItemMessage> list = new LinkedList<ItemMessage>();
-				list.add(new ItemMessage(stack.getItem().itemID, stack.getItem().itemDamage, stack.stackSize, stack.getItem().tag));
-				MessageManager.requested(player, list);
-			}
-			
-			@Override
-			public void handleMissingItems(LinkedList<ItemMessage> list) {
-				MessageManager.errors(player, list);
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				}
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
 			}
 
 			@Override
-			public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items) {
-				//Not needed here
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
+				Collection<ItemIdentifierStack> coll = new ArrayList(1);
+				coll.add(new ItemIdentifierStack(item, count));
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}
+			
+			@Override
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
 		});
 	}
 }

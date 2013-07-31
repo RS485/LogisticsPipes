@@ -8,12 +8,14 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.network.SendNBTTagCompound;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
 @Accessors(chain=true)
 public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
@@ -109,10 +111,7 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 	
 	private void sendItemIdentifierStack(ItemIdentifierStack item, DataOutputStream data) throws IOException {
 		if (item != null) {
-			data.writeInt(item.getItem().itemID);
-			data.writeInt(item.stackSize);
-			data.writeInt(item.getItem().itemDamage);
-			SendNBTTagCompound.writeNBTTagCompound(item.getItem().tag, data);
+			item.write(data);
 		} else {
 			data.writeInt(0);
 		}
@@ -123,7 +122,9 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 		if (itemID == 0) {
 			return null;
 		} else {
-			ItemStack stack = new ItemStack(itemID, data.readInt(), data.readInt());
+			int stackSize = data.readInt();
+			int damage = data.readInt();
+			ItemStack stack = new ItemStack(itemID, stackSize, damage);
 			stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
 			return stack;
 		}
@@ -134,9 +135,10 @@ public abstract class InventoryCoordinatesPacket extends CoordinatesPacket {
 		if (itemID == 0) {
 			return null;
 		} else {
-			ItemStack stack = new ItemStack(itemID, data.readInt(), data.readInt());
-			stack.setTagCompound(SendNBTTagCompound.readNBTTagCompound(data));
-			return ItemIdentifierStack.GetFromStack(stack);
+			int stackSize = data.readInt();
+			int damage = data.readInt();
+			NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+			return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stackSize);
 		}
 	}
 }

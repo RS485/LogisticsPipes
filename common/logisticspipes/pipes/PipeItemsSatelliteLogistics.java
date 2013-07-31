@@ -45,7 +45,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequestItems, IHeadUpDisplayRendererProvider, IChestContentReceiver {
 	
-	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final LinkedList<ItemIdentifierStack> itemList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	private final HUDSatellite HUD = new HUDSatellite(this);

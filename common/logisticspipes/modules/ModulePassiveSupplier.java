@@ -49,7 +49,7 @@ public class ModulePassiveSupplier extends LogisticsGuiModule implements IClient
 	
 	private IHUDModuleRenderer HUD = new HUDPassiveSupplier(this);
 	
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModulePassiveSupplier() {
 		_filterInventory.addListener(this);

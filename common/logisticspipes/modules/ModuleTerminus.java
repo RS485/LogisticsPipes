@@ -48,7 +48,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	
 	private IHUDModuleRenderer HUD = new HUDTerminatorModule(this);
 
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleTerminus() {
 		_filterInventory.addListener(this);

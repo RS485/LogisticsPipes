@@ -1,7 +1,6 @@
 package logisticspipes.pipes.upgrades;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -165,7 +164,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 
 	public DummyContainer getDummyContainer(EntityPlayer player) {
 		DummyContainer dummy = new DummyContainer(player, inv, new IGuiOpenControler() {
-			List<EntityPlayer> players = new PlayerCollectionList();
+			PlayerCollectionList players = new PlayerCollectionList();
 			@Override
 			public void guiOpenedByPlayer(EntityPlayer player) {
 				players.add(player);

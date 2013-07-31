@@ -49,7 +49,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	private IPowerProvider powerFramework;
 	
-	private List<EntityPlayer> guiListener = new PlayerCollectionList();
+	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
@@ -58,7 +58,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
   	private boolean addedToEnergyNet = false;
 	
 	private boolean init = false;
-	private List<EntityPlayer> watcherList = new PlayerCollectionList();
+	private PlayerCollectionList watcherList = new PlayerCollectionList();
 	private IHeadUpDisplayRenderer HUD;
 	
 	public LogisticsPowerJunctionTileEntity() {

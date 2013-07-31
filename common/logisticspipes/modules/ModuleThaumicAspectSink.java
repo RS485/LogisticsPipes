@@ -40,7 +40,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	
 	public final List<Integer> aspectList = new LinkedList<Integer>();
 	
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	@Override
 	public void registerHandler(IInventoryProvider invProvider, ISendRoutedItem itemSender, IWorldProvider world, IRoutedPowerProvider powerProvider) {

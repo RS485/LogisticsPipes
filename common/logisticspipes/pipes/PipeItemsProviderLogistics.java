@@ -66,7 +66,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvideItems, IHeadUpDisplayRendererProvider, IChestContentReceiver, IChangeListener, IOrderManagerContentReceiver {
 
-	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	private final Map<ItemIdentifier,Integer> displayMap = new HashMap<ItemIdentifier, Integer>();
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<ItemIdentifierStack>();

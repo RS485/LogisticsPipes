@@ -96,7 +96,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	//HUD
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private HUDChassiePipe HUD;
 
 	public PipeLogisticsChassi(int itemID) {

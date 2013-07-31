@@ -106,7 +106,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 		}
 	}
 
-	public static Map<ChunkCoordIntPair, List<EntityPlayer>> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, List<EntityPlayer>>();
+	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, PlayerCollectionList>();
 
 	int taskCount = 0;
 	

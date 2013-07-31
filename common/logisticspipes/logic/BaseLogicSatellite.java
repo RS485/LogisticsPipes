@@ -120,11 +120,7 @@ public class BaseLogicSatellite extends BaseRoutingLogic implements IRequireReli
 	}
 
 	private void updateWatchers() {
-		for(EntityPlayer player : ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers) {
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
-//TODO Must be handled manualy
-			MainProxy.sendPacketToPlayer(packet,(Player) player);
-		}
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), ((PipeItemsSatelliteLogistics)this.container.pipe).localModeWatchers);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ import net.minecraftforge.liquids.LiquidStack;
 public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 	
 	public SimpleInventory filterInv = new SimpleInventory(1, "Dummy", 1);
-	private List<EntityPlayer> guiOpenedBy = new PlayerCollectionList();
+	private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
 	
 	public PipeLiquidBasic(int itemID) {
 		super(itemID);

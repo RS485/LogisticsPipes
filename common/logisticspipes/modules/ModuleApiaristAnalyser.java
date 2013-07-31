@@ -38,7 +38,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	private int currentTick = 0;
 	private int slot = 0;
 
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;

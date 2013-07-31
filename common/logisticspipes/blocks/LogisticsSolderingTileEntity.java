@@ -33,7 +33,6 @@ import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.api.power.IPowerProvider;
 import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerFramework;
-import cpw.mods.fml.common.network.Player;
 
 public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
@@ -45,7 +44,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public int rotation = 0;
 	private boolean init = false;
 	
-	private List<EntityPlayer> listener = new PlayerCollectionList();
+	private PlayerCollectionList listener = new PlayerCollectionList();
 
 	public LogisticsSolderingTileEntity() {
 		provider = PowerFramework.currentFramework.createPowerProvider();
@@ -227,24 +226,15 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	
 	private void updateHeat() {
 		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-		for(EntityPlayer player:listener) {
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
-		}
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 	}
 
 	private void updateProgress() {
-		for(EntityPlayer player:listener) {
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_PROGRESS, xCoord, yCoord, zCoord, this.progress).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(this.progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
-		}
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationProgress.class).setInteger(this.progress).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 	}
 	
 	private void updateInventory() {
-		for(EntityPlayer player:listener) {
-//TODO 		MainProxy.sendPacketToPlayer(new PacketInventoryChange(NetworkConstants.SOLDERING_UPDATE_INVENTORY, xCoord, yCoord, zCoord, this).getPacket(), (Player)player);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
-		}
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SolderingStationInventory.class).setInventory(this).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), listener);
 	}
 	
 	@Override

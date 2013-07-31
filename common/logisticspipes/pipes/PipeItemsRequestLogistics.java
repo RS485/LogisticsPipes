@@ -98,6 +98,8 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public List<ItemStack> getProvidedItems() {
+		if(stillNeedReplace())
+			return new ArrayList<ItemStack>();
 		Map<ItemIdentifier, Integer> items = SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
 		for(Entry <ItemIdentifier, Integer> item:items.entrySet()) {
@@ -109,6 +111,8 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@Override
 	public List<ItemStack> getCraftedItems() {
+		if(stillNeedReplace())
+			return new ArrayList<ItemStack>();
 		LinkedList<ItemIdentifier> items = SimpleServiceLocator.logisticsManager.getCraftableItems(getRouter().getIRoutersByCost());
 		List<ItemStack> list = new ArrayList<ItemStack>(items.size());
 		for(ItemIdentifier item:items) {

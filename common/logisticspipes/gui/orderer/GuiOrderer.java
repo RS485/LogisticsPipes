@@ -282,7 +282,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 				if (lastClickedx >= realX && lastClickedx < realX + panelxSize && lastClickedy >= realY && lastClickedy < realY + panelySize) {
 					selectedItem = itemIdentifierStack;
 					drawRect(x - 2, y - 2, x + panelxSize - 2, y + panelySize - 2, Colors.Black);
-					drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.White);
+					drawRect(x - 1, y - 1, x + panelxSize - 3, y + panelySize - 3, Colors.LightGrey);
 					drawRect(x, y, x + panelxSize - 4, y + panelySize - 4, Colors.DarkGrey);
 					specialItemRendering(itemIdentifierStack.getItem(), x, y);
 				}

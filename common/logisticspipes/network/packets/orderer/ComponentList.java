@@ -8,6 +8,7 @@ import java.util.List;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.orderer.GuiOrderer;
+import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.utils.ItemMessage;
 import lombok.Getter;
@@ -58,6 +59,7 @@ public class ComponentList extends ModernPacket {
 			data.writeInt(msg.id);
 			data.writeInt(msg.data);
 			data.writeInt(msg.amount);
+			SendNBTTagCompound.writeNBTTagCompound(msg.tag, data);
 		}
 		data.write(0);
 		for(ItemMessage msg:missing) {
@@ -65,6 +67,7 @@ public class ComponentList extends ModernPacket {
 			data.writeInt(msg.id);
 			data.writeInt(msg.data);
 			data.writeInt(msg.amount);
+			SendNBTTagCompound.writeNBTTagCompound(msg.tag, data);
 		}
 		data.write(0);
 	}
@@ -76,6 +79,7 @@ public class ComponentList extends ModernPacket {
 			msg.id = data.readInt();
 			msg.data = data.readInt();
 			msg.amount = data.readInt();
+			msg.tag = SendNBTTagCompound.readNBTTagCompound(data);
 			used.add(msg);
 		}
 		while(data.read() != 0) {
@@ -83,6 +87,7 @@ public class ComponentList extends ModernPacket {
 			msg.id = data.readInt();
 			msg.data = data.readInt();
 			msg.amount = data.readInt();
+			msg.tag = SendNBTTagCompound.readNBTTagCompound(data);
 			missing.add(msg);
 		}
 	}

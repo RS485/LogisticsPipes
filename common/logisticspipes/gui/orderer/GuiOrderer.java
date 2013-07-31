@@ -470,12 +470,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		super.handleMouseInputSub();
 	}
 
-	public void handleRequestAnswer(ItemMessage itemMessage, boolean error, ISubGuiControler control, EntityPlayer player) {
-		List<ItemMessage> list = new ArrayList<ItemMessage>();
-		list.add(itemMessage);
-		handleRequestAnswer(list, error, control, player);
-	}
-
 	public void handleRequestAnswer(List<ItemMessage> items, boolean error, ISubGuiControler control, EntityPlayer player) {
 		if (!error){
 			ArrayList<String> msg = new ArrayList<String>();

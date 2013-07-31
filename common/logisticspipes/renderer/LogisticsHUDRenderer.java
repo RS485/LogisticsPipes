@@ -338,6 +338,7 @@ public class LogisticsHUDRenderer {
 				}
 				if(k - 1 == (int) i % flags.size()) {
 					setColor(type);
+					break;
 				}
 			}
 		}

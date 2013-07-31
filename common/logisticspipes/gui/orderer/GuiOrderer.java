@@ -11,6 +11,8 @@ package logisticspipes.gui.orderer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import logisticspipes.config.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
@@ -34,6 +36,8 @@ import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 
@@ -338,6 +342,16 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		if(searchinput1 == "" && searchinput2 == "") return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;
 		if(isSearched(String.valueOf(item.itemID),(searchinput1 + searchinput2))) return true;
+		//Enchantment? Enchantment!
+		Map<Integer,Integer> enchantIdLvlMap = EnchantmentHelper.getEnchantments(item.unsafeMakeNormalStack(1));
+		for(Entry<Integer,Integer> e:enchantIdLvlMap.entrySet()) {
+			if (e.getKey().intValue() < Enchantment.enchantmentsList.length && Enchantment.enchantmentsList[e.getKey()] != null) {
+				String enchantname = Enchantment.enchantmentsList[e.getKey()].getTranslatedName(e.getValue());
+				if(enchantname != null) {
+					if(isSearched(enchantname.toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;
+				}
+			}
+		}
 		return false;
 	}
 	

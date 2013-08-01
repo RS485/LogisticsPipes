@@ -10,7 +10,7 @@ public class EntrencsLogic extends BaseRoutingLogic {
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, worldObj, xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), xCoord, yCoord, zCoord);
 		}
 	}
 	

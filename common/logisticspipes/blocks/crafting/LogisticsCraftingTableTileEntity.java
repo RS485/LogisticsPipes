@@ -35,7 +35,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
 		for(IRecipe r : CraftingUtil.getRecipeList()) {
-			if(r.matches(craftInv, worldObj)) {
+			if(r.matches(craftInv, getWorld())) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
 			}

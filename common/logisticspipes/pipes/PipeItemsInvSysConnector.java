@@ -48,10 +48,11 @@ import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectRoutingConnection, IHeadUpDisplayRendererProvider, IOrderManagerContentReceiver{
@@ -110,15 +111,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	private void checkConnectedInvs() {
-		WorldUtil wUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile instanceof IInventory) {
 				IInventory inv = InventoryHelper.getInventory((IInventory) tile.tile);
 				if(inv instanceof net.minecraft.inventory.ISidedInventory) {
 					inv = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)inv, tile.orientation.getOpposite(),false);
-				}
-				if(inv instanceof net.minecraftforge.common.ISidedInventory) {
-					inv = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory)inv, tile.orientation.getOpposite());
 				}
 				if(checkOneConnectedInv(inv,tile.orientation)) {
 					updateContentListener();
@@ -154,11 +152,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	public void sendStack(ItemStack stack, int destination, ForgeDirection dir, TransportMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.getWorld());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(mode);
 		super.queueRoutedItem(itemToSend, dir);
-		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.worldObj, 4);
+		MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
 	}
 	
 	private UUID getConnectionUUID() {
@@ -189,8 +187,8 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 
 	private void dropFreqCard() {
 		if(inv.getStackInSlot(0) == null) return;
-		EntityItem item = new EntityItem(worldObj,this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
-		worldObj.spawnEntityInWorld(item);
+		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
+		getWorld().spawnEntityInWorld(item);
 		inv.setInventorySlotContents(0, null);
 	}
 
@@ -209,12 +207,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 	
 	@Override
-	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(world)) {
+	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(getWorld())) {
 			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, world, i, j, k);
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), i, j, k);
 			} else {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 		}
 		return true;
@@ -276,14 +274,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 	
 	private boolean hasRemoteConnection() {
-		return hasConnectionUUID() && this.worldObj != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
+		return hasConnectionUUID() && this.getWorld() != null && SimpleServiceLocator.connectionManager.hasDirectConnection(getRouter());
 	}
 	
 	private boolean inventoryConnected() {
 		for (int i = 0; i < 6; i++)	{
 			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
 			p.moveForwards(1);
-			TileEntity tile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			TileEntity tile = getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(tile instanceof IInventory) {
 				return true;
 			}
@@ -330,7 +328,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		for (int i = 0; i < 6; i++)	{
 			Position p = new Position(getX(), getY(), getZ(), ForgeDirection.values()[i]);
 			p.moveForwards(1);
-			TileEntity lTile = worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			TileEntity lTile = getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(lTile instanceof IInventory) {
 				if(lTile == tile) {
 					return true;
@@ -341,16 +339,16 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return false;
 	}
 	
-	public void handleItemEnterInv(EntityData data, TileEntity tile) {
+	public void handleItemEnterInv(TravelingItem data, TileEntity tile) {
 		if(isConnectedInv(tile)) {
-			if(data.item instanceof IRoutedItem) {
-				IRoutedItem routed = (IRoutedItem)data.item;
+			if(data instanceof IRoutedItem) {
+				IRoutedItem routed = (IRoutedItem)data;
 				if(hasRemoteConnection()) {
 					CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 					if(CRP instanceof IDirectRoutingConnection) {
 						IDirectRoutingConnection pipe = (IDirectRoutingConnection) CRP;
 						pipe.addItem(ItemIdentifier.get(routed.getItemStack()), routed.getItemStack().stackSize, routed.getDestination(), routed.getTransportMode());
-						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.worldObj, 4);
+						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
 					}
 				}
 			}

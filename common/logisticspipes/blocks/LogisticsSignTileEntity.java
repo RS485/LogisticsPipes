@@ -23,18 +23,18 @@ public class LogisticsSignTileEntity extends TileEntity {
 	public void updateEntity() {
 		if(!init) {
     		init = true;
-    		if(!MainProxy.isClient(worldObj)) {
+    		if(!MainProxy.isClient(getWorld())) {
     			PipeItemsCraftingLogistics crafting = getAttachedSignOwnerPipe();
     			if(crafting != null) {
     				ForgeDirection dir = OrientationsUtil.getOrientationOfTilewithPipe(crafting.transport, this);
     				crafting.setCraftingSign(dir, true, null);
-    				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    				getWorld().setBlockToAir(xCoord, yCoord, zCoord);
     			} else {
     				for(CoreRoutedPipe pipe:getNearRoutingPipes()) {
     	    			if(pipe instanceof PipeItemsCraftingLogistics) {
     	    				ForgeDirection dir = OrientationsUtil.getOrientationOfTilewithPipe(((PipeItemsCraftingLogistics)pipe).transport, this);
     	    				((PipeItemsCraftingLogistics)pipe).setCraftingSign(dir, true, null);
-    	    				worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    	    				getWorld().setBlockToAir(xCoord, yCoord, zCoord);
         	    			break;
     	    			}
     	    		}
@@ -54,19 +54,19 @@ public class LogisticsSignTileEntity extends TileEntity {
 	
 	private CoreRoutedPipe[] getNearRoutingPipes() {
 		List<CoreRoutedPipe> list = new ArrayList<CoreRoutedPipe>();
-		TileEntity tile = worldObj.getBlockTileEntity(xCoord + 1,yCoord,zCoord);
+		TileEntity tile = getWorld().getBlockTileEntity(xCoord + 1,yCoord,zCoord);
 		if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 			list.add((CoreRoutedPipe) ((TileGenericPipe)tile).pipe);
 		}
-		tile = worldObj.getBlockTileEntity(xCoord - 1,yCoord,zCoord);
+		tile = getWorld().getBlockTileEntity(xCoord - 1,yCoord,zCoord);
 		if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 			list.add((CoreRoutedPipe) ((TileGenericPipe)tile).pipe);
 		}
-		tile = worldObj.getBlockTileEntity(xCoord,yCoord,zCoord + 1);
+		tile = getWorld().getBlockTileEntity(xCoord,yCoord,zCoord + 1);
 		if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 			list.add((CoreRoutedPipe) ((TileGenericPipe)tile).pipe);
 		}
-		tile = worldObj.getBlockTileEntity(xCoord,yCoord,zCoord - 1);
+		tile = getWorld().getBlockTileEntity(xCoord,yCoord,zCoord - 1);
 		if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 			list.add((CoreRoutedPipe) ((TileGenericPipe)tile).pipe);
 		}

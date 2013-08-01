@@ -9,7 +9,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.TileGenericPipe;
 
 public class TesseractConnection implements ISpecialTileConnection {
@@ -30,7 +30,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			Position p = new Position(tile.xCoord, tile.yCoord, tile.zCoord, direction);
 			p.moveForwards(1);
-			TileEntity canidate = tile.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			TileEntity canidate = tile.getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
 				if(onlyOnePipe) {
 					onlyOnePipe = false;
@@ -50,7 +50,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				Position p = new Position(connected.xCoord, connected.yCoord, connected.zCoord, direction);
 				p.moveForwards(1);
-				TileEntity canidate = connected.worldObj.getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+				TileEntity canidate = connected.getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 				if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
 					if(pipe != null) {
 						pipe = null;
@@ -77,7 +77,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 	}
 
 	@Override
-	public void transmit(TileEntity tile, EntityData data) {
+	public void transmit(TileEntity tile, TravelingItem data) {
 		List<TileGenericPipe> list = getConnections(tile);
 		if(list.size() < 1) return;
 		TileGenericPipe pipe = list.get(0);

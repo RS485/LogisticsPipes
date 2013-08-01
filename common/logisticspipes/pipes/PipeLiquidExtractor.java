@@ -8,8 +8,8 @@ import logisticspipes.transport.PipeLiquidTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.ITankContainer;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.transport.TileGenericPipe;
 
 public class PipeLiquidExtractor extends PipeLiquidInsertion {
@@ -25,25 +25,25 @@ public class PipeLiquidExtractor extends PipeLiquidInsertion {
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(worldObj.getWorldTime() % 10 == 0) return;
+		if(getWorld().getWorldTime() % 10 == 0) return;
 		LinkedList<AdjacentTile> connected = this.getConnectedEntities();
 		for(AdjacentTile tile:connected) {
-			if(tile.tile instanceof ITankContainer && !(tile.tile instanceof TileGenericPipe)) {
-				extractFrom((ITankContainer) tile.tile, tile.orientation);
+			if(tile.tile instanceof IFluidHandler && !(tile.tile instanceof TileGenericPipe)) {
+				extractFrom((IFluidHandler) tile.tile, tile.orientation);
 			}
 		}
 	}
 	
-	private void extractFrom(ITankContainer container, ForgeDirection side) {
+	private void extractFrom(IFluidHandler container, ForgeDirection side) {
 		int i = side.ordinal();
-		LiquidStack contained = ((PipeLiquidTransportLogistics)this.transport).getTanks(side)[0].getLiquid();
+		FluidStack contained = ((PipeLiquidTransportLogistics)this.transport).getTanks(side)[0].getLiquid();
 		int amountMissing = ((PipeLiquidTransportLogistics)this.transport).getSideCapacity() - (contained != null ? contained.amount : 0);
 		if(liquidToExtract[i] < Math.min(200, amountMissing)) {
 			if(this.useEnergy(2)) {
 				liquidToExtract[i] += Math.min(200, amountMissing);
 			}
 		}
-		LiquidStack extracted = container.drain(side.getOpposite(), liquidToExtract[i] > flowRate ? flowRate : liquidToExtract[i], false);
+		FluidStack extracted = container.drain(side.getOpposite(), liquidToExtract[i] > flowRate ? flowRate : liquidToExtract[i], false);
 
 		int inserted = 0;
 		if (extracted != null) {

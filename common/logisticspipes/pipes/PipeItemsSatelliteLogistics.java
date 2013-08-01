@@ -61,7 +61,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Override
 	public void enabledUpdateEntity() {
-		if(worldObj.getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if(getWorld().getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}
@@ -91,7 +91,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private IInventory getRawInventory(ForgeDirection ori) {
 		Position pos = new Position(this.getX(), this.getY(), this.getZ(), ori);
 		pos.moveForwards(1);
-		TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 		if (tile instanceof TileGenericPipe) return null;
 		if (!(tile instanceof IInventory)) return null;
 		return InventoryHelper.getInventory((IInventory) tile);
@@ -100,7 +100,6 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private IInventory getInventory(ForgeDirection ori) {
 		IInventory rawInventory = getRawInventory(ori);
 		if (rawInventory instanceof net.minecraft.inventory.ISidedInventory) return new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) rawInventory, ori.getOpposite(), false);
-		if (rawInventory instanceof net.minecraftforge.common.ISidedInventory) return new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) rawInventory, ori.getOpposite());
 		return rawInventory;
 	}
 	
@@ -138,7 +137,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(((BaseLogicSatellite)this.logic).satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
+			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(((BaseLogicSatellite)this.logic).satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 //TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
 			updateInv(true);

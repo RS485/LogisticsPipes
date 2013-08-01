@@ -87,7 +87,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 	
 	private boolean isPowerJunction(ForgeDirection ori) {
-		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		TileEntity tilePipe = this.container.getTile(ori);
 		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
 			return false;
 		}
@@ -99,7 +99,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	private boolean isPowerProvider(ForgeDirection ori) {
-		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		TileEntity tilePipe = this.container.getTile(ori);
 		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
 			return false;
 		}
@@ -111,7 +111,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 	
 	private boolean isSecurityProvider(ForgeDirection ori) {
-		TileEntity tilePipe = this.container.tileBuffer[ori.ordinal()].getTile();
+		TileEntity tilePipe = this.container.getTile(ori);
 		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
 			return false;
 		}
@@ -155,7 +155,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {
 		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
-		WorldUtil world = new WorldUtil(this.worldObj, this.getX(), this.getY(), this.getZ());
+		WorldUtil world = new WorldUtil(this.getWorld(), this.getX(), this.getY(), this.getZ());
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
 		for(AdjacentTile tile:adjacent) {
 			if(tile.tile instanceof ILogisticsPowerProvider) {

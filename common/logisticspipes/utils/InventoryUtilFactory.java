@@ -32,10 +32,6 @@ public class InventoryUtilFactory {
 	private TileEntity getTileEntityFromInventory(IInventory inv) {
 		if(inv instanceof TileEntity) {
 			return (TileEntity) inv;
-		} else if(inv instanceof SidedInventoryForgeAdapter) {
-			if(((SidedInventoryForgeAdapter) inv)._sidedInventory instanceof TileEntity) {
-				return (TileEntity) ((SidedInventoryForgeAdapter) inv)._sidedInventory;
-			}
 		} else if(inv instanceof SidedInventoryMinecraftAdapter) {
 			if(((SidedInventoryMinecraftAdapter) inv)._sidedInventory instanceof TileEntity) {
 				return (TileEntity) ((SidedInventoryMinecraftAdapter) inv)._sidedInventory;

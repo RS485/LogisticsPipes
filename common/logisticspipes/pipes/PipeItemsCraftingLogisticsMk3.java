@@ -26,7 +26,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.core.EntityPassiveItem;
+import buildcraft.transport.TravelingItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransportItems;
 import cpw.mods.fml.common.network.Player;
@@ -66,7 +66,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
 		if(inv.isEmpty()) return;
-		if(worldObj.getWorldTime() % 6 != 0) return;
+		if(getWorld().getWorldTime() % 6 != 0) return;
 		//Add from internal buffer
 		List<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) {sendBuffer();return;}
@@ -108,9 +108,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			if(stackToSend==null) continue;
 			Position p = new Position(container.xCoord, container.yCoord, container.zCoord, null);
 			Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, ForgeDirection.UNKNOWN);
-			EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, entityPos.x, entityPos.y, entityPos.z, stackToSend);
+			TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
 			entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-			((PipeTransportItems) transport).entityEntering(entityItem, entityPos.orientation);
+			((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
 			inv.setInventorySlotContents(i, null);
 			break;
 		}
@@ -121,7 +121,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	@Override
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
-		inv.dropContents(worldObj, getX(), getY(), getZ());
+		inv.dropContents();
 	}
 
 	@Override

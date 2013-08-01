@@ -8,15 +8,15 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 
 public class EntrencsTransport extends PipeTransportLogistics {
 	
 	public PipeItemsSystemEntranceLogistics pipe;
 	
 	@Override
-	public ForgeDirection resolveDestination(EntityData data) {
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(container.worldObj, data);
+	public ForgeDirection resolveDestination(TravelingItem data) {
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(container.getWorld(), data);
 		if(routedItem.getDestination() < 0 || routedItem.getArrived()) {
 			if(pipe.getLocalFreqUUID() != null) {
 				if(pipe.useEnergy(5)) {

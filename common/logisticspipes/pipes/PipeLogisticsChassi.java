@@ -149,7 +149,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		}
 		if(ChassiLogic.orientation != oldOrientation) {
 			clearCache();
-			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(worldObj), PacketHandler.getPacket(PipeUpdate.class).setPayload(getLogisticsNetworkPacket()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(PipeUpdate.class).setPayload(getLogisticsNetworkPacket()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			refreshRender(true);
 		}
 	}
@@ -159,7 +159,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if (getRouter().isRoutedExit(connection)) return false;
 		Position pos = new Position(getX(), getY(), getZ(), connection);
 		pos.moveForwards(1.0);
-		TileEntity tile = worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+		TileEntity tile = getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 
 		if (tile == null) return false;
 		if (tile instanceof TileGenericPipe) return false;
@@ -191,7 +191,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	@Override
 	public void onNeighborBlockChange_Logistics() {
 		if (!isValidOrientation(ChassiLogic.orientation)){
-			if(MainProxy.isServer(this.worldObj)) {
+			if(MainProxy.isServer(this.getWorld())) {
 				nextOrientation();
 			}
 		}
@@ -288,7 +288,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.getWorld());
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
 			if (reply.getValue2().isDefault){
@@ -309,7 +309,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.getWorld());
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.addRelayPoints(relays);
@@ -346,7 +346,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
 		_moduleInventory.removeListener(this);
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(this.getWorld())) {
 			for (int i = 0; i < this.getChassiSize(); i++){
 				LogisticsModule x = _module.getSubModule(i);
 				if (x instanceof ILegacyActiveModule) {
@@ -359,7 +359,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 					ItemModuleInformationManager.saveInfotmation(_moduleInventory.getStackInSlot(i), this.getLogisticsModule().getSubModule(i));
 				}
 			}
-			_moduleInventory.dropContents(this.worldObj, getX(), getY(), getZ());
+			_moduleInventory.dropContents(this.getWorld(), getX(), getY(), getZ());
 		}
 	}
 
@@ -390,7 +390,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			}
 		}
 		if (reInitGui) {
-			if(MainProxy.isClient(this.worldObj)) {
+			if(MainProxy.isClient(this.getWorld())) {
 				if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiChassiPipe){
 					FMLClientHandler.instance().getClient().currentScreen.initGui();
 				}
@@ -416,18 +416,18 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public void ignoreDisableUpdateEntity() {
 		if (switchOrientationOnTick){
 			switchOrientationOnTick = false;
-			if(MainProxy.isServer(this.worldObj)) {
+			if(MainProxy.isServer(this.getWorld())) {
 				nextOrientation();
 			}
 		}
-		if(convertFromMeta && worldObj.getBlockMetadata(getX(), getY(), getZ()) != 0) {
-			ChassiLogic.orientation = ForgeDirection.values()[worldObj.getBlockMetadata(getX(), getY(), getZ()) % 6];
-			worldObj.setBlockMetadataWithNotify(getX(), getY(), getZ(), 0,0);
+		if(convertFromMeta && getWorld().getBlockMetadata(getX(), getY(), getZ()) != 0) {
+			ChassiLogic.orientation = ForgeDirection.values()[getWorld().getBlockMetadata(getX(), getY(), getZ()) % 6];
+			getWorld().setBlockMetadataWithNotify(getX(), getY(), getZ(), 0,0);
 			convertFromMeta=false;
 		}
 		if(!init) {
 			init = true;
-			if(MainProxy.isClient(this.worldObj)) {
+			if(MainProxy.isClient(this.getWorld())) {
 //TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_PIPE_UPDATE, getX(), getY(), getZ()).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestPipeUpdatePacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}
@@ -470,7 +470,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				} else {
-					entityplayer.sendChatToPlayer("Permission denied");
+					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 				}
 			}
 			return true;
@@ -481,7 +481,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
-					entityplayer.sendChatToPlayer("Permission denied");
+					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 				}
 			}
 			return true;
@@ -522,7 +522,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				ILegacyActiveModule y = (ILegacyActiveModule)x;
 				if(y.filterAllowsItem(promise.item)) {
 					y.fullFill(promise, destination);
-					MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.worldObj, 2);
+					MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
 					return;
 				}
 			}
@@ -550,7 +550,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public World getWorld() {
-		return this.worldObj;
+		return this.getWorld();
 	}
 
 	@Override
@@ -600,7 +600,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public int sendQueueChanged(boolean force) {
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(this.getWorld())) {
 			if(Configs.MULTI_THREAD_NUMBER > 0 && !force) {
 				HudUpdateTick.add(getRouter());
 			} else {

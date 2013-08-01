@@ -76,11 +76,11 @@ import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.tools.IToolWrench;
 import buildcraft.api.transport.IPipedItem;
-import buildcraft.core.EntityPassiveItem;
+import buildcraft.transport.TravelingItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
@@ -169,9 +169,9 @@ public class BuildCraftProxy {
 		Utils.dropItems(world, stack, x, y, z);
 	}
 
-	public IRoutedItem GetOrCreateRoutedItem(World worldObj, EntityData itemData) {
+	public IRoutedItem GetOrCreateRoutedItem(World getWorld(), TravelingItem itemData) {
 		if (!isRoutedItem(itemData.item)){
-			RoutedEntityItem newItem = new RoutedEntityItem(worldObj, itemData.item);
+			RoutedEntityItem newItem = new RoutedEntityItem(getWorld(), itemData.item);
 			itemData.item = newItem;
 			return newItem;
 		}
@@ -186,14 +186,14 @@ public class BuildCraftProxy {
 		return (IRoutedItem) item;
 	}
 	
-	public IRoutedItem CreateRoutedItem(World worldObj, IPipedItem item) {
-		RoutedEntityItem newItem = new RoutedEntityItem(worldObj, item);
+	public IRoutedItem CreateRoutedItem(World getWorld(), IPipedItem item) {
+		RoutedEntityItem newItem = new RoutedEntityItem(getWorld(), item);
 		return newItem;
 	}
 
-	public IRoutedItem CreateRoutedItem(ItemStack payload, World worldObj) {
-		EntityPassiveItem entityItem = new EntityPassiveItem(worldObj, 0, 0, 0, payload);
-		return CreateRoutedItem(worldObj, entityItem);
+	public IRoutedItem CreateRoutedItem(ItemStack payload, World getWorld()) {
+		TravelingItem entityItem = new TravelingItem(getWorld(), 0, 0, 0, payload);
+		return CreateRoutedItem(getWorld(), entityItem);
 	}
 
 	public void registerTrigger() {

@@ -26,16 +26,17 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Position;
 import buildcraft.api.transport.IPipedItem;
-import buildcraft.core.EntityPassiveItem;
+import buildcraft.transport.TravelingItem;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
-public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
+public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 
 
 	int destinationint = -1;
@@ -54,7 +55,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	List<Integer> jamlist = new ArrayList<Integer>();
 	
-	public RoutedEntityItem(World world, IPipedItem entityItem) {
+	public RoutedEntityItem(World world, TravelingItem entityItem) {
 		super(world, entityItem.getEntityId());
 		thisItem = ItemIdentifierStack.GetFromStack(entityItem.getItemStack());
 		container = entityItem.getContainer();
@@ -90,7 +91,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public EntityItem toEntityItem(ForgeDirection dir) {
-		if (!CoreProxy.proxy.isRenderWorld(worldObj)) {
+		if (!CoreProxy.proxy.isRenderWorld(getWorld())) {
 			if (getItemStack().stackSize <= 0) {
 				return null;
 			}
@@ -120,16 +121,16 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			Position motion = new Position(0, 0, 0, dir);
 			motion.moveForwards(0.1 + getSpeed() * 2F);
 
-			EntityItem entityitem = new EntityItem(worldObj, position.x, position.y, position.z, getItemStack());
+			EntityItem entityitem = new EntityItem(getWorld(), position.x, position.y, position.z, getItemStack());
 
 			entityitem.lifespan = BuildCraftCore.itemLifespan;
 			entityitem.delayBeforeCanPickup = 10;
 
-			float f3 = worldObj.rand.nextFloat() * 0.01F - 0.02F;
-			entityitem.motionX = (float) worldObj.rand.nextGaussian() * f3 + motion.x;
-			entityitem.motionY = (float) worldObj.rand.nextGaussian() * f3 + motion.y;
-			entityitem.motionZ = (float) worldObj.rand.nextGaussian() * f3 + motion.z;
-			worldObj.spawnEntityInWorld(entityitem);
+			float f3 = getWorld().rand.nextFloat() * 0.01F - 0.02F;
+			entityitem.motionX = (float) getWorld().rand.nextGaussian() * f3 + motion.x;
+			entityitem.motionY = (float) getWorld().rand.nextGaussian() * f3 + motion.y;
+			entityitem.motionZ = (float) getWorld().rand.nextGaussian() * f3 + motion.z;
+			getWorld().spawnEntityInWorld(entityitem);
 			remove();
 
 			return entityitem;
@@ -148,7 +149,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 				}
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableLiquidTransport) {
 					if(item.getItem() instanceof LogisticsLiquidContainer) {
-						LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+						FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
 						((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).liquidLost(LiquidIdentifier.get(liquid), liquid.amount);
 					}
 				}
@@ -166,7 +167,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	
 	@Override
 	public void remove() {
-		if(MainProxy.isClient(this.worldObj)) return;
+		if(MainProxy.isClient(this.getWorld())) return;
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableTransport){
@@ -174,7 +175,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 			}
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe().logic instanceof IRequireReliableLiquidTransport) {
 				if(item.getItem() instanceof LogisticsLiquidContainer) {
-					LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+					FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
 					((IRequireReliableLiquidTransport)destinationRouter.getPipe().logic).liquidLost(LiquidIdentifier.get(liquid), liquid.amount);
 				}
 			}
@@ -228,7 +229,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public EntityPassiveItem getEntityPassiveItem() {
+	public TravelingItem getTravelingItem() {
 		return this;
 	}
 
@@ -244,11 +245,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public void split(World worldObj, int itemsToTake, ForgeDirection orientation) {
+	public void split(World getWorld(), int itemsToTake, ForgeDirection orientation) {
 		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
 			throw new UnsupportedOperationException("Can't split up a LiquidContainer");
 		}
-		EntityPassiveItem newItem = new EntityPassiveItem(worldObj);
+		TravelingItem newItem = new TravelingItem(getWorld());
 		newItem.setPosition(position.x, position.y, position.z);
 		newItem.setSpeed(this.speed);
 		newItem.setItemStack(this.item.splitStack(this.item.stackSize - itemsToTake));
@@ -256,7 +257,7 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 		if (this.container instanceof TileGenericPipe && ((TileGenericPipe)this.container).pipe.transport instanceof PipeTransportItems){
 			if (((TileGenericPipe)this.container).pipe instanceof PipeLogisticsChassi){
 				PipeLogisticsChassi chassi = (PipeLogisticsChassi) ((TileGenericPipe)this.container).pipe;
-				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(worldObj, newItem), orientation, ItemSendMode.Fast);
+				chassi.queueRoutedItem(SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(getWorld(), newItem), orientation, ItemSendMode.Fast);
 			} else {
 				//this should never happen
 				newItem.toEntityItem(orientation);
@@ -281,11 +282,11 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	public EntityPassiveItem getNewEntityPassiveItem() {
+	public TravelingItem getNewTravelingItem() {
 		if(getItemStack().getItem() instanceof LogisticsLiquidContainer) {
-			throw new UnsupportedOperationException("Can't change LiquidContainer to EntityPassiveItem");
+			throw new UnsupportedOperationException("Can't change LiquidContainer to TravelingItem");
 		}
-		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
+		TravelingItem Entityitem = new TravelingItem(getWorld(), entityId);
 		Entityitem.setContainer(container);
 		Entityitem.setPosition(position.x, position.y, position.z);
 		Entityitem.setSpeed(speed);
@@ -315,12 +316,12 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 
 	@Override
 	public IRoutedItem getCopy() {
-		EntityPassiveItem Entityitem = new EntityPassiveItem(worldObj, entityId);
+		TravelingItem Entityitem = new TravelingItem(getWorld(), entityId);
 		Entityitem.setContainer(container);
 		Entityitem.setPosition(position.x, position.y, position.z);
 		Entityitem.setSpeed(speed);
 		Entityitem.setItemStack(item.copy());
-		RoutedEntityItem routed = new RoutedEntityItem(worldObj, Entityitem);
+		RoutedEntityItem routed = new RoutedEntityItem(getWorld(), Entityitem);
 		routed.destinationint = destinationint;
 		routed._doNotBuffer = _doNotBuffer;
 		routed.bufferCounter = bufferCounter;

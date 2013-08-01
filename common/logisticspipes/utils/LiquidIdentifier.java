@@ -8,10 +8,12 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import logisticspipes.LogisticsPipes;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.ILiquidTank;
-import net.minecraftforge.liquids.ITankContainer;
-import net.minecraftforge.liquids.LiquidDictionary;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.FluidRegistry;
+import net.minecraftforge.fluids.FluidStack;
 
 import com.google.common.base.Objects;
 
@@ -19,11 +21,11 @@ public class LiquidIdentifier {
 
 	private static class ItemKey implements Comparable<ItemKey>{
 
-		public int itemID;
+		public int fluidID;
 		public int itemDamage;
 		
 		public ItemKey(int id, int d){
-			itemID=id;
+			fluidID=id;
 			itemDamage=d;
 		}
 		
@@ -32,7 +34,7 @@ public class LiquidIdentifier {
 			if (!(that instanceof ItemKey))
 				return false;
 			ItemKey i = (ItemKey)that;
-			return this.itemID== i.itemID && this.itemDamage == i.itemDamage;
+			return this.fluidID== i.fluidID && this.itemDamage == i.itemDamage;
 			
 		}
 		
@@ -40,15 +42,15 @@ public class LiquidIdentifier {
 		public int hashCode(){
 			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
 			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
-			//return ((itemID)*1000001)+itemDamage;
-			return Objects.hashCode(itemID, itemDamage);
+			//return ((fluidID)*1000001)+itemDamage;
+			return Objects.hashCode(fluidID, itemDamage);
 		}
 		
 		@Override
 		public int compareTo(ItemKey o) {
-			if(itemID==o.itemID)
+			if(fluidID==o.fluidID)
 				return itemDamage-o.itemDamage;
-			return itemID-o.itemID;
+			return fluidID-o.fluidID;
 		}
 	}
 	
@@ -56,18 +58,18 @@ public class LiquidIdentifier {
 	
 	private final static ConcurrentSkipListSet<ItemKey> _liquidIdentifierKeyQueue = new ConcurrentSkipListSet<ItemKey>();
 	
-	public final int itemId;
+	public final int fluidID;
 	public final int itemMeta;
 	public final String name;
 	
-	private LiquidIdentifier(int itemId, int itemMeta, String name) {
-		this.itemId = itemId;
+	private LiquidIdentifier(int fluidID, int itemMeta, String name) {
+		this.fluidID = fluidID;
 		this.itemMeta = itemMeta;
 		if(name == null) {
 			name = "";
 		}
 		this.name = name;
-		ItemKey key = new ItemKey(itemId, itemMeta);
+		ItemKey key = new ItemKey(fluidID, itemMeta);
 		_liquidIdentifierCache.put(key, this);
 		if(this.isVaild()) {
 			_liquidIdentifierKeyQueue.add(key);
@@ -78,50 +80,50 @@ public class LiquidIdentifier {
 		return name;
 	}
 	
-	public ItemIdentifier getItemIdentifier() {
-		return ItemIdentifier.get(itemId, itemMeta, null);
+	public LiquidIdentifier getfluidIDentifier() {
+		return LiquidIdentifier.get(fluidID, itemMeta, null);
 	}
 	
-	public static LiquidIdentifier get(LiquidStack stack) {
+	public static LiquidIdentifier get(FluidStack stack) {
 		if(stack.extra != null) {
 			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
 			new Exception().printStackTrace();
 		}
-		return get(stack.itemID, stack.itemMeta);
+		return get(stack.fluidID, stack.itemMeta);
 	}
 	
-	public static LiquidIdentifier get(LiquidStack stack, String name) {
-		if(stack.extra != null) {
+	public static LiquidIdentifier get(Fluid fluid, String name) {
+		/*if(fluid.extra != null) {
 			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
 			new Exception().printStackTrace();
+		}*/
+		return get(fluid.);
+	}
+	
+	public static LiquidIdentifier get(int fluidID, int itemMeta) {
+		return get(fluidID, itemMeta, "");
+	}
+	
+	public static LiquidIdentifier get(int fluidID, int itemMeta, String name) {
+		if(_liquidIdentifierCache.containsKey(new ItemKey(fluidID, itemMeta))) {
+			return _liquidIdentifierCache.get(new ItemKey(fluidID, itemMeta));
 		}
-		return get(stack.itemID, stack.itemMeta, name);
+		return new LiquidIdentifier(fluidID, itemMeta, name);
 	}
 	
-	public static LiquidIdentifier get(int itemID, int itemMeta) {
-		return get(itemID, itemMeta, "");
+	public FluidStack makeFluidStack(int amount) {
+		return new FluidStack(fluidID, amount, itemMeta);
 	}
 	
-	public static LiquidIdentifier get(int itemID, int itemMeta, String name) {
-		if(_liquidIdentifierCache.containsKey(new ItemKey(itemID, itemMeta))) {
-			return _liquidIdentifierCache.get(new ItemKey(itemID, itemMeta));
-		}
-		return new LiquidIdentifier(itemID, itemMeta, name);
-	}
-	
-	public LiquidStack makeLiquidStack(int amount) {
-		return new LiquidStack(itemId, amount, itemMeta);
-	}
-	
-	public int getFreeSpaceInsideTank(ITankContainer container, ForgeDirection dir) {
+	public int getFreeSpaceInsideTank(IFluidHandler container, ForgeDirection dir) {
 		int free = 0;
-		ILiquidTank[] tanks = container.getTanks(dir);
+		FluidTankInfo[] tanks = container.getTankInfo(dir);
 		if(tanks != null && tanks.length > 0) {
 			for(int i=0;i<tanks.length;i++) {
 				free += getFreeSpaceInsideTank(tanks[i]);
 			}
 		} else {
-			ILiquidTank tank = container.getTank(dir, this.makeLiquidStack(0));
+			FluidTankInfo tank = container.getTankInfo(dir, this.makeFluidStack(0));
 			if(tank != null) {
 				free += getFreeSpaceInsideTank(tank);
 			}
@@ -129,13 +131,13 @@ public class LiquidIdentifier {
 		return free;
 	}
 	
-	public int getFreeSpaceInsideTank(ILiquidTank tank) {
-		LiquidStack liquid = tank.getLiquid();
-		if(liquid == null || liquid.itemID <= 0) {
-			return tank.getCapacity();
+	public int getFreeSpaceInsideTank(FluidTankInfo tanks) {
+		FluidStack liquid = tanks.fluid;
+		if(liquid == null || liquid.fluidID <= 0) {
+			return tanks.capacity;
 		}
 		if(get(liquid) == this) {
-			return tank.getCapacity() - liquid.amount;
+			return tanks.capacity - liquid.amount;
 		}
 		return 0;
 	}
@@ -143,8 +145,8 @@ public class LiquidIdentifier {
 	private static boolean init = false;
 	public static void initFromForge(boolean flag) {
 		if(init) return;
-		Map<String, LiquidStack> liquids = LiquidDictionary.getLiquids();
-		for(Entry<String, LiquidStack> name: liquids.entrySet()) {
+		Map<String, Fluid> liquids = FluidRegistry.getRegisteredFluids()
+		for(Entry<String, Fluid> name: liquids.entrySet()) {
 			get(name.getValue(), name.getKey());
 		}
 		if(flag) {
@@ -154,15 +156,15 @@ public class LiquidIdentifier {
 	
 	@Override
 	public String toString() {
-		return name + "/" + itemId + ":" + itemMeta;
+		return name + "/" + fluidID + ":" + itemMeta;
 	}
 	
 	public boolean isVaild() {
-		return Item.itemsList.length > itemId && Item.itemsList[itemId] != null;
+		return Item.itemsList.length > fluidID && Item.itemsList[fluidID] != null;
 	}
 	
 	public LiquidIdentifier next() {
-		ItemKey key = new ItemKey(itemId, itemMeta);
+		ItemKey key = new ItemKey(fluidID, itemMeta);
 		if(!_liquidIdentifierKeyQueue.contains(key)) return first();
 		key = _liquidIdentifierKeyQueue.higher(key);
 		if(key == null) {
@@ -172,7 +174,7 @@ public class LiquidIdentifier {
 	}
 	
 	public LiquidIdentifier prev() {
-		ItemKey key = new ItemKey(itemId, itemMeta);
+		ItemKey key = new ItemKey(fluidID, itemMeta);
 		if(!_liquidIdentifierKeyQueue.contains(key)) return last();
 		key = _liquidIdentifierKeyQueue.lower(key);
 		if(key == null) {

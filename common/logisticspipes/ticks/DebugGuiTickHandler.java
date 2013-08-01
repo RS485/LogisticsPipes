@@ -45,6 +45,7 @@ import lombok.ToString;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.common.ForgeDirection;
@@ -644,28 +645,28 @@ outer:
 
 	public void targetResponse(TargetMode mode, EntityPlayer player, Object[] additions) {
 		if(mode == TargetMode.None) {
-			player.sendChatToPlayer("No Target Found");
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Target Found"));
 		} else if(mode == TargetMode.Block) {
 			int x = (Integer) additions[0];
 			int y = (Integer) additions[1];
 			int z = (Integer) additions[2];
-			player.sendChatToPlayer("Checking Block at: x:" + x + " y:" + y + " z:" + z);
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Checking Block at: x:" + x + " y:" + y + " z:" + z);
 			int id = player.worldObj.getBlockId(x, y, z);
-			player.sendChatToPlayer("Found Block with Id: " + id);
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Found Block with Id: " + id));
 			TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
 			if(tile == null) {
-				player.sendChatToPlayer("No TileEntity found");
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No TileEntity found"));
 			} else {
-				player.sendChatToPlayer("Starting Debuging of TileEntity: " + tile.getClass().getSimpleName());
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Starting Debuging of TileEntity: " + tile.getClass().getSimpleName()));
 				this.startWatchingOf(tile, (Player)player);
 			}
 		} else if(mode == TargetMode.Entity) {
 			int entityId = (Integer) additions[0];
 			Entity entitiy = player.worldObj.getEntityByID(entityId);
 			if(entitiy == null) {
-				player.sendChatToPlayer("No Entity found");
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Entity found"));
 			} else {
-				player.sendChatToPlayer("Starting Debuging of Entity: " + entitiy.getClass().getSimpleName());
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Starting Debuging of Entity: " + entitiy.getClass().getSimpleName()));
 				this.startWatchingOf(entitiy, (Player)player);
 			}
 		}

@@ -127,7 +127,7 @@ public class CardManagmentInventory implements IInventory {
 	public void closeChest() {}
 
 	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		if(itemstack == null) return false;
 		if(i == 0 || i == 1) {
 			return itemstack.getItem() instanceof ItemModule;
@@ -138,6 +138,7 @@ public class CardManagmentInventory implements IInventory {
 	}
 	
 	public void close(EntityPlayer player) {
-		inv.dropContents(player.worldObj, (int)player.posX, (int)player.posY, (int)player.posZ);
+		inv.dropContents();
 	}
+
 }

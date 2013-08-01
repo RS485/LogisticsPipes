@@ -23,9 +23,9 @@ import logisticspipes.utils.Pair3;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.ILiquidTank;
-import net.minecraftforge.liquids.ITankContainer;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.transport.PipeTransportLiquids;
 import buildcraft.transport.TileGenericPipe;
 
@@ -39,24 +39,24 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 
 	@Override
 	public void enabledUpdateEntity() {
-		if (!manager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
+		if (!manager.hasOrders() || getWorld().getWorldTime() % 6 != 0) return;
 		
 		Pair3<LiquidIdentifier, Integer, IRequestLiquid> order = manager.getFirst();
 		int amountToSend = Math.min(order.getValue2(), 5000);
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			if(amountToSend <= 0) break;
-			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
-			for(ILiquidTank tank:tanks) {
-				LiquidStack liquid;
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			for(IFluidTank tank:tanks) {
+				FluidStack liquid;
 				if((liquid = tank.getLiquid()) != null) {
 					if(order.getValue1() == LiquidIdentifier.get(liquid)) {
 						int amount = Math.min(liquid.amount, amountToSend);
 						amountToSend -= amount;
-						LiquidStack drained = ((ITankContainer)pair.getValue1()).drain(pair.getValue2(), amount, false);
+						FluidStack drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2(), amount, false);
 						if(drained != null && order.getValue1() == LiquidIdentifier.get(drained)) {
-							drained = ((ITankContainer)pair.getValue1()).drain(pair.getValue2(), amount, true);
+							drained = ((IFluidHandler)pair.getValue1()).drain(pair.getValue2(), amount, true);
 							ItemStack stack = SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(drained);
-							IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, worldObj);
+							IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, getWorld());
 							item.setDestination(order.getValue3().getRouter().getSimpleID());
 							item.setTransportMode(TransportMode.Active);
 							this.queueRoutedItem(item, pair.getValue2());
@@ -76,9 +76,9 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	public Map<LiquidIdentifier, Integer> getAvailableLiquids() {
 		Map<LiquidIdentifier, Integer> map = new HashMap<LiquidIdentifier, Integer>();
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
-			for(ILiquidTank tank:tanks) {
-				LiquidStack liquid;
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			for(IFluidTank tank:tanks) {
+				FluidStack liquid;
 				if((liquid = tank.getLiquid()) != null && liquid.itemID != 0) {
 					LiquidIdentifier ident = LiquidIdentifier.get(liquid);
 					if(map.containsKey(ident)) {
@@ -118,9 +118,9 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 		if(request.isDone()) return;
 		int containedAmount = 0;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
-			for(ILiquidTank tank:tanks) {
-				LiquidStack liquid;
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			for(IFluidTank tank:tanks) {
+				FluidStack liquid;
 				if((liquid = tank.getLiquid()) != null) {
 					if(request.getLiquid() == LiquidIdentifier.get(liquid)) {
 						containedAmount += liquid.amount;
@@ -157,9 +157,9 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			ILiquidTank[] tanks = ((ITankContainer)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
-			for(ILiquidTank tank:tanks) {
-				LiquidStack liquid;
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			for(IFluidTank tank:tanks) {
+				FluidStack liquid;
 				if((liquid = tank.getLiquid()) != null && liquid.itemID != 0) {
 					LiquidIdentifier ident = LiquidIdentifier.get(liquid);
 					l1.add(ident.getItemIdentifier());

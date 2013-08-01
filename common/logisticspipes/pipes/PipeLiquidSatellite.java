@@ -30,9 +30,9 @@ import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.ILiquidTank;
-import net.minecraftforge.liquids.ITankContainer;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiquid, IHeadUpDisplayRendererProvider, IChestContentReceiver {
@@ -74,7 +74,7 @@ public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiq
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(worldObj.getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if(getWorld().getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}
@@ -99,11 +99,11 @@ public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiq
 	private void updateInv(boolean force) {
 		itemList.clear();
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			if(!(pair.getValue1() instanceof ITankContainer)) continue;
-			ITankContainer tankContainer = (ITankContainer) pair.getValue1();
-			ILiquidTank[] tanks = tankContainer.getTanks(pair.getValue2().getOpposite());
-			for(ILiquidTank tank: tanks) {
-				LiquidStack liquid = tank.getLiquid();
+			if(!(pair.getValue1() instanceof IFluidHandler)) continue;
+			IFluidHandler tankContainer = (IFluidHandler) pair.getValue1();
+			IFluidTank[] tanks = tankContainer.getTanks(pair.getValue2().getOpposite());
+			for(IFluidTank tank: tanks) {
+				FluidStack liquid = tank.getLiquid();
 				if(liquid != null) {
 					addToList(LiquidIdentifier.get(liquid).getItemIdentifier().makeStack(liquid.amount));
 				}

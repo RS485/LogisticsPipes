@@ -19,6 +19,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.ChunkCoordIntPair;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -68,7 +69,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 					if(((TileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 						if(!((CoreRoutedPipe)((TileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
 							event.setCanceled(true);
-							event.entityPlayer.sendChatToPlayer("Permission Denied");
+							event.entityPlayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission Denied"));
 							((TileGenericPipe)tile).scheduleNeighborChange();
 							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
 							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;
@@ -131,8 +132,8 @@ public class LogisticsEventListener implements IPlayerTracker {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
 		}
 		if(VersionChecker.hasNewVersion) {
-			player.sendChatToPlayer("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + ".");
-			player.sendChatToPlayer("Use \"/logisticspipes changelog\" to see a changelog.");
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Use \"/logisticspipes changelog\" to see a changelog."));
 		}
 	}
 

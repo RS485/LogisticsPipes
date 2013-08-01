@@ -431,7 +431,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 	public void scheduleNeighborChange() {
 		super.scheduleNeighborChange();
 		boolean connected[] = new boolean[6];
-		WorldUtil world = new WorldUtil(this.worldObj, this.xCoord, this.yCoord, this.zCoord);
+		WorldUtil world = new WorldUtil(this.getWorld(), this.xCoord, this.yCoord, this.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
 		for(AdjacentTile aTile: adjacent) {
 			if(SimpleServiceLocator.ccProxy.isTurtle(aTile.tile)) {

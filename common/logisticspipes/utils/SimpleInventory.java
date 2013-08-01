@@ -295,8 +295,9 @@ public class SimpleInventory implements IInventory, ISaveState{
 	}
 
 	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
+
 }

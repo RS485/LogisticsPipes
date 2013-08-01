@@ -12,18 +12,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
+import buildcraft.transport.TravelingItem;
+
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.transport.IPipedItem;
-import buildcraft.core.EntityPassiveItem;
 
 /**
  * This interface describes the actions that must be available on an item that is considered routed
- * @author Krapht
  *
  */
 public interface IRoutedItem{
@@ -74,8 +73,8 @@ public interface IRoutedItem{
 	//public void setSpeedBoost(float multiplier);
 	//public float getSpeedBoost();
 	
-	public EntityPassiveItem getEntityPassiveItem();
-	public IPipedItem getNewEntityPassiveItem();
+	public TravelingItem getTravelingItem();
+	public TravelingItem getNewTravelingItem();
 	
 	public void setArrived(boolean flag);
 	public boolean getArrived();

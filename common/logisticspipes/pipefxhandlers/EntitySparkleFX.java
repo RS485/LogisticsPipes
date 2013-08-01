@@ -169,9 +169,9 @@ public class EntitySparkleFX extends EntityFX
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
 
-            if (this.particleAge == 0 && this.tinkle && this.worldObj.rand.nextInt(10) == 0)
+            if (this.particleAge == 0 && this.tinkle && this.getWorld().rand.nextInt(10) == 0)
             {
-                this.worldObj.playSoundAtEntity(this, "random.orb", 0.02F, 0.7F * ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.6F + 2.0F));
+                this.getWorld().playSoundAtEntity(this, "random.orb", 0.02F, 0.7F * ((this.getWorld().rand.nextFloat() - this.getWorld().rand.nextFloat()) * 0.6F + 2.0F));
             }
 
             if (this.particleAge++ >= this.particleMaxAge)

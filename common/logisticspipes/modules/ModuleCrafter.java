@@ -80,16 +80,13 @@ public class ModuleCrafter extends LogisticsModule{
 
 	private int spaceFor(ItemIdentifier item){
 		int count=0;
-		WorldUtil wUtil = new WorldUtil(pipe.worldObj,pipe.getX(),pipe.getY(),pipe.getZ());
+		WorldUtil wUtil = new WorldUtil(pipe.getWorld(),pipe.getX(),pipe.getY(),pipe.getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IInventory)) continue;
 			if (tile.tile instanceof TileGenericPipe) continue;
 			IInventory base = (IInventory) tile.tile;
 			if (base instanceof net.minecraft.inventory.ISidedInventory) {
 				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(),false);
-			}
-			if (base instanceof net.minecraftforge.common.ISidedInventory) {
-				base = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) base, tile.orientation.getOpposite());
 			}
 			IInventoryUtil inv =SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
 			count += inv.roomForItem(item, 9999);

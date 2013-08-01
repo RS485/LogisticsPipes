@@ -14,8 +14,8 @@ import net.minecraft.item.crafting.CraftingManager;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
-import net.minecraftforge.liquids.LiquidDictionary;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.LiquidDictionary;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
@@ -57,7 +57,7 @@ public class ForestryProxy implements IForestryProxy {
 	private Method localize;
 	private Item propolis;
 	private Item pollen;
-	private LiquidStack honey;
+	private FluidStack honey;
 	private final boolean has_all;
 	private IBeeRoot root;
 

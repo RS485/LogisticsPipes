@@ -80,7 +80,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 
 				ItemStack result = null;
 				for(IRecipe r : CraftingUtil.getRecipeList()) {
-					if(r.matches(tempCraftingInv, tile.getWorldObj())) {
+					if(r.matches(tempCraftingInv, tile.getgetWorld()())) {
 						result = r.getCraftingResult(tempCraftingInv);
 						break;
 					}

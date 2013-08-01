@@ -4,7 +4,7 @@ import logisticspipes.pipes.PipeItemsInvSysConnector;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 
 public class TransportInvConnection extends PipeTransportLogistics {
 	
@@ -16,7 +16,7 @@ public class TransportInvConnection extends PipeTransportLogistics {
 	}
 	
 	@Override
-	protected void insertedItemStack(EntityData data, TileEntity tile) {
+	protected void insertedItemStack(TravelingItem data, TileEntity tile) {
 		if(tile instanceof IInventory) {
 			((PipeItemsInvSysConnector)this.container.pipe).handleItemEnterInv(data,tile);
 		}

@@ -15,7 +15,7 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
@@ -27,7 +27,7 @@ public class PipeLiquidUpdate extends CoordinatesPacket {
 
 	@Getter(value=AccessLevel.PRIVATE)
 	@Setter
-	private LiquidStack[] renderCache = new LiquidStack[ForgeDirection.values().length];
+	private FluidStack[] renderCache = new FluidStack[ForgeDirection.values().length];
 
 	@Getter(value=AccessLevel.PRIVATE)
 	@Setter
@@ -51,7 +51,7 @@ public class PipeLiquidUpdate extends CoordinatesPacket {
 		BitSetHelper.write(data, delta);
 
 		for (ForgeDirection dir : ForgeDirection.values()) {
-			LiquidStack liquid = renderCache[dir.ordinal()];
+			FluidStack liquid = renderCache[dir.ordinal()];
 
 			if (delta.get(dir.ordinal() * 3 + 0)) {
 				if (liquid != null) {
@@ -86,15 +86,15 @@ public class PipeLiquidUpdate extends CoordinatesPacket {
 		try {
 			for (ForgeDirection dir : ForgeDirection.values()) {
 				if (renderCache[dir.ordinal()] == null) {
-					renderCache[dir.ordinal()] = new LiquidStack(0, 0, 0);
+					renderCache[dir.ordinal()] = new FluidStack(0, 0, 0);
 				}
 				
 				if (delta.get(dir.ordinal() * 3 + 0)) {
-					renderCache[dir.ordinal()]=new LiquidStack(getDataStream().readShort(),renderCache[dir.ordinal()].amount);
+					renderCache[dir.ordinal()]=new FluidStack(getDataStream().readShort(),renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 1)) {
 					
-					renderCache[dir.ordinal()]= new LiquidStack(renderCache[dir.ordinal()].itemID, renderCache[dir.ordinal()].amount, getDataStream().readShort());
+					renderCache[dir.ordinal()]= new FluidStack(renderCache[dir.ordinal()].itemID, renderCache[dir.ordinal()].amount, getDataStream().readShort());
 				}
 				if (delta.get(dir.ordinal() * 3 + 2)) {
 					if(dir != ForgeDirection.UNKNOWN) {

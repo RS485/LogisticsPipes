@@ -315,7 +315,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 		if (MainProxy.isServer(entityplayer.worldObj)) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketGuiArgument(NetworkConstants.GUI_ARGUMENT_PACKET, GuiIDs.GUI_CRAFTINGPIPE_ID, ).getPacket(),  (Player) entityplayer);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID).setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getLiquidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}),  (Player) entityplayer);
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, worldObj, xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), xCoord, yCoord, zCoord);
 		}
 	}
 
@@ -394,7 +394,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			player.inventory.currentItem = (player.inventory.currentItem + 1) % 9;
 		}
 
-		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		final WorldUtil worldUtil = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
 		boolean found = false;
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
@@ -408,9 +408,9 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 				found = (tile.tile instanceof IInventory && !(tile.tile instanceof TileGenericPipe));
 
 			if (found) {
-				Block block = worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[worldObj.getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
+				Block block = getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord) < Block.blocksList.length ? Block.blocksList[getWorld().getBlockId(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord)] : null;
 				if(block != null) {
-					if(block.onBlockActivated(worldObj, tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)){
+					if(block.onBlockActivated(getWorld(), tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, player, 0, 0, 0, 0)){
 						break;
 					}
 				}
@@ -421,7 +421,7 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {
-		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		final WorldUtil worldUtil = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
 		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
 			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
 				if (provider.importRecipe(tile.tile, _dummyInventory))
@@ -439,12 +439,12 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 			// Send inventory as packet
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
-			MainProxy.sendPacketToAllWatchingChunk(this.xCoord, this.zCoord, MainProxy.getDimensionForWorld(worldObj), packet);
+			MainProxy.sendPacketToAllWatchingChunk(this.xCoord, this.zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
 		}
 	}
 
 	public void handleStackMove(int number) {
-		if(MainProxy.isClient(this.worldObj)) {
+		if(MainProxy.isClient(this.getWorld())) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,xCoord,yCoord,zCoord,number).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeStackMovePacket.class).setInteger(number).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		}
@@ -601,13 +601,13 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void setLiquidAmount(int[] amount) {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isClient(getWorld())) {
 			this.amount = amount;
 		}
 	}
 
 	public void defineLiquidAmount(int integer, int slot) {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isClient(getWorld())) {
 			amount[slot] = integer;
 		}
 	}

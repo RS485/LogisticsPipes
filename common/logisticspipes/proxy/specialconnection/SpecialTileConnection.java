@@ -5,7 +5,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.ISpecialTileConnection;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.TileGenericPipe;
 
 public class SpecialTileConnection {
@@ -36,7 +36,7 @@ public class SpecialTileConnection {
 		return false;
 	}
 
-	public void transmit(TileEntity tile, EntityData data) {
+	public void transmit(TileEntity tile, TravelingItem data) {
 		for(ISpecialTileConnection connectionHandler:handler) {
 			if(connectionHandler.isType(tile)) {
 				connectionHandler.transmit(tile, data);

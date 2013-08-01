@@ -25,10 +25,11 @@ import logisticspipes.utils.WorldUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.ITankContainer;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.core.IMachine;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
@@ -40,25 +41,25 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	public LiquidRoutedPipe(int itemID) {
 		super(new PipeLiquidTransportLogistics(), new TemporaryLogic(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
-		worldUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
+		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 	
 	public LiquidRoutedPipe(BaseRoutingLogic logic, int itemID) {
 		super(new PipeLiquidTransportLogistics(), logic, itemID);
 		((PipeTransportItems) transport).travelHook = this;
-		worldUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
+		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 	
 	@Override
 	public void setTile(TileEntity tile) {
 		super.setTile(tile);
-		worldUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
+		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override
 	public boolean logisitcsIsPipeConnected(TileEntity tile) {
-		if (tile instanceof ITankContainer) {
-			ITankContainer liq = (ITankContainer) tile;
+		if (tile instanceof IFluidHandler) {
+			IFluidHandler liq = (IFluidHandler) tile;
 
 			if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
 				return true;
@@ -81,10 +82,10 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	}
 	
 	private boolean isLiquidSidedTexture(ForgeDirection connection) {
-		WorldUtil util = new WorldUtil(worldObj, getX(), getY(), getZ());
+		WorldUtil util = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		TileEntity tile = util.getAdjacentTileEntitie(connection);
-		if (tile instanceof ITankContainer) {
-			ITankContainer liq = (ITankContainer) tile;
+		if (tile instanceof IFluidHandler) {
+			IFluidHandler liq = (IFluidHandler) tile;
 
 			if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
 				return true;
@@ -121,12 +122,12 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	 */
 	
 	public final boolean isConnectableTank(TileEntity tile, ForgeDirection dir, boolean flag) {
-		if(!(tile instanceof ITankContainer)) return false;
+		if(!(tile instanceof IFluidHandler)) return false;
 		if(!this.canPipeConnect(tile, dir)) return false;
 		if(tile instanceof TileGenericPipe) {
 			if(((TileGenericPipe)tile).pipe instanceof LiquidRoutedPipe) return false;
 			if(!flag) return false;
-			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof ITankContainer)) return false;
+			if(((TileGenericPipe)tile).pipe == null || !(((TileGenericPipe)tile).pipe.transport instanceof IFluidHandler)) return false;
 		}
 		return true;
 	}
@@ -141,12 +142,12 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 				if(pair.getValue1() instanceof TileGenericPipe) {
 					if(((TileGenericPipe)pair.getValue1()).pipe instanceof CoreRoutedPipe) continue;
 				}
-				LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
+				FluidTank tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 				validDirections++;
-				if(tank.getLiquid() == null) continue;
-				int filled = ((ITankContainer)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getLiquid(), true);
+				if(tank.getFluid() == null) continue;
+				int filled = ((IFluidHandler)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getFluid(), true);
 				if(filled == 0) continue;
-				LiquidStack drain = tank.drain(filled, true);
+				FluidStack drain = tank.drain(filled, true);
 				if(drain == null || filled != drain.amount) {
 					if(LogisticsPipes.DEBUG) {
 						throw new UnsupportedOperationException("Liquid Multiplication");
@@ -154,20 +155,20 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 				}
 			}
 			if(validDirections == 0) return;
-			LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).internalTank;
-			LiquidStack stack = tank.getLiquid();
+			FluidTank tank = ((PipeLiquidTransportLogistics)this.transport).internalTank;
+			FluidStack stack = tank.getFluid();
 			if(stack == null) return;
 			for(Pair<TileEntity,ForgeDirection> pair:list) {
 				if(pair.getValue1() instanceof TileGenericPipe) {
 					if(((TileGenericPipe)pair.getValue1()).pipe instanceof CoreRoutedPipe) continue;
 				}
-				LogisticsLiquidSection tankSide = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
-				stack = tank.getLiquid();
+				FluidTank tankSide = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
+				stack = tank.getFluid();
 				if(stack == null) continue;
 				stack = stack.copy();
 				int filled = tankSide.fill(stack , true);
 				if(filled == 0) continue;
-				LiquidStack drain = tank.drain(filled, true);
+				FluidStack drain = tank.drain(filled, true);
 				if(drain == null || filled != drain.amount) {
 					if(LogisticsPipes.DEBUG) {
 						throw new UnsupportedOperationException("Liquid Multiplication");
@@ -183,7 +184,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 			IRoutedItem next = iter.next();
 			ItemStack item = next.getItemStack();
 			if(item.getItem() instanceof LogisticsLiquidContainer) {
-				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+				FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
 				if(LiquidIdentifier.get(liquid) == ident) {
 					amount += liquid.amount;
 				}
@@ -199,26 +200,26 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	/* IItemTravelingHook */
 
 	@Override
-	public void drop(PipeTransportItems pipe, EntityData data) {}
+	public void drop(PipeTransportItems pipe, TravelingItem data) {}
 
 	@Override
-	public void centerReached(PipeTransportItems pipe, EntityData data) {}
+	public void centerReached(PipeTransportItems pipe, TravelingItem data) {}
 
 	@Override
-	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
+	public void endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		((PipeTransportLogistics)pipe).markChunkModified(tile);
-		if(canInsertToTanks() && MainProxy.isServer(worldObj)) {
-			if(!(data.item instanceof IRoutedItem) || data.item.getItemStack() == null || !(data.item.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
-			if(this.getRouter().getSimpleID() != ((IRoutedItem)data.item).getDestination()) return;
-			((PipeTransportItems)this.transport).scheduleRemoval(data.item);
+		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
+			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsLiquidContainer)) return;
+			if(this.getRouter().getSimpleID() != ((IRoutedItem)data).getDestination()) return;
+			((PipeTransportItems)this.transport).scheduleRemoval(data);
 			int filled = 0;
-			LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.item.getItemStack());
+			FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(data.getItemStack());
 			if(this.isConnectableTank(tile, data.output, false)) {
 				List<Pair<TileEntity,ForgeDirection>> adjTanks = getAdjacentTanks(false);
 				//Try to put liquid into all adjacent tanks.
 				for (int i = 0; i < adjTanks.size(); i++) {
 					Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
-					ITankContainer tank = (ITankContainer) pair.getValue1();
+					IFluidHandler tank = (IFluidHandler) pair.getValue1();
 					ForgeDirection dir = pair.getValue2();
 					filled = tank.fill(dir.getOpposite(), liquid, true);
 					liquid.amount -= filled;
@@ -240,7 +241,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 				((IRequireReliableLiquidTransport)logic).liquidNotInserted(LiquidIdentifier.get(liquid), liquid.amount);
 			}
 			
-			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), worldObj);
+			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(liquid), getWorld());
 			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsLiquidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
 			int dest = replies.getValue1();
 			routedItem.setDestination(dest);

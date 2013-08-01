@@ -20,12 +20,12 @@ import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	
 	@Override
-	public Pair<Integer, Integer> getBestReply(LiquidStack stack, IRouter sourceRouter, List<Integer> jamList) {
+	public Pair<Integer, Integer> getBestReply(FluidStack stack, IRouter sourceRouter, List<Integer> jamList) {
 		for (ExitRoute candidateRouter : sourceRouter.getIRoutersByCost()){
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 			if(candidateRouter.destination.getSimpleID() == sourceRouter.getSimpleID()) continue;
@@ -47,7 +47,7 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	}
 
 	@Override
-	public ItemStack getLiquidContainer(LiquidStack stack) {
+	public ItemStack getLiquidContainer(FluidStack stack) {
 		ItemStack item = new ItemStack(LogisticsPipes.LogisticsLiquidContainer, 1);
 		NBTTagCompound nbt = new NBTTagCompound("tag");
 		stack.writeToNBT(nbt);
@@ -56,9 +56,9 @@ public class LogisticsLiquidManager implements ILogisticsLiquidManager {
 	}
 
 	@Override
-	public LiquidStack getLiquidFromContainer(ItemStack stack) {
+	public FluidStack getLiquidFromContainer(ItemStack stack) {
 		if(stack.getItem() instanceof LogisticsLiquidContainer && stack.hasTagCompound()) {
-			return LiquidStack.loadLiquidStackFromNBT(stack.getTagCompound());
+			return FluidStack.loadFluidStackFromNBT(stack.getTagCompound());
 		}
 		return null;
 	}

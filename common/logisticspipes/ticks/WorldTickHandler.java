@@ -16,7 +16,7 @@ import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.Position;
 import buildcraft.core.ITileBufferHolder;
 import buildcraft.core.TileBuffer;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.ITickHandler;
@@ -64,7 +64,7 @@ public class WorldTickHandler implements ITickHandler {
 				int x = tile.xCoord;
 				int y = tile.yCoord;
 				int z = tile.zCoord;
-				World world = tile.worldObj;
+				World world = tile.getWorld();
 
 				//TE or its chunk might've gone away while we weren't looking
 				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
@@ -89,13 +89,13 @@ public class WorldTickHandler implements ITickHandler {
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {
-						for(EntityData entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
+						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
 							entity.item.setContainer(newTile);
 						}
-						for(EntityData entity:((List<EntityData>)entitiesToLoad.get(newTile.pipe.transport))) {
+						for(TravelingItem entity:((List<TravelingItem>)entitiesToLoad.get(newTile.pipe.transport))) {
 							entity.item.setContainer(newTile);
 						}
-						for(EntityData entity:((List<EntityData>)delayedEntitiesToLoad.get(newTile.pipe.transport))) {
+						for(TravelingItem entity:((List<TravelingItem>)delayedEntitiesToLoad.get(newTile.pipe.transport))) {
 							entity.item.setContainer(newTile);
 						}
 					}
@@ -105,7 +105,7 @@ public class WorldTickHandler implements ITickHandler {
 					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
 					pos.moveForwards(1.0);
 
-					newTile.tileBuffer[o.ordinal()] = new TileBuffer(newTile.worldObj, (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
+					newTile.tileBuffer[o.ordinal()] = new TileBuffer(newTile.getWorld(), (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
 				}
 
 				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {

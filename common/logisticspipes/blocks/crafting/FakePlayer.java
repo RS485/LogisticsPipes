@@ -7,7 +7,7 @@ import net.minecraft.util.ChunkCoordinates;
 public class FakePlayer extends EntityPlayer {
 
 	public FakePlayer(TileEntity from) {
-		super(from.worldObj);
+		super(from.getWorld());
 		posX = from.xCoord;
 		posY = from.yCoord + 1;
 		posZ = from.zCoord;

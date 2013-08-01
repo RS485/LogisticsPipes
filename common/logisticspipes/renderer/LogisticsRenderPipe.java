@@ -25,7 +25,7 @@ import net.minecraftforge.client.IItemRenderer.ItemRenderType;
 import net.minecraftforge.client.IItemRenderer.ItemRendererHelper;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.opengl.GL11;
 
@@ -342,14 +342,14 @@ public class LogisticsRenderPipe extends RenderPipe {
 		boolean sides = false, above = false;
 
 		for (int i = 0; i < 6; ++i) {
-			// ILiquidTank tank = liq.getTanks()[i];
-			// LiquidStack liquid = tank.getLiquid();
-			LiquidStack liquid = liq.renderCache[i];
+			// IFluidTank tank = liq.getTanks()[i];
+			// FluidStack liquid = tank.getLiquid();
+			FluidStack liquid = liq.renderCache[i];
 			// int amount = liquid != null ? liquid.amount : 0;
 			// int amount = liquid != null ? liq.renderAmmount[i] : 0;
 
 			if (liquid != null && liquid.amount > 0) {
-				DisplayLiquidList d = getListFromBuffer(liquid, pipe.worldObj);
+				DisplayLiquidList d = getListFromBuffer(liquid, pipe.getWorld());
 
 				if (d == null) {
 					continue;
@@ -389,15 +389,15 @@ public class LogisticsRenderPipe extends RenderPipe {
 			}
 		}
 		// CENTER
-		// ILiquidTank tank = liq.getTanks()[ForgeDirection.Unknown.ordinal()];
-		// LiquidStack liquid = tank.getLiquid();
-		LiquidStack liquid = liq.renderCache[ForgeDirection.UNKNOWN.ordinal()];
+		// IFluidTank tank = liq.getTanks()[ForgeDirection.Unknown.ordinal()];
+		// FluidStack liquid = tank.getLiquid();
+		FluidStack liquid = liq.renderCache[ForgeDirection.UNKNOWN.ordinal()];
 
 		// int amount = liquid != null ? liquid.amount : 0;
 		// int amount = liquid != null ? liq.renderAmmount[ForgeDirection.Unknown.ordinal()] : 0;
 		if (liquid != null && liquid.amount > 0) {
-			// DisplayLiquidList d = getListFromBuffer(liq.getTanks()[ForgeDirection.Unknown.ordinal()].getLiquid(), pipe.worldObj);
-			DisplayLiquidList d = getListFromBuffer(liquid, pipe.worldObj);
+			// DisplayLiquidList d = getListFromBuffer(liq.getTanks()[ForgeDirection.Unknown.ordinal()].getLiquid(), pipe.getWorld());
+			DisplayLiquidList d = getListFromBuffer(liquid, pipe.getWorld());
 
 			if (d != null) {
 				int stage = (int) ((float) liquid.amount / (float) (liq.getInnerCapacity()) * (LIQUID_STAGES - 1));
@@ -419,7 +419,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		GL11.glPopMatrix();
 	}
 
-	private DisplayLiquidList getListFromBuffer(LiquidStack stack, World world) {
+	private DisplayLiquidList getListFromBuffer(FluidStack stack, World world) {
 
 		int liquidId = stack.itemID;
 

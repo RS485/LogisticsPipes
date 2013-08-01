@@ -135,7 +135,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void updateEntity() {
 		super.updateEntity();
-		if(MainProxy.isServer(worldObj)) {
+		if(MainProxy.isServer(getWorld())) {
 			float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
 			if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
 				energy = 1;
@@ -149,7 +149,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		  	}
 		}
 		if(!init) {
-			if(MainProxy.isClient(worldObj)) {
+			if(MainProxy.isClient(getWorld())) {
 				LogisticsHUDRenderer.instance().add(this);
 			}
 			if(!addedToEnergyNet) {
@@ -163,7 +163,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isClient(this.worldObj)) {
+		if(MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
 		if(addedToEnergyNet) {
@@ -175,7 +175,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isClient(this.worldObj)) {
+		if(MainProxy.isClient(this.getWorld())) {
 			init = false;
 		}
 		if(!addedToEnergyNet) {
@@ -186,7 +186,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isClient(this.worldObj)) {
+		if(MainProxy.isClient(this.getWorld())) {
 			LogisticsHUDRenderer.instance().remove(this);
 		}
 		if(addedToEnergyNet) {
@@ -240,7 +240,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 
 	public void handlePowerPacket(int integer) {
-		if(MainProxy.isClient(this.worldObj)) {
+		if(MainProxy.isClient(this.getWorld())) {
 			internalStorage = integer;
 		}
 	}
@@ -267,7 +267,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	public World getWorld() {
-		return worldObj;
+		return getWorld();
 	}
 
 	@Override
@@ -295,7 +295,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	public boolean isExistent() {
-		return worldObj.getBlockTileEntity(xCoord, yCoord, zCoord) == this;
+		return getWorld().getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	
 	@Override

@@ -12,7 +12,7 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.client.IItemRenderer;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
@@ -63,7 +63,7 @@ public class LiquidContainerRenderer implements IItemRenderer {
 		GL11.glPushMatrix();
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (item.getItem() instanceof LogisticsLiquidContainer) {
-			LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
+			FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(item);
 			if (liquid == null) {
 				doRenderItem(item, mc, type, data);
 				GL11.glPopMatrix();

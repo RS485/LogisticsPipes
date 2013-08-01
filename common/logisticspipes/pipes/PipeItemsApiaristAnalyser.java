@@ -78,7 +78,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	@Override
 	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
 			if (reply.getValue2().isDefault){
@@ -99,7 +99,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 
 	@Override
 	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
-		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
 		itemToSend.addRelayPoints(relays);
@@ -111,7 +111,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 			Position pos = new Position(this.container);
 			pos.orientation = ori;
 			pos.moveForwards(1);
-			TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 			if(tile != null) {
 				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile)) {
 					return ori;
@@ -122,7 +122,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	private TileEntity getPointedTileEntity() {
-		WorldUtil wUtil = new WorldUtil(worldObj, getX(), getY(), getZ());
+		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 		for (AdjacentTile tile : wUtil.getAdjacentTileEntities(true)){
 			if(tile.tile != null) {
 				if(SimpleServiceLocator.forestryProxy.isTileAnalyser(tile.tile)) {

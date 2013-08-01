@@ -60,7 +60,7 @@ public class PathFinder {
 		newSearch.setVisited.add(startPipe);
 		Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, startOrientation);
 		p.moveForwards(1);
-		TileEntity entity = startPipe.worldObj.getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
+		TileEntity entity = startPipe.getWorld().getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
 		if (!(entity instanceof TileGenericPipe && ((TileGenericPipe)entity).pipe.canPipeConnect(startPipe, startOrientation))){
 			return new HashMap<CoreRoutedPipe, ExitRoute>();
 		}
@@ -150,7 +150,7 @@ public class PathFinder {
 			if(root && !ForgeDirection.UNKNOWN.equals(side) && !direction.equals(side)) continue;
 
 			// tile may be up to 1 second old, but any neighbour pipe change will cause an immidiate update here, so we know that if it has changed, it isn't a pipe that has done so.
-			TileEntity tile = startPipe.tileBuffer[direction.ordinal()].getTile();
+			TileEntity tile = startPipe.getTile(direction);
 			
 			if (tile == null) continue;
 			connections.add(new Pair<TileEntity, ForgeDirection>(tile, direction));
@@ -244,7 +244,7 @@ public class PathFinder {
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null) {
-					pathPainter.addLaser(startPipe.worldObj, new LaserData(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction, connectionFlags));
+					pathPainter.addLaser(startPipe.getWorld(), new LaserData(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction, connectionFlags));
 				}
 			}
 		}

@@ -32,6 +32,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagInt;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.ChatMessageComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.transport.TileGenericPipe;
@@ -53,7 +55,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void invalidate() {
 		super.invalidate();
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(this.getWorld())) {
 			SimpleServiceLocator.securityStationManager.remove(this);
 		}
 	}
@@ -61,7 +63,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void validate() {
 		super.validate();
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(this.getWorld())) {
 			SimpleServiceLocator.securityStationManager.add(this);
 		}
 	}
@@ -69,7 +71,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(this.getWorld())) {
 			SimpleServiceLocator.securityStationManager.remove(this);
 		}
 	}
@@ -100,7 +102,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	}
 
 	public UUID getSecId() {
-		if(MainProxy.isServer(worldObj)) {
+		if(MainProxy.isServer(getWorld())) {
 			if(secId == null) {
 				secId = UUID.randomUUID();
 			}
@@ -109,19 +111,19 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	}
 	
 	public void setClientUUID(UUID id) {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isClient(getWorld())) {
 			secId = id;
 		}
 	}
 
 	public void setClientCC(boolean flag) {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isClient(getWorld())) {
 			allowCC = flag;
 		}
 	}
 
 	public void setClientDestroy(boolean flag) {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isClient(getWorld())) {
 			allowAutoDestroy = flag;
 		}
 	}
@@ -192,7 +194,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			break;
 		case 2: //+
 			if(!useEnergy(10)) {
-				player.sendChatToPlayer("No Energy");
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
 				return;
 			}
 			if(inv.getStackInSlot(0) == null) {
@@ -210,7 +212,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			break;
 		case 3: //++
 			if(!useEnergy(640)) {
-				player.sendChatToPlayer("No Energy");
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
 				return;
 			}
 			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
@@ -244,7 +246,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer, boolean usePower) {
 		if(usePower && !useEnergy(10)) {
-			entityplayer.sendChatToPlayer("No Energy");
+			entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
 			return new SecuritySettings("No Energy");
 		}
 		SecuritySettings setting = settingsList.get(entityplayer.username);
@@ -315,7 +317,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			Position pos = new Position(this);
 			pos.orientation = ForgeDirection.VALID_DIRECTIONS[i + 2];
 			pos.moveForwards(1);
-			TileEntity tile = this.worldObj.getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
 			if(tile instanceof IRoutedPowerProvider) {
 				if(((IRoutedPowerProvider)tile).useEnergy(amount)) {
 					return true;
@@ -336,5 +338,10 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public void func_85027_a(CrashReportCategory par1CrashReportCategory) {
 		super.func_85027_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
+	}
+	
+	public World getWorld() {
+		return this.getWorldObj();
+	}
 	}
 }

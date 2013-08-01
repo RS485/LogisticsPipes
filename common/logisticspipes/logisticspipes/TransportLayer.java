@@ -21,11 +21,11 @@ public abstract class TransportLayer {
 	public abstract boolean stillWantItem(IRoutedItem item);
 	public abstract ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed);
 	
-//	public void SendItem(EntityData data){
+//	public void SendItem(TravelingItem data){
 //		
 //	}
 //	
-//	public void ItemLost(EntityData data){
+//	public void ItemLost(TravelingItem data){
 //		
 //	}
 

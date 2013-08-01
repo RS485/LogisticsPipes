@@ -51,7 +51,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
 				if(slot >= 0) {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.getX(), pipe.getY(), pipe.getZ(), (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, 0, -1, 0, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());	
@@ -60,7 +60,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 				break;
 			case 1:
 				if(slot >= 0) {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.getX(), pipe.getY(), pipe.getZ(), slot).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, _advancedExtractor.getX(), -1, _advancedExtractor.getZ(), slot).getPacket());

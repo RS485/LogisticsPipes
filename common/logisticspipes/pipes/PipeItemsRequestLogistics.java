@@ -37,6 +37,7 @@ import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 
 @CCType(name = "LogisticsPipes:Request")
@@ -59,16 +60,16 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	}
 	
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, this.worldObj, this.getX() , this.getY(), this.getZ());
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
 	}
 	
 	@Override
-	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(world)) {
+	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(getWorld())) {
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 		}
 		return true;
@@ -76,7 +77,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	
 	@Override
 	public void enabledUpdateEntity() {
-		if (this.worldObj.getWorldTime() % 1200 == 0){
+		if (this.getWorld().getWorldTime() % 1200 == 0){
 			_history.addLast(SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost()));
 			if (_history.size() > 20){
 				_history.removeFirst();

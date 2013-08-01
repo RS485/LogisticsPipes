@@ -23,8 +23,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.ILiquidTank;
-import net.minecraftforge.liquids.ITankContainer;
+import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -45,13 +45,13 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 
 	@Override
 	public void throttledUpdateEntity() {
-		if (MainProxy.isClient(worldObj)) return;
+		if (MainProxy.isClient(getWorld())) return;
 		super.throttledUpdateEntity();
 		if(dummyInventory.getStackInSlot(0) == null) return;
-		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		WorldUtil worldUtil = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
-			if (!(tile.tile instanceof ITankContainer) || tile.tile instanceof TileGenericPipe) continue;
-			ITankContainer container = (ITankContainer) tile.tile;
+			if (!(tile.tile instanceof IFluidHandler) || tile.tile instanceof TileGenericPipe) continue;
+			IFluidHandler container = (IFluidHandler) tile.tile;
 			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;
 			
 			//How much do I want?
@@ -61,8 +61,8 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 			//How much do I have?
 			HashMap<LiquidIdentifier, Integer> haveLiquids = new HashMap<LiquidIdentifier, Integer>();
 			
-			ILiquidTank[] result = container.getTanks(ForgeDirection.UNKNOWN);
-			for (ILiquidTank slot : result){
+			IFluidTank[] result = container.getTanks(ForgeDirection.UNKNOWN);
+			for (IFluidTank slot : result){
 				if (slot.getLiquid() == null || !wantLiquids.containsKey(LiquidIdentifier.get(slot.getLiquid()))) continue;
 				Integer liquidWant = haveLiquids.get(LiquidIdentifier.get(slot.getLiquid()));
 				if (liquidWant==null){
@@ -189,7 +189,7 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if(MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_LiquidSupplier_MK2_ID, worldObj, xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_LiquidSupplier_MK2_ID, getWorld(), xCoord, yCoord, zCoord);
 		}
 	}
 
@@ -205,7 +205,7 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 	}
 
 	public void setAmount(int amount) {
-		if(MainProxy.isClient(this.worldObj)) {
+		if(MainProxy.isClient(this.getWorld())) {
 			this.amount = amount;
 		}
 	}

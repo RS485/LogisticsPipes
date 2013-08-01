@@ -62,9 +62,6 @@ public class InventoryHelper {
 		else if (object instanceof ISidedInventory)
 			return new TransactorSimple((ISidedInventory) object);
 
-		else if (object instanceof net.minecraftforge.common.ISidedInventory)
-			return new TransactorSimple(InventoryWrapper.getWrappedInventory(object));
-
 		else if (object instanceof IInventory)
 			return new TransactorSimple(getInventory((IInventory) object));
 

@@ -49,7 +49,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, Comparable<ServerRouter> {
@@ -332,7 +332,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if(changed) {
 			CoreRoutedPipe pipe = getPipe();
 			if (pipe != null) {
-				pipe.worldObj.notifyBlocksOfNeighborChange(pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj.getBlockId(pipe.xCoord, pipe.yCoord, pipe.zCoord));
+				pipe.getWorld().notifyBlocksOfNeighborChange(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().getBlockId(pipe.getX(), pipe.getY(), pipe.getZ()));
 				pipe.refreshConnectionAndRender(false);
 			}
 		}
@@ -608,7 +608,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (pipe != null && pipe.logic instanceof IRequireReliableLiquidTransport) {
 			ItemStack stack = routedEntityItem.getItemStack();
 			if(stack.getItem() instanceof LogisticsLiquidContainer) {
-				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
+				FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
 				((IRequireReliableLiquidTransport)pipe.logic).liquidArrived(LiquidIdentifier.get(liquid), liquid.amount);				
 			}
 		}

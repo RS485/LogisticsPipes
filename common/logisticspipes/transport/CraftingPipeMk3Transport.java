@@ -1,7 +1,7 @@
 package logisticspipes.transport;
 
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
-import buildcraft.transport.EntityData;
+import buildcraft.transport.TravelingItem;
 
 public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	
@@ -12,9 +12,9 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 	}
 
 	@Override
-	protected void reverseItem(EntityData data) {
-		data.item.getItemStack().stackSize = pipe.inv.addCompressed(data.item.getItemStack());
-		if(data.item.getItemStack().stackSize > 0) {
+	protected void reverseItem(TravelingItem data) {
+		data.getItemStack().stackSize = pipe.inv.addCompressed(data.getItemStack());
+		if(data.getItemStack().stackSize > 0) {
 			super.reverseItem(data);
 		}
 	}

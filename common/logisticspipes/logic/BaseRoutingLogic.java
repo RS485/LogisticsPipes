@@ -30,10 +30,11 @@ import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.pipes.PipeLogic;
 
-public abstract class BaseRoutingLogic extends PipeLogic{
+public abstract class BaseRoutingLogic{
 	
 	public CoreRoutedPipe getRoutedPipe(){
 		return (CoreRoutedPipe) this.container.pipe;
@@ -87,7 +88,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior && (settings == null || settings.openNetworkMonitor)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, worldObj, xCoord, yCoord, zCoord);
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), xCoord, yCoord, zCoord);
 			}
 			return true;
 		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
@@ -95,17 +96,17 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, worldObj, xCoord, yCoord, zCoord);
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), this.g, yCoord, zCoord);
 			}
 			return true;
 		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 			return true;
 		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 			return true;
 		}

@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 import org.lwjgl.input.Keyboard;
 
@@ -49,7 +49,7 @@ public class LogisticsLiquidContainer extends LogisticsItem implements IItemAdva
 	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		super.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
 		if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-			LiquidStack stack = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(par1ItemStack);
+			FluidStack stack = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(par1ItemStack);
 			if(stack != null) {
 				par3List.add("Type:  " + stack.asItemStack().getDisplayName());
 				par3List.add("Value: " + stack.amount + "mB");

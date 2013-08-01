@@ -14,7 +14,7 @@ import logisticspipes.utils.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.liquids.LiquidStack;
+import net.minecraftforge.fluids.FluidStack;
 
 public class PipeLiquidInsertion extends LiquidRoutedPipe {
 	
@@ -45,7 +45,7 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 		}
 		PipeLiquidTransportLogistics transport = (PipeLiquidTransportLogistics) this.transport;
 		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-			LiquidStack stack = transport.sideTanks[dir.ordinal()].getLiquid();
+			FluidStack stack = transport.sideTanks[dir.ordinal()].getLiquid();
 			if(stack == null) continue;
 			stack = stack.copy();
 			
@@ -71,9 +71,9 @@ public class PipeLiquidInsertion extends LiquidRoutedPipe {
 				continue;
 			}
 
-			LiquidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
+			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
 			ItemStack liquidContainer = SimpleServiceLocator.logisticsLiquidManager.getLiquidContainer(toSend);
-			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(liquidContainer, worldObj);
+			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(liquidContainer, getWorld());
 			routed.setDestination(result.getValue1());
 			routed.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routed, dir);

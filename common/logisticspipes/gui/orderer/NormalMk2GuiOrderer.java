@@ -21,9 +21,9 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	private SmallGuiButton Macrobutton;
 	
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
-		super(RequestPipeMK2.xCoord, RequestPipeMK2.yCoord, RequestPipeMK2.zCoord, MainProxy.getDimensionForWorld(RequestPipeMK2.worldObj), entityPlayer);
+		super(RequestPipeMK2.xCoord, RequestPipeMK2.yCoord, RequestPipeMK2.zCoord, MainProxy.getDimensionForWorld(RequestPipeMK2.getWorld()), entityPlayer);
 		pipe = RequestPipeMK2;
-//TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+//TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.getX(), pipe.getY(), pipe.getZ()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 	}
 	
@@ -52,7 +52,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 		//Click on Disk
 		if(lastClickedx != -10000000 &&	lastClickedy != -10000000) {
 			if (lastClickedx >= right - 39 && lastClickedx < right - 19 && lastClickedy >= bottom - 47 && lastClickedy < bottom - 27) {
-//TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+//TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_DROP, pipe.getX(), pipe.getY(), pipe.getZ()).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskDropPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 				lastClickedx = -10000000;
 				lastClickedy = -10000000;
@@ -79,7 +79,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	protected void actionPerformed(GuiButton guibutton) {
 		super.actionPerformed(guibutton);
 		if (guibutton.id == 12) {
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.xCoord, pipe.yCoord, pipe.zCoord).getPacket());
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.getX(), pipe.getY(), pipe.getZ()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 			this.setSubGui(new GuiDiskPopup(this));
 		}

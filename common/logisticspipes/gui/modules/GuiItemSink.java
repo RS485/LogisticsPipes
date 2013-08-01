@@ -50,7 +50,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 				_itemSink.setDefaultRoute(!_itemSink.isDefaultRoute());
 				//((GuiButton)buttonList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
 				if(slot >= 0) {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.xCoord, pipe.yCoord, pipe.zCoord, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
+//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.getX(), pipe.getY(), pipe.getZ(), (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, 0, -1, 0, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());

@@ -63,7 +63,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
 		if(MainProxy.isServer(entityplayer.worldObj)) {
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, getWorld(), xCoord, yCoord, zCoord);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)entityplayer);
 		}
@@ -81,17 +81,17 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			return;
 		}
 		
-		if(MainProxy.isClient(this.worldObj)) return;
+		if(MainProxy.isClient(this.getWorld())) return;
 		if (pause) return;
 		super.throttledUpdateEntity();
 
 		for(int amount : _requestedItems.values()) {
 			if(amount > 0) {
-				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.worldObj, 2);
+				MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, xCoord, yCoord, zCoord, this.getWorld(), 2);
 			}
 		}
 
-		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+		WorldUtil worldUtil = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;

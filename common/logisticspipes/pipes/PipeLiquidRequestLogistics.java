@@ -19,7 +19,7 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 	}
 	
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Orderer_ID, this.worldObj, this.getX() , this.getY(), this.getZ());
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Liquid_Orderer_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
 	}
 	
 	@Override
@@ -28,7 +28,7 @@ public class PipeLiquidRequestLogistics extends LiquidRoutedPipe implements IReq
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 		}
 		return true;

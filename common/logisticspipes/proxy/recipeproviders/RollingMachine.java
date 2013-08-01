@@ -66,7 +66,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 		if (craftMatrix == null)
 			return false;
 
-		ItemStack result = getResult(craftMatrix, tile.worldObj);
+		ItemStack result = getResult(craftMatrix, tile.getWorld());
 
 		if (result == null)
 			return false;

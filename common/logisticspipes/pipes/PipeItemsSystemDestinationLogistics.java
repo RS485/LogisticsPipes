@@ -40,7 +40,7 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 		if(inv.getStackInSlot(0) == null) return null;
 		if(!inv.getStackInSlot(0).hasTagCompound()) return null;
 		if(!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) return null;
-		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.worldObj, 2);
+		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
 		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
 
@@ -63,8 +63,8 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	private void dropFreqCard() {
 		if(inv.getStackInSlot(0) == null) return;
-		EntityItem item = new EntityItem(worldObj,this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
-		worldObj.spawnEntityInWorld(item);
+		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
+		getWorld().spawnEntityInWorld(item);
 		inv.setInventorySlotContents(0, null);
 	}
 

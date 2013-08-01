@@ -29,6 +29,7 @@ import logisticspipes.utils.SimpleInventory;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
@@ -55,14 +56,14 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 	
 	@Override
-	public boolean wrenchClicked(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(world)) {
+	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(getWorld())) {
 			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, world, x, y, z);
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket(), (Player) entityplayer);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 		}
 		return true;
@@ -71,7 +72,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	@Override
 	public void ignoreDisableUpdateEntity() {
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			getRouter(dir).update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+			getRouter(dir).update(getWorld().getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		}
 	}
 
@@ -117,7 +118,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir);
+					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), dir);
 				}
 			}
 			return routers[dir.ordinal()];
@@ -136,7 +137,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				if (routerId == null || routerId == ""){
 					routerId = UUID.randomUUID().toString();
 				}
-				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN);
+				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), ForgeDirection.UNKNOWN);
 			}
 		}
 		return router;

@@ -63,7 +63,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 	}
 
 	protected int findId(int increment) {
-		if(MainProxy.isClient(this.worldObj)) return satelliteId;
+		if(MainProxy.isClient(this.getWorld())) return satelliteId;
 		int potentialId = satelliteId;
 		boolean conflict = true;
 		while (conflict) {
@@ -136,7 +136,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 
 	@Override
 	public void destroy() {
-		if(MainProxy.isClient(this.worldObj)) return;
+		if(MainProxy.isClient(this.getWorld())) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
@@ -149,7 +149,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 			final ModernPacket packet = PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 //TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)entityplayer);
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, worldObj, xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatelitePipe_ID, getWorld(), xCoord, yCoord, zCoord);
 		}
 	}
 

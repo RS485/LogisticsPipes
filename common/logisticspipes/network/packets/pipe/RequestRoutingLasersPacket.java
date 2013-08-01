@@ -59,12 +59,12 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	}
 
 	private void handleRouteInDirection(final TileGenericPipe pipe, ForgeDirection dir, ArrayList<IRouter> connectedRouters, final List<LaserData> lasers, EnumSet<PipeRoutingConnectionType> connectionType) {
-		lasers.add(new LaserData(pipe.xCoord, pipe.yCoord, pipe.zCoord, dir, connectionType).setStartPipe(firstPipe));
+		lasers.add(new LaserData(pipe.getX(), pipe.getY(), pipe.getZ(), dir, connectionType).setStartPipe(firstPipe));
 		firstPipe = false;
 		HashMap<CoreRoutedPipe, ExitRoute> map = PathFinder.paintAndgetConnectedRoutingPipes(pipe, dir, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, new IPaintPath() {
 			@Override
-			public void addLaser(World worldObj, LaserData laser) {
-				if(pipe.worldObj == worldObj) {
+			public void addLaser(World getWorld(), LaserData laser) {
+				if(pipe.getWorld() == getWorld()) {
 					lasers.add(laser);
 				}
 			}

@@ -82,7 +82,7 @@ public class LogisticsHUDRenderer {
 				continue;
 			CoreRoutedPipe pipe = router.getPipe();
 			if(!(pipe instanceof IHeadUpDisplayRendererProvider)) continue;
-			if(MainProxy.getDimensionForWorld(pipe.worldObj) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
+			if(MainProxy.getDimensionForWorld(pipe.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
 				double dis = Math.hypot(pipe.xCoord - x + 0.5,Math.hypot(pipe.yCoord - y + 0.5, pipe.zCoord - z + 0.5));
 				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,(IHeadUpDisplayRendererProvider)pipe));

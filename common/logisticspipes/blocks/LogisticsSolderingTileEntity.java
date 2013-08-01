@@ -226,7 +226,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 	
 	private void updateHeat() {
-		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(worldObj), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		for(EntityPlayer player:listener) {
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SOLDERING_UPDATE_HEAT, xCoord, yCoord, zCoord, this.heat).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SolderingStationHeat.class).setInteger(this.heat).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
@@ -249,7 +249,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	
 	@Override
 	public void updateEntity() {
-		if(MainProxy.isClient(worldObj)) {
+		if(MainProxy.isClient(getWorld())) {
 			if(!init) {
 //TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.ROTATION_REQUEST, xCoord, yCoord, zCoord).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
@@ -266,7 +266,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 				}
 				updateHeat();
 			} else {
-				if(worldObj.getWorldTime() % 5 == 0) {
+				if(getWorld().getWorldTime() % 5 == 0) {
 					heat--;
 					if(heat < 0) {
 						heat = 0;
@@ -505,7 +505,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 	
 	public void onBlockBreak() {
-		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+		inv.dropContents(getWorld(), xCoord, yCoord, zCoord);
 	}
 	
 	@Override

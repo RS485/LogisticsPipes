@@ -161,7 +161,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		ForgeDirection blocked = null;
 		
 		if(!(data.item instanceof IRoutedItem) && data.item != null) {
-			IPipedItem result = getPipe().getQueuedForItemStack(data.item.getItemStack());
+			IPipedItem result = getPipe().getQueuedForEntityData(data);
 			if(result != null) {
 				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(worldObj, data);
 				if(routedItem instanceof RoutedEntityItem && result instanceof RoutedEntityItem) {

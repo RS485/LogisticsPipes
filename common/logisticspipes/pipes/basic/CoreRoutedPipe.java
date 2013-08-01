@@ -1041,11 +1041,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 	}
 	
-	public IPipedItem getQueuedForItemStack(ItemStack stack) {
-		for(IPipedItem item:queuedDataForUnroutedItems) {
-			if(ItemIdentifierStack.GetFromStack(item.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
-				queuedDataForUnroutedItems.remove(item);
-				return item;
+	public IPipedItem getQueuedForEntityData(EntityData data) {
+		ItemStack stack = data.item.getItemStack();
+		for(IPipedItem queued:queuedDataForUnroutedItems) {
+			if(ItemIdentifierStack.GetFromStack(queued.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
+				queuedDataForUnroutedItems.remove(queued);
+				return queued;
 			}
 		}
 		return null;

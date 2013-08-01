@@ -2,7 +2,6 @@ package logisticspipes.pipes;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
@@ -64,7 +63,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
 	private UUID idbuffer = UUID.randomUUID();
 	

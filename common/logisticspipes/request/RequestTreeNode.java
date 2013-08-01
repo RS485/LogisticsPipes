@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -31,7 +32,6 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.ItemMessage;
 import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
@@ -231,21 +231,24 @@ public class RequestTreeNode {
 		}
 	}
 
-	protected void sendMissingMessage(LinkedList<ItemMessage> missing) {
+	protected void buildMissingMap(Map<ItemIdentifier,Integer> missing) {
 		if(getMissingItemCount() != 0) {
-			ItemIdentifierStack stack = request.clone();
-			stack.stackSize = getMissingItemCount();
-			missing.add(new ItemMessage(stack));
+			ItemIdentifier item = request.getItem();
+			Integer count = missing.get(item);
+			if(count == null)
+				count = 0;
+			count += getMissingItemCount();
+			missing.put(item, count);
 		}
 		for(RequestTreeNode subNode:subRequests) {
-			subNode.sendMissingMessage(missing);
+			subNode.buildMissingMap(missing);
 		}
 		for(LiquidRequestTreeNode subNode:liquidSubRequests) {
-			subNode.sendMissingMessage(missing);
+			subNode.buildMissingMap(missing);
 		}
 	}
 
-	protected void sendUsedMessage(LinkedList<ItemMessage> used, LinkedList<ItemMessage> missing) {
+	protected void buildUsedMap(Map<ItemIdentifier,Integer> used, Map<ItemIdentifier,Integer> missing) {
 		int usedcount = 0;
 		for(LogisticsPromise promise:promises) {
 			if(promise.sender instanceof IProvideItems && !(promise.sender instanceof ICraftItems)) {
@@ -253,17 +256,23 @@ public class RequestTreeNode {
 			}
 		}
 		if(usedcount != 0) {
-			ItemIdentifierStack stack = request.clone();
-			stack.stackSize = usedcount;
-			used.add(new ItemMessage(stack));
+			ItemIdentifier item = request.getItem();
+			Integer count = used.get(item);
+			if(count == null)
+				count = 0;
+			count += usedcount;
+			used.put(item, count);
 		}
 		if(getMissingItemCount() != 0) {
-			ItemIdentifierStack stack = request.clone();
-			stack.stackSize = getMissingItemCount();
-			missing.add(new ItemMessage(stack));
+			ItemIdentifier item = request.getItem();
+			Integer count = missing.get(item);
+			if(count == null)
+				count = 0;
+			count += getMissingItemCount();
+			missing.put(item, count);
 		}
 		for(RequestTreeNode subNode:subRequests) {
-			subNode.sendUsedMessage(used, missing);
+			subNode.buildUsedMap(used, missing);
 		}
 	}
 	

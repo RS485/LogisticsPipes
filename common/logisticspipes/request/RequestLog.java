@@ -1,11 +1,11 @@
 package logisticspipes.request;
 
-import java.util.LinkedList;
+import java.util.Map;
 
-import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.ItemIdentifier;
 
 public interface RequestLog {
-	public void handleMissingItems(LinkedList<ItemMessage> list);
-	public void handleSucessfullRequestOf(ItemMessage item);
-	public void handleSucessfullRequestOfList(LinkedList<ItemMessage> items);
+	public void handleMissingItems(Map<ItemIdentifier,Integer> items);
+	public void handleSucessfullRequestOf(ItemIdentifier item, int count);
+	public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items);
 }

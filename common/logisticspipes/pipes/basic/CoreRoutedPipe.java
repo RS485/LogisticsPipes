@@ -150,7 +150,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	protected final ArrayList<TravelingItem> queuedDataForUnroutedItems = new ArrayList<TravelingItem>();
 	
-	public final List<EntityPlayer> watchers = new PlayerCollectionList();
+	public final PlayerCollectionList watchers = new PlayerCollectionList();
 
 	protected List<IInventory> _cachedAdjacentInventories;
 

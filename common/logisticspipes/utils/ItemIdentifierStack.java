@@ -8,10 +8,14 @@
 
 package logisticspipes.utils;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedList;
 
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -106,6 +110,25 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	@Override
 	public ItemIdentifierStack clone() {
 		return new ItemIdentifierStack(_item, stackSize);
+	}
+	
+	public String getFriendlyName() {
+		return stackSize + " " + _item.getFriendlyName();
+	}
+	
+	public void write(DataOutputStream data) throws IOException {
+		data.writeInt(_item.itemID);
+		data.writeInt(stackSize);
+		data.writeInt(_item.itemDamage);
+		SendNBTTagCompound.writeNBTTagCompound(_item.tag, data);
+	}
+	
+	public static ItemIdentifierStack read(DataInputStream data) throws IOException {
+		int itemID = data.readInt();
+		int stacksize = data.readInt();
+		int damage = data.readInt();
+		NBTTagCompound tag = SendNBTTagCompound.readNBTTagCompound(data);
+		return new ItemIdentifierStack(ItemIdentifier.get(itemID, damage, tag), stacksize);
 	}
 	
 	public static LinkedList<ItemIdentifierStack> getListFromInventory(IInventory inv) {

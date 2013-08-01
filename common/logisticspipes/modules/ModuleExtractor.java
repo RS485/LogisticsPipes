@@ -58,7 +58,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 
 	private IHUDModuleRenderer HUD = new HUDExtractor(this);
 
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 	public ModuleExtractor() {
 

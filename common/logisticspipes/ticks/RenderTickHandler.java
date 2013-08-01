@@ -4,11 +4,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.PriorityQueue;
 import java.util.Queue;
 
 import logisticspipes.network.PacketHandler;
@@ -25,14 +24,12 @@ import net.minecraft.client.renderer.ActiveRenderInfo;
 
 import org.lwjgl.opengl.GL11;
 
-import com.google.common.base.Objects;
-
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.FMLCommonHandler;
+import cpw.mods.fml.common.IScheduledTickHandler;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.SingleIntervalHandler;
 import cpw.mods.fml.common.TickType;
-import cpw.mods.fml.common.registry.TickRegistry;
-import cpw.mods.fml.common.registry.TickRegistry.TickQueueElement;
 
 public class RenderTickHandler implements ITickHandler {
 
@@ -54,15 +51,13 @@ public class RenderTickHandler implements ITickHandler {
 	private static Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
 	private int emptyCounter = 0;
 	private int fullCounter = 0;
-	private Field map;
+	private Field ticks;
 	private Field wrapper;
-	private List<ITickHandler> tickHandlerAfterLP = new ArrayList<ITickHandler>();
-	private boolean init = false;
 
 	public RenderTickHandler() {
 		try {
-			map = TickRegistry.class.getDeclaredField("clientTickHandlers");
-			map.setAccessible(true);
+			ticks = FMLCommonHandler.class.getDeclaredField("scheduledClientTicks");
+			ticks.setAccessible(true);
 			wrapper = SingleIntervalHandler.class.getDeclaredField("wrapped");
 			wrapper.setAccessible(true);
 		} catch(NoSuchFieldException e) {
@@ -74,36 +69,34 @@ public class RenderTickHandler implements ITickHandler {
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {
-		if(!init) {
-			try {
-				@SuppressWarnings("unchecked")
-				PriorityQueue<TickQueueElement> queue = (PriorityQueue<TickQueueElement>) map.get(null);
-				Iterator<TickQueueElement> i = queue.iterator();
-				while(i.hasNext()) {
-					TickQueueElement element = i.next();
-					if(element.ticker instanceof SingleIntervalHandler) {
-						SingleIntervalHandler handler = (SingleIntervalHandler) element.ticker;
-						ITickHandler tick = (ITickHandler) wrapper.get(handler);
-						if(tick.getClass().toString().contains("mapwriter.forge.MwTickHandler")) {
-							if(tick.ticks().size() == 1 && tick.ticks().contains(TickType.RENDER)) {
-								tickHandlerAfterLP.add(tick);
-								i.remove();
+		if(type.contains(TickType.RENDER)) {
+			if(LogisticsHUDRenderer.instance().displayRenderer()) {
+				try {
+					@SuppressWarnings("unchecked")
+					List<IScheduledTickHandler> old = (List<IScheduledTickHandler>) ticks.get(FMLCommonHandler.instance());
+					List<IScheduledTickHandler> newList = new ArrayList<IScheduledTickHandler>(old.size());
+					BitSet handled = new BitSet(old.size());
+					for(int i = 0;i < old.size();i++) {
+						IScheduledTickHandler handler = old.get(i);
+						if(handler instanceof SingleIntervalHandler) {
+							ITickHandler tick = (ITickHandler) wrapper.get(handler);
+							if(tick == this) {
+								newList.add(old.get(i));
+								handled.set(i);
+								break;
 							}
 						}
+						
 					}
+					for(int i = 0;i < old.size();i++) {
+						if(handled.get(i)) continue;
+						newList.add(old.get(i));
+					}
+					ticks.set(FMLCommonHandler.instance(), newList);
+				} catch(Exception e) {
+					e.printStackTrace();
 				}
-			} catch(Exception e) {
-				e.printStackTrace();
 			}
-			init = true;
-			return;
-		}
-		for(ITickHandler hander:tickHandlerAfterLP) {
-			EnumSet<TickType> ticksToRun = EnumSet.copyOf(Objects.firstNonNull(hander.ticks(), EnumSet.noneOf(TickType.class)));
-	        ticksToRun.retainAll(type);
-	        if (!ticksToRun.isEmpty()) {
-	        	hander.tickStart(ticksToRun, tickData);
-	        }	
 		}
 	}
 	
@@ -119,7 +112,6 @@ public class RenderTickHandler implements ITickHandler {
 		throw new NoSuchMethodException("Can't find setupCameraTransform or a to display HUD");
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if(type.contains(TickType.RENDER)) {
@@ -174,13 +166,6 @@ public class RenderTickHandler implements ITickHandler {
 					}
 				}
 			}
-		}
-		for(ITickHandler hander:tickHandlerAfterLP) {
-			EnumSet<TickType> ticksToRun = EnumSet.copyOf(Objects.firstNonNull(hander.ticks(), EnumSet.noneOf(TickType.class)));
-            ticksToRun.retainAll(type);
-            if (!ticksToRun.isEmpty()) {
-            	hander.tickEnd(ticksToRun, tickData);
-            }
 		}
 	}
 	

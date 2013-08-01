@@ -2,7 +2,6 @@ package logisticspipes.main;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -107,7 +106,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 		}
 	}
 
-	public static Map<ChunkCoordIntPair, List<EntityPlayer>> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, List<EntityPlayer>>();
+	public static Map<ChunkCoordIntPair, PlayerCollectionList> watcherList = new ConcurrentHashMap<ChunkCoordIntPair, PlayerCollectionList>();
 
 	int taskCount = 0;
 	

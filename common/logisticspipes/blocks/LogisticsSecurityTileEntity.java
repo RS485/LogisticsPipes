@@ -42,7 +42,7 @@ import cpw.mods.fml.common.network.Player;
 public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider {
 	
 	public SimpleInventory inv = new SimpleInventory(1, "ID Slots", 64);
-	private List<EntityPlayer> listener = new PlayerCollectionList();
+	private PlayerCollectionList listener = new PlayerCollectionList();
 	private UUID secId = null;
 	private Map<String, SecuritySettings> settingsList = new HashMap<String, SecuritySettings>();
 	public List<Integer> excludedCC = new ArrayList<Integer>();

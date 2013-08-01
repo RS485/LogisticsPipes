@@ -82,7 +82,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	
 	private IHUDModuleRenderer HUD = new HUDProviderModule(this);
 
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	
 	public ModuleProvider() {}
 

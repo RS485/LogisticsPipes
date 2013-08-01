@@ -4,12 +4,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 import logisticspipes.asm.ClientSideOnlyMethodContent;
+import logisticspipes.config.Configs;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.utils.ItemMessage;
+import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -21,7 +22,7 @@ public class MissingItems extends ModernPacket {
 
 	@Getter
 	@Setter
-	private List<ItemMessage> items = new ArrayList<ItemMessage>();
+	private Collection<ItemIdentifierStack> items = new ArrayList<ItemIdentifierStack>();
 	
 	@Setter
 	@Getter
@@ -39,26 +40,24 @@ public class MissingItems extends ModernPacket {
 	@Override
 	@ClientSideOnlyMethodContent
 	public void processPacket(EntityPlayer player) {
-		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
-			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(),!isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
+		if (Configs.DISPLAY_POPUP && FMLClientHandler.instance().getClient().currentScreen instanceof GuiOrderer) {
+			((GuiOrderer)FMLClientHandler.instance().getClient().currentScreen).handleRequestAnswer(getItems(), isFlag(), (GuiOrderer)FMLClientHandler.instance().getClient().currentScreen, player);
 		} else if(isFlag()) {
-			for (final ItemMessage items : getItems()) {
-				player.addChatMessage("Missing: " + items);
+			for(ItemIdentifierStack item:items){
+				player.addChatMessage("Missing: " + item.getFriendlyName());
 			}
 		} else {
-			for (final ItemMessage items : getItems()) {
-				player.addChatMessage("Requested: " + items);
+			for(ItemIdentifierStack item:items) {
+				player.addChatMessage("Requested: " + item.getFriendlyName());
 			}
 			player.addChatMessage("Request successful!");
 		}
 	}
 	@Override
 	public void writeData(DataOutputStream data) throws IOException {
-		for(ItemMessage msg:items) {
+		for(ItemIdentifierStack item:items) {
 			data.write(1);
-			data.writeInt(msg.id);
-			data.writeInt(msg.data);
-			data.writeInt(msg.amount);
+			item.write(data);
 		}
 		data.write(0);
 		data.writeBoolean(isFlag());
@@ -67,11 +66,7 @@ public class MissingItems extends ModernPacket {
 	@Override
 	public void readData(DataInputStream data) throws IOException {
 		while(data.read() != 0) {
-			ItemMessage msg = new ItemMessage();
-			msg.id = data.readInt();
-			msg.data = data.readInt();
-			msg.amount = data.readInt();
-			items.add(msg);
+			items.add(ItemIdentifierStack.read(data));
 		}
 		setFlag(data.readBoolean());
 	}

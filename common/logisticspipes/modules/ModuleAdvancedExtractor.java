@@ -64,7 +64,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	private IHUDModuleRenderer HUD = new HUDAdvancedExtractor(this);
 
-	private final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
 
 	public ModuleAdvancedExtractor() {

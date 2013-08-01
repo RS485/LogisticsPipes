@@ -79,6 +79,7 @@ public class PacketHandler implements IPacketHandler {
 		try {
 			packet.processPacket((EntityPlayer) player);
 		} catch(Exception e) {
+			LogisticsPipes.log.severe(packet.getClass().getName());
 			LogisticsPipes.log.severe(packet.toString());
 			throw new RuntimeException(e);
 		}

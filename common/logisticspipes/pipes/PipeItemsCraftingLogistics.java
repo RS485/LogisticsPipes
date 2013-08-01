@@ -89,7 +89,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	public final LinkedList<ItemIdentifierStack> oldList = new LinkedList<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();
-	public final List<EntityPlayer> localModeWatchers = new PlayerCollectionList();
+	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
 	
 	public final LinkedList<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> _extras = new LinkedList<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>>();

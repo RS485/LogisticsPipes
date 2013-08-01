@@ -1,6 +1,5 @@
 package logisticspipes.proxy;
 
-import java.util.List;
 import java.util.WeakHashMap;
 
 import logisticspipes.LogisticsPipes;
@@ -13,6 +12,7 @@ import logisticspipes.network.packets.pipe.ParticleFX;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.ticks.RoutingTableUpdateThread;
+import logisticspipes.utils.PlayerCollectionList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.server.ServerListenThread;
@@ -125,9 +125,9 @@ public class MainProxy {
 	public static void sendPacketToAllWatchingChunk(int X, int Z, int dimensionId, ModernPacket packet) {
 		packet.create();
 		ChunkCoordIntPair chunk = new ChunkCoordIntPair(X >> 4, Z >> 4);
-		List<EntityPlayer> players = LogisticsEventListener.watcherList.get(chunk);
+		PlayerCollectionList players = LogisticsEventListener.watcherList.get(chunk);
 		if(players != null) {
-			for(EntityPlayer player:players) {
+			for(EntityPlayer player:players.players()) {
 				if(MainProxy.getDimensionForWorld(player.worldObj) == dimensionId) {
 					sendPacketToPlayer(packet, (Player)player);
 				}
@@ -136,14 +136,14 @@ public class MainProxy {
 		}
 	}
 	
-	public static void sendToPlayerList(ModernPacket packet, List<EntityPlayer> players) {
+	public static void sendToPlayerList(ModernPacket packet, PlayerCollectionList players) {
 		packet.create();
 		if(packet.isCompressable() || needsToBeCompressed(packet)) {
-			for(EntityPlayer player:players) {
+			for(EntityPlayer player:players.players()) {
 				SimpleServiceLocator.serverBufferHandler.addPacketToCompressor(packet.getPacket(), (Player) player);
 			}
 		} else {
-			for(EntityPlayer player:players) {
+			for(EntityPlayer player:players.players()) {
 				PacketDispatcher.sendPacketToPlayer(packet.getPacket(), (Player) player);
 			}
 		}

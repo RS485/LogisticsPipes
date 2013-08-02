@@ -156,6 +156,10 @@ public class DummyContainer extends Container{
 		if(slot instanceof UnmodifiableSlot) {
 			return currentlyEquippedStack;
 		}
+		//we get a leftclick *and* a doubleclick message if there's a doubleclick with no item on the pointer, filter it out
+		if(currentlyEquippedStack == null && isShift == 6) {
+			return currentlyEquippedStack;
+		}
 		
 		if(slot instanceof LiquidSlot) {
 			if(currentlyEquippedStack != null) {

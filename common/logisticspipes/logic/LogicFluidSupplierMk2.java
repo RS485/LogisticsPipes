@@ -12,6 +12,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FluidSupplierAmount;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.AdjacentTile;
@@ -23,6 +24,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
 import buildcraft.transport.TileGenericPipe;
@@ -38,21 +40,22 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 	private boolean _requestPartials = false;
 	
 	public IRoutedPowerProvider _power;
-
-	public LogicFluidSupplierMk2(){
+	private final CoreRoutedPipe container;
+	public LogicFluidSupplierMk2(CoreRoutedPipe container){
 		throttleTime = 100;
+		this.container=container;
 	}
 
 	@Override
 	public void throttledUpdateEntity() {
-		if (MainProxy.isClient(getWorld())) return;
+		if (MainProxy.isClient(container.getWorld())) return;
 		super.throttledUpdateEntity();
 		if(dummyInventory.getStackInSlot(0) == null) return;
-		WorldUtil worldUtil = new WorldUtil(getWorld(), xCoord, yCoord, zCoord);
+		WorldUtil worldUtil = new WorldUtil(container.getWorld(), container.getX(), container.getY(), container.getZ());
 		for (AdjacentTile tile :  worldUtil.getAdjacentTileEntities(true)){
 			if (!(tile.tile instanceof IFluidHandler) || tile.tile instanceof TileGenericPipe) continue;
 			IFluidHandler container = (IFluidHandler) tile.tile;
-			if (container.getTanks(ForgeDirection.UNKNOWN) == null || container.getTanks(ForgeDirection.UNKNOWN).length == 0) continue;
+			if (container.getTankInfo(ForgeDirection.UNKNOWN) == null || container.getTankInfo(ForgeDirection.UNKNOWN).length == 0) continue;
 			
 			//How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
@@ -61,14 +64,14 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
 			
-			IFluidTank[] result = container.getTanks(ForgeDirection.UNKNOWN);
-			for (IFluidTank slot : result){
-				if (slot.getFluid() == null || !wantFluids.containsKey(FluidIdentifier.get(slot.getFluid()))) continue;
-				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.getFluid()));
+			FluidTankInfo[] result = container.getTankInfo(ForgeDirection.UNKNOWN);
+			for (FluidTankInfo slot : result){
+				if (slot.fluid == null || !wantFluids.containsKey(FluidIdentifier.get(slot.fluid))) continue;
+				Integer liquidWant = haveFluids.get(FluidIdentifier.get(slot.fluid));
 				if (liquidWant==null){
-					haveFluids.put(FluidIdentifier.get(slot.getFluid()), slot.getFluid().amount);
+					haveFluids.put(FluidIdentifier.get(slot.fluid), slot.fluid.amount);
 				} else {
-					haveFluids.put(FluidIdentifier.get(slot.getFluid()), liquidWant +  slot.getFluid().amount);
+					haveFluids.put(FluidIdentifier.get(slot.fluid), liquidWant +  slot.fluid.amount);
 				}
 			}
 			
@@ -86,7 +89,7 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 				}
 			}
 			
-			((PipeFluidSupplierMk2)this.container.pipe).setRequestFailed(false);
+			((PipeFluidSupplierMk2)this.container).setRequestFailed(false);
 			
 			//Make request
 			
@@ -101,12 +104,12 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 				boolean success = false;
 
 				if(_requestPartials) {
-					countToRequest = RequestTree.requestFluidPartial(need, countToRequest, (IRequestFluid) this.container.pipe, null);
+					countToRequest = RequestTree.requestFluidPartial(need, countToRequest, (IRequestFluid) this.container, null);
 					if(countToRequest > 0) {
 						success = true;
 					}
 				} else {
-					success = RequestTree.requestFluid(need, countToRequest, (IRequestFluid) this.container.pipe, null)>0;
+					success = RequestTree.requestFluid(need, countToRequest, (IRequestFluid) this.container, null)>0;
 				}
 				
 				if (success){
@@ -117,7 +120,7 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 						_requestedItems.put(need, currentRequest + countToRequest);
 					}
 				} else{
-					((PipeFluidSupplierMk2)this.container.pipe).setRequestFailed(true);
+					((PipeFluidSupplierMk2)this.container).setRequestFailed(true);
 				}
 			}
 		}
@@ -151,7 +154,7 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 		}
 		//still remaining... was from fuzzyMatch on a crafter
 		for(Entry<FluidIdentifier, Integer> e : _requestedItems.entrySet()) {
-			if(e.getKey().itemId == liquid.itemId && e.getKey().itemMeta == liquid.itemMeta) {
+			if(e.getKey().itemId == liquid.fluidID && e.getKey().itemMeta == liquid.itemMeta) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
 				remaining -= expected;
@@ -189,7 +192,7 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if(MainProxy.isServer(entityplayer.worldObj)) {
-			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FluidSupplier_MK2_ID, getWorld(), xCoord, yCoord, zCoord);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FluidSupplier_MK2_ID, container.getWorld(), container.getX(), container.getY(), container.getZ());
 		}
 	}
 
@@ -205,7 +208,7 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 	}
 
 	public void setAmount(int amount) {
-		if(MainProxy.isClient(this.getWorld())) {
+		if(MainProxy.isClient(container.getWorld())) {
 			this.amount = amount;
 		}
 	}
@@ -216,6 +219,6 @@ public class LogicFluidSupplierMk2 extends BaseRoutingLogic implements IRequireR
 			amount = 0;
 		}
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, xCoord, yCoord, zCoord, amount).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(amount).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(amount).setPosX(container.getX()).setPosY(container.getY()).setPosZ(container.getZ()), (Player)player);
 	}
 }

@@ -209,9 +209,9 @@ public class SimpleInventory implements IInventory, ISaveState{
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
 		if(slotIdent.equals(stackIdent)) {
 			slot.stackSize += stack.stackSize;
-			if(slot.stackSize > 127) {
-				int ans = stack.stackSize - (slot.stackSize - 127);
-				slot.stackSize = 127;
+			if(slot.stackSize > this._stackLimit) {
+				int ans = stack.stackSize - (slot.stackSize - this._stackLimit);
+				slot.stackSize = this._stackLimit;
 				return ans;
 			} else {
 				return stack.stackSize;

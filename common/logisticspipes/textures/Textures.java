@@ -4,6 +4,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import logisticspipes.textures.provider.LPPipeIconProvider;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import buildcraft.api.core.IIconProvider;
@@ -11,11 +12,23 @@ import cpw.mods.fml.common.FMLCommonHandler;
 
 public class Textures {
 	private int index = 0;
-	private static TextureType empty = new TextureType();
+	public static TextureType empty = new TextureType();
 	static {
 		empty.normal = 0;
 		empty.powered = 0;
 		empty.unpowered = 0;
+	}
+	public static TextureType empty_1 = new TextureType();
+	static {
+		empty_1.normal = 1;
+		empty_1.powered = 1;
+		empty_1.unpowered = 1;
+	}
+	public static TextureType empty_2 = new TextureType();
+	static {
+		empty_2.normal = 2;
+		empty_2.powered = 2;
+		empty_2.unpowered = 2;
 	}
 	
 	public Textures() {
@@ -63,6 +76,8 @@ public class Textures {
 	public static TextureType LOGISTICSPIPE_LIQUID_REQUEST					= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_EXTRACTOR				= empty;
 	public static TextureType LOGISTICSPIPE_LIQUID_SATELLITE				= empty;
+	
+	public static Icon LOGISTICS_REQUEST_TABLE[]							= new Icon[0];
 	
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR						= 0;
 	public static Icon LOGISTICSACTIONTRIGGERS_DISABLED ;
@@ -138,7 +153,12 @@ public class Textures {
 	public static IIconProvider LPactionIconProvider;
 	public static LPPipeIconProvider LPpipeIconProvider;
 	public void registerBlockIcons() {
-		index = 0;
+		//Register Empty Texture for slot 0
+		MainProxy.proxy.addLogisticsPipesOverride(0, "empty", "", true);
+		MainProxy.proxy.addLogisticsPipesOverride(1, "empty", "", true);
+		MainProxy.proxy.addLogisticsPipesOverride(2, "empty", "", true);
+		
+		index = 3;
 		
 		// Standalone pipes
 		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
@@ -187,6 +207,12 @@ public class Textures {
 		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
 		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
 		
+		if(MainProxy.isClient()) {
+			LOGISTICS_REQUEST_TABLE = new Icon[5];
+			for(int i = 0;i < 5;i++) {
+				LOGISTICS_REQUEST_TABLE[i] = Minecraft.getMinecraft().renderEngine.textureMapBlocks.registerIcon("logisticspipes:requesttable/"+i);
+			}
+		}
 		
 		if(LogisticsPipes.DEBUG) {
 			System.out.println("LP: pipetextures " + index);

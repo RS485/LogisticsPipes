@@ -19,6 +19,7 @@ import logisticspipes.pipefxhandlers.providers.EntityWhiteSparkleFXProvider;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
+import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.utils.ItemIdentifier;
@@ -36,6 +37,7 @@ import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.render.RenderPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
 //import logisticspipes.textures.LogisticsPipesTextureStatic;
@@ -71,6 +73,7 @@ public class ClientProxy implements IProxy {
 		if(brp instanceof RenderPipe) {
 			SimpleServiceLocator.buildCraftProxy.resetItemRotation((RenderPipe) brp);
 		}
+		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 	}
 
 	@Override

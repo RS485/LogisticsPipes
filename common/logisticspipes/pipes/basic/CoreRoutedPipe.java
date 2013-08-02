@@ -774,7 +774,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 0) {
 			watchers.add(player);
-//TODO 		MainProxy.sendPacketToPlayer(new PacketRoutingStats(NetworkConstants.STAT_UPDATE, this).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(StatUpdate.class).setPipe(this), (Player)player);
 		}
 	}
@@ -788,7 +787,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	public void updateStats() {
 		if(watchers.size() > 0) {
-//TODO 		MainProxy.sendToPlayerList(new PacketRoutingStats(NetworkConstants.STAT_UPDATE, this).getPacket(), watchers);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(StatUpdate.class).setPipe(this), watchers);
 		}
 	}

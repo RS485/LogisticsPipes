@@ -25,6 +25,7 @@ import logisticspipes.gates.TriggerNeedsPower;
 import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
@@ -58,6 +59,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
+import logisticspipes.renderer.LogisticsPipeBlockRenderer;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
@@ -247,6 +249,8 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsLiquidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
 		LogisticsPipes.LogisticsLiquidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatellite.class, "Logistics Liquid Satellite Pipe", side);
 		LogisticsPipes.LogisticsLiquidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
+	
+		LogisticsPipes.logisticsRequestTable = createPipe(Configs.LOGISTICSPIPE_REQUEST_TABLE_ID, PipeBlockRequestTable.class, "Request Table", side);
 	}
 
 	/**
@@ -294,8 +298,11 @@ public class BuildCraftProxy {
 		}
 		
 		if(side.isClient()) {
-			
-			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
+			if(pipe instanceof PipeBlockRequestTable) {
+				MinecraftForgeClient.registerItemRenderer(res.itemID, new LogisticsPipeBlockRenderer());
+			} else {
+				MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
+			}
 		}
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID && defaultID != Configs.LOGISTICSPIPE_LIQUID_CONNECTOR) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);

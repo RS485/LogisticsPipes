@@ -177,6 +177,7 @@ public class LogisticsPipes {
 	public static Item LogisticsEntrancePipe;
 	public static Item LogisticsDestinationPipe;
 	public static Item LogisticsFirewallPipe;
+	public static Item logisticsRequestTable;
 	
 	// Logistics Apiarist's Pipes
 	public static Item LogisticsApiaristAnalyzerPipe;

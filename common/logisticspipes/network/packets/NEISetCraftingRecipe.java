@@ -4,15 +4,19 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import buildcraft.transport.TileGenericPipe;
+
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 
 @Accessors(chain = true)
 public class NEISetCraftingRecipe extends CoordinatesPacket {
@@ -27,9 +31,11 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		LogisticsCraftingTableTileEntity tile = getTile(player.worldObj, LogisticsCraftingTableTileEntity.class);
-		if(tile != null) {
-			tile.handleNEIRecipePacket(getContent());
+		TileEntity tile = getTile(player.worldObj , TileEntity.class);
+		if(tile instanceof LogisticsCraftingTableTileEntity) {
+			((LogisticsCraftingTableTileEntity)tile).handleNEIRecipePacket(getContent());
+		} else if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
+			((PipeBlockRequestTable)((TileGenericPipe)tile).pipe).handleNEIRecipePacket(getContent());
 		}
 	}
 	

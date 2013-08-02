@@ -21,6 +21,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
@@ -152,6 +153,10 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	@Override
 	public ForgeDirection resolveDestination(EntityData data) {
+		
+		if(this.container.pipe instanceof PipeBlockRequestTable) {
+			System.out.print("");
+		}
 		
 		if(data.item != null && data.item.getItemStack() != null) {
 			getPipe().relayedItem(data.item.getItemStack().stackSize);

@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
@@ -84,7 +85,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	
 	public static int dimensioncache;
 	public static long cachetime;
-	
+
 	public GuiOrderer(int x, int y, int z, int dim, EntityPlayer entityPlayer) {
 		super(220,240,0,0);
 		xCoord = x;
@@ -138,6 +139,17 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	@Override
 	public void initGui() {
 		super.initGui();
+		
+		this.guiLeft =  width/2 - xSize/2 + xCenterOffset;
+		this.guiTop = height/2 - ySize/2  + yCenterOffset;
+		
+		this.right = width/2 + xSize/2 + xCenterOffset;
+		this.bottom = height/2 + ySize/2 + yCenterOffset;
+		
+		this.guiLeft += this.getLeftAddition();
+		this.xCenter = (right + guiLeft) / 2;
+		this.yCenter = (bottom + guiTop) / 2;
+		
 		buttonList.clear();
 		buttonList.add(new GuiButton(0, right - 55, bottom - 25, 50,20,"Request")); // Request
 		buttonList.add(new SmallGuiButton(1, right - 15, guiTop + 5, 10 ,10 ,">")); // Next page
@@ -149,11 +161,16 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		buttonList.add(new SmallGuiButton(7, xCenter + 38, bottom - 26, 15, 10, "++")); // +10
 		buttonList.add(new SmallGuiButton(11, xCenter + 26, bottom - 15, 26, 10, "+++")); // +64
 		buttonList.add(new GuiCheckBox(8, guiLeft + 9, bottom - 60, 14, 14, Configs.DISPLAY_POPUP)); // Popup
+		this.guiLeft -= this.getLeftAddition();
 	}
 	
 	@Override
 	public boolean doesGuiPauseGame() {
 		return false;
+	}
+	
+	protected int getLeftAddition() {
+		return 0;
 	}
 	
 	@Override
@@ -167,6 +184,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		if (page > maxPage){
 			page = maxPage;
 		}
+		
+		this.guiLeft += this.getLeftAddition();
 		
 		fontRenderer.drawString(_title, guiLeft + fontRenderer.getStringWidth(_title) / 2, guiTop + 6, 0x404040);
 		String pageString = "Page " + (page + 1) + " / " + (maxPage + 1);
@@ -224,7 +243,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-		drawRect(10, 18, xSize - 10, ySize - 82, Colors.MiddleGrey);
+		drawRect(10, 18, xSize - 10 - this.getLeftAddition(), ySize - 82, Colors.MiddleGrey);
 
 		tooltip = null;
 		int ppi = 0;
@@ -327,6 +346,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			GL11.glEnable(GL11.GL_DEPTH_TEST);
 		}
 		GL11.glPopMatrix();
+
+		this.guiLeft -= this.getLeftAddition();
 	}
 	
 	public abstract void specialItemRendering(ItemIdentifier item, int x, int y);

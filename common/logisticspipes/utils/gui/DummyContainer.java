@@ -11,6 +11,7 @@ package logisticspipes.utils.gui;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Colors;
@@ -97,11 +98,11 @@ public class DummyContainer extends Container{
 	public void addRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck) {
 		addSlotToContainer(new RestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck));
 	}
+
 	public void addStaticRestrictedSlot(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotCheck slotCheck, int stackLimit) {
 		addSlotToContainer(new StaticRestrictedSlot(inventory, slotId, xCoord, yCoord, slotCheck, stackLimit));
 	}
 
-	
 	public void addModuleSlot(int slotId, IInventory inventory, int xCoord, int yCoord, PipeLogisticsChassi pipe) {
 		addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
 	}
@@ -116,6 +117,10 @@ public class DummyContainer extends Container{
 
 	public void addUnmodifiableSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
 		addSlotToContainer(new UnmodifiableSlot(inventory, slotId, xCoord, yCoord));
+	}
+	
+	public void addCallableSlotHandler(int slotId, IInventory inventory, int xCoord, int yCoord, ISlotClick handler) {
+		addSlotToContainer(new HandelableSlot(inventory, slotId, xCoord, yCoord, handler));
 	}
 	
 	/**
@@ -138,7 +143,7 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot) && !(slot instanceof ColorSlot))) {
+		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot) && !(slot instanceof ColorSlot) && !(slot instanceof HandelableSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
 			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
@@ -152,6 +157,13 @@ public class DummyContainer extends Container{
 		InventoryPlayer inventoryplayer = entityplayer.inventory;
 		
 		ItemStack currentlyEquippedStack = inventoryplayer.getItemStack();
+		
+		if(slot instanceof HandelableSlot) {
+			if(currentlyEquippedStack == null) {
+				return ((HandelableSlot)slot).getProvidedStack();
+			}
+			return currentlyEquippedStack;
+		}
 		
 		if(slot instanceof UnmodifiableSlot) {
 			return currentlyEquippedStack;

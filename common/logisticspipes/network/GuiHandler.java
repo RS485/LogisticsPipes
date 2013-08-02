@@ -40,11 +40,13 @@ import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiTerminus;
 import logisticspipes.gui.modules.GuiThaumicAspectSink;
 import logisticspipes.gui.modules.GuiWithPreviousGuiContainer;
+import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.gui.orderer.LiquidGuiOrderer;
 import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.items.LogisticsItemCard;
@@ -78,6 +80,7 @@ import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.network.packets.pipe.LiquidSupplierMode;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
@@ -515,6 +518,32 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(8, 135);
 				return dummy;
 				
+			case GuiIDs.GUI_Request_Table_ID:
+				if(pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
+				dummy = new DummyContainer(player.inventory, ((PipeBlockRequestTable)pipe.pipe).matrix);
+				int i = 0;
+				for(int Y = 0;Y < 3;Y++) {
+					for(int X = 0;X < 9;X++) {
+						dummy.addNormalSlot(i++, ((PipeBlockRequestTable)pipe.pipe).inv, 0, 0);
+					}
+				}
+				i = 0;
+				for(int Y = 0;Y < 3;Y++) {
+					for(int X = 0;X < 3;X++) {
+						dummy.addDummySlot(i++, 0, 0);
+					}
+				}
+				dummy.addCallableSlotHandler(0, ((PipeBlockRequestTable)pipe.pipe).resultInv, 0, 0, new ISlotClick() {
+					@Override
+					public ItemStack getResultForClick() {
+						((PipeBlockRequestTable)fpipe.pipe).inv.addCompressed(((PipeBlockRequestTable)fpipe.pipe).getOutput());
+						return null;
+					}
+				});
+				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).toSortInv, 0, 0);
+				dummy.addNormalSlotsForPlayerInventory(0, 0);
+				return dummy;
+
 			default:break;
 			}
 		} else {
@@ -902,7 +931,11 @@ public class GuiHandler implements IGuiHandler {
 			case GuiIDs.GUI_Auto_Crafting_ID:
 				if(!(tile instanceof LogisticsCraftingTableTileEntity)) return null;
 				return new GuiLogisticsCraftingTable(player, (LogisticsCraftingTableTileEntity)tile);
-	
+			
+			case GuiIDs.GUI_Request_Table_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
+				return new GuiRequestTable(player, ((PipeBlockRequestTable)pipe.pipe));
+			
 			default:break;
 			}
 		} else {

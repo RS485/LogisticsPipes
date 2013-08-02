@@ -8,6 +8,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -39,6 +40,9 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 	public int getGuiID() {
 		return GuiIDs.GUI_Upgrade_Manager;
 	}
+	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/upgrade_manager.png");
+	
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
@@ -58,7 +62,7 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 				oldSlot.yDisplayPosition = newSlot.yDisplayPosition;
 			}
 		}
-		mc.renderEngine.bindTexture("/logisticspipes/gui/upgrade_manager.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		if(!upgrade.hasCombinedSneakyUpgrade()) {
 			drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		} else {

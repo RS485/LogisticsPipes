@@ -12,6 +12,7 @@ package logisticspipes.utils.gui;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -26,6 +27,9 @@ public class SmallGuiButton extends GuiButton {
 		// TODO Auto-generated constructor stub
 	}
 	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/gui.png");
+	
+
 	
 	@Override
 	public void drawButton(Minecraft minecraft, int i, int j)
@@ -35,7 +39,7 @@ public class SmallGuiButton extends GuiButton {
             return;
         }
         FontRenderer fontrenderer = minecraft.fontRenderer;
-        minecraft.renderEngine.bindTexture("/gui/gui.png");
+        minecraft.renderEngine.func_110577_a(TEXTURE);
        // GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         boolean flag = i >= xPosition && j >= yPosition && i < xPosition + width && j < yPosition + height;

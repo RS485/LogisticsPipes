@@ -16,6 +16,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -96,10 +97,13 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 		}
 	}
 	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/satellite.png");
+	
+	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/satellite.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

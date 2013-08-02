@@ -35,7 +35,7 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPayload(((CoreRoutedPipe) pipe.pipe).getLogisticsNetworkPacket()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe.logic instanceof BaseLogicCrafting) {
-				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((BaseLogicCrafting) pipe.pipe.logic).getDummyInventory()).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player) player);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(((BaseLogicCrafting) pipe.pipe.logic).getDummyInventory()).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()), (Player) player);
 			}
 		}
 	}

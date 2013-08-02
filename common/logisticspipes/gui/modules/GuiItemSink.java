@@ -18,6 +18,7 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -51,7 +52,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 				//((GuiButton)buttonList.get(0)).displayString = _itemSink.isDefaultRoute() ? "Yes" : "No";
 				if(slot >= 0) {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, pipe.getX(), pipe.getY(), pipe.getZ(), (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ITEM_SINK_DEFAULT, 0, -1, 0, (_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(ItemSinkDefaultPacket.class).setInteger((_itemSink.isDefaultRoute() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0));
@@ -84,11 +85,11 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 		fontRenderer.drawString("Default route:", 65, 45, 0x404040);
 	}
-	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/itemsink.png");
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/itemsink.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

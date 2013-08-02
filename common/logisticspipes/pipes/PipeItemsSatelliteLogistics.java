@@ -32,7 +32,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SidedInventoryForgeAdapter;
+
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;

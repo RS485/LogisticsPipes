@@ -19,6 +19,7 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -52,7 +53,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
 				if(slot >= 0) {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.getX(), pipe.getY(), pipe.getZ(), (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, 0, -1, 0, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());	
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0));
@@ -61,7 +62,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 			case 1:
 				if(slot >= 0) {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.getX(), pipe.getY(), pipe.getZ(), slot).getPacket());
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
 //TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, _advancedExtractor.getX(), -1, _advancedExtractor.getZ(), slot).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(_advancedExtractor.getX()).setPosY(-1).setPosZ(_advancedExtractor.getZ()));
@@ -93,11 +94,10 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 		fontRenderer.drawString(_advancedExtractor.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
-	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/itemsink.png");
+		mc.renderEngine.func_110577_a(ITEMSINK);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

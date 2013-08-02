@@ -9,6 +9,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -32,11 +33,11 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		
 	}
-
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/power_junction.png");
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/power_junction.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

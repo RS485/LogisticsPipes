@@ -43,8 +43,8 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 		this.logic = logic;
 		xSize = 184;
 		ySize = 176;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, 0).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(0).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord));
+//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.getX(), this.logic.getY(), this.logic.getZ(), 0).getPacket());
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(0).setPosX(this.logic.getX()).setPosY(this.logic.getY()).setPosZ(this.logic.getZ()));
 	}
 	
 	@Override
@@ -64,7 +64,7 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 13, guiTop + 92);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 59, guiTop + 17);
 		//GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		//mc.renderEngine.bindTexture("/logisticspipes/gui/supplier.png");
+		//mc.renderEngine.func_110577_a("/logisticspipes/gui/supplier.png");
 		//int j = guiLeft;
 		//int k = guiTop;
 		//drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -91,15 +91,15 @@ public class GuiLiquidSupplierMk2Pipe extends GuiContainer implements IGuiIDHand
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.xCoord, logic.yCoord, logic.zCoord, (logic.isRequestingPartials() ? 1 : 0)).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.getX(), logic.getY(), logic.getZ(), (logic.isRequestingPartials() ? 1 : 0)).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		if((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;
 			if(guibutton.id % 10 == 1) change = -1;
 			change *= Math.pow(10, guibutton.id / 10 - 1);
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.xCoord, this.logic.yCoord, this.logic.zCoord, change).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(change).setPosX(this.logic.xCoord).setPosY(this.logic.yCoord).setPosZ(this.logic.zCoord));
+//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.getX(), this.logic.getY(), this.logic.getZ(), change).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(LiquidSupplierAmount.class).setInteger(change).setPosX(this.logic.getX()).setPosY(this.logic.getY()).setPosZ(this.logic.getZ()));
 		}
 		super.actionPerformed(guibutton);
 		

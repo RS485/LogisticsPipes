@@ -6,29 +6,29 @@ import buildcraft.transport.PipeTransport;
 
 public class OrientationsUtil {
 	public static ForgeDirection getOrientationOfTilewithPipe(PipeTransport pipe,TileEntity tile) {
-		if(pipe.zCoord == tile.zCoord) {
-			if(pipe.yCoord == tile.yCoord) {
-				if(pipe.xCoord < tile.xCoord) {
+		if(pipe.getZ() == tile.zCoord) {
+			if(pipe.getY() == tile.yCoord) {
+				if(pipe.getX() < tile.xCoord) {
 					return ForgeDirection.EAST;
-				} else if(pipe.xCoord > tile.xCoord) {
+				} else if(pipe.getX() > tile.xCoord) {
 					return ForgeDirection.WEST;
 				}
 			}
 		}
-		if(pipe.xCoord == tile.xCoord) {
-			if(pipe.zCoord == tile.zCoord) {
-				if(pipe.yCoord < tile.yCoord) {
+		if(pipe.getX() == tile.xCoord) {
+			if(pipe.getZ() == tile.zCoord) {
+				if(pipe.getY() < tile.yCoord) {
 					return ForgeDirection.UP;
-				} else if(pipe.yCoord > tile.yCoord) {
+				} else if(pipe.getY() > tile.yCoord) {
 					return ForgeDirection.DOWN;
 				}
 			}
 		}
-		if(pipe.xCoord == tile.xCoord) {
-			if(pipe.yCoord == tile.yCoord) {
-				if(pipe.zCoord < tile.zCoord) {
+		if(pipe.getX() == tile.xCoord) {
+			if(pipe.getY() == tile.yCoord) {
+				if(pipe.getZ() < tile.zCoord) {
 					return ForgeDirection.SOUTH;
-				} else if(pipe.zCoord > tile.zCoord) {
+				} else if(pipe.getZ() > tile.zCoord) {
 					return ForgeDirection.NORTH;
 				}
 			}
@@ -37,29 +37,29 @@ public class OrientationsUtil {
 	}
 	
 	public static ForgeDirection getOrientationOfTilewithTile(TileEntity pipe,TileEntity tile) {
-		if(pipe.zCoord == tile.zCoord) {
-			if(pipe.yCoord == tile.yCoord) {
-				if(pipe.xCoord < tile.xCoord) {
+		if(pipe.getZ() == tile.zCoord) {
+			if(pipe.getY() == tile.yCoord) {
+				if(pipe.getX() < tile.xCoord) {
 					return ForgeDirection.EAST;
-				} else if(pipe.xCoord > tile.xCoord) {
+				} else if(pipe.getX() > tile.xCoord) {
 					return ForgeDirection.WEST;
 				}
 			}
 		}
-		if(pipe.xCoord == tile.xCoord) {
-			if(pipe.zCoord == tile.zCoord) {
-				if(pipe.yCoord < tile.yCoord) {
+		if(pipe.getX() == tile.xCoord) {
+			if(pipe.getZ() == tile.zCoord) {
+				if(pipe.getY() < tile.yCoord) {
 					return ForgeDirection.UP;
-				} else if(pipe.yCoord > tile.yCoord) {
+				} else if(pipe.getY() > tile.yCoord) {
 					return ForgeDirection.DOWN;
 				}
 			}
 		}
-		if(pipe.xCoord == tile.xCoord) {
-			if(pipe.yCoord == tile.yCoord) {
-				if(pipe.zCoord < tile.zCoord) {
+		if(pipe.getX() == tile.xCoord) {
+			if(pipe.getY() == tile.yCoord) {
+				if(pipe.getZ() < tile.zCoord) {
 					return ForgeDirection.SOUTH;
-				} else if(pipe.zCoord > tile.zCoord) {
+				} else if(pipe.getZ() > tile.zCoord) {
 					return ForgeDirection.NORTH;
 				}
 			}

@@ -60,7 +60,8 @@ public class LogisticsSolidBlock extends BlockContainer {
 		}
 		return false;
 	}
-
+/*
+ *TODO: does this code need fixing?
 	@Override
 	public void onBlockPlacedBy(World par1World, int par2, int par3, int par4, EntityLiving par5EntityLiving, ItemStack itemStack) {
 		super.onBlockPlacedBy(par1World, par2, par3, par4, par5EntityLiving, itemStack);
@@ -85,7 +86,7 @@ public class LogisticsSolidBlock extends BlockContainer {
 				((IRotationProvider)tile).setRotation(3);
 			}
 		}
-	}
+	}*/
 
 	@Override
 	public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6) {

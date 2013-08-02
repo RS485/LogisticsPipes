@@ -13,6 +13,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -44,11 +45,11 @@ public class GuiLiquidSupplier extends GuiWithPreviousGuiContainer {
 		fontRenderer.drawString(_liquidSupplier.getFilterInventory().getInvName(), 8, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
-	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/itemsink.png");	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {	
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/itemsink.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

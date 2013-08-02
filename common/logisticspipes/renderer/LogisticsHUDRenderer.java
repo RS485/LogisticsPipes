@@ -24,6 +24,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.GuiIngameForge;
 
 import org.lwjgl.opengl.GL11;
@@ -83,7 +84,7 @@ public class LogisticsHUDRenderer {
 			CoreRoutedPipe pipe = router.getPipe();
 			if(!(pipe instanceof IHeadUpDisplayRendererProvider)) continue;
 			if(MainProxy.getDimensionForWorld(pipe.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
-				double dis = Math.hypot(pipe.xCoord - x + 0.5,Math.hypot(pipe.yCoord - y + 0.5, pipe.zCoord - z + 0.5));
+				double dis = Math.hypot(pipe.getX() - x + 0.5,Math.hypot(pipe.getY() - y + 0.5, pipe.getZ() - z + 0.5));
 				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,(IHeadUpDisplayRendererProvider)pipe));
 					if(!list.contains(pipe)) {
@@ -153,6 +154,9 @@ public class LogisticsHUDRenderer {
 	
 	private boolean displayCross = false;
 	
+	//TODO: only load this once, rather than twice
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/icons.png");
+	
 	public void renderPlayerDisplay(long renderTicks) {
 		if(!displayRenderer()) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
@@ -161,7 +165,7 @@ public class LogisticsHUDRenderer {
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
 	        if (GuiIngameForge.renderCrosshairs && mc.ingameGUI != null) {
-		        mc.renderEngine.bindTexture("/gui/icons.png");
+		        mc.renderEngine.func_110577_a(TEXTURE);
 		        GL11.glColor4d(0.0D, 0.0D, 0.0D, 1.0D);
 		        GL11.glDisable(GL11.GL_BLEND);
 		        mc.ingameGUI.drawTexturedModalRect(width / 2 - 7, height / 2 - 7, 0, 0, 16, 16);

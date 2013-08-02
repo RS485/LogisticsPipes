@@ -6,13 +6,14 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
 public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRenderer {
 	
 	private final LogisticsPowerJunctionTileEntity junction;
-	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/power_junction.png");
 	public HUDPowerJunction(LogisticsPowerJunctionTileEntity junction) {
 		this.junction = junction;
 	}
@@ -33,7 +34,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		super.renderHeadUpDisplay(distance, day, mc, config);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/power_junction.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		drawTexturedModalRect(-50, -30, 9, 10, 7, 61);
 		GL11.glTranslatef(0.0F, 0.0F, -0.0005F);
 		int level = 100 - junction.getChargeState();

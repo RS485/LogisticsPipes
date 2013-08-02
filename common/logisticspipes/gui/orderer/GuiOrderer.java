@@ -40,6 +40,7 @@ import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -156,6 +157,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		return false;
 	}
 	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/icons.png");
+	
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
 		//super.drawScreen(i, j, f);
@@ -239,7 +242,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			int graphic = ((int) (System.currentTimeMillis() / 250) % 5);
 			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,
 			// this.mc.renderEngine.getTexture());
-			mc.renderEngine.bindTexture("/gui/icons.png");
+			mc.renderEngine.func_110577_a(TEXTURE);
 			Tessellator tesselator = Tessellator.instance;
 			tesselator.startDrawingQuads();
 			int xPosition = (xSize / 2) - 50;

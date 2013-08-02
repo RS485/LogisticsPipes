@@ -11,6 +11,7 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -68,8 +69,8 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			if(_slot >= 0) {
-//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(_pipe.xCoord).setPosY(_pipe.yCoord).setPosZ(_pipe.zCoord));
+//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.getX(), _pipe.getY(), _pipe.getZ(), _slot).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(_pipe.getX()).setPosY(_pipe.getY()).setPosZ(_pipe.getZ()));
 			} else {
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _provider.getX(), _provider.getY(), _provider.getZ(), _slot).getPacket());	
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(_provider.getX()).setPosY(_provider.getY()).setPosZ(_provider.getZ()));
@@ -77,8 +78,8 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();
 			if(_slot >= 0) {
-//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.xCoord, _pipe.yCoord, _pipe.zCoord, _slot).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(_pipe.xCoord).setPosY(_pipe.yCoord).setPosZ(_pipe.zCoord));
+//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.getX(), _pipe.getY(), _pipe.getZ(), _slot).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(_pipe.getX()).setPosY(_pipe.getY()).setPosZ(_pipe.getZ()));
 			} else {
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _provider.getX(), _provider.getY(), _provider.getZ(), _slot).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(_provider.getX()).setPosY(_provider.getY()).setPosZ(_provider.getZ()));
@@ -86,11 +87,11 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		}
 		super.actionPerformed(guibutton);
 	}
-	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/supplier.png");	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/supplier.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

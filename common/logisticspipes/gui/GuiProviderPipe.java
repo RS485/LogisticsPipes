@@ -19,6 +19,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -63,12 +64,12 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.getX(), logic.getY(), logic.getZ()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeNextModePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
+//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.getX(), logic.getY(), logic.getZ()).getPacket());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeNextModePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);
 	}
@@ -84,10 +85,12 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		fontRenderer.drawString("Mode: " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/supplier.png");
+	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/supplier.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

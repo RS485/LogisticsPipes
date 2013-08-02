@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.renderer.Tessellator;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
@@ -108,6 +109,9 @@ public class EntitySparkleFX extends EntityFX
         this.motionY = var19 / this.particleMaxAge;
         this.motionZ = var21 / this.particleMaxAge;
     }
+	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/particles/particles.png");
+	
 
     @Override
 	public void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
@@ -117,7 +121,7 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, this.blendmode);
-        Minecraft.getMinecraft().renderEngine.bindTexture("/logisticspipes/particles/particles.png");
+        Minecraft.getMinecraft().renderEngine.func_110577_a(TEXTURE);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.75F);
         int var8 = this.particle + this.particleAge / this.multiplier;
         float var9 = var8 % 8 / 8.0F;
@@ -140,7 +144,7 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
         GL11.glPopMatrix();
-        Minecraft.getMinecraft().renderEngine.bindTexture("/particles.png");
+        Minecraft.getMinecraft().renderEngine.func_110577_a(TEXTURE);//TODO: check -- was "/particles.png");, now LP-particles
         var1.startDrawingQuads();
     }
 
@@ -169,9 +173,9 @@ public class EntitySparkleFX extends EntityFX
             this.prevPosY = this.posY;
             this.prevPosZ = this.posZ;
 
-            if (this.particleAge == 0 && this.tinkle && this.getWorld().rand.nextInt(10) == 0)
+            if (this.particleAge == 0 && this.tinkle && this.worldObj.rand.nextInt(10) == 0)
             {
-                this.getWorld().playSoundAtEntity(this, "random.orb", 0.02F, 0.7F * ((this.getWorld().rand.nextFloat() - this.getWorld().rand.nextFloat()) * 0.6F + 2.0F));
+                this.worldObj.playSoundAtEntity(this, "random.orb", 0.02F, 0.7F * ((this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.6F + 2.0F));
             }
 
             if (this.particleAge++ >= this.particleMaxAge)

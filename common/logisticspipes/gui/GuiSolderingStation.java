@@ -11,6 +11,7 @@ import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -33,11 +34,14 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 	}
+	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/soldering_station.png");
+	
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/soldering_station.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -52,7 +56,7 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 			iisl.add(iis);
 			BasicGuiHelper.renderItemIdentifierStackListIntoGui(iisl, null, 0, guiLeft + 141, guiTop + 47, 1, 1, 18, 18, mc, false, false);
 		}
-		mc.renderEngine.bindTexture("/logisticspipes/gui/soldering_station.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
 		for(int a=0;a<3;a++) {
 			for(int b=0;b<3;b++) {

@@ -61,8 +61,8 @@ public class LogisticsSignBlock extends BlockContainer {
 			this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
 			PipeItemsCraftingLogistics pipe = ((LogisticsSignTileEntity)tile).getAttachedSignOwnerPipe();
 			if (pipe != null) {
-				int disX = pipe.xCoord - tile.xCoord;
-				int disZ = pipe.zCoord - tile.zCoord;
+				int disX = pipe.getX() - tile.xCoord;
+				int disZ = pipe.getZ() - tile.zCoord;
 				if (disZ > 0) {
 					this.setBlockBounds(var8, var6, 1.0F - var10, var9, var7, 1.0F);
 				} else if (disZ < 0) {

@@ -3,6 +3,7 @@ package logisticspipes.utils.gui.hud;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -76,11 +77,18 @@ public abstract class BasicHUDButton implements IHUDButton {
 	}
 	
 	
+	private static final ResourceLocation ITEMS = new ResourceLocation("/gui/items.png");
+	
+			
+	private static final ResourceLocation GUI = new ResourceLocation("/gui/gui.png");
+			
+	
 	
 	@Override
 	public void renderButton(boolean hover, boolean clicked) {
 		Minecraft minecraft = FMLClientHandler.instance().getClient();
-        GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, minecraft.renderEngine.getTexture("/gui/gui.png"));
+        //GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, 
+        minecraft.renderEngine.func_110577_a(GUI); //TODO: check this change
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         int k = !buttonEnabled() ? 0 : hover ? 2 : 1;
         
@@ -105,7 +113,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 0.001F);
-		minecraft.renderEngine.bindTexture("/gui/items.png");
+		minecraft.renderEngine.func_110577_a(ITEMS);
 	}
 
 	@Override

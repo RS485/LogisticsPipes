@@ -469,8 +469,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					list.appendTag(nbt);
 				}
 				this.mainGui.getDisk().getTagCompound().setTag("macroList", list);
-//TODO 			MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.xCoord, mainGui.pipe.yCoord, mainGui.pipe.zCoord, mainGui.pipe.getDisk()).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.xCoord).setPosY(mainGui.pipe.yCoord).setPosZ(mainGui.pipe.zCoord));
+//TODO 			MainProxy.sendPacketToServer(new PacketItem(NetworkConstants.DISK_CONTENT, mainGui.pipe.getX(), mainGui.pipe.getY(), mainGui.pipe.getZ(), mainGui.pipe.getDisk()).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(mainGui.pipe.getDisk()).setPosX(mainGui.pipe.getX()).setPosY(mainGui.pipe.getY()).setPosZ(mainGui.pipe.getZ()));
 				this.exitGui();
 			} else if(macroItems.size() != 0) {
 				this.setSubGui(new GuiMessagePopup("Please enter a name"));

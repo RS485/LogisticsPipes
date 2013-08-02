@@ -92,9 +92,9 @@ public class RemoteOrderer extends Item {
 	
 	public static void connectToPipe(ItemStack stack, PipeItemsRemoteOrdererLogistics pipe) {
 		stack.stackTagCompound = new NBTTagCompound();
-		stack.stackTagCompound.setInteger("connectedPipe-x", pipe.xCoord);
-		stack.stackTagCompound.setInteger("connectedPipe-y", pipe.yCoord);
-		stack.stackTagCompound.setInteger("connectedPipe-z", pipe.zCoord);
+		stack.stackTagCompound.setInteger("connectedPipe-x", pipe.getX());
+		stack.stackTagCompound.setInteger("connectedPipe-y", pipe.getY());
+		stack.stackTagCompound.setInteger("connectedPipe-z", pipe.getZ());
 		int dimension = 0;
 		for(Integer dim:DimensionManager.getIDs()) {
 			if(pipe.getWorld().equals(DimensionManager.getWorld(dim.intValue()))) {

@@ -28,15 +28,18 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.inventory.ISpecialInventory;
-import buildcraft.api.power.IPowerProvider;
+import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerFramework;
+import buildcraft.api.power.PowerHandler;
+import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.power.PowerHandler.Type;
 
 public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
-	private IPowerProvider provider;
+	private PowerHandler provider;
 	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
@@ -47,8 +50,8 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	private PlayerCollectionList listener = new PlayerCollectionList();
 
 	public LogisticsSolderingTileEntity() {
-		provider = PowerFramework.currentFramework.createPowerProvider();
-		provider.configure(10, 10, 100, 10, 100);
+		provider = new PowerHandler(this, Type.MACHINE);
+		provider.configure(10, 100, 1000, 100); // never triggers doWork, as this is just an energy store, and tick does the actual work.
 	}
 
 	public Container createContainer(EntityPlayer player) {
@@ -318,30 +321,23 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		return true;
 	}
 
-	@Override
-	public void setPowerProvider(IPowerProvider provider) {
-		this.provider = provider;
-	}
 
 	@Override
-	public IPowerProvider getPowerProvider() {
-		return provider;
-	}
-
-	@Override
-	public void doWork() {
+	public void doWork(PowerHandler workProvider) {
 		
 	}
 
 	@Override
-	public int powerRequest(ForgeDirection from) {
-		if (hasWork()) {
-			return provider.getMaxEnergyReceived();
-		} else {
-			return 0;
-		}
+	public PowerReceiver getPowerReceiver(ForgeDirection side) {
+		return provider.getPowerReceiver();
 	}
 
+	@Override
+	public World getWorld() {
+		// TODO Auto-generated method stub
+		return this.worldObj;
+	}
+	
 	@Override
 	public int getSizeInventory() {
 		return inv.getSizeInventory();
@@ -524,7 +520,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		// TODO Auto-generated method stub
 		return true;
 	}
@@ -534,4 +530,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 		super.func_85027_a(par1CrashReportCategory);
 		par1CrashReportCategory.addCrashSection("LP-Version", LogisticsPipes.VERSION);
 	}
+
+
 }

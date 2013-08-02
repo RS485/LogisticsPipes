@@ -31,9 +31,10 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.power.IPowerProvider;
+import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.IPowerReceptor;
-import buildcraft.api.power.PowerFramework;
+import buildcraft.api.power.PowerHandler.PowerReceiver;
+import buildcraft.api.power.PowerHandler.Type;
 import dan200.computer.api.IComputerAccess;
 import dan200.computer.api.IPeripheral;
 
@@ -47,7 +48,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	public final int IC2Multiplier = 2;
 	public final int MAX_STORAGE = 2000000;
 	
-	private IPowerProvider powerFramework;
+	private PowerHandler powerFramework;
 	
 	private PlayerCollectionList guiListener = new PlayerCollectionList();
 	
@@ -62,8 +63,8 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	private IHeadUpDisplayRenderer HUD;
 	
 	public LogisticsPowerJunctionTileEntity() {
-		powerFramework = PowerFramework.currentFramework.createPowerProvider();
-		powerFramework.configure(0, 1, 250, 1, 750);
+		powerFramework = new PowerHandler(this, Type.STORAGE);
+		powerFramework.configure(0, 250, 1, 750);
 		HUD = new HUDPowerJunction(this);
 	}
 	@Override
@@ -196,22 +197,8 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 
 	@Override
-	public void setPowerProvider(IPowerProvider provider) {
-		powerFramework = provider;
-	}
+	public void doWork(PowerHandler p) {}
 
-	@Override
-	public IPowerProvider getPowerProvider() {
-		return powerFramework;
-	}
-
-	@Override
-	public void doWork() {}
-
-	@Override
-	public int powerRequest(ForgeDirection from) {
-		return Math.min(powerFramework.getMaxEnergyReceived(), freeSpace() / BuildCraftMultiplier);
-	}
 
 	@Override
 	public int getPowerLevel() {
@@ -273,13 +260,13 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void startWatching() {
 //TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
 //TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopBlockWatchingPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
@@ -379,4 +366,9 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	@ModDependentMethod(modId="ComputerCraft")
 	public void detach(IComputerAccess computer) {}
+	
+	@Override
+	public PowerReceiver getPowerReceiver(ForgeDirection side) {
+		return powerFramework.getPowerReceiver();
+	}
 }

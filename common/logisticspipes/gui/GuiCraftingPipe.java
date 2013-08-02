@@ -189,7 +189,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			return;
 		case 4:
 			_logic.openAttachedGui(_player);
-			RenderTickHandler.addGuiToReopen(_logic.xCoord, _logic.yCoord, _logic.zCoord, getGuiID());
+			RenderTickHandler.addGuiToReopen(_logic.getX(), _logic.getY(), _logic.getZ(), getGuiID());
 			return;
 		case 20:
 			_logic.priorityUp(_player);
@@ -212,7 +212,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	public void onGuiClosed() {
 		super.onGuiClosed();
-		inventorySlots.onCraftGuiClosed(_player); // Fix approved
+		inventorySlots.onContainerClosed(_player); // Fix approved
 	}
 
 	@Override

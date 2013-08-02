@@ -7,6 +7,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
 import buildcraft.transport.Pipe;
 
 public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
@@ -14,6 +15,10 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 	private int prevGuiID = -1;
 	protected Pipe pipe;
 	private GuiScreen prevGui;
+	
+	protected static final ResourceLocation ITEMSINK = new ResourceLocation("/logisticspipes/gui/itemsink.png");
+	protected static final ResourceLocation SUPPLIER = new ResourceLocation("/logisticspipes/gui/supplier.png");
+	protected static final ResourceLocation CHASSI1 = new ResourceLocation("/logisticspipes/gui/itemsink.png");
 	
 	public GuiWithPreviousGuiContainer(Container par1Container, Pipe pipe, GuiScreen prevGui) {
 		super(par1Container);
@@ -38,7 +43,7 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 			if (prevGuiID != -1) {
 				super.keyTyped(c,i);
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.getX(), pipe.getY(), pipe.getZ(), prevGuiID + 10000).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 			} else {
 				super.keyTyped(c, i);
 			}

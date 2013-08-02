@@ -25,6 +25,7 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
@@ -101,9 +102,9 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 			if (module != null){
 				final ModernPacket packet = PacketHandler
 						.getPacket(ChassisGUI.class).setButtonID(guibutton.id)
-						.setPosX(_chassiPipe.xCoord)
-						.setPosY(_chassiPipe.yCoord)
-						.setPosZ(_chassiPipe.zCoord);
+						.setPosX(_chassiPipe.getX())
+						.setPosY(_chassiPipe.getY())
+						.setPosZ(_chassiPipe.getZ());
 //TODO Must be handled manualy
 				MainProxy.sendPacketToServer(packet);
 			}
@@ -152,11 +153,12 @@ public class GuiChassiPipe extends KraphtBaseGuiScreen implements IGuiIDHandlerP
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/chassipipe_size"+ _chassiPipe.getChassiSize() +".png");
+		mc.renderEngine.func_110577_a(_chassiPipe.getChassiGUITexture());
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
 	}
+
 
 	@Override
 	public int getGuiID() {

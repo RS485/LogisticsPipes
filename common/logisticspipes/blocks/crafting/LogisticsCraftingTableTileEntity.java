@@ -35,7 +35,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
 		for(IRecipe r : CraftingUtil.getRecipeList()) {
-			if(r.matches(craftInv, getWorld())) {
+			if(r.matches(craftInv, getWorldObj())) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
 			}
@@ -187,7 +187,7 @@ outer:
 	public void closeChest() {}
 
 	@Override
-	public boolean isStackValidForSlot(int i, ItemStack itemstack) {
+	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		if(i < 9 && i >= 0) {
 			ItemStack stack = matrix.getStackInSlot(i);
 			if(stack != null && itemstack != null) {

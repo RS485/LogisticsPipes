@@ -17,6 +17,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
@@ -70,7 +71,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		
 		if(slot >= 0) {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.getX(), pipe.getY(), pipe.getZ(), _directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).getPacket());
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord));
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		} else {
 //TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, 0, -1, _directionReceiver.getZ(), _directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).getPacket());	
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(_directionReceiver.getZ()));
@@ -89,11 +90,11 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		
 		fontRenderer.drawString("Extract orientation", xSize / 2 - fontRenderer.getStringWidth("Extract orientation") / 2 , 10, 0x404040);
 	}
-	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/extractor.png");	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.bindTexture("/logisticspipes/gui/extractor.png");
+		mc.renderEngine.func_110577_a(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		//drawRect(width/2 - xSize / 2, height / 2 - ySize /2, width/2 + xSize / 2, height / 2 + ySize /2, 0xFF404040);

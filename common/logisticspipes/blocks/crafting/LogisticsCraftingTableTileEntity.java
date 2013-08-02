@@ -106,6 +106,10 @@ outer:
 		return result;
 	}
 
+	public void onBlockBreak() {
+		inv.dropContents(worldObj, xCoord, yCoord, zCoord);
+	}
+
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
 		if(inventory == matrix) {

@@ -916,7 +916,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public boolean useEnergy(int amount){
-		return useEnergy(amount, null);
+		return useEnergy(amount, null, true);
 	}
 	@Override
 	public boolean canUseEnergy(int amount){
@@ -942,6 +942,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
+		return useEnergy(amount, providersToIgnore, false);
+	}
+
+	private boolean useEnergy(int amount, List<Object> providersToIgnore, boolean sparkles) {
 		if(MainProxy.isClient(getWorld())) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		if(amount == 0) return true;
@@ -955,11 +959,13 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount, providersToIgnore)) {
 				provider.useEnergy(amount, providersToIgnore);
+				if(sparkles) {
 				int particlecount = amount;
 				if (particlecount > 10) {
 					particlecount = 10;
 				}
 				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), particlecount);
+				}
 				return true;
 			}
 		}
@@ -1045,10 +1051,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public TravelingItem getQueuedForItemStack(ItemStack stack) {
-		for(TravelingItem item:queuedDataForUnroutedItems) {
-			if(ItemIdentifierStack.GetFromStack(item.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
-				queuedDataForUnroutedItems.remove(item);
-				return item;
+		ItemStack stack = data.item.getItemStack();
+		for(TravelingItem queued:queuedDataForUnroutedItems) {
+			if(ItemIdentifierStack.GetFromStack(queued.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
+				queuedDataForUnroutedItems.remove(queued);
+				return queued;
 			}
 		}
 		return null;

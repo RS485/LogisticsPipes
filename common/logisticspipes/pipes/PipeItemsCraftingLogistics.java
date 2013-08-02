@@ -19,7 +19,6 @@ import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
-import logisticspipes.config.Configs;
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
@@ -73,7 +72,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransportItems;
@@ -152,6 +150,50 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while(_orderManager.hasOrders()) {
 			_orderManager.sendFailed();
 		}
+	}
+
+	@Override
+	public IPipedItem getQueuedForEntityData(EntityData data) {
+		IPipedItem ret = super.getQueuedForEntityData(data);
+		if(ret != null)
+			return ret;
+		//we don't have anything to do
+		if(!_orderManager.hasOrders() && _extras.isEmpty())
+			return null;
+		//see if we can use it as result
+		ItemStack stack = data.item.getItemStack();
+		while (stack.stackSize > 0 && (_orderManager.hasOrders() || !_extras.isEmpty())) {
+			Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> nextOrder;
+			boolean processingOrder=false;
+			if(_orderManager.hasOrders()){
+				nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
+				processingOrder=true;
+			} else {
+				nextOrder = _extras.getFirst(); // fetch but not remove.
+			}
+			ItemIdentifier wanteditem = nextOrder.getValue1().getItem();
+			if(!wanteditem.fuzzyMatch(stack))
+				break;
+			//this is something we can use, remove some from the original itemstack and send that as a new item
+			int numtosend = Math.min(stack.stackSize, nextOrder.getValue1().stackSize);
+			ItemStack stackToSend = stack.splitStack(numtosend);
+			if (processingOrder) {
+				IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
+				item.setDestination(nextOrder.getValue2().getRouter().getSimpleID());
+				item.setTransportMode(TransportMode.Active);
+				item.addRelayPoints(nextOrder.getValue3());
+				super.queueRoutedItem(item, data.input.getOpposite());
+				_orderManager.sendSuccessfull(stackToSend.stackSize, false);
+			} else {
+				removeExtras(numtosend,nextOrder.getValue1().getItem());
+				LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
+
+				IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
+				super.queueRoutedItem(item, data.input.getOpposite());
+			}
+		}
+		//if we sent everything, this leaves the original piped item with a stacksize of 0, that should cause it to disappear
+		return null;
 	}
 
 	private ItemStack extractFromISpecialInventory(ISpecialInventory inv, ItemIdentifier wanteditem, int count){
@@ -325,20 +367,21 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 						nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
 					} else {
 						processingOrder = false;
-						if(!_extras.isEmpty())
+						if(!_extras.isEmpty()) {
 						nextOrder = _extras.getFirst();
+						} else {
+							//we somehow managed to end up with no extras and a bunch of extracted items left, fake a nextorder so we passiveroute them
+							ItemIdentifierStack dummystack = new ItemIdentifierStack(extractedID, extracted.stackSize);
+							nextOrder = new Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>(dummystack,null,null);
+					}
 					}
 					
 				} else {
 					removeExtras(numtosend,nextOrder.getValue1().getItem());
-
-					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
 					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
- 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
-					entityPos.moveForwards(0.5);
-					TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
-					((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
+
+					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stackToSend, worldObj);
+					super.queueRoutedItem(item, tile.orientation);
 				}
 			}
 		}

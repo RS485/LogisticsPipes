@@ -30,7 +30,7 @@ import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -63,7 +63,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
 
@@ -484,12 +484,12 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			template.addRequirement(ItemIdentifierStack.GetFromStack(resourceStack), target[i]);
 		}
 		
-		int liquidCrafter = this.getUpgradeManager().getLiquidCrafter();
-		IRequestLiquid[] liquidTarget = new IRequestLiquid[liquidCrafter];
+		int liquidCrafter = this.getUpgradeManager().getFluidCrafter();
+		IRequestFluid[] liquidTarget = new IRequestFluid[liquidCrafter];
 		
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(craftingLogic.liquidSatelliteId != 0) {
-				IRequestLiquid sat = (IRequestLiquid) craftingLogic.getLiquidSatelliteRouter(-1).getPipe();
+				IRequestFluid sat = (IRequestFluid) craftingLogic.getFluidSatelliteRouter(-1).getPipe();
 				for(int i=0;i<liquidCrafter;i++) {
 					liquidTarget[i] = sat;
 				}
@@ -497,14 +497,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		} else {
 			for(int i=0;i<liquidCrafter;i++) {
 				if(craftingLogic.liquidSatelliteIdArray[i] != 0) {
-					liquidTarget[i] = (IRequestLiquid) craftingLogic.getLiquidSatelliteRouter(i).getPipe();
+					liquidTarget[i] = (IRequestFluid) craftingLogic.getFluidSatelliteRouter(i).getPipe();
 				}
 			}
 		}
 		
 		for (int i = 0; i < liquidCrafter; i++){
-			LiquidIdentifier liquid = craftingLogic.getLiquidMaterial(i);
-			int amount = craftingLogic.getLiquidAmount()[i];
+			FluidIdentifier liquid = craftingLogic.getFluidMaterial(i);
+			int amount = craftingLogic.getFluidAmount()[i];
 			if (liquid == null || amount <= 0 || liquidTarget[i] == null) continue;
 			template.addRequirement(liquid, amount, liquidTarget[i]);
 		}

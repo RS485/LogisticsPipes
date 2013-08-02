@@ -8,7 +8,7 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -64,7 +64,7 @@ public class WorldTickHandler implements ITickHandler {
 				int x = tile.xCoord;
 				int y = tile.yCoord;
 				int z = tile.zCoord;
-				World world = tile.getWorld();
+				World world = getWorldObj();
 
 				//TE or its chunk might've gone away while we weren't looking
 				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
@@ -105,7 +105,7 @@ public class WorldTickHandler implements ITickHandler {
 					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
 					pos.moveForwards(1.0);
 
-					newTile.tileBuffer[o.ordinal()] = new TileBuffer(newTile.getWorld(), (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
+					newTile.tileBuffer[o.ordinal()] = new TileBuffer(newgetWorldObj(), (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
 				}
 
 				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
@@ -122,7 +122,7 @@ public class WorldTickHandler implements ITickHandler {
 			localList.remove(0);
 		}
 		ItemIdentifier.tick();
-		LiquidIdentifier.initFromForge(true);
+		FluidIdentifier.initFromForge(true);
 		if(type.contains(TickType.SERVER)) {
 			HudUpdateTick.tick();
 			if(LogisticsPipes.WATCHDOG) {

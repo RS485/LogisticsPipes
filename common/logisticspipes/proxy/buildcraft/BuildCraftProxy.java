@@ -33,7 +33,7 @@ import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
-import logisticspipes.pipes.PipeItemsLiquidSupplier;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogisticsMk2;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
@@ -43,13 +43,13 @@ import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
-import logisticspipes.pipes.PipeLiquidBasic;
-import logisticspipes.pipes.PipeLiquidExtractor;
-import logisticspipes.pipes.PipeLiquidInsertion;
-import logisticspipes.pipes.PipeLiquidProvider;
-import logisticspipes.pipes.PipeLiquidRequestLogistics;
-import logisticspipes.pipes.PipeLiquidSatellite;
-import logisticspipes.pipes.PipeLiquidSupplierMk2;
+import logisticspipes.pipes.PipeFluidBasic;
+import logisticspipes.pipes.PipeFluidExtractor;
+import logisticspipes.pipes.PipeFluidInsertion;
+import logisticspipes.pipes.PipeFluidProvider;
+import logisticspipes.pipes.PipeFluidRequestLogistics;
+import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
@@ -57,7 +57,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk4;
 import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
-import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
+import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
@@ -75,7 +75,6 @@ import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.tools.IToolWrench;
-import buildcraft.api.transport.IPipedItem;
 import buildcraft.transport.TravelingItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
@@ -169,31 +168,31 @@ public class BuildCraftProxy {
 		Utils.dropItems(world, stack, x, y, z);
 	}
 
-	public IRoutedItem GetOrCreateRoutedItem(World getWorld(), TravelingItem itemData) {
-		if (!isRoutedItem(itemData.item)){
-			RoutedEntityItem newItem = new RoutedEntityItem(getWorld(), itemData.item);
-			itemData.item = newItem;
+	public IRoutedItem GetOrCreateRoutedItem(World worldObj, TravelingItem itemData) {
+		if (!isRoutedItem(itemData)){
+			RoutedEntityItem newItem = new RoutedEntityItem(worldObj, itemData);
+			itemData = newItem;
 			return newItem;
 		}
-		return (IRoutedItem) itemData.item; 
+		return (IRoutedItem) itemData; 
 	}
 	
-	public boolean isRoutedItem(IPipedItem item) {
+	public boolean isRoutedItem(TravelingItem item) {
 		return (item instanceof RoutedEntityItem);
 	}
 	
-	public IRoutedItem GetRoutedItem(IPipedItem item) {
+	public IRoutedItem GetRoutedItem(TravelingItem item) {
 		return (IRoutedItem) item;
 	}
 	
-	public IRoutedItem CreateRoutedItem(World getWorld(), IPipedItem item) {
-		RoutedEntityItem newItem = new RoutedEntityItem(getWorld(), item);
+	public IRoutedItem CreateRoutedItem(TravelingItem item) {
+		RoutedEntityItem newItem = new RoutedEntityItem(item);
 		return newItem;
 	}
 
-	public IRoutedItem CreateRoutedItem(ItemStack payload, World getWorld()) {
-		TravelingItem entityItem = new TravelingItem(getWorld(), 0, 0, 0, payload);
-		return CreateRoutedItem(getWorld(), entityItem);
+	public IRoutedItem CreateRoutedItem(ItemStack payload, World worldObj) {
+		TravelingItem entityItem = new TravelingItem(0, 0, 0, payload);
+		return CreateRoutedItem(entityItem);
 	}
 
 	public void registerTrigger() {
@@ -237,16 +236,16 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsCraftingPipeMk3 = createPipe(Configs.LOGISTICSPIPE_CRAFTING_MK3_ID, PipeItemsCraftingLogisticsMk3.class, "Crafting Logistics Pipe MK3", side);
 		LogisticsPipes.LogisticsFirewallPipe = createPipe(Configs.LOGISTICSPIPE_FIREWALL_ID, PipeItemsFirewall.class, "Firewall Logistics Pipe", side);
 		
-		LogisticsPipes.LogisticsLiquidSupplierPipeMk1 = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsLiquidSupplier.class, "Liquid Supplier Logistics Pipe", side);
+		LogisticsPipes.LogisticsFluidSupplierPipeMk1 = createPipe(Configs.LOGISTICSPIPE_LIQUIDSUPPLIER_ID, PipeItemsFluidSupplier.class, "Fluid Supplier Logistics Pipe", side);
 		
-		LogisticsPipes.LogisticsLiquidConnectorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsLiquidConnectorPipe.class, "Logistics Liquid Connector Pipe", side);
-		LogisticsPipes.LogisticsLiquidBasicPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeLiquidBasic.class, "Basic Logistics Liquid Pipe", side);
-		LogisticsPipes.LogisticsLiquidInsertionPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeLiquidInsertion.class, "Logistics Liquid Insertion Pipe", side);
-		LogisticsPipes.LogisticsLiquidProviderPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeLiquidProvider.class, "Logistics Liquid Provider Pipe", side);
-		LogisticsPipes.LogisticsLiquidRequestPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeLiquidRequestLogistics.class, "Logistics Liquid Request Pipe", side);
-		LogisticsPipes.LogisticsLiquidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeLiquidExtractor.class, "Logistics Liquid Extractor Pipe", side);
-		LogisticsPipes.LogisticsLiquidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeLiquidSatellite.class, "Logistics Liquid Satellite Pipe", side);
-		LogisticsPipes.LogisticsLiquidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeLiquidSupplierMk2.class, "Logistics Liquid Supplier Pipe Mk2", side);
+		LogisticsPipes.LogisticsFluidConnectorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_CONNECTOR, LogisticsFluidConnectorPipe.class, "Logistics Fluid Connector Pipe", side);
+		LogisticsPipes.LogisticsFluidBasicPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_BASIC, PipeFluidBasic.class, "Basic Logistics Fluid Pipe", side);
+		LogisticsPipes.LogisticsFluidInsertionPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_INSERTION, PipeFluidInsertion.class, "Logistics Fluid Insertion Pipe", side);
+		LogisticsPipes.LogisticsFluidProviderPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_PROVIDER, PipeFluidProvider.class, "Logistics Fluid Provider Pipe", side);
+		LogisticsPipes.LogisticsFluidRequestPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_REQUEST, PipeFluidRequestLogistics.class, "Logistics Fluid Request Pipe", side);
+		LogisticsPipes.LogisticsFluidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeFluidExtractor.class, "Logistics Fluid Extractor Pipe", side);
+		LogisticsPipes.LogisticsFluidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeFluidSatellite.class, "Logistics Fluid Satellite Pipe", side);
+		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
 	}
 
 	/**

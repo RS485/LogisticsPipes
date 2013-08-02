@@ -1,10 +1,10 @@
 package logisticspipes.gui.hud;
 
 import logisticspipes.hud.HUDConfig;
-import logisticspipes.logic.BaseLogicLiquidSatellite;
+import logisticspipes.logic.BaseLogicFluidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
-import logisticspipes.pipes.PipeLiquidSatellite;
+import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;
@@ -14,18 +14,18 @@ import org.lwjgl.opengl.GL11;
 public class HUDSatellite extends BasicHUDGui {
 
 	private final PipeItemsSatelliteLogistics pipe1;
-	private final PipeLiquidSatellite pipe2;
+	private final PipeFluidSatellite pipe2;
 	private int page;
 
 	public HUDSatellite(final PipeItemsSatelliteLogistics pipe) {
 		this(pipe, null);
 	}
 	
-	public HUDSatellite(final PipeLiquidSatellite pipe) {
+	public HUDSatellite(final PipeFluidSatellite pipe) {
 		this(null, pipe);
 	}
 	
-	private HUDSatellite(PipeItemsSatelliteLogistics pPipe1, PipeLiquidSatellite pPipe2) {
+	private HUDSatellite(PipeItemsSatelliteLogistics pPipe1, PipeFluidSatellite pPipe2) {
 		this.pipe1 = pPipe1;
 		this.pipe2 = pPipe2;
 		this.addButton(new BasicHUDButton("<", -2, -40, 8, 8) {
@@ -92,7 +92,7 @@ public class HUDSatellite extends BasicHUDGui {
 			if(pipe1 != null) {
 				message = "ID: " + Integer.toString(((BaseLogicSatellite)pipe1.logic).satelliteId);
 			} else {
-				message = "ID: " + Integer.toString(((BaseLogicLiquidSatellite)pipe2.logic).satelliteId);
+				message = "ID: " + Integer.toString(((BaseLogicFluidSatellite)pipe2.logic).satelliteId);
 			}
 			mc.fontRenderer.drawString(message , -28, -28, 0);
 			GL11.glScalef(0.8F, 0.8F, -1F);
@@ -121,7 +121,7 @@ public class HUDSatellite extends BasicHUDGui {
 			if(pipe1 != null) {
 				message = Integer.toString(((BaseLogicSatellite)pipe1.logic).satelliteId);
 			} else {
-				message = Integer.toString(((BaseLogicLiquidSatellite)pipe2.logic).satelliteId);
+				message = Integer.toString(((BaseLogicFluidSatellite)pipe2.logic).satelliteId);
 			}
 			mc.fontRenderer.drawString(message , -(mc.fontRenderer.getStringWidth(message) / 2), -4, 0);
 		}

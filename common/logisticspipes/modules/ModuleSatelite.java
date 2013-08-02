@@ -71,9 +71,6 @@ public class ModuleSatelite extends LogisticsModule{
 			if (base instanceof net.minecraft.inventory.ISidedInventory) {
 				base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory) base, tile.orientation.getOpposite(),false);
 			}
-			if (base instanceof net.minecraftforge.common.ISidedInventory) {
-				base = new SidedInventoryForgeAdapter((net.minecraftforge.common.ISidedInventory) base, tile.orientation.getOpposite());
-			}
 			IInventoryUtil inv =SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(base);
 			count += inv.roomForItem(item, 9999);
 		}

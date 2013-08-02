@@ -30,7 +30,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 		for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 			Position p = new Position(tile.xCoord, tile.yCoord, tile.zCoord, direction);
 			p.moveForwards(1);
-			TileEntity canidate = tile.getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+			TileEntity canidate = tile.getWorldObj().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 			if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(tile, canidate, direction)) {
 				if(onlyOnePipe) {
 					onlyOnePipe = false;
@@ -50,7 +50,7 @@ public class TesseractConnection implements ISpecialTileConnection {
 			for (ForgeDirection direction : ForgeDirection.VALID_DIRECTIONS) {
 				Position p = new Position(connected.xCoord, connected.yCoord, connected.zCoord, direction);
 				p.moveForwards(1);
-				TileEntity canidate = connected.getWorld().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
+				TileEntity canidate = connected.getWorldObj().getBlockTileEntity((int) p.x, (int) p.y, (int) p.z);
 				if(canidate instanceof TileGenericPipe && SimpleServiceLocator.buildCraftProxy.checkPipesConnections(connected, canidate, direction)) {
 					if(pipe != null) {
 						pipe = null;

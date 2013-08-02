@@ -8,7 +8,7 @@ import logisticspipes.pipes.upgrades.AdvancedSatelliteUpgrade;
 import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
-import logisticspipes.pipes.upgrades.LiquidCraftingUpgrade;
+import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
@@ -137,7 +137,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(CONNECTION_WEST, "Disconnection Upgrade (WEST)", ConnectionUpgradeWEST.class, 13);
 
 		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 14);
-		registerUpgrade(LIQUID_CRAFTING, "Liquid Crafting Upgrade", LiquidCraftingUpgrade.class, 15);
+		registerUpgrade(LIQUID_CRAFTING, "Fluid Crafting Upgrade", FluidCraftingUpgrade.class, 15);
 		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
 	}
 	
@@ -243,7 +243,7 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[13]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/DisWEST");
 
 		icons[14]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
-		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/LiquidCrafting");
+		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
 		icons[16]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
 		icons[17]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/UNKNOWN01");
 	}

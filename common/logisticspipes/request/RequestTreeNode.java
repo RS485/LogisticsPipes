@@ -19,7 +19,7 @@ import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree.ActiveRequestType;
@@ -32,7 +32,7 @@ import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 
@@ -77,7 +77,7 @@ public class RequestTreeNode {
 	private final RequestTreeNode parentNode;
 	protected final RequestTree root;
 	private List<RequestTreeNode> subRequests = new ArrayList<RequestTreeNode>();
-	List<LiquidRequestTreeNode> liquidSubRequests = new ArrayList<LiquidRequestTreeNode>();
+	List<FluidRequestTreeNode> liquidSubRequests = new ArrayList<FluidRequestTreeNode>();
 	private List<LogisticsPromise> promises = new ArrayList<LogisticsPromise>();
 	private List<LogisticsExtraPromise> extrapromises = new ArrayList<LogisticsExtraPromise>();
 	private List<LogisticsExtraPromise> byproducts = new ArrayList<LogisticsExtraPromise>();
@@ -152,7 +152,7 @@ public class RequestTreeNode {
 		subNode.removeSubPromisses();
 	}
 	
-	protected void remove(LiquidRequestTreeNode subNode) {
+	protected void remove(FluidRequestTreeNode subNode) {
 		liquidSubRequests.remove(subNode);
 		subNode.removeSubPromisses();
 	}
@@ -226,7 +226,7 @@ public class RequestTreeNode {
 				((ICraftItems)promise.sender).registerExtras(promise);
 			}
 		}
-		for(LiquidRequestTreeNode subNode:liquidSubRequests) {
+		for(FluidRequestTreeNode subNode:liquidSubRequests) {
 			subNode.fullFill();
 		}
 	}
@@ -243,7 +243,7 @@ public class RequestTreeNode {
 		for(RequestTreeNode subNode:subRequests) {
 			subNode.buildMissingMap(missing);
 		}
-		for(LiquidRequestTreeNode subNode:liquidSubRequests) {
+		for(FluidRequestTreeNode subNode:liquidSubRequests) {
 			subNode.buildMissingMap(missing);
 		}
 	}
@@ -630,11 +630,11 @@ outer:
 				failed = true;
 			}			
 		}
-		List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(nCraftingSets);
-		ArrayList<LiquidRequestTreeNode>lastLiquidNode = new ArrayList<LiquidRequestTreeNode>(liquids.size());
-		for(Pair3<LiquidIdentifier, Integer, IRequestLiquid> liquid:liquids) {
-			LiquidRequestTreeNode node = new LiquidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
-			lastLiquidNode.add(node);
+		List<Pair3<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSets);
+		ArrayList<FluidRequestTreeNode>lastFluidNode = new ArrayList<FluidRequestTreeNode>(liquids.size());
+		for(Pair3<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
+			FluidRequestTreeNode node = new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
+			lastFluidNode.add(node);
 			if(!node.isDone()) {
 				failed = true;
 			}
@@ -643,7 +643,7 @@ outer:
 			for (RequestTreeNode n:lastNode) {
 				n.destroy(); // drop the failed requests.
 			}
-			for (LiquidRequestTreeNode n:lastLiquidNode) {
+			for (FluidRequestTreeNode n:lastFluidNode) {
 				n.destroy(); // drop the failed requests.
 			}
 			//save last tried template for filling out the tree
@@ -654,7 +654,7 @@ outer:
 			}
 			
 			for(int i = 0; i < liquids.size(); i++) {
-				workSetsAvailable = Math.min(workSetsAvailable, lastLiquidNode.get(i).getPromiseLiquidAmount() / (liquids.get(i).getValue2() / nCraftingSets));
+				workSetsAvailable = Math.min(workSetsAvailable, lastFluidNode.get(i).getPromiseFluidAmount() / (liquids.get(i).getValue2() / nCraftingSets));
 			}
 			
 			return generateRequestTreeFor(workSetsAvailable, template);
@@ -674,7 +674,7 @@ outer:
 		
 		//and try it
 		ArrayList<RequestTreeNode> newChildren = new ArrayList<RequestTreeNode>();
-		ArrayList<LiquidRequestTreeNode> newLiquidChildren = new ArrayList<LiquidRequestTreeNode>();
+		ArrayList<FluidRequestTreeNode> newFluidChildren = new ArrayList<FluidRequestTreeNode>();
 		if(workSets>0) {
 			//now set the amounts
 
@@ -688,10 +688,10 @@ outer:
 					failed = true;
 				}			
 			}
-			List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(workSets);
-			for(Pair3<LiquidIdentifier, Integer, IRequestLiquid> liquid:liquids) {
-				LiquidRequestTreeNode node = new LiquidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
-				newLiquidChildren.add(node);
+			List<Pair3<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(workSets);
+			for(Pair3<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
+				FluidRequestTreeNode node = new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
+				newFluidChildren.add(node);
 				if(!node.isDone()) {
 					failed = true;
 				}
@@ -700,7 +700,7 @@ outer:
 				for(RequestTreeNode c:newChildren) {
 					c.destroy();
 				}
-				for (LiquidRequestTreeNode n:newLiquidChildren) {
+				for (FluidRequestTreeNode n:newFluidChildren) {
 					n.destroy();
 				}
 				return 0;
@@ -733,10 +733,10 @@ outer:
 			new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
 		}
 
-		List<Pair3<LiquidIdentifier, Integer, IRequestLiquid>> liquids = template.getComponentLiquid(nCraftingSetsNeeded);
+		List<Pair3<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSetsNeeded);
 
-		for(Pair3<LiquidIdentifier, Integer, IRequestLiquid> liquid:liquids) {
-			new LiquidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
+		for(Pair3<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
+			new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 		}
 
 		this.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));

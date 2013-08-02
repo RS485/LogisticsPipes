@@ -8,7 +8,7 @@
 
 package logisticspipes.gates;
 
-import logisticspipes.pipes.PipeItemsLiquidSupplier;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.gates.ITriggerParameter;
@@ -37,8 +37,8 @@ public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 			PipeItemsSupplierLogistics supplier = (PipeItemsSupplierLogistics) pipe;
 			return supplier.isRequestFailed();
 		}
-		if (pipe instanceof PipeItemsLiquidSupplier) {
-			PipeItemsLiquidSupplier supplier = (PipeItemsLiquidSupplier) pipe;
+		if (pipe instanceof PipeItemsFluidSupplier) {
+			PipeItemsFluidSupplier supplier = (PipeItemsFluidSupplier) pipe;
 			return supplier.isRequestFailed();
 		}
 		return false;

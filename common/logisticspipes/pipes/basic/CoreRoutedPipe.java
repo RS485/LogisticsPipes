@@ -324,10 +324,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			if(stillNeedReplace) {
 				stillNeedReplace = false;
 				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlockId(getX(), getY(), getZ()));
-				for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
+				/* TravelingItems are just held by a pipe, they don't need to know their world
+				 * for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getTravelingItem().setWorld(getWorld());
-				}
+				}*/
 				//first tick just create a router and do nothing.
 				firstInitialiseTick();
 				return;
@@ -408,7 +409,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				if (transport != null && transport instanceof PipeTransportLogistics){
 					((PipeTransportLogistics)transport).dropBuffer();
 				}
-				getUpgradeManager().dropUpgrades(getWorld(), getX(), getY(), getZ());
+				getUpgradeManager().dropUpgrades();
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -1095,23 +1096,27 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 
 	public final int getX() {
-		if(this.container == null) {
+		//TODO: what if container is null; pipes don't have a coord any more.
+/*		if(this.container == null) {
 			return xCoord;
-		}
+		}*/
 		return this.container.xCoord;
 	}
 
 	public final int getY() {
+		/*
 		if(this.container == null) {
 			return yCoord;
-		}
+		}*/
 		return this.container.yCoord;
 	}
 
 	public final int getZ() {
+		/*
 		if(this.container == null) {
 			return zCoord;
 		}
+		*/
 		return this.container.zCoord;
 	}
 
@@ -1124,7 +1129,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		crashReportCategory.addCrashSection("Router", this.getRouter().toString());
 	}
 	
-	public boolean isLiquidPipe() {
+	public boolean isFluidPipe() {
 		return false;
 	}
 	

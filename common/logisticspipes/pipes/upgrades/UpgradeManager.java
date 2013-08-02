@@ -107,7 +107,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				isAdvancedCrafter = true;
 			} else if(upgrade instanceof CombinedSneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN) {
 				isCombinedSneakyUpgrade = true;
-			} else if(upgrade instanceof LiquidCraftingUpgrade) {
+			} else if(upgrade instanceof FluidCraftingUpgrade) {
 				liquidCrafter += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof CraftingByproductUpgrade) {
 				hasByproductExtractor = true;
@@ -173,7 +173,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 			public void guiClosedByPlayer(EntityPlayer player) {
 				players.remove(player);
 				if(players.isEmpty() && !isCombinedSneakyUpgrade) {
-					sneakyInv.dropContents();
+					sneakyInv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 				}
 			}
 		});
@@ -233,7 +233,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 	
 	public void dropUpgrades() {
-		inv.dropContents();
+		inv.dropContents(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 	}
 
 	public boolean isSideDisconnected(ForgeDirection side) {
@@ -319,7 +319,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		return isAdvancedCrafter;
 	}
 	
-	public int getLiquidCrafter() {
+	public int getFluidCrafter() {
 		return liquidCrafter;
 	}
 	

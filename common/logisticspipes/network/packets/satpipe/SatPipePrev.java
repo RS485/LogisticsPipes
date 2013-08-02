@@ -1,6 +1,6 @@
 package logisticspipes.network.packets.satpipe;
 
-import logisticspipes.logic.BaseLogicLiquidSatellite;
+import logisticspipes.logic.BaseLogicFluidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -28,8 +28,8 @@ public class SatPipePrev extends CoordinatesPacket {
 		if (pipe.pipe.logic instanceof BaseLogicSatellite) {
 			((BaseLogicSatellite) pipe.pipe.logic).setPrevId(player);
 		}
-		if (pipe.pipe.logic instanceof BaseLogicLiquidSatellite) {
-			((BaseLogicLiquidSatellite) pipe.pipe.logic).setPrevId(player);
+		if (pipe.pipe.logic instanceof BaseLogicFluidSatellite) {
+			((BaseLogicFluidSatellite) pipe.pipe.logic).setPrevId(player);
 		}
 	}
 

@@ -53,7 +53,7 @@ public class RecipeManager {
 		};
 		LocalCraftingManager craftingManager = new LocalCraftingManager();
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSupplierPipeMk1, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk1, 1), new Object[] {
 			"lPl",
 			" B ",
 			Character.valueOf('l'), "dyeBlue",
@@ -853,16 +853,16 @@ public class RecipeManager {
 			Character.valueOf('s'), Item.ingotIron
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidConnectorPipe, 4), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidConnectorPipe, 4), new Object[] {
 			"GPG",
 			"gLg",
-			Character.valueOf('L'), LogisticsPipes.LogisticsLiquidBasicPipe,
-			Character.valueOf('P'), BuildCraftTransport.pipeLiquidsGold,
+			Character.valueOf('L'), LogisticsPipes.LogisticsFluidBasicPipe,
+			Character.valueOf('P'), BuildCraftTransport.pipeFluidsGold,
 			Character.valueOf('G'), Block.glass,
 			Character.valueOf('g'), Item.ingotGold
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidBasicPipe, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidBasicPipe, 1), new Object[] {
 			"w",
 			"B",
 			"b",
@@ -871,47 +871,47 @@ public class RecipeManager {
 			Character.valueOf('b'), Item.bucketEmpty
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSatellitePipe, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSatellitePipe, 1), new Object[] {
 			"rLr",
-			Character.valueOf('L'), LogisticsPipes.LogisticsLiquidBasicPipe,
+			Character.valueOf('L'), LogisticsPipes.LogisticsFluidBasicPipe,
 			Character.valueOf('r'), Item.redstone
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidSupplierPipeMk2, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidSupplierPipeMk2, 1), new Object[] {
 			" g ",
 			"lPl",
 			" g ",
 			Character.valueOf('l'), "dyeBlue",
-			Character.valueOf('P'), LogisticsPipes.LogisticsLiquidBasicPipe,
+			Character.valueOf('P'), LogisticsPipes.LogisticsFluidBasicPipe,
 			Character.valueOf('g'), Item.ingotGold
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidInsertionPipe, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidInsertionPipe, 1), new Object[] {
 			" g ",
 			"gLg",
 			" g ",
-			Character.valueOf('L'), LogisticsPipes.LogisticsLiquidBasicPipe,
+			Character.valueOf('L'), LogisticsPipes.LogisticsFluidBasicPipe,
 			Character.valueOf('g'), Item.glassBottle
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidProviderPipe, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidProviderPipe, 1), new Object[] {
 			"g",
 			"L",
-			Character.valueOf('L'), LogisticsPipes.LogisticsLiquidBasicPipe,
+			Character.valueOf('L'), LogisticsPipes.LogisticsFluidBasicPipe,
 			Character.valueOf('g'), Item.glassBottle
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidRequestPipe, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidRequestPipe, 1), new Object[] {
 			"gLg",
-			Character.valueOf('L'), LogisticsPipes.LogisticsLiquidBasicPipe,
+			Character.valueOf('L'), LogisticsPipes.LogisticsFluidBasicPipe,
 			Character.valueOf('g'), Item.glassBottle
 		});
 		
-		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsLiquidExtractorPipe, 1), new Object[] {
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.LogisticsFluidExtractorPipe, 1), new Object[] {
 			"w",
 			"I",
-			Character.valueOf('I'), LogisticsPipes.LogisticsLiquidInsertionPipe,
-			Character.valueOf('w'), BuildCraftTransport.pipeLiquidsWood
+			Character.valueOf('I'), LogisticsPipes.LogisticsFluidInsertionPipe,
+			Character.valueOf('w'), BuildCraftTransport.pipeFluidsWood
 		});
 	}
 }

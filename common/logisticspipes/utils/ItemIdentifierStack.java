@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedList;
 
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
@@ -70,6 +71,10 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		this.stackSize = stackSize;
 	}
 	
+	public ItemIdentifierStack(FluidIdentifier key, Integer stackSize) {
+		//TODO: convert a FluidIdentifier into an ItemIdentifier
+	}
+
 	public ItemIdentifier getItem(){
 		return _item;
 	}

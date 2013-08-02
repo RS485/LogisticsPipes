@@ -17,7 +17,7 @@ import java.util.Map.Entry;
 
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.pipes.basic.liquid.LogisticsLiquidConnectorPipe;
+import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.Pair;
 import net.minecraft.inventory.IInventory;
@@ -117,7 +117,7 @@ public class PathFinder {
 		}
 		
 		//Iron, obsidean and liquid pipes will separate networks
-		if (startPipe.pipe instanceof LogisticsLiquidConnectorPipe) {
+		if (startPipe.pipe instanceof LogisticsFluidConnectorPipe) {
 			return foundPipes;
 		}		
 		

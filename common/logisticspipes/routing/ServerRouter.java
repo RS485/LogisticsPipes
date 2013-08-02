@@ -28,9 +28,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.routing.IFilteringRouter;
-import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
+import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.items.LogisticsLiquidContainer;
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
 import logisticspipes.pipes.PipeItemsFirewall;
@@ -39,7 +39,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.Pair;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -605,11 +605,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
 			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
 		}
-		if (pipe != null && pipe.logic instanceof IRequireReliableLiquidTransport) {
+		if (pipe != null && pipe.logic instanceof IRequireReliableFluidTransport) {
 			ItemStack stack = routedEntityItem.getItemStack();
-			if(stack.getItem() instanceof LogisticsLiquidContainer) {
-				FluidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
-				((IRequireReliableLiquidTransport)pipe.logic).liquidArrived(LiquidIdentifier.get(liquid), liquid.amount);				
+			if(stack.getItem() instanceof LogisticsFluidContainer) {
+				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+				((IRequireReliableFluidTransport)pipe.logic).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);				
 			}
 		}
 	}

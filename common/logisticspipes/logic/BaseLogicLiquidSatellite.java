@@ -14,38 +14,38 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.interfaces.routing.IRequestLiquid;
-import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
+import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.satpipe.SatPipeNext;
 import logisticspipes.network.packets.satpipe.SatPipePrev;
 import logisticspipes.network.packets.satpipe.SatPipeSetID;
-import logisticspipes.pipes.PipeLiquidSatellite;
+import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.core.network.TileNetworkData;
 import cpw.mods.fml.common.network.Player;
 
-public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequireReliableLiquidTransport {
+public class BaseLogicFluidSatellite extends BaseRoutingLogic implements IRequireReliableFluidTransport {
 
-	public static HashSet<BaseLogicLiquidSatellite> AllSatellites = new HashSet<BaseLogicLiquidSatellite>();
+	public static HashSet<BaseLogicFluidSatellite> AllSatellites = new HashSet<BaseLogicFluidSatellite>();
 
 	// called only on server shutdown
 	public static void cleanup() {
 		AllSatellites.clear();
 	}
 	
-	protected final Map<LiquidIdentifier, Integer> _lostItems = new HashMap<LiquidIdentifier, Integer>();
+	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<FluidIdentifier, Integer>();
 
 	@TileNetworkData
 	public int satelliteId;
 
-	public BaseLogicLiquidSatellite() {
+	public BaseLogicFluidSatellite() {
 		throttleTime = 40;
 	}
 
@@ -72,7 +72,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 				return 0;
 			}
 			conflict = false;
-			for (final BaseLogicLiquidSatellite sat : AllSatellites) {
+			for (final BaseLogicFluidSatellite sat : AllSatellites) {
 				if (sat.satelliteId == potentialId) {
 					conflict = true;
 					break;
@@ -126,7 +126,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 
 	
 	private void updateWatchers() {
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), ((PipeLiquidSatellite)this.container.pipe).localModeWatchers);
+		MainProxy.sendToPlayerList(PacketHandler.getPacket(SatPipeSetID.class).setSatID(satelliteId).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), ((PipeFluidSatellite)this.container.pipe).localModeWatchers);
 	}
 	
 
@@ -155,10 +155,10 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 		if (_lostItems.isEmpty()) {
 			return;
 		}
-		final Iterator<Entry<LiquidIdentifier, Integer>> iterator = _lostItems.entrySet().iterator();
+		final Iterator<Entry<FluidIdentifier, Integer>> iterator = _lostItems.entrySet().iterator();
 		while (iterator.hasNext()) {
-			Entry<LiquidIdentifier, Integer> stack = iterator.next();
-			int received = RequestTree.requestLiquidPartial(stack.getKey(), stack.getValue(), (IRequestLiquid) this.getRoutedPipe(), null);
+			Entry<FluidIdentifier, Integer> stack = iterator.next();
+			int received = RequestTree.requestFluidPartial(stack.getKey(), stack.getValue(), (IRequestFluid) this.getRoutedPipe(), null);
 			
 			if(received > 0) {
 				if(received == stack.getValue()) {
@@ -175,7 +175,7 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 	}
 
 	@Override
-	public void liquidLost(LiquidIdentifier item, int amount) {
+	public void liquidLost(FluidIdentifier item, int amount) {
 		if(_lostItems.containsKey(item)) {
 			_lostItems.put(item, _lostItems.get(item) + amount);
 		} else {
@@ -184,10 +184,10 @@ public class BaseLogicLiquidSatellite extends BaseRoutingLogic implements IRequi
 	}
 
 	@Override
-	public void liquidArrived(LiquidIdentifier item, int amount) {}
+	public void liquidArrived(FluidIdentifier item, int amount) {}
 
 	@Override
-	public void liquidNotInserted(LiquidIdentifier item, int amount) {
+	public void liquidNotInserted(FluidIdentifier item, int amount) {
 		this.liquidLost(item, amount);
 	}
 }

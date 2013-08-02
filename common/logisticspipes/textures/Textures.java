@@ -99,7 +99,7 @@ public class Textures {
 	public static String LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE =  "pipes/crafting_mk3";
 	public static String LOGISTICSPIPE_FIREWALL_TEXTURE_FILE =  "pipes/firewall";
 	
-	// Liquid Pipes
+	// Fluid Pipes
 	public static String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE =  "pipes/original/liquid_connector";
 	public static String LOGISTICSPIPE_LIQUID_BASIC_FILE =  "pipes/liquid_basic";
 	public static String LOGISTICSPIPE_LIQUID_INSERTION_FILE =  "pipes/liquid_insertion";
@@ -167,7 +167,7 @@ public class Textures {
 		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
 		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);
 		
-		//Liquid
+		//Fluid
 		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture( LOGISTICSPIPE_LIQUID_TEXTURE_FILE, 2);
 		LOGISTICSPIPE_LIQUID_CONNECTOR				= registerSingleTexture(LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE);
 		LOGISTICSPIPE_LIQUID_BASIC					= registerTexture(LOGISTICSPIPE_LIQUID_BASIC_FILE);

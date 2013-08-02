@@ -61,15 +61,15 @@ public class SolderingStationRecipes {
 				new ItemStack(LogisticsPipes.LogisticsHUDArmor,1,0), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
-					new ItemStack(Item.lightStoneDust,1,0),
+					new ItemStack(Item.redstone,1,0),
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
-					new ItemStack(Item.lightStoneDust,1,0),
-					new ItemStack(Item.lightStoneDust,1,0),
+					new ItemStack(Item.redstone,1,0),
+					new ItemStack(Item.redstone,1,0),
 					new ItemStack(Block.glass,1,0),
-					new ItemStack(Item.lightStoneDust,1,0),
-					new ItemStack(Item.lightStoneDust,1,0),
-					new ItemStack(Item.lightStoneDust,1,0),
-					new ItemStack(Item.lightStoneDust,1,0) }, 
+					new ItemStack(Item.redstone,1,0),
+					new ItemStack(Item.redstone,1,0),
+					new ItemStack(Item.redstone,1,0),
+					new ItemStack(Item.redstone,1,0) }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,1), null));
 		
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{

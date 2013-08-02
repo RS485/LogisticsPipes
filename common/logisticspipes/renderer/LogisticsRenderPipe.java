@@ -6,7 +6,7 @@ import java.util.List;
 
 import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.transport.PipeLiquidTransportLogistics;
+import logisticspipes.transport.PipeFluidTransportLogistics;
 import net.minecraft.block.Block;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
@@ -45,9 +45,9 @@ public class LogisticsRenderPipe extends RenderPipe {
 	private final int[] angleY = { 0, 0, 270, 90, 0, 180 };
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	
-	private HashMap<Integer, HashMap<Integer, DisplayLiquidList>> displayLiquidLists = new HashMap<Integer, HashMap<Integer, DisplayLiquidList>>();
+	private HashMap<Integer, HashMap<Integer, DisplayFluidList>> displayFluidLists = new HashMap<Integer, HashMap<Integer, DisplayFluidList>>();
 	
-	private class DisplayLiquidList {
+	private class DisplayFluidList {
 
 		public int[] sideHorizontal = new int[LIQUID_STAGES];
 		public int[] sideVertical = new int[LIQUID_STAGES];
@@ -61,8 +61,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		if (BuildCraftCore.render == RenderMode.NoDynamic) return;
 		TileGenericPipe pipe = ((TileGenericPipe) tileentity);
 		if (pipe.pipe == null) return;
-		if (pipe.pipe.transport instanceof PipeLiquidTransportLogistics) {
-			renderLiquids(pipe.pipe, x, y, z);
+		if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
+			renderFluids(pipe.pipe, x, y, z);
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			renderCraftingPipe((PipeItemsCraftingLogistics) pipe.pipe, x, y, z);
@@ -330,8 +330,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		return sum.toString();
 	}
 	
-	private void renderLiquids(Pipe pipe, double x, double y, double z) {
-		PipeLiquidTransportLogistics liq = (PipeLiquidTransportLogistics) pipe.transport;
+	private void renderFluids(Pipe pipe, double x, double y, double z) {
+		PipeFluidTransportLogistics liq = (PipeFluidTransportLogistics) pipe.transport;
 		GL11.glPushMatrix();
 		GL11.glPushAttrib(GL11.GL_ENABLE_BIT);
 		GL11.glEnable(GL11.GL_CULL_FACE);
@@ -347,13 +347,13 @@ public class LogisticsRenderPipe extends RenderPipe {
 
 		for (int i = 0; i < 6; ++i) {
 			// IFluidTank tank = liq.getTanks()[i];
-			// FluidStack liquid = tank.getLiquid();
+			// FluidStack liquid = tank.getFluid();
 			FluidStack liquid = liq.renderCache[i];
 			// int amount = liquid != null ? liquid.amount : 0;
 			// int amount = liquid != null ? liq.renderAmmount[i] : 0;
 
 			if (liquid != null && liquid.amount > 0) {
-				DisplayLiquidList d = getListFromBuffer(liquid, pipe.getWorld());
+				DisplayFluidList d = getListFromBuffer(liquid, pipe.getWorld());
 
 				if (d == null) {
 					continue;
@@ -394,14 +394,14 @@ public class LogisticsRenderPipe extends RenderPipe {
 		}
 		// CENTER
 		// IFluidTank tank = liq.getTanks()[ForgeDirection.Unknown.ordinal()];
-		// FluidStack liquid = tank.getLiquid();
+		// FluidStack liquid = tank.getFluid();
 		FluidStack liquid = liq.renderCache[ForgeDirection.UNKNOWN.ordinal()];
 
 		// int amount = liquid != null ? liquid.amount : 0;
 		// int amount = liquid != null ? liq.renderAmmount[ForgeDirection.Unknown.ordinal()] : 0;
 		if (liquid != null && liquid.amount > 0) {
-			// DisplayLiquidList d = getListFromBuffer(liq.getTanks()[ForgeDirection.Unknown.ordinal()].getLiquid(), pipe.getWorld());
-			DisplayLiquidList d = getListFromBuffer(liquid, pipe.getWorld());
+			// DisplayFluidList d = getListFromBuffer(liq.getTanks()[ForgeDirection.Unknown.ordinal()].getFluid(), pipe.getWorld());
+			DisplayFluidList d = getListFromBuffer(liquid, pipe.getWorld());
 
 			if (d != null) {
 				int stage = (int) ((float) liquid.amount / (float) (liq.getInnerCapacity()) * (LIQUID_STAGES - 1));
@@ -423,27 +423,27 @@ public class LogisticsRenderPipe extends RenderPipe {
 		GL11.glPopMatrix();
 	}
 
-	private DisplayLiquidList getListFromBuffer(FluidStack stack, World world) {
+	private DisplayFluidList getListFromBuffer(FluidStack stack, World world) {
 
 		int liquidId = stack.itemID;
 
 		if (liquidId == 0)
 			return null;
 
-		return getDisplayLiquidLists(liquidId, stack.itemMeta, world);
+		return getDisplayFluidLists(liquidId, stack.itemMeta, world);
 	}
 
-	private DisplayLiquidList getDisplayLiquidLists(int liquidId, int meta, World world) {
-		if (displayLiquidLists.containsKey(liquidId)) {
-			HashMap<Integer, DisplayLiquidList> x = displayLiquidLists.get(liquidId);
+	private DisplayFluidList getDisplayFluidLists(int liquidId, int meta, World world) {
+		if (displayFluidLists.containsKey(liquidId)) {
+			HashMap<Integer, DisplayFluidList> x = displayFluidLists.get(liquidId);
 			if (x.containsKey(meta))
 				return x.get(meta);
 		} else {
-			displayLiquidLists.put(liquidId, new HashMap<Integer, DisplayLiquidList>());
+			displayFluidLists.put(liquidId, new HashMap<Integer, DisplayFluidList>());
 		}
 
-		DisplayLiquidList d = new DisplayLiquidList();
-		displayLiquidLists.get(liquidId).put(meta, d);
+		DisplayFluidList d = new DisplayFluidList();
+		displayFluidLists.get(liquidId).put(meta, d);
 
 		BlockInterface block = new BlockInterface();
 

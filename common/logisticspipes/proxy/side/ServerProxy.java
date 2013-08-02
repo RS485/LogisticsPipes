@@ -209,7 +209,7 @@ public class ServerProxy implements IProxy {
 		if(world instanceof WorldClient) {
 			return ((WorldClient)world).provider.dimensionId;
 		}
-		return world.getWorldInfo().getDimension();
+		return world.getWorldInfo().getVanillaDimension();
 	}
 
 	@Override

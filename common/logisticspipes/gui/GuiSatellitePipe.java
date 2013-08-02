@@ -9,7 +9,7 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.logic.BaseLogicLiquidSatellite;
+import logisticspipes.logic.BaseLogicFluidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.network.GuiIDs;
 import net.minecraft.client.gui.GuiButton;
@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL11;
 public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvider {
 
 	private BaseLogicSatellite _satellite;
-	private BaseLogicLiquidSatellite _liquidSatellite;
+	private BaseLogicFluidSatellite _liquidSatellite;
 	private EntityPlayer _player;
 
 	public GuiSatellitePipe(BaseLogicSatellite satellite, EntityPlayer player){
@@ -39,7 +39,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 		this.ySize = 70;
 	}
 	
-	public GuiSatellitePipe(BaseLogicLiquidSatellite satellite, EntityPlayer player){
+	public GuiSatellitePipe(BaseLogicFluidSatellite satellite, EntityPlayer player){
 		super(new Container(){
 			@Override
 			public boolean canInteractWith(EntityPlayer entityplayer) {

@@ -7,19 +7,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import logisticspipes.interfaces.routing.ILiquidProvider;
+import logisticspipes.interfaces.routing.IFluidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.interfaces.routing.IRequestLiquid;
+import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.LiquidLogisticsPromise;
+import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 
 public class RequestTree extends RequestTreeNode {
 
@@ -34,7 +34,7 @@ public class RequestTree extends RequestTreeNode {
 	
 	public static final EnumSet<ActiveRequestType> defaultRequestFlags=EnumSet.of(ActiveRequestType.Provide,ActiveRequestType.Craft);
 	private HashMap<FinalPair<IProvideItems,ItemIdentifier>,Integer> _promisetotals;
-	private HashMap<FinalPair<ILiquidProvider,LiquidIdentifier>,Integer> _promisetotalsliquid;
+	private HashMap<FinalPair<IFluidProvider,FluidIdentifier>,Integer> _promisetotalsliquid;
 
 	public RequestTree(ItemIdentifierStack item, IRequestItems requester, RequestTree parent, EnumSet<ActiveRequestType> requestFlags) {
 		super(item, requester, parent, requestFlags);
@@ -48,9 +48,9 @@ public class RequestTree extends RequestTreeNode {
 		return n;
 	}
 
-	private int getExistingLiquidPromisesFor(FinalPair<ILiquidProvider, LiquidIdentifier> key) {
+	private int getExistingFluidPromisesFor(FinalPair<IFluidProvider, FluidIdentifier> key) {
 		if(_promisetotalsliquid == null)
-			_promisetotalsliquid = new HashMap<FinalPair<ILiquidProvider,LiquidIdentifier>,Integer>();
+			_promisetotalsliquid = new HashMap<FinalPair<IFluidProvider,FluidIdentifier>,Integer>();
 		Integer n = _promisetotalsliquid.get(key);
 		if(n == null) return 0;
 		return n;
@@ -61,9 +61,9 @@ public class RequestTree extends RequestTreeNode {
 		return getExistingPromisesFor(key);
 	}
 	
-	protected int getAllPromissesFor(ILiquidProvider provider, LiquidIdentifier liquid) {
-		FinalPair<ILiquidProvider, LiquidIdentifier> key = new FinalPair<ILiquidProvider,LiquidIdentifier>(provider, liquid);
-		return getExistingLiquidPromisesFor(key);
+	protected int getAllPromissesFor(IFluidProvider provider, FluidIdentifier liquid) {
+		FinalPair<IFluidProvider, FluidIdentifier> key = new FinalPair<IFluidProvider,FluidIdentifier>(provider, liquid);
+		return getExistingFluidPromisesFor(key);
 	}
 	
 	protected LinkedList<LogisticsExtraPromise> getExtrasFor(ItemIdentifier item) {
@@ -110,14 +110,14 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	protected void promiseAdded(LiquidLogisticsPromise promise) {
-		FinalPair<ILiquidProvider, LiquidIdentifier> key = new FinalPair<ILiquidProvider,LiquidIdentifier>(promise.sender, promise.liquid);
-		_promisetotalsliquid.put(key, getExistingLiquidPromisesFor(key) + promise.amount);
+	protected void promiseAdded(FluidLogisticsPromise promise) {
+		FinalPair<IFluidProvider, FluidIdentifier> key = new FinalPair<IFluidProvider,FluidIdentifier>(promise.sender, promise.liquid);
+		_promisetotalsliquid.put(key, getExistingFluidPromisesFor(key) + promise.amount);
 	}
 
-	protected void promiseRemoved(LiquidLogisticsPromise promise) {
-		FinalPair<ILiquidProvider,LiquidIdentifier> key = new FinalPair<ILiquidProvider,LiquidIdentifier>(promise.sender, promise.liquid);
-		int r = getExistingLiquidPromisesFor(key) - promise.amount;
+	protected void promiseRemoved(FluidLogisticsPromise promise) {
+		FinalPair<IFluidProvider,FluidIdentifier> key = new FinalPair<IFluidProvider,FluidIdentifier>(promise.sender, promise.liquid);
+		int r = getExistingFluidPromisesFor(key) - promise.amount;
 		if(r == 0) {
 			_promisetotalsliquid.remove(key);
 		} else {
@@ -233,27 +233,27 @@ public class RequestTree extends RequestTreeNode {
 		return request( item, requester, log, true, true, false, true,defaultRequestFlags);
 	}
 	
-	public static int requestLiquidPartial(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log) {
-		return requestLiquid(liquid, amount, pipe, log, true);
+	public static int requestFluidPartial(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
+		return requestFluid(liquid, amount, pipe, log, true);
 	}
 
-	public static int requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log) {
-		return requestLiquid(liquid, amount, pipe, log, false);
+	public static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
+		return requestFluid(liquid, amount, pipe, log, false);
 	}
 	
-	public static int requestLiquid(LiquidIdentifier liquid, int amount, IRequestLiquid pipe, RequestLog log, boolean acceptPartial) {
-		LiquidRequestTreeNode request = new LiquidRequestTreeNode(liquid, amount, pipe, null);
+	public static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log, boolean acceptPartial) {
+		FluidRequestTreeNode request = new FluidRequestTreeNode(liquid, amount, pipe, null);
 		if(request.isDone() || acceptPartial) {
 			request.fullFill();
 			if(log != null) {
-				log.handleSucessfullRequestOf(request.getLiquid().getItemIdentifier(), request.getAmount());
+				log.handleSucessfullRequestOf(request.getFluid().getItemIdentifier(), request.getAmount());
 			}
-			return request.getPromiseLiquidAmount();
+			return request.getPromiseFluidAmount();
 		} else {
 			if(log != null) {
 				request.sendMissingMessage(log);
 			}
-			return request.getPromiseLiquidAmount();
+			return request.getPromiseFluidAmount();
 		}
 	}
 }

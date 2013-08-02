@@ -26,14 +26,14 @@ import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.items.LogisticsLiquidContainer;
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsNetworkManager;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.log.RequestLogFormator;
-import logisticspipes.logic.BaseLogicLiquidSatellite;
+import logisticspipes.logic.BaseLogicFluidSatellite;
 import logisticspipes.logic.BaseLogicSatellite;
-import logisticspipes.logistics.LogisticsLiquidManager;
+import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsEventListener;
@@ -58,7 +58,7 @@ import logisticspipes.proxy.specialtankhandler.BuildCraftTankHandler;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
 import logisticspipes.recipes.RecipeManager;
 import logisticspipes.recipes.SolderingStationRecipes;
-import logisticspipes.renderer.LiquidContainerRenderer;
+import logisticspipes.renderer.FluidContainerRenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.RouterManager;
 import logisticspipes.routing.ServerRouter;
@@ -74,7 +74,7 @@ import logisticspipes.ticks.VersionChecker;
 import logisticspipes.ticks.Watchdog;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.utils.InventoryUtilFactory;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -181,16 +181,16 @@ public class LogisticsPipes {
 	public static Item LogisticsApiaristAnalyzerPipe;
 	public static Item LogisticsApiaristSinkPipe;
 	
-	// Logistics Liquid Pipes
-	public static Item LogisticsLiquidBasicPipe;
-	public static Item LogisticsLiquidRequestPipe;
-	public static Item LogisticsLiquidProviderPipe;
-	public static Item LogisticsLiquidSatellitePipe;
-	public static Item LogisticsLiquidSupplierPipeMk1;
-	public static Item LogisticsLiquidSupplierPipeMk2;
-	public static Item LogisticsLiquidConnectorPipe;
-	public static Item LogisticsLiquidInsertionPipe;
-	public static Item LogisticsLiquidExtractorPipe;
+	// Logistics Fluid Pipes
+	public static Item LogisticsFluidBasicPipe;
+	public static Item LogisticsFluidRequestPipe;
+	public static Item LogisticsFluidProviderPipe;
+	public static Item LogisticsFluidSatellitePipe;
+	public static Item LogisticsFluidSupplierPipeMk1;
+	public static Item LogisticsFluidSupplierPipeMk2;
+	public static Item LogisticsFluidConnectorPipe;
+	public static Item LogisticsFluidInsertionPipe;
+	public static Item LogisticsFluidExtractorPipe;
 
 	// Logistics Modules/Upgrades
 	public static ItemModule ModuleItem;
@@ -205,7 +205,7 @@ public class LogisticsPipes {
 	public static ItemHUDArmor LogisticsHUDArmor;
 	public static Item LogisticsParts;
 	public static Item LogisticsUpgradeManager;
-	public static Item LogisticsLiquidContainer;
+	public static Item LogisticsFluidContainer;
 	public static Item LogisticsBrokenItem;
 	
 	// Logistics Blocks
@@ -232,7 +232,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());
-		SimpleServiceLocator.setLogisticsLiquidManager(new LogisticsLiquidManager());
+		SimpleServiceLocator.setLogisticsFluidManager(new LogisticsFluidManager());
 		SimpleServiceLocator.setSpecialTankHandler(new SpecialTankHandler());
 		
 		if(event.getSide().isClient()) {
@@ -314,7 +314,7 @@ public class LogisticsPipes {
 		
 		Object renderer = null;
 		if(isClient) {
-			renderer = new LiquidContainerRenderer();
+			renderer = new FluidContainerRenderer();
 		}
 		
 		LogisticsNetworkMonitior = new LogisticsNetworkManager(Configs.LOGISTICSNETWORKMONITOR_ID);
@@ -323,7 +323,7 @@ public class LogisticsPipes {
 		LogisticsItemCard = new LogisticsItemCard(Configs.ITEM_CARD_ID);
 		LogisticsItemCard.setUnlocalizedName("logisticsItemCard");
 		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, (LiquidContainerRenderer)renderer);
+			MinecraftForgeClient.registerItemRenderer(LogisticsItemCard.itemID, (FluidContainerRenderer)renderer);
 		}
 		
 		LogisticsRemoteOrderer = new RemoteOrderer(Configs.LOGISTICSREMOTEORDERER_ID);
@@ -361,10 +361,10 @@ public class LogisticsPipes {
 		LogisticsUpgradeManager = new LogisticsItem(Configs.ITEM_UPGRADE_MANAGER_ID);
 		LogisticsUpgradeManager.setUnlocalizedName("upgradeManagerItem");
 		
-		LogisticsLiquidContainer = new LogisticsLiquidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
-		LogisticsLiquidContainer.setUnlocalizedName("logisticsLiquidContainer");
+		LogisticsFluidContainer = new LogisticsFluidContainer(Configs.ITEM_LIQUID_CONTAINER_ID);
+		LogisticsFluidContainer.setUnlocalizedName("logisticsFluidContainer");
 		if(isClient) {
-			MinecraftForgeClient.registerItemRenderer(LogisticsLiquidContainer.itemID, (LiquidContainerRenderer)renderer);
+			MinecraftForgeClient.registerItemRenderer(LogisticsFluidContainer.itemID, (FluidContainerRenderer)renderer);
 		}
 		
 		LogisticsBrokenItem = new LogisticsBrokenItem(Configs.ITEM_BROKEN_ID);
@@ -385,7 +385,7 @@ public class LogisticsPipes {
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsParts,1,3), "en_US", "Nano Hopper");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsUpgradeManager,1,0), "en_US", "Upgrade Manager");
 		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsBrokenItem,1,0), "en_US", "Logistics Broken Item");
-		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsLiquidContainer,1,0), "en_US", "Logistics Liquid Container");
+		LanguageRegistry.instance().addNameForObject(new ItemStack(LogisticsFluidContainer,1,0), "en_US", "Logistics Fluid Container");
 		
 		LanguageRegistry.instance().addStringLocalization("itemGroup.Logistics_Pipes", "en_US", "Logistics Pipes");
 		
@@ -418,10 +418,10 @@ public class LogisticsPipes {
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
 		
-		//init Liquids
-		LiquidIdentifier.initFromForge(false);
-		LiquidIdentifier.get(9, 0, "water");
-		LiquidIdentifier.get(11, 0, "lava");
+		//init Fluids
+		FluidIdentifier.initFromForge(false);
+		FluidIdentifier.get(9, 0, "water");
+		FluidIdentifier.get(11, 0, "lava");
 
 		if (!FMLCommonHandler.instance().getModName().contains("MCPC") && ((Configs.WATCHDOG_CLIENT && isClient) || Configs.WATCHDOG_SERVER)) {
 			new Watchdog(isClient);
@@ -436,7 +436,7 @@ public class LogisticsPipes {
 		QueuedTasks.clearAllTasks();
 		HudUpdateTick.clearUpdateFlags();
 		BaseLogicSatellite.cleanup();
-		BaseLogicLiquidSatellite.cleanup();
+		BaseLogicFluidSatellite.cleanup();
 		ServerRouter.cleanup();
 		if(event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();

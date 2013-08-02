@@ -15,7 +15,7 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Colors;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.LiquidIdentifier;
+import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -23,7 +23,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fluids.LiquidContainerRegistry;
+import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 public class DummyContainer extends Container{
@@ -106,8 +106,8 @@ public class DummyContainer extends Container{
 		addSlotToContainer(new ModuleSlot(inventory, slotId, xCoord, yCoord, pipe));
 	}
 	
-	public void addLiquidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
-		addSlotToContainer(new LiquidSlot(inventory, slotId, xCoord, yCoord));
+	public void addFluidSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
+		addSlotToContainer(new FluidSlot(inventory, slotId, xCoord, yCoord));
 	}
 	
 	public void addColorSlot(int slotId, IInventory inventory, int xCoord, int yCoord) {
@@ -138,7 +138,7 @@ public class DummyContainer extends Container{
 	public ItemStack slotClick(int slotId, int mouseButton, int isShift, EntityPlayer entityplayer) {
 		if (slotId < 0) return super.slotClick(slotId, mouseButton, isShift, entityplayer);
 		Slot slot = (Slot)inventorySlots.get(slotId);
-		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof LiquidSlot) && !(slot instanceof ColorSlot))) {
+		if (slot == null || (!(slot instanceof DummySlot) && !(slot instanceof UnmodifiableSlot) && !(slot instanceof FluidSlot) && !(slot instanceof ColorSlot))) {
 			ItemStack stack1 = super.slotClick(slotId, mouseButton, isShift, entityplayer);
 			ItemStack stack2 = slot.getStack();
 			if(stack2 != null && stack2.getItem().itemID == LogisticsPipes.ModuleItem.itemID) {
@@ -157,11 +157,11 @@ public class DummyContainer extends Container{
 			return currentlyEquippedStack;
 		}
 		
-		if(slot instanceof LiquidSlot) {
+		if(slot instanceof FluidSlot) {
 			if(currentlyEquippedStack != null) {
-				FluidStack liquidId = LiquidContainerRegistry.getLiquidForFilledItem(currentlyEquippedStack);
+				FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(currentlyEquippedStack);
 				if (liquidId != null) {
-					LiquidIdentifier ident = LiquidIdentifier.get(liquidId);
+					FluidIdentifier ident = FluidIdentifier.get(liquidId);
 					if(mouseButton == 0) {
 						if(ident == null) {
 							slot.putStack(null);
@@ -174,21 +174,21 @@ public class DummyContainer extends Container{
 					return currentlyEquippedStack;
 				}
 			}
-			LiquidIdentifier ident = null;
+			FluidIdentifier ident = null;
 			if(slot.getStack() != null) {
-				ident = ItemIdentifier.get(slot.getStack()).getLiquidIdentifier();
+				ident = ItemIdentifier.get(slot.getStack()).getFluidIdentifier();
 			}
 			if(mouseButton == 0) {
 				if(ident != null) {
 					ident = ident.next();
 				} else {
-					ident = LiquidIdentifier.first();
+					ident = FluidIdentifier.first();
 				}
 			} else if(mouseButton == 1) {
 				if(ident != null) {
 					ident = ident.prev();
 				} else {
-					ident = LiquidIdentifier.last();
+					ident = FluidIdentifier.last();
 				}
 			} else {
 				ident = null;

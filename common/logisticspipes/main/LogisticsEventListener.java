@@ -51,10 +51,10 @@ public class LogisticsEventListener implements IPlayerTracker {
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
 	public void textureHook(TextureStitchEvent.Pre event) throws IOException{
-		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapItems) {
+		if (event.map.textureType == 1) {
 			LogisticsPipes.textures.registerItemIcons(event.map);
 		}
-		if (event.map == Minecraft.getMinecraft().renderEngine.textureMapBlocks) {
+		if (event.map.textureType == 0) {
 			LogisticsPipes.textures.registerBlockIcons();
 		}
 	}

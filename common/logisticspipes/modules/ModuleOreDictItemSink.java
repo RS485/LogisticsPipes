@@ -89,7 +89,7 @@ public class ModuleOreDictItemSink extends LogisticsGuiModule implements IClient
 	}
 
 
-	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.ModBasedItemSink, 0, true, false, 5, 0);
+	private static final SinkReply _sinkReply = new SinkReply(FixedPriority.OreDictItemSink, 0, true, false, 5, 0);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier item, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
 		if(bestPriority > _sinkReply.fixedPriority.ordinal() || (bestPriority == _sinkReply.fixedPriority.ordinal() && bestCustomPriority >= _sinkReply.customPriority)) return null;

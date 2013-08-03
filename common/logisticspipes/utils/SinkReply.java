@@ -5,6 +5,7 @@ public final class SinkReply {
 	public enum FixedPriority {
 		DefaultRoute,
 		ModBasedItemSink,
+		OreDictItemSink,
 		Terminus,
 		APIARIST_BeeSink,
 		APIARIST_Analyser,

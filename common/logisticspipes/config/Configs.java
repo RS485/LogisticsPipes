@@ -217,9 +217,6 @@ public class Configs {
 		LOGISTICSPIPE_FIREWALL_ID = CONFIGURATION.getItem(
 				"logisticsPipeFirewall.id", LOGISTICSPIPE_FIREWALL_ID,
 				"The item id for the firewall logistics pipe").getInt();
-		LOGISTICSPIPE_REQUEST_TABLE_ID = CONFIGURATION.getItem(
-				"logisticsPipeRequestTable.id", LOGISTICSPIPE_REQUEST_TABLE_ID,
-				"The item id for the request table").getInt();
 
 		LOGISTICSPIPE_LIQUID_CONNECTOR = CONFIGURATION.getItem(
 				"logisticPipeLiquidConnector.id",
@@ -383,6 +380,10 @@ public class Configs {
 								LOGISTICS_CRAFTING_TABLE_POWER_USAGE,
 								"Number of LPower units the Logistics Crafting Table uses per craft.")
 						.getInt(), 0);
+
+		LOGISTICSPIPE_REQUEST_TABLE_ID = CONFIGURATION.getItem(
+				"logisticsPipeRequestTable.id", LOGISTICSPIPE_REQUEST_TABLE_ID,
+				"The item id for the request table").getInt();
 
 		CONFIGURATION.save();
 	}

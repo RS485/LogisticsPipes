@@ -80,13 +80,13 @@ public class RemoteOrderer extends Item {
 			return par1ItemStack;
     	}
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
-		int energyUse=0;
-		if(pipe.worldObj != par3EntityPlayer.worldObj)
-			energyUse += 500;
-		energyUse += Math.abs(pipe.getX()-par3EntityPlayer.posX) + Math.abs(pipe.getY()-par3EntityPlayer.posY) + Math.abs(pipe.getZ()-par3EntityPlayer.posZ);
-		energyUse *= 5; // x5 converts from lp to mj energy cost.
 		if(pipe != null) {
 			if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
+				int energyUse=0;
+				if(pipe.worldObj != par3EntityPlayer.worldObj)
+					energyUse += 500;
+				energyUse += Math.abs(pipe.getX()-par3EntityPlayer.posX) + Math.abs(pipe.getY()-par3EntityPlayer.posY) + Math.abs(pipe.getZ()-par3EntityPlayer.posZ);
+				energyUse *= 5; // x5 converts from lp to mj energy cost.
 				if(pipe.useEnergy(energyUse)) { 
 					par3EntityPlayer.sendChatToPlayer("Establishing connection to destination at a cost of " + energyUse + " energy");
 			

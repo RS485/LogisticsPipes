@@ -41,7 +41,6 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 			}
 			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
 				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).ModListChanged();
 			}
 		} else {
 			if(getSlot() < 0) {
@@ -59,6 +58,7 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 			}
 			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
 				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).ModListChanged();
 			}
 		}
 	}

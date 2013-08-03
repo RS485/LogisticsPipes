@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import buildcraft.transport.TileGenericPipe;
-
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
@@ -17,6 +15,7 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain = true)
 public class NEISetCraftingRecipe extends CoordinatesPacket {

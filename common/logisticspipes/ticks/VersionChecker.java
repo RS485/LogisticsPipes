@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.LogisticsClassTransformer;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
@@ -31,7 +30,7 @@ public class VersionChecker extends Thread {
 		try {
 			if(LogisticsPipes.VERSION.equals("%"+"VERSION%:%DEBUG"+"%")) return;
 			if(LogisticsPipes.VERSION.contains("-")) return;
-			URL url = new URL("http://rs485.thezorro266.com/version/check.php?VERSION=" + LogisticsPipes.VERSION + "&ASM=" + LogisticsClassTransformer.BUILDCRAFT_CHANGED); //TODO Remove ASM stats before Release
+			URL url = new URL("http://rs485.thezorro266.com/version/check.php?VERSION=" + LogisticsPipes.VERSION);
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			InputStream inputStream = (InputStream) conn.getContent();
 			Scanner s = new Scanner(inputStream).useDelimiter("\\A");

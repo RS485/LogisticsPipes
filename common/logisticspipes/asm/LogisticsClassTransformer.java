@@ -20,8 +20,6 @@ import cpw.mods.fml.relauncher.IClassTransformer;
 import cpw.mods.fml.relauncher.Side;
 
 public class LogisticsClassTransformer implements IClassTransformer {
-	
-	public static boolean BUILDCRAFT_CHANGED = false;
 
 	private abstract class LocalMethodVisitor extends MethodNode {
 
@@ -81,8 +79,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		}
 		if(!handled) {
 			throw new RuntimeException("Method 'canReceivePipeObjects' from 'buildcraft.transport.PipeTransportItems' could not be found.");
-		} else {
-			BUILDCRAFT_CHANGED = true;
 		}
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
 		node.accept(writer);

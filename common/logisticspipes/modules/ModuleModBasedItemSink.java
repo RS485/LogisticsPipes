@@ -130,7 +130,6 @@ public class ModuleModBasedItemSink extends LogisticsGuiModule implements IClien
 		for(int i = 0; i < modList.size(); i++) {
 			nbttagcompound.setString("Mod" + i, modList.get(i));
 		}
-		modIdSet = null;
 	}
 
 	@Override

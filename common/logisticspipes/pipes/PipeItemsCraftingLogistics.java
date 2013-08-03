@@ -52,6 +52,7 @@ import logisticspipes.proxy.cc.interfaces.CCQueued;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTreeNode;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
@@ -507,15 +508,19 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!hasSatellite) return null;
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(craftingLogic.satelliteId != 0) {
-				IRequestItems sat = craftingLogic.getSatelliteRouter(-1).getPipe();
-				for(int i=6;i<9;i++) {
-					target[i] = sat;
+				IRouter r = craftingLogic.getSatelliteRouter(-1);
+				if(r != null) {
+					IRequestItems sat = r.getPipe();
+					for(int i=6;i<9;i++) {
+						target[i] = sat;
+					}
 				}
 			}
 		} else {
 			for(int i=0;i<9;i++) {
 				if(craftingLogic.advancedSatelliteIdArray[i] != 0) {
-					target[i] = craftingLogic.getSatelliteRouter(i).getPipe();
+					IRouter r = craftingLogic.getSatelliteRouter(i);
+					if(r != null) target[i] = r.getPipe();
 				}
 			}
 		}
@@ -534,15 +539,19 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(craftingLogic.liquidSatelliteId != 0) {
-				IRequestLiquid sat = (IRequestLiquid) craftingLogic.getLiquidSatelliteRouter(-1).getPipe();
-				for(int i=0;i<liquidCrafter;i++) {
-					liquidTarget[i] = sat;
+				IRouter r = craftingLogic.getLiquidSatelliteRouter(-1);
+				if(r != null) {
+					IRequestLiquid sat = (IRequestLiquid) r.getPipe();
+					for(int i=0;i<liquidCrafter;i++) {
+						liquidTarget[i] = sat;
+					}
 				}
 			}
 		} else {
 			for(int i=0;i<liquidCrafter;i++) {
 				if(craftingLogic.liquidSatelliteIdArray[i] != 0) {
-					liquidTarget[i] = (IRequestLiquid) craftingLogic.getLiquidSatelliteRouter(i).getPipe();
+					IRouter r = craftingLogic.getLiquidSatelliteRouter(i);
+					if(r != null) liquidTarget[i] = (IRequestLiquid) r.getPipe();
 				}
 			}
 		}

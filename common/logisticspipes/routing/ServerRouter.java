@@ -268,6 +268,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		return null;
 	}
 
+	@Override
+	public boolean isValidCache() {
+		return getPipe() != null;
+	}
+
 	private void ensureRouteTableIsUpToDate(boolean force){
 		if (_LSAVersion > _lastLSAVersion[simpleID]) {
 			if(Configs.MULTI_THREAD_NUMBER > 0 && !force) {

@@ -35,6 +35,7 @@ import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiLiquidSupplier;
 import logisticspipes.gui.modules.GuiModBasedItemSink;
+import logisticspipes.gui.modules.GuiOreDictItemSink;
 import logisticspipes.gui.modules.GuiPassiveSupplier;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiTerminus;
@@ -67,6 +68,7 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleLiquidSupplier;
 import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
@@ -74,6 +76,7 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.network.packets.module.ElectricManagetMode;
 import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
+import logisticspipes.network.packets.module.OreDictItemSinkList;
 import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
 import logisticspipes.network.packets.modules.BeeModule;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
@@ -742,6 +745,26 @@ public class GuiHandler implements IGuiHandler {
 					return dummy;
 				}
 				
+			case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
+				if(slot >= 0) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
+					NBTTagCompound nbt = new NBTTagCompound();
+					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleOreDictItemSink)) return null;
+					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				}
+				
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
@@ -1101,6 +1124,24 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, null, slot);
 				}
 			
+			case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
+				if(slot >= 0) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
+					return new GuiOreDictItemSink(player.inventory, pipe.pipe, (ModuleOreDictItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot),  FMLClientHandler.instance().getClient().currentScreen, slot + 1);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerSlot(-1-z);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleOreDictItemSink)) return null;
+					return new GuiOreDictItemSink(player.inventory, null, (ModuleOreDictItemSink) module, null, slot);
+				}
+				
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;

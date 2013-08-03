@@ -468,6 +468,13 @@ public class RecipeManager {
 			Character.valueOf('U'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2)
 		});
 
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.OREDICTITEMSINK), new Object[] {
+			"U",
+			"B",
+			Character.valueOf('B'), new ItemStack(LogisticsPipes.ModuleItem, 1, ItemModule.MODBASEDITEMSINK),
+			Character.valueOf('U'), Item.book
+		});
+
 
 		for(int i=0; i<1000;i++) {
 			LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(new ItemStack(LogisticsPipes.ModuleItem, 1, i), null, null, null, null, null);

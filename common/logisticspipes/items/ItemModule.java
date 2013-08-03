@@ -25,6 +25,7 @@ import logisticspipes.modules.ModuleExtractorMk2;
 import logisticspipes.modules.ModuleExtractorMk3;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModulePolymorphicItemSink;
 import logisticspipes.modules.ModuleProvider;
@@ -66,6 +67,7 @@ public class ItemModule extends LogisticsItem {
 	public static final int APIARISTREFILLER = 10;
 	public static final int APIARISTTERMINUS = 11;
 	public static final int MODBASEDITEMSINK = 12;
+	public static final int OREDICTITEMSINK = 13;
 	public static final int THAUMICASPECTSINK = 30;
 
 	//PASSIVE MK 2
@@ -184,6 +186,7 @@ public class ItemModule extends LogisticsItem {
 		registerModule(APIARISTREFILLER			, "Apiary Refiller module"		, ModuleApiaristRefiller.class);
 		registerModule(APIARISTTERMINUS			, "Drone Terminus module"		, ModuleApiaristTerminus.class);
 		registerModule(MODBASEDITEMSINK			, "Mod Based ItemSink module"	, ModuleModBasedItemSink.class);
+		registerModule(OREDICTITEMSINK			, "OreDict ItemSink module"		, ModuleOreDictItemSink.class);
 		registerModule(THAUMICASPECTSINK		, "Thaumic AspectSink module"	, ModuleThaumicAspectSink.class);
 	}
 

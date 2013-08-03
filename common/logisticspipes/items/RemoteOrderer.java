@@ -53,6 +53,7 @@ public class RemoteOrderer extends Item {
 		return _icons[par1];
 	}
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		//Add special tooltip in tribute to DireWolf

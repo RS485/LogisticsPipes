@@ -39,7 +39,6 @@ import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
 import org.lwjgl.input.Keyboard;
@@ -357,7 +356,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		if(super.hasSubGui()) return;
 		BasicGuiHelper.displayItemToolTip(tooltip, this, this.zLevel, guiLeft, guiTop);
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	public boolean itemSearched(ItemIdentifier item) {
 		if(searchinput1 == "" && searchinput2 == "") return true;

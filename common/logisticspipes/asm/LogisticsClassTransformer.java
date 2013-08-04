@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import net.minecraft.launchwrapper.IClassTransformer;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;

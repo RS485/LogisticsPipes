@@ -80,6 +80,7 @@ import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -104,7 +105,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.FMLInjectionData;
-import cpw.mods.fml.relauncher.RelaunchClassLoader;
 import cpw.mods.fml.relauncher.Side;
 
 @Mod(
@@ -134,7 +134,7 @@ import cpw.mods.fml.relauncher.Side;
 public class LogisticsPipes {
 
 	public LogisticsPipes() {
-		RelaunchClassLoader loader = (RelaunchClassLoader)LogisticsPipes.class.getClassLoader();
+		LaunchClassLoader loader = (LaunchClassLoader)LogisticsPipes.class.getClassLoader();
 		loader.registerTransformer("logisticspipes.asm.LogisticsClassTransformer");
 		PacketHandler.intialize(); //To load PacketClasses after the ClassTransformer
 	}

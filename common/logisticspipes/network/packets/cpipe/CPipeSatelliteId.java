@@ -4,9 +4,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -48,11 +48,11 @@ public class CPipeSatelliteId extends CoordinatesPacket {
 			return;
 		}
 		
-		if( !(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
 		
-		((BaseLogicCrafting) pipe.pipe.logic).setSatelliteId(pipeId, -1);
+		((PipeItemsCraftingLogistics) pipe.pipe).setSatelliteId(pipeId, -1);
 	}
 }
 

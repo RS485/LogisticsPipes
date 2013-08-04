@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.inventory.Container;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -33,6 +34,10 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		DarkGrey,
 		Red
 	}
+	
+	protected static final ResourceLocation ITEMSINK = new ResourceLocation("/logisticspipes/gui/itemsink.png");
+	protected static final ResourceLocation SUPPLIER = new ResourceLocation("/logisticspipes/gui/supplier.png");
+	protected static final ResourceLocation CHASSI1 = new ResourceLocation("/logisticspipes/gui/itemsink.png");
 	
 	protected int right;
 	protected int bottom;

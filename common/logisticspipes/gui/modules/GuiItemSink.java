@@ -12,6 +12,7 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ItemSinkDefaultPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -62,7 +63,7 @@ public class GuiItemSink extends GuiWithPreviousGuiContainer {
 		
 	}
 	
-	public GuiItemSink(IInventory playerInventory, Pipe pipe, ModuleItemSink itemSink, GuiScreen previousGui, int slot) {
+	public GuiItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleItemSink itemSink, GuiScreen previousGui, int slot) {
 		super(null,pipe,previousGui);
 		_itemSink = itemSink;
 		this.slot = slot;

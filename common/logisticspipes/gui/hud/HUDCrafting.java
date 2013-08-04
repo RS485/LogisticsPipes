@@ -4,14 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.hud.HUDConfig;
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
-
 import org.lwjgl.opengl.GL11;
 
 public class HUDCrafting extends BasicHUDGui {

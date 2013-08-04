@@ -21,7 +21,7 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer {
 	private SmallGuiButton Macrobutton;
 	
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2 ,EntityPlayer entityPlayer) {
-		super(RequestPipeMK2.xCoord, RequestPipeMK2.yCoord, RequestPipeMK2.zCoord, MainProxy.getDimensionForWorld(RequestPipeMK2.getWorld()), entityPlayer);
+		super(RequestPipeMK2.getX(), RequestPipeMK2.getY(), RequestPipeMK2.getZ(), MainProxy.getDimensionForWorld(RequestPipeMK2.getWorld()), entityPlayer);
 		pipe = RequestPipeMK2;
 //TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.DISK_REQUEST_CONTENT, pipe.getX(), pipe.getY(), pipe.getZ()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskRequestConectPacket.class).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));

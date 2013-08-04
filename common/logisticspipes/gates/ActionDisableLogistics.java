@@ -8,6 +8,8 @@
 
 package logisticspipes.gates;
 
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.util.Icon;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
 import buildcraft.api.core.IIconProvider;
@@ -17,17 +19,12 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class ActionDisableLogistics extends LPAction{
 
 	public ActionDisableLogistics(int id) {
-		super(id);
+		super(id,"LogisticsPipes.action.pipeDisable");
 	}
 	
 	@Override
 	public boolean hasParameter() {
 		return false;
-	}
-	
-	@Override
-	public int getId() {
-		return this.id;
 	}
 	
 	@Override
@@ -40,10 +37,5 @@ public class ActionDisableLogistics extends LPAction{
 		return LPActionTriggerIconProvider.actionDisablePipeIconIndex;
 	}
 
-	@Override
-	@SideOnly(Side.CLIENT)
-	public IIconProvider getIconProvider() {
-		return Textures.LPactionIconProvider;
-	}
 	
 }

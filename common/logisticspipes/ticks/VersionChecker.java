@@ -12,7 +12,6 @@ import java.util.Scanner;
 import logisticspipes.LogisticsPipes;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
 
 public class VersionChecker extends Thread {
 
@@ -25,6 +24,7 @@ public class VersionChecker extends Thread {
 		this.start();
 	}
 	
+	@Override
 	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
 	public void run() {
 		try {

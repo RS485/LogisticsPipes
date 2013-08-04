@@ -40,6 +40,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 		return result;
 	}
 
+	@Override
 	@SideOnly(Side.CLIENT)
 	public Icon getBlockTexture(IBlockAccess iblockaccess, int i, int j, int k, int l) {
 		TileEntity tile = iblockaccess.getBlockTileEntity(i, j, k);
@@ -81,8 +82,8 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 		TileGenericPipe tileG = (TileGenericPipe) tile1;
 		if(tileG instanceof LogisticsTileGenericPipe && tileG.pipe instanceof PipeBlockRequestTable) {
 			this.setBlockBoundsBasedOnState(world, x, y, z);
-			origin = origin.addVector((double) ( -x), (double) ( -y), (double) ( -z));
-			direction = direction.addVector((double) ( -x), (double) ( -y), (double) ( -z));
+			origin = origin.addVector(( -x), ( -y), ( -z));
+			direction = direction.addVector(( -x), ( -y), ( -z));
 			Vec3 vec32 = origin.getIntermediateWithXValue(direction, this.minX);
 			Vec3 vec33 = origin.getIntermediateWithXValue(direction, this.maxX);
 			Vec3 vec34 = origin.getIntermediateWithYValue(direction, this.minY);
@@ -148,7 +149,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 				if(vec38 == vec37) {
 					b0 = 3;
 				}
-				return new MovingObjectPosition(x, y, z, b0, vec38.addVector((double) x, (double) y, (double) z));
+				return new MovingObjectPosition(x, y, z, b0, vec38.addVector(x, y, z));
 			}
 		}
 		return super.collisionRayTrace(world, x, y, z, origin, direction);

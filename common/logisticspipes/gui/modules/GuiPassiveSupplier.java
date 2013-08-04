@@ -10,6 +10,7 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
@@ -24,7 +25,7 @@ public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 	private final ModulePassiveSupplier _supplier;
 	
 	
-	public GuiPassiveSupplier(IInventory playerInventory, Pipe pipe, ModulePassiveSupplier supplier, GuiScreen previousGui) {
+	public GuiPassiveSupplier(IInventory playerInventory, CoreRoutedPipe pipe, ModulePassiveSupplier supplier, GuiScreen previousGui) {
 		super(null,pipe,previousGui);
 		_supplier = supplier;
 		DummyContainer dummy = new DummyContainer(playerInventory, _supplier.getFilterInventory());

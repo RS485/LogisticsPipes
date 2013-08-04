@@ -173,7 +173,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		return 0;
 	}
 	
-	@Override
 	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/icons.png");
 	
 	@Override
@@ -243,7 +242,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		}
 
 		GL11.glPushMatrix();
-		GL11.glTranslatef((float) guiLeft, (float) guiTop, 0.0F);
+		GL11.glTranslatef(guiLeft, guiTop, 0.0F);
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 
 		drawRect(10, 18, xSize - 10 - this.getLeftAddition(), ySize - 82, Colors.MiddleGrey);
@@ -274,7 +273,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		} else {
 			RenderHelper.enableGUIStandardItemLighting();
 			GL11.glEnable(GL12.GL_RESCALE_NORMAL);
-			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, (float) 240 / 1.0F, (float) 240 / 1.0F);
+			OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
 			GL11.glDisable(GL11.GL_DEPTH_TEST);
 			GL11.glDisable(GL11.GL_LIGHTING);
 

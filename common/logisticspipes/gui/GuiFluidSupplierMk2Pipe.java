@@ -7,11 +7,11 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.logic.LogicFluidSupplierMk2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FluidSupplierAmount;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
+import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -23,9 +23,9 @@ import net.minecraft.inventory.IInventory;
 public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private IInventory dummyInventory;
-	private LogicFluidSupplierMk2 logic;
+	private PipeFluidSupplierMk2 logic;
 	
-	public GuiFluidSupplierMk2Pipe(IInventory playerInventory, IInventory dummyInventory, LogicFluidSupplierMk2 logic) {
+	public GuiFluidSupplierMk2Pipe(IInventory playerInventory, IInventory dummyInventory, PipeFluidSupplierMk2 logic) {
 		super(null);
 		
 		

@@ -8,6 +8,7 @@ public abstract class LogisticsGuiModule extends LogisticsModule {
 	 */
 	public abstract int getGuiHandlerID();
 	
+	@Override
 	public boolean hasGui() {
 		return true;
 	}

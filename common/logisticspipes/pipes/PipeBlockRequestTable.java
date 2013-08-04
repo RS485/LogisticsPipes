@@ -22,6 +22,7 @@ import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -42,16 +43,16 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public boolean handleClick(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
+	public boolean handleClick(EntityPlayer entityplayer, SecuritySettings settings) {
 		//allow using upgrade manager
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			return false;
 		}
-		if(MainProxy.isServer(world)) {
+		if(MainProxy.isServer(getWorld())) {
 			if(settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer("Permission denied");
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
 		}
 		return true;
@@ -66,13 +67,13 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				delay--;
 				return;
 			}
-			IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.worldObj);
+			IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack, this.getWorld());
 			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, this.getRouter().getSimpleID(), false);
 			if(itemToSend.getDestinationUUID() != null) {
 				ForgeDirection dir = this.getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
-				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.worldObj, 4);
-				toSortInv.setInventorySlotContents(0, null);
+				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), this.getWorld(), 4);
+				toSortInv.clearInventorySlotContents(0);
 			} else {
 				delay = 100;
 			}
@@ -83,7 +84,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
-		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, this.worldObj, this.getX() , this.getY(), this.getZ());
+		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Request_Table_ID, this.getWorld(), this.getX() , this.getY(), this.getZ());
 	}
 	
 	@Override
@@ -124,20 +125,20 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
-		if(MainProxy.isServer(this.worldObj)) {
+		if(MainProxy.isServer(this.getWorld())) {
 			inv.dropContents(getWorld(), getX(), getY(), getZ());
 		}
 	}
 	
 	public void cacheRecipe() {
 		cache = null;
-		resultInv.setInventorySlotContents(0, null);
+		resultInv.clearInventorySlotContents(0);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory();
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
 		for(IRecipe r : CraftingUtil.getRecipeList()) {
-			if(r.matches(craftInv, worldObj)) {
+			if(r.matches(craftInv, getWorld())) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
 			}
@@ -237,6 +238,7 @@ outer:
 		toSortInv.writeToNBT(par1nbtTagCompound, "toSortInv");
 	}
 
+	@Override
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {
 			_transportLayer = new PipeTransportLayer(this, this, getRouter()) {

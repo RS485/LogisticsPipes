@@ -1,9 +1,9 @@
 package logisticspipes.network.packets.satpipe;
 
-import logisticspipes.logic.PipeFluidSatellite;
-import logisticspipes.logic.PipeItemsSatelliteLogistics;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
 
@@ -25,11 +25,11 @@ public class SatPipeNext extends CoordinatesPacket {
 			return;
 		}
 
-		if (pipe.pipe.logic instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe.logic).setNextId(player);
+		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
+			((PipeItemsSatelliteLogistics) pipe.pipe).setNextId(player);
 		}
-		if (pipe.pipe.logic instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe.logic).setNextId(player);
+		if (pipe.pipe instanceof PipeFluidSatellite) {
+			((PipeFluidSatellite) pipe.pipe).setNextId(player);
 		}
 	}
 	

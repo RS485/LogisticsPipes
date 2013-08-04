@@ -33,7 +33,9 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		
 	}
+	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/power_junction.png");
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

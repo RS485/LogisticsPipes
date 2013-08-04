@@ -81,7 +81,6 @@ import buildcraft.transport.TravelingItem;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;

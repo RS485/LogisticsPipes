@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
 
@@ -23,10 +23,10 @@ public class CraftingPipePriorityDownPacket extends CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((BaseLogicCrafting) pipe.pipe.logic).priorityDown(player);
+		((PipeItemsCraftingLogistics) pipe.pipe).priorityDown(player);
 	}
 }
 

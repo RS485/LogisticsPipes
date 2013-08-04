@@ -11,7 +11,7 @@ public class CraftingUtil {
 	// Suppressed because getRecipeList shouldn't ever return something that
 	// isn't a recipe.
 	public static List<IRecipe> getRecipeList() {
-		return (List<IRecipe>) CraftingManager.getInstance().getRecipeList();
+		return CraftingManager.getInstance().getRecipeList();
 	}
 
 }

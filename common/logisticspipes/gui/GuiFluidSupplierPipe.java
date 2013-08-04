@@ -7,24 +7,25 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.logic.LogicFluidSupplier;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
 public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private IInventory dummyInventory;
-	private LogicFluidSupplier logic; 
+	private PipeItemsFluidSupplier logic; 
 	
-	public GuiFluidSupplierPipe(IInventory playerInventory, IInventory dummyInventory, LogicFluidSupplier logic) {
+	public GuiFluidSupplierPipe(IInventory playerInventory, IInventory dummyInventory, PipeItemsFluidSupplier logic) {
 		super(null);
 		
 		
@@ -54,6 +55,8 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 		fontRenderer.drawString("Partial requests:", xSize - 140, ySize - 112, 0x404040);
 	}
 	
+	protected static final ResourceLocation SUPPLIER = new ResourceLocation("/logisticspipes/gui/supplier.png");
+
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {	
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

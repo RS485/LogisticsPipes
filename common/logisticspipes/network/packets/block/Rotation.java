@@ -21,7 +21,7 @@ public class Rotation extends IntegerCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		IRotationProvider tile = this.getTile(player.worldObj, IRotationProvider.class);
 		if(tile instanceof IRotationProvider) {
-			((IRotationProvider) tile).setRotation(getInteger());
+			tile.setRotation(getInteger());
 			FMLClientHandler.instance().getClient().theWorld.markBlockForUpdate(getPosX(), getPosY(), getPosZ());
 		}
 	}

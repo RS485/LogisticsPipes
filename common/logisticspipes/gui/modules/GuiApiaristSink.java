@@ -6,6 +6,7 @@ import logisticspipes.modules.ModuleApiaristSink.SinkSetting;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.BeeModuleSetBeePacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -25,7 +26,7 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 	private final ModuleApiaristSink module;
 	private int slot;
 	
-	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, Pipe pipe, GuiScreen previousGui, int slot) {
+	public GuiApiaristSink(ModuleApiaristSink module, EntityPlayer player, CoreRoutedPipe pipe, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(player.inventory,null), pipe, previousGui);
 		this.module = module;
 		this.slot = slot;

@@ -20,7 +20,7 @@ public class GuiCardManager extends KraphtBaseGuiScreen {
 			@Override public void guiOpenedByPlayer(EntityPlayer player) {}
 			@Override
 			public void guiClosedByPlayer(EntityPlayer player) {
-				Cinv.close(player);
+				Cinv.close(player, (int)player.posX, (int)player.posY, (int)player.posZ);
 			}
 		});
 		dummy.addRestrictedSlot(0, Cinv, 21, 21, LogisticsPipes.ModuleItem.itemID);

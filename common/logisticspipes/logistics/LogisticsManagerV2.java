@@ -39,6 +39,7 @@ import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
@@ -261,7 +262,7 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		if (r.getPipe() instanceof PipeItemsCraftingLogistics){
 			PipeItemsCraftingLogistics pipe = (PipeItemsCraftingLogistics) r.getPipe();
 			if (pipe.getCraftedItems() != null){
-				List<ItemIdentifier> items = pipe.getCraftedItems();
+				List<ItemIdentifierStack> items = pipe.getCraftedItems();
 				if(items.size()==1)
 					return ("Crafter<" + items.get(0).getFriendlyName() + ">");
 				return ("Crafter< MULTIPLE ITEMS >");
@@ -381,11 +382,11 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 			}
 
 			ICraftItems crafter = (ICraftItems) r.destination.getPipe();
-			List<ItemIdentifier> craftedItems = crafter.getCraftedItems();
+			List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
 			if(craftedItems != null) {
-				for(ItemIdentifier craftedItem:craftedItems) {
-					if (craftedItem != null && !craftableItems.contains(craftedItem)){
-						craftableItems.add(craftedItem);
+				for(ItemIdentifierStack craftedItem:craftedItems) {
+					if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())){
+						craftableItems.add(craftedItem.getItem());
 					}
 				}
 			}
@@ -418,14 +419,14 @@ outer:
 			}
 
 			ICraftItems crafter = (ICraftItems) n.destination.getPipe();
-			List<ItemIdentifier> craftedItems = crafter.getCraftedItems();
-			for(ItemIdentifier craftedItem:craftedItems){
+			List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
+			for(ItemIdentifierStack craftedItem:craftedItems){
 				if(craftedItem != null) {
 					for(IFilter filter:filters) {
-						if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getUndamaged()) || filter.blockCrafting()) continue outer;
+						if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
 					}
-					if (!craftableItems.contains(craftedItem)){
-						craftableItems.add(craftedItem);
+					if (!craftableItems.contains(craftedItem.getItem())){
+						craftableItems.add(craftedItem.getItem());
 					}
 				}
 			}

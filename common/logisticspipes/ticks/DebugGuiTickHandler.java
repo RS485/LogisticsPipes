@@ -307,9 +307,9 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 			}
 			node.setUserObject(((DefaultMutableTreeNode)superNode.getChildAt(0)).getUserObject());
 			if(node instanceof ExtendedDefaultMutableTreeNode) {
-				((ExtendedDefaultMutableTreeNode)node).loaded = true;
+				node.loaded = true;
 				if(superNode.getChildAt(0) instanceof ExtendedDefaultMutableTreeNode) {
-					((ExtendedDefaultMutableTreeNode)node).type = ((ExtendedDefaultMutableTreeNode)superNode.getChildAt(0)).type;
+					node.type = ((ExtendedDefaultMutableTreeNode)superNode.getChildAt(0)).type;
 				}
 			}
 			((DefaultTreeModel)tree.getModel()).reload(node);
@@ -650,7 +650,7 @@ outer:
 			int x = (Integer) additions[0];
 			int y = (Integer) additions[1];
 			int z = (Integer) additions[2];
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Checking Block at: x:" + x + " y:" + y + " z:" + z);
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			int id = player.worldObj.getBlockId(x, y, z);
 			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Found Block with Id: " + id));
 			TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);

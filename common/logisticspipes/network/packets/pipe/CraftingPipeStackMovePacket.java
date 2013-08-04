@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -25,8 +24,8 @@ public class CraftingPipeStackMovePacket extends IntegerCoordinatesPacket {
 			return;
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-			if(((PipeItemsCraftingLogistics)pipe.pipe).logic instanceof BaseLogicCrafting) {
-				BaseLogicCrafting logic = (BaseLogicCrafting) ((PipeItemsCraftingLogistics)pipe.pipe).logic;
+			if(((PipeItemsCraftingLogistics)pipe.pipe) instanceof PipeItemsCraftingLogistics) {
+				PipeItemsCraftingLogistics logic = (PipeItemsCraftingLogistics) ((PipeItemsCraftingLogistics)pipe.pipe);
 				logic.handleStackMove(getInteger());
 			}
 		}

@@ -4,10 +4,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.logic.PipeFluidSatellite;
-import logisticspipes.logic.PipeItemsSatelliteLogistics;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -49,11 +49,11 @@ public class SatPipeSetID extends CoordinatesPacket {
 			return;
 		}
 
-		if (pipe.pipe.logic instanceof PipeItemsSatelliteLogistics) {
-			((PipeItemsSatelliteLogistics) pipe.pipe.logic).setSatelliteId(getSatID());
+		if (pipe.pipe instanceof PipeItemsSatelliteLogistics) {
+			((PipeItemsSatelliteLogistics) pipe.pipe).setSatelliteId(getSatID());
 		}
-		if (pipe.pipe.logic instanceof PipeFluidSatellite) {
-			((PipeFluidSatellite) pipe.pipe.logic)
+		if (pipe.pipe instanceof PipeFluidSatellite) {
+			((PipeFluidSatellite) pipe.pipe)
 					.setSatelliteId(getSatID());
 		}
 	}

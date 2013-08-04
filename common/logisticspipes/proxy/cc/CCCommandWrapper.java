@@ -21,6 +21,7 @@ public class CCCommandWrapper implements ILuaObject {
 		object = object2;
 	}
 
+	@Override
 	public String[] getMethodNames() {
 		LinkedList<String> list = new LinkedList<String>();
 		list.add("help");
@@ -32,6 +33,7 @@ public class CCCommandWrapper implements ILuaObject {
 		return list.toArray(new String[list.size()]);
 	}
 
+	@Override
 	public Object[] callMethod(int methodId, Object[] arguments) throws Exception {
 		if(methodId == 0) {
 			StringBuilder help = new StringBuilder();

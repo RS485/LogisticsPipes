@@ -137,7 +137,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 			dummyEntityItem.setEntityItemStack(itemstack);
 			dummyEntityItem.hoverStart = 0;
             GL11.glScalef(2F, 2F, 2F);
-            GL11.glRotatef((((float)((EntityItem)data[1]).age) / 20.0F + ((EntityItem)data[1]).hoverStart) * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+            GL11.glRotatef(((((EntityItem)data[1]).age) / 20.0F + ((EntityItem)data[1]).hoverStart) * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
 			renderItem.doRenderItem(dummyEntityItem, 0, 0, 0, 0, 0);
 			GL11.glPopMatrix();
 		}
@@ -161,20 +161,20 @@ public class FluidContainerRenderer implements IItemRenderer {
             par3 = j1;
         }
 
-        float f = (float)(par4 >> 24 & 255) / 255.0F;
-        float f1 = (float)(par4 >> 16 & 255) / 255.0F;
-        float f2 = (float)(par4 >> 8 & 255) / 255.0F;
-        float f3 = (float)(par4 & 255) / 255.0F;
+        float f = (par4 >> 24 & 255) / 255.0F;
+        float f1 = (par4 >> 16 & 255) / 255.0F;
+        float f2 = (par4 >> 8 & 255) / 255.0F;
+        float f3 = (par4 & 255) / 255.0F;
         Tessellator tessellator = Tessellator.instance;
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glColor4f(f1, f2, f3, f);
         tessellator.startDrawingQuads();
-        tessellator.addVertex((double)par0, (double)par3, 0.0D);
-        tessellator.addVertex((double)par2, (double)par3, 0.0D);
-        tessellator.addVertex((double)par2, (double)par1, 0.0D);
-        tessellator.addVertex((double)par0, (double)par1, 0.0D);
+        tessellator.addVertex(par0, par3, 0.0D);
+        tessellator.addVertex(par2, par3, 0.0D);
+        tessellator.addVertex(par2, par1, 0.0D);
+        tessellator.addVertex(par0, par1, 0.0D);
         tessellator.draw();
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_BLEND);

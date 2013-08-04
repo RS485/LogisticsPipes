@@ -14,7 +14,7 @@ import buildcraft.transport.Pipe;
 public class TriggerHasDestination extends LPTrigger implements ITriggerPipe {
 
 	public TriggerHasDestination(int id) {
-		super(id);
+		super(id,"LogisticsPipes.trigger.hasDestination");
 	}
 
 	@Override

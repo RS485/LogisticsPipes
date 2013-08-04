@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.cpipe;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
@@ -26,11 +26,11 @@ public class CPipeSatelliteImportBack extends InventoryCoordinatesPacket {
 			return;
 		}
 		
-		if( !(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+		if( !(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
 		
-		final BaseLogicCrafting craftingPipe = (BaseLogicCrafting) pipe.pipe.logic;
+		final PipeItemsCraftingLogistics craftingPipe = (PipeItemsCraftingLogistics) pipe.pipe;
 		for(int i = 0; i < getStackList().size(); i++) {
 			craftingPipe.setDummyInventorySlot(i, getStackList().get(i));
 		}

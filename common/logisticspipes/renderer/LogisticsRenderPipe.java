@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.transport.PipeFluidTransportLogistics;
@@ -175,7 +174,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	private void renderSignLabel(PipeItemsCraftingLogistics pipe, float var12) {
         FontRenderer var17 = this.getFontRenderer();
         if(pipe != null) {
-    		List<ItemStack> craftables = ((BaseLogicCrafting)pipe.logic).getCraftedItems();
+    		List<ItemStack> craftables = ((PipeItemsCraftingLogistics)pipe.logic).getCraftedItems();
 
     		String name = "";
     		if(craftables != null && craftables.size() > 0) {
@@ -289,8 +288,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		        }
 		        
 		        var17.drawString("ID: "+String.valueOf(item.itemID), -var17.getStringWidth("ID: "+String.valueOf(item.itemID)) / 2, 0 * 10 - 4 * 5, 0);
-		        if(((BaseLogicCrafting)pipe.logic).satelliteId != 0) {
-		        	var17.drawString("Sat ID: "+String.valueOf(((BaseLogicCrafting)pipe.logic).satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(((BaseLogicCrafting)pipe.logic).satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
+		        if(((PipeItemsCraftingLogistics)pipe.logic).satelliteId != 0) {
+		        	var17.drawString("Sat ID: "+String.valueOf(((PipeItemsCraftingLogistics)pipe.logic).satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(((PipeItemsCraftingLogistics)pipe.logic).satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 		        }
     		} else {
     			GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
@@ -319,10 +318,10 @@ public class LogisticsRenderPipe extends RenderPipe {
 		Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
         tessellator.setNormal(0.0F, 1.0F, 0.0F);
-        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + par5), (double)zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + par5), (double)zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + 0), (double)zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMinV());
-        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), (double)zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMinV());
+        tessellator.addVertexWithUV(par1 + 0, par2 + par5, zLevel, par3Icon.getMinU(), par3Icon.getMaxV());
+        tessellator.addVertexWithUV(par1 + par4, par2 + par5, zLevel, par3Icon.getMaxU(), par3Icon.getMaxV());
+        tessellator.addVertexWithUV(par1 + par4, par2 + 0, zLevel, par3Icon.getMaxU(), par3Icon.getMinV());
+        tessellator.addVertexWithUV(par1 + 0, par2 + 0, zLevel, par3Icon.getMinU(), par3Icon.getMinV());
         tessellator.draw();
         GL11.glPopMatrix();
 	}

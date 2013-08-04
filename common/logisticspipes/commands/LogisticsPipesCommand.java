@@ -19,10 +19,11 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.command.WrongUsageException;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ChatMessageComponent;
+import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.server.FMLServerHandler;
 
 public class LogisticsPipesCommand extends CommandBase {
 
@@ -93,15 +94,15 @@ public class LogisticsPipesCommand extends CommandBase {
         } else if(arguments[0].equalsIgnoreCase("bypass") || arguments[0].equalsIgnoreCase("bp")) {
         	if(!(sender instanceof EntityPlayer)) return;
         	if(!MinecraftServer.getServerConfigurationManager(FMLCommonHandler.instance().getMinecraftServerInstance()).getOps().contains(sender.getCommandSenderName().toLowerCase()) && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode()) {
-        		sender.sendChatToPlayer("You are not allowed to use this command");
+        		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("You are not allowed to use this command"));
         		return;
         }
         	if(!LogisticsSecurityTileEntity.byPassed.contains((EntityPlayer) sender)) {
         		LogisticsSecurityTileEntity.byPassed.add((EntityPlayer) sender);
-        		sender.sendChatToPlayer("Enabled");
+        		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Enabled"));
         	} else {
         		LogisticsSecurityTileEntity.byPassed.remove((EntityPlayer) sender);
-        		sender.sendChatToPlayer("Disabled");
+        		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Disabled"));
         	}
         	return;
         }

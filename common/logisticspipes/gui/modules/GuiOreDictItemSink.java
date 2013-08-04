@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -24,7 +25,7 @@ public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 	private int mouseX = 0;
 	private int mouseY = 0;
 
-	public GuiOreDictItemSink(IInventory playerInventory, Pipe pipe, ModuleOreDictItemSink itemSink, GuiScreen previousGui, int slot) {
+	public GuiOreDictItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleOreDictItemSink itemSink, GuiScreen previousGui, int slot) {
 		super(null, pipe, previousGui);
 
 		_itemSink = itemSink;
@@ -127,7 +128,7 @@ public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 							t.setItemDamage(0);
 						tmpInv.setInventorySlotContents(0, t);
 					} else {
-						tmpInv.setInventorySlotContents(0, null);
+						tmpInv.clearInventorySlotContents(0);
 					}
 				}
 			}

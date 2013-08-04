@@ -2,7 +2,6 @@ package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

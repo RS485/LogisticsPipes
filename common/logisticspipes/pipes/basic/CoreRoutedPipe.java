@@ -483,7 +483,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				pipecount = Math.max(pipecount - 1, 0);
 				
 				if (transport != null && transport instanceof PipeTransportLogistics){
-					((PipeTransportLogistics)transport).dropBuffer();
+					transport.dropBuffer();
 				}
 				getUpgradeManager().dropUpgrades();
 			} catch(Exception e) {
@@ -941,7 +941,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public boolean globalIgnoreConnectionDisconnection = false;
 	
 	public final boolean canPipeConnect(TileEntity tile, ForgeDirection dir, boolean ignoreSystemDisconnection) {
-		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe((PipeTransportItems) this.transport, tile);
+		ForgeDirection side = OrientationsUtil.getOrientationOfTilewithPipe(this.transport, tile);
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
@@ -1212,6 +1212,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 	}
 
+	@Override
 	public final int getX() {
 		//TODO: what if container is null; pipes don't have a coord any more.
 /*		if(this.container == null) {
@@ -1220,6 +1221,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		return this.container.xCoord;
 	}
 
+	@Override
 	public final int getY() {
 		/*
 		if(this.container == null) {
@@ -1228,6 +1230,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		return this.container.yCoord;
 	}
 
+	@Override
 	public final int getZ() {
 		/*
 		if(this.container == null) {
@@ -1259,14 +1262,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	@Override
-	protected void actionsActivated(HashMap<Integer, Boolean> actions) {
+	protected void actionsActivated(Map<IAction, Boolean> actions) {
 		super.actionsActivated(actions);
 
 		setEnabled(true);
 		// Activate the actions
-		for (Entry<Integer, Boolean> i : actions.entrySet()) {
+		for (Entry<IAction, Boolean> i : actions.entrySet()) {
 			if (i.getValue()) {
-				if (ActionManager.actions[i.getKey()] instanceof ActionDisableLogistics){
+				if (i.getKey() instanceof ActionDisableLogistics){
 					setEnabled(false);
 				}
 			}

@@ -11,7 +11,6 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.RenderEngine;
 
 public class OverlayManager {
 	public static BufferedImage generateOverlay(String bg, String fg) throws IOException

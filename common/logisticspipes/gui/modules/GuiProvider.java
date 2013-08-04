@@ -5,6 +5,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ProviderModuleIncludePacket;
 import logisticspipes.network.packets.module.ProviderModuleNextModePacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -21,15 +22,14 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 	
 	private final IInventory _playerInventory;
 	private final ModuleProvider _provider;
-	private final Pipe _pipe;
+	//private final Pipe pipe;
 	private final int _slot;
 
 
-	public GuiProvider(IInventory playerInventory, Pipe pipe, ModuleProvider provider, GuiScreen previousGui, int slot) {
+	public GuiProvider(IInventory playerInventory, CoreRoutedPipe pipe, ModuleProvider provider, GuiScreen previousGui, int slot) {
 		super(null,pipe,previousGui);
 		_playerInventory = playerInventory;
 		_provider = provider;
-		_pipe = pipe;
 		_slot = slot;
 		
 		DummyContainer dummy = new DummyContainer(_playerInventory, _provider.getFilterInventory());
@@ -69,8 +69,8 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		if (guibutton.id == 0){
 			_provider.setFilterExcluded(!_provider.isExcludeFilter());
 			if(_slot >= 0) {
-//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _pipe.getX(), _pipe.getY(), _pipe.getZ(), _slot).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(_pipe.getX()).setPosY(_pipe.getY()).setPosZ(_pipe.getZ()));
+//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, pipe.getX(), pipe.getY(), pipe.getZ(), _slot).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 			} else {
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_CHANGE_INCLUDE, _provider.getX(), _provider.getY(), _provider.getZ(), _slot).getPacket());	
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleIncludePacket.class).setInteger(_slot).setPosX(_provider.getX()).setPosY(_provider.getY()).setPosZ(_provider.getZ()));
@@ -78,8 +78,8 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		} else if (guibutton.id  == 1){
 			_provider.nextExtractionMode();
 			if(_slot >= 0) {
-//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _pipe.getX(), _pipe.getY(), _pipe.getZ(), _slot).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(_pipe.getX()).setPosY(_pipe.getY()).setPosZ(_pipe.getZ()));
+//TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, pipe.getX(), pipe.getY(), pipe.getZ(), _slot).getPacket());
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 			} else {
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.PROVIDER_MODULE_NEXT_MODE, _provider.getX(), _provider.getY(), _provider.getZ(), _slot).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderModuleNextModePacket.class).setInteger(_slot).setPosX(_provider.getX()).setPosY(_provider.getY()).setPosZ(_provider.getZ()));

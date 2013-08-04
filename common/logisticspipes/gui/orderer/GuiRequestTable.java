@@ -28,7 +28,7 @@ public class GuiRequestTable extends GuiOrderer {
 	public final PipeBlockRequestTable _table;
 	
 	public GuiRequestTable(EntityPlayer entityPlayer, PipeBlockRequestTable table) {
-		super(table.xCoord, table.yCoord, table.zCoord, MainProxy.getDimensionForWorld(table.worldObj), entityPlayer);
+		super(table.getX(), table.getY(), table.getZ(), MainProxy.getDimensionForWorld(table.getWorld()), entityPlayer);
 		_table = table;
 		this.xSize += this.getLeftAddition();
 		DummyContainer dummy = new DummyContainer(entityPlayer.inventory, _table.matrix);

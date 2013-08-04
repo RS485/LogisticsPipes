@@ -39,7 +39,8 @@ public class PipeUpdate extends CoordinatesPacket {
 		if(tile.pipe == null) {
 			return;
 		}
-		new TilePacketWrapper(new Class[] { TileGenericPipe.class, tile.pipe.transport.getClass(), tile.pipe.logic.getClass() }).fromPayload(new Object[] { tile.pipe.container, tile.pipe.transport, tile.pipe.logic }, getPayload());
+		//FIXME: does the old logic at tile.pipe need to be here?!
+		new TilePacketWrapper(new Class[] { TileGenericPipe.class, tile.pipe.transport.getClass(), tile.pipe.getClass() }).fromPayload(new Object[] { tile.pipe.container, tile.pipe.transport, tile.pipe }, getPayload());
 	}
 
 	@Override

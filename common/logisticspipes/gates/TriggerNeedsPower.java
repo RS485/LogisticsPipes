@@ -10,7 +10,7 @@ import buildcraft.api.gates.ITriggerParameter;
 public class TriggerNeedsPower extends LPTrigger{
 
 	public TriggerNeedsPower(int id) {
-		super(id);
+		super(id,"LogisticsPipes.trigger.nodeRequestsRecharge");
 	}
 
 	@Override

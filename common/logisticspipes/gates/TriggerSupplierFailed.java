@@ -18,7 +18,7 @@ import buildcraft.transport.Pipe;
 public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 
 	public TriggerSupplierFailed(int id) {
-		super(id);
+		super(id,"LogisticsPipes.trigger.supplierFailed");
 	}
 	
 	@Override

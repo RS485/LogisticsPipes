@@ -10,6 +10,7 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
@@ -24,7 +25,7 @@ public class GuiTerminus extends GuiWithPreviousGuiContainer {
 	private final ModuleTerminus _terminus;
 	
 	
-	public GuiTerminus(IInventory playerInventory, Pipe pipe, ModuleTerminus terminus, GuiScreen previousGui) {
+	public GuiTerminus(IInventory playerInventory, CoreRoutedPipe pipe, ModuleTerminus terminus, GuiScreen previousGui) {
 		super(null,pipe,previousGui);
 		_terminus = terminus;
 		DummyContainer dummy = new DummyContainer(playerInventory, _terminus.getFilterInventory());

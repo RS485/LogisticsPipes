@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.logic.LogicFluidSupplierMk2;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,13 +26,13 @@ public class FluidSupplierAmount extends IntegerCoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof LogicFluidSupplierMk2)) {
+		if (!(pipe.pipe instanceof PipeFluidSupplierMk2)) {
 			return;
 		}
 		if(MainProxy.isClient(player.worldObj)) {
-			((LogicFluidSupplierMk2) pipe.pipe.logic).setAmount(getInteger());
+			((PipeFluidSupplierMk2) pipe.pipe).setAmount(getInteger());
 		} else {
-			((LogicFluidSupplierMk2) pipe.pipe.logic).changeFluidAmount(getInteger(), player);
+			((PipeFluidSupplierMk2) pipe.pipe).changeFluidAmount(getInteger(), player);
 		}
 	}
 }

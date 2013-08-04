@@ -77,15 +77,15 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	public Map<FluidIdentifier, Integer> getAvailableFluids() {
 		Map<FluidIdentifier, Integer> map = new HashMap<FluidIdentifier, Integer>();
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-			for(IFluidTank tank:tanks) {
+			FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
+			for(FluidTankInfo tank:tanks) {
 				FluidStack liquid;
-				if((liquid = tank.getFluid()) != null && liquid.fluidID != 0) {
+				if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
 					FluidIdentifier ident = FluidIdentifier.get(liquid);
 					if(map.containsKey(ident)) {
-						map.put(ident, map.get(ident) + tank.getFluid().amount);
+						map.put(ident, map.get(ident) + tank.fluid.amount);
 					} else {						
-						map.put(ident, tank.getFluid().amount);
+						map.put(ident, tank.fluid.amount);
 					}
 				}
 			}
@@ -119,10 +119,10 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 		if(request.isDone()) return;
 		int containedAmount = 0;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-			for(IFluidTank tank:tanks) {
+			FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
+			for(FluidTankInfo tank:tanks) {
 				FluidStack liquid;
-				if((liquid = tank.getFluid()) != null) {
+				if((liquid = tank.fluid) != null) {
 					if(request.getFluid() == FluidIdentifier.get(liquid)) {
 						containedAmount += liquid.amount;
 					}
@@ -158,10 +158,10 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
-			for(IFluidTank tank:tanks) {
+			FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
+			for(FluidTankInfo tank:tanks) {
 				FluidStack liquid;
-				if((liquid = tank.getFluid()) != null && liquid.fluidID != 0) {
+				if((liquid = tank.fluid) != null && liquid.fluidID != 0) {
 					FluidIdentifier ident = FluidIdentifier.get(liquid);
 					l1.add(ident.getItemIdentifier());
 				}

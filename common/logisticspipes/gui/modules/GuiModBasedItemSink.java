@@ -2,7 +2,7 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -21,7 +21,7 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 	private int mouseX = 0;
 	private int mouseY = 0;
 	
-	public GuiModBasedItemSink(IInventory playerInventory, Pipe pipe, ModuleModBasedItemSink itemSink, GuiScreen previousGui, int slot) {
+	public GuiModBasedItemSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleModBasedItemSink itemSink, GuiScreen previousGui, int slot) {
 		super(null, pipe, previousGui);
 		
 		_itemSink = itemSink;

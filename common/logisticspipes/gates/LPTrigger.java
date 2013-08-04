@@ -1,7 +1,9 @@
 package logisticspipes.gates;
 
 import logisticspipes.textures.Textures;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.Icon;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.gates.ActionManager;
@@ -12,26 +14,26 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public abstract class LPTrigger implements ITrigger {
+	protected final int legacyId;
+	protected final String uniqueTag;
 
-	protected int id;
+	public LPTrigger(int legacyId, String uniqueTag) {
+		this.legacyId = legacyId;
+		this.uniqueTag = uniqueTag;
+		ActionManager.registerTrigger(this);
+	}
 
-	public LPTrigger(int id) {
-		this.id = id;
-		ActionManager.triggers[id] = this;
+
+	@Override
+	public int getLegacyId() {
+		return this.legacyId;
 	}
 
 	@Override
-	public int getId() {
-		return this.id;
+	public String getUniqueTag() {
+		return uniqueTag;
 	}
-
-    @Override
-    @SideOnly(Side.CLIENT)
-    public IIconProvider getIconProvider() {
-    	return Textures.LPactionIconProvider;
-    }
-    
-    @Override
+	
     public abstract int getIconIndex();
 
 	@Override
@@ -52,5 +54,18 @@ public abstract class LPTrigger implements ITrigger {
 	@Override
 	public final ITriggerParameter createParameter() {
 		return new TriggerParameter();
+	}
+
+
+
+	@Override
+	public Icon getIcon() {
+		return Textures.LPactionIconProvider.getIcon(getIconIndex());
+	}
+
+
+	@Override
+	public void registerIcons(IconRegister iconRegister) {
+		Textures.LPactionIconProvider.registerIcons(iconRegister);	
 	}
 }

@@ -13,7 +13,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

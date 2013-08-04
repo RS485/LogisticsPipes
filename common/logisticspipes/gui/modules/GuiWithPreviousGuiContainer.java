@@ -3,24 +3,20 @@ package logisticspipes.gui.modules;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.gui.GuiBackPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.Container;
-import net.minecraft.util.ResourceLocation;
 import buildcraft.transport.Pipe;
 
 public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen implements IGuiIDHandlerProvider {
 	
 	private int prevGuiID = -1;
-	protected Pipe pipe;
+	protected CoreRoutedPipe pipe;
 	private GuiScreen prevGui;
 	
-	protected static final ResourceLocation ITEMSINK = new ResourceLocation("/logisticspipes/gui/itemsink.png");
-	protected static final ResourceLocation SUPPLIER = new ResourceLocation("/logisticspipes/gui/supplier.png");
-	protected static final ResourceLocation CHASSI1 = new ResourceLocation("/logisticspipes/gui/itemsink.png");
-	
-	public GuiWithPreviousGuiContainer(Container par1Container, Pipe pipe, GuiScreen prevGui) {
+	public GuiWithPreviousGuiContainer(Container par1Container, CoreRoutedPipe pipe, GuiScreen prevGui) {
 		super(par1Container);
 		this.prevGui = prevGui;
 		if(prevGui instanceof IGuiIDHandlerProvider) {
@@ -43,7 +39,7 @@ public abstract class GuiWithPreviousGuiContainer extends KraphtBaseGuiScreen im
 			if (prevGuiID != -1) {
 				super.keyTyped(c,i);
 //TODO 			MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.GUI_BACK_PACKET, pipe.getX(), pipe.getY(), pipe.getZ(), prevGuiID + 10000).getPacket());
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiBackPacket.class).setInteger(prevGuiID + 10000).setPosX(pipe.container.xCoord).setPosY(pipe.container.yCoord).setPosZ(pipe.container.zCoord));
 			} else {
 				super.keyTyped(c, i);
 			}

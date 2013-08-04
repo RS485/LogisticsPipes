@@ -9,29 +9,31 @@
 
 package logisticspipes.gates;
 
+import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.util.Icon;
 import logisticspipes.textures.Textures;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
+import buildcraft.core.triggers.ActionTriggerIconProvider;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class LPAction implements IAction {
+public abstract  class LPAction implements IAction {
 
-	protected int id;
+	protected final int legacyId;
+	protected final String uniqueTag;
 
-	public LPAction(int id) {
-		this.id = id;
-		ActionManager.actions[id] = this;
+	public LPAction(int legacyId, String uniqueTag) {
+		this.legacyId = legacyId;
+		this.uniqueTag = uniqueTag;
+		ActionManager.registerAction(this);
 	}
 
 	@Override
-	public int getId() {
-		return this.id;
+	public int getLegacyId() {
+		return this.legacyId;
 	}
-
-	@Override
-	public abstract int getIconIndex();
 
 	@Override
 	public boolean hasParameter() {
@@ -44,10 +46,26 @@ public abstract class LPAction implements IAction {
 	}
 	
 	@Override
-	@SideOnly(Side.CLIENT)
-	public IIconProvider getIconProvider() {
-		return Textures.LPactionIconProvider;
+	public void registerIcons(IconRegister iconRegister) {
+		// TODO Auto-generated method stub
+		Textures.LPactionIconProvider.registerIcons(iconRegister);
+		
 	}
-	
+
+	@Override
+	public String getUniqueTag() {
+		return this.uniqueTag;
+	}
+
+	public int getIconIndex() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	@SideOnly(Side.CLIENT)
+	public Icon getIcon() {
+		return Textures.LPactionIconProvider.getIcon(getIconIndex());
+	}
 	
 }

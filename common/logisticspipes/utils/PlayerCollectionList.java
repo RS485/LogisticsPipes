@@ -76,15 +76,18 @@ public class PlayerCollectionList {
 			this.iterator = source;
 		}
 		
+		@Override
 		public boolean hasNext() {
 			return iterator.hasNext();
 		}
 		
+		@Override
 		public EntityPlayer next() {
 			EqualWeakReference<EntityPlayer> reference = iterator.next();
-			return (EntityPlayer) reference.get();
+			return reference.get();
 		}
 		
+		@Override
 		public void remove() {
         	iterator.remove();
         }

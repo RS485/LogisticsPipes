@@ -1,7 +1,5 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.logic.LogicFluidSupplier;
-import logisticspipes.logic.LogicFluidSupplierMk2;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
@@ -30,20 +28,20 @@ public class FluidSupplierMode extends IntegerCoordinatesPacket {
 			return;
 		}
 		if(MainProxy.isClient(player.worldObj)) {
-			if(pipe.pipe instanceof PipeItemsFluidSupplier && pipe.pipe.logic instanceof LogicFluidSupplier) {
-				((LogicFluidSupplier)pipe.pipe.logic).setRequestingPartials((getInteger() % 10) == 1);
+			if(pipe.pipe instanceof PipeItemsFluidSupplier && pipe.pipe instanceof PipeItemsFluidSupplier) {
+				((PipeItemsFluidSupplier)pipe.pipe).setRequestingPartials((getInteger() % 10) == 1);
 			}
-			if(pipe.pipe instanceof PipeFluidSupplierMk2 && pipe.pipe.logic instanceof LogicFluidSupplierMk2) {
-				((LogicFluidSupplierMk2)pipe.pipe.logic).setRequestingPartials((getInteger() % 10) == 1);
+			if(pipe.pipe instanceof PipeFluidSupplierMk2 && pipe.pipe instanceof PipeFluidSupplierMk2) {
+				((PipeFluidSupplierMk2)pipe.pipe).setRequestingPartials((getInteger() % 10) == 1);
 			}
 		} else {
 			if(pipe.pipe instanceof PipeItemsFluidSupplier) {
 				PipeItemsFluidSupplier liquid = (PipeItemsFluidSupplier) pipe.pipe;
-				((LogicFluidSupplier)liquid.logic).setRequestingPartials((getInteger() % 10) == 1);
+				((PipeItemsFluidSupplier)liquid).setRequestingPartials((getInteger() % 10) == 1);
 			}
 			if(pipe.pipe instanceof PipeFluidSupplierMk2) {
 				PipeFluidSupplierMk2 liquid = (PipeFluidSupplierMk2) pipe.pipe;
-				((LogicFluidSupplierMk2)liquid.logic).setRequestingPartials((getInteger() % 10) == 1);
+				((PipeFluidSupplierMk2)liquid).setRequestingPartials((getInteger() % 10) == 1);
 			}
 		}
 	}

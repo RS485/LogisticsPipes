@@ -12,6 +12,7 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ElectricManagerPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -61,7 +62,7 @@ public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 		}
 	}
 
-	public GuiElectricManager(IInventory playerInventory, Pipe pipe, ModuleElectricManager module, GuiScreen previousGui, int slot) {
+	public GuiElectricManager(IInventory playerInventory, CoreRoutedPipe pipe, ModuleElectricManager module, GuiScreen previousGui, int slot) {
 		super(null,pipe,previousGui);
 		_module = module;
 		this.slot = slot;

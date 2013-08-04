@@ -344,9 +344,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	/* --- IItemTravelHook --- */
 	@Override
-	public void endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
+	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
-		handleTileReached(data, tile);
+		return handleTileReached(data, tile);
 	}
 
 	@Override

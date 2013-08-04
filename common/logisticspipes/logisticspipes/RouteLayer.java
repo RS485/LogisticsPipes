@@ -10,7 +10,6 @@ import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.transport.PipeTransportLogistics;
 import net.minecraftforge.common.ForgeDirection;
 
 /**

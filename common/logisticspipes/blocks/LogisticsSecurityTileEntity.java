@@ -22,7 +22,6 @@ import logisticspipes.network.packets.block.SecurityStationOpenPlayer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.crash.CrashReportCategory;

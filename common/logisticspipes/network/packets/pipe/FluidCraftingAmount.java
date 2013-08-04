@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.pipe;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
@@ -26,13 +26,13 @@ public class FluidCraftingAmount extends Integer2CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+		if (!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
 		if(MainProxy.isClient(player.worldObj)) {
-			((BaseLogicCrafting) pipe.pipe.logic).defineFluidAmount(getInteger(), getInteger2());
+			((PipeItemsCraftingLogistics) pipe.pipe).defineFluidAmount(getInteger(), getInteger2());
 		} else {
-			((BaseLogicCrafting) pipe.pipe.logic).changeFluidAmount(getInteger(), getInteger2(), player);
+			((PipeItemsCraftingLogistics) pipe.pipe).changeFluidAmount(getInteger(), getInteger2(), player);
 		}
 	}
 }

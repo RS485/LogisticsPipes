@@ -58,7 +58,7 @@ public class PathFinder {
 	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter, EnumSet<PipeRoutingConnectionType> connectionType) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, pathPainter);
 		newSearch.setVisited.add(startPipe);
-		Position p = new Position(startpipe.getX(), startpipe.getY(), startpipe.getZ(), startOrientation);
+		Position p = new Position(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, startOrientation);
 		p.moveForwards(1);
 		TileEntity entity = startPipe.getWorld().getBlockTileEntity((int)p.x, (int)p.y, (int)p.z);
 		if (!(entity instanceof TileGenericPipe && ((TileGenericPipe)entity).pipe.canPipeConnect(startPipe, startOrientation))){
@@ -244,7 +244,7 @@ public class PathFinder {
 					}
 				}
 				if (foundPipes.size() > beforeRecurseCount && pathPainter != null) {
-					pathPainter.addLaser(startPipe.getWorld(), new LaserData(startpipe.getX(), startpipe.getY(), startpipe.getZ(), direction, connectionFlags));
+					pathPainter.addLaser(startPipe.getWorld(), new LaserData(startPipe.xCoord, startPipe.yCoord, startPipe.zCoord, direction, connectionFlags));
 				}
 			}
 		}

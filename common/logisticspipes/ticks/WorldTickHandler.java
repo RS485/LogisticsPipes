@@ -90,13 +90,13 @@ public class WorldTickHandler implements ITickHandler {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {
 						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
-							entity.item.setContainer(newTile);
+							entity.setContainer(newTile);
 						}
 						for(TravelingItem entity:((List<TravelingItem>)entitiesToLoad.get(newTile.pipe.transport))) {
-							entity.item.setContainer(newTile);
+							entity.setContainer(newTile);
 						}
 						for(TravelingItem entity:((List<TravelingItem>)delayedEntitiesToLoad.get(newTile.pipe.transport))) {
-							entity.item.setContainer(newTile);
+							entity.setContainer(newTile);
 						}
 					}
 				}
@@ -105,7 +105,7 @@ public class WorldTickHandler implements ITickHandler {
 					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
 					pos.moveForwards(1.0);
 
-					newTile.tileBuffer[o.ordinal()] = new TileBuffer(newgetWorldObj(), (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
+					newTile.tileBuffer[o.ordinal()] = new TileBuffer(getWorld(), (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
 				}
 
 				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {

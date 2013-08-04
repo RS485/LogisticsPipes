@@ -1,6 +1,5 @@
 package logisticspipes.network.packets.cpipe;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -25,8 +24,8 @@ public class CraftingPipeOpenConnectedGuiPacket extends CoordinatesPacket {
 			return;
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
-			if(pipe.pipe.logic instanceof BaseLogicCrafting) {
-				((BaseLogicCrafting) pipe.pipe.logic).openAttachedGui(player);
+			if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
+				((PipeItemsCraftingLogistics) pipe.pipe).openAttachedGui(player);
 			}
 		}
 	}

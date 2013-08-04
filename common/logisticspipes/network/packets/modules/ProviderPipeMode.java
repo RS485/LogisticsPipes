@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.modules;
 
-import logisticspipes.logic.PipeItemsProviderLogistics;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeItemsProviderLogistics;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
 
@@ -23,10 +23,10 @@ public class ProviderPipeMode extends IntegerCoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof PipeItemsProviderLogistics)) {
+		if (!(pipe.pipe instanceof PipeItemsProviderLogistics)) {
 			return;
 		}
-		((PipeItemsProviderLogistics) pipe.pipe.logic).setExtractionMode(getInteger());
+		((PipeItemsProviderLogistics) pipe.pipe).setExtractionMode(getInteger());
 	}
 }
 

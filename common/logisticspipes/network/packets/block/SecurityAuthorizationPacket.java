@@ -21,9 +21,9 @@ public class SecurityAuthorizationPacket extends IntegerCoordinatesPacket {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
 		if(tile != null) {
 			if(getInteger() == 1) {
-				((LogisticsSecurityTileEntity) tile).authorizeStation();
+				tile.authorizeStation();
 			} else {
-				((LogisticsSecurityTileEntity) tile).deauthorizeStation();
+				tile.deauthorizeStation();
 			}
 		}
 	}

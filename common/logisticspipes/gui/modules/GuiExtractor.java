@@ -12,6 +12,7 @@ import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ExtractorModuleDirectionPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
@@ -31,7 +32,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 	private final ISneakyDirectionReceiver _directionReceiver;
 	private int slot;
 	
-	public GuiExtractor(IInventory playerInventory, Pipe pipe, ISneakyDirectionReceiver directionReceiver, GuiScreen previousGui, int slot) {
+	public GuiExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ISneakyDirectionReceiver directionReceiver, GuiScreen previousGui, int slot) {
 		super(new DummyContainer(playerInventory, null),pipe,previousGui);
 		_directionReceiver = directionReceiver;
 		xSize = 160;

@@ -1,8 +1,8 @@
 package logisticspipes.network.packets.block;
 
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
 
@@ -23,10 +23,10 @@ public class CraftingPipePrevAdvancedSatellitePacket extends IntegerCoordinatesP
 		if(pipe == null) {
 			return;
 		}
-		if(!(pipe.pipe.logic instanceof BaseLogicCrafting)) {
+		if(!(pipe.pipe instanceof PipeItemsCraftingLogistics)) {
 			return;
 		}
-		((BaseLogicCrafting) pipe.pipe.logic).setPrevSatellite(player, getInteger());
+		((PipeItemsCraftingLogistics) pipe.pipe).setPrevSatellite(player, getInteger());
 	}
 }
 

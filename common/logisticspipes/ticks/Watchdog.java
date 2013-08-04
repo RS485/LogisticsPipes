@@ -47,6 +47,7 @@ public class Watchdog extends Thread {
 		timeStempClient = System.currentTimeMillis();
 	}
 	
+	@Override
 	public void run() {
 		while(true) {
 			boolean server = false;

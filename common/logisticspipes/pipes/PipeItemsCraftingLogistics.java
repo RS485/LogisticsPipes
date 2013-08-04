@@ -232,7 +232,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	private ItemStack extractFromLogisticsCraftingTable(LogisticsCraftingTableTileEntity tile, ItemIdentifier wanteditem, int count) {
-		ItemStack extracted = extractFromIInventory((IInventory)tile, wanteditem, count);
+		ItemStack extracted = extractFromIInventory(tile, wanteditem, count);
 		if(extracted != null) {
 			return extracted;
 		}
@@ -518,9 +518,9 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(liquidSatelliteId != 0) {
-				IRouter r = getLiquidSatelliteRouter(-1);
+				IRouter r = getFluidSatelliteRouter(-1);
 				if(r != null) {
-					IRequestLiquid sat = (IRequestLiquid) r.getPipe();
+					IRequestFluid sat = (IRequestFluid) r.getPipe();
 					for(int i=0;i<liquidCrafter;i++) {
 					liquidTarget[i] = sat;
 				}
@@ -529,8 +529,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		} else {
 			for(int i=0;i<liquidCrafter;i++) {
 				if(liquidSatelliteIdArray[i] != 0) {
-					IRouter r = getLiquidSatelliteRouter(i);
-					if(r != null) liquidTarget[i] = (IRequestLiquid) r.getPipe();
+					IRouter r = getFluidSatelliteRouter(i);
+					if(r != null) liquidTarget[i] = (IRequestFluid) r.getPipe();
 				}
 			}
 		}
@@ -710,7 +710,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		return false;
 	}
 	
-	// from BaseLogicCrafting
+	// from PipeItemsCraftingLogistics
 	protected SimpleInventory _dummyInventory = new SimpleInventory(11, "Requested items", 127);
 	protected SimpleInventory _liquidInventory = new SimpleInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1);
 	

@@ -16,7 +16,6 @@ import org.objectweb.asm.tree.MethodNode;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
-import cpw.mods.fml.relauncher.IClassTransformer;
 import cpw.mods.fml.relauncher.Side;
 
 public class LogisticsClassTransformer implements IClassTransformer {

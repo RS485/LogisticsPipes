@@ -40,7 +40,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 			int allSlots[] = _sidedInventory.getAccessibleSlotsFromSide(_side);
 			for(int number:allSlots) {
 				ItemStack item=_sidedInventory.getStackInSlot(number);
-				if(!list.contains((Integer)number) && (!forExtraction || // check extract condition
+				if(!list.contains(number) && (!forExtraction || // check extract condition
 					(item!=null && _sidedInventory.canExtractItem(number,item,_side)))){
 						list.add(number);
 				}
@@ -56,7 +56,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 			int slots[] = _sidedInventory.getAccessibleSlotsFromSide(i);
 			for(int number:slots) {
 				ItemStack item=_sidedInventory.getStackInSlot(number);
-				if(!list.contains((Integer)number) && (!forExtraction || // check extract condition
+				if(!list.contains(number) && (!forExtraction || // check extract condition
 					(item!=null && _sidedInventory.canExtractItem(number,item,i)))){
 						list.add(number);
 				}
@@ -132,7 +132,7 @@ public final class SidedInventoryMinecraftAdapter implements IInventory {
 	}
 
 	@Override
-	public boolean isStackValidForSlot(int slot, ItemStack itemstack) {
-		return _sidedInventory.isStackValidForSlot(_slotMap[slot], itemstack) && _sidedInventory.canInsertItem(_slotMap[slot], itemstack, _side);
+	public boolean isItemValidForSlot(int slot, ItemStack itemstack) {
+		return _sidedInventory.isItemValidForSlot(_slotMap[slot], itemstack) && _sidedInventory.canInsertItem(_slotMap[slot], itemstack, _side);
 	}
 }

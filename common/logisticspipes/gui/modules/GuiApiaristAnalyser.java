@@ -2,6 +2,7 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -14,7 +15,7 @@ public class GuiApiaristAnalyser extends GuiWithPreviousGuiContainer {
 
 	private final ModuleApiaristAnalyser module;	
 	
-	public GuiApiaristAnalyser(ModuleApiaristAnalyser module, Pipe pipe, GuiScreen previousGui, IInventory playerInventory) {
+	public GuiApiaristAnalyser(ModuleApiaristAnalyser module, CoreRoutedPipe pipe, GuiScreen previousGui, IInventory playerInventory) {
 		super(new DummyContainer(playerInventory,null), pipe, previousGui);
 		this.module = module;
 		xSize = 120;

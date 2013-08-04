@@ -6,7 +6,6 @@ import java.util.UUID;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.nbt.NBTTagCompound;
-import buildcraft.api.transport.IPassiveItemContribution;
 
 public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 	

@@ -13,6 +13,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.AdvancedExtractorIncludePacket;
 import logisticspipes.network.packets.module.AdvancedExtractorSneakyGuiPacket;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiStringHandlerButton;
@@ -72,7 +73,7 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 		
 	}
 	
-	public GuiAdvancedExtractor(IInventory playerInventory, Pipe pipe, ModuleAdvancedExtractor advancedExtractor, GuiScreen previousGui, int slot) {
+	public GuiAdvancedExtractor(IInventory playerInventory, CoreRoutedPipe pipe, ModuleAdvancedExtractor advancedExtractor, GuiScreen previousGui, int slot) {
 		super(null,pipe,previousGui);
 		_advancedExtractor = advancedExtractor;
 		this.slot = slot;

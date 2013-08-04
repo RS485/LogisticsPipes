@@ -6,7 +6,6 @@ import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.tileentity.TileEntityChest;
 import buildcraft.api.inventory.ISpecialInventory;
 import buildcraft.core.inventory.ITransactor;
-import buildcraft.core.inventory.InventoryWrapper;
 import buildcraft.core.inventory.TransactorSimple;
 import buildcraft.core.inventory.TransactorSpecial;
 

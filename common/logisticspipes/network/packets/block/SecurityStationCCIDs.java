@@ -20,7 +20,7 @@ public class SecurityStationCCIDs extends NBTCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
 		if(tile != null) {
-			((LogisticsSecurityTileEntity) tile).handleListPacket(getTag());
+			tile.handleListPacket(getTag());
 		}
 	}
 }

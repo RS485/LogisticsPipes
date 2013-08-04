@@ -28,10 +28,10 @@ public class SecurityStationAutoDestroy extends IntegerCoordinatesPacket {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
 		if(tile instanceof LogisticsSecurityTileEntity) {
 			if(MainProxy.isClient(player.worldObj)) {
-				((LogisticsSecurityTileEntity)tile).setClientDestroy(getInteger() == 1);
+				tile.setClientDestroy(getInteger() == 1);
 				handleClientSide(player);
 			} else {
-				((LogisticsSecurityTileEntity)tile).changeDestroy();
+				tile.changeDestroy();
 			}
 		}
 	}

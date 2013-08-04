@@ -9,7 +9,7 @@ import buildcraft.transport.Pipe;
 public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 
 	public TriggerCrafting(int id) {
-		super(id);
+		super(id,"LogisticsPipes.triggers.isCrafting");
 	}
 
 	@Override
@@ -27,6 +27,5 @@ public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 	public String getDescription() {
 		return "Pipe Waiting for Crafting";
 	}
-
 
 }

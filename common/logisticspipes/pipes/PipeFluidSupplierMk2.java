@@ -78,7 +78,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		return true;
 	}
 	
-	//from LogicFluidSupplierMk2
+	//from PipeFluidSupplierMk2
 	private SimpleInventory dummyInventory = new SimpleInventory(1, "Fluid to keep stocked", 127);
 	private int amount = 0;
 	

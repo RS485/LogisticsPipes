@@ -31,7 +31,7 @@ public class SecurityStationCC extends IntegerCoordinatesPacket {
 				tile.setClientCC(getInteger() == 1);
 				handleClientSide(player);
 			} else {
-				((LogisticsSecurityTileEntity)tile).changeCC();
+				tile.changeCC();
 			}
 		}
 	}

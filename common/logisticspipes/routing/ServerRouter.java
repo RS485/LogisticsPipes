@@ -607,14 +607,14 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		//notify that Item has arrived
 		CoreRoutedPipe pipe = getPipe();	
 		pipe.notifyOfItemArival(routedEntityItem);
-		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
-			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
+		if (pipe != null && pipe instanceof IRequireReliableTransport){
+			((IRequireReliableTransport)pipe).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
 		}
-		if (pipe != null && pipe.logic instanceof IRequireReliableFluidTransport) {
+		if (pipe != null && pipe instanceof IRequireReliableFluidTransport) {
 			ItemStack stack = routedEntityItem.getItemStack();
 			if(stack.getItem() instanceof LogisticsFluidContainer) {
 				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
-				((IRequireReliableFluidTransport)pipe.logic).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);				
+				((IRequireReliableFluidTransport)pipe).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);				
 			}
 		}
 	}

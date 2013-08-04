@@ -2,6 +2,7 @@ package logisticspipes.gui.modules;
 
 import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -16,7 +17,7 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 	private final ModuleThaumicAspectSink _module;
 	private final SimpleInventory tmpInv;
 	
-	public GuiThaumicAspectSink(IInventory playerInventory, Pipe pipe, ModuleThaumicAspectSink itemSink, GuiScreen previousGui, int slot) {
+	public GuiThaumicAspectSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleThaumicAspectSink itemSink, GuiScreen previousGui, int slot) {
 		super(null, pipe, previousGui);
 		
 		_module = itemSink;

@@ -94,16 +94,16 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	/* IItemTravelingHook */
 
 	@Override
-	public void endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
+	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
-		if (!(tile instanceof IFluidHandler)) return;
-		if (tile instanceof TileGenericPipe) return;
+		if (!(tile instanceof IFluidHandler)) return false;
+		if (tile instanceof TileGenericPipe) return false;
 		IFluidHandler container = (IFluidHandler) tile;
 		//container.getFluidSlots()[0].getFluidQty();
-		if (data == null) return;
-		if (data.getItemStack() == null) return;
+		if (data == null) return false;
+		if (data.getItemStack() == null) return false ;
 		FluidStack liquidId = FluidContainerRegistry.getFluidForFilledItem(data.getItemStack());
-		if (liquidId == null) return;
+		if (liquidId == null) return false;
 		ForgeDirection orientation = data.output.getOpposite();
 		if(getUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getUpgradeManager().getSneakyOrientation();
@@ -123,6 +123,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		if (data.getItemStack().stackSize < 1){
 			((PipeTransportItems)this.transport).items.scheduleRemoval(data);
 		}
+		return true;
 	}
 
 	@Override
@@ -135,7 +136,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	public boolean hasGenericInterests() {
 		return true;
 	}
-// from LogicFluidSupplier
+// from PipeItemsFluidSupplier
 	private SimpleInventory dummyInventory = new SimpleInventory(9, "Fluids to keep stocked", 127);
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();

@@ -198,11 +198,11 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	public void centerReached(PipeTransportItems pipe, TravelingItem data) {}
 
 	@Override
-	public void endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
+	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
-			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsFluidContainer)) return;
-			if(this.getRouter().getSimpleID() != ((IRoutedItem)data).getDestination()) return;
+			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsFluidContainer)) return false;
+			if(this.getRouter().getSimpleID() != ((IRoutedItem)data).getDestination()) return false;
 			((PipeTransportItems)this.transport).items.scheduleRemoval(data);
 			int filled = 0;
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(data.getItemStack());
@@ -216,16 +216,16 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 					filled = tank.fill(dir.getOpposite(), liquid, true);
 					liquid.amount -= filled;
 					if (liquid.amount != 0) continue;
-					return;
+					return false;
 				}
 				//Try inserting the liquid into the pipe side tank
 				filled = ((PipeFluidTransportLogistics)this.transport).sideTanks[data.output.ordinal()].fill(liquid, true);
-				if(filled == liquid.amount) return;
+				if(filled == liquid.amount) return true;
 				liquid.amount -= filled;
 			}
 			//Try inserting the liquid into the pipe internal tank
 			filled = ((PipeFluidTransportLogistics)this.transport).internalTank.fill(liquid, true);
-			if(filled == liquid.amount) return;
+			if(filled == liquid.amount) return true;
 			//If liquids still exist,
 			liquid.amount -= filled;
 
@@ -240,7 +240,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 			routedItem.setDestination(dest);
 			routedItem.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routedItem, data.output.getOpposite());
+			return true;
 		}
+		return false;
 	}
 
 	@Override

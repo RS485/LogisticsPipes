@@ -487,15 +487,19 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!hasSatellite) return null;
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(satelliteId != 0) {
-				IRequestItems sat = getSatelliteRouter(-1).getPipe();
-				for(int i=6;i<9;i++) {
-					target[i] = sat;
+				IRouter r = getSatelliteRouter(-1);
+				if(r != null) {
+					IRequestItems sat = r.getPipe();
+					for(int i=6;i<9;i++) {
+						target[i] = sat;
+					}
 				}
 			}
 		} else {
 			for(int i=0;i<9;i++) {
 				if(advancedSatelliteIdArray[i] != 0) {
-					target[i] = getSatelliteRouter(i).getPipe();
+					IRouter r = getSatelliteRouter(i);
+					if(r != null) target[i] = r.getPipe();
 				}
 			}
 		}
@@ -514,15 +518,19 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		
 		if(!getUpgradeManager().isAdvancedSatelliteCrafter()) {
 			if(liquidSatelliteId != 0) {
-				IRequestFluid sat = (IRequestFluid) getFluidSatelliteRouter(-1).getPipe();
-				for(int i=0;i<liquidCrafter;i++) {
+				IRouter r = getLiquidSatelliteRouter(-1);
+				if(r != null) {
+					IRequestLiquid sat = (IRequestLiquid) r.getPipe();
+					for(int i=0;i<liquidCrafter;i++) {
 					liquidTarget[i] = sat;
 				}
+			}
 			}
 		} else {
 			for(int i=0;i<liquidCrafter;i++) {
 				if(liquidSatelliteIdArray[i] != 0) {
-					liquidTarget[i] = (IRequestFluid) getFluidSatelliteRouter(i).getPipe();
+					IRouter r = getLiquidSatelliteRouter(i);
+					if(r != null) liquidTarget[i] = (IRequestLiquid) r.getPipe();
 				}
 			}
 		}

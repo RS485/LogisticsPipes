@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.ActivatNBTDebug;
 import logisticspipes.network.packets.RequestUpdateNamesPacket;
@@ -21,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.network.Player;
+import cpw.mods.fml.server.FMLServerHandler;
 
 public class LogisticsPipesCommand extends CommandBase {
 
@@ -87,6 +89,20 @@ public class LogisticsPipesCommand extends CommandBase {
         } else if(arguments[0].equalsIgnoreCase("dump")) {
 			Watchdog.dump(false, false, true);
 			sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Dump Created"));
+        	return;
+        } else if(arguments[0].equalsIgnoreCase("bypass") || arguments[0].equalsIgnoreCase("bp")) {
+        	if(!(sender instanceof EntityPlayer)) return;
+        	if(!MinecraftServer.getServerConfigurationManager(FMLCommonHandler.instance().getMinecraftServerInstance()).getOps().contains(sender.getCommandSenderName().toLowerCase()) && !FMLCommonHandler.instance().getMinecraftServerInstance().isSinglePlayer() && FMLCommonHandler.instance().getMinecraftServerInstance().isServerInOnlineMode()) {
+        		sender.sendChatToPlayer("You are not allowed to use this command");
+        		return;
+        }
+        	if(!LogisticsSecurityTileEntity.byPassed.contains((EntityPlayer) sender)) {
+        		LogisticsSecurityTileEntity.byPassed.add((EntityPlayer) sender);
+        		sender.sendChatToPlayer("Enabled");
+        	} else {
+        		LogisticsSecurityTileEntity.byPassed.remove((EntityPlayer) sender);
+        		sender.sendChatToPlayer("Disabled");
+        	}
         	return;
         }
 		if(LogisticsPipes.DEBUG) {

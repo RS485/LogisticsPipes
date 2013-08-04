@@ -145,25 +145,21 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void flagForRoutingUpdate() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public boolean checkAdjacentUpdate() {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
 	public void clearPrevAdjacent() {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -174,25 +170,26 @@ public class ClientRouter implements IRouter {
 
 	@Override
 	public void updateInterests() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public ExitRoute getDistanceTo(IRouter r) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public void clearInterests() {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public List<IRouter> getFilteringRouter() {
-		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean isValidCache() {
+		return true;
 	}
 }

@@ -22,6 +22,7 @@ import logisticspipes.request.RequestTree.ActiveRequestType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -44,7 +45,7 @@ public class RequestHandler {
 				, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
@@ -53,7 +54,7 @@ public class RequestHandler {
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
-				Collection<ItemIdentifierStack> coll = new ArrayList(1);
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}
@@ -152,7 +153,7 @@ public class RequestHandler {
 		RequestTree.request(transaction, requester, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
@@ -164,7 +165,7 @@ public class RequestHandler {
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
@@ -173,7 +174,7 @@ public class RequestHandler {
 		},RequestTree.defaultRequestFlags);
 	}
 
-	public static String computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
+	public static Object[] computerRequest(final ItemIdentifierStack makeStack, final CoreRoutedPipe pipe, boolean craftingOnly) {
 
 		EnumSet<ActiveRequestType> requestFlags;
 		if(craftingOnly){
@@ -182,24 +183,32 @@ public class RequestHandler {
 			requestFlags=EnumSet.of(ActiveRequestType.Craft,ActiveRequestType.Provide);			
 		}
 		if(!pipe.useEnergy(15)) {
-			return "NO_POWER";
+			return new Object[]{"NO_POWER"};
 		}
-		final String[] status = new String[1];
+		final Object[] status = new String[2];
 		RequestTree.request(makeStack, pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				status[0] = "MISSING";
+				List<Pair<ItemIdentifier, Integer>> itemList = new LinkedList<Pair<ItemIdentifier, Integer>>();
+				for(Entry<ItemIdentifier, Integer> item : items.entrySet()) {
+					itemList.add(new Pair<ItemIdentifier,Integer>(item.getKey(), item.getValue()));
+			}
+				status[1] = itemList;
 			}
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
 				status[0] = "DONE";
+				List<Pair<ItemIdentifier, Integer>> itemList = new LinkedList<Pair<ItemIdentifier, Integer>>();
+				itemList.add(new Pair<ItemIdentifier,Integer>(item, count));
+				status[1] = itemList;
 			}
 			
 			@Override
 			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {}
 		},false, false,true,false,requestFlags);
-		return status[0];
+		return status;
 	}
 
 	public static void refreshFluid(EntityPlayer player, CoreRoutedPipe pipe) {
@@ -217,7 +226,7 @@ public class RequestHandler {
 		RequestTree.requestFluid(FluidIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage) , stack.stackSize, requester, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
-				Collection<ItemIdentifierStack> coll = new ArrayList(items.size());
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
 				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
 					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
 				}
@@ -226,7 +235,7 @@ public class RequestHandler {
 
 			@Override
 			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {
-				Collection<ItemIdentifierStack> coll = new ArrayList(1);
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(1);
 				coll.add(new ItemIdentifierStack(item, count));
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
 			}

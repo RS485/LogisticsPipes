@@ -50,7 +50,14 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public boolean allowCC = false;
 	public boolean allowAutoDestroy = false;
 	
-	public LogisticsSecurityTileEntity() {
+	public static PlayerCollectionList byPassed = new PlayerCollectionList();
+	public static final SecuritySettings allowAll = new SecuritySettings("");
+	static {
+		allowAll.openGui = true;
+		allowAll.openRequest = true;
+		allowAll.openUpgrades = true;
+		allowAll.openNetworkMonitor = true;
+		allowAll.removePipes = true;
 	}
 	
 	@Override
@@ -244,6 +251,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	}
 
 	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer, boolean usePower) {
+		if(byPassed.contains(entityplayer)) return allowAll;
 		if(usePower && !useEnergy(10)) {
 			entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
 			return new SecuritySettings("No Energy");

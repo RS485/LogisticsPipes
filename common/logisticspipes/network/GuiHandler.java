@@ -35,6 +35,7 @@ import logisticspipes.gui.modules.GuiExtractor;
 import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiFluidSupplier;
 import logisticspipes.gui.modules.GuiModBasedItemSink;
+import logisticspipes.gui.modules.GuiOreDictItemSink;
 import logisticspipes.gui.modules.GuiPassiveSupplier;
 import logisticspipes.gui.modules.GuiProvider;
 import logisticspipes.gui.modules.GuiTerminus;
@@ -45,6 +46,7 @@ import logisticspipes.gui.orderer.NormalGuiOrderer;
 import logisticspipes.gui.orderer.NormalMk2GuiOrderer;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.interfaces.ISlotCheck;
+import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.items.LogisticsItemCard;
@@ -65,6 +67,7 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleFluidSupplier;
 import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
@@ -72,12 +75,14 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.network.packets.module.ElectricManagetMode;
 import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
+import logisticspipes.network.packets.module.OreDictItemSinkList;
 import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
 import logisticspipes.network.packets.modules.BeeModule;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
@@ -515,6 +520,32 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addNormalSlotsForPlayerInventory(8, 135);
 				return dummy;
 				
+			case GuiIDs.GUI_Request_Table_ID:
+				if(pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
+				dummy = new DummyContainer(player.inventory, ((PipeBlockRequestTable)pipe.pipe).matrix);
+				int i = 0;
+				for(int Y = 0;Y < 3;Y++) {
+					for(int X = 0;X < 9;X++) {
+						dummy.addNormalSlot(i++, ((PipeBlockRequestTable)pipe.pipe).inv, 0, 0);
+					}
+				}
+				i = 0;
+				for(int Y = 0;Y < 3;Y++) {
+					for(int X = 0;X < 3;X++) {
+						dummy.addDummySlot(i++, 0, 0);
+					}
+				}
+				dummy.addCallableSlotHandler(0, ((PipeBlockRequestTable)pipe.pipe).resultInv, 0, 0, new ISlotClick() {
+					@Override
+					public ItemStack getResultForClick() {
+						((PipeBlockRequestTable)fpipe.pipe).inv.addCompressed(((PipeBlockRequestTable)fpipe.pipe).getOutput());
+						return null;
+					}
+				});
+				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).toSortInv, 0, 0);
+				dummy.addNormalSlotsForPlayerInventory(0, 0);
+				return dummy;
+
 			default:break;
 			}
 		} else {
@@ -713,6 +744,26 @@ public class GuiHandler implements IGuiHandler {
 					return dummy;
 				}
 				
+			case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
+				if(slot >= 0) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
+					NBTTagCompound nbt = new NBTTagCompound();
+					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
+//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
+					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
+					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				} else {
+					dummy = new DummyModuleContainer(player, z);
+					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleOreDictItemSink)) return null;
+					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					dummy.addDummySlot(0, 0, 0);
+					dummy.addNormalSlotsForPlayerInventory(0, 0);
+					return dummy;
+				}
+				
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;
@@ -903,6 +954,10 @@ public class GuiHandler implements IGuiHandler {
 				if(!(tile instanceof LogisticsCraftingTableTileEntity)) return null;
 				return new GuiLogisticsCraftingTable(player, (LogisticsCraftingTableTileEntity)tile);
 	
+			case GuiIDs.GUI_Request_Table_ID:
+				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) return null;
+				return new GuiRequestTable(player, ((PipeBlockRequestTable)pipe.pipe));
+			
 			default:break;
 			}
 		} else {
@@ -1068,6 +1123,24 @@ public class GuiHandler implements IGuiHandler {
 					return new GuiThaumicAspectSink(player.inventory, null, (ModuleThaumicAspectSink) module, null, slot);
 				}
 			
+			case GuiIDs.GUI_Module_OreDict_ItemSink_ID:
+				if(slot >= 0) {
+					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleOreDictItemSink)) return null;
+					return new GuiOreDictItemSink(player.inventory, pipe.pipe, (ModuleOreDictItemSink)((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot),  FMLClientHandler.instance().getClient().currentScreen, slot + 1);
+				} else {
+					ItemStack item = player.inventory.mainInventory[z];
+					if(item == null) return null;
+					LogisticsModule module = LogisticsPipes.ModuleItem.getModuleForItem(item, null, null, null, new IWorldProvider() {
+						@Override
+						public World getWorld() {
+							return world;
+						}}, null);
+					module.registerSlot(-1-z);
+					ItemModuleInformationManager.readInformation(item, module);
+					if(!(module instanceof ModuleOreDictItemSink)) return null;
+					return new GuiOreDictItemSink(player.inventory, null, (ModuleOreDictItemSink) module, null, slot);
+				}
+				
 			case GuiIDs.GUI_Module_Apiarist_Analyzer:
 				if(slot >= 0) {
 					if(pipe.pipe == null || !(pipe.pipe instanceof CoreRoutedPipe) || !(((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot) instanceof ModuleApiaristAnalyser)) return null;

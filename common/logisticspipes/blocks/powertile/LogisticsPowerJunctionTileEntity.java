@@ -109,6 +109,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 	
 	public void addEnergy(float amount) {
+		if(MainProxy.isClient(getWorld())) return;
 		internalStorage += amount;
 		if(internalStorage > MAX_STORAGE) {
 			internalStorage = MAX_STORAGE;

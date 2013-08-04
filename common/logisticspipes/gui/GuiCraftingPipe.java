@@ -19,7 +19,6 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.Slot;
 
 public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvider {
 
@@ -368,6 +367,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		}
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
 		
+		/*
 		if(!isAdvancedSat) {
 			for(int count=36; count<42;count++) {
 				Slot slot = inventorySlots.getSlot(count);
@@ -379,6 +379,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 				}
 			}
 		}
+		*/
 	}
 
 	@Override

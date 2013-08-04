@@ -201,12 +201,12 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	@CCQueued
-	public String makeRequest(Double itemId, Double amount) throws Exception {
+	public Object[] makeRequest(Double itemId, Double amount) throws Exception {
 		return makeRequest(itemId, amount, false);
 	}
 	@CCCommand(description="Requests the given ItemIdentifier Id with the given amount")
 	@CCQueued
-	public String makeRequest(Double itemId, Double amount, Boolean forceCrafting) throws Exception {
+	public Object[] makeRequest(Double itemId, Double amount, Boolean forceCrafting) throws Exception {
 		if(forceCrafting==null)
 			forceCrafting=false;
 		ItemIdentifier item = ItemIdentifier.getForId((int)Math.floor(itemId));

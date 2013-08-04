@@ -59,8 +59,13 @@ public class PlayerCollectionList {
 		players.add(new EqualWeakReference<EntityPlayer>(player));
 	}
 
-	public boolean remove(EntityPlayer o) {
-		return players.remove(new EqualWeakReference<EntityPlayer>(o));
+	public boolean remove(EntityPlayer player) {
+		return players.remove(new EqualWeakReference<EntityPlayer>(player));
+	}
+
+	public boolean contains(EntityPlayer player) {
+		checkPlayers();
+		return players.contains(new EqualWeakReference<EntityPlayer>(player));
 	}
 
 	private class Itr implements Iterator<EntityPlayer> {

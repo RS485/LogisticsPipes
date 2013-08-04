@@ -1,12 +1,13 @@
 package logisticspipes.nei;
 
-import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
+import logisticspipes.gui.orderer.GuiRequestTable;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.NEISetCraftingRecipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.api.IOverlayHandler;
 import codechicken.nei.recipe.IRecipeHandler;
@@ -15,7 +16,16 @@ import cpw.mods.fml.client.FMLClientHandler;
 public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 	@Override
 	public void overlayRecipe(GuiContainer firstGui, IRecipeHandler recipe, int recipeIndex, boolean shift) {
-		LogisticsCraftingTableTileEntity c = ((GuiLogisticsCraftingTable)firstGui)._crafter;
+		
+		TileEntity tile;
+		if(firstGui instanceof GuiLogisticsCraftingTable) {
+			tile = ((GuiLogisticsCraftingTable)firstGui)._crafter;
+		} else if(firstGui instanceof GuiRequestTable) {
+			tile = ((GuiRequestTable)firstGui)._table.container;
+		} else {
+			return;
+		}
+		
 		ItemStack[] stack = new ItemStack[9];
 		NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 		for(PositionedStack ps : recipe.getIngredientStacks(recipeIndex)) {
@@ -30,7 +40,6 @@ public class LogisticsCraftingOverlayHandler implements IOverlayHandler {
 				stack[slot] = ps.items[0];
 			}
 		}
-//TODO Must be handled manualy
-		MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(c.xCoord).setPosY(c.yCoord).setPosZ(c.zCoord));
+		MainProxy.sendPacketToServer(packet.setContent(stack).setPosX(tile.xCoord).setPosY(tile.yCoord).setPosZ(tile.zCoord));
 	}
 }

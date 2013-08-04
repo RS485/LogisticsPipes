@@ -48,6 +48,7 @@ public class Configs {
 	public static int LOGISTICSPIPE_DESTINATION_ID = 6895;
 	public static int LOGISTICSPIPE_CRAFTING_MK3_ID = 6896;
 	public static int LOGISTICSPIPE_FIREWALL_ID = 6897;
+	public static int LOGISTICSPIPE_REQUEST_TABLE_ID = 6898;
 
 	public static int LOGISTICSPIPE_LIQUID_CONNECTOR = 6901;
 	public static int LOGISTICSPIPE_LIQUID_BASIC = 6902;
@@ -379,6 +380,10 @@ public class Configs {
 								LOGISTICS_CRAFTING_TABLE_POWER_USAGE,
 								"Number of LPower units the Logistics Crafting Table uses per craft.")
 						.getInt(), 0);
+
+		LOGISTICSPIPE_REQUEST_TABLE_ID = CONFIGURATION.getItem(
+				"logisticsPipeRequestTable.id", LOGISTICSPIPE_REQUEST_TABLE_ID,
+				"The item id for the request table").getInt();
 
 		CONFIGURATION.save();
 	}

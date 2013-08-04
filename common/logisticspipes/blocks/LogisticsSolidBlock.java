@@ -94,6 +94,9 @@ public class LogisticsSolidBlock extends BlockContainer {
 		if(tile instanceof LogisticsSolderingTileEntity) {
 			((LogisticsSolderingTileEntity)tile).onBlockBreak();
 		}
+		if(tile instanceof LogisticsCraftingTableTileEntity) {
+			((LogisticsCraftingTableTileEntity)tile).onBlockBreak();
+		}
 		super.breakBlock(par1World, par2, par3, par4, par5, par6);
 	}
 

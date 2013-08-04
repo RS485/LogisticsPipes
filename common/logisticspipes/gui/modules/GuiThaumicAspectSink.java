@@ -44,7 +44,7 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 
 	@Override
 	public int getGuiID() {
-		return GuiIDs.GUI_Module_ModBased_ItemSink_ID;
+		return GuiIDs.GUI_Module_Thaumic_AspectSink_ID;
 	}
 
 	@Override

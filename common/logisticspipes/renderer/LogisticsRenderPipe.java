@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import logisticspipes.logic.BaseLogicCrafting;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import net.minecraft.block.Block;
@@ -13,7 +14,6 @@ import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
-import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
@@ -46,6 +46,10 @@ public class LogisticsRenderPipe extends RenderPipe {
 	private final int[] angleZ = { 90, 270, 0, 0, 0, 0 };
 	
 	private HashMap<Integer, HashMap<Integer, DisplayFluidList>> displayFluidLists = new HashMap<Integer, HashMap<Integer, DisplayFluidList>>();
+
+    private ModelSign modelSign = new ModelSign();
+
+	private RenderBlocks renderBlocks = new RenderBlocks();
 	
 	private class DisplayFluidList {
 
@@ -67,6 +71,20 @@ public class LogisticsRenderPipe extends RenderPipe {
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			renderCraftingPipe((PipeItemsCraftingLogistics) pipe.pipe, x, y, z);
 		}
+		if(pipe.pipe instanceof PipeBlockRequestTable) {
+			try {
+				renderBlock((PipeBlockRequestTable) pipe.pipe, x, y, z);
+			} catch(Exception e) {
+				e.printStackTrace();
+	}
+		}
+	}
+	
+	private void renderBlock(PipeBlockRequestTable blockPipe, double x, double y, double z) {
+		GL11.glPushMatrix();
+		GL11.glTranslatef((float) x + 0.5F, (float) y + 0.5F, (float) z + 0.5F);
+		
+		GL11.glPopMatrix();
 	}
 	
 	private boolean needDistance(List<ForgeDirection> list) {
@@ -133,13 +151,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			}			
 		}
 	}
-	
-	/** The ModelSign instance used by the TileEntitySignRenderer */
-    private ModelSign modelSign = new ModelSign();
 
-	private RenderBlocks renderBlocks = new RenderBlocks();
-	RenderManager rendermanager = RenderManager.instance;
-	
 	private void renderSign(PipeItemsCraftingLogistics pipe) {
 		float var10 = 0.6666667F;
         float var12 = 0.016666668F * var10;

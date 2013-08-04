@@ -297,11 +297,11 @@ public class RequestTreeNode {
 		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
-	
+
+			if(!r.isValidCache()) continue; //Skip Routers without a valid pipe
+
 			ExitRoute e = destination.getDistanceTo(r);
-			//ExitRoute e = r.getDistanceTo(requester.getRouter());
-			if (e!=null)
-				validSources.add(e);
+			if (e!=null) validSources.add(e);
 		}
 		// closer providers are good
 		Collections.sort(validSources, new workWeightedSorter(1.0));
@@ -370,10 +370,10 @@ public class RequestTreeNode {
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 
+			if(!r.isValidCache()) continue; //Skip Routers without a valid pipe
+
 			ExitRoute e = this.target.getRouter().getDistanceTo(r);
-			//ExitRoute e = r.getDistanceTo(requester.getRouter());
-			if (e!=null)
-				validSources.add(e);
+			if (e!=null) validSources.add(e);
 		}
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);

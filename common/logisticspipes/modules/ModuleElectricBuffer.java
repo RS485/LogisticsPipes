@@ -70,10 +70,10 @@ public class ModuleElectricBuffer extends LogisticsModule {
 		return this._power.getZ();
 	}
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 0);
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricBuffer, 0, true, false, 1, 0);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stack, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
+		if (bestPriority >= FixedPriority.ElectricBuffer.ordinal()) return null;
 		if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack.makeNormalStack(1))) {
 			if (_power.canUseEnergy(1)) {
 				return _sinkReply;
@@ -98,7 +98,7 @@ public class ModuleElectricBuffer extends LogisticsModule {
 			ItemStack stack = inv.getStackInSlot(i);
 			if (stack == null) continue;
 			if (SimpleServiceLocator.IC2Proxy.isElectricItem(stack)) {
-				Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+				Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricManager);
 				if(reply == null) continue;
 				MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, this.getX(), this.getY(), this.getZ(), _world.getWorld(), 2);
 				_itemSender.sendStack(inv.decrStackSize(i, 1), reply, ItemSendMode.Normal);

@@ -87,10 +87,10 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 
 
-	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricNetwork, 0, true, false, 1, 1);
+	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ElectricManager, 0, true, false, 1, 1);
 	@Override
 	public SinkReply sinksItem(ItemIdentifier stackID, int bestPriority, int bestCustomPriority, boolean allowDefault, boolean includeInTransit) {
-		if (bestPriority >= FixedPriority.ElectricNetwork.ordinal()) return null;
+		if (bestPriority >= FixedPriority.ElectricManager.ordinal()) return null;
 		if (!_power.canUseEnergy(1)) return null;
 		ItemStack stack = stackID.makeNormalStack(1);
 		if (isOfInterest(stack)) {
@@ -139,7 +139,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 			if (isOfInterest(stack)) {
 				//If item set to discharge and its fully discharged, then extract it.
 				if (_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyDischarged(stack)) {
-					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 2);
@@ -149,7 +149,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 				}
 				//If item set to charge  and its fully charged, then extract it.
 				if (!_dischargeMode && SimpleServiceLocator.IC2Proxy.isFullyCharged(stack)) {
-					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricNetwork);
+					Pair3<Integer, SinkReply, List<IFilter>> reply = SimpleServiceLocator.logisticsManager.hasDestinationWithMinPriority(ItemIdentifier.get(stack), _itemSender.getSourceID(), true, FixedPriority.ElectricBuffer);
 					if(reply == null) continue;
 					if(_power.useEnergy(10)) {
 						MainProxy.sendSpawnParticlePacket(Particles.OrangeParticle, getX(), getY(), getZ(), _world.getWorld(), 2);

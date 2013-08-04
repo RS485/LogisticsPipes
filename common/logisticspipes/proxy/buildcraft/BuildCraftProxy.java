@@ -25,6 +25,7 @@ import logisticspipes.gates.TriggerNeedsPower;
 import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
@@ -58,6 +59,7 @@ import logisticspipes.pipes.PipeLogisticsChassiMk5;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsBlockGenericPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
+import logisticspipes.renderer.LogisticsPipeBlockRenderer;
 import logisticspipes.routing.RoutedEntityItem;
 import net.minecraft.block.Block;
 import net.minecraft.entity.item.EntityItem;
@@ -246,6 +248,8 @@ public class BuildCraftProxy {
 		LogisticsPipes.LogisticsFluidExtractorPipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_EXTRACTOR, PipeFluidExtractor.class, "Logistics Fluid Extractor Pipe", side);
 		LogisticsPipes.LogisticsFluidSatellitePipe = createPipe(Configs.LOGISTICSPIPE_LIQUID_SATELLITE, PipeFluidSatellite.class, "Logistics Fluid Satellite Pipe", side);
 		LogisticsPipes.LogisticsFluidSupplierPipeMk2 = createPipe(Configs.LOGISTICSPIPE_LIQUID_SUPPLIER_MK2, PipeFluidSupplierMk2.class, "Logistics Fluid Supplier Pipe Mk2", side);
+	
+		LogisticsPipes.logisticsRequestTable = createPipe(Configs.LOGISTICSPIPE_REQUEST_TABLE_ID, PipeBlockRequestTable.class, "Request Table", side);
 	}
 
 	/**
@@ -293,8 +297,11 @@ public class BuildCraftProxy {
 		}
 		
 		if(side.isClient()) {
-			
+			if(pipe instanceof PipeBlockRequestTable) {
+				MinecraftForgeClient.registerItemRenderer(res.itemID, new LogisticsPipeBlockRenderer());
+			} else {
 			MinecraftForgeClient.registerItemRenderer(res.itemID, TransportProxyClient.pipeItemRenderer);
+		}
 		}
 		if(defaultID != Configs.LOGISTICSPIPE_BASIC_ID && defaultID != Configs.LOGISTICSPIPE_LIQUID_CONNECTOR) {
 			registerShapelessResetRecipe(res,0,LogisticsPipes.LogisticsBasicPipe,0);

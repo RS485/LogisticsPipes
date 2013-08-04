@@ -132,7 +132,7 @@ public class SolderingStationRecipes {
 					null,
 					new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2,1),null }, 
 				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk3,1), null));
-		
+
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
 					new ItemStack(Block.netherBrick,1),
 					new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
@@ -144,6 +144,18 @@ public class SolderingStationRecipes {
 					null,
 					new ItemStack(Block.netherBrick,1) }, 
 				new ItemStack(LogisticsPipes.LogisticsFirewallPipe,1), null));
+		
+		recipes.add(new SolderingStationRecipe(new ItemStack[]{
+				new ItemStack(Block.stoneBrick,1),
+				new ItemStack(Block.workbench,1),
+				new ItemStack(Block.stoneBrick,1),
+				new ItemStack(LogisticsPipes.LogisticsCraftingPipeMk2,1),
+				new ItemStack(Block.hopperBlock,1),
+				new ItemStack(LogisticsPipes.LogisticsRequestPipeMk2,1),
+				new ItemStack(BuildCraftSilicon.redstoneChipset,1,3),
+				new ItemStack(Block.chest,3),
+				new ItemStack(BuildCraftSilicon.redstoneChipset,1,3)}, 
+			new ItemStack(LogisticsPipes.logisticsRequestTable,1), null));
 	}
 	
 	public static List<SolderingStationRecipe> getRecipes() {

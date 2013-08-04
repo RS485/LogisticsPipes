@@ -45,6 +45,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.SpecialInventoryHandlerManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.recipeproviders.AssemblyAdvancedWorkbench;
+import logisticspipes.proxy.recipeproviders.AssemblyTable;
 import logisticspipes.proxy.recipeproviders.AutoWorkbench;
 import logisticspipes.proxy.recipeproviders.ImmibisCraftingTableMk2;
 import logisticspipes.proxy.recipeproviders.LogisticsCraftingTable;
@@ -176,6 +177,7 @@ public class LogisticsPipes {
 	public static Item LogisticsEntrancePipe;
 	public static Item LogisticsDestinationPipe;
 	public static Item LogisticsFirewallPipe;
+	public static Item logisticsRequestTable;
 	
 	// Logistics Apiarist's Pipes
 	public static Item LogisticsApiaristAnalyzerPipe;
@@ -394,6 +396,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.thaumCraftProxy.addCraftingRecipes();
 		SimpleServiceLocator.addCraftingRecipeProvider(new AutoWorkbench());
 		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyAdvancedWorkbench());
+		SimpleServiceLocator.addCraftingRecipeProvider(new AssemblyTable());
 		SimpleServiceLocator.addCraftingRecipeProvider(new SolderingStation());
 		SimpleServiceLocator.addCraftingRecipeProvider(new LogisticsCraftingTable());
 		if (RollingMachine.load())

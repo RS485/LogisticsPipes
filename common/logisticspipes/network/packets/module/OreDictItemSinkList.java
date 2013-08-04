@@ -4,7 +4,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.modules.ModuleModBasedItemSink;
+import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
@@ -17,19 +17,19 @@ import net.minecraft.entity.player.EntityPlayer;
 import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
-public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
+public class OreDictItemSinkList extends NBTCoordinatesPacket {
 
 	@Getter
 	@Setter
 	private int slot;
-	
-	public ModuleBasedItemSinkList(int id) {
+
+	public OreDictItemSinkList(int id) {
 		super(id);
 	}
 
 	@Override
 	public ModernPacket template() {
-		return new ModuleBasedItemSinkList(getId());
+		return new OreDictItemSinkList(getId());
 	}
 
 	@Override
@@ -39,15 +39,15 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 			if(pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleOreDictItemSink) {
+				((ModuleOreDictItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
 			}
 		} else {
 			if(getSlot() < 0) {
 				if(player.openContainer instanceof DummyModuleContainer) {
 					DummyModuleContainer dummy = (DummyModuleContainer) player.openContainer;
-					if(dummy.getModule() instanceof ModuleModBasedItemSink) {
-						((ModuleModBasedItemSink)dummy.getModule()).readFromNBT(getTag());
+					if(dummy.getModule() instanceof ModuleOreDictItemSink) {
+						((ModuleOreDictItemSink)dummy.getModule()).readFromNBT(getTag());
 						return;
 					}
 				}
@@ -56,9 +56,9 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 			if(pipe == null) {
 				return;
 			}
-			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleModBasedItemSink) {
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
-				((ModuleModBasedItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).ModListChanged();
+			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleOreDictItemSink) {
+				((ModuleOreDictItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());
+				((ModuleOreDictItemSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).OreListChanged();
 			}
 		}
 	}
@@ -75,4 +75,3 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 		slot = data.readInt();
 	}
 }
-

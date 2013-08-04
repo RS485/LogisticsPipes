@@ -73,22 +73,22 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 		boolean change = false;
 		for(AdjacentTile tile : crafters) {
 			for(int i=0;i<inv.getSizeInventory();i++) {
-				ItemStack slot = inv.getStackInSlot(i);
+				ItemIdentifierStack slot = inv.getIDStackInSlot(i);
 				if(slot == null) continue;
 				ForgeDirection insertion = tile.orientation.getOpposite();
 				if(getUpgradeManager().hasSneakyUpgrade()) {
 					insertion = getUpgradeManager().getSneakyOrientation();
 				}
-				ItemStack toadd = slot.copy();
-				toadd.stackSize = Math.min(toadd.stackSize, toadd.getMaxStackSize());
+				ItemIdentifierStack toadd = slot.clone();
+				toadd.stackSize = Math.min(toadd.stackSize, toadd.getItem().getMaxStackSize());
 				toadd.stackSize = Math.min(toadd.stackSize, ((IInventory)tile.tile).getInventoryStackLimit());
-				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd, insertion, true);
+				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd.makeNormalStack(), insertion, true);
 				slot.stackSize -= added.stackSize;
 				if(added.stackSize != 0) {
 					change = true;
 				}
 				if(slot.stackSize <= 0) {
-					inv.setInventorySlotContents(i, null);
+					inv.clearInventorySlotContents(i);
 				} else {
 					inv.setInventorySlotContents(i, slot);
 				}
@@ -111,7 +111,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
 			entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 			((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
-			inv.setInventorySlotContents(i, null);
+			inv.clearInventorySlotContents(i);
 			break;
 		}
 		// TODO Auto-generated method stub
@@ -121,7 +121,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	@Override
 	public void onBlockRemoval() {
 		super.onBlockRemoval();
-		inv.dropContents();
+		inv.dropContents(getWorld(), getX(), getY(), getZ());
 	}
 
 	@Override

@@ -32,7 +32,6 @@ import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
-import logisticspipes.logic.BaseChassiLogic;
 import logisticspipes.logisticspipes.ChassiModule;
 import logisticspipes.logisticspipes.ChassiTransportLayer;
 import logisticspipes.logisticspipes.ExtractionMode;
@@ -81,6 +80,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
+import buildcraft.core.network.TileNetworkData;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -92,7 +92,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	private final SimpleInventory _moduleInventory;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
-	BaseChassiLogic ChassiLogic;
+
+	// from baseLogicChassi
+	@TileNetworkData
+	public ForgeDirection orientation = ForgeDirection.UNKNOWN;
+
 	private boolean convertFromMeta = false;
 
 	//HUD
@@ -101,8 +105,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	private HUDChassiePipe HUD;
 
 	public PipeLogisticsChassi(int itemID) {
-		super(new BaseChassiLogic(), itemID);
-		ChassiLogic = (BaseChassiLogic) logic;
+		super(itemID);
 		_moduleInventory = new SimpleInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
 		_module = new ChassiModule(getChassiSize(), this);
@@ -124,28 +127,28 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}	
 	
 	public ForgeDirection getPointedOrientation(){
-		return ChassiLogic.orientation;
+		return orientation;
 	}
 
 	public TileEntity getPointedTileEntity(){
-		if(ChassiLogic.orientation == ForgeDirection.UNKNOWN) return null;
-		return this.getContainer().getTile(ChassiLogic.orientation);
+		if(orientation == ForgeDirection.UNKNOWN) return null;
+		return this.getContainer().getTile(orientation);
 	}
 
 	public void nextOrientation() {
 		boolean found = false;
-		ForgeDirection oldOrientation = ChassiLogic.orientation;
+		ForgeDirection oldOrientation = orientation;
 		for (int l = 0; l < 6; ++l) {
-			ChassiLogic.orientation = ForgeDirection.values()[(ChassiLogic.orientation.ordinal() + 1) % 6];
-			if(isValidOrientation(ChassiLogic.orientation)) {
+			orientation = ForgeDirection.values()[(orientation.ordinal() + 1) % 6];
+			if(isValidOrientation(orientation)) {
 				found = true;
 				break;
 			}
 		}
 		if (!found) {
-			ChassiLogic.orientation = ForgeDirection.UNKNOWN;
+			orientation = ForgeDirection.UNKNOWN;
 		}
-		if(ChassiLogic.orientation != oldOrientation) {
+		if(orientation != oldOrientation) {
 			clearCache();
 			MainProxy.sendPacketToAllWatchingChunk(getX(), getZ(), MainProxy.getDimensionForWorld(getWorld()), PacketHandler.getPacket(PipeUpdate.class).setPayload(getLogisticsNetworkPacket()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			refreshRender(true);
@@ -180,7 +183,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public TextureType getNonRoutedTexture(ForgeDirection connection) {
-		if (connection.equals(ChassiLogic.orientation)){
+		if (connection.equals(orientation)){
 			return Textures.LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE;
 		}
 		return Textures.LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE;
@@ -188,7 +191,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public void onNeighborBlockChange_Logistics() {
-		if (!isValidOrientation(ChassiLogic.orientation)){
+		if (!isValidOrientation(orientation)){
 			if(MainProxy.isServer(this.getWorld())) {
 				nextOrientation();
 			}
@@ -320,11 +323,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			_moduleInventory.readFromNBT(nbttagcompound, "chassi");
 			InventoryChanged(_moduleInventory);
 			_module.readFromNBT(nbttagcompound);
-			ChassiLogic.orientation = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
+			orientation = ForgeDirection.values()[nbttagcompound.getInteger("Orientation") % 7];
 			if(nbttagcompound.getInteger("Orientation") == 0) {
 				convertFromMeta = true;
 			}
-			switchOrientationOnTick = (ChassiLogic.orientation == ForgeDirection.UNKNOWN);
+			switchOrientationOnTick = (orientation == ForgeDirection.UNKNOWN);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -335,7 +338,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		super.writeToNBT(nbttagcompound);
 		_moduleInventory.writeToNBT(nbttagcompound, "chassi");
 		_module.writeToNBT(nbttagcompound);
-		nbttagcompound.setInteger("Orientation", ChassiLogic.orientation.ordinal());
+		nbttagcompound.setInteger("Orientation", orientation.ordinal());
 	}
 
 	@Override
@@ -383,6 +386,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 					}
 					ItemModuleInformationManager.removeInformation(stack);
 				}
+				inventory.setInventorySlotContents(i,stack);
 			}
 		}
 		if (reInitGui) {
@@ -417,7 +421,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			}
 		}
 		if(convertFromMeta && getWorld().getBlockMetadata(getX(), getY(), getZ()) != 0) {
-			ChassiLogic.orientation = ForgeDirection.values()[getWorld().getBlockMetadata(getX(), getY(), getZ()) % 6];
+			orientation = ForgeDirection.values()[getWorld().getBlockMetadata(getX(), getY(), getZ()) % 6];
 			getWorld().setBlockMetadataWithNotify(getX(), getY(), getZ(), 0,0);
 			convertFromMeta=false;
 		}

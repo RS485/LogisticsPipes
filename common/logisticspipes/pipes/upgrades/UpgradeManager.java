@@ -256,9 +256,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		if(entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsItemCard.itemID && entityplayer.getCurrentEquippedItem().getItemDamage() == LogisticsItemCard.SEC_CARD) {
 			if(MainProxy.isClient(world)) return true;
 			if(inv.getStackInSlot(8) == null) {
-				inv.setInventorySlotContents(8, entityplayer.getCurrentEquippedItem().copy());
-				inv.getStackInSlot(8).stackSize = 1;
-				entityplayer.getCurrentEquippedItem().splitStack(1);
+				ItemStack newItem=entityplayer.getCurrentEquippedItem().splitStack(1);
+				inv.setInventorySlotContents(8, newItem);
 				InventoryChanged(inv);
 				return true;
 			}
@@ -277,6 +276,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				if(item.stackSize < inv.getInventoryStackLimit()) {
 					item.stackSize++;
 					entityplayer.getCurrentEquippedItem().splitStack(1);
+					inv.setInventorySlotContents(i, item);
 					InventoryChanged(inv);
 					return true;
 				}
@@ -310,7 +310,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				securityDelay = 0;
 			}
 			if(securityDelay > 20) {
-				inv.setInventorySlotContents(8, null);
+				inv.clearInventorySlotContents(8);
 			}
 		}
 	}

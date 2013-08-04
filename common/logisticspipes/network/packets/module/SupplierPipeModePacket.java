@@ -1,6 +1,6 @@
 package logisticspipes.network.packets.module;
 
-import logisticspipes.logic.LogicSupplier;
+import logisticspipes.logic.PipeItemsSupplierLogistics;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -27,10 +27,10 @@ public class SupplierPipeModePacket extends CoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof LogicSupplier)) {
+		if (!(pipe.pipe.logic instanceof PipeItemsSupplierLogistics)) {
 			return;
 		}
-		final LogicSupplier logic = (LogicSupplier) pipe.pipe.logic;
+		final PipeItemsSupplierLogistics logic = (PipeItemsSupplierLogistics) pipe.pipe.logic;
 		logic.setRequestingPartials(!logic.isRequestingPartials());
 //TODO	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, getPosX(), getPosY(), getPosZ(), logic.isRequestingPartials() ? 1 : 0).getPacket(), (Player)player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(logic.isRequestingPartials() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);

@@ -5,14 +5,14 @@ import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportFluids;
-import buildcraft.transport.pipes.PipeLogicGold;
+//import buildcraft.transport.pipes.PipeLogicGold;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 public class LogisticsFluidConnectorPipe extends Pipe {
 
 	public LogisticsFluidConnectorPipe(int itemID) {
-		super(new LogisitcsFluidConnectionTransport(), new PipeLogicGold(), itemID);
+		super(new LogisitcsFluidConnectionTransport(),  itemID);
 
 		((PipeTransportFluids) transport).flowRate = 40;
 		((PipeTransportFluids) transport).travelDelay = 4;

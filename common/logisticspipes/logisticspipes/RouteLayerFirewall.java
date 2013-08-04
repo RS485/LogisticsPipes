@@ -5,8 +5,8 @@ import logisticspipes.routing.IRouter;
 import net.minecraftforge.common.ForgeDirection;
 
 public class RouteLayerFirewall extends RouteLayer{
-	public RouteLayerFirewall(IRouter iRouter, TransportLayer transport) {
-		super(iRouter, transport);
+	public RouteLayerFirewall(IRouter iRouter, TransportLayer transportLayer) {
+		super(iRouter, transportLayer);
 	}
 	
 	@Override

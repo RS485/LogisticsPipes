@@ -2,6 +2,7 @@ package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -37,19 +38,20 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 
 		// Compact
 		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-			final ItemStack stackInSlot = inventory.getStackInSlot(i);
+			final ItemIdentifierStack stackInSlot = inventory.getIDStackInSlot(i);
 			if (stackInSlot == null) {
 				continue;
 			}
-			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
+			final ItemIdentifier itemInSlot = stackInSlot.getItem();
 			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
-				final ItemStack stackInOtherSlot = inventory.getStackInSlot(j);
+				final ItemIdentifierStack stackInOtherSlot = inventory.getIDStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
 				}
-				if (itemInSlot == ItemIdentifier.get(stackInOtherSlot)) {
+				if (itemInSlot == stackInOtherSlot.getItem()) {
 					stackInSlot.stackSize += stackInOtherSlot.stackSize;
-					inventory.setInventorySlotContents(j, null);
+					inventory.setInventorySlotContents(i,stackInSlot);
+					inventory.clearInventorySlotContents(j);
 				}
 			}
 		}
@@ -62,8 +64,8 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 				if (inventory.getStackInSlot(j) == null) {
 					continue;
 				}
-				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				inventory.setInventorySlotContents(j, null);
+				inventory.setInventorySlotContents(i, inventory.getIDStackInSlot(j));
+				inventory.clearInventorySlotContents(j);
 				break;
 			}
 		}

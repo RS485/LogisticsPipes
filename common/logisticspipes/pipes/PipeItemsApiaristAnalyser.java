@@ -7,7 +7,6 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRelayItem;
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -37,7 +36,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	private ModuleApiaristAnalyser analyserModule;
 
 	public PipeItemsApiaristAnalyser(int itemID) {
-		super(new TemporaryLogic(), itemID);
+		super(itemID);
 		analyserModule = new ModuleApiaristAnalyser();
 		analyserModule.registerHandler(this, this, this, this);
 	}

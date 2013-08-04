@@ -9,10 +9,10 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.logic.LogicSupplier;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.SupplierPipeModePacket;
+import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
@@ -25,9 +25,9 @@ import org.lwjgl.opengl.GL11;
 public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvider {
 	
 	private IInventory dummyInventory;
-	private LogicSupplier logic; 
+	private PipeItemsSupplierLogistics logic; 
 	
-	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, LogicSupplier logic) {
+	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, PipeItemsSupplierLogistics logic) {
 		super(null);
 		
 		

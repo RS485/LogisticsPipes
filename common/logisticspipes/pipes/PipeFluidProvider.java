@@ -23,6 +23,7 @@ import logisticspipes.utils.Pair3;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.FluidStack;
@@ -45,10 +46,10 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 		int amountToSend = Math.min(order.getValue2(), 5000);
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			if(amountToSend <= 0) break;
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
-			for(IFluidTank tank:tanks) {
+			FluidTankInfo[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
+			for(FluidTankInfo tank:tanks) {
 				FluidStack liquid;
-				if((liquid = tank.getFluid()) != null) {
+				if((liquid = tank.fluid) != null) {
 					if(order.getValue1() == FluidIdentifier.get(liquid)) {
 						int amount = Math.min(liquid.amount, amountToSend);
 						amountToSend -= amount;
@@ -76,10 +77,10 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	public Map<FluidIdentifier, Integer> getAvailableFluids() {
 		Map<FluidIdentifier, Integer> map = new HashMap<FluidIdentifier, Integer>();
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
 			for(IFluidTank tank:tanks) {
 				FluidStack liquid;
-				if((liquid = tank.getFluid()) != null && liquid.itemID != 0) {
+				if((liquid = tank.getFluid()) != null && liquid.fluidID != 0) {
 					FluidIdentifier ident = FluidIdentifier.get(liquid);
 					if(map.containsKey(ident)) {
 						map.put(ident, map.get(ident) + tank.getFluid().amount);
@@ -118,7 +119,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 		if(request.isDone()) return;
 		int containedAmount = 0;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
 			for(IFluidTank tank:tanks) {
 				FluidStack liquid;
 				if((liquid = tank.getFluid()) != null) {
@@ -157,10 +158,10 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	public Set<ItemIdentifier> getSpecificInterests() {
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();;
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
-			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTanks(pair.getValue2().getOpposite());
+			IFluidTank[] tanks = ((IFluidHandler)pair.getValue1()).getTankInfo(pair.getValue2().getOpposite());
 			for(IFluidTank tank:tanks) {
 				FluidStack liquid;
-				if((liquid = tank.getFluid()) != null && liquid.itemID != 0) {
+				if((liquid = tank.getFluid()) != null && liquid.fluidID != 0) {
 					FluidIdentifier ident = FluidIdentifier.get(liquid);
 					l1.add(ident.getItemIdentifier());
 				}

@@ -3,6 +3,7 @@ package logisticspipes.proxy.recipeproviders;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -19,7 +20,7 @@ public class LogisticsCraftingTable implements ICraftingRecipeProvider {
 			return false;
 
 		LogisticsCraftingTableTileEntity bench = (LogisticsCraftingTableTileEntity) tile;
-		ItemStack result = bench.resultInv.getStackInSlot(0);
+		ItemIdentifierStack result = bench.resultInv.getIDStackInSlot(0);
 		
 		if (result == null)
 			return false;
@@ -40,21 +41,21 @@ public class LogisticsCraftingTable implements ICraftingRecipeProvider {
 		// Compact
 		
 		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-			final ItemStack stackInSlot = inventory.getStackInSlot(i);
-			if (stackInSlot == null) {
+			final ItemIdentifierStack itemInSlot = inventory.getIDStackInSlot(i);
+			if (itemInSlot == null) {
 				continue;
 			}
-			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
 			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
-				final ItemStack stackInOtherSlot = inventory.getStackInSlot(j);
+				final ItemIdentifierStack stackInOtherSlot = inventory.getIDStackInSlot(j);
 				if (stackInOtherSlot == null) {
 					continue;
 				}
-				if (itemInSlot == ItemIdentifier.get(stackInOtherSlot)) {
-					stackInSlot.stackSize += stackInOtherSlot.stackSize;
-					inventory.setInventorySlotContents(j, null);
+				if (itemInSlot == stackInOtherSlot) {
+					itemInSlot.stackSize += stackInOtherSlot.stackSize;
+					inventory.clearInventorySlotContents(j);
 				}
 			}
+			inventory.setInventorySlotContents(i, itemInSlot);
 		}
 		
 
@@ -67,7 +68,7 @@ public class LogisticsCraftingTable implements ICraftingRecipeProvider {
 					continue;
 				}
 				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				inventory.setInventorySlotContents(j, null);
+				inventory.clearInventorySlotContents(j);
 				break;
 			}
 		}

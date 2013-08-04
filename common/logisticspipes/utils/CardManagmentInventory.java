@@ -137,8 +137,8 @@ public class CardManagmentInventory implements IInventory {
 		return false;
 	}
 	
-	public void close(EntityPlayer player) {
-		inv.dropContents();
+	public void close(EntityPlayer player,int x, int y, int z) {
+		inv.dropContents(player.worldObj, x, y, z);
 	}
 
 }

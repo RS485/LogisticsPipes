@@ -1,6 +1,5 @@
 package logisticspipes.pipes;
 
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -13,7 +12,7 @@ public class PipeItemsApiaristSink extends CoreRoutedPipe {
 	private ModuleApiaristSink sinkModule;
 
 	public PipeItemsApiaristSink(int itemID) {
-		super(new TemporaryLogic(), itemID);
+		super(itemID);
 		sinkModule = new ModuleApiaristSink();
 		sinkModule.registerHandler(null, null, this, this);
 	}

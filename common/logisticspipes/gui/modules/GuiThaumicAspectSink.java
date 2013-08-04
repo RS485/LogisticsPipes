@@ -51,7 +51,7 @@ public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 	protected void actionPerformed(GuiButton par1GuiButton) {
 		if(par1GuiButton.id == 0 && tmpInv.getStackInSlot(0) != null) {
 			_module.handleItem(tmpInv.getStackInSlot(0));
-			tmpInv.setInventorySlotContents(0, null);
+			tmpInv.clearInventorySlotContents(0);
 		} else if(par1GuiButton.id == 1) {
 			_module.clearAspectList();
 		} else {

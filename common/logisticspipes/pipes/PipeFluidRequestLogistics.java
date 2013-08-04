@@ -10,6 +10,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 
 public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IRequestFluid {
@@ -23,8 +24,8 @@ public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IReque
 	}
 	
 	@Override
-	public boolean wrenchClicked(World world, int i, int j, int k, EntityPlayer entityplayer, SecuritySettings settings) {
-		if(MainProxy.isServer(world)) {
+	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
+		if(MainProxy.isServer(getWorld())) {
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {

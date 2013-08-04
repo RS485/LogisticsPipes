@@ -53,7 +53,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 						tempCraftingInv.setInventorySlotContents(i, recipe[i][0]);
 						inventory.setInventorySlotContents(i, recipe[i][0]);
 					} else {
-						inventory.setInventorySlotContents(i, null);
+						inventory.clearInventorySlotContents(i);
 					}
 				}
 
@@ -62,13 +62,13 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 				int slotCount = 0;
 				for(int i = 0; i < 9; i++) {
 					ItemStack slotStack = inventory.getStackInSlot(i);
-					inventory.setInventorySlotContents(i, null);
+					inventory.clearInventorySlotContents(i);
 					if(slotStack != null && slotStack.getItem() != null) {
 						int count = 1;
 						for(int j = i+1; j < 9; j++) {
 							ItemStack tempStack = inventory.getStackInSlot(j);
 							if(tempStack != null && ItemIdentifier.get(slotStack) == ItemIdentifier.get(tempStack)) {
-								inventory.setInventorySlotContents(j, null);
+								inventory.clearInventorySlotContents(j);
 								count++;
 							}
 						}

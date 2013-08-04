@@ -9,7 +9,6 @@ import java.util.UUID;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.config.Configs;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.RouteLayerFirewall;
 import logisticspipes.modules.LogisticsModule;
@@ -47,7 +46,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	private boolean isBlocking = true;
 	
 	public PipeItemsFirewall(int itemID) {
-		super(new TemporaryLogic(), itemID);
+		super(itemID);
 	}
 
 	@Override

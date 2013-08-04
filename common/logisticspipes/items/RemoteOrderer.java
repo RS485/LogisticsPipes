@@ -53,6 +53,7 @@ public class RemoteOrderer extends Item {
 		return _icons[par1];
 	}
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public void addInformation(ItemStack itemstack, EntityPlayer player, List list, boolean flag) {
 		//Add special tooltip in tribute to DireWolf
@@ -79,26 +80,13 @@ public class RemoteOrderer extends Item {
 			return par1ItemStack;
     	}
 		PipeItemsRemoteOrdererLogistics pipe = getPipe(par1ItemStack);
-		int energyUse=0;
-		if(pipe.worldObj != par3EntityPlayer.worldObj)
-			energyUse += 500;
-		energyUse += Math.abs(pipe.getX()-par3EntityPlayer.posX) + Math.abs(pipe.getY()-par3EntityPlayer.posY) + Math.abs(pipe.getZ()-par3EntityPlayer.posZ);
-		energyUse *= 5; // x5 converts from lp to mj energy cost.
 		if(pipe != null) {
 			if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
-				if(pipe.useEnergy(energyUse)) { 
-					par3EntityPlayer.sendChatToPlayer("Establishing connection to destination at a cost of " + energyUse + " energy");
-			
-		//TODO 			MainProxy.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.worldObj)).getPacket(), (Player)par3EntityPlayer);
-						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), (Player)par3EntityPlayer);
-						par3EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
-				
-				} else {
-					par3EntityPlayer.sendChatToPlayer("Unable to establish connection at a cost of " + energyUse + " energy : power junction needs more power.");
+//TODO 			MainProxy.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.getWorld())).getPacket(), (Player)par3EntityPlayer);
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), (Player)par3EntityPlayer);
+				par3EntityPlayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
 			}
 		}
-			//new Exception().printStackTrace();
-	    }
 		return par1ItemStack;
     }
 	

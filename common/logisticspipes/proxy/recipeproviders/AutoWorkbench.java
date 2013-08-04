@@ -53,7 +53,8 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 				}
 				if (itemInSlot == ItemIdentifier.get(stackInOtherSlot)) {
 					stackInSlot.stackSize += stackInOtherSlot.stackSize;
-					inventory.setInventorySlotContents(j, null);
+					inventory.setInventorySlotContents(i, stackInSlot);
+					inventory.clearInventorySlotContents(j);
 				}
 			}
 		}
@@ -67,8 +68,8 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 				if (inventory.getStackInSlot(j) == null) {
 					continue;
 				}
-				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				inventory.setInventorySlotContents(j, null);
+				inventory.setInventorySlotContents(i, inventory.getIDStackInSlot(j));
+				inventory.clearInventorySlotContents(j);
 				break;
 			}
 		}

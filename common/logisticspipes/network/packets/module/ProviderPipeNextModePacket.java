@@ -1,6 +1,6 @@
 package logisticspipes.network.packets.module;
 
-import logisticspipes.logic.LogicProvider;
+import logisticspipes.logic.PipeItemsProviderLogistics;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -32,7 +32,7 @@ public class ProviderPipeNextModePacket extends CoordinatesPacket {
 			return;
 		}
 		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
-		final LogicProvider logic = (LogicProvider) providerpipe.logic;
+		final PipeItemsProviderLogistics logic = (PipeItemsProviderLogistics) providerpipe.logic;
 		logic.nextExtractionMode();
 //TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), logic.getExtractionMode().ordinal()).getPacket(), (Player) player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(logic.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);

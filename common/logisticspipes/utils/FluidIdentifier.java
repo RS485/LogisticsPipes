@@ -112,7 +112,7 @@ public class FluidIdentifier {
 	}
 	
 	public FluidStack makeFluidStack(int amount) {
-		return new FluidStack(fluidID, amount, itemMeta);
+		return new FluidStack(fluidID, amount);
 	}
 	
 	public int getFreeSpaceInsideTank(IFluidHandler container, ForgeDirection dir) {
@@ -145,7 +145,7 @@ public class FluidIdentifier {
 	private static boolean init = false;
 	public static void initFromForge(boolean flag) {
 		if(init) return;
-		Map<String, Fluid> liquids = FluidRegistry.getRegisteredFluids()
+		Map<String, Fluid> liquids = FluidRegistry.getRegisteredFluids();
 		for(Entry<String, Fluid> name: liquids.entrySet()) {
 			get(name.getValue(), name.getKey());
 		}
@@ -197,5 +197,11 @@ public class FluidIdentifier {
 			return null;
 		}
 		return _liquidIdentifierCache.get(key);
+	}
+
+	public ItemIdentifier getItemIdentifier() {
+		NotImplemented yet
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

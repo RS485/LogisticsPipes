@@ -53,7 +53,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 		_filterInventory.addListener(this);
 	}
 	
-	public IInventory getFilterInventory(){
+	public SimpleInventory getFilterInventory(){
 		return _filterInventory;
 	}
 	

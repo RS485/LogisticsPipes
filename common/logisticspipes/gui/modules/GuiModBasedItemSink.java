@@ -57,13 +57,13 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 	@Override
 	protected void actionPerformed(GuiButton par1GuiButton) {
 		if(par1GuiButton.id == 0) {
-			if(!_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName())) {
-				_itemSink.modList.add(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName());
+			if(!_itemSink.modList.contains(tmpInv.getIDStackInSlot(0).getItem().getModName())) {
+				_itemSink.modList.add(tmpInv.getIDStackInSlot(0).getItem().getModName());
 				_itemSink.ModListChanged();
 			}
 		} else if(par1GuiButton.id == 1) {
-			if(tmpInv.getStackInSlot(0) != null && _itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName())) {
-				_itemSink.modList.remove(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName());
+			if(tmpInv.getIDStackInSlot(0) != null && _itemSink.modList.contains(tmpInv.getIDStackInSlot(0).getItem().getModName())) {
+				_itemSink.modList.remove(tmpInv.getIDStackInSlot(0).getItem().getModName());
 				_itemSink.ModListChanged();
 			} else if(!name.equals("") && _itemSink.modList.contains(name)) {
 				_itemSink.modList.remove(name);
@@ -91,10 +91,10 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 		BasicGuiHelper.drawPlayerInventoryBackground(mc, guiLeft + 7, guiTop + 126);
 		BasicGuiHelper.drawSlotBackground(mc, guiLeft + 6, guiTop + 7);
 		BasicGuiHelper.drawRect(guiLeft + 26, guiTop + 5, guiLeft + 169, guiTop + 17, 0xff808080);
-		if(tmpInv.getStackInSlot(0) != null) {
+		if(tmpInv.getIDStackInSlot(0) != null) {
 			name = "";
-			mc.fontRenderer.drawString(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName(), guiLeft + 28, guiTop + 7, 0x404040);
-			if(_itemSink.modList.contains(ItemIdentifier.get(tmpInv.getStackInSlot(0)).getModName())) {
+			mc.fontRenderer.drawString(tmpInv.getIDStackInSlot(0).getItem().getModName(), guiLeft + 28, guiTop + 7, 0x404040);
+			if(_itemSink.modList.contains(tmpInv.getIDStackInSlot(0).getItem().getModName())) {
 				((GuiButton)buttonList.get(0)).enabled = false;
 				((GuiButton)buttonList.get(1)).enabled = true;
 			} else if (_itemSink.modList.size() < 9) {
@@ -125,7 +125,7 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 				name = _itemSink.modList.get(i);
 				mouseX = 0;
 				mouseY = 0;
-				tmpInv.setInventorySlotContents(0, null);
+				tmpInv.clearInventorySlotContents(0);
 			}
 		}
 	}

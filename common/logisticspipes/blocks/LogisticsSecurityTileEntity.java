@@ -22,6 +22,7 @@ import logisticspipes.network.packets.block.SecurityStationOpenPlayer;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.crash.CrashReportCategory;
@@ -183,14 +184,10 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public void buttonFreqCard(int integer, EntityPlayer player) {
 		switch(integer) {
 		case 0: //--
-			inv.setInventorySlotContents(0, null);
+			inv.clearInventorySlotContents(0);
 			break;
 		case 1: //-
-			if(inv.getStackInSlot(0) == null) return;
-			inv.getStackInSlot(0).stackSize--;
-			if(inv.getStackInSlot(0).stackSize <= 0) {
-				inv.setInventorySlotContents(0, null);
-			}
+			inv.decrStackSize(0, 1);
 			break;
 		case 2: //+
 			if(!useEnergy(10)) {
@@ -203,10 +200,12 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 				stack.getTagCompound().setString("UUID", getSecId().toString());
 				inv.setInventorySlotContents(0, stack);
 			} else {
-				if(inv.getStackInSlot(0).stackSize < 64) {
-					inv.getStackInSlot(0).stackSize++;
-					inv.getStackInSlot(0).setTagCompound(new NBTTagCompound("tag"));
-					inv.getStackInSlot(0).getTagCompound().setString("UUID", getSecId().toString());
+				ItemStack slot=inv.getStackInSlot(0);
+				if(slot.stackSize < 64) {
+					slot.stackSize++;
+					slot.setTagCompound(new NBTTagCompound("tag"));
+					slot.getTagCompound().setString("UUID", getSecId().toString());
+					inv.setInventorySlotContents(0, slot);
 				}
 			}
 			break;

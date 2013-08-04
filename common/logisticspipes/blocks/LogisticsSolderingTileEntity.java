@@ -288,30 +288,30 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	}
 
 	private boolean tryCraft() {
-		ItemStack content = inv.getStackInSlot(10);
+		ItemIdentifierStack content = inv.getIDStackInSlot(10);
 		ICraftingResultHandler handler = getHandlerForRecipe();
 		ItemStack toAdd = getTagetForRecipe(false);
 		if(handler != null) {
 			handler.handleCrafting(toAdd);
 		}
 		if(content != null) {
-			if(!content.isItemEqual(toAdd) || !ItemStack.areItemStackTagsEqual(content, toAdd)) {
+			if(!content.getItem().equals(toAdd)) {
 				return false;
 			}
-			if(content.stackSize + toAdd.stackSize > content.getMaxStackSize()) {
+			if(content.stackSize + toAdd.stackSize > content.getItem().getMaxStackSize()) {
 				return false;
 			}
 			toAdd.stackSize += content.stackSize;
 		}
 
 		//dummy
-		content = getTagetForRecipe(true);
+		getTagetForRecipe(true);
 
 		inv.setInventorySlotContents(10, toAdd);
 
 		inv.getStackInSlot(9).stackSize -= 1;
 		if(inv.getStackInSlot(9).stackSize <= 0) {
-			inv.setInventorySlotContents(9, null);
+			inv.clearInventorySlotContents(9);
 		}
 
 		inv.onInventoryChanged();
@@ -406,7 +406,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 				super.onInventoryChanged();
 			}
 			if (iron.stackSize == 0) {
-				inv.setInventorySlotContents(9, null);
+				inv.clearInventorySlotContents(9);
 			}
 			return toAdd;
 		}
@@ -448,7 +448,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			}
 			if(stack.itemID == itemstack.itemID && stack.getItemDamage() == itemstack.getItemDamage()) {
 				if(itemsperslot == 0 && itemsextra == 0) {
-					inv.setInventorySlotContents(i, null);
+					inv.clearInventorySlotContents(i);
 				} else {
 					ItemStack slot = inv.getStackInSlot(i);
 					if(slot == null) {
@@ -473,7 +473,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public ItemStack[] extractItem(boolean doRemove, ForgeDirection from, int maxItemCount) {
 		ItemStack[] tmp = new ItemStack[] { inv.getStackInSlot(10) };
 		if (doRemove) {
-			inv.setInventorySlotContents(10, null);
+			inv.clearInventorySlotContents(10);
 			inv.onInventoryChanged();
 			super.onInventoryChanged();
 		}

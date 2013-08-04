@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.modules;
 
 import logisticspipes.gui.GuiSupplierPipe;
-import logisticspipes.logic.LogicSupplier;
+import logisticspipes.logic.PipeItemsSupplierLogistics;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,10 +25,10 @@ public class SupplierPipeMode extends IntegerCoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof LogicSupplier)) {
+		if (!(pipe.pipe.logic instanceof PipeItemsSupplierLogistics)) {
 			return;
 		}
-		((LogicSupplier) pipe.pipe.logic).setRequestingPartials(getInteger() == 1);
+		((PipeItemsSupplierLogistics) pipe.pipe.logic).setRequestingPartials(getInteger() == 1);
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiSupplierPipe) {
 			((GuiSupplierPipe) FMLClientHandler.instance().getClient().currentScreen).refreshMode();
 		}

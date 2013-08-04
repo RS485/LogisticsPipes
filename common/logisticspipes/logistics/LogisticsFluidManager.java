@@ -65,7 +65,7 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 
 	@Override
 	public TreeSet<ItemIdentifierStack> getAvailableFluid(List<ExitRoute> validDestinations) {
-		Map<FluidIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
+		Map<FluidIdentifier, Integer> allAvailableItems = new HashMap<FluidIdentifier, Integer>();
 		for(ExitRoute r: validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;

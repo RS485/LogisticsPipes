@@ -1,8 +1,8 @@
 package logisticspipes.gui.hud;
 
 import logisticspipes.hud.HUDConfig;
-import logisticspipes.logic.BaseLogicFluidSatellite;
-import logisticspipes.logic.BaseLogicSatellite;
+import logisticspipes.logic.PipeFluidSatellite;
+import logisticspipes.logic.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -90,9 +90,9 @@ public class HUDSatellite extends BasicHUDGui {
 			GL11.glScalef(1.5F, 1.5F, 0.0001F);
 			String message;
 			if(pipe1 != null) {
-				message = "ID: " + Integer.toString(((BaseLogicSatellite)pipe1.logic).satelliteId);
+				message = "ID: " + Integer.toString(((PipeItemsSatelliteLogistics)pipe1.logic).satelliteId);
 			} else {
-				message = "ID: " + Integer.toString(((BaseLogicFluidSatellite)pipe2.logic).satelliteId);
+				message = "ID: " + Integer.toString(((PipeFluidSatellite)pipe2.logic).satelliteId);
 			}
 			mc.fontRenderer.drawString(message , -28, -28, 0);
 			GL11.glScalef(0.8F, 0.8F, -1F);
@@ -119,9 +119,9 @@ public class HUDSatellite extends BasicHUDGui {
 			GL11.glScalef(3F, 3F, 0.0001F);
 			String message;
 			if(pipe1 != null) {
-				message = Integer.toString(((BaseLogicSatellite)pipe1.logic).satelliteId);
+				message = Integer.toString(((PipeItemsSatelliteLogistics)pipe1.logic).satelliteId);
 			} else {
-				message = Integer.toString(((BaseLogicFluidSatellite)pipe2.logic).satelliteId);
+				message = Integer.toString(((PipeFluidSatellite)pipe2.logic).satelliteId);
 			}
 			mc.fontRenderer.drawString(message , -(mc.fontRenderer.getStringWidth(message) / 2), -4, 0);
 		}

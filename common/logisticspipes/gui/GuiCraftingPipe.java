@@ -9,8 +9,8 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.logic.BaseLogicCrafting;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -23,7 +23,7 @@ import net.minecraft.inventory.Slot;
 
 public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvider {
 
-	private final BaseLogicCrafting _logic;
+	private final PipeItemsCraftingLogistics _pipe;
 	private final EntityPlayer _player;
 	private final GuiButton[] buttonarray;
 	private final GuiButton[] normalButtonArray;
@@ -33,7 +33,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	private final int liquidCrafter;
 	private final boolean hasByproductExtractor;
 	
-	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, BaseLogicCrafting logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor) {
+	public GuiCraftingPipe(EntityPlayer player, IInventory dummyInventory, PipeItemsCraftingLogistics logic, boolean isAdvancedSat, int liquidCrafter, int[] amount, boolean hasByproductExtractor) {
 		super(null);
 		_player = player;
 		this.isAdvancedSat = isAdvancedSat;
@@ -79,8 +79,8 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
         }
         
         this.inventorySlots = dummy;
-		_logic = logic;
-		_logic.setFluidAmount(amount);
+		_pipe = logic;
+		_pipe.setFluidAmount(amount);
 		buttonarray = new GuiButton[6];
 		normalButtonArray = new GuiButton[8];
 		advancedSatButtonArray = new GuiButton[9][2];
@@ -141,13 +141,13 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if(5 <= guibutton.id && guibutton.id < 11) {
-			_logic.handleStackMove(guibutton.id - 5);
+			_pipe.handleStackMove(guibutton.id - 5);
 		}
 		if(30 <= guibutton.id && guibutton.id < 40) {
-			_logic.setNextSatellite(_player, guibutton.id - 30);
+			_pipe.setNextSatellite(_player, guibutton.id - 30);
 		}
 		if(40 <= guibutton.id && guibutton.id < 50) {
-			_logic.setPrevSatellite(_player, guibutton.id - 40);
+			_pipe.setPrevSatellite(_player, guibutton.id - 40);
 		}
 		if(100 <= guibutton.id && guibutton.id < 200) {
 			int i = guibutton.id - 100;
@@ -167,41 +167,41 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 					case 7:amount = -1000; break;
 					default:break;
 				}
-				_logic.changeFluidAmount(amount, i, _player);
+				_pipe.changeFluidAmount(amount, i, _player);
 			} else if(action == 8) {
-				_logic.setPrevFluidSatellite(_player, i);
+				_pipe.setPrevFluidSatellite(_player, i);
 			} else if(action == 9) {
-				_logic.setNextFluidSatellite(_player, i);
+				_pipe.setNextFluidSatellite(_player, i);
 			}
 		}
 		switch(guibutton.id){
 		case 0:
-			_logic.setNextSatellite(_player);
+			_pipe.setNextSatellite(_player);
 			return;
 		case 1: 
-			_logic.setPrevSatellite(_player);
+			_pipe.setPrevSatellite(_player);
 			return;
 		/*case 2:
 			_logic.paintPathToSatellite();
 			return;*/
 		case 3:
-			_logic.importFromCraftingTable(_player);
+			_pipe.importFromCraftingTable(_player);
 			return;
 		case 4:
-			_logic.openAttachedGui(_player);
-			RenderTickHandler.addGuiToReopen(_logic.getX(), _logic.getY(), _logic.getZ(), getGuiID());
+			_pipe.openAttachedGui(_player);
+			RenderTickHandler.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), getGuiID());
 			return;
 		case 20:
-			_logic.priorityUp(_player);
+			_pipe.priorityUp(_player);
 			return;
 		case 21:
-			_logic.priorityDown(_player);
+			_pipe.priorityDown(_player);
 			return;
 		case 22:
-			_logic.setNextFluidSatellite(_player, -1);
+			_pipe.setNextFluidSatellite(_player, -1);
 			return;
 		case 23:
-			_logic.setPrevFluidSatellite(_player, -1);
+			_pipe.setPrevFluidSatellite(_player, -1);
 			return;
 		default:
 			super.actionPerformed(guibutton);
@@ -223,42 +223,42 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if(!isAdvancedSat) {
 			fontRenderer.drawString("Output", 77, 40, 0x404040);
 			fontRenderer.drawString("Satellite", 123, 7, 0x404040);
-			if (_logic.satelliteId == 0) {
+			if (_pipe.satelliteId == 0) {
 				fontRenderer.drawString("Off", 135, 52, 0x404040);
 			} else {
-				fontRenderer.drawString(""+_logic.satelliteId , 146 - fontRenderer.getStringWidth(""+_logic.satelliteId) , 52, 0x404040);
+				fontRenderer.drawString(""+_pipe.satelliteId , 146 - fontRenderer.getStringWidth(""+_pipe.satelliteId) , 52, 0x404040);
 			}
 			fontRenderer.drawString("Priority:" , 123 , 75, 0x404040);
-			fontRenderer.drawString(""+_logic.priority , 143 - (fontRenderer.getStringWidth(""+_logic.priority) / 2) , 87, 0x404040);
+			fontRenderer.drawString(""+_pipe.priority , 143 - (fontRenderer.getStringWidth(""+_pipe.priority) / 2) , 87, 0x404040);
 		} else {
 			for(int i=0; i<9;i++) {
-				if (_logic.advancedSatelliteIdArray[i] == 0) {
+				if (_pipe.advancedSatelliteIdArray[i] == 0) {
 					fontRenderer.drawString("Off", 10 + (i * 18), 57, 0x404040);
 				} else {
-					fontRenderer.drawString(""+_logic.advancedSatelliteIdArray[i] , 20 - fontRenderer.getStringWidth(""+_logic.advancedSatelliteIdArray[i]) + (i * 18), 57, 0x404040);
+					fontRenderer.drawString(""+_pipe.advancedSatelliteIdArray[i] , 20 - fontRenderer.getStringWidth(""+_pipe.advancedSatelliteIdArray[i]) + (i * 18), 57, 0x404040);
 				}
 			}
 			fontRenderer.drawString("Output", 77, 90, 0x404040);
 			fontRenderer.drawString("Priority:" , 123 , 95, 0x404040);
-			fontRenderer.drawString(""+_logic.priority , 143 - (fontRenderer.getStringWidth(""+_logic.priority) / 2) , 107, 0x404040);
+			fontRenderer.drawString(""+_pipe.priority , 143 - (fontRenderer.getStringWidth(""+_pipe.priority) / 2) , 107, 0x404040);
 		}
 		
 		for(int i=0;i<liquidCrafter;i++) {
 			int liquidLeft = -(i*40) - 40;
-			fontRenderer.drawString(Integer.toString(_logic.getFluidAmount()[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_logic.getFluidAmount()[i])) / 2), 43, 0x404040);
+			fontRenderer.drawString(Integer.toString(_pipe.getFluidAmount()[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_pipe.getFluidAmount()[i])) / 2), 43, 0x404040);
 			fontRenderer.drawString("1", liquidLeft + 18, 57, 0x404040);
 			fontRenderer.drawString("10", liquidLeft + 15, 77, 0x404040);
 			fontRenderer.drawString("100", liquidLeft + 12, 97, 0x404040);
 			fontRenderer.drawString("1000", liquidLeft + 9, 117, 0x404040);
 			if(isAdvancedSat) {
-				if(_logic.liquidSatelliteIdArray[i] == 0) {
+				if(_pipe.liquidSatelliteIdArray[i] == 0) {
 					drawRect(liquidLeft + 1, 13, liquidLeft + 40, 142, 0xAA8B8B8B);
 					fontRenderer.drawString("Off", liquidLeft + 13, 149, 0x404040);
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = false;
 					}
 				} else {
-					fontRenderer.drawString(Integer.toString(_logic.liquidSatelliteIdArray[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_logic.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
+					fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteIdArray[i]), liquidLeft + 21 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteIdArray[i])) / 2), 149, 0x404040);
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = true;
 					}
@@ -266,7 +266,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}
 		}
 		if(!isAdvancedSat && liquidCrafter != 0) {
-			if(_logic.liquidSatelliteId == 0) {
+			if(_pipe.liquidSatelliteId == 0) {
 				drawRect(-(liquidCrafter * 40) + 1, 13, 0, 142, 0xAA8B8B8B);
 				fontRenderer.drawString("Off", -(liquidCrafter * 40) / 2 - 7, 149, 0x404040);
 				for(int i=0;i<liquidCrafter;i++) {
@@ -275,7 +275,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 					}
 				}
 			} else {
-				fontRenderer.drawString(Integer.toString(_logic.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (fontRenderer.getStringWidth(Integer.toString(_logic.liquidSatelliteId)) / 2), 149, 0x404040);
+				fontRenderer.drawString(Integer.toString(_pipe.liquidSatelliteId), -(liquidCrafter * 40) / 2 + 1 - (fontRenderer.getStringWidth(Integer.toString(_pipe.liquidSatelliteId)) / 2), 149, 0x404040);
 				for(int i=0;i<liquidCrafter;i++) {
 					for(int j=0;j<8;j++) {
 						liquidGuiParts[i][j].enabled = true;
@@ -284,7 +284,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}
 		}
 		for(int i=0;i<liquidCrafter;i++) {
-			if(_logic.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _logic.liquidSatelliteId == 0) || (isAdvancedSat && _logic.liquidSatelliteIdArray[i] == 0))) {
+			if(_pipe.getFluidInventory().getStackInSlot(i) == null && !((!isAdvancedSat && _pipe.liquidSatelliteId == 0) || (isAdvancedSat && _pipe.liquidSatelliteIdArray[i] == 0))) {
 				drawRect(-((i + 1) * 40) + 1, 40, -(i * 40), 142, 0xAA8B8B8B);
 				for(int j=0;j<8;j++) {
 					liquidGuiParts[i][j].enabled = false;
@@ -299,7 +299,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 	@Override
 	protected boolean isPointInRegion(int x, int y, int par3, int par4, int par5, int par6) {
 		if(!isAdvancedSat && liquidCrafter != 0) {
-			if(_logic.liquidSatelliteId == 0) {
+			if(_pipe.liquidSatelliteId == 0) {
 				if(-(liquidCrafter * 40) < x && x < 0) {
 					if(10 < y && y < 170) {
 						return false;
@@ -308,7 +308,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			}	
 		} else if(liquidCrafter != 0) {
 			for(int i=0;i<liquidCrafter;i++) {
-				if(_logic.liquidSatelliteIdArray[i] == 0) {
+				if(_pipe.liquidSatelliteIdArray[i] == 0) {
 					if(-((i + 1) * 40) < x && x < -(i * 40)) {
 						if(10 < y && y < 170) {
 							return false;

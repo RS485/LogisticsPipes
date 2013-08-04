@@ -77,11 +77,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 			} else {
 				par1CrashReportCategory.addCrashSection("Transport", "null");
 			}
-			if(this.pipe.logic != null) {
-				par1CrashReportCategory.addCrashSection("Logic", this.pipe.logic.getClass().getCanonicalName());
-			} else {
-				par1CrashReportCategory.addCrashSection("Logic", "null");
-			}
+
 			if(this.pipe instanceof CoreRoutedPipe) {
 				try {
 					((CoreRoutedPipe)this.pipe).addCrashReport(par1CrashReportCategory);

@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDProvider;
 import logisticspipes.interfaces.IChangeListener;
 import logisticspipes.interfaces.IChestContentReceiver;
@@ -28,16 +29,18 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.logic.LogicProvider;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.hud.ChestContent;
 import logisticspipes.network.packets.hud.HUDStartWatchingPacket;
 import logisticspipes.network.packets.hud.HUDStopWatchingPacket;
+import logisticspipes.network.packets.modules.ProviderPipeInclude;
+import logisticspipes.network.packets.modules.ProviderPipeMode;
 import logisticspipes.network.packets.orderer.OrdererManagerContent;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -54,13 +57,14 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
-
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
+import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
@@ -80,7 +84,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	private boolean doContentUpdate = true;
 		
 	public PipeItemsProviderLogistics(int itemID) {
-		super(new LogicProvider(), itemID);
+		super(itemID);
 	}
 	
 	public PipeItemsProviderLogistics(int itemID, LogisticsOrderManager logisticsOrderManager) {
@@ -103,10 +107,9 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		}
 		
 		//Check if configurations allow for this item
-		LogicProvider logicProvider = (LogicProvider) logic;
-		if (logicProvider.hasFilter() 
-				&& ((logicProvider.isExcludeFilter() && logicProvider.itemIsFiltered(item)) 
-						|| (!logicProvider.isExcludeFilter() && !logicProvider.itemIsFiltered(item)))) return 0;
+		if (hasFilter() 
+				&& ((isExcludeFilter() && itemIsFiltered(item)) 
+						|| (!isExcludeFilter() && !itemIsFiltered(item)))) return 0;
 		
 		
 		int count = 0;
@@ -190,7 +193,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		if(base instanceof net.minecraft.inventory.ISidedInventory) {
 			base = new SidedInventoryMinecraftAdapter((net.minecraft.inventory.ISidedInventory)base, tile.orientation.getOpposite(),false);
 		}
-		ExtractionMode mode = ((LogicProvider)logic).getExtractionMode();
+		ExtractionMode mode = getExtractionMode();
 		switch(mode){
 			case LeaveFirst:
 				return SimpleServiceLocator.inventoryUtilFactory.getHidingInventoryUtil(base, false, false, 1, 0);
@@ -287,7 +290,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		if (!isEnabled()){
 			return;
 		}
-		LogicProvider providerLogic = (LogicProvider) logic;
 		HashMap<ItemIdentifier, Integer> addedItems = new HashMap<ItemIdentifier, Integer>();
 		
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
@@ -301,7 +303,7 @@ outer:
 			for (Entry<ItemIdentifier, Integer> currItem : currentInv.entrySet()) {
 				if(items.containsKey(currItem.getKey())) continue;
 				
-				if(providerLogic.hasFilter() && ((providerLogic.isExcludeFilter() && providerLogic.itemIsFiltered(currItem.getKey()))  || (!providerLogic.isExcludeFilter() && !providerLogic.itemIsFiltered(currItem.getKey())))) continue;
+				if(hasFilter() && ((isExcludeFilter() && itemIsFiltered(currItem.getKey()))  || (!isExcludeFilter() && !itemIsFiltered(currItem.getKey())))) continue;
 				
 				for(IFilter filter:filters) {
 					if(filter.isBlocked() == filter.isFilteredItem(currItem.getKey().getUndamaged()) || filter.blockProvider()) continue outer;
@@ -446,5 +448,73 @@ outer:
 		return (_orderManager.totalItemsCountInAllOrders()+63)/64.0;
 	}
 
+	// import from logic
+	private SimpleInventory providingInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
+	private boolean _filterIsExclude;
+	private ExtractionMode _extractionMode = ExtractionMode.Normal;
+
+	@Override
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		if(MainProxy.isServer(entityplayer.worldObj)) {
+			//GuiProxy.openGuiProviderPipe(entityplayer.inventory, providingInventory, this);
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_ProviderPipe_ID, getWorld(), getX(), getY(), getZ());
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, getX(), getY(), getZ(), getExtractionMode().ordinal()).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(getExtractionMode().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_INCLUDE_CONTENT, getX(), getY(), getZ(), isExcludeFilter() ? 1 : 0).getPacket(), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeInclude.class).setInteger(isExcludeFilter() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+		}	
+	}
+	
+	/*** GUI ***/
+	public SimpleInventory getprovidingInventory() {
+		return providingInventory;
+	}
+
+	@Override
+	public void readFromNBT(NBTTagCompound nbttagcompound) {
+		super.readFromNBT(nbttagcompound);
+		providingInventory.readFromNBT(nbttagcompound, "");
+		_filterIsExclude = nbttagcompound.getBoolean("filterisexclude");
+		_extractionMode = ExtractionMode.getMode(nbttagcompound.getInteger("extractionMode"));
+    }
+
+	@Override
+    public void writeToNBT(NBTTagCompound nbttagcompound) {
+    	super.writeToNBT(nbttagcompound);
+    	providingInventory.writeToNBT(nbttagcompound, "");
+    	nbttagcompound.setBoolean("filterisexclude", _filterIsExclude);
+    	nbttagcompound.setInteger("extractionMode", _extractionMode.ordinal());
+    }
+	
+	/** INTERFACE TO PIPE **/
+	public boolean hasFilter(){
+		return !providingInventory.isEmpty();
+	}
+	
+	public boolean itemIsFiltered(ItemIdentifier item){
+		return providingInventory.containsItem(item);
+	}
+	
+	public boolean isExcludeFilter(){
+		return _filterIsExclude;
+	}
+	
+	public void setFilterExcluded(boolean isExcluded){
+		_filterIsExclude = isExcluded;
+	}
+	
+	public ExtractionMode getExtractionMode(){
+		return _extractionMode;
+	}
+
+	public void setExtractionMode(int id) {
+		_extractionMode = ExtractionMode.getMode(id);
+	}
+
+	public void nextExtractionMode() {
+		_extractionMode = _extractionMode.next();
+	}
+
+	
 
 }

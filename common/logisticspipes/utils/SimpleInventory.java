@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 
 public class SimpleInventory implements IInventory, ISaveState{
 
-	private ItemStack[] _contents;
+	private ItemIdentifierStack[] _contents;
 	private final String _name;
 	private final int _stackLimit;
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
@@ -36,7 +36,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 	
 	public SimpleInventory(int size, String name, int stackLimit){
-		_contents = new ItemStack[size];
+		_contents = new ItemIdentifierStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
 		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
@@ -50,25 +50,55 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
+		return _contents[i].makeNormalStack();
+	}
+
+	//NOTE: this is a clone, changing the return of this function does not altet the inventory
+	public ItemIdentifierStack getIDStackInSlot(int i) {
 		return _contents[i];
 	}
 
+	
 	@Override
-	public ItemStack decrStackSize(int i, int j) {
-		if (_contents[i] == null) return null;
-		if (_contents[i].stackSize > j) {
-			ItemStack ret = _contents[i].splitStack(j);
+	public ItemStack decrStackSize(int slot, int count) {
+		if (_contents[slot] == null) return null;
+		if (_contents[slot].stackSize > count) {
+			ItemStack ret = _contents[slot].makeNormalStack();
+			ret.stackSize=count;
+			_contents[slot].stackSize-=count;
 			updateContents();
 			return ret;
 		}
-		ItemStack ret = _contents[i];
-		_contents[i] = null;
+		ItemStack ret = _contents[slot].makeNormalStack();
+		_contents[slot] = null;
+		updateContents();
+		return ret;
+	}
+	
+	// here so the returned stack can be stuck in another inventory without re-converting it/
+	public ItemIdentifierStack decrIDStackSize(int slot, int count) {
+		if (_contents[slot] == null) return null;
+		if (_contents[slot].stackSize > count) {
+			ItemIdentifierStack ret = _contents[slot].clone();
+			ret.stackSize=count;
+			_contents[slot].stackSize-=count;
+			updateContents();
+			return ret;
+		}
+		ItemIdentifierStack ret = _contents[slot];
+		_contents[slot] = null;
 		updateContents();
 		return ret;
 	}
 
+
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
+		_contents[i] = ItemIdentifierStack.GetFromStack(itemstack);
+		updateContents();
+	}
+
+	public void setInventorySlotContents(int i, ItemIdentifierStack itemstack) {
 		_contents[i] = itemstack;
 		updateContents();
 	}
@@ -112,7 +142,7 @@ public class SimpleInventory implements IInventory, ISaveState{
     		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
     		int index = nbttagcompound2.getInteger("index");
     		if(index < _contents.length) {
-    			_contents [index] = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+    			_contents [index] = ItemIdentifierStack.GetFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound2));
     		} else {
     			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
     		}
@@ -132,7 +162,7 @@ public class SimpleInventory implements IInventory, ISaveState{
         		NBTTagCompound nbttagcompound2 = new NBTTagCompound ();
         		nbttaglist.appendTag(nbttagcompound2);
     			nbttagcompound2.setInteger("index", j);
-    			_contents[j].writeToNBT(nbttagcompound2);	
+    			_contents[j].unsafeMakeNormalStack().writeToNBT(nbttagcompound2);	
     		}     		
     	}
     	nbttagcompound.setTag(prefix + "items", nbttaglist);
@@ -143,7 +173,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		if(MainProxy.isServer(worldObj)) {
 			for(int i=0;i<_contents.length;i++) {
 				while(_contents[i] != null) {
-					ItemStack todrop = decrStackSize(i, _contents[i].getMaxStackSize());
+					ItemStack todrop = decrStackSize(i, _contents[i].unsafeMakeNormalStack().getMaxStackSize());
 			    	dropItems(worldObj, todrop, posX, posY, posZ);
 				}
 			}
@@ -179,7 +209,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public ItemStack getStackInSlotOnClosing(int i) {
 		if (this._contents[i] == null) return null;
 		
-		ItemStack stackToTake = this._contents[i];
+		ItemStack stackToTake = this._contents[i].makeNormalStack();
 		this._contents[i] = null;
 		updateContents();
 		return stackToTake;
@@ -189,23 +219,19 @@ public class SimpleInventory implements IInventory, ISaveState{
 		int i=0;
 		for(ItemIdentifierStack stack:_allItems) {
 			if(_contents.length <= i) break;
-			if(stack == null) {
-				_contents[i] = null;
-			} else {
-				_contents[i] = stack.unsafeMakeNormalStack();
-			}
+			_contents[i] = stack;
 			i++;
 		}
 		onInventoryChanged();
 	}
 	
 	private int tryAddToSlot(int i, ItemStack stack) {
-		ItemStack slot = _contents[i];
+		ItemIdentifierStack slot = _contents[i];
 		if(slot == null) {
-			_contents[i] = stack.copy();
+			_contents[i] = ItemIdentifierStack.GetFromStack(stack);
 			return stack.stackSize;
 		}
-		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
+		ItemIdentifier slotIdent = slot.getItem();
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
 		if(slotIdent.equals(stackIdent)) {
 			slot.stackSize += stack.stackSize;
@@ -249,19 +275,14 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_contentsMap.clear();
 		_contentsUndamagedSet.clear();
 		for (int i = 0; i < _contents.length; i++) {
-			ItemStack stack = _contents[i];
-			if (stack == null) {
-				continue;
-			}
-			ItemIdentifier itemId = ItemIdentifier.get(stack);
+			ItemIdentifier itemId = _contents[i].getItem();
 			Integer count = _contentsMap.get(itemId);
 			if (count == null) {
-				_contentsMap.put(itemId, stack.stackSize);
+				_contentsMap.put(itemId,  _contents[i].stackSize);
 			} else {
-				_contentsMap.put(itemId, _contentsMap.get(itemId) + stack.stackSize);
+				_contentsMap.put(itemId, _contentsMap.get(itemId) +  _contents[i].stackSize);
 			}
-			ItemIdentifier itemUndamagedId = ItemIdentifier.getUndamaged(stack);
-			_contentsUndamagedSet.add(itemUndamagedId); // add is cheaper than check then add; it just returns false if it is already there
+			_contentsUndamagedSet.add(itemId.getUndamaged()); // add is cheaper than check then add; it just returns false if it is already there
 		}
 	}
 
@@ -298,6 +319,48 @@ public class SimpleInventory implements IInventory, ISaveState{
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		// TODO Auto-generated method stub
 		return true;
+	}
+
+	public void clearInventorySlotContents(int i) {
+		_contents[i]=null;
+		updateContents();
+		
+	}
+
+	public void compact_first_9() {
+		// Compact
+		for (int i = 0; i < 9; i++) {
+			final ItemIdentifierStack stackInSlot = getIDStackInSlot(i);
+			if (stackInSlot == null) {
+				continue;
+			}
+			final ItemIdentifier itemInSlot = stackInSlot.getItem();
+			for (int j = i + 1; j < 9; j++) {
+				final ItemIdentifierStack stackInOtherSlot = getIDStackInSlot(j);
+				if (stackInOtherSlot == null) {
+					continue;
+				}
+				if (itemInSlot == stackInOtherSlot.getItem()) {
+					stackInSlot.stackSize += stackInOtherSlot.stackSize;
+					clearInventorySlotContents(j);
+				}
+			}
+			setInventorySlotContents(i,stackInSlot);
+		}
+		
+		for (int i = 0; i < 9; i++) {
+			if (getStackInSlot(i) != null) {
+				continue;
+			}
+			for (int j = i + 1; j < 9; j++) {
+				if (getStackInSlot(j) == null) {
+					continue;
+				}
+				setInventorySlotContents(i, getStackInSlot(j));
+				clearInventorySlotContents(j);
+				break;
+			}
+		}
 	}
 
 }

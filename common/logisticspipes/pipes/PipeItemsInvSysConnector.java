@@ -14,7 +14,6 @@ import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
-import logisticspipes.logic.LogicInvSysConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
@@ -68,7 +67,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	private UUID idbuffer = UUID.randomUUID();
 	
 	public PipeItemsInvSysConnector(int itemID) {
-		super(new TransportInvConnection(), new LogicInvSysConnection(), itemID);
+		super(new TransportInvConnection(), itemID);
 	}
 	
 	@Override
@@ -188,7 +187,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		if(inv.getStackInSlot(0) == null) return;
 		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
 		getWorld().spawnEntityInWorld(item);
-		inv.setInventorySlotContents(0, null);
+		inv.clearInventorySlotContents(0);
 	}
 
 	public Set<ItemIdentifierStack> getExpectedItems() {
@@ -209,7 +208,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public boolean wrenchClicked(EntityPlayer entityplayer, SecuritySettings settings) {
 		if(MainProxy.isServer(getWorld())) {
 			if (settings == null || settings.openGui) {
-				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), i, j, k);
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), getX(), getY(), getZ());
 			} else {
 				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
 			}
@@ -338,10 +337,10 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 		return false;
 	}
 	
-	public void handleItemEnterInv(TravelingItem data, TileEntity tile) {
+	public void handleItemEnterInv(TravelingItem arrivingItem, TileEntity tile) {
 		if(isConnectedInv(tile)) {
-			if(data instanceof IRoutedItem) {
-				IRoutedItem routed = (IRoutedItem)data;
+			if(arrivingItem instanceof IRoutedItem) {
+				IRoutedItem routed = (IRoutedItem)arrivingItem;
 				if(hasRemoteConnection()) {
 					CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 					if(CRP instanceof IDirectRoutingConnection) {

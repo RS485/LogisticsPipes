@@ -8,26 +8,36 @@
 
 package logisticspipes.gui;
 
+import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.logic.LogicProvider;
+import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.ProviderPipeIncludePacket;
 import logisticspipes.network.packets.module.ProviderPipeNextModePacket;
+import logisticspipes.network.packets.modules.ProviderPipeInclude;
+import logisticspipes.network.packets.modules.ProviderPipeMode;
+import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import cpw.mods.fml.common.network.Player;
+
 public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvider{
 	private IInventory dummyInventory;
-	private LogicProvider logic; 
+	private PipeItemsProviderLogistics logic;
 	
-	public GuiProviderPipe(IInventory playerInventory, IInventory dummyInventory, LogicProvider logic) {
+	public GuiProviderPipe(IInventory playerInventory, IInventory dummyInventory, PipeItemsProviderLogistics logic) {
 		super(null);
 		
 		DummyContainer dummy = new DummyContainer(playerInventory, dummyInventory);

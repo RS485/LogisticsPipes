@@ -2,8 +2,9 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import logisticspipes.logic.EntrencsLogic;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -12,6 +13,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.EntrencsTransport;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
@@ -19,7 +21,7 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 	public SimpleInventory inv = new SimpleInventory(1, "Freq Slot", 1);
 	
 	public PipeItemsSystemEntranceLogistics(int itemID) {
-		super(new EntrencsTransport(), new EntrencsLogic(), itemID);
+		super(new EntrencsTransport(), itemID);
 		((EntrencsTransport)this.transport).pipe = this;
 	}
 	
@@ -67,7 +69,13 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 		if(inv.getStackInSlot(0) == null) return;
 		EntityItem item = new EntityItem(getWorld(),this.getX(), this.getY(), this.getZ(), inv.getStackInSlot(0));
 		getWorld().spawnEntityInWorld(item);
-		inv.setInventorySlotContents(0, null);
+		inv.clearInventorySlotContents(0);
 	}
-
+	
+	@Override
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		if (MainProxy.isServer(entityplayer.worldObj)) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
+		}
+	}
 }

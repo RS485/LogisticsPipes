@@ -6,6 +6,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -29,7 +30,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 	
 	public void cacheRecipe() {
 		cache = null;
-		resultInv.setInventorySlotContents(0, null);
+		resultInv.clearInventorySlotContents(0);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory();
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
@@ -51,16 +52,16 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 		int[] used = new int[inv.getSizeInventory()];
 outer:
 		for(int i=0;i<9;i++) {
-			ItemStack item = matrix.getStackInSlot(i);
+			ItemIdentifierStack item = matrix.getIDStackInSlot(i);
 			if(item == null) {
 				toUse[i] = -1;
 				continue;
 			}
-			ItemIdentifier ident = ItemIdentifier.get(item);
+			ItemIdentifier ident = item.getItem();
 			for(int j=0;j<inv.getSizeInventory();j++) {
-				item = inv.getStackInSlot(j);
+				item = inv.getIDStackInSlot(j);
 				if(item == null) continue;
-				if(ident.equalsForCrafting(ItemIdentifier.get(item))) {
+				if(ident.equalsForCrafting(item.getItem())) {
 					if(item.stackSize > used[j]) {
 						used[j]++;
 						toUse[i] = j;
@@ -78,8 +79,8 @@ outer:
 		}
 		ItemStack result = cache.getCraftingResult(crafter);
 		if(result == null) return null;
-		if(!ItemIdentifier.get(resultInv.getStackInSlot(0)).equalsWithoutNBT(ItemIdentifier.get(result))) return null;
-		if(!wanted.equalsWithoutNBT(ItemIdentifier.get(result))) return null;
+		if(!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) return null;
+		if(!wanted.equalsWithoutNBT(resultInv.getIDStackInSlot(0).getItem())) return null;
 		if(!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) return null;
 		crafter = new AutoCraftingInventory();
 		for(int i=0;i<9;i++) {
@@ -189,9 +190,9 @@ outer:
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		if(i < 9 && i >= 0) {
-			ItemStack stack = matrix.getStackInSlot(i);
+			ItemIdentifierStack stack = matrix.getIDStackInSlot(i);
 			if(stack != null && itemstack != null) {
-				return ItemIdentifier.get(stack).equalsWithoutNBT(ItemIdentifier.get(itemstack));
+				return stack.getItem().equalsWithoutNBT(ItemIdentifier.get(itemstack));
 			}
 		}
 		return true;

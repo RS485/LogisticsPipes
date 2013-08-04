@@ -3,7 +3,6 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.RemoteOrderer;
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -18,7 +17,7 @@ import net.minecraft.world.World;
 public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements IRequestItems {
 
 	public PipeItemsRemoteOrdererLogistics(int itemID) {
-		super(new TemporaryLogic(), itemID);
+		super(itemID);
 	}
 
 	@Override

@@ -10,6 +10,7 @@ package logisticspipes.pipes.basic;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
 import java.util.HashMap;
@@ -17,6 +18,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -36,7 +38,6 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
-import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -45,9 +46,11 @@ import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.LogisticsGuiModule;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.PacketPayload;
 import logisticspipes.network.TilePacketWrapper;
+import logisticspipes.network.packets.pipe.RequestRoutingLasersPacket;
 import logisticspipes.network.packets.pipe.StatUpdate;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.upgrades.UpgradeManager;
@@ -56,6 +59,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
+import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
@@ -93,6 +97,7 @@ import buildcraft.api.core.Position;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.core.utils.Utils;
+import buildcraft.transport.PipeTransport;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
@@ -102,7 +107,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @CCType(name = "LogisticsPipes:Normal")
-public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
+public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implements IRequestItems, IAdjacentWorldAccess, ITrackStatistics, IWorldProvider, IWatchingHandler, IRoutedPowerProvider {
 
 	public enum ItemSendMode {
 		Normal,
@@ -154,15 +159,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	protected List<IInventory> _cachedAdjacentInventories;
 
-	public BaseRoutingLogic logic;
+	//public BaseRoutingLogic logic;
+	// from BaseRoutingLogic
+	protected int throttleTime = 20;
+	private int throttleTimeLeft = 20 + new Random().nextInt(Configs.LOGISTICS_DETECTION_FREQUENCY);
 	
-	public CoreRoutedPipe(BaseRoutingLogic logic, int itemID) {
-		this(new PipeTransportLogistics(), logic, itemID);
+	public CoreRoutedPipe(int itemID) {
+		this(new PipeTransportLogistics(), itemID);
 	}
 
-	public CoreRoutedPipe(PipeTransportLogistics transport, BaseRoutingLogic logic, int itemID) {
+	public CoreRoutedPipe(PipeTransportLogistics transport, int itemID) {
 		super(transport, itemID);
-		this.logic = logic;
+		//this.logic = logic;
 		((PipeTransportItems) transport).allowBouncing = true;
 		
 		pipecount++;
@@ -191,7 +199,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public PacketPayload getLogisticsNetworkPacket() {
-		PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), logic.getClass() }).toPayload(getX(), getY(), getZ(), new Object[] { container, transport, logic });
+		PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass()}).toPayload(getX(), getY(), getZ(), new Object[] { container, transport });
 
 		return payload;
 	}
@@ -353,6 +361,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		getRouter().update(getWorld().getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		getUpgradeManager().securityTick();
 		super.updateEntity();
+		
+		// from BaseRoutingLogic
+		if (--throttleTimeLeft > 0) return;
+		throttledUpdateEntity();
+		throttleTimeLeft = throttleTime;
+		
 		ignoreDisableUpdateEntity();
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
@@ -393,6 +407,68 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		getLogisticsModule().tick();
 	}	
 	
+// From BaseRoutingLogic
+	public void throttledUpdateEntity(){}
+	
+	protected void delayThrottle() {
+		//delay 6(+1) ticks to prevent suppliers from ticking between a item arriving at them and the item hitting their adj. inv
+		if(throttleTimeLeft < 7)
+			throttleTimeLeft = 7;
+	}
+	
+	private void doDebugStuff(EntityPlayer entityplayer) {
+		//entityplayer.worldObj.setWorldTime(4951);
+		IRouter r = getRouter();
+		if(!(r instanceof ServerRouter)) return;
+		System.out.println("***");
+		System.out.println("---------Interests---------------");
+		for(Entry<ItemIdentifier, Set<IRouter>> i: ServerRouter.getInterestedInSpecifics().entrySet()){
+			System.out.print(i.getKey().getFriendlyName()+":");
+			for(IRouter j:i.getValue())
+				System.out.print(j.getSimpleID()+",");
+			System.out.println();
+		}
+		
+		System.out.print("ALL ITEMS:");
+		for(IRouter j:ServerRouter.getInterestedInGeneral())
+			System.out.print(j.getSimpleID()+",");
+		System.out.println();
+			
+		
+		
+		
+		ServerRouter sr = (ServerRouter) r;
+		
+		System.out.println(r.toString());
+		System.out.println("---------CONNECTED TO---------------");
+		for (CoreRoutedPipe adj : sr._adjacent.keySet()) {
+			System.out.println(adj.getRouter().getSimpleID());
+		}
+		System.out.println();
+		System.out.println("========DISTANCE TABLE==============");
+		for(ExitRoute n : r.getIRoutersByCost()) {
+			System.out.println(n.destination.getSimpleID()+ " @ " + n.distanceToDestination + " -> "+ n.connectionDetails +"("+n.destination.getId() +")");
+		}
+		System.out.println();
+		System.out.println("*******EXIT ROUTE TABLE*************");
+		ArrayList<ExitRoute> table = r.getRouteTable();
+		for (int i=0; i < table.size(); i++){			
+			if(table.get(i)!=null)
+			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i) + " distance)");
+		}
+		System.out.println();
+		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
+		System.out.println(Arrays.toString(ForgeDirection.VALID_DIRECTIONS));
+		System.out.println(Arrays.toString(sr.sideDisconnected));
+		System.out.println(Arrays.toString(container.pipeConnectionsBuffer));
+		System.out.println();
+		System.out.println("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~");
+		System.out.println(r.getPipe().getRoutedPowerProviders());
+		System.out.println(r.getPowerProvider());
+		refreshConnectionAndRender(true);
+	}
+// end FromBaseRoutingLogic
+	
 	@Override
 	public void onBlockRemoval() {
 		revertItemID();
@@ -400,9 +476,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			try {
 				super.onBlockRemoval();
 				//invalidate() removes the router
-				if (logic instanceof BaseRoutingLogic){
-					((BaseRoutingLogic)logic).destroy();
-				}
+//				if (logic instanceof BaseRoutingLogic){
+//					((BaseRoutingLogic)logic).destroy();
+//				}
 				//Just in case
 				pipecount = Math.max(pipecount - 1, 0);
 				
@@ -605,7 +681,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			NBTTagCompound tagentityitem = tagentry.getCompoundTag("entityitem");
 			TravelingItem entity = new TravelingItem();
 			entity.readFromNBT(tagentityitem);
-			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(null, entity);
+			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(entity);
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
 			_sendQueue.add(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routeditem, from, mode));
@@ -662,14 +738,18 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public final boolean blockActivated(EntityPlayer entityplayer) {
+		
+		
 		SecuritySettings settings = null;
-		if(MainProxy.isServer(getWorld())) {
+		if(MainProxy.isServer(entityplayer.worldObj)) {
 			LogisticsSecurityTileEntity station = SimpleServiceLocator.securityStationManager.getStation(getUpgradeManager().getSecurityID());
+			// Logic had false
 			if(station != null) {
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
 		}
-		if(handleClick(entityplayer, settings)) return true;
+		
+				if(handleClick(entityplayer, settings)) return true;
 		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(wrenchClicked(entityplayer, settings)) {
 				return true;
@@ -686,6 +766,45 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			return true;
 		}
 		if(!(entityplayer.isSneaking()) && getUpgradeManager().tryIserting(getWorld(), entityplayer)) {
+			return true;
+		}
+		//TODO: simplify any duplicate logic from above
+		// from logic
+		if (entityplayer.getCurrentEquippedItem() == null) {
+			if (!entityplayer.isSneaking()) return false;
+			if(MainProxy.isClient(entityplayer.worldObj)) {
+				if(!LogisticsHUDRenderer.instance().hasLasers()) { //TODO remove old Lasers
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRoutingLasersPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
+				} else {
+					LogisticsHUDRenderer.instance().resetLasers();
+				}
+			}
+			if (LogisticsPipes.DEBUG) {
+				doDebugStuff(entityplayer);
+			}
+			return true;
+		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior && (settings == null || settings.openNetworkMonitor)) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
+			}
+			return true;
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
+			onWrenchClicked(entityplayer);
+			return true;
+		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Normal_Orderer_ID, getWorld(), getX(), getY(), getZ());
+			}
+			return true;
+		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+			}
+			return true;
+		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
+			if(MainProxy.isServer(entityplayer.worldObj)) {
+				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+			}
 			return true;
 		}
 		return super.blockActivated(entityplayer);
@@ -798,8 +917,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public void itemCouldNotBeSend(ItemIdentifierStack item) {
-		if(logic instanceof IRequireReliableTransport) {
-			((IRequireReliableTransport)logic).itemLost(item);
+		if(this instanceof IRequireReliableTransport) {
+			((IRequireReliableTransport)this).itemLost(item);
 		}
 		//Override by subclasses //TODO
 	}
@@ -916,7 +1035,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public boolean useEnergy(int amount){
-		return useEnergy(amount, null, true);
+		return useEnergy(amount, null);
 	}
 	@Override
 	public boolean canUseEnergy(int amount){
@@ -942,10 +1061,6 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	
 	@Override
 	public boolean useEnergy(int amount, List<Object> providersToIgnore) {
-		return useEnergy(amount, providersToIgnore, false);
-	}
-
-	private boolean useEnergy(int amount, List<Object> providersToIgnore, boolean sparkles) {
 		if(MainProxy.isClient(getWorld())) return false;
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return true;
 		if(amount == 0) return true;
@@ -959,13 +1074,11 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount, providersToIgnore)) {
 				provider.useEnergy(amount, providersToIgnore);
-				if(sparkles) {
 				int particlecount = amount;
 				if (particlecount > 10) {
 					particlecount = 10;
 				}
 				MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), particlecount);
-				}
 				return true;
 			}
 		}
@@ -1051,11 +1164,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	}
 	
 	public TravelingItem getQueuedForItemStack(ItemStack stack) {
-		ItemStack stack = data.item.getItemStack();
-		for(TravelingItem queued:queuedDataForUnroutedItems) {
-			if(ItemIdentifierStack.GetFromStack(queued.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
-				queuedDataForUnroutedItems.remove(queued);
-				return queued;
+		for(TravelingItem item:queuedDataForUnroutedItems) {
+			if(ItemIdentifierStack.GetFromStack(item.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
+				queuedDataForUnroutedItems.remove(item);
+				return item;
 			}
 		}
 		return null;
@@ -1105,7 +1217,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public final int getX() {
 		//TODO: what if container is null; pipes don't have a coord any more.
 /*		if(this.container == null) {
-			return xCoord;
+			return getX();
 		}*/
 		return this.container.xCoord;
 	}
@@ -1113,7 +1225,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public final int getY() {
 		/*
 		if(this.container == null) {
-			return yCoord;
+			return getY();
 		}*/
 		return this.container.yCoord;
 	}
@@ -1121,7 +1233,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public final int getZ() {
 		/*
 		if(this.container == null) {
-			return zCoord;
+			return getZ();
 		}
 		*/
 		return this.container.zCoord;
@@ -1232,4 +1344,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		}
 		return true;
 	}
+	
+	// from logic
+	public void onWrenchClicked(EntityPlayer entityplayer) {
+		if (MainProxy.isServer(entityplayer.worldObj)) {
+			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Freq_Card_ID, getWorld(), getX(), getY(), getZ());
+		}
+	}
+	
+	final void destroy(){ // no overide, put code in OnBlockRemoval
+	
+	}
+	
 }

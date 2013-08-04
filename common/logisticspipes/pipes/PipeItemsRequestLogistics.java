@@ -18,7 +18,6 @@ import java.util.Map.Entry;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.IRequestAPI;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -46,7 +45,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	private final LinkedList<Map<ItemIdentifier, Integer>> _history = new LinkedList<Map<ItemIdentifier,Integer>>(); 
 
 	public PipeItemsRequestLogistics(int itemID) {
-		super(new TemporaryLogic(), itemID);
+		super(itemID);
 	}
 
 	@Override

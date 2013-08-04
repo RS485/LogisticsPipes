@@ -7,8 +7,6 @@ import java.util.List;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.items.LogisticsFluidContainer;
-import logisticspipes.logic.BaseRoutingLogic;
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
@@ -39,13 +37,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	private WorldUtil worldUtil;
 	
 	public FluidRoutedPipe(int itemID) {
-		super(new PipeFluidTransportLogistics(), new TemporaryLogic(), itemID);
-		((PipeTransportItems) transport).travelHook = this;
-		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-	}
-	
-	public FluidRoutedPipe(BaseRoutingLogic logic, int itemID) {
-		super(new PipeFluidTransportLogistics(), logic, itemID);
+		super(new PipeFluidTransportLogistics(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
 		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
@@ -207,11 +199,11 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 
 	@Override
 	public void endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
-		((PipeTransportLogistics)pipe).markChunkModified(tile);
+		//((PipeTransportLogistics)pipe).markChunkModified(tile);
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
 			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsFluidContainer)) return;
 			if(this.getRouter().getSimpleID() != ((IRoutedItem)data).getDestination()) return;
-			((PipeTransportItems)this.transport).scheduleRemoval(data);
+			((PipeTransportItems)this.transport).items.scheduleRemoval(data);
 			int filled = 0;
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(data.getItemStack());
 			if(this.isConnectableTank(tile, data.output, false)) {
@@ -237,8 +229,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 			//If liquids still exist,
 			liquid.amount -= filled;
 
-			if(logic instanceof IRequireReliableFluidTransport) {
-				((IRequireReliableFluidTransport)logic).liquidNotInserted(FluidIdentifier.get(liquid), liquid.amount);
+			//TODO: FIX THIS 
+			if(this instanceof IRequireReliableFluidTransport) {
+				((IRequireReliableFluidTransport)this).liquidNotInserted(FluidIdentifier.get(liquid), liquid.amount);
 			}
 			
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid), getWorld());

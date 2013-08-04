@@ -1,7 +1,7 @@
 package logisticspipes.network.packets.modules;
 
 import logisticspipes.gui.GuiProviderPipe;
-import logisticspipes.logic.LogicProvider;
+import logisticspipes.logic.PipeItemsProviderLogistics;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;
@@ -25,10 +25,10 @@ public class ProviderPipeInclude extends IntegerCoordinatesPacket {
 		if (pipe == null) {
 			return;
 		}
-		if (!(pipe.pipe.logic instanceof LogicProvider)) {
+		if (!(pipe.pipe.logic instanceof PipeItemsProviderLogistics)) {
 			return;
 		}
-		((LogicProvider) pipe.pipe.logic).setFilterExcluded(getInteger() == 1);
+		((PipeItemsProviderLogistics) pipe.pipe.logic).setFilterExcluded(getInteger() == 1);
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof GuiProviderPipe) {
 			((GuiProviderPipe) FMLClientHandler.instance().getClient().currentScreen).refreshInclude();
 		}

@@ -61,8 +61,8 @@ public class GuiLogisticsCraftingTable extends KraphtBaseGuiScreen {
 		
 		ItemIdentifierStack[] items = new ItemIdentifierStack[9];
 		for(int i=0;i<9;i++) {
-			if(_crafter.matrix.getStackInSlot(i) != null) {
-				items[i] = ItemIdentifier.get(_crafter.matrix.getStackInSlot(i)).makeStack(1);
+			if(_crafter.matrix.getIDStackInSlot(i) != null) {
+				items[i] = _crafter.matrix.getIDStackInSlot(i);
 			}
 		}
 		BasicGuiHelper.renderItemIdentifierStackListIntoGui(Arrays.asList(items), null, 0, guiLeft + 8, guiTop + 80, 9, 9, 18, 18, mc, false, false);

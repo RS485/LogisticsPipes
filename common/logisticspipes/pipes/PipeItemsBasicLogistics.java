@@ -17,7 +17,6 @@ import java.util.TreeSet;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.logic.TemporaryLogic;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -27,6 +26,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.item.ItemStack;
@@ -62,7 +62,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 				}
 				return false;
 			}
-		}, new TemporaryLogic(), itemID);
+		}, itemID);
 		itemSinkModule = new ModuleItemSink();
 		itemSinkModule.registerHandler(null, null, this, this);
 	}
@@ -179,9 +179,9 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 			return null;
 		Set<ItemIdentifier> l1 = new TreeSet<ItemIdentifier>();
 		for(int i=0; i<9;i++){
-			ItemStack item = this.itemSinkModule.getFilterInventory().getStackInSlot(i);
+			ItemIdentifierStack item = this.itemSinkModule.getFilterInventory().getIDStackInSlot(i);
 			if(item != null)
-				l1.add(ItemIdentifier.get(item));
+				l1.add(item.getItem());
 		}
 		return l1;
 	}

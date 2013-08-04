@@ -31,14 +31,14 @@ import logisticspipes.items.LogisticsNetworkManager;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.log.RequestLogFormator;
-import logisticspipes.logic.BaseLogicFluidSatellite;
-import logisticspipes.logic.BaseLogicSatellite;
 import logisticspipes.logistics.LogisticsFluidManager;
 import logisticspipes.logistics.LogisticsManagerV2;
 import logisticspipes.main.CreativeTabLP;
 import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.ProxyManager;
 import logisticspipes.proxy.SimpleServiceLocator;
@@ -435,8 +435,8 @@ public class LogisticsPipes {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		QueuedTasks.clearAllTasks();
 		HudUpdateTick.clearUpdateFlags();
-		BaseLogicSatellite.cleanup();
-		BaseLogicFluidSatellite.cleanup();
+		PipeItemsSatelliteLogistics.cleanup();
+		PipeFluidSatellite.cleanup();
 		ServerRouter.cleanup();
 		if(event.getSide().equals(Side.CLIENT)) {
 			LogisticsHUDRenderer.instance().clear();

@@ -35,6 +35,7 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -327,12 +328,12 @@ public class ItemModule extends LogisticsItem {
 								SimpleInventory inv = new SimpleInventory(size, "InformationTempInventory", Integer.MAX_VALUE);
 								inv.readFromNBT(module, prefix);
 								for(int pos=0;pos < inv.getSizeInventory();pos++) {
-									ItemStack stack = inv.getStackInSlot(pos);
+									ItemIdentifierStack stack = inv.getIDStackInSlot(pos);
 									if(stack != null) {
 										if(stack.stackSize > 1) {
-											list.add("  " + stack.stackSize+"x " + ItemIdentifier.get(stack).getFriendlyName());
+											list.add("  " + stack.stackSize+"x " + stack.getFriendlyName());
 										} else {
-											list.add("  " + ItemIdentifier.get(stack).getFriendlyName());
+											list.add("  " + stack.getFriendlyName());
 										}
 									}
 								}

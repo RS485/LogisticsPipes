@@ -11,7 +11,8 @@ public final class SinkReply {
 		APIARIST_Analyser,
 		ItemSink,
 		PassiveSupplier,
-		ElectricNetwork,
+		ElectricBuffer,
+		ElectricManager,
 	}
 	
 	public final FixedPriority fixedPriority;

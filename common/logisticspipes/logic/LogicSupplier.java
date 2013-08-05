@@ -151,7 +151,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 						success = true;
 					}
 				} else {
-					success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null)>0;
+					success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
 				}
 				
 				if (success){

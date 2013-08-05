@@ -106,7 +106,7 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 						success = true;
 					}
 				} else {
-					success = RequestTree.requestLiquid(need, countToRequest, (IRequestLiquid) this.container.pipe, null)>0;
+					success = RequestTree.requestLiquid(need, countToRequest, (IRequestLiquid) this.container.pipe, null);
 				}
 				
 				if (success){

@@ -403,7 +403,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 			}
 			if(count >= 199) {
 				CoreRoutedPipe pipe = getCPipe();
-				new Exception("Took too long (" + m.getName() + "," + pipe.getClass().getName() + ")").printStackTrace();
+				LogisticsPipes.log.warning("CC call " + m.getName() + " on " + pipe.getClass().getName() + " at (" + this.xCoord + "," + this.yCoord + "," + this.zCoord + ") took too long.");
 				throw new Exception("Took too long");
 			}
 			if(m.getReturnType().equals(Void.class)) {

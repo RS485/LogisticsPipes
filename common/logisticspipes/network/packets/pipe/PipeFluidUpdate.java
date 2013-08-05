@@ -55,18 +55,20 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 
 			if (delta.get(dir.ordinal() * 3 + 0)) {
 				if (liquid != null) {
-					data.writeShort(liquid.itemID);
+					data.writeShort(liquid.fluidID);
 				} else {
 					data.writeShort(0);
 				}
 			}
+			//FIXME:Handle NBT
+			/*
 			if (delta.get(dir.ordinal() * 3 + 1)) {
 				if (liquid != null) {
-					data.writeShort(liquid.itemMeta);
+					data.writeShort(liquid.);
 				} else {
 					data.writeShort(0);
 				}
-			}
+			}*/
 			if (delta.get(dir.ordinal() * 3 + 2)) {
 				if (liquid != null) {
 					data.writeShort(liquid.amount);
@@ -86,15 +88,16 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 		try {
 			for (ForgeDirection dir : ForgeDirection.values()) {
 				if (renderCache[dir.ordinal()] == null) {
-					renderCache[dir.ordinal()] = new FluidStack(0, 0, 0);
+					renderCache[dir.ordinal()] = new FluidStack(0, 0);
 				}
 				
 				if (delta.get(dir.ordinal() * 3 + 0)) {
+					//FIXME:handle NBT
 					renderCache[dir.ordinal()]=new FluidStack(getDataStream().readShort(),renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 1)) {
-					
-					renderCache[dir.ordinal()]= new FluidStack(renderCache[dir.ordinal()].itemID, renderCache[dir.ordinal()].amount, getDataStream().readShort());
+					//FIXME:handle NBT
+					renderCache[dir.ordinal()]= new FluidStack(renderCache[dir.ordinal()].fluidID, renderCache[dir.ordinal()].amount);
 				}
 				if (delta.get(dir.ordinal() * 3 + 2)) {
 					if(dir != ForgeDirection.UNKNOWN) {

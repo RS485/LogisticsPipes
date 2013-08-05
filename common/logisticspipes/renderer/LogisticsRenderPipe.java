@@ -7,7 +7,10 @@ import java.util.List;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.transport.PipeFluidTransportLogistics;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.model.ModelSign;
 import net.minecraft.client.renderer.GLAllocation;
@@ -18,6 +21,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.client.IItemRenderer.ItemRenderType;
@@ -150,7 +154,11 @@ public class LogisticsRenderPipe extends RenderPipe {
 			}			
 		}
 	}
-
+	
+	//FIXME:is this correct?
+	private static final ResourceLocation SIGN = new ResourceLocation("/logisticspipes/item/sign.png");  
+	private static final ResourceLocation TERRAIN = new ResourceLocation("/terrain.png");  
+	private static final ResourceLocation ITEMS = new ResourceLocation("/gui/items.png");  
 	private void renderSign(PipeItemsCraftingLogistics pipe) {
 		float var10 = 0.6666667F;
         float var12 = 0.016666668F * var10;
@@ -158,8 +166,8 @@ public class LogisticsRenderPipe extends RenderPipe {
         GL11.glTranslatef(0.0F, -0.3125F, -0.31F);
         GL11.glRotatef(180, 0.0f, 1.0f, 0.0f);
         this.modelSign.signStick.showModel = false;
+		Minecraft.getMinecraft().renderEngine.func_110577_a(SIGN);
 
-        this.bindTextureByName("/item/sign.png");
         GL11.glPushMatrix();
         GL11.glScalef(var10, -var10, -var10);
         this.modelSign.renderSign();
@@ -174,11 +182,11 @@ public class LogisticsRenderPipe extends RenderPipe {
 	private void renderSignLabel(PipeItemsCraftingLogistics pipe, float var12) {
         FontRenderer var17 = this.getFontRenderer();
         if(pipe != null) {
-    		List<ItemStack> craftables = ((PipeItemsCraftingLogistics)pipe.logic).getCraftedItems();
+    		List<ItemIdentifierStack> craftables = pipe.getCraftedItems();
 
     		String name = "";
     		if(craftables != null && craftables.size() > 0) {
-    			ItemStack itemstack = craftables.get(0);
+    			ItemStack itemstack = craftables.get(0).unsafeMakeNormalStack();
 	        	
 	        	if(itemstack == null || itemstack.getItem() == null) return; //Only happens on false configuration
 		        
@@ -186,7 +194,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	        	
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
-		        this.bindTextureByName(itemstack.getItemSpriteNumber() == 0 ? "/terrain.png" : "/gui/items.png");
+		        Minecraft.getMinecraft().renderEngine.func_110577_a(itemstack.getItemSpriteNumber() == 0 ? TERRAIN : ITEMS);
 
 				GL11.glPushMatrix();
 				
@@ -288,8 +296,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		        }
 		        
 		        var17.drawString("ID: "+String.valueOf(item.itemID), -var17.getStringWidth("ID: "+String.valueOf(item.itemID)) / 2, 0 * 10 - 4 * 5, 0);
-		        if(((PipeItemsCraftingLogistics)pipe.logic).satelliteId != 0) {
-		        	var17.drawString("Sat ID: "+String.valueOf(((PipeItemsCraftingLogistics)pipe.logic).satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(((PipeItemsCraftingLogistics)pipe.logic).satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
+		        if(pipe.satelliteId != 0) {
+		        	var17.drawString("Sat ID: "+String.valueOf(pipe.satelliteId), -var17.getStringWidth("Sat ID: "+String.valueOf(pipe.satelliteId)) / 2, 1 * 10 - 4 * 5, 0);
 		        }
     		} else {
     			GL11.glRotatef(-180.0F, 1.0F, 0.0F, 0.0F);
@@ -486,7 +494,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			block.minY = Utils.pipeMinPos + 0.01F;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 
-			RenderEntityBlock.renderBlock(block, world, 0, 0, 0, false, true);
+			block.renderBlock(world, 0, 0, 0);
 
 			GL11.glEndList();
 

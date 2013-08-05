@@ -15,6 +15,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.oredict.ShapedOreRecipe;
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftSilicon;
@@ -43,7 +44,7 @@ public class ForestryProxy implements IForestryProxy {
 			localize.setAccessible(true);
 			propolis = ItemInterface.getItem("propolis").getItem();
 			pollen = ItemInterface.getItem("pollen").getItem();
-			honey = FluidDictionary.getFluid("honey", 1500);
+			honey = FluidRegistry.getFluidStack("honey", 1500);
 			root = (IBeeRoot) AlleleManager.alleleRegistry.getSpeciesRoot("rootBees");
 			initsuccessful = true;
 		} catch(Exception e) {

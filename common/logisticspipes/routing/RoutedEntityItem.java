@@ -24,6 +24,8 @@ import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTBase;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
@@ -67,23 +69,26 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 			delay = 62; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
 		}
 		
-		if(entityItem.getContribution("routingInformation") == null) {
-			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
+		RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(this);
+		if(!item.getTagCompound().hasKey("routingInformation")) {
+			NBTTagCompound newTags = item.getTagCompound().getCompoundTag("routingInformation");
+			handler.writeToNBT(newTags);
 		} else {
-			RoutedEntityItemSaveHandler settings = (RoutedEntityItemSaveHandler) entityItem.getContribution("routingInformation");
+			NBTTagCompound tags = item.getTagCompound().getCompoundTag("routingInformation");
+			handler.readFromNBT(tags);
 
 			/* clear destination on load for activerouted items
 			 * we'll have to keep this until active requesters are smarter about remebering things over unload/reload
 			 */
-			if(settings.transportMode != TransportMode.Active) {
-				this.destinationUUID=settings.destinationUUID;
+			if(handler.transportMode != TransportMode.Active) {
+				this.destinationUUID=handler.destinationUUID;
 				this.checkIDFromUUID();
 			}
 
-			bufferCounter = settings.bufferCounter;
-			arrived = settings.arrived;
-			_transportMode = settings.transportMode;
-			this.addContribution("routingInformation", new RoutedEntityItemSaveHandler(this));
+			bufferCounter = handler.bufferCounter;
+			arrived = handler.arrived;
+			_transportMode = handler.transportMode;
+			handler.writeToNBT(tags);
 		}
 	}
 	
@@ -100,7 +105,8 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 				return null;
 			}
 
-			if(container != null) {
+			//FIXME: is this still needed?
+/*			if(container != null) {
 				//detect items spawning in the center of pipes and move them to the exit side
 				if(xCoord == container.xCoord + 0.5 && yCoord == container.yCoord + 0.25 && zCoord == container.zCoord + 0.5) {
 					position.orientation = dir;
@@ -115,7 +121,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 						position.moveForwards(0.5);
 					}
 				}
-			}
+			}*/
 
 			Position motion = new Position(0, 0, 0, dir);
 			motion.moveForwards(0.1 + getSpeed() * 2F);
@@ -179,7 +185,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 				}
 			}
 		}
-		super.remove();
+		remove();
 	}
 
 	@Override
@@ -287,12 +293,13 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 		if(getItemStack().getItem() instanceof LogisticsFluidContainer) {
 			throw new UnsupportedOperationException("Can't change FluidContainer to TravelingItem");
 		}
-		TravelingItem Entityitem = new TravelingItem(entityId);
-		Entityitem.setContainer(container);
-		Entityitem.setPosition(xCoord, yCoord, zCoord);
-		Entityitem.setSpeed(speed);
-		Entityitem.setItemStack(item);
-		return Entityitem;
+		TravelingItem newItem = new TravelingItem();
+		newItem.setItemStack(getItemStack());
+		newItem.setContainer(container);
+		newItem.setPosition(xCoord, yCoord, zCoord);
+		newItem.setSpeed(speed);
+		newItem.setItemStack(item);
+		return newItem;
 	}
 
 	@Override
@@ -317,7 +324,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 
 	@Override
 	public IRoutedItem getCopy() {
-		TravelingItem Entityitem = new TravelingItem(entityId);
+		TravelingItem Entityitem = new TravelingItem();
 		Entityitem.setContainer(container);
 		Entityitem.setPosition(xCoord, yCoord, zCoord);
 		Entityitem.setSpeed(speed);

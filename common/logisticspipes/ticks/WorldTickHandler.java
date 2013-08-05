@@ -64,7 +64,7 @@ public class WorldTickHandler implements ITickHandler {
 				int x = tile.xCoord;
 				int y = tile.yCoord;
 				int z = tile.zCoord;
-				World world = getWorldObj();
+				World world = tile.worldObj;
 
 				//TE or its chunk might've gone away while we weren't looking
 				TileEntity tilecheck = world.getBlockTileEntity(x, y, z);
@@ -74,7 +74,7 @@ public class WorldTickHandler implements ITickHandler {
 				}
 
 				TileGenericPipe newTile = new LogisticsTileGenericPipe();
-				for(Field field:tile.getClass().getDeclaredFields()) {
+				/*for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
 						field.setAccessible(true);
 						field.set(newTile, field.get(tile));
@@ -83,13 +83,13 @@ public class WorldTickHandler implements ITickHandler {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					}
-				}
+				}*/
 				tile.pipe = null;
 				world.setBlockTileEntity(x, y, z, newTile);
 				if(newTile.pipe != null) {
 					newTile.pipe.setTile(newTile);
 					if(newTile.pipe.transport instanceof PipeTransportItems) {
-						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).travelingEntities.values()) {
+						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).items) {
 							entity.setContainer(newTile);
 						}
 						for(TravelingItem entity:((List<TravelingItem>)entitiesToLoad.get(newTile.pipe.transport))) {
@@ -100,14 +100,8 @@ public class WorldTickHandler implements ITickHandler {
 						}
 					}
 				}
-				
-				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
-					Position pos = new Position(newTile.xCoord, newTile.yCoord, newTile.zCoord, o);
-					pos.moveForwards(1.0);
 
-					newTile.tileBuffer[o.ordinal()] = new TileBuffer(getWorld(), (int) pos.x, (int) pos.y, (int) pos.z, newTile.pipe.transport.delveIntoUnloadedChunks());
-				}
-
+				//getTile creates the TileCache as needed.
 				for (ForgeDirection o : ForgeDirection.VALID_DIRECTIONS) {
 					TileEntity tileSide = newTile.getTile(o);
 

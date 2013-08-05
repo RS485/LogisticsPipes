@@ -74,7 +74,7 @@ public class CCProxy implements ICCProxy {
 		if(!valid) return ForgeDirection.UNKNOWN;
 		if(!(cObject instanceof IComputerAccess)) return ForgeDirection.UNKNOWN;
 		IComputerAccess computer = (IComputerAccess) cObject;
-		WorldUtil world = new WorldUtil(pipe.getWorld(), pipe.getX(), pipe.getY(), pipe.getZ());
+		WorldUtil world = new WorldUtil(pipe.getWorldObj(), pipe.xCoord, pipe.yCoord, pipe.zCoord);
 		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(false);
 		for(AdjacentTile aTile: adjacent) {
 			try {

@@ -115,7 +115,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				Item item = Item.itemsList[data.getItemStack().itemID];
 				if (item.hasContainerItem()){
 					Item containerItem = item.getContainerItem();
-					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(new ItemStack(containerItem, 1), this.getWorld());
+					IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(new ItemStack(containerItem, 1));
 					this.queueRoutedItem(itemToSend, data.output);
 				}
 			}

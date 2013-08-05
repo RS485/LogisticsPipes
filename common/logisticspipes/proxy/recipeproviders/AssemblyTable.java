@@ -58,42 +58,13 @@ public class AssemblyTable implements ICraftingRecipeProvider {
 			if(i < nextRecipe.input.length) {
 				inventory.setInventorySlotContents(i, nextRecipe.input[i]);
 			} else {
-				inventory.setInventorySlotContents(i, null);
+				inventory.clearInventorySlotContents(i);
 			}
 		}
 
 		// Compact
-		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-			final ItemStack stackInSlot = inventory.getStackInSlot(i);
-			if (stackInSlot == null) {
-				continue;
-			}
-			final ItemIdentifier itemInSlot = ItemIdentifier.get(stackInSlot);
-			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
-				final ItemStack stackInOtherSlot = inventory.getStackInSlot(j);
-				if (stackInOtherSlot == null) {
-					continue;
-				}
-				if (itemInSlot == ItemIdentifier.get(stackInOtherSlot)) {
-					stackInSlot.stackSize += stackInOtherSlot.stackSize;
-					inventory.setInventorySlotContents(j, null);
-				}
-			}
-		}
-
-		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-			if (inventory.getStackInSlot(i) != null) {
-				continue;
-			}
-			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
-				if (inventory.getStackInSlot(j) == null) {
-					continue;
-				}
-				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				inventory.setInventorySlotContents(j, null);
-				break;
-			}
-		}
+		inventory.compact_first_9();
+		
 		return true;
 	}
 }

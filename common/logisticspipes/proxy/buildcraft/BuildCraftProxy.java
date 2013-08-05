@@ -169,9 +169,9 @@ public class BuildCraftProxy {
 		Utils.dropItems(world, stack, x, y, z);
 	}
 
-	public IRoutedItem GetOrCreateRoutedItem(World worldObj, TravelingItem itemData) {
+	public IRoutedItem GetOrCreateRoutedItem(TravelingItem itemData) {
 		if (!isRoutedItem(itemData)){
-			RoutedEntityItem newItem = new RoutedEntityItem(worldObj, itemData);
+			RoutedEntityItem newItem = new RoutedEntityItem(itemData);
 			itemData = newItem;
 			return newItem;
 		}
@@ -191,8 +191,8 @@ public class BuildCraftProxy {
 		return newItem;
 	}
 
-	public IRoutedItem CreateRoutedItem(ItemStack payload, World worldObj) {
-		TravelingItem entityItem = new TravelingItem(0, 0, 0, payload);
+	public IRoutedItem CreateRoutedItem(ItemStack payload) {
+		TravelingItem entityItem = new TravelingItem( 0, 0, 0, payload);
 		return CreateRoutedItem(entityItem);
 	}
 
@@ -320,7 +320,8 @@ public class BuildCraftProxy {
 	}
 	
 	public boolean checkMaxItems() {
-		return BuildCraftTransport.maxItemsInPipes >= 1000;
+		//TODO: where's this gone ....
+		return true;// 		BuildCraftTransport.instance.maxItemsInPipes >= 1000;
 	}
 	
 	public boolean isWrenchEquipped(EntityPlayer entityplayer) {

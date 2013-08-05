@@ -93,4 +93,7 @@ public interface IRoutedItem{
 	public long getTickToTimeOut();
 	// the world tick in which getTickToTimeOut returns 0.
 	public long getTimeOut();
+
+//FIXME: not sure when/if this will be called correctly
+	void remove();
 }

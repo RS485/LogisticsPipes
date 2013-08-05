@@ -73,7 +73,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 
 			FluidStack toSend = transport.sideTanks[dir.ordinal()].drain(result.getValue2(), true);
 			ItemStack liquidContainer = SimpleServiceLocator.logisticsFluidManager.getFluidContainer(toSend);
-			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(liquidContainer, getWorld());
+			IRoutedItem routed = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(liquidContainer);
 			routed.setDestination(result.getValue1());
 			routed.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routed, dir);

@@ -44,10 +44,18 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	}
 
 	@Override
-	public int fill(int tankIndex, FluidStack resource, boolean doFill) {
-		return fill(ForgeDirection.getOrientation(tankIndex), resource, doFill);
+	public boolean canFill(ForgeDirection from, Fluid fluid) {
+		// TODO Auto-generated method stub
+		return true;
 	}
 
+
+
+	@Override
+	public boolean canDrain(ForgeDirection from, Fluid fluid) {
+		return true;
+//		return (sideTanks[from.ordinal()].getFluid().fluidID==fluid.getID() && drain(from,fluid.)
+	}
 	@Override
 	public FluidStack drain(ForgeDirection from, int maxDrain, boolean doDrain) {
 		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
@@ -57,20 +65,25 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		}
 	}
 
+
+
 	@Override
-	public FluidStack drain(ForgeDirection from, FluidStack resouce, boolean doDrain) {
-		return drain(ForgeDirection.getOrientation(tankIndex), resource, doDrain);
+	public FluidStack drain(ForgeDirection from, FluidStack resource,
+			boolean doDrain) {
+		if (!(sideTanks[from.ordinal()].getFluid().isFluidEqual(resource)))
+			return new FluidStack(resource.fluidID,0);
+		
+		return drain(from,resource.amount,doDrain);
 	}
 
 	@Override
-	public IFluidTank[] getTanks(ForgeDirection direction) {
-		if(direction.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
-			return new IFluidTank[]{sideTanks[direction.ordinal()]};
+	public FluidTankInfo[] getTankInfo(ForgeDirection from) {
+		if(from.ordinal() < ForgeDirection.VALID_DIRECTIONS.length) {
+			return new FluidTankInfo[]{new FluidTankInfo(sideTanks[from.ordinal()])};
 		} else {
 			return null;//new IFluidTank[]{internalTank};
 		}
 	}
-
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
@@ -99,11 +112,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		internalTank.writeToNBT(subTag);
 		nbttagcompound.setTag("tank[middle]", subTag);
 	}
-	
-	@Override
-	public IFluidTank getTank(ForgeDirection direction, FluidStack type) {
-		return null;
-	}
+
 	
 	/*
 	@Override
@@ -167,7 +176,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 			if(clientSyncCounter < 0) clientSyncCounter = 0;
 			ModernPacket packet = computeFluidUpdate(init, true);
 			if (packet != null) {
-				MainProxy.sendPacketToAllWatchingChunk(xCoord, zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
+				MainProxy.sendPacketToAllWatchingChunk(container.xCoord, container.zCoord, MainProxy.getDimensionForWorld(getWorld()), packet);
 			}
 		}
 	}
@@ -227,18 +236,19 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 				continue;
 			}
 
-			if (prev.itemID != current.itemID || initPacket) {
+			if (prev.fluidID != current.fluidID || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()]=new FluidStack(current.itemID,renderCache[dir.ordinal()].amount);
+				renderCache[dir.ordinal()]=new FluidStack(current.fluidID,renderCache[dir.ordinal()].amount);
 				//TODO check: @GUIpsp Possibly instanciating multiple times, might be slow
 				delta.set(dir.ordinal() * 3 + 0);
 			}
 
-			if (prev.itemMeta != current.itemMeta || initPacket) {
+			//FIXME:Handle NBTTAGS
+/*			if (prev.itemMeta != current.itemMeta || initPacket) {
 				changed = true;
-				renderCache[dir.ordinal()]=new FluidStack(current.itemID,renderCache[dir.ordinal()].amount,current.itemMeta);
+				renderCache[dir.ordinal()]=new FluidStack(current.fluidID,renderCache[dir.ordinal()].amount,current.itemMeta);
 				delta.set(dir.ordinal() * 3 + 1);
-			}
+			}*/
 
 			int displayQty = (prev.amount * 4 + current.amount) / 5;
 			if (displayQty == 0 && current.amount > 0 || initPacket) {
@@ -262,7 +272,7 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 		}
 
 		if (changed || initPacket) {
-			return PacketHandler.getPacket(PipeFluidUpdate.class).setRenderCache(renderCache).setDelta(delta).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord).setChunkDataPacket(initPacket);
+			return PacketHandler.getPacket(PipeFluidUpdate.class).setRenderCache(renderCache).setDelta(delta).setPosX(container.xCoord).setPosY(container.yCoord).setPosZ(container.zCoord).setChunkDataPacket(initPacket);
 		}
 
 		return null;
@@ -273,5 +283,9 @@ public class PipeFluidTransportLogistics extends PipeTransportLogistics implemen
 	protected boolean isItemExitable(ItemStack stack) {
 		return true;
 	}
+
+
+
+
 
 }

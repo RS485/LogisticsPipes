@@ -7,7 +7,7 @@ import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
+public class RoutedEntityItemSaveHandler {
 	
 	public RoutedEntityItemSaveHandler() {}
 	
@@ -34,7 +34,6 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 		}
 	}
 	
-	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		if(nbttagcompound.hasKey("destinationUUID")) {
 			destinationUUID = UUID.fromString(nbttagcompound.getString("destinationUUID"));
@@ -50,7 +49,6 @@ public class RoutedEntityItemSaveHandler implements IPassiveItemContribution {
 		}
 	}
 
-	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		this.extract();
 		if(destinationUUID !=null) {

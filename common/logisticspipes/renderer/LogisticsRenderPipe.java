@@ -156,7 +156,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	}
 	
 	//FIXME:is this correct?
-	private static final ResourceLocation SIGN = new ResourceLocation("/logisticspipes/item/sign.png");  
+	private static final ResourceLocation SIGN = new ResourceLocation("/item/sign.png");  
 	private static final ResourceLocation TERRAIN = new ResourceLocation("/terrain.png");  
 	private static final ResourceLocation ITEMS = new ResourceLocation("/gui/items.png");  
 	private void renderSign(PipeItemsCraftingLogistics pipe) {

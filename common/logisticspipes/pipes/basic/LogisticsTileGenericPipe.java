@@ -130,12 +130,12 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 	}
 	
 	private boolean argumentsMatch(Method method, Object[] arguments) {
-		int i=0;
-		for(Class<?> args:method.getParameterTypes()) {
-			if(!arguments[i].getClass().equals(args)) return false;
-			i++;
+		Class<?> args[] = method.getParameterTypes();
+		if(arguments.length != args.length) return false;
+		for(int i=0; i<arguments.length; i++) {
+			if(!arguments[i].getClass().equals(args[i])) return false;
 		}
-		return arguments.length == i;
+		return true;
 	}
 	
 	@Override

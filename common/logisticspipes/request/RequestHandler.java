@@ -185,7 +185,7 @@ public class RequestHandler {
 		if(!pipe.useEnergy(15)) {
 			return new Object[]{"NO_POWER"};
 		}
-		final Object[] status = new String[2];
+		final Object[] status = new Object[2];
 		RequestTree.request(makeStack, pipe, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {

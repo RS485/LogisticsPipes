@@ -333,6 +333,12 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	}
 	
 	@Override
+	public boolean isAuthorized(String id) {
+		if (_authorized.isEmpty() || id == null) return false;
+		return _authorized.contains(id);
+	}
+	
+	@Override
 	public void setClientAuthorizationList(List<String> list) {
 		this._authorized = list;
 	}

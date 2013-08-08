@@ -41,6 +41,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean isCombinedSneakyUpgrade = false;
 	private int liquidCrafter = 0;
 	private boolean hasByproductExtractor = false;
+	private UUID uuid = null;
+	private String uuidS = "";
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -134,6 +136,14 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		if(needUpdate) {
 			pipe.connectionUpdate();
 		}
+		uuid = null;
+		ItemStack stack = inv.getStackInSlot(8);
+		if(stack == null) return;
+		if(stack.itemID != LogisticsPipes.LogisticsItemCard.itemID || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) return;
+		if(!stack.hasTagCompound()) return;
+		if(!stack.getTagCompound().hasKey("UUID")) return;
+		uuid = UUID.fromString(stack.getTagCompound().getString("UUID"));
+		uuidS = uuid.toString();
 	}
 
 	/* Special implementations */
@@ -286,12 +296,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 	
 	public UUID getSecurityID() {
-		ItemStack stack = inv.getStackInSlot(8);
-		if(stack == null) return null;
-		if(stack.itemID != LogisticsPipes.LogisticsItemCard.itemID || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) return null;
-		if(!stack.hasTagCompound()) return null;
-		if(!stack.getTagCompound().hasKey("UUID")) return null;
-		return UUID.fromString(stack.getTagCompound().getString("UUID"));
+		return uuid;
 	}
 
 	public void insetSecurityID(UUID id) {
@@ -302,9 +307,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 	
 	public void securityTick() {
-		UUID id;
-		if((id = getSecurityID()) != null) {
-			if(!SimpleServiceLocator.securityStationManager.isAuthorized(id)) {
+		if((getSecurityID()) != null) {
+			if(!SimpleServiceLocator.securityStationManager.isAuthorized(uuidS)) {
 				securityDelay++;
 			} else {
 				securityDelay = 0;

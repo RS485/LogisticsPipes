@@ -76,14 +76,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void firstInitialiseTick() {
-		super.firstInitialiseTick();
-		for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-			getRouter(dir);
-		}
-	}
-	
-	@Override
 	public void invalidate() {
 		for(int i=0;i<6;i++) {
 			if(routers[i] != null) {
@@ -106,23 +98,35 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		super.onChunkUnload();
 	}
 	
+	private void createRouters() {
+		synchronized (routerIdLock) {
+			if (routerId == null || routerId == ""){
+				routerId = UUID.randomUUID().toString();
+			}
+			router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN, routers);
+			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
+				if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
+					routerIds[dir.ordinal()] = UUID.randomUUID().toString();
+				}
+				routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir, routers);
+			}
+			routers[6] = router;
+		}
+	}
+
 	@Override
 	public IRouter getRouter(ForgeDirection dir) {
 		if(stillNeedReplace) {
 			System.out.println("Hey, don't get routers for pipes that aren't ready");
 			new Throwable().printStackTrace();
 		}
+		if(router == null){
+			createRouters();
+		}
 		if(dir.ordinal() < routers.length) {
-			if (routers[dir.ordinal()] == null){
-				synchronized (routerIdLock) {
-					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
-						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
-					}
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir, routers);
-				}
-			}
 			return routers[dir.ordinal()];
 		}
+		//this should never happen
 		return super.getRouter();
 	}
 	
@@ -132,13 +136,8 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 			System.out.println("Hey, don't get routers for pipes that aren't ready");
 			new Throwable().printStackTrace();
 		}
-		if (router == null){
-			synchronized (routerIdLock) {
-				if (routerId == null || routerId == ""){
-					routerId = UUID.randomUUID().toString();
-				}
-				routers[6] = router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN, routers);
-			}
+		if(router == null){
+			createRouters();
 		}
 		return router;
 	}

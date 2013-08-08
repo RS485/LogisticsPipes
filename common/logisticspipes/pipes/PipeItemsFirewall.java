@@ -35,7 +35,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 
-	private IRouter[] routers = new IRouter[ForgeDirection.VALID_DIRECTIONS.length];
+	private IRouter[] routers = new IRouter[7];
 	private String[] routerIds = new String[ForgeDirection.VALID_DIRECTIONS.length];
 	
 	public SimpleInventory inv = new SimpleInventory(6 * 6, "Filter Inv", 1);
@@ -85,18 +85,19 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	
 	@Override
 	public void invalidate() {
-		for(int i=0;i<routers.length;i++) {
+		for(int i=0;i<6;i++) {
 			if(routers[i] != null) {
 				routers[i].destroy();
 				routers[i] = null;
 			}
 		}
+		routers[6] = null;
 		super.invalidate();
 	}
 	
 	@Override
 	public void onChunkUnload() {
-		for(int i=0;i<routers.length;i++) {
+		for(int i=0;i<6;i++) {
 			if(routers[i] != null) {
 				routers[i].clearPipeCache();
 				routers[i].clearInterests();
@@ -117,7 +118,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 					if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 						routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 					}
-					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir);
+					routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir, routers);
 				}
 			}
 			return routers[dir.ordinal()];
@@ -136,7 +137,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 				if (routerId == null || routerId == ""){
 					routerId = UUID.randomUUID().toString();
 				}
-				router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN);
+				routers[6] = router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN, routers);
 			}
 		}
 		return router;

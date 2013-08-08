@@ -19,9 +19,12 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	@Getter
 	private ForgeDirection side;
 	
-	public FilteringRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir) {
+	private final IRouter[] _otherRouters;
+	
+	public FilteringRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir, IRouter[] otherRouters) {
 		super(id, dimension, xCoord, yCoord, zCoord);
 		this.side = dir;
+		_otherRouters = otherRouters;
 	}
 	
 	@Override
@@ -102,6 +105,12 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}
 		return hasBeenReset;
+	}
+
+	@Override
+	public IRouter getRouter(ForgeDirection insertOrientation) {
+		if(_otherRouters.length <= insertOrientation.ordinal()) return null;
+		return _otherRouters[insertOrientation.ordinal()];
 	}
 
 	@Override

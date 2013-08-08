@@ -480,7 +480,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		for (Entry<IRouter, ExitRoute> pipe :  _adjacentRouter.entrySet()){
 			//currentE.connectionDetails.retainAll(blocksPower);
 			ExitRoute currentE = pipe.getValue();
-			IRouter newRouter= pipe.getKey().getRouter(currentE.insertOrientation);
+			IRouter newRouter = pipe.getKey();
 			if(newRouter != null){
 				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails);
 				candidatesCost.add(newER);
@@ -812,10 +812,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
 	@Override
 	public IRouter getRouter(ForgeDirection insertOrientation) {
-		CoreRoutedPipe pipe = getCachedPipe();
-		if(pipe==null)
-			return null;
-		return pipe.getRouter(insertOrientation);
+		return this;
 	}
 
 	@Override

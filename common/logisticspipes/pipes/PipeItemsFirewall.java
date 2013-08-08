@@ -159,15 +159,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		return ForgeDirection.UNKNOWN;
 	}
 
-	public boolean isIdforOtherSide(int id) {
-		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			if(getRouter(dir).getSimpleID() == id) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
@@ -212,17 +203,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	@Override
 	public LogisticsModule getLogisticsModule() {
 		return null;
-	}
-	
-	public List<ExitRoute> getRouters(IRouter from) {
-		List<ExitRoute> list = new ArrayList<ExitRoute>();
-		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			if(getRouter(dir).equals(from)) continue;
-			List<ExitRoute> nodes = getRouter(dir).getIRoutersByCost();
-			list.addAll(nodes);
-		}
-		Collections.sort(list);
-		return list;
 	}
 	
 	public IFilter getFilter(final UUID id, final int simpleid) {

@@ -2,6 +2,7 @@ package logisticspipes.routing;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,10 +33,15 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 		if(LogisticsPipes.DEBUG && ForgeDirection.UNKNOWN.equals(side)) {
 			throw new UnsupportedOperationException(this.toString());
 		}
-		if(this.getPipe() instanceof PipeItemsFirewall) {
-			return ((PipeItemsFirewall)this.getPipe()).getRouters(this);
+
+		List<ExitRoute> list = new ArrayList<ExitRoute>();
+		for(int i=0; i<6; i++) {
+			if(_otherRouters[i].equals(this)) continue;
+			List<ExitRoute> nodes = _otherRouters[i].getIRoutersByCost();
+			list.addAll(nodes);
 		}
-		return new ArrayList<ExitRoute>();
+		Collections.sort(list);
+		return list;
 	}
 
 	@Override
@@ -60,8 +66,9 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 
 	@Override
 	public boolean isIdforOtherSide(int id) {
-		if(this.getPipe() instanceof PipeItemsFirewall) {
-			return ((PipeItemsFirewall)this.getPipe()).isIdforOtherSide(id);
+		for(int i=0; i<6; i++) {
+			if(_otherRouters[i].getSimpleID() == id)
+				return true;
 		}
 		return false;
 	}
@@ -73,22 +80,19 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			return hasBeenReset;
 		hasBeenProcessed.set(this.simpleID);
 		if(!ForgeDirection.UNKNOWN.equals(side)) {
-			CoreRoutedPipe pipe = this.getPipe();
-			if(pipe != null) {
-				IRouter router = pipe.getRouter();
-				if(router != null) {
-					if(router instanceof FilteringRouter) {
-						if(ForgeDirection.UNKNOWN.equals(((FilteringRouter)router).side)) {
-							hasBeenReset = router.act(hasBeenProcessed, actor);
-						} else {
-							throw new RuntimeException("Why is the FilteringRouter not centered? (" + router.toString() + ")");
-						}
+			IRouter router = _otherRouters[6];
+			if(router != null) {
+				if(router instanceof FilteringRouter) {
+					if(ForgeDirection.UNKNOWN.equals(((FilteringRouter)router).side)) {
+						hasBeenReset = router.act(hasBeenProcessed, actor);
 					} else {
-						throw new RuntimeException("Why is the router not an FilteringRouter? (" + router.toString() + ")");
+						throw new RuntimeException("Why is the FilteringRouter not centered? (" + router.toString() + ")");
 					}
 				} else {
-					throw new RuntimeException("Why is the router null? (" + this.toString() + ")");
+					throw new RuntimeException("Why is the router not an FilteringRouter? (" + router.toString() + ")");
 				}
+			} else {
+				throw new RuntimeException("Why is the router null? (" + this.toString() + ")");
 			}
 		}
 		if(!actor.isInteresting(this))

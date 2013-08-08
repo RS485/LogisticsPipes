@@ -245,8 +245,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public CoreRoutedPipe getPipe(){
-		if(_myPipeCache!=null && _myPipeCache.get()!=null)
-			return _myPipeCache.get();
+		CoreRoutedPipe crp = getCachedPipe();
+		if(crp != null)
+			return crp;
 		World worldObj = DimensionManager.getWorld(_dimension);
 		if(worldObj == null) {
 			return null;
@@ -263,7 +264,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public CoreRoutedPipe getCachedPipe(){
-		if(_myPipeCache!=null && _myPipeCache.get()!=null)
+		if(_myPipeCache!=null)
 			return _myPipeCache.get();
 		return null;
 	}

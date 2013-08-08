@@ -10,6 +10,7 @@ package logisticspipes.logic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.Set;
@@ -147,7 +148,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		ArrayList<ExitRoute> table = r.getRouteTable();
+		List<ExitRoute> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
 			if(table.get(i)!=null)
 			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i) + " distance)");

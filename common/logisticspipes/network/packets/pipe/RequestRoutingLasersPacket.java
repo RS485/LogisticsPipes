@@ -39,7 +39,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		if(tile == null) return;
 		if(tile.pipe instanceof CoreRoutedPipe) {
 			IRouter router = ((CoreRoutedPipe)tile.pipe).getRouter();
-			ArrayList<ExitRoute> exits = router.getRouteTable();
+			List<ExitRoute> exits = router.getRouteTable();
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
 			for(ExitRoute exit:exits) {
 				if(exit == null) continue;

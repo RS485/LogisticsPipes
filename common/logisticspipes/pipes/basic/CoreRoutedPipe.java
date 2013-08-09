@@ -452,7 +452,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	@Override
 	public void dropContents() {
 		if(MainProxy.isClient(worldObj)) return;
-		if(canBeDestroyed()) {
+		if(canBeDestroyed() || destroyByPlayer) {
 			super.dropContents();
 		} else {
 			if(itemIDAccess == null) {
@@ -482,10 +482,10 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
+					revertItemID();
 					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
 					worldCache.setBlockTileEntity(xCache, yCache, zCache, tileCache);
 					worldCache.notifyBlockChange(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
-					revertItemID();
 					blockRemove = false;
 					return null;
 				}

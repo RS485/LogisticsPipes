@@ -42,7 +42,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private int liquidCrafter = 0;
 	private boolean hasByproductExtractor = false;
 	private UUID uuid = null;
-	private String uuidS = "";
+	private String uuidS = null;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -137,6 +137,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 			pipe.connectionUpdate();
 		}
 		uuid = null;
+		uuidS = null;
 		ItemStack stack = inv.getStackInSlot(8);
 		if(stack == null) return;
 		if(stack.itemID != LogisticsPipes.LogisticsItemCard.itemID || stack.getItemDamage() != LogisticsItemCard.SEC_CARD) return;
@@ -304,6 +305,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		stack.setTagCompound(new NBTTagCompound("tag"));
 		stack.getTagCompound().setString("UUID", id.toString());
 		inv.setInventorySlotContents(8, stack);
+		InventoryChanged(inv);
 	}
 	
 	public void securityTick() {

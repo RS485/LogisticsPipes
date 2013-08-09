@@ -145,8 +145,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	@Override
-	public void onBlockRemoval() {
-		super.onBlockRemoval();
+	public void onAllowedRemoval() {
 		while(_orderManager.hasOrders()) {
 			_orderManager.sendFailed();
 		}

@@ -89,8 +89,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 	
 	@Override
-	public void onBlockRemoval() {
-		super.onBlockRemoval();
+	public void onAllowedRemoval() {
 		while(_orderManager.hasOrders()) {
 			_orderManager.sendFailed();
 		}

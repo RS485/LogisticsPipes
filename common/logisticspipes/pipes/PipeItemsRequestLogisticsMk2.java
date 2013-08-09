@@ -86,8 +86,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	}
 	
 	@Override
-	public void onBlockRemoval() {
-		super.onBlockRemoval();
+	public void onAllowedRemoval() {
 		if(MainProxy.isServer(this.worldObj)) {
 			this.dropDisk();
 		}

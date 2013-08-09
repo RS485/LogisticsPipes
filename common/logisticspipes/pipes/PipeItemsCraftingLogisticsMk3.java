@@ -119,8 +119,8 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public void onBlockRemoval() {
-		super.onBlockRemoval();
+	public void onAllowedRemoval() {
+		super.onAllowedRemoval();
 		inv.dropContents(worldObj, getX(), getY(), getZ());
 	}
 

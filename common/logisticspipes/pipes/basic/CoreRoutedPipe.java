@@ -389,12 +389,15 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if (getLogisticsModule() == null) return;
 		getLogisticsModule().tick();
 	}	
-	
+
+	protected void onAllowedRemoval() {}
+
 	@Override
-	public void onBlockRemoval() {
+	public final void onBlockRemoval() {
 		revertItemID();
 		if(canBeDestroyed() || destroyByPlayer) {
 			try {
+				onAllowedRemoval();
 				super.onBlockRemoval();
 				//invalidate() removes the router
 				if (logic instanceof BaseRoutingLogic){

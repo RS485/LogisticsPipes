@@ -220,7 +220,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	}
 
 	@Override
-	public void onBlockRemoval() {
+	public void onAllowedRemoval() {
 		if(!stillNeedReplace) {
 			CoreRoutedPipe CRP = SimpleServiceLocator.connectionManager.getConnectedPipe(getRouter());
 			SimpleServiceLocator.connectionManager.removeDirectConnection(getRouter());
@@ -229,7 +229,6 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			}
 		}
 		dropFreqCard();
-		super.onBlockRemoval();
 	}
 	
 

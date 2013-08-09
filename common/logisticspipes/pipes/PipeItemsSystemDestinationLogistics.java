@@ -45,7 +45,7 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void onBlockRemoval() {
+	public void onAllowedRemoval() {
 		dropFreqCard();
 	}
 

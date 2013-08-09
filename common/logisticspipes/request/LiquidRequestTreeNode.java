@@ -66,6 +66,26 @@ public class LiquidRequestTreeNode {
 		}
 	}
 
+	protected void buildUsedMap(Map<ItemIdentifier,Integer> used, Map<ItemIdentifier,Integer> missing) {
+		int usedcount = promiseLiquidAmount;
+		if(usedcount != 0) {
+			ItemIdentifier item = liquid.getItemIdentifier();
+			Integer count = used.get(item);
+			if(count == null)
+				count = 0;
+			count += usedcount;
+			used.put(item, count);
+		}
+		if(amountLeft() != 0) {
+			ItemIdentifier item = liquid.getItemIdentifier();
+			Integer count = missing.get(item);
+			if(count == null)
+				count = 0;
+			count += amountLeft();
+			missing.put(item, count);
+		}
+	}
+
 	public void fullFill() {
 		for(LiquidLogisticsPromise promise: promises){
 			promise.sender.fullFill(promise, target);

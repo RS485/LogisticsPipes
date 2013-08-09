@@ -220,9 +220,8 @@ public class RequestTree extends RequestTreeNode {
 		}
 	}
 
-	public static int request(ItemIdentifierStack item,
-			IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, false, false,true,false,defaultRequestFlags);
+	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
+		return request( item, requester, log, false, false,true,false,defaultRequestFlags) == item.stackSize;
 	}
 	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {
@@ -238,10 +237,10 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	public static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
-		return requestFluid(liquid, amount, pipe, log, false);
+		return requestFluid(liquid, amount, pipe, log, false)  == amount;
 	}
 	
-	public static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log, boolean acceptPartial) {
+	private static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log, boolean acceptPartial) {
 		FluidRequestTreeNode request = new FluidRequestTreeNode(liquid, amount, pipe, null);
 		if(request.isDone() || acceptPartial) {
 			request.fullFill();

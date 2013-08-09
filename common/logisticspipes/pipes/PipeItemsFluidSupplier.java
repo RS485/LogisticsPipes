@@ -217,7 +217,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 						success = true;
 					}
 				} else {
-					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null)>0;
+					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) this.container.pipe, null);
 				}
 				
 				if (success){

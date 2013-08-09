@@ -149,7 +149,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 						success = true;
 					}
 				} else {
-					success = RequestTree.requestFluid(need, countToRequest, (IRequestFluid) this.container, null)>0;
+					success = RequestTree.requestFluid(need, countToRequest, (IRequestFluid) this.container, null);
 				}
 				
 				if (success){

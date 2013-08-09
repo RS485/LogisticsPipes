@@ -171,7 +171,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 						success = true;
 					}
 				} else {
-					success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null)>0;
+					success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
 				}
 				
 				if (success){

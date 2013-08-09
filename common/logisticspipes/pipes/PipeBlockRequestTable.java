@@ -123,8 +123,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	@Override
-	public void onBlockRemoval() {
-		super.onBlockRemoval();
+	public void onAllowedRemoval() {
 		if(MainProxy.isServer(this.getWorld())) {
 			inv.dropContents(getWorld(), getX(), getY(), getZ());
 		}

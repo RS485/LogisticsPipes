@@ -16,6 +16,7 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
@@ -50,8 +51,17 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	public TransportLayer getTransportLayer() {
 		if (this._transportLayer == null){
 			_transportLayer = new TransportLayer() {
-				@Override public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {return getPointedOrientation();}
-				@Override public boolean stillWantItem(IRoutedItem item) {return true;}
+				@Override public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
+					item.setArrived(true);
+					getRouter().inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
+					ForgeDirection pointed = getPointedOrientation();
+					if(blocked != null && blocked.equals(pointed))
+						return null;
+					return pointed;
+				}
+				@Override public boolean stillWantItem(IRoutedItem item) {
+					return true;
+				}
 			};
 		}
 		return _transportLayer;

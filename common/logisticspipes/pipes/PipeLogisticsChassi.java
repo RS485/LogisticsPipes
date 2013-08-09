@@ -342,8 +342,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public void onBlockRemoval() {
-		super.onBlockRemoval();
+	public void onAllowedRemoval() {
 		_moduleInventory.removeListener(this);
 		if(MainProxy.isServer(this.getWorld())) {
 			for (int i = 0; i < this.getChassiSize(); i++){

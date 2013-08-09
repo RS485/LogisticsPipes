@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.Serializable;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.ITickHandler;
@@ -114,7 +116,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	public class ArrayVarType extends ParentVarType {
 		private static final long serialVersionUID = -6335674162049738144L;
 		Map<Integer, VarType> objectType = new HashMap<Integer, VarType>();
-		transient WeakReference<Object[]> watched;
+		transient WeakReference<Object> watched;
 	}
 	@Data
 	public class FieldPart implements Serializable {
@@ -170,7 +172,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	}
 	
 	private boolean isPrimitive(Class<?> clazz) {
-		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class;
+		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class || clazz == WorldServer.class;
 	}
 	
 	private VarType resolveType(Object toInstect, VarType prev, String name, boolean extended, ParentVarType parent) {
@@ -186,17 +188,18 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 			type.watched = toInstect.toString();
 			return type;
 		}
-		if(clazz.isArray() && toInstect instanceof Object[]) {
+		if(clazz.isArray()) {
 			ArrayVarType type = new ArrayVarType();
 			type.i = 0;
-			type.watched = new WeakReference<Object[]>((Object[]) toInstect);
+			type.watched = new WeakReference<Object>(toInstect);
 			type.name = name;
 			type.parent = parent;
 			if(prev instanceof ExtendedVarType) {
 				type.i = ((ExtendedVarType)prev).i;
 			}
-			for(int i=0;i<type.watched.get().length;i++) {
-				Object o = type.watched.get()[i];
+			Object[] array = getArray(type.watched.get());
+			for(int i=0;i<array.length;i++) {
+				Object o = array[i];
 				VarType tmp = null;
 				if(prev instanceof ArrayVarType) {
 					tmp = ((ArrayVarType)prev).objectType.get(i);
@@ -271,6 +274,25 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		return type;
 	}
 	
+	private Object[] getArray(Object val) {
+		if(val instanceof Object[])
+			return (Object[]) val;
+		int arrlength = Array.getLength(val);
+		Object[] outputArray = new Object[arrlength];
+		for(int i = 0; i < arrlength; ++i) {
+			outputArray[i] = Array.get(val, i);
+		}
+		return outputArray;
+	}
+
+	private void setArray(Object val, Integer pos, Object casted) {
+		if(val instanceof Object[]) {
+			((Object[]) val)[pos] = casted;
+		} else {
+			Array.set(val, pos, casted);
+		}
+	}
+	
 	public void createNewDebugGui(String ObjectClass) {
 		if(localGui != null) {
 			localGui.setVisible(false);
@@ -297,6 +319,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 			((DefaultTreeModel)tree.getModel()).reload(baseNode);
 		} else {
 			ExtendedDefaultMutableTreeNode node = getNodeForPathAndVarType(clientType, pos, setting);
+			if(node == null) return;
 			while(node.getChildCount() > 0) {
 				node.remove(0);
 			}
@@ -335,11 +358,12 @@ outer:
 						continue outer;
 					}
 				}
+				return null; //Nothing found
 			} else {
 				ArrayVarType aType = (ArrayVarType) varPos;
 				for(int j=0;j<aType.objectType.size();j++) {
 					if(aType.objectType.get(j).i.equals(pos[i])) {
-						if(i - 1 == pos.length && toRefresh != null) {
+						if(i + 1 == pos.length && toRefresh != null) {
 							varPos = aType.objectType.get(j);
 							toRefresh.node = varPos.node;
 							aType.objectType.put(j, toRefresh);
@@ -350,6 +374,7 @@ outer:
 						continue outer;
 					}
 				}
+				return null; //Nothing found
 			}
 		}
 		return varPos.node;
@@ -425,8 +450,6 @@ outer:
 			} else if(pos instanceof ArrayVarType) {
 				pos = ((ArrayVarType)pos).objectType.get(tree[i]);
 			} else {
-				localGui.setVisible(false);
-				localGui = null;
 				new Exception("List unsorted for some reason. Accessing " + pos.name + ". Closing gui. (" + Arrays.toString(tree) + ")").printStackTrace();
 				return;
 			}
@@ -499,7 +522,7 @@ outer:
 			if(!isModified) {
 				for(int i=0;i<aType.objectType.size();i++) {
 					path.addLast(i);
-					aType.objectType.put(i, handleUpdate(aType.objectType.get(i), player, path, aType.watched.get()[i], aType));
+					aType.objectType.put(i, handleUpdate(aType.objectType.get(i), player, path, getArray(aType.watched.get())[i], aType));
 					path.removeLast();
 				}
 			} else {
@@ -553,6 +576,7 @@ outer:
 			((DefaultTreeModel)tree.getModel()).reload(baseNode);
 		} else {
 			ExtendedDefaultMutableTreeNode node = getNodeForPathAndVarType(clientType,pos,null);
+			if(node == null) return;
 			if(setting instanceof BasicVarType) {
 				node.setUserObject(setting.name + ": " + ((BasicVarType)setting).watched);
 			} else if(setting instanceof NullVarType) {
@@ -573,8 +597,6 @@ outer:
 			} else if(pos instanceof ArrayVarType) {
 				pos = ((ArrayVarType)pos).objectType.get(path[i]);
 			} else {
-				localGui.setVisible(false);
-				localGui = null;
 				new Exception("List unsorted for some reason. Accessing " + pos.name + ". Closing gui. (" + Arrays.toString(path) + ")").printStackTrace();
 				return;
 			}
@@ -588,7 +610,7 @@ outer:
 			}
 		} else if(pos instanceof ArrayVarType) {
 			try {
-				((ArrayVarType)pos).watched.get()[path[path.length - 1]] = getCasted(((ArrayVarType)pos).watched.get().getClass().getComponentType(), content);
+				setArray(((ArrayVarType)pos).watched.get(), path[path.length - 1], getCasted(((ArrayVarType)pos).watched.get().getClass().getComponentType(), content));
 			} catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -706,7 +728,13 @@ outer:
 						String s = (String)JOptionPane.showInputDialog(null, "Please enter the new content for " + node.base.name + ":", "Change Variable",  JOptionPane.PLAIN_MESSAGE, null, null, old);
 						LinkedList<Integer> path = new LinkedList<Integer>();
 						path.add(node.base.i);
-						ParentVarType type = ((ExtendedDefaultMutableTreeNode)node.getParent().getParent()).type;
+						ParentVarType type = ((ExtendedDefaultMutableTreeNode)node).type;
+						if(type == null) {
+							type = ((ExtendedDefaultMutableTreeNode)node.getParent()).type;	
+						}
+						if(type == null) {
+							type = ((ExtendedDefaultMutableTreeNode)node.getParent().getParent()).type;	
+						}
 						while(type != null) {
 							path.addFirst(type.i);
 							type = type.parent;

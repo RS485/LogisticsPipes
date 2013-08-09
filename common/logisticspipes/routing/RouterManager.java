@@ -115,7 +115,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	}
 
 	@Override
-	public IRouter getOrCreateFirewallRouter(UUID UUid, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir) {
+	public IRouter getOrCreateFirewallRouter(UUID UUid, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir, IRouter[] otherRouters) {
 		IRouter r = null;
 		int id=this.getIDforUUID(UUid);
 		if(id>0)
@@ -128,7 +128,7 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 				}
 			} else {
 				synchronized (_routersServer) {
-					r = new FilteringRouter(UUid, dimension, xCoord, yCoord, zCoord, dir);
+					r = new FilteringRouter(UUid, dimension, xCoord, yCoord, zCoord, dir, otherRouters);
 					int rId= r.getSimpleID();
 					if(_routersServer.size()>rId)
 						_routersServer.set(rId, r);
@@ -330,6 +330,12 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 	public boolean isAuthorized(UUID id) {
 		if (_authorized.isEmpty() || id == null) return false;
 		return _authorized.contains(id.toString());
+	}
+	
+	@Override
+	public boolean isAuthorized(String id) {
+		if (_authorized.isEmpty() || id == null) return false;
+		return _authorized.contains(id);
 	}
 	
 	@Override

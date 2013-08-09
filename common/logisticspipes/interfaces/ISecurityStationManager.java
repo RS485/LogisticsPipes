@@ -13,6 +13,7 @@ public interface ISecurityStationManager {
 	public void deauthorizeUUID(UUID id);
 	public void authorizeUUID(UUID id);
 	public boolean isAuthorized(UUID id);
+	public boolean isAuthorized(String id);
 	public void sendClientAuthorizationList();
 	public void sendClientAuthorizationList(EntityPlayer player);
 	public void setClientAuthorizationList(List<String> list);

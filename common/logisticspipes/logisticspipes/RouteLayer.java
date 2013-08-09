@@ -10,6 +10,7 @@ import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
+import logisticspipes.routing.RoutedEntityItem;
 import net.minecraftforge.common.ForgeDirection;
 
 /**
@@ -62,6 +63,7 @@ public class RouteLayer {
 		if (item.getDestinationUUID().equals(_router.getId())){
 			
 			if (!_transport.stillWantItem(item)){
+				_router.inboundItemArrived((RoutedEntityItem) item);
 				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
 			}
 			

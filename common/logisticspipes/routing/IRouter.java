@@ -32,7 +32,7 @@ public interface IRouter {
 	public boolean hasRoute(int id);
 	public ForgeDirection getExitFor(int id);
 	
-	public ArrayList<ExitRoute> getRouteTable();
+	public List<ExitRoute> getRouteTable();
 	public List<ExitRoute> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	public CoreRoutedPipe getCachedPipe();

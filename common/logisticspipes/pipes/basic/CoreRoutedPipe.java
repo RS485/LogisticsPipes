@@ -406,7 +406,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if (getLogisticsModule() == null) return;
 		getLogisticsModule().tick();
 	}	
-	
+
+	protected void onAllowedRemoval() {}
+
 // From BaseRoutingLogic
 	public void throttledUpdateEntity(){}
 	
@@ -470,10 +472,11 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 // end FromBaseRoutingLogic
 	
 	@Override
-	public void onBlockRemoval() {
+	public final void onBlockRemoval() {
 		revertItemID();
 		if(canBeDestroyed() || destroyByPlayer) {
 			try {
+				onAllowedRemoval();
 				super.onBlockRemoval();
 				//invalidate() removes the router
 //				if (logic instanceof BaseRoutingLogic){
@@ -531,7 +534,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	@Override
 	public void dropContents() {
 		if(MainProxy.isClient(getWorld())) return;
-		if(canBeDestroyed()) {
+		if(canBeDestroyed() || destroyByPlayer) {
 			super.dropContents();
 		} else {
 			if(itemIDAccess == null) {
@@ -561,10 +564,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			QueuedTasks.queueTask(new Callable<Object>() {
 				@Override
 				public Object call() throws Exception {
+					revertItemID();
 					worldCache.setBlock(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
 					worldCache.setBlockTileEntity(xCache, yCache, zCache, tileCache);
 					worldCache.notifyBlockChange(xCache, yCache, zCache, BuildCraftTransport.genericPipeBlock.blockID);
-					revertItemID();
 					blockRemove = false;
 					return null;
 				}

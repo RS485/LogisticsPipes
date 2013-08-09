@@ -144,11 +144,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected static LSA[] SharedLSADatabase = new LSA[0];
 
 	/** Map of router -> orientation for all known destinations **/
-	public ArrayList<ExitRoute> _routeTable = new ArrayList<ExitRoute>();
+	public List<ExitRoute> _routeTable = new ArrayList<ExitRoute>();
 	public List<ExitRoute> _routeCosts = new ArrayList<ExitRoute>();
 	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
 	public List<IRouter> _firewallRouter = new ArrayList<IRouter>();
-	public List<IRouter> _externalRoutersByCost = null;
 	
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
 
@@ -245,8 +244,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public CoreRoutedPipe getPipe(){
-		if(_myPipeCache!=null && _myPipeCache.get()!=null)
-			return _myPipeCache.get();
+		CoreRoutedPipe crp = getCachedPipe();
+		if(crp != null)
+			return crp;
 		World worldObj = DimensionManager.getWorld(_dimension);
 		if(worldObj == null) {
 			return null;
@@ -263,7 +263,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public CoreRoutedPipe getCachedPipe(){
-		if(_myPipeCache!=null && _myPipeCache.get()!=null)
+		if(_myPipeCache!=null)
 			return _myPipeCache.get();
 		return null;
 	}
@@ -279,13 +279,12 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				RoutingTableUpdateThread.add(new UpdateRouterRunnable(this));
 			} else {
 				CreateRouteTable(_LSAVersion);
-				_externalRoutersByCost = null;
 			}
 		}
 	}
 
 	@Override
-	public ArrayList<ExitRoute> getRouteTable(){
+	public List<ExitRoute> getRouteTable(){
 		ensureRouteTableIsUpToDate(true);
 		return _routeTable;
 	}
@@ -340,6 +339,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				pipe.getWorld().notifyBlocksOfNeighborChange(pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld().getBlockId(pipe.getX(), pipe.getY(), pipe.getZ()));
 				pipe.refreshConnectionAndRender(false);
 			}
+			adjacentChanged = true;
+		}
+		
+		if(_adjacent.size() != adjacent.size()) {
+			adjacentChanged = true;
 		}
 		
 		for (CoreRoutedPipe pipe : _adjacent.keySet()) {
@@ -480,7 +484,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		for (Entry<IRouter, ExitRoute> pipe :  _adjacentRouter.entrySet()){
 			//currentE.connectionDetails.retainAll(blocksPower);
 			ExitRoute currentE = pipe.getValue();
-			IRouter newRouter= pipe.getKey().getRouter(currentE.insertOrientation);
+			IRouter newRouter = pipe.getKey();
 			if(newRouter != null){
 				ExitRoute newER = new ExitRoute(newRouter, newRouter, currentE.distanceToDestination, currentE.connectionDetails);
 				candidatesCost.add(newER);
@@ -592,10 +596,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 			if(_lastLSAVersion[simpleID] < version_to_update_to){
 				_lastLSAVersion[simpleID] = version_to_update_to;
-				_powerTable = powerTable;
-				_routeTable = routeTable;
-				_routeCosts = routeCosts; 
-				_firewallRouter = firewallRouter;
+				_powerTable = Collections.unmodifiableList(powerTable);
+				_routeTable = Collections.unmodifiableList(routeTable);
+				_routeCosts = Collections.unmodifiableList(routeCosts); 
+				_firewallRouter = Collections.unmodifiableList(firewallRouter);
 			}
 			SharedLSADatabasereadLock.unlock();
 		}
@@ -812,10 +816,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
 	@Override
 	public IRouter getRouter(ForgeDirection insertOrientation) {
-		CoreRoutedPipe pipe = getCachedPipe();
-		if(pipe==null)
-			return null;
-		return pipe.getRouter(insertOrientation);
+		return this;
 	}
 
 	@Override

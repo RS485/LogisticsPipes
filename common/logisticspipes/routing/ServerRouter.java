@@ -339,6 +339,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				pipe.worldObj.notifyBlocksOfNeighborChange(pipe.xCoord, pipe.yCoord, pipe.zCoord, pipe.worldObj.getBlockId(pipe.xCoord, pipe.yCoord, pipe.zCoord));
 				pipe.refreshConnectionAndRender(false);
 			}
+			adjacentChanged = true;
+		}
+		
+		if(_adjacent.size() != adjacent.size()) {
+			adjacentChanged = true;
 		}
 		
 		for (CoreRoutedPipe pipe : _adjacent.keySet()) {

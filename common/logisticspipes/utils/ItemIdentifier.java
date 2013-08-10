@@ -81,6 +81,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
+	private final static ConcurrentHashMap<ItemIdentifier,Integer> _badTags = new ConcurrentHashMap<ItemIdentifier,Integer>(128, 0.75f, 1);
 	
 	//array of mod names, used for id -> name, 0 is unknown
 	private final static ArrayList<String> _modNameList = new ArrayList<String>();
@@ -542,7 +543,13 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
 		if((item.getMaxStackSize() > 1 || LogisticsPipes.DEBUG) && nbt.getName() == "") {
-			LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
+			Integer badTag=_badTags.get(item.getIgnoringNBT());
+			if(badTag==null){
+				_badTags.put(item.getIgnoringNBT(), 1);
+				LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
+			} else{
+				_badTags.put(item.getIgnoringNBT(), badTag+1);
+			}
 		}
 		try {
 			String s = checkNBTbadness_recurse(nbt);

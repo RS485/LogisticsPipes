@@ -734,7 +734,11 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		//this already got a checkAdjacentUpdate, so start the recursion with neighbors
 		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
 		IRAction flood = new floodCheckAdjacent();
+/*		visited.set(simpleID);
 		// for all connected updatecurrent and previous
+		for(IRouter r : _adjacentRouter.keySet()) {
+			r.act(visited, flood);
+		}*/
 		this.act(visited, flood);
 		//now increment LSA version in the network and clean up _prevAdjacentRouter
 		visited.clear();

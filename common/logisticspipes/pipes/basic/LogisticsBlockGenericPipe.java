@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.textures.Textures;
 import net.minecraft.entity.Entity;
@@ -76,6 +78,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	}
 	
 	@Override
+	@ModDependentMethodName(modId="ImmibisMicroblocks", newName="collisionRayTrace_ImmibisMicroblockTransformer")
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
 		TileEntity tile1 = world.getBlockTileEntity(x, y, z);
 		TileGenericPipe tileG = (TileGenericPipe) tile1;

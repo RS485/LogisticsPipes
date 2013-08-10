@@ -152,6 +152,17 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							changed = true;
 							break;
 						}
+					} else if(a.desc.equals("Llogisticspipes/asm/ModDependentMethodName;")) {
+						if(a.values.size() == 4 && a.values.get(0).equals("modId") && a.values.get(2).equals("newName")) {
+							String modId = a.values.get(1).toString();
+							String newName = a.values.get(3).toString();
+							if(Loader.isModLoaded(modId)) {
+								m.name = newName;
+								break;
+							}
+						} else {
+							throw new UnsupportedOperationException("Can't parse the annotation correctly");
+						}
 					}
 				}
 			}

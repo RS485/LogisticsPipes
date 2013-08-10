@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
+import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.config.Configs;
 import logisticspipes.items.CraftingSignCreator;
 import logisticspipes.items.ItemDisk;
@@ -259,6 +260,7 @@ public class LogisticsPipes {
 		LogisticsEventListener eventListener = new LogisticsEventListener();
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		GameRegistry.registerPlayerTracker(eventListener);
+		NetworkRegistry.instance().registerChatListener(new LPChatListener());
 		textures.registerBlockIcons();
 		
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();

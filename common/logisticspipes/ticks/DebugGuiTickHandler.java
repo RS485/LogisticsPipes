@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -33,7 +34,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 
+import logisticspipes.commands.chathelper.ChatColor;
+import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.OpenChatGui;
 import logisticspipes.network.packets.debuggui.DebugExpandPart;
 import logisticspipes.network.packets.debuggui.DebugInfoUpdate;
 import logisticspipes.network.packets.debuggui.DebugPanelOpen;
@@ -47,7 +51,6 @@ import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -695,9 +698,9 @@ outer:
 		}
 	}
 
-	public void targetResponse(TargetMode mode, EntityPlayer player, Object[] additions) {
+	public void targetResponse(TargetMode mode, final EntityPlayer player, Object[] additions) {
 		if(mode == TargetMode.None) {
-			player.sendChatToPlayer("No Target Found");
+			player.sendChatToPlayer(ChatColor.RED + "No Target Found");
 		} else if(mode == TargetMode.Block) {
 			int x = (Integer) additions[0];
 			int y = (Integer) additions[1];
@@ -705,21 +708,39 @@ outer:
 			player.sendChatToPlayer("Checking Block at: x:" + x + " y:" + y + " z:" + z);
 			int id = player.worldObj.getBlockId(x, y, z);
 			player.sendChatToPlayer("Found Block with Id: " + id);
-			TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
+			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
 			if(tile == null) {
-				player.sendChatToPlayer("No TileEntity found");
+				player.sendChatToPlayer(ChatColor.RED + "No TileEntity found");
 			} else {
-				player.sendChatToPlayer("Starting Debuging of TileEntity: " + tile.getClass().getSimpleName());
-				this.startWatchingOf(tile, (Player)player);
+				LPChatListener.addTask(new Callable<Boolean>(){
+					@Override
+					public Boolean call() throws Exception {
+						player.sendChatToPlayer(ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName());
+						DebugGuiTickHandler.this.startWatchingOf(tile, (Player)player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						return true;
+					}
+				}, player);
+				player.sendChatToPlayer(ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">");
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 			}
 		} else if(mode == TargetMode.Entity) {
 			int entityId = (Integer) additions[0];
-			Entity entitiy = player.worldObj.getEntityByID(entityId);
+			final Entity entitiy = player.worldObj.getEntityByID(entityId);
 			if(entitiy == null) {
-				player.sendChatToPlayer("No Entity found");
+				player.sendChatToPlayer(ChatColor.RED + "No Entity found");
 			} else {
-				player.sendChatToPlayer("Starting Debuging of Entity: " + entitiy.getClass().getSimpleName());
-				this.startWatchingOf(entitiy, (Player)player);
+				LPChatListener.addTask(new Callable<Boolean>(){
+					@Override
+					public Boolean call() throws Exception {
+						player.sendChatToPlayer(ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName());
+						DebugGuiTickHandler.this.startWatchingOf(entitiy, (Player)player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						return true;
+					}
+				}, player);
+				player.sendChatToPlayer(ChatColor.AQUA + "Start debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">");
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 			}
 		}
 	}

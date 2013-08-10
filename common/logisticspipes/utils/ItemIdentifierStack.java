@@ -104,7 +104,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 
 	@Override
 	public String toString() {
-		return new StringBuilder(Integer.toString(stackSize)).append("x").append(_item.toString()).toString();
+		return new StringBuilder(Integer.toString(stackSize)).append("x ").append(_item.toString()).toString();
 	}
 	
 	@Override

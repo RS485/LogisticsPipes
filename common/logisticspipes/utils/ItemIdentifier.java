@@ -491,7 +491,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	
 	@Override
 	public String toString() {
-		return getModName() + "(" + getModId() + "):" + getFriendlyName();
+		return getModName() + "(" + getModId() + "):" + getFriendlyName() + ", " + itemID + ":" + itemDamage;
 	}
 
 	@Override

@@ -23,7 +23,6 @@ import net.minecraft.server.MinecraftServer;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.network.Player;
-import cpw.mods.fml.server.FMLServerHandler;
 
 public class LogisticsPipesCommand extends CommandBase {
 
@@ -128,6 +127,9 @@ public class LogisticsPipesCommand extends CommandBase {
 	        			} else {
 	        				sender.sendChatToPlayer("No player asking!");
 	        			}
+	        			return;
+	        		} else if(arguments[1].equalsIgnoreCase("close")) {
+	        			DebugGuiTickHandler.instance().closeWatchingFrom((Player) sender);
 	        			return;
 	        		}
 	        	} catch(Exception e) {

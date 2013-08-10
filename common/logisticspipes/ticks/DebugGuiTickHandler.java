@@ -14,9 +14,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.swing.JFrame;
@@ -40,11 +42,15 @@ import logisticspipes.network.packets.debuggui.DebugTargetResponse;
 import logisticspipes.network.packets.debuggui.DebugTargetResponse.TargetMode;
 import logisticspipes.network.packets.debuggui.DebugTypePacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumMovingObjectType;
 import net.minecraft.util.MovingObjectPosition;
@@ -171,7 +177,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	}
 	
 	private boolean isPrimitive(Class<?> clazz) {
-		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class || clazz == WorldServer.class;
+		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class || clazz == WorldServer.class || clazz == ItemIdentifier.class || clazz == ItemIdentifierStack.class;
 	}
 	
 	private VarType resolveType(Object toInstect, VarType prev, String name, boolean extended, ParentVarType parent) {
@@ -277,6 +283,9 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		if(val instanceof Object[])
 			return (Object[]) val;
 		int arrlength = Array.getLength(val);
+		if(arrlength > 10000) { //Limit to 10000 to avoid high system load (More being displayed also can't be handled by the user)
+			arrlength = 10000;
+		}
 		Object[] outputArray = new Object[arrlength];
 		for(int i = 0; i < arrlength; ++i) {
 			outputArray[i] = Array.get(val, i);
@@ -440,6 +449,7 @@ outer:
 
 	public void expandGuiAt(Integer[] tree, Player player) {
 		ServerGuiSetting info = serverInfo.get(player);
+		if(info == null) return;
 		VarType pos = info.var;
 		VarType prevPos = null;
 		for(int i=1;i<tree.length;i++) {
@@ -471,18 +481,39 @@ outer:
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
+
+	public void closeWatchingFrom(Player sender) {
+		serverInfo.remove(sender);
+	}
 	
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if(!type.contains(TickType.SERVER)) return;
-		for(Player player:serverInfo.keySet()) {
-			try {
-				ServerGuiSetting setting = serverInfo.get(player);
-				LinkedList<Integer> l = new LinkedList<Integer>();
-				l.add(0);
-				setting.var = handleUpdate(setting.var, player, l, setting.base, null);
-			} catch(Exception e) {
-				e.printStackTrace();
+		Iterator<Entry<Player, ServerGuiSetting>> iterator = serverInfo.entrySet().iterator();
+		while(iterator.hasNext()) {
+			Entry<Player, ServerGuiSetting> entry = iterator.next();
+			Player player = entry.getKey();
+			boolean remove = false;
+			if(player instanceof EntityPlayer) {
+				if(((EntityPlayer)player).isDead) {
+					remove = true;
+				} else if(player instanceof EntityPlayerMP) {
+					if(((EntityPlayerMP)player).playerNetServerHandler.connectionClosed) {
+						remove = true;
+					}
+				}
+			}
+			if(!remove) {
+				try {
+					ServerGuiSetting setting = entry.getValue();
+					LinkedList<Integer> l = new LinkedList<Integer>();
+					l.add(0);
+					setting.var = handleUpdate(setting.var, player, l, setting.base, null);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				iterator.remove();
 			}
 		}
 	}

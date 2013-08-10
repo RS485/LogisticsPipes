@@ -87,7 +87,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 
 	@SuppressWarnings("unchecked")
 	private byte[] handleLPTransformation(byte[] bytes) {
-		ClassNode node = new ClassNode();
+		final ClassNode node = new ClassNode();
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		boolean changed = false;
@@ -155,9 +155,23 @@ public class LogisticsClassTransformer implements IClassTransformer {
 					} else if(a.desc.equals("Llogisticspipes/asm/ModDependentMethodName;")) {
 						if(a.values.size() == 4 && a.values.get(0).equals("modId") && a.values.get(2).equals("newName")) {
 							String modId = a.values.get(1).toString();
-							String newName = a.values.get(3).toString();
+							final String newName = a.values.get(3).toString();
 							if(Loader.isModLoaded(modId)) {
+								final String oldName = m.name;
 								m.name = newName;
+								MethodNode newM = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
+									@Override
+									public void visitMethodInsn(int opcode, String owner, String name, String desc) {
+										if(name.equals(oldName) && owner.equals(node.superName)) {
+											super.visitMethodInsn(opcode, owner, newName, desc);
+										} else {
+											super.visitMethodInsn(opcode, owner, name, desc);
+										}
+									}
+								};
+								m.accept(newM);
+								node.methods.set(node.methods.indexOf(m), newM);
+								changed = true;
 								break;
 							}
 						} else {

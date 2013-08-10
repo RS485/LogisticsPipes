@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -156,11 +157,6 @@ public class ClientRouter implements IRouter {
 	@Override
 	public boolean checkAdjacentUpdate() {
 		return false;
-	}
-
-	@Override
-	public void clearPrevAdjacent() {
-		
 	}
 
 	@Override

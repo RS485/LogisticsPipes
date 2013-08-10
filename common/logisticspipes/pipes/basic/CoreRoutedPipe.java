@@ -25,6 +25,7 @@ import java.util.concurrent.PriorityBlockingQueue;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
@@ -904,8 +905,8 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return power;
 	}
 	
-	private <T> void addAll(List<T> list, List<T> add) {
-		for(T o:add) {
+	private <T> void addAll(List<ILogisticsPowerProvider> list, List<ILogisticsPowerProvider> list2) {
+		for(ILogisticsPowerProvider o:list2) {
 			if(!list.contains(o)) {
 				list.add(o);
 			}

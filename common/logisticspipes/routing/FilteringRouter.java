@@ -97,15 +97,8 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 		}
 		if(!actor.isInteresting(this))
 			return hasBeenReset;
-		if(actor.doTo(this)){
-			hasBeenProcessed.clear();
-			// don't need to worry about resetting the recursion, as we are the neighbor of our neighbor, and are no longer flagged as processed.
-			hasBeenReset=true;
-		}
+		actor.doTo(this);
 		for(IRouter r : _adjacentRouter.keySet()) {
-			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
-		}
-		for(IRouter r : _prevAdjacentRouter.keySet()) {
 			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
 		}
 		return hasBeenReset;

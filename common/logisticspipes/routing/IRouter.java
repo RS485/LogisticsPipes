@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraftforge.common.ForgeDirection;
@@ -22,7 +23,6 @@ public interface IRouter {
 	public interface IRAction {
 		public boolean isInteresting(IRouter that);
 		public boolean doTo(IRouter that);
-		public void doneWith(IRouter that);
 	}
 	public void destroy();
 	public void update(boolean fullRefresh);
@@ -47,10 +47,17 @@ public interface IRouter {
 	public IRouter getRouter(ForgeDirection insertOrientation);
 	public int getSimpleID();
 
+	/**
+	 * 
+	 * @param hasBeenProcessed a bitset flagging which nodes have already been acted on 
+	 * (the router should set the bit for it's own id, then return true.
+	 * @param actor
+	 * the visitor
+	 * @return true if the bitset was cleared at some stage during the process, resulting in a potentially incomplete bitset.
+	 */
 	public boolean act(BitSet hasBeenProcessed, IRAction actor);
 	public void flagForRoutingUpdate();
 	public boolean checkAdjacentUpdate();
-	public void clearPrevAdjacent();
 	
 	/* Automated Disconnection */
 	public boolean isSideDisconneceted(ForgeDirection dir);

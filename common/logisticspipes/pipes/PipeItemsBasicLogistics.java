@@ -1,6 +1,4 @@
 /** 
- * Copyright (c) Krapht, 2011
- * 
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public 
  * License 1.0, or MMPL. Please check the contents of the license located in
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
@@ -151,20 +149,6 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 */
 	private boolean isSideOrientation(ForgeDirection ori) {
 		return ori == ForgeDirection.EAST || ori == ForgeDirection.WEST || ori == ForgeDirection.SOUTH || ori == ForgeDirection.NORTH;
-	}
-	
-	public List<ILogisticsPowerProvider> getConnectedPowerProviders() {
-		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>();
-		WorldUtil world = new WorldUtil(this.worldObj, this.getX(), this.getY(), this.getZ());
-		LinkedList<AdjacentTile> adjacent = world.getAdjacentTileEntities(true);
-		for(AdjacentTile tile:adjacent) {
-			if(tile.tile instanceof ILogisticsPowerProvider) {
-				if(isSideOrientation(tile.orientation) || !(tile.tile instanceof LogisticsPowerJunctionTileEntity))  {
-					list.add((ILogisticsPowerProvider)tile.tile);
-				}
-			}
-		}
-		return list;
 	}
 
 	@Override

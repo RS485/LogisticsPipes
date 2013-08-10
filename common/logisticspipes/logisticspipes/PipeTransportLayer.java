@@ -33,9 +33,6 @@ public class PipeTransportLayer extends TransportLayer{
 			_trackStatistics.recievedItem(item.getItemStack().stackSize);
 		}
 		
-		item.setArrived(true);
-		this._router.inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
-		
 		LinkedList<AdjacentTile> adjacentEntities = _worldAccess.getConnectedEntities();
 		LinkedList<ForgeDirection> possibleForgeDirection = new LinkedList<ForgeDirection>();
 		

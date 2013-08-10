@@ -5,7 +5,9 @@ import logisticspipes.logic.LogicLiquidSupplier;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -74,6 +76,9 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 		((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if (MainProxy.isServer(worldObj) && (data.item instanceof RoutedEntityItem) && ((RoutedEntityItem)(data.item)).getArrived()) {
+			notifyOfItemArival((RoutedEntityItem) data.item);
+		}
 		if (!(tile instanceof ITankContainer)) return;
 		if (tile instanceof TileGenericPipe) return;
 		ITankContainer container = (ITankContainer) tile;

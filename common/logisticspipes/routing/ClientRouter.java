@@ -118,11 +118,6 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void inboundItemArrived(RoutedEntityItem routedEntityItem) {
-		//Not On Client Side
-	}
-
-	@Override
 	public LogisticsModule getLogisticsModule() {
 		CoreRoutedPipe pipe = this.getPipe();
 		if (pipe == null) return null;

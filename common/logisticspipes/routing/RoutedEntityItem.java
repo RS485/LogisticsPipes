@@ -233,7 +233,6 @@ public class RoutedEntityItem extends EntityPassiveItem implements IRoutedItem{
 	}
 
 	@Override
-	@Deprecated
 	public void setArrived(boolean flag) {
 		this.arrived = flag;
 	}

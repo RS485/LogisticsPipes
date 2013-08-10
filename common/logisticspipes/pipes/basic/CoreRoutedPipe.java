@@ -36,7 +36,9 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequireReliableLiquidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.items.LogisticsLiquidContainer;
 import logisticspipes.logic.BaseRoutingLogic;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -74,6 +76,7 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.LiquidIdentifier;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
@@ -87,6 +90,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.liquids.LiquidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
@@ -1070,7 +1074,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
 		this._inTransitToMe.remove(routedEntityItem);		
-		//LogisticsPipes.log.info("Ariving: "+routedEntityItem.getIDStack().getItem().getFriendlyName());
+		if (logic instanceof IRequireReliableTransport){
+			((IRequireReliableTransport)logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
+		}
+		if (logic instanceof IRequireReliableLiquidTransport) {
+			ItemStack stack = routedEntityItem.getItemStack();
+			if(stack.getItem() instanceof LogisticsLiquidContainer) {
+				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
+				((IRequireReliableLiquidTransport)logic).liquidArrived(LiquidIdentifier.get(liquid), liquid.amount);
+			}
+		}
 	}
 
 	public int countOnRoute(ItemIdentifier it) {

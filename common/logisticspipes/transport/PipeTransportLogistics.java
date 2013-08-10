@@ -382,6 +382,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	@Override
 	public void endReached(PipeTransportItems pipe, EntityData data, TileEntity tile) {
 		((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if (MainProxy.isServer(worldObj) && (data.item instanceof RoutedEntityItem) && ((RoutedEntityItem)(data.item)).getArrived()) {
+			getPipe().notifyOfItemArival((RoutedEntityItem) data.item);
+		}
 		try {
 			Set<Integer> toRemoveList = (Set<Integer>) toRemove.get(PipeTransportLogistics.this);
 			toRemoveList.add(data.item.getEntityId());

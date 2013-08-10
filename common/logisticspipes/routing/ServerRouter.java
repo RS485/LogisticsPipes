@@ -624,23 +624,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 	
 	@Override
-	public void inboundItemArrived(RoutedEntityItem routedEntityItem){
-		//notify that Item has arrived
-		CoreRoutedPipe pipe = getPipe();	
-		pipe.notifyOfItemArival(routedEntityItem);
-		if (pipe != null && pipe.logic instanceof IRequireReliableTransport){
-			((IRequireReliableTransport)pipe.logic).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
-		}
-		if (pipe != null && pipe.logic instanceof IRequireReliableLiquidTransport) {
-			ItemStack stack = routedEntityItem.getItemStack();
-			if(stack.getItem() instanceof LogisticsLiquidContainer) {
-				LiquidStack liquid = SimpleServiceLocator.logisticsLiquidManager.getLiquidFromContainer(stack);
-				((IRequireReliableLiquidTransport)pipe.logic).liquidArrived(LiquidIdentifier.get(liquid), liquid.amount);				
-			}
-		}
-	}
-
-	@Override
 	public boolean act(BitSet hasBeenProcessed,IRAction actor){
 		if(hasBeenProcessed.get(this.simpleID))
 			return false;

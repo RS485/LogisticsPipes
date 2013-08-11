@@ -38,6 +38,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 			if(r.matches(craftInv, worldObj)) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
+				break;
 			}
 		}
 	}

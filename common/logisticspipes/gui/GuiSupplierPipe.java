@@ -10,6 +10,7 @@ package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
 import logisticspipes.logic.LogicSupplier;
+import logisticspipes.logic.LogicSupplier.SupplyMode;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.module.SupplierPipeModePacket;
@@ -53,7 +54,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		fontRenderer.drawString(dummyInventory.getInvName(), xSize / 2 - fontRenderer.getStringWidth(dummyInventory.getInvName())/2, 6, 0x404040);
 		fontRenderer.drawString("Inventory", 18, ySize - 102, 0x404040);
-		fontRenderer.drawString("Partial requests:", xSize - 140, ySize - 112, 0x404040);
+		fontRenderer.drawString("Request Mode:", xSize - 140, ySize - 112, 0x404040);
 	}
 	
 	@Override
@@ -70,14 +71,18 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		buttonList.add(new GuiButton(0, width / 2 + 45, height / 2 - 25, 30, 20, logic.isRequestingPartials() ? "Yes" : "No"));
+		buttonList.add(new GuiButton(0, width / 2 + 35, height / 2 - 25, 50, 20, logic.isRequestingPartials().toString()));
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
 		if (guibutton.id == 0){
-			logic.setRequestingPartials(!logic.isRequestingPartials());
-			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+			int currentMode=logic.isRequestingPartials().ordinal()+1;
+			if(currentMode >= SupplyMode.values().length){
+				currentMode=0;
+			}
+			logic.setRequestingPartials(SupplyMode.values()[currentMode]);
+			((GuiButton)buttonList.get(0)).displayString = SupplyMode.values()[currentMode].toString();
 //TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.SUPPLIER_PIPE_MODE_CHANGE, logic.xCoord, logic.yCoord, logic.zCoord).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SupplierPipeModePacket.class).setPosX(logic.xCoord).setPosY(logic.yCoord).setPosZ(logic.zCoord));
 		}
@@ -86,7 +91,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 	}
 	
 	public void refreshMode() {
-		((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
+		((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials().toString();
 	}
 	
 	@Override

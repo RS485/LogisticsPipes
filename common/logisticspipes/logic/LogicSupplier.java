@@ -45,7 +45,14 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
-	private boolean _requestPartials = false;
+	public enum SupplyMode{
+		Partial,
+		Full,
+		Bulk50,
+		Bulk100,
+		Infinite
+	}
+	private SupplyMode _requestMode = SupplyMode.Bulk50;
 
 	public boolean pause = false;
 	
@@ -65,7 +72,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, worldObj, xCoord, yCoord, zCoord);
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, xCoord, yCoord, zCoord, isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials() ? 1 : 0).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials().ordinal()).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), (Player)entityplayer);
 		}
 	}
 	
@@ -96,8 +103,8 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			if (tile.tile instanceof TileGenericPipe) continue;
 			if (!(tile.tile instanceof IInventory)) continue;
 			
-			//Do not attempt to supply redstone engines
-			if (tile.tile instanceof TileEngine && ((TileEngine)tile.tile).engine instanceof EngineWood) continue;
+//			//Do not attempt to supply redstone engines
+//			if (tile.tile instanceof TileEngine && ((TileEngine)tile.tile).engine instanceof EngineWood) continue;
 			
 			IInventory inv = (IInventory) tile.tile;
 			if (inv.getSizeInventory() < 1) continue;
@@ -121,7 +128,22 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 			//Reduce what I have and what have been requested already
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
 				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
-				if (haveCount != null){
+				if(haveCount==null)
+					haveCount=0;
+				int spaceAvailable=invUtil.roomForItem(item.getKey());
+				if(_requestMode==SupplyMode.Infinite){
+					item.setValue(Math.min(item.getKey().getMaxStackSize(),spaceAvailable));
+					continue;
+
+				}
+				if(spaceAvailable == 0 || 
+						( _requestMode==SupplyMode.Bulk50 && haveCount>item.getValue()/2) ||
+						( _requestMode==SupplyMode.Bulk100 && haveCount>=item.getValue()))
+				{
+					item.setValue(0);
+					continue;
+				}
+				if (haveCount >0){
 					item.setValue(item.getValue() - haveCount);
 					// so that 1 damaged item can't satisfy a request for 2 other damage values.
 					haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
@@ -145,7 +167,7 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 				
 				boolean success = false;
 
-				if(_requestPartials) {
+				if(_requestMode!=SupplyMode.Full) {
 					neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
 					if(neededCount > 0) {
 						success = true;
@@ -173,14 +195,24 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);	
 		dummyInventory.readFromNBT(nbttagcompound, "");
-		_requestPartials = nbttagcompound.getBoolean("requestpartials");
+		if(nbttagcompound.hasKey("requestmode")){
+			_requestMode=SupplyMode.values()[nbttagcompound.getShort("requestmode")];
+		}
+		if(nbttagcompound.hasKey("requestpartials")){
+			boolean oldPartials = nbttagcompound.getBoolean("requestpartials");
+			if(oldPartials)
+				_requestMode=SupplyMode.Partial;
+			else
+				_requestMode=SupplyMode.Full;
+		}
     }
 
 	@Override
     public void writeToNBT(NBTTagCompound nbttagcompound) {
     	super.writeToNBT(nbttagcompound);
     	dummyInventory.writeToNBT(nbttagcompound, "");
-    	nbttagcompound.setBoolean("requestpartials", _requestPartials);
+    	nbttagcompound.setShort("requestmode", (short) _requestMode.ordinal());
+//    	nbttagcompound.setBoolean("requestpartials", _requestPartials);
     }
 	
 	private void decreaseRequested(ItemIdentifierStack item) {
@@ -220,11 +252,11 @@ public class LogicSupplier extends BaseRoutingLogic implements IRequireReliableT
 		delayThrottle();
 	}
 	
-	public boolean isRequestingPartials(){
-		return _requestPartials;
+	public SupplyMode isRequestingPartials(){
+		return _requestMode;
 	}
 	
-	public void setRequestingPartials(boolean value){
-		_requestPartials = value;
+	public void setRequestingPartials(SupplyMode value){
+		_requestMode = value;
 	}
 }

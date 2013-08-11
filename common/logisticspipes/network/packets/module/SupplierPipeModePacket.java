@@ -1,6 +1,7 @@
 package logisticspipes.network.packets.module;
 
 import logisticspipes.logic.LogicSupplier;
+import logisticspipes.logic.LogicSupplier.SupplyMode;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -31,9 +32,12 @@ public class SupplierPipeModePacket extends CoordinatesPacket {
 			return;
 		}
 		final LogicSupplier logic = (LogicSupplier) pipe.pipe.logic;
-		logic.setRequestingPartials(!logic.isRequestingPartials());
+		int mode = logic.isRequestingPartials().ordinal() +1;
+		if(mode >= SupplyMode.values().length)
+			mode=0;
+		logic.setRequestingPartials(SupplyMode.values()[mode]);
 //TODO	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, getPosX(), getPosY(), getPosZ(), logic.isRequestingPartials() ? 1 : 0).getPacket(), (Player)player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(logic.isRequestingPartials() ? 1 : 0).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(logic.isRequestingPartials().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player)player);
 	}
 }
 

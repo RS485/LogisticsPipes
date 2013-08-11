@@ -735,7 +735,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (doFullRefresh) {
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {
-				updateAdjacentAndLsa();
+				updateAdjacentAndLsa(); // also calls checkAdjacentUpdate() by default;
 			}
 			ensureRouteTableIsUpToDate(false);
 			CoreRoutedPipe pipe = getPipe();

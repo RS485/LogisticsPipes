@@ -202,6 +202,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
 				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				count = stackToSend.stackSize;
 				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;

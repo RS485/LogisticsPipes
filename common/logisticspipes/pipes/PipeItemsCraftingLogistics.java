@@ -562,7 +562,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			template.addRequirement(liquid, amount, liquidTarget[i]);
 		}
 		
-		if(this.getUpgradeManager().hasByproductExtractor()) {
+		if(this.getUpgradeManager().hasByproductExtractor() && ((BaseLogicCrafting)logic).getByproductItem() != null) {
 			template.addByproduct(ItemIdentifierStack.GetFromStack(((BaseLogicCrafting)logic).getByproductItem()));
 		}
 		

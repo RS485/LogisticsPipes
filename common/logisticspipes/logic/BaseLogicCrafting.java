@@ -421,24 +421,23 @@ public class BaseLogicCrafting extends BaseRoutingLogic implements IRequireRelia
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {
-		final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-				if (provider.importRecipe(tile.tile, _dummyInventory))
-					break;
-			}
-		}
-		
-		if(player == null) return;
-		
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(worldObj)) {
 			// Send packet asking for import
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
 			MainProxy.sendPacketToServer(packet);
 		} else{
+			final WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);
+			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
+				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
+					if (provider.importRecipe(tile.tile, _dummyInventory))
+						break;
+				}
+			}
 			// Send inventory as packet
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord);
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			if(player != null) {
+				MainProxy.sendPacketToPlayer(packet, (Player)player);
+			}
 			MainProxy.sendPacketToAllWatchingChunk(this.xCoord, this.zCoord, MainProxy.getDimensionForWorld(worldObj), packet);
 		}
 	}

@@ -115,7 +115,7 @@ public class Textures {
 	public static String LOGISTICSPIPE_FIREWALL_TEXTURE_FILE =  "pipes/firewall";
 	
 	// Liquid Pipes
-	public static String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE =  "pipes/original/liquid_connector";
+	public static String LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE =  "pipes/liquid_connector";
 	public static String LOGISTICSPIPE_LIQUID_BASIC_FILE =  "pipes/liquid_basic";
 	public static String LOGISTICSPIPE_LIQUID_INSERTION_FILE =  "pipes/liquid_insertion";
 	public static String LOGISTICSPIPE_LIQUID_PROVIDER_FILE =  "pipes/liquid_provider";

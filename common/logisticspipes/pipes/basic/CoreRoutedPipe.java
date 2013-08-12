@@ -961,15 +961,16 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount, providersToIgnore)) {
-				provider.useEnergy(amount, providersToIgnore);
-				if(sparkles) {
-					int particlecount = amount;
-					if (particlecount > 10) {
-						particlecount = 10;
+				if(provider.useEnergy(amount, providersToIgnore)) {
+					if(sparkles) {
+						int particlecount = amount;
+						if (particlecount > 10) {
+							particlecount = 10;
+						}
+						MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, particlecount);
 					}
-					MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.worldObj, particlecount);
+					return true;
 				}
-				return true;
 			}
 		}
 		return false;

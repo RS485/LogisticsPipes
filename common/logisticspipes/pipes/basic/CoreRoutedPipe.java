@@ -831,6 +831,9 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
+		if(container != null && container.hasPlug(side)) {
+			return false;
+		}
 		if(!stillNeedReplace) {
 			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
 				return false;

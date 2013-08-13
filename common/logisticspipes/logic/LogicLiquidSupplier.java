@@ -18,6 +18,7 @@ import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsLiquidSupplier;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.AdjacentTile;
@@ -56,6 +57,10 @@ public class LogicLiquidSupplier extends BaseRoutingLogic implements IRequireRel
 	
 	@Override
 	public void throttledUpdateEntity() {
+		if (!((CoreRoutedPipe)this.container.pipe).isEnabled()){
+			return;
+		}
+
 		if (MainProxy.isClient(worldObj)) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(worldObj, xCoord, yCoord, zCoord);

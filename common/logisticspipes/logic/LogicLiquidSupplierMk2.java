@@ -12,6 +12,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.LiquidSupplierAmount;
 import logisticspipes.pipes.PipeLiquidSupplierMk2;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.request.RequestTree;
 import logisticspipes.utils.AdjacentTile;
@@ -45,6 +46,10 @@ public class LogicLiquidSupplierMk2 extends BaseRoutingLogic implements IRequire
 
 	@Override
 	public void throttledUpdateEntity() {
+		if (!((CoreRoutedPipe)this.container.pipe).isEnabled()){
+			return;
+		}
+
 		if (MainProxy.isClient(worldObj)) return;
 		super.throttledUpdateEntity();
 		if(dummyInventory.getStackInSlot(0) == null) return;

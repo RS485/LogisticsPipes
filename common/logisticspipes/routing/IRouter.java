@@ -54,7 +54,7 @@ public interface IRouter {
 	 * the visitor
 	 * @return true if the bitset was cleared at some stage during the process, resulting in a potentially incomplete bitset.
 	 */
-	public boolean act(BitSet hasBeenProcessed, IRAction actor);
+	public void act(BitSet hasBeenProcessed, IRAction actor);
 	public void flagForRoutingUpdate();
 	public boolean checkAdjacentUpdate();
 	

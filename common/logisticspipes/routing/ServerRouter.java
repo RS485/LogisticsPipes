@@ -624,18 +624,18 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 	
 	@Override
-	public boolean act(BitSet hasBeenProcessed,IRAction actor){
+	public void act(BitSet hasBeenProcessed,IRAction actor){
 		if(hasBeenProcessed.get(this.simpleID))
-			return false;
+			return;
 		hasBeenProcessed.set(this.simpleID);
 		if(!actor.isInteresting(this))
-			return false;
+			return;
 		
 		actor.doTo(this);
 		for(IRouter r : _adjacentRouter.keySet()) {
 			r.act(hasBeenProcessed, actor);
 		}
-		return false;
+		return;
 	}
 	
 	/**

@@ -74,17 +74,16 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 	}
 
 	@Override
-	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
-		boolean hasBeenReset=false;
+	public void act(BitSet hasBeenProcessed, IRAction actor) {
 		if(hasBeenProcessed.get(this.simpleID))
-			return hasBeenReset;
+			return;
 		hasBeenProcessed.set(this.simpleID);
 		if(!ForgeDirection.UNKNOWN.equals(side)) {
 			IRouter router = _otherRouters[6];
 			if(router != null) {
 				if(router instanceof FilteringRouter) {
 					if(ForgeDirection.UNKNOWN.equals(((FilteringRouter)router).side)) {
-						hasBeenReset = router.act(hasBeenProcessed, actor);
+						router.act(hasBeenProcessed, actor);
 					} else {
 						throw new RuntimeException("Why is the FilteringRouter not centered? (" + router.toString() + ")");
 					}
@@ -96,12 +95,12 @@ public class FilteringRouter extends ServerRouter implements IFilteringRouter {
 			}
 		}
 		if(!actor.isInteresting(this))
-			return hasBeenReset;
+			return;
 		actor.doTo(this);
 		for(IRouter r : _adjacentRouter.keySet()) {
-			hasBeenReset=hasBeenReset || r.act(hasBeenProcessed, actor);
+			r.act(hasBeenProcessed, actor);
 		}
-		return hasBeenReset;
+		return;
 	}
 
 	@Override

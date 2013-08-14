@@ -36,7 +36,7 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 				if(tile instanceof TileGenericPipe) return false;
 				if (tile instanceof ITankContainer) {
 					ITankContainer liq = (ITankContainer) tile;
-					if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
+					if (liq.getTanks(dir.getOpposite()) != null && liq.getTanks(dir.getOpposite()).length > 0)
 						return true;
 				}
 				return false;

@@ -64,7 +64,7 @@ public class PipeLiquidBasic extends LiquidRoutedPipe implements ILiquidSink {
 		int freeSpace = -onTheWay;
 		for(Pair<TileEntity,ForgeDirection> pair:getAdjacentTanks(true)) {
 			LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
-			freeSpace += ident.getFreeSpaceInsideTank((ITankContainer)pair.getValue1(), pair.getValue2());
+			freeSpace += ident.getFreeSpaceInsideTank((ITankContainer)pair.getValue1(), pair.getValue2().getOpposite());
 			freeSpace += ident.getFreeSpaceInsideTank(tank);
 			if(freeSpace >= stack.amount) {
 				return stack.amount;

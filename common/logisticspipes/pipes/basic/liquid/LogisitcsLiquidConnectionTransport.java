@@ -22,7 +22,7 @@ public class LogisitcsLiquidConnectionTransport extends PipeTransportLiquids {
 		if (tile instanceof ITankContainer) {
 			ITankContainer liq = (ITankContainer) tile;
 
-			if (liq.getTanks(side) != null && liq.getTanks(side).length > 0)
+			if (liq.getTanks(side.getOpposite()) != null && liq.getTanks(side.getOpposite()).length > 0)
 				return true;
 		}
 

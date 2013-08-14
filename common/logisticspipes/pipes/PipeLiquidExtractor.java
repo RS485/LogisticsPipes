@@ -16,7 +16,8 @@ public class PipeLiquidExtractor extends PipeLiquidInsertion {
 
 	private int[] liquidToExtract = new int[6];
 
-	private static final int flowRate = 25;
+	private static final int flowRate = 500;
+	private static final int energyPerFlow = 5;
 	
 	public PipeLiquidExtractor(int itemID) {
 		super(itemID);
@@ -25,7 +26,7 @@ public class PipeLiquidExtractor extends PipeLiquidInsertion {
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(worldObj.getWorldTime() % 10 == 0) return;
+		if(worldObj.getWorldTime() % 10 != 0) return;
 		LinkedList<AdjacentTile> connected = this.getConnectedEntities();
 		for(AdjacentTile tile:connected) {
 			if(tile.tile instanceof ITankContainer && !(tile.tile instanceof TileGenericPipe)) {
@@ -38,9 +39,9 @@ public class PipeLiquidExtractor extends PipeLiquidInsertion {
 		int i = side.ordinal();
 		LiquidStack contained = ((PipeLiquidTransportLogistics)this.transport).getTanks(side)[0].getLiquid();
 		int amountMissing = ((PipeLiquidTransportLogistics)this.transport).getSideCapacity() - (contained != null ? contained.amount : 0);
-		if(liquidToExtract[i] < Math.min(200, amountMissing)) {
-			if(this.useEnergy(2)) {
-				liquidToExtract[i] += Math.min(200, amountMissing);
+		if(liquidToExtract[i] < Math.min(flowRate, amountMissing)) {
+			if(this.useEnergy(energyPerFlow)) {
+				liquidToExtract[i] += Math.min(flowRate, amountMissing);
 			}
 		}
 		LiquidStack extracted = container.drain(side.getOpposite(), liquidToExtract[i] > flowRate ? flowRate : liquidToExtract[i], false);

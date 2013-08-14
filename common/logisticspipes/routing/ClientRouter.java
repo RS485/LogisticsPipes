@@ -140,8 +140,8 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
-		return false;
+	public void act(BitSet hasBeenProcessed, IRAction actor) {
+		
 	}
 
 	@Override

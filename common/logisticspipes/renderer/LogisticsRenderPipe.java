@@ -445,7 +445,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		return getDisplayLiquidLists(liquidId, stack.itemMeta, world);
 	}
 
-	private DisplayLiquidList getDisplayLiquidLists(int liquidId, int meta, World world) {
+	private DisplayLiquidList getDisplayLiquidLists(int liquidId, final int meta, World world) {
 		if (displayLiquidLists.containsKey(liquidId)) {
 			HashMap<Integer, DisplayLiquidList> x = displayLiquidLists.get(liquidId);
 			if (x.containsKey(meta))
@@ -457,11 +457,18 @@ public class LogisticsRenderPipe extends RenderPipe {
 		DisplayLiquidList d = new DisplayLiquidList();
 		displayLiquidLists.get(liquidId).put(meta, d);
 
-		BlockInterface block = new BlockInterface();
+		BlockInterface block;
 
 		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
+			block = new BlockInterface() {
+				@Override
+				public Icon getBlockTextureFromSide(int i) {
+					return baseBlock.getIcon(i, meta);
+				}
+			};
 			block.baseBlock = Block.blocksList[liquidId];
 		} else {
+			block = new BlockInterface();
 			block.baseBlock = Block.waterStill;
 			block.texture = Item.itemsList[liquidId].getIconFromDamage(meta);
 		}

@@ -811,7 +811,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 		return false;
 	}
 	
-	public boolean logisitcsIsPipeConnected(TileEntity tile) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
 		return false;
 	}
 	
@@ -839,7 +839,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 				return false;
 			}
 		}
-		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile, dir);
+		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile, dir)) && !disconnectPipe(tile, dir);
 	}
 	
 	public void connectionUpdate() {

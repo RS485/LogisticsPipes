@@ -57,11 +57,11 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 	}
 
 	@Override
-	public boolean logisitcsIsPipeConnected(TileEntity tile) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
 		if (tile instanceof ITankContainer) {
 			ITankContainer liq = (ITankContainer) tile;
 
-			if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
+			if (liq.getTanks(dir.getOpposite()) != null && liq.getTanks(dir.getOpposite()).length > 0)
 				return true;
 		}
 
@@ -87,7 +87,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 		if (tile instanceof ITankContainer) {
 			ITankContainer liq = (ITankContainer) tile;
 
-			if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
+			if (liq.getTanks(connection.getOpposite()) != null && liq.getTanks(connection.getOpposite()).length > 0)
 				return true;
 		}
 		if(tile instanceof TileGenericPipe) {

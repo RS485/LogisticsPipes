@@ -674,9 +674,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		public boolean isInteresting(IRouter that) {
 			return that.checkAdjacentUpdate();
 		}
+		
 		@Override
-		public boolean doTo(IRouter that) {
-			return false;
+		public void doTo(IRouter that) {
+			
 		}
 	}
 
@@ -700,9 +701,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			return true;
 		}
 		@Override
-		public boolean doTo(IRouter that) {
+		public void doTo(IRouter that) {
 			that.flagForRoutingUpdate();
-			return false;
 		}
 	}
 

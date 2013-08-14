@@ -8,13 +8,11 @@
 
 package logisticspipes.routing;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import net.minecraftforge.common.ForgeDirection;
@@ -22,7 +20,7 @@ import net.minecraftforge.common.ForgeDirection;
 public interface IRouter {
 	public interface IRAction {
 		public boolean isInteresting(IRouter that);
-		public boolean doTo(IRouter that);
+		public void doTo(IRouter that);
 	}
 	public void destroy();
 	public void update(boolean fullRefresh);

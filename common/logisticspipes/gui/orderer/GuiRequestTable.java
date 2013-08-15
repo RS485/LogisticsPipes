@@ -1,14 +1,16 @@
 package logisticspipes.gui.orderer;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
+
 import logisticspipes.interfaces.ISlotClick;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
-import logisticspipes.network.packets.orderer.RequestSubmitPacket;
+import logisticspipes.network.packets.orderer.RequestSubmitListPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -143,14 +145,11 @@ public class GuiRequestTable extends GuiOrderer {
 			guibutton.displayString = displayString;
 			refreshItems();
 		} else if(guibutton.id == 14) {
-			SimpleInventory compress = new SimpleInventory(9, "", Integer.MAX_VALUE);
-			for(int i=0; i < 9;i++) {
-				compress.addCompressed(_table.matrix.getStackInSlot(i));
+			ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9); 
+			for(Entry<ItemIdentifier,Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
+				list.add(e.getKey().makeStack(e.getValue()));
 			}
-			for(int i=0; i < 9;i++) {
-				ItemStack slot = compress.getStackInSlot(i);
-				if(slot != null) MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(ItemIdentifierStack.GetFromStack(slot)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-			}
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			refreshItems();
 		}
 	}

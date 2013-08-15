@@ -134,6 +134,35 @@ public class RequestHandler {
 	}
 	
 
+	public static void requestList(final EntityPlayer player, final List<ItemIdentifierStack> list, CoreRoutedPipe pipe) {
+		if(!pipe.useEnergy(5)) {
+			player.sendChatToPlayer("No Energy");
+			return;
+		}
+		RequestTree.request(list, pipe, new RequestLog() {
+			@Override
+			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				}
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(true), (Player)player);
+			}
+			
+			@Override
+			public void handleSucessfullRequestOf(ItemIdentifier item, int count) {}
+			
+			@Override
+			public void handleSucessfullRequestOfList(Map<ItemIdentifier,Integer> items) {
+				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());
+				for(Entry<ItemIdentifier,Integer>e:items.entrySet()) {
+					coll.add(new ItemIdentifierStack(e.getKey(), e.getValue()));
+				}
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(MissingItems.class).setItems(coll).setFlag(false), (Player)player);
+			}
+		},RequestTree.defaultRequestFlags);
+	}
+
 	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe requester, final EntityPlayer player) {
 		if(!requester.useEnergy(5)) {
 			player.sendChatToPlayer("No Energy");

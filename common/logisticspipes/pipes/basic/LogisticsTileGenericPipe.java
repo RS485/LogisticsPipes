@@ -62,7 +62,11 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 	@Override
 	public void invalidate() {
 		if(!getCPipe().blockRemove()) {
-			super.invalidate();
+			initialized = false;
+			this.tileEntityInvalid = true;
+			if (pipe != null) {
+				pipe.invalidate();
+			}
 		}
 	}
 	

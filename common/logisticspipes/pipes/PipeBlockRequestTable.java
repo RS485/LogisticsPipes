@@ -3,10 +3,10 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
@@ -237,24 +237,31 @@ outer:
 		toSortInv.writeToNBT(par1nbtTagCompound, "toSortInv");
 	}
 
+	@Override
+	public boolean sharesInventoryWith(CoreRoutedPipe other){
+		return false;
+	}
+
+	@Override
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {
-			_transportLayer = new PipeTransportLayer(this, this, getRouter()) {
+			_transportLayer = new TransportLayer() {
 				@Override
-				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+				public boolean stillWantItem(IRoutedItem item) {
+					PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
 					if(item.getItemStack() != null) {
 						ItemStack stack = item.getItemStack();
 						stack.stackSize = inv.addCompressed(stack);
 						item.setItemStack(stack);
-						if(stack.stackSize == 0) {
-							PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
-							return null;
-						}
 					}
-					return super.itemArrived(item, denyed);
+					return false;
+				}
+				@Override
+				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+					return null;
 				}
 			};
 		}
-		return super.getTransportLayer();
+		return _transportLayer;
 	}
 }

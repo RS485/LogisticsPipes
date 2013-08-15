@@ -160,7 +160,8 @@ public class DummyContainer extends Container{
 		
 		if(slot instanceof HandelableSlot) {
 			if(currentlyEquippedStack == null) {
-				return ((HandelableSlot)slot).getProvidedStack();
+				inventoryplayer.setItemStack(((HandelableSlot)slot).getProvidedStack());
+				return null;
 			}
 			return currentlyEquippedStack;
 		}

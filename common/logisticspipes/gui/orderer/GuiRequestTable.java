@@ -49,8 +49,7 @@ public class GuiRequestTable extends GuiOrderer {
 		dummy.addCallableSlotHandler(0, _table.resultInv, guiLeft + 101, guiTop + 33, new ISlotClick() {
 			@Override
 			public ItemStack getResultForClick() {
-				_table.inv.addCompressed(_table.getOutput());
-				return null;
+				return _table.getResultForClick();
 			}
 		});
 		dummy.addNormalSlot(0, _table.toSortInv, guiLeft + 164, guiTop + 51);
@@ -73,7 +72,9 @@ public class GuiRequestTable extends GuiOrderer {
 		buttonList.add(new SmallGuiButton(13,  guiLeft + 10, bottom - 28, 46, 10, "Content")); // Component
 		buttonList.add(new SmallGuiButton(9, guiLeft + 10, bottom - 41, 46, 10, "Both"));
 		this.guiLeft -= this.getLeftAddition();
-		buttonList.add(new SmallGuiButton(14, guiLeft + 75, guiTop + 55, 46, 10, "Request")); // Refresh
+		buttonList.add(new SmallGuiButton(14, guiLeft + 96, guiTop + 53, 10, 10, "+")); // +1
+		buttonList.add(new SmallGuiButton(15, guiLeft + 108, guiTop + 53, 15, 10, "++")); // +10
+		buttonList.add(new SmallGuiButton(16, guiLeft + 96, guiTop + 64, 26, 10, "+++")); // +64
 	}
 	
 	@Override
@@ -145,13 +146,21 @@ public class GuiRequestTable extends GuiOrderer {
 			guibutton.displayString = displayString;
 			refreshItems();
 		} else if(guibutton.id == 14) {
-			ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9); 
-			for(Entry<ItemIdentifier,Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
-				list.add(e.getKey().makeStack(e.getValue()));
-			}
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
-			refreshItems();
+			requestMatrix(1);
+		} else if(guibutton.id == 15) {
+			requestMatrix(10);
+		} else if(guibutton.id == 16) {
+			requestMatrix(64);
 		}
+	}
+
+	private void requestMatrix(int multiplier) {
+		ArrayList<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(9);
+		for(Entry<ItemIdentifier,Integer> e : _table.matrix.getItemsAndCount().entrySet()) {
+			list.add(e.getKey().makeStack(e.getValue() * multiplier));
+		}
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
+		refreshItems();
 	}
 
 	@Override

@@ -539,8 +539,7 @@ public class GuiHandler implements IGuiHandler {
 				dummy.addCallableSlotHandler(0, ((PipeBlockRequestTable)pipe.pipe).resultInv, 0, 0, new ISlotClick() {
 					@Override
 					public ItemStack getResultForClick() {
-						((PipeBlockRequestTable)fpipe.pipe).inv.addCompressed(((PipeBlockRequestTable)fpipe.pipe).getOutput());
-						return null;
+						return ((PipeBlockRequestTable)fpipe.pipe).getResultForClick();
 					}
 				});
 				dummy.addNormalSlot(0, ((PipeBlockRequestTable)pipe.pipe).toSortInv, 0, 0);

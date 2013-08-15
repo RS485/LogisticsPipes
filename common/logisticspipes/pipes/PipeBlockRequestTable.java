@@ -206,6 +206,17 @@ outer:
 		return result;
 	}
 
+	public ItemStack getResultForClick() {
+		ItemStack result = getOutput();
+		if(result == null)
+			return null;
+		int left = inv.addCompressed(result);
+		if(left == 0)
+			return null;
+		result.stackSize = left;
+		return result;
+	}
+
 	@Override
 	public void InventoryChanged(SimpleInventory inventory) {
 		if(inventory == matrix) {

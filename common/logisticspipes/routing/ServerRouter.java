@@ -941,6 +941,12 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		string.append(isDestroied());
 		return string.append("}").toString();
 	}
+
+	@Override
+	public void forceLsaUpdate() {
+		BitSet visited = new BitSet(ServerRouter.getBiggestSimpleID());
+		this.act(visited, new flagForLSAUpdate());
+	}
 }
 
 

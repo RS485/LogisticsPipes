@@ -183,4 +183,8 @@ public class ClientRouter implements IRouter {
 	public boolean isValidCache() {
 		return true;
 	}
+	
+	@Override
+	public void forceLsaUpdate() {
+	}
 }

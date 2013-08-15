@@ -65,4 +65,7 @@ public interface IRouter {
 	public List<IRouter> getFilteringRouter();
 	
 	public boolean isValidCache();
+	
+	//force-update LSA version in the network
+	public void forceLsaUpdate();
 }

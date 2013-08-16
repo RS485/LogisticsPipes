@@ -145,7 +145,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 				LogisticsLiquidSection tank = ((PipeLiquidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 				validDirections++;
 				if(tank.getLiquid() == null) continue;
-				int filled = ((ITankContainer)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getLiquid(), true);
+				int filled = ((ITankContainer)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getLiquid().copy(), true);
 				if(filled == 0) continue;
 				LiquidStack drain = tank.drain(filled, true);
 				if(drain == null || filled != drain.amount) {
@@ -224,7 +224,7 @@ public abstract class LiquidRoutedPipe extends CoreRoutedPipe implements IItemTr
 					Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
 					ITankContainer tank = (ITankContainer) pair.getValue1();
 					ForgeDirection dir = pair.getValue2();
-					filled = tank.fill(dir.getOpposite(), liquid, true);
+					filled = tank.fill(dir.getOpposite(), liquid.copy(), true);
 					liquid.amount -= filled;
 					if (liquid.amount != 0) continue;
 					return;

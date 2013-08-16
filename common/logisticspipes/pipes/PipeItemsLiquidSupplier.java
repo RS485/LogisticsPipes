@@ -91,8 +91,8 @@ public class PipeItemsLiquidSupplier extends CoreRoutedPipe implements IRequestI
 		if(getUpgradeManager().hasSneakyUpgrade()) {
 			orientation = getUpgradeManager().getSneakyOrientation();
 		}
-		while (data.item.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
-			container.fill(orientation, liquidId, true);
+		while (data.item.getItemStack().stackSize > 0 && container.fill(orientation, liquidId.copy(), false) == liquidId.amount && this.useEnergy(5)) {
+			container.fill(orientation, liquidId.copy(), true);
 			data.item.getItemStack().stackSize--;
 			if (data.item.getItemStack().itemID >= 0 && data.item.getItemStack().itemID < Item.itemsList.length){
 				Item item = Item.itemsList[data.item.getItemStack().itemID];

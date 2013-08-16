@@ -310,6 +310,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				}
 				//sneaky insertion
 				UpgradeManager manager = getPipe().getUpgradeManager();
+				boolean tookSome = false;
 				if(!manager.hasCombinedSneakyUpgrade()) {
 					ForgeDirection insertion = data.output.getOpposite();
 					if(manager.hasSneakyUpgrade()) {
@@ -318,6 +319,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 					ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 					
 					data.item.getItemStack().stackSize -= added.stackSize;
+					if(added.stackSize > 0)
+						tookSome = true;
 					
 					//For InvSysCon
 					if(data.item instanceof IRoutedItem) {
@@ -335,6 +338,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 						ItemStack added = InventoryHelper.getTransactorFor(tile).add(data.item.getItemStack(), insertion, true);
 						
 						data.item.getItemStack().stackSize -= added.stackSize;
+						if(added.stackSize > 0)
+							tookSome = true;
 						
 						//For InvSysCon
 						if(data.item instanceof IRoutedItem) {
@@ -346,6 +351,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 						}
 						if(data.item.getItemStack().stackSize <= 0) break;
 					}
+				}
+				if(data.item.getItemStack().stackSize > 0 && tookSome && data.item instanceof IRoutedItem) {
+					((IRoutedItem)data.item).setBufferCounter(0);
 				}
 				
 				//LogisticsPipes end

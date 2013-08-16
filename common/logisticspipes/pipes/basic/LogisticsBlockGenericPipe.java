@@ -32,6 +32,8 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	@Override
 	public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> result = super.getBlockDropped(world, x, y, z, metadata, fortune);
+		if(result == null)
+			return null;
 		for(int i=0;i<result.size();i++) {
 			ItemStack stack = result.get(i);
 			if(stack.itemID == LogisticsPipes.LogisticsBrokenItem.itemID) {

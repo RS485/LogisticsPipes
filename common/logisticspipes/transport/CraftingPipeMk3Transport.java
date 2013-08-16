@@ -13,7 +13,7 @@ public class CraftingPipeMk3Transport extends PipeTransportLogistics {
 
 	@Override
 	protected void reverseItem(EntityData data) {
-		data.item.getItemStack().stackSize = pipe.inv.addCompressed(data.item.getItemStack());
+		data.item.getItemStack().stackSize = pipe.inv.addCompressed(data.item.getItemStack(), true);
 		if(data.item.getItemStack().stackSize > 0) {
 			super.reverseItem(data);
 		}

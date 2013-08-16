@@ -196,12 +196,22 @@ outer:
 		for(int i=0;i<9;i++) {
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, null);
-			if(left != null) inv.addCompressed(left);
+			if(left != null) {
+				left.stackSize = inv.addCompressed(left, false);
+				if(left.stackSize > 0) {
+					inv.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+				}
+			}
 		}
 		for(int i=0;i<fake.inventory.getSizeInventory();i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, null);
-			if(left != null) inv.addCompressed(left);
+			if(left != null) {
+				left.stackSize = inv.addCompressed(left, false);
+				if(left.stackSize > 0) {
+					inv.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+				}
+			}
 		}
 		return result;
 	}
@@ -210,11 +220,10 @@ outer:
 		ItemStack result = getOutput();
 		if(result == null)
 			return null;
-		int left = inv.addCompressed(result);
-		if(left == 0)
-			return null;
-		result.stackSize = left;
-		return result;
+		result.stackSize = inv.addCompressed(result, false);
+		if(result.stackSize > 0)
+			return result;
+		return null;
 	}
 
 	@Override
@@ -262,7 +271,7 @@ outer:
 					PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
 					if(item.getItemStack() != null) {
 						ItemStack stack = item.getItemStack();
-						stack.stackSize = inv.addCompressed(stack);
+						stack.stackSize = inv.addCompressed(stack, false);
 						item.setItemStack(stack);
 					}
 					return false;

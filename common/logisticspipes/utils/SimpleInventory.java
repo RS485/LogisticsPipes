@@ -151,7 +151,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 	}
 
-	private static void dropItems(World world, ItemStack stack, int i, int j, int k) {
+	public static void dropItems(World world, ItemStack stack, int i, int j, int k) {
 		if(stack.stackSize <= 0)
 			return;
 		float f1 = 0.7F;
@@ -199,19 +199,20 @@ public class SimpleInventory implements IInventory, ISaveState{
 		onInventoryChanged();
 	}
 	
-	private int tryAddToSlot(int i, ItemStack stack) {
+	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
 		ItemStack slot = _contents[i];
 		if(slot == null) {
 			_contents[i] = stack.copy();
-			return stack.stackSize;
+			_contents[i].stackSize = Math.min(_contents[i].stackSize, realstacklimit);
+			return _contents[i].stackSize;
 		}
-		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
+		ItemIdentifier slotIdent = ItemIdentifier.get(slot);
 		if(slotIdent.equals(stackIdent)) {
 			slot.stackSize += stack.stackSize;
-			if(slot.stackSize > this._stackLimit) {
-				int ans = stack.stackSize - (slot.stackSize - this._stackLimit);
-				slot.stackSize = this._stackLimit;
+			if(slot.stackSize > realstacklimit) {
+				int ans = stack.stackSize - (slot.stackSize - realstacklimit);
+				slot.stackSize = realstacklimit;
 				return ans;
 			} else {
 				return stack.stackSize;
@@ -221,22 +222,28 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 	}
 	
-	public int addCompressed(ItemStack stack) {
+	public int addCompressed(ItemStack stack, boolean ignoreMaxStackSize) {
 		if(stack == null) return 0;
 		stack = stack.copy();
+
+		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
+		int stacklimit = this._stackLimit;
+		if(!ignoreMaxStackSize)
+			stacklimit = Math.min(stacklimit, stackIdent.getMaxStackSize());
+
 		for(int i=0; i<this._contents.length;i++) {
 			if(stack.stackSize <= 0) {
 				break;
 			}
 			if(_contents[i] == null) continue; //Skip Empty Slots on first attempt.
-			int added = tryAddToSlot(i, stack);
+			int added = tryAddToSlot(i, stack, stacklimit);
 			stack.stackSize -= added;
 		}
 		for(int i=0; i<this._contents.length;i++) {
 			if(stack.stackSize <= 0) {
 				break;
 			}
-			int added = tryAddToSlot(i, stack);
+			int added = tryAddToSlot(i, stack, stacklimit);
 			stack.stackSize -= added;
 		}
 		onInventoryChanged();

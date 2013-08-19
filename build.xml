@@ -14,8 +14,8 @@
 	<property name="jar.dir"              value="${build.dir}/dist"/>
 	<property name="lib.dir"              value="${build.dir}/lib"/>
 
-	<property name="mcp.dir"              value="${build.dir}/mcp"/>
-	<property name="forge.dir"            value="${mcp.dir}/forge"/>
+	<property name="forge.dir"            value="${build.dir}/forge"/>
+	<property name="mcp.dir"              value="${forge.dir}/mcp"/>
 	<property name="buildcraft.dir"       value="${mcp.dir}/unpack/buildcraft"/>
 	<property name="forestry.dir"         value="${mcp.dir}/unpack/forestry"/>
 	<property name="ic2.dir"              value="${mcp.dir}/unpack/ic2"/>
@@ -24,23 +24,21 @@
 	<property name="te.dir"               value="${mcp.dir}/unpack/te"/>
 	<property name="waila.dir"            value="${mcp.dir}/unpack/waila"/>
 
-	<property name="clientsrc.dir"        value="${mcp.dir}/src/minecraft"/>
-	<property name="commonsrc.dir"        value="${clientsrc.dir}"/>
+	<property name="minecraftsrc.dir"        value="${mcp.dir}/src/minecraft"/>
+    
+	<property file="${minecraftsrc.dir}/fmlversion.properties" />
 	
-	<property file="${clientsrc.dir}/fmlversion.properties" />
-	
-	<property name="downloadserver"       value="http://www.theZorro266.com"/>
-	<property name="downloadserver.dir"   value="rs485/"/>
+	<property name="downloadserver"       value="http://rs485.theZorro266.com"/>
+	<property name="downloadserver.dir"   value="external/"/>
 	<property name="downloadserver.full"  value="${downloadserver}/${downloadserver.dir}"/>
 
 	<property name="antcont.version"      value="1.0b3"/>
-	<property name="mcp.version"          value="751"/>
-	<property name="mc.version"           value="1.5.2"/>
-	<property name="forge.version"        value="7.8.0.685"/>
-	<property name="bc.version"           value="3.7.1"/>
-	<property name="forestry.version"     value="2.2.6.2"/>
-	<property name="ic2.version"          value="1.115.304-lf"/>
-	<property name="cc.version"           value="1.52"/>
+	<property name="mc.version"           value="1.6.2"/>
+	<property name="forge.version"        value="9.10.0.837"/>
+	<property name="bc.version"           value="4.0.1"/>
+	<property name="forestry.version"     value="2.3.0.0"/>
+	<property name="ic2.version"          value="1.118.401-lf"/>
+	<property name="cc.version"           value="1.56"/>
 	<property name="thaumcraft.version.api" value="0.0.5"/>
 	<property name="thaumcraft.version.mod" value="3.0.4b"/>
 	<property name="te.version"           value="2.3.0"/>
@@ -49,7 +47,7 @@
 	<property name="guava.version"        value="15.0-SNAPSHOT"/>
 	<property name="waila.version"        value="1.2.0"/>
 	<property name="gson.version"         value="2.2.4"/>
-	<property name="lp.version"           value="0.7.3"/>
+	<property name="lp.version"           value="0.7.4"/>
 	
 	<!-- Targets -->
 	<target name="init-msg">
@@ -63,7 +61,6 @@
 	<target name="setup">
 		<mkdir dir="${download.dir}"/>
 
-		<get src="${downloadserver.full}mcp${mcp.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True"/>
@@ -86,6 +83,7 @@
 				<include name="ant-contrib-${antcont.version}-bin.zip"/>
 			</fileset>
 		</unzip>
+        
 		<!-- Pull in ant-contrib for if task -->
 		<taskdef resource="net/sf/antcontrib/antcontrib.properties">
 			<classpath>
@@ -93,17 +91,28 @@
 			</classpath>
 		</taskdef>
 		
-			<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
-			<fileset dir="${download.dir}">
-				<include name="mcp${mcp.version}.zip"/>
-			</fileset>
-		</unzip>
-		
-		<unzip dest="${mcp.dir}" failOnEmptyArchive="true">
+		<unzip dest="${build.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
 				<include name="minecraftforge-src-${mc.version}-${forge.version}.zip"/>
 			</fileset>
 		</unzip>
+        
+        <!-- Set executable permission on forge's *.sh -->
+		<chmod dir="${forge.dir}" perm="a+rx" includes="**.sh"/>
+		
+		<!-- Install forge -->
+		<echo message="Starting forge install process"/>
+
+		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
+            <arg value="/c"/>
+			<arg value="install.cmd"/>
+		</exec>
+
+		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
+			<arg value="install.sh"/>
+		</exec>
+		
+		<echo message="Forge installation finished"/>
 
 		<unzip dest="${buildcraft.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
@@ -146,39 +155,19 @@
 				<include name="Waila_API_${waila.version}.zip"/>
 			</fileset>
 		</unzip>
-
-		
+        
 		<echo message="Unpacking finished"/>
-
-		<chmod file="${mcp.dir}/updatemd5.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/updatemcp.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/recompile.sh" perm="+x"/>
-		<chmod file="${mcp.dir}/reobfuscate_srg.sh" perm="+x"/>
-		<chmod file="${forge.dir}/install.sh" perm="+x"/>
-
-		<!-- if your building on OSX these 2 should be executable -->
-		<chmod file="${mcp.dir}/runtime/bin/astyle-osx" perm="+x"/>
-		<chmod file="${mcp.dir}/runtime/bin/jad-osx" perm="+x"/>
-		<!-- Install forge -->
-		<exec dir="${forge.dir}" executable="cmd" osfamily="windows" failonerror="true">
-			<arg line="/c install.cmd"/>
-		</exec>
-
-		<exec dir="${forge.dir}" executable="sh" osfamily="unix" failonerror="true">
-			<arg value="install.sh"/>
-		</exec>
-		
+        
 		<copy file="${download.dir}/lombok-${lombok.version}.jar" todir="${mcp.dir}/lib"/>
 		<copy file="${download.dir}/gson-${gson.version}.jar" todir="${mcp.dir}/lib"/>
-		
-		<echo message="Decompile finished"/>
+        
 		<!-- Copy BC source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${buildcraft.dir}/common">
 				<exclude name="**/buildcraft/devel"/>
 			</fileset>
 		</copy>
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${buildcraft.dir}/buildcraft_resources">
 			</fileset>
 		</copy>
@@ -186,55 +175,54 @@
 		<echo message="Copied BC files"/>
 
 		<!-- Copy Forestry API source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${forestry.dir}"/>
 		</copy>
 
 		<echo message="Copied Forestry API"/>
 
 		<!-- Copy IC2 API source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${ic2.dir}"/>
 		</copy>
 
 		<echo message="Copied IC2 API"/>
 
 		<!-- Copy CC API source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${cc.dir}"/>
 		</copy>
 
 		<echo message="Copied CC API"/>
 
 		<!-- Copy ThaumCraft API source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${thaumcraft.dir}"/>
 		</copy>
 
 		<echo message="Copied ThaumCraft API"/>
 
 		<!-- Copy TE API source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${te.dir}"/>
 		</copy>
 
 		<echo message="Copied TE API"/>
 
 		<!-- Copy Waila API source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${waila.dir}"/>
 		</copy>
 
 		<echo message="Copied waila API"/>
 
 		<!-- Copy Dummy classes source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${src.dir}/dummy"/>
 		</copy>
 
 		<echo message="Copied dummy files"/>
 
-		<!-- Refresh MD5 -->
 		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
 			<arg line="/c updatemd5.bat -f --client"/>
 		</exec>
@@ -244,7 +232,6 @@
 		</exec>
 
 		<echo message="Regenerated MD5s"/>
-
 	</target>
 
 
@@ -257,22 +244,22 @@
 		<echo message="Loaded ant-contrib"/>
 
 		<!-- Delete LP source in build space -->
-		<delete dir="${commonsrc.dir}/logisticspipes"/>
+		<delete dir="${minecraftsrc.dir}/logisticspipes"/>
 
 		<!-- Copy LP source -->
-		<copy todir="${commonsrc.dir}">
+		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${src.dir}/common"/>
 		</copy>
-		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
-		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
-		<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
+		<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
+		<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
+		<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
 		
 		<echo message="Loading FingerPrint"/>
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>
 			<then>
 				<loadfile property="fingerprint" srcFile="${sign.dir}/.fingerprint"/>
-				<replace file="${commonsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
+				<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
 			</then>
 		</if>
 	</target>
@@ -288,7 +275,7 @@
 		</exec>
 
 		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-			<arg value="recompile.sh"/>
+			<arg line="recompile.sh --client"/>
 		</exec>
 
 		<!-- Reobf -->
@@ -297,7 +284,7 @@
 		</exec>
 
 		<exec dir="${mcp.dir}" executable="sh" osfamily="unix" failonerror="true">
-			<arg value="reobfuscate_srg.sh"/>
+			<arg line="reobfuscate_srg.sh --client"/>
 		</exec>
 
 		<!-- Copy LP classes -->
@@ -391,9 +378,9 @@
 	<target name="test" depends="vars-test, init-msg, clean, setup, compile, package-simple">
 		<delete dir="${test.dir}"/>
 		<mkdir dir="${test.dir}"/>
-		<get src="${downloadserver.full}mcpc-plus-1.5.2-R0.2-forge716-B511.jar" dest="${test.dir}/svr.jar" usetimestamp="True"/>
+		<get src="${downloadserver.full}mcpc-plus-1.6.2-R0.2-forge836-B54.jar" dest="${test.dir}/svr.jar" usetimestamp="True"/>
 		<mkdir dir="${test.dir}/mods"/>
-		<get src="${downloadserver.full}buildcraft-A-3.6.0.jar" dest="${test.dir}/mods" usetimestamp="True"/>
+		<get src="${downloadserver.full}buildcraft-A-4.0.1.jar" dest="${test.dir}/mods" usetimestamp="True"/>
 		<copy file="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" todir="${test.dir}/mods"/>
 		<copy file="${src.dir}/expect.tcl" todir="${test.dir}"/>
 		

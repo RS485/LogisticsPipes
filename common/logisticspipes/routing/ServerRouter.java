@@ -98,7 +98,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 					return;
 				}
 				//spinlock during the first tick, we can't touch the routing table, untill Update() has been called on every pipe.
-				while(p.stillNeedReplace()){Thread.sleep(10);}
+				for(int i=0;i<10 && p.stillNeedReplace();i++){Thread.sleep(10);}
+				if(p.stillNeedReplace())
+					return; // drop the pipe update if it still needs replace after 5 ticks.
 				CreateRouteTable(newVersion);
 			} catch(Exception e) {
 				e.printStackTrace();

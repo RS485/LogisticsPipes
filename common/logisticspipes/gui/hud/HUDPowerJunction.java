@@ -1,7 +1,7 @@
 package logisticspipes.gui.hud;
 
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
@@ -18,7 +18,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)32);
         } else {
@@ -57,7 +57,7 @@ public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRende
     }
 
 	@Override
-	public boolean display(HUDConfig config) {
+	public boolean display(IHUDConfig config) {
 		return !junction.isInvalid() && config.isHUDPowerJunction();
 	}
 

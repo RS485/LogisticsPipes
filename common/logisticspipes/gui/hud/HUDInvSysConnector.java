@@ -1,6 +1,6 @@
 package logisticspipes.gui.hud;
 
-import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
@@ -17,7 +17,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -40,7 +40,7 @@ public class HUDInvSysConnector extends BasicHUDGui {
 	}
 
 	@Override
-	public boolean display(HUDConfig config) {
+	public boolean display(IHUDConfig config) {
 		if(!config.isHUDInvSysCon()) return false;
 		if(display > System.currentTimeMillis()) {
 			return true;

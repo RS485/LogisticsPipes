@@ -3,8 +3,8 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDButton;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.logisticspipes.ChassiModule;
 import logisticspipes.modules.LogisticsModule;
@@ -93,7 +93,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	}
 
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
 		if(day) {
         	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
         } else {
@@ -155,7 +155,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	}
 
 	@Override
-	public boolean display(HUDConfig config) {
+	public boolean display(IHUDConfig config) {
 		if(!config.isHUDChassie()) return false;
 		for(int i=0;i<moduleInventory.getSizeInventory();i++) {
 			ItemStack stack = moduleInventory.getStackInSlot(i);

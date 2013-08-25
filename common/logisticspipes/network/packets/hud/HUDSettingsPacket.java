@@ -5,7 +5,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.proxy.SimpleServiceLocator;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
@@ -38,7 +40,16 @@ public class HUDSettingsPacket extends ModernPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if(player.inventory.getStackInSlot(slot) == null) return;
-		HUDConfig config = new HUDConfig(player.inventory.getStackInSlot(slot));
+		IHUDConfig config;
+		if(SimpleServiceLocator.mpsProxy.isMPSHand(player.inventory.getStackInSlot(slot))) {
+			if(SimpleServiceLocator.mpsProxy.isMPSHelm(player.inventory.armorItemInSlot(3))) {
+				config = SimpleServiceLocator.mpsProxy.getConfigFor(player.inventory.armorItemInSlot(3));
+			} else {
+				config = new HUDConfig(player.inventory.armorItemInSlot(3));
+			}
+		} else {
+			config = new HUDConfig(player.inventory.getStackInSlot(slot));
+		}
 		switch(buttonId) {
 			case 0:
 				config.setHUDChassie(state);

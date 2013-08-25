@@ -1,25 +1,17 @@
-package logisticspipes.hud;
+package logisticspipes.proxy.mps;
 
 import logisticspipes.interfaces.IHUDConfig;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class HUDConfig implements IHUDConfig {
-	
+public class MPSHUDConfig implements IHUDConfig {
+
 	private NBTTagCompound configTag;
 	
-	public HUDConfig(ItemStack stack) {
-		this(stack.getTagCompound());
-		stack.setTagCompound(configTag);
-	}
-	
-	public HUDConfig(NBTTagCompound tag) {
-		configTag = tag;
-		if(configTag == null) {
-			configTag = new NBTTagCompound("tag");
-		}
+	public MPSHUDConfig(NBTTagCompound tag) {
+		configTag = tag.getCompoundTag(LogisticsPipesHUDModule.NAME + "_Settings");
 		
 		if(configTag.hasNoTags()) {
+			tag.setTag(LogisticsPipesHUDModule.NAME + "_Settings", configTag);
 			configTag.setBoolean("HUDChassie", true);
 			configTag.setBoolean("HUDCrafting", true);
 			configTag.setBoolean("HUDInvSysCon", true);

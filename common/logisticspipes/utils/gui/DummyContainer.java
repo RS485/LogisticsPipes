@@ -331,6 +331,15 @@ public class DummyContainer extends Container{
         }
 	}
 
+	public void addRestrictedArmorForPlayerInventory(int xOffset, int yOffset) {
+		if (_playerInventory == null){
+			return;
+		}
+        for(int i1 = 0; i1 < 4; i1++) {
+        	addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1 + 36, xOffset, yOffset - i1 * 18));
+        }
+	}
+
 	//Hacky overrides to handle client/server player inv sync with 0-slot containers
 	@Override
 	public Slot getSlotFromInventory(IInventory par1IInventory, int par2)

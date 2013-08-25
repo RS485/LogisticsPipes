@@ -10,6 +10,7 @@ import java.util.List;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -156,7 +157,20 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor && ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		return FMLClientHandler.instance().getClient().thePlayer != null
+				&& FMLClientHandler.instance().getClient().thePlayer.inventory != null
+				&& FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null
+				&& FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null
+				&& checkItemStackForHUD(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+	}
+	
+	private boolean checkItemStackForHUD(ItemStack stack) {
+		if(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
+			return ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		} else if(SimpleServiceLocator.mpsProxy.isMPSHelm(stack)) {
+			return SimpleServiceLocator.mpsProxy.hasActiveHUDModule(stack);
+		}
+		return false;
 	}
 	
 	private boolean displayCross = false;
@@ -189,7 +203,12 @@ public class LogisticsHUDRenderer {
 		}
 		boolean cursorHandled = false;
 		displayCross = false;
-		HUDConfig config = new HUDConfig(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		IHUDConfig config;
+		if(SimpleServiceLocator.mpsProxy.isMPSHelm(mc.thePlayer.inventory.armorInventory[3])) {
+			config = SimpleServiceLocator.mpsProxy.getConfigFor(mc.thePlayer.inventory.armorInventory[3]);
+		} else {
+			 config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
+		}
 		IHeadUpDisplayRendererProvider thisIsLast = null;
 		for(IHeadUpDisplayRendererProvider renderer:list) {
 			if(renderer.getRenderer() == null) continue;
@@ -235,7 +254,7 @@ public class LogisticsHUDRenderer {
 		}
 		
 		GL11.glPushMatrix();
-		MovingObjectPosition box = FMLClientHandler.instance().getClient().objectMouseOver;
+		MovingObjectPosition box = mc.objectMouseOver;
 		if(box != null && box.typeOfHit == EnumMovingObjectType.TILE) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				progress = Math.min(progress + 2, 100);
@@ -429,7 +448,7 @@ public class LogisticsHUDRenderer {
 		}
 	}
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config, float partialTick) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);

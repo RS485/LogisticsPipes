@@ -423,6 +423,9 @@ public class LogisticsPipes {
 		//Registering special particles
 		MainProxy.proxy.registerParticles();
 		
+		//init Modular Powersuits modules
+		SimpleServiceLocator.mpsProxy.initModules();
+		
 		//init Liquids
 		LiquidIdentifier.initFromForge(false);
 		LiquidIdentifier.get(9, 0, "water");

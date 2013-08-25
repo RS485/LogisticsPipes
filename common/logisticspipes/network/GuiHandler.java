@@ -455,7 +455,8 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_HUD_Settings:
 				dummy = new DummyContainer(player.inventory, null);
-				dummy.addRestrictedHotbarForPlayerInventory(8, 160);
+				dummy.addRestrictedHotbarForPlayerInventory(10, 160);
+				dummy.addRestrictedArmorForPlayerInventory(10, 60);
 				return dummy;
 				
 			case GuiIDs.GUI_Upgrade_Manager:

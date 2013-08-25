@@ -14,15 +14,20 @@ import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.Loader;
@@ -147,6 +152,18 @@ public class ProxyManager {
 				@Override public boolean isBetterStorageCrate(TileEntity tile) {return false;}
 			});
 			LogisticsPipes.log.info("Loaded BetterStorage DummyProxy");
+		}
+		
+		if(Loader.isModLoaded("NotEnoughItems")) {
+			SimpleServiceLocator.setNEIProxy(new NEIProxy());
+			LogisticsPipes.log.info("Loaded NotEnoughItems Proxy");
+		} else {
+			SimpleServiceLocator.setNEIProxy(new INEIProxy() {
+				@Override public int getWidthForList(List<String> data, FontRenderer fontRenderer) {return 0;}
+				@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
+				@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
+			});
+			LogisticsPipes.log.info("Loaded NotEnoughItems DummyProxy");
 		}
 	}
 }

@@ -69,6 +69,8 @@ public class FluidContainerRenderer implements IItemRenderer {
 				GL11.glPopMatrix();
 				return;
 			}
+			//FIXME
+			/*
 			ItemStack liquidItem = liquid.asItemStack();
 			GL11.glPushMatrix();
 			if(type == ItemRenderType.INVENTORY) {
@@ -79,7 +81,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 				GL11.glTranslated(0, 0.09, 0);
 			}
 			doRenderItem(liquidItem, mc, type, data);
-			GL11.glPopMatrix();
+			GL11.glPopMatrix();*/
 			doRenderItem(item, mc, type, data);
 		} else if(item.getItem() instanceof LogisticsItemCard) {
 			doRenderItem(item, mc, type, data);

@@ -74,17 +74,17 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 			Map<FluidIdentifier, Integer> allItems = provider.getAvailableFluids();
 			
 			for (Entry<FluidIdentifier, Integer> liquid : allItems.entrySet()){
-				Integer amount = allAvailableItems.get(liquid.getKey().getfluidIDentifier());
+				Integer amount = allAvailableItems.get(liquid.getKey());
 				if (amount==null){
-					allAvailableItems.put(liquid.getKey().getfluidIDentifier(), liquid.getValue());
+					allAvailableItems.put(liquid.getKey(), liquid.getValue());
 				} else {
-					allAvailableItems.put(liquid.getKey().getfluidIDentifier(), amount + liquid.getValue());
+					allAvailableItems.put(liquid.getKey(), amount + liquid.getValue());
 				}
 			}
 		}
 		TreeSet<ItemIdentifierStack> itemIdentifierStackList = new TreeSet<ItemIdentifierStack>();
 		for(Entry<FluidIdentifier, Integer> item:allAvailableItems.entrySet()) {
-			itemIdentifierStackList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
+			//itemIdentifierStackList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
 		}
 		return itemIdentifierStackList;
 	}

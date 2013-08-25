@@ -194,7 +194,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		}
 		//still remaining... was from fuzzyMatch on a crafter
 		for(Entry<FluidIdentifier, Integer> e : _requestedItems.entrySet()) {
-			if(e.getKey().getfluidIDentifier().fluidID == liquid.fluidID && e.getKey().itemMeta == liquid.itemMeta) {
+			if(e.getKey() == liquid) {
 				int expected = e.getValue();
 				e.setValue(Math.max(0, expected - remaining));
 				remaining -= expected;

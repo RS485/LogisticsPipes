@@ -69,7 +69,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		TileGenericPipe pipe = ((TileGenericPipe) tileentity);
 		if (pipe.pipe == null) return;
 		if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-			renderFluids(pipe.pipe, x, y, z);
+			//FIXME
+			//renderFluids(pipe.pipe, x, y, z);
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			renderCraftingPipe((PipeItemsCraftingLogistics) pipe.pipe, x, y, z);
@@ -349,6 +350,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 		return sum.toString();
 	}
 	
+//FIXME
+/*
 	private void renderFluids(Pipe pipe, double x, double y, double z) {
 		PipeFluidTransportLogistics liq = (PipeFluidTransportLogistics) pipe.transport;
 		GL11.glPushMatrix();
@@ -485,7 +488,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			// SIDE HORIZONTAL
 
 			d.sideHorizontal[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.sideHorizontal[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.sideHorizontal[s], 4864); // GL_COMPILE
 
 			block.minX = 0.0F;
 			block.minZ = Utils.pipeMinPos + 0.01F;
@@ -503,7 +506,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			// SIDE VERTICAL
 
 			d.sideVertical[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.sideVertical[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.sideVertical[s], 4864 GL_COMPILE); // GL_COMPILE
 
 			block.minY = Utils.pipeMaxPos - 0.01;
 			block.maxY = 1;
@@ -521,7 +524,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			// CENTER HORIZONTAL
 
 			d.centerHorizontal[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.centerHorizontal[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.centerHorizontal[s], 4864 GL_COMPILE); // GL_COMPILE
 
 			block.minX = Utils.pipeMinPos + 0.01;
 			block.minZ = Utils.pipeMinPos + 0.01;
@@ -539,7 +542,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			// CENTER VERTICAL
 
 			d.centerVertical[s] = GLAllocation.generateDisplayLists(1);
-			GL11.glNewList(d.centerVertical[s], 4864 /* GL_COMPILE */);
+			GL11.glNewList(d.centerVertical[s], 4864 GL_COMPILE); // GL_COMPILE
 
 			block.minY = Utils.pipeMinPos + 0.01;
 			block.maxY = Utils.pipeMaxPos - 0.01;
@@ -558,4 +561,5 @@ public class LogisticsRenderPipe extends RenderPipe {
 
 		return d;
 	}
+*/
 }

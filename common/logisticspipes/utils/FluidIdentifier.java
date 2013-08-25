@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.proxy.SimpleServiceLocator;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
@@ -80,16 +81,12 @@ public class FluidIdentifier {
 		return name;
 	}
 	
-	public FluidIdentifier getfluidIDentifier() {
-		return FluidIdentifier.get(fluidID, itemMeta, null);
-	}
-	
 	public static FluidIdentifier get(FluidStack stack) {
-		if(stack.extra != null) {
+		if(stack.tag != null) {
 			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
 			new Exception().printStackTrace();
 		}
-		return get(stack.fluidID, stack.itemMeta);
+		return get(stack.fluidID, 0);
 	}
 	
 	public static FluidIdentifier get(Fluid fluid, String name) {
@@ -97,7 +94,7 @@ public class FluidIdentifier {
 			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
 			new Exception().printStackTrace();
 		}*/
-		return get(fluid.);
+		return get(fluid.getID(), 0);
 	}
 	
 	public static FluidIdentifier get(int fluidID, int itemMeta) {
@@ -121,11 +118,6 @@ public class FluidIdentifier {
 		if(tanks != null && tanks.length > 0) {
 			for(int i=0;i<tanks.length;i++) {
 				free += getFreeSpaceInsideTank(tanks[i]);
-			}
-		} else {
-			FluidTankInfo tank = container.getTankInfo(dir, this.makeFluidStack(0));
-			if(tank != null) {
-				free += getFreeSpaceInsideTank(tank);
 			}
 		}
 		return free;
@@ -200,8 +192,6 @@ public class FluidIdentifier {
 	}
 
 	public ItemIdentifier getItemIdentifier() {
-		NotImplemented yet
-		// TODO Auto-generated method stub
-		return null;
+		return ItemIdentifier.get(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(makeFluidStack(0)));
 	}
 }

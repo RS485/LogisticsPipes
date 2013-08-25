@@ -229,6 +229,8 @@ public class LogisticsHUDRenderer {
 	        GL11.glDisable(GL11.GL_BLEND);
 	        GL11.glDisable(GL11.GL_DEPTH_TEST);
 	        displayOneView(thisIsLast, config, partialTick);
+	        GL11.glEnable(GL11.GL_BLEND);
+	        GL11.glEnable(GL11.GL_DEPTH_TEST);
 	        GL11.glPopMatrix();
 		}
 		

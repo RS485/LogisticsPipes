@@ -274,7 +274,7 @@ public class RequestTreeNode {
 		for(RequestTreeNode subNode:subRequests) {
 			subNode.buildUsedMap(used, missing);
 		}
-		for(LiquidRequestTreeNode subNode:liquidSubRequests) {
+		for(FluidRequestTreeNode subNode:liquidSubRequests) {
 			subNode.buildUsedMap(used, missing);
 		}
 	}

@@ -36,6 +36,7 @@ import buildcraft.api.power.IPowerReceptor;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 import dan200.computer.api.IComputerAccess;
+import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
 @ModDependentInterface(modId={"IC2", "ComputerCraft"}, interfacePath={"ic2.api.energy.tile.IEnergySink", "dan200.computer.api.IPeripheral"})
@@ -350,7 +351,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	@Override
 	@ModDependentMethod(modId="ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, int method, Object[] arguments) throws Exception {
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int method, Object[] arguments) throws Exception {
 	return new Object[]{this.getPowerLevel()};
 	}
 	

@@ -26,6 +26,13 @@ import logisticspipes.gates.TriggerSupplierFailed;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.PipeFluidBasic;
+import logisticspipes.pipes.PipeFluidExtractor;
+import logisticspipes.pipes.PipeFluidInsertion;
+import logisticspipes.pipes.PipeFluidProvider;
+import logisticspipes.pipes.PipeFluidRequestLogistics;
+import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeItemsApiaristAnalyser;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.PipeItemsBasicLogistics;
@@ -33,8 +40,8 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk2;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsFluidSupplier;
+import logisticspipes.pipes.PipeItemsInvSysConnector;
 import logisticspipes.pipes.PipeItemsProviderLogistics;
 import logisticspipes.pipes.PipeItemsProviderLogisticsMk2;
 import logisticspipes.pipes.PipeItemsRemoteOrdererLogistics;
@@ -44,13 +51,6 @@ import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
-import logisticspipes.pipes.PipeFluidBasic;
-import logisticspipes.pipes.PipeFluidExtractor;
-import logisticspipes.pipes.PipeFluidInsertion;
-import logisticspipes.pipes.PipeFluidProvider;
-import logisticspipes.pipes.PipeFluidRequestLogistics;
-import logisticspipes.pipes.PipeFluidSatellite;
-import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk1;
 import logisticspipes.pipes.PipeLogisticsChassiMk2;
 import logisticspipes.pipes.PipeLogisticsChassiMk3;
@@ -77,7 +77,7 @@ import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.api.gates.ITrigger;
 import buildcraft.api.tools.IToolWrench;
-import buildcraft.transport.TravelingItem;
+import buildcraft.core.inventory.InvUtils;
 import buildcraft.core.utils.Localization;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
@@ -86,6 +86,7 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
+import buildcraft.transport.TravelingItem;
 import buildcraft.transport.render.RenderPipe;
 import cpw.mods.fml.relauncher.Side;
 
@@ -162,11 +163,11 @@ public class BuildCraftProxy {
 	}
 
 	public void dropItems(World world, IInventory inventory, int x, int y, int z) {
-		Utils.dropItems(world, inventory, x, y, z);
+		InvUtils.dropItems(world, inventory, x, y, z);
 	}
 
 	public void dropItems(World world, ItemStack stack, int x, int y, int z) {
-		Utils.dropItems(world, stack, x, y, z);
+		InvUtils.dropItems(world, stack, x, y, z);
 	}
 
 	public IRoutedItem GetOrCreateRoutedItem(TravelingItem itemData) {

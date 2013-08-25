@@ -183,8 +183,7 @@ public class ClientProxy implements IProxy {
 	// BuildCraft method end
 
 	@Override
-	public void addLogisticsPipesOverride(int index, String override1, String override2, boolean flag) {
-		IconRegister par1IconRegister=Minecraft.getMinecraft().renderEngine.textureMapBlocks;
+	public void addLogisticsPipesOverride(IconRegister par1IconRegister, int index, String override1, String override2, boolean flag) {
 		if(flag) {
 			Textures.LPpipeIconProvider.setIcon(index, par1IconRegister.registerIcon("logisticspipes:"+override1));
 		} else {

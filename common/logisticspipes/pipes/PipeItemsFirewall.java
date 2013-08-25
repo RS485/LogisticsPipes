@@ -102,12 +102,12 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 			if (routerId == null || routerId == ""){
 				routerId = UUID.randomUUID().toString();
 			}
-			router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), ForgeDirection.UNKNOWN, routers);
+			router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), ForgeDirection.UNKNOWN, routers);
 			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
 				if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
 					routerIds[dir.ordinal()] = UUID.randomUUID().toString();
 				}
-				routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(worldObj), getX(), getY(), getZ(), dir, routers);
+				routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), dir, routers);
 			}
 			routers[6] = router;
 		}

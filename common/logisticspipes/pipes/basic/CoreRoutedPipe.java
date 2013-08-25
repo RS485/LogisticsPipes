@@ -453,7 +453,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		ArrayList<ExitRoute> table = r.getRouteTable();
+		List<ExitRoute> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
 			if(table.get(i)!=null)
 			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i) + " distance)");
@@ -892,7 +892,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	@Override
 	public World getWorld() {
-		return this.getWorld();
+		return container.getWorld();
 	}
 
 	@Override

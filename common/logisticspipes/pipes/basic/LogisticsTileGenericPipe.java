@@ -28,6 +28,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.TileGenericPipe;
 import dan200.computer.api.IComputerAccess;
+import dan200.computer.api.ILuaContext;
 import dan200.computer.api.IPeripheral;
 
 @ModDependentInterface(modId={"ComputerCraft"}, interfacePath={"dan200.computer.api.IPeripheral"})
@@ -135,9 +136,9 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 	}
 	
 	@Override
-	public boolean arePipesConnected(TileEntity with, ForgeDirection dir) {
+	public boolean canPipeConnect(TileEntity with, ForgeDirection dir) {
 		if(SimpleServiceLocator.ccProxy.isTurtle(with) && !turtleConnect[OrientationsUtil.getOrientationOfTilewithTile(this, with).ordinal()]) return false;
-		return super.arePipesConnected(with, dir);
+		return super.canPipeConnect(with, dir);
 	}
 	
 	@Override
@@ -163,7 +164,7 @@ public class LogisticsTileGenericPipe extends TileGenericPipe implements IPeriph
 
 	@Override
 	@ModDependentMethod(modId="ComputerCraft")
-	public Object[] callMethod(IComputerAccess computer, int methodId, Object[] arguments) throws Exception {
+	public Object[] callMethod(IComputerAccess computer, ILuaContext context, int methodId, Object[] arguments) throws Exception {
 		if(getCPipe() == null) throw new InternalError("Pipe is not a LogisticsPipe");
 		init();
 		lastPC = computer;

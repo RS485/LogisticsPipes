@@ -1,6 +1,7 @@
 package logisticspipes.proxy.interfaces;
 
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import buildcraft.transport.TileGenericPipe;
@@ -13,7 +14,7 @@ public interface IProxy {
 	public EntityPlayer getClientPlayer();
 	public boolean isMainThreadRunning();
 	
-	public void addLogisticsPipesOverride(int index, String override1, String override2, boolean flag);
+	public void addLogisticsPipesOverride(IconRegister par1IconRegister, int index, String override1, String override2, boolean flag);
 	public void registerParticles();
 	public String getName(ItemIdentifier item);
 	public void updateNames(ItemIdentifier item, String name);

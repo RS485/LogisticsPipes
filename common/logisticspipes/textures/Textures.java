@@ -152,65 +152,65 @@ public class Textures {
 	public static String LOGISTICS_SOLID_BLOCK=LOGISTICSPIPE_TEXTURE_FILE;
 	public static IIconProvider LPactionIconProvider;
 	public static LPPipeIconProvider LPpipeIconProvider;
-	public void registerBlockIcons() {
+	public void registerBlockIcons(IconRegister par1IconRegister) {
 		//Register Empty Texture for slot 0
-		MainProxy.proxy.addLogisticsPipesOverride(0, "empty", "", true);
-		MainProxy.proxy.addLogisticsPipesOverride(1, "empty", "", true);
-		MainProxy.proxy.addLogisticsPipesOverride(2, "empty", "", true);
+		MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, 0, "empty", "", true);
+		MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, 1, "empty", "", true);
+		MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, 2, "empty", "", true);
 		
 		index = 3;
 		
 		// Standalone pipes
-		LOGISTICSPIPE_TEXTURE 						= registerTexture(LOGISTICSPIPE_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
-		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
-		LOGISTICSPIPE_SECURITY_TEXTURE 				= registerTexture(LOGISTICSPIPE_SECURITY_TEXTURE_FILE, 2);
-		LOGISTICSPIPE_ROUTED_TEXTURE            	= registerTexture(LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_NOTROUTED_TEXTURE         	= registerTexture(LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
-		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
-		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUIDSUPPLIER_MK2_TEXTURE	= registerTexture(LOGISTICSPIPE_LIQUIDSUPPLIER_MK2_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
-		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE 		= registerTexture(LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
-		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE 	= registerTexture(LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
-		LOGISTICSPIPE_APIARIST_SINK_TEXTURE 		= registerTexture(LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
-		LOGISTICSPIPE_INVSYSCON_CON_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE);
-		LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE);
-		LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE 		= registerTexture(LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE);
-		LOGISTICSPIPE_ENTRANCE_TEXTURE 				= registerTexture(LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE);
-		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
-		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
-		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);
+		LOGISTICSPIPE_TEXTURE 						= registerTexture(par1IconRegister, LOGISTICSPIPE_TEXTURE_FILE);
+		LOGISTICSPIPE_PROVIDER_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_PROVIDER_TEXTURE_FILE);
+		LOGISTICSPIPE_POWERED_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_POWERED_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_SECURITY_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_SECURITY_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_ROUTED_TEXTURE            	= registerTexture(par1IconRegister, LOGISTICSPIPE_ROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_NOTROUTED_TEXTURE         	= registerTexture(par1IconRegister, LOGISTICSPIPE_NOTROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_REQUESTER_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_REQUESTER_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTER_TEXTURE				= registerTexture(par1IconRegister, LOGISTICSPIPE_CRAFTER_TEXTURE_FILE);
+		LOGISTICSPIPE_SATELLITE_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_SATELLITE_TEXTURE_FILE);
+		LOGISTICSPIPE_SUPPLIER_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_SUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE		= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUIDSUPPLIER_TEXTURE_FILE);
+		LOGISTICSPIPE_LIQUIDSUPPLIER_MK2_TEXTURE	= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUIDSUPPLIER_MK2_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTERMK2_TEXTURE			= registerTexture(par1IconRegister, LOGISTICSPIPE_CRAFTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_REQUESTERMK2_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_REQUESTERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_PROVIDERMK2_TEXTURE 			= registerTexture(par1IconRegister, LOGISTICSPIPE_PROVIDERMK2_TEXTURE_FILE);
+		LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_REMOTE_ORDERER_TEXTURE_FILE);
+		LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE 	= registerTexture(par1IconRegister, LOGISTICSPIPE_APIARIST_ANALYSER_TEXTURE_FILE);
+		LOGISTICSPIPE_APIARIST_SINK_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_APIARIST_SINK_TEXTURE_FILE);
+		LOGISTICSPIPE_INVSYSCON_CON_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_INVSYSCON_CON_TEXTURE_FILE);
+		LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_INVSYSCON_DIS_TEXTURE_FILE);
+		LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_INVSYSCON_MIS_TEXTURE_FILE);
+		LOGISTICSPIPE_ENTRANCE_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_ENTRANCE_TEXTURE_FILE);
+		LOGISTICSPIPE_DESTINATION_TEXTURE	 		= registerTexture(par1IconRegister, LOGISTICSPIPE_DESTINATION_TEXTURE_FILE);
+		LOGISTICSPIPE_CRAFTERMK3_TEXTURE			= registerTexture(par1IconRegister, LOGISTICSPIPE_CRAFTERMK3_TEXTURE_FILE);
+		LOGISTICSPIPE_FIREWALL_TEXTURE				= registerTexture(par1IconRegister, LOGISTICSPIPE_FIREWALL_TEXTURE_FILE);
 		
 		//Fluid
-		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture( LOGISTICSPIPE_LIQUID_TEXTURE_FILE, 2);
-		LOGISTICSPIPE_LIQUID_CONNECTOR				= registerSingleTexture(LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE);
-		LOGISTICSPIPE_LIQUID_BASIC					= registerTexture(LOGISTICSPIPE_LIQUID_BASIC_FILE);
-		LOGISTICSPIPE_LIQUID_INSERTION				= registerTexture(LOGISTICSPIPE_LIQUID_INSERTION_FILE);
-		LOGISTICSPIPE_LIQUID_PROVIDER				= registerTexture(LOGISTICSPIPE_LIQUID_PROVIDER_FILE);
-		LOGISTICSPIPE_LIQUID_REQUEST				= registerTexture(LOGISTICSPIPE_LIQUID_REQUEST_FILE);
-		LOGISTICSPIPE_LIQUID_EXTRACTOR				= registerTexture(LOGISTICSPIPE_LIQUID_EXTRACTOR_FILE);
-		LOGISTICSPIPE_LIQUID_SATELLITE				= registerTexture(LOGISTICSPIPE_LIQUID_SATELLITE_FILE);
+		LOGISTICSPIPE_LIQUID_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_TEXTURE_FILE, 2);
+		LOGISTICSPIPE_LIQUID_CONNECTOR				= registerSingleTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_CONNECTOR_TEXTURE_FILE);
+		LOGISTICSPIPE_LIQUID_BASIC					= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_BASIC_FILE);
+		LOGISTICSPIPE_LIQUID_INSERTION				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_INSERTION_FILE);
+		LOGISTICSPIPE_LIQUID_PROVIDER				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_PROVIDER_FILE);
+		LOGISTICSPIPE_LIQUID_REQUEST				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_REQUEST_FILE);
+		LOGISTICSPIPE_LIQUID_EXTRACTOR				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_EXTRACTOR_FILE);
+		LOGISTICSPIPE_LIQUID_SATELLITE				= registerTexture(par1IconRegister, LOGISTICSPIPE_LIQUID_SATELLITE_FILE);
 		
 		//Chassi
-		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE 		= registerTexture(LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI1_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI1_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI2_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI2_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI3_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
-		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI_ROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI_NOTROUTED_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE 		= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI_DIRECTION_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI1_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI1_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI2_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI2_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI3_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI3_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI4_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI4_TEXTURE_FILE);
+		LOGISTICSPIPE_CHASSI5_TEXTURE 				= registerTexture(par1IconRegister, LOGISTICSPIPE_CHASSI5_TEXTURE_FILE);
 		
 		if(MainProxy.isClient()) {
 			LOGISTICS_REQUEST_TABLE = new Icon[5];
 			for(int i = 0;i < 5;i++) {
-				LOGISTICS_REQUEST_TABLE[i] = Minecraft.getMinecraft().renderEngine.textureMapBlocks.registerIcon("logisticspipes:requesttable/"+i);
+				LOGISTICS_REQUEST_TABLE[i] = par1IconRegister.registerIcon("logisticspipes:requesttable/"+i);
 			}
 		}
 		
@@ -223,8 +223,8 @@ public class Textures {
 		LPactionIconProvider.registerIcons(par1IconRegister);
 	}
 	
-	public TextureType registerTexture(String fileName) {
-		return registerTexture(fileName, 1);
+	public TextureType registerTexture(IconRegister par1IconRegister, String fileName) {
+		return registerTexture(par1IconRegister, fileName, 1);
 	}
 	/**
 	 * @param par1IconRegister - IconRegister
@@ -232,30 +232,30 @@ public class Textures {
 	 * @param flag - 2 - register single texture without overlay, 1/0 register with overlay
 	 */
 	
-	public TextureType registerTexture(String fileName, int flag) {
+	public TextureType registerTexture(IconRegister par1IconRegister, String fileName, int flag) {
 		TextureType texture = new TextureType();
 			texture.normal = index++;
 			texture.powered=texture.normal;
 			texture.unpowered=texture.normal;
 			boolean isClient = MainProxy.isClient();
 			if(isClient) {
-				MainProxy.proxy.addLogisticsPipesOverride(texture.normal,fileName,LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,(flag==2));
+				MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, texture.normal,fileName,LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,(flag==2));
 			}
 			if(flag==1) {
 				texture.powered = index++;
 				texture.unpowered = index++;
 				if(isClient) {
-					MainProxy.proxy.addLogisticsPipesOverride(texture.powered,fileName,LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE,false);
-					MainProxy.proxy.addLogisticsPipesOverride(texture.unpowered,fileName,LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE,false);
+					MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, texture.powered,fileName,LOGISTICSPIPE_OVERLAY_POWERED_TEXTURE_FILE,false);
+					MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, texture.unpowered,fileName,LOGISTICSPIPE_OVERLAY_UNPOWERED_TEXTURE_FILE,false);
 				}
 			} 
 		return texture;
 	}
 	
-	public int registerSingleTexture(String fileName) {
+	public int registerSingleTexture(IconRegister par1IconRegister, String fileName) {
 		int texture = index++;
 		if(FMLCommonHandler.instance().getEffectiveSide().isClient()) {
-			MainProxy.proxy.addLogisticsPipesOverride(texture, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,true);
+			MainProxy.proxy.addLogisticsPipesOverride(par1IconRegister, texture, fileName, LOGISTICSPIPE_UN_OVERLAY_TEXTURE_FILE,true);
 		}
 		return texture;
 	}

@@ -8,6 +8,9 @@ import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
+import codechicken.nei.PositionedStack;
+import codechicken.nei.api.IOverlayHandler;
+import codechicken.nei.recipe.IRecipeHandler;
 import cpw.mods.fml.client.FMLClientHandler;
 
 public class LogisticsCraftingOverlayHandler implements IOverlayHandler {

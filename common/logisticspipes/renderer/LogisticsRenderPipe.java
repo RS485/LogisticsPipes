@@ -406,7 +406,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 					break;
 				default:
 				}
-				bindTextureByName(liquid.canonical().getTextureSheet());
+				//FIXME bind texture
+				//bindTextureByName(liquid.canonical().getTextureSheet());
 				GL11.glCallList(list);
 				GL11.glPopMatrix();
 			}
@@ -425,7 +426,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 			if (d != null) {
 				int stage = (int) ((float) liquid.amount / (float) (liq.getInnerCapacity()) * (LIQUID_STAGES - 1));
 
-				bindTextureByName(liquid.canonical().getTextureSheet());
+				//FIXME bind texture
+				//bindTextureByName(liquid.canonical().getTextureSheet());
 				
 				if (above) {
 					GL11.glCallList(d.centerVertical[stage]);
@@ -494,7 +496,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			block.minY = Utils.pipeMinPos + 0.01F;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 
-			block.renderBlock(world, 0, 0, 0);
+			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 
 			GL11.glEndList();
 
@@ -512,7 +514,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			block.minZ = 0.5 - (size / 2 - 0.01) * ratio;
 			block.maxZ = 0.5 + (size / 2 - 0.01) * ratio;
 
-			RenderEntityBlock.renderBlock(block, world, 0, 0, 0, false, true);
+			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 
 			GL11.glEndList();
 
@@ -530,7 +532,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			block.minY = Utils.pipeMinPos + 0.01;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 
-			RenderEntityBlock.renderBlock(block, world, 0, 0, 0, false, true);
+			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 
 			GL11.glEndList();
 
@@ -548,7 +550,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			block.minZ = 0.5 - (size / 2 - 0.02) * ratio;
 			block.maxZ = 0.5 + (size / 2 - 0.02) * ratio;
 
-			RenderEntityBlock.renderBlock(block, world, 0, 0, 0, false, true);
+			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
 
 			GL11.glEndList();
 

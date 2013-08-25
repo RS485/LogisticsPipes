@@ -307,11 +307,11 @@ public class DummyContainer extends Container{
 	}
 	
 	@Override
-	public void onCraftGuiClosed(EntityPlayer par1EntityPlayer) {
+	public void onContainerClosed(EntityPlayer par1EntityPlayer) {
 		if(_controler != null) {
 			_controler.guiClosedByPlayer(par1EntityPlayer);
 		}
-		super.onCraftGuiClosed(par1EntityPlayer);
+		super.onContainerClosed(par1EntityPlayer);
 	}
 
 	@Override

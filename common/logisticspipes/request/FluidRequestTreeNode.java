@@ -67,7 +67,7 @@ public class FluidRequestTreeNode {
 	}
 
 	protected void buildUsedMap(Map<ItemIdentifier,Integer> used, Map<ItemIdentifier,Integer> missing) {
-		int usedcount = promiseLiquidAmount;
+		int usedcount = promiseFluidAmount;
 		if(usedcount != 0) {
 			ItemIdentifier item = liquid.getItemIdentifier();
 			Integer count = used.get(item);

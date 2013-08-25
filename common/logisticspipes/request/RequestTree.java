@@ -236,7 +236,7 @@ public class RequestTree extends RequestTreeNode {
 		return requestFluid(liquid, amount, pipe, log, true);
 	}
 
-	public static int requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
+	public static boolean requestFluid(FluidIdentifier liquid, int amount, IRequestFluid pipe, RequestLog log) {
 		return requestFluid(liquid, amount, pipe, log, false)  == amount;
 	}
 	

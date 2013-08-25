@@ -259,7 +259,6 @@ public class LogisticsPipes {
 		LogisticsEventListener eventListener = new LogisticsEventListener();
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		GameRegistry.registerPlayerTracker(eventListener);
-		textures.registerBlockIcons();
 		
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
 

@@ -36,7 +36,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 	
 	private void extractFrom(IFluidHandler container, ForgeDirection side) {
 		int i = side.ordinal();
-		FluidStack contained = ((PipeFluidTransportLogistics)this.transport).getTanks(side)[0].getFluid();
+		FluidStack contained = ((PipeFluidTransportLogistics)this.transport).getTankInfo(side)[0].fluid;
 		int amountMissing = ((PipeFluidTransportLogistics)this.transport).getSideCapacity() - (contained != null ? contained.amount : 0);
 		if(liquidToExtract[i] < Math.min(200, amountMissing)) {
 			if(this.useEnergy(2)) {

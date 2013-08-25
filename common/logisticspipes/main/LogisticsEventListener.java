@@ -54,7 +54,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 			LogisticsPipes.textures.registerItemIcons(event.map);
 		}
 		if (event.map.textureType == 0) {
-			LogisticsPipes.textures.registerBlockIcons();
+			LogisticsPipes.textures.registerBlockIcons(event.map);
 		}
 	}
 	

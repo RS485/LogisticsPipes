@@ -13,7 +13,7 @@ import javax.imageio.ImageIO;
 import net.minecraft.client.Minecraft;
 
 public class OverlayManager {
-	public static BufferedImage generateOverlay(String bg, String fg) throws IOException
+/*	public static BufferedImage generateOverlay(String bg, String fg) throws IOException
 	{
 		String basicpath="/mods/logisticspipes/textures/blocks";
 		
@@ -47,5 +47,5 @@ public class OverlayManager {
             throw new RuntimeException(String.format("The requested image path %s appears to be corrupted",path));
         }
         return result;
-    }
+    }*/
 }

@@ -16,6 +16,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.multiplayer.WorldClient;
+import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.network.packet.Packet250CustomPayload;
@@ -244,7 +245,7 @@ public class ServerProxy implements IProxy {
 	}
 	// BuildCraft method end
 	@Override
-	public void addLogisticsPipesOverride(int index, String override1,
+	public void addLogisticsPipesOverride(IconRegister par1IconRegister, int index, String override1,
 			String override2, boolean flag) {
 		// TODO Auto-generated method stub
 		

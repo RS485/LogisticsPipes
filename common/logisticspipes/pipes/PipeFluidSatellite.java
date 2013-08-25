@@ -266,12 +266,11 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	
 
 	@Override
-	public void onBlockRemoval() {
+	public void onAllowedRemoval() {
 		if(MainProxy.isClient(this.getWorld())) return;
 		if (AllSatellites.contains(this)) {
 			AllSatellites.remove(this);
 		}
-		super.onBlockRemoval();
 	}
 
 	@Override

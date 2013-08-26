@@ -10,4 +10,5 @@ import java.lang.annotation.Target;
 public @interface ModDependentMethodName {
 	public String modId();
 	public String newName();
+	public String version();
 }

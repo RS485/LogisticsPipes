@@ -16,6 +16,11 @@ import org.objectweb.asm.tree.MethodNode;
 
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
+import cpw.mods.fml.common.versioning.ArtifactVersion;
+import cpw.mods.fml.common.versioning.DefaultArtifactVersion;
+import cpw.mods.fml.common.versioning.VersionParser;
+import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.IClassTransformer;
 import cpw.mods.fml.relauncher.Side;
 
@@ -153,10 +158,22 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							break;
 						}
 					} else if(a.desc.equals("Llogisticspipes/asm/ModDependentMethodName;")) {
-						if(a.values.size() == 4 && a.values.get(0).equals("modId") && a.values.get(2).equals("newName")) {
+						if(a.values.size() == 6 && a.values.get(0).equals("modId") && a.values.get(2).equals("newName") && a.values.get(4).equals("version")) {
 							String modId = a.values.get(1).toString();
 							final String newName = a.values.get(3).toString();
-							if(Loader.isModLoaded(modId)) {
+							final String version = a.values.get(5).toString();
+							boolean loaded = Loader.isModLoaded(modId);
+							if(loaded && !version.equals("")) {
+								ModContainer mod = Loader.instance().getIndexedModList().get(modId);
+								if(mod != null) {
+									VersionRange range = VersionParser.parseRange(version);
+									ArtifactVersion artifactVersion = new DefaultArtifactVersion("Version", mod.getVersion());
+									loaded = range.containsVersion(artifactVersion);
+								} else {
+									loaded = false;
+								}
+							}
+							if(loaded) {
 								final String oldName = m.name;
 								m.name = newName;
 								MethodNode newM = new MethodNode(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {

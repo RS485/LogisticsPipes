@@ -80,7 +80,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	}
 	
 	@Override
-	@ModDependentMethodName(modId="ImmibisMicroblocks", newName="collisionRayTrace_ImmibisMicroblockTransformer")
+	@ModDependentMethodName(modId="ImmibisMicroblocks", newName="collisionRayTrace_ImmibisMicroblockTransformer", version="")
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
 		TileEntity tile1 = world.getBlockTileEntity(x, y, z);
 		TileGenericPipe tileG = (TileGenericPipe) tile1;

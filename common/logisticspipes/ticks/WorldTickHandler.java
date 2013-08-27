@@ -44,7 +44,7 @@ public class WorldTickHandler implements ITickHandler {
 			System.out.println("not client, not server ... what is " + type);
 			return;
 		}
-		if(entitiesToLoad == null || delayedEntitiesToLoad == null) {
+/*		if(entitiesToLoad == null || delayedEntitiesToLoad == null) {
 			try {
 				entitiesToLoad = PipeTransportItems.class.getDeclaredField("entitiesToLoad");
 				entitiesToLoad.setAccessible(true);
@@ -57,9 +57,9 @@ public class WorldTickHandler implements ITickHandler {
 			} catch (SecurityException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 		while(localList.size() > 0) {
-			try {
+			//try {
 				TileGenericPipe tile = localList.get(0);
 				int x = tile.xCoord;
 				int y = tile.yCoord;
@@ -74,7 +74,7 @@ public class WorldTickHandler implements ITickHandler {
 				}
 
 				TileGenericPipe newTile = new LogisticsTileGenericPipe();
-				/*for(Field field:tile.getClass().getDeclaredFields()) {
+				for(Field field:tile.getClass().getDeclaredFields()) {
 					try {
 						field.setAccessible(true);
 						field.set(newTile, field.get(tile));
@@ -83,7 +83,7 @@ public class WorldTickHandler implements ITickHandler {
 					} catch (IllegalAccessException e) {
 						e.printStackTrace();
 					}
-				}*/
+				}
 				tile.pipe = null;
 				world.setBlockTileEntity(x, y, z, newTile);
 				if(newTile.pipe != null) {
@@ -92,12 +92,12 @@ public class WorldTickHandler implements ITickHandler {
 						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).items) {
 							entity.setContainer(newTile);
 						}
-						for(TravelingItem entity:((List<TravelingItem>)entitiesToLoad.get(newTile.pipe.transport))) {
+/*						for(TravelingItem entity:((List<TravelingItem>)entitiesToLoad.get(newTile.pipe.transport))) {
 							entity.setContainer(newTile);
 						}
 						for(TravelingItem entity:((List<TravelingItem>)delayedEntitiesToLoad.get(newTile.pipe.transport))) {
 							entity.setContainer(newTile);
-						}
+						}*/
 					}
 				}
 
@@ -110,9 +110,9 @@ public class WorldTickHandler implements ITickHandler {
 					}
 				}
 				//newTile.scheduleNeighborChange();
-			} catch (IllegalAccessException e) {
+			/*} catch (IllegalAccessException e) {
 				e.printStackTrace();
-			}
+			}*/
 			localList.remove(0);
 		}
 		ItemIdentifier.tick();

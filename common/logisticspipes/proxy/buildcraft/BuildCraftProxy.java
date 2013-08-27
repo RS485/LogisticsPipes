@@ -100,7 +100,7 @@ public class BuildCraftProxy {
 	public static ITrigger LogisticsHasDestinationTrigger;
 	public static IAction LogisticsDisableAction;
 	
-	private Method arePipesConnected;
+	private Method canPipeConnect;
 	
 	public boolean checkPipesConnections(TileEntity from, TileEntity to, ForgeDirection way) {
 		return checkPipesConnections(from, to, way, false);
@@ -114,7 +114,7 @@ public class BuildCraftProxy {
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!arePipesConnected((TileGenericPipe) from, to, way)) {
+				if (!canPipeConnect((TileGenericPipe) from, to, way)) {
 					((CoreRoutedPipe)((TileGenericPipe) to).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
@@ -126,7 +126,7 @@ public class BuildCraftProxy {
 				}
 			} else {
 				((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = true;
-				if (!arePipesConnected((TileGenericPipe) to, from, way.getOpposite())) {
+				if (!canPipeConnect((TileGenericPipe) to, from, way.getOpposite())) {
 					((CoreRoutedPipe)((TileGenericPipe) from).pipe).globalIgnoreConnectionDisconnection = false;
 					return false;
 				}
@@ -140,8 +140,8 @@ public class BuildCraftProxy {
 
 	public boolean initProxyAndCheckVersion() {
 		try {
-			arePipesConnected = TileGenericPipe.class.getDeclaredMethod("arePipesConnected", new Class[]{TileEntity.class, ForgeDirection.class});
-			arePipesConnected.setAccessible(true);
+			canPipeConnect = TileGenericPipe.class.getDeclaredMethod("canPipeConnect", new Class[]{TileEntity.class, ForgeDirection.class});
+			canPipeConnect.setAccessible(true);
 			return true;
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -149,9 +149,9 @@ public class BuildCraftProxy {
 		}
 	}
 
-	public boolean arePipesConnected(TileGenericPipe tile, TileEntity with, ForgeDirection side) {
+	public boolean canPipeConnect(TileGenericPipe tile, TileEntity with, ForgeDirection side) {
 		try {
-			return (Boolean) arePipesConnected.invoke(tile, with, side);
+			return (Boolean) canPipeConnect.invoke(tile, with, side);
 		} catch (IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {

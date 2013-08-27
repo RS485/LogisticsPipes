@@ -40,7 +40,8 @@ public class LogisticsClassTransformer implements IClassTransformer {
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		try {
 			if(name.equals("buildcraft.transport.PipeTransportItems")) {
-				return handlePipeTransportItems(bytes);
+				//return handlePipeTransportItems(bytes);
+				return bytes;
 			}
 			if(!name.startsWith("logisticspipes.")) {
 				return bytes;

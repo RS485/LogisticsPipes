@@ -548,11 +548,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public World getWorld() {
-		return this.getWorld();
-	}
-
-	@Override
 	public IHeadUpDisplayRenderer getRenderer() {
 		return HUD;
 	}
@@ -707,7 +702,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public Integer getChassieSize() {
 		return this.getChassiSize();
 	}
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/chassipipe_size1.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size1.png");
 
 	public abstract ResourceLocation getChassiGUITexture() ;
 }

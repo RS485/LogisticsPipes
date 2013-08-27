@@ -39,7 +39,6 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	public FluidRoutedPipe(int itemID) {
 		super(new PipeFluidTransportLogistics(), itemID);
 		((PipeTransportItems) transport).travelHook = this;
-		worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
 	}
 	
 	@Override

@@ -50,6 +50,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
+		if (_contents[i] == null) return null;
 		return _contents[i].makeNormalStack();
 	}
 
@@ -94,12 +95,20 @@ public class SimpleInventory implements IInventory, ISaveState{
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		_contents[i] = ItemIdentifierStack.GetFromStack(itemstack);
+		if(itemstack == null) {
+			_contents[i] = null;
+		} else {
+			_contents[i] = ItemIdentifierStack.GetFromStack(itemstack);
+		}
 		updateContents();
 	}
 
 	public void setInventorySlotContents(int i, ItemIdentifierStack itemstack) {
-		_contents[i] = itemstack;
+		if(itemstack == null) {
+			_contents[i] = null;
+		} else {
+			_contents[i] = itemstack;
+		}
 		updateContents();
 	}
 
@@ -275,6 +284,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		_contentsMap.clear();
 		_contentsUndamagedSet.clear();
 		for (int i = 0; i < _contents.length; i++) {
+			if(_contents[i] == null) continue;
 			ItemIdentifier itemId = _contents[i].getItem();
 			Integer count = _contentsMap.get(itemId);
 			if (count == null) {

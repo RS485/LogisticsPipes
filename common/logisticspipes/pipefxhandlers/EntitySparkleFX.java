@@ -110,7 +110,7 @@ public class EntitySparkleFX extends EntityFX
         this.motionZ = var21 / this.particleMaxAge;
     }
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/particles/particles.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/particles/particles.png");
 	
 
     @Override

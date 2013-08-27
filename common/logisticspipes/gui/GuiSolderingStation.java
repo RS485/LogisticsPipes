@@ -35,7 +35,7 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/soldering_station.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/soldering_station.png");
 	
 
 	@Override

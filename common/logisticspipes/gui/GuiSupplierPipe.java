@@ -57,7 +57,7 @@ public class GuiSupplierPipe extends GuiContainer implements IGuiIDHandlerProvid
 		fontRenderer.drawString("Partial requests:", xSize - 140, ySize - 112, 0x404040);
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/supplier.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 	
 
 	@Override

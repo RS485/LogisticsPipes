@@ -97,7 +97,7 @@ public class GuiSatellitePipe extends GuiContainer implements IGuiIDHandlerProvi
 		}
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/satellite.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/satellite.png");
 	
 	
 	@Override

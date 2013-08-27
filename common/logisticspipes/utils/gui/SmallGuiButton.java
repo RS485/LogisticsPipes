@@ -27,7 +27,7 @@ public class SmallGuiButton extends GuiButton {
 		// TODO Auto-generated constructor stub
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/gui.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/gui.png");
 	
 
 	

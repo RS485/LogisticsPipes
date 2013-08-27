@@ -13,7 +13,7 @@ import org.lwjgl.opengl.GL11;
 public class HUDPowerJunction extends BasicHUDGui implements IHeadUpDisplayRenderer {
 	
 	private final LogisticsPowerJunctionTileEntity junction;
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/power_junction.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
 	public HUDPowerJunction(LogisticsPowerJunctionTileEntity junction) {
 		this.junction = junction;
 	}

@@ -155,7 +155,7 @@ public class LogisticsHUDRenderer {
 	private boolean displayCross = false;
 	
 	//TODO: only load this once, rather than twice
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/icons.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/icons.png");
 	
 	public void renderPlayerDisplay(long renderTicks) {
 		if(!displayRenderer()) return;

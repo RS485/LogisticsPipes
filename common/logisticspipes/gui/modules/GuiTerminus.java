@@ -47,7 +47,7 @@ public class GuiTerminus extends GuiWithPreviousGuiContainer {
 		fontRenderer.drawString("Inventory", 8, ySize - 92, 0x404040);
 	}
 
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/itemsink.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {		

@@ -34,7 +34,7 @@ public class GuiPowerJunction extends KraphtBaseGuiScreen {
 		
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/power_junction.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/power_junction.png");
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {

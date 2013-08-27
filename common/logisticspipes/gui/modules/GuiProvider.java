@@ -87,7 +87,7 @@ public class GuiProvider extends GuiWithPreviousGuiContainer {
 		}
 		super.actionPerformed(guibutton);
 	}
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/supplier.png");	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

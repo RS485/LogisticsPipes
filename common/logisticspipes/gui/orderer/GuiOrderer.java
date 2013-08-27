@@ -173,7 +173,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		return 0;
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/gui/icons.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("textures/gui/icons.png");
 	
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {

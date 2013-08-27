@@ -85,7 +85,7 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		fontRenderer.drawString("Mode: " + logic.getExtractionMode().getExtractionModeString(), 9, ySize - 112, 0x404040);
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/supplier.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
 	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {

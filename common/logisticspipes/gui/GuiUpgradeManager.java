@@ -41,7 +41,7 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 		return GuiIDs.GUI_Upgrade_Manager;
 	}
 	
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/upgrade_manager.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/upgrade_manager.png");
 	
 
 	@Override

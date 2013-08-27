@@ -403,7 +403,7 @@ public class BasicGuiHelper {
         }
 	}
 	
-	private static final ResourceLocation SLOT = new ResourceLocation("/logisticspipes/gui/slot.png");
+	private static final ResourceLocation SLOT = new ResourceLocation("logisticspipes", "textures/gui/slot.png");
 	
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -418,7 +418,7 @@ public class BasicGuiHelper {
         var9.draw();
     }
 	
-	private static final ResourceLocation BIGSLOT = new ResourceLocation("/logisticspipes/gui/slot-big.png");
+	private static final ResourceLocation BIGSLOT = new ResourceLocation("logisticspipes", "textures/gui/slot-big.png");
 	
 
     public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
@@ -434,7 +434,7 @@ public class BasicGuiHelper {
         var9.draw();
     }
     
-	private static final ResourceLocation SMALLSLOT = new ResourceLocation("/logisticspipes/gui/slot-small.png");
+	private static final ResourceLocation SMALLSLOT = new ResourceLocation("logisticspipes", "textures/gui/slot-small.png");
 	
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
@@ -449,7 +449,7 @@ public class BasicGuiHelper {
         var9.draw();
     }
 	
-	private static final ResourceLocation ITEMS = new ResourceLocation("/gui/items.png");
+	private static final ResourceLocation ITEMS = new ResourceLocation("textures/gui/items.png");
 	
 
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
@@ -496,7 +496,7 @@ public class BasicGuiHelper {
     	drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, flag, true, true, true, true);
     }
 	
-	private static final ResourceLocation BACKGROUND = new ResourceLocation("/logisticspipes/gui/GuiBackground.png");
+	private static final ResourceLocation BACKGROUND = new ResourceLocation("logisticspipes", "textures/gui/GuiBackground.png");
 	
 
     public static void drawGuiBackGround(Minecraft mc, int guiLeft, int guiTop, int right, int bottom, float zLevel, boolean flag, boolean displayTop, boolean displayLeft, boolean displayBottom, boolean displayRight){

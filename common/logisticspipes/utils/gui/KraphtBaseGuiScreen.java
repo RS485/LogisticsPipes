@@ -35,9 +35,9 @@ public abstract class KraphtBaseGuiScreen extends GuiContainer implements IGuiID
 		Red
 	}
 	
-	protected static final ResourceLocation ITEMSINK = new ResourceLocation("/logisticspipes/gui/itemsink.png");
-	protected static final ResourceLocation SUPPLIER = new ResourceLocation("/logisticspipes/gui/supplier.png");
-	protected static final ResourceLocation CHASSI1 = new ResourceLocation("/logisticspipes/gui/itemsink.png");
+	protected static final ResourceLocation ITEMSINK = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
+	protected static final ResourceLocation SUPPLIER = new ResourceLocation("logisticspipes", "textures/gui/supplier.png");
+	protected static final ResourceLocation CHASSI1 = new ResourceLocation("logisticspipes", "textures/gui/itemsink.png");
 	
 	protected int right;
 	protected int bottom;

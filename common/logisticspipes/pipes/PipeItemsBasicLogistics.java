@@ -87,7 +87,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isPowerJunction(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;
 		}
 
@@ -99,7 +99,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 
 	private boolean isPowerProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;
 		}
 
@@ -111,7 +111,7 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	
 	private boolean isSecurityProvider(ForgeDirection ori) {
 		TileEntity tilePipe = this.container.getTile(ori);
-		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.arePipesConnected(this.container, tilePipe, ori)) {
+		if(tilePipe == null || !SimpleServiceLocator.buildCraftProxy.canPipeConnect(this.container, tilePipe, ori)) {
 			return false;
 		}
 		if(tilePipe instanceof LogisticsSecurityTileEntity) {

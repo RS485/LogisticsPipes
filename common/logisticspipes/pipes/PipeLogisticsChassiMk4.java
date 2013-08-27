@@ -19,7 +19,7 @@ public class PipeLogisticsChassiMk4 extends PipeLogisticsChassi{
 	public int getChassiSize() {
 		return 4;
 	}
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/chassipipe_size4.png");
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/chassipipe_size4.png");
 
 	@Override
 	public ResourceLocation getChassiGUITexture() {

@@ -133,7 +133,8 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		_filterInventory.readFromNBT(nbttagcompound, "");
-		setDefaultRoute(nbttagcompound.getBoolean("defaultdestination"));
+		_isDefaultRoute = nbttagcompound.getBoolean("defaultdestination");
+		//setDefaultRoute(nbttagcompound.getBoolean("defaultdestination"));
 	}
 
 	@Override

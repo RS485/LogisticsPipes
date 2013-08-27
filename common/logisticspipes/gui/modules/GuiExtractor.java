@@ -91,7 +91,7 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		
 		fontRenderer.drawString("Extract orientation", xSize / 2 - fontRenderer.getStringWidth("Extract orientation") / 2 , 10, 0x404040);
 	}
-	private static final ResourceLocation TEXTURE = new ResourceLocation("/logisticspipes/gui/extractor.png");	
+	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/gui/extractor.png");	
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

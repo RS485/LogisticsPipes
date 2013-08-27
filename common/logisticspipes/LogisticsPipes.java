@@ -259,6 +259,7 @@ public class LogisticsPipes {
 		LogisticsEventListener eventListener = new LogisticsEventListener();
 		MinecraftForge.EVENT_BUS.register(eventListener);
 		GameRegistry.registerPlayerTracker(eventListener);
+		textures.registerBlockIcons(null);
 		
 		SimpleServiceLocator.buildCraftProxy.initProxyAndCheckVersion();
 
@@ -411,7 +412,7 @@ public class LogisticsPipes {
 		LogisticsSign.setUnlocalizedName("logisticsSign");
 		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
-		LogisticsSign.setUnlocalizedName("logisticsSolidBlock");
+		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");
 		
 		MainProxy.proxy.registerTileEntities();
 

@@ -333,8 +333,7 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 
 	@Override
 	public World getWorld() {
-		// TODO Auto-generated method stub
-		return this.worldObj;
+		return this.getWorldObj();
 	}
 	
 	@Override

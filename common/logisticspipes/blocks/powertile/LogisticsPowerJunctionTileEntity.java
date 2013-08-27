@@ -256,7 +256,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	public World getWorld() {
-		return getWorld();
+		return this.getWorldObj();
 	}
 
 	@Override

@@ -363,9 +363,10 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		super.updateEntity();
 		
 		// from BaseRoutingLogic
-		if (--throttleTimeLeft > 0) return;
-		throttledUpdateEntity();
-		throttleTimeLeft = throttleTime;
+		if (--throttleTimeLeft <= 0) {
+			throttledUpdateEntity();
+			throttleTimeLeft = throttleTime;
+		}
 		
 		ignoreDisableUpdateEntity();
 		_initialInit = false;

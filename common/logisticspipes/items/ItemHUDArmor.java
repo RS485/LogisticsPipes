@@ -6,6 +6,7 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumArmorMaterial;
@@ -72,5 +73,11 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor 
 	@Override
 	public boolean isEnabled(ItemStack item) {
 		return true;
+	}
+
+	@Override
+	public String getArmorTexture(ItemStack stack, Entity entity, int slot, String type)
+	{
+		return "logisticspipes:textures/armor/LogisticsHUD_1.png";
 	}
 }

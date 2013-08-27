@@ -61,7 +61,7 @@
 	<target name="setup">
 		<mkdir dir="${download.dir}"/>
 
-		<get src="${downloadserver.full}minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="http://files.minecraftforge.net/minecraftforge/minecraftforge-src-${mc.version}-${forge.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}buildcraft-src-${bc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>
@@ -245,6 +245,10 @@
 
 		<!-- Delete LP source in build space -->
 		<delete dir="${minecraftsrc.dir}/logisticspipes"/>
+		<!-- and textures -->
+		<delete dir="${minecraftsrc.dir}/assets/logisticspipes"/>
+		<!-- and lang -->
+		<delete dir="${minecraftsrc.dir}/lang/logisticspipes"/>
 
 		<!-- Copy LP source -->
 		<copy todir="${minecraftsrc.dir}">
@@ -253,7 +257,15 @@
 		<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%VERSION%" value="${lp.version.full}"/>
 		<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%MCVERSION%" value="${mc.version}"/>
 		<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%DEBUG%" value="${DEBUG}"/>
-		
+		<!-- and textures -->
+		<copy todir="${minecraftsrc.dir}/assets">
+			<fileset dir="${src.dir}/resources/assets"/>
+		</copy>
+		<!-- and lang -->
+		<copy todir="${minecraftsrc.dir}/lang">
+			<fileset dir="${src.dir}/resources/lang"/>
+		</copy>
+
 		<echo message="Loading FingerPrint"/>
 		<if>
 			<available file="${sign.dir}/.fingerprint"/>
@@ -292,7 +304,7 @@
 			<fileset dir="${mcp.dir}/reobf/minecraft"/>
 		</copy>
 
-		<!-- Copy resoucres -->
+		<!-- Copy mcmod.info -->
 		<copy todir="${classes.dir}/client">
 			<fileset dir="${src.dir}/resources"></fileset>
 		</copy>
@@ -301,10 +313,6 @@
 		<replace file="${classes.dir}/client/mcmod.info" token="%MCVERSION%" value="${mc.version}"/>
 
 		<echo message="Compiling finished"/>
-
-		<!-- Create resources zip for MC in mcp -->
-		<zip destfile="${mcp.dir}/jars/mods/LogisticsPipes_resources.zip" basedir="${src.dir}/resources" excludes="mcmod.info"/>
-
 	</target>
 
 	<target name="package-simple" depends="compile">

@@ -67,7 +67,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				delay--;
 				return;
 			}
-			IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(stack);
+			IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 			SimpleServiceLocator.logisticsManager.assignDestinationFor(itemToSend, this.getRouter().getSimpleID(), false);
 			if(itemToSend.getDestinationUUID() != null) {
 				ForgeDirection dir = this.getRouteLayer().getOrientationForItem(itemToSend, null);

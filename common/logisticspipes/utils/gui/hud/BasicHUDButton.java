@@ -80,7 +80,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 	private static final ResourceLocation ITEMS = new ResourceLocation("textures/gui/items.png");
 	
 			
-	private static final ResourceLocation GUI = new ResourceLocation("textures/gui/gui.png");
+	private static final ResourceLocation GUI = new ResourceLocation("textures/gui/widgets.png");
 			
 	
 	

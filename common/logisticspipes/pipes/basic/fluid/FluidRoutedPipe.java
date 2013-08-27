@@ -233,7 +233,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 				((IRequireReliableFluidTransport)this).liquidNotInserted(FluidIdentifier.get(liquid), liquid.amount);
 			}
 			
-			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));
+			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, SimpleServiceLocator.logisticsFluidManager.getFluidContainer(liquid));
 			Pair<Integer, Integer> replies = SimpleServiceLocator.logisticsFluidManager.getBestReply(liquid, this.getRouter(), routedItem.getJamList());
 			int dest = replies.getValue1();
 			routedItem.setDestination(dest);

@@ -192,8 +192,9 @@ public class BuildCraftProxy {
 		return newItem;
 	}
 
-	public IRoutedItem CreateRoutedItem(ItemStack payload) {
+	public IRoutedItem CreateRoutedItem(TileEntity container, ItemStack payload) {
 		TravelingItem entityItem = new TravelingItem( 0, 0, 0, payload);
+		entityItem.setContainer(container);
 		return CreateRoutedItem(entityItem);
 	}
 

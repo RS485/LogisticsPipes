@@ -449,7 +449,7 @@ public class BasicGuiHelper {
         var9.draw();
     }
 	
-	private static final ResourceLocation ITEMS = new ResourceLocation("textures/gui/items.png");
+	private static final ResourceLocation ITEMS = new ResourceLocation("textures/gui/icons.png");
 	
 
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {

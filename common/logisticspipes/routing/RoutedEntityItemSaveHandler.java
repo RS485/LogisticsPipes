@@ -9,8 +9,6 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class RoutedEntityItemSaveHandler {
 	
-	public RoutedEntityItemSaveHandler() {}
-	
 	public RoutedEntityItemSaveHandler(RoutedEntityItem routedEntityItem) {
 		this.routedEntityItem = routedEntityItem;
 	}

@@ -36,8 +36,7 @@ import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
 
-public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
-
+public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 
 	int destinationint = -1;
 	UUID destinationUUID;
@@ -59,22 +58,21 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem{
 		super(entityItem.id);
 		thisItem = ItemIdentifierStack.GetFromStack(entityItem.getItemStack());
 		container = entityItem.getContainer();
-//		position = entityItem.getPosition();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
-		World world = container.worldObj;
-		if(world != null) {
-			delay = 10*20 + world.getTotalWorldTime(); //10 seconds, it should be delivered by then
+		if(container != null && container.worldObj != null) {
+			delay = 10*20 + container.worldObj.getTotalWorldTime(); //10 seconds, it should be delivered by then
 		} else {
 			delay = 62; //64-2 ticks (assume destination consumes items at 1/tick) *20ms ; that way another stack gets sent 64 ticks after the first.
 		}
 		
 		RoutedEntityItemSaveHandler handler = new RoutedEntityItemSaveHandler(this);
-		if(!item.getTagCompound().hasKey("routingInformation")) {
-			NBTTagCompound newTags = item.getTagCompound().getCompoundTag("routingInformation");
+		NBTTagCompound extraData = entityItem.getExtraData();
+		if(!extraData.hasKey("routingInformation")) {
+			NBTTagCompound newTags = extraData.getCompoundTag("routingInformation");
 			handler.writeToNBT(newTags);
 		} else {
-			NBTTagCompound tags = item.getTagCompound().getCompoundTag("routingInformation");
+			NBTTagCompound tags = extraData.getCompoundTag("routingInformation");
 			handler.readFromNBT(tags);
 
 			/* clear destination on load for activerouted items

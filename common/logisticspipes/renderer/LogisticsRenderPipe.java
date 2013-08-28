@@ -399,7 +399,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 					break;
 				default:
 				}
-				bindTextureByName(liquid.canonical().getTextureSheet());
+				bindTextureByName(getLiquidTextureSheetSafe(liquid));
 				GL11.glCallList(list);
 				GL11.glPopMatrix();
 			}
@@ -418,7 +418,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			if (d != null) {
 				int stage = (int) ((float) liquid.amount / (float) (liq.getInnerCapacity()) * (LIQUID_STAGES - 1));
 
-				bindTextureByName(liquid.canonical().getTextureSheet());
+				bindTextureByName(getLiquidTextureSheetSafe(liquid));
 				
 				if (above) {
 					GL11.glCallList(d.centerVertical[stage]);
@@ -433,6 +433,17 @@ public class LogisticsRenderPipe extends RenderPipe {
 		
 		GL11.glPopAttrib();
 		GL11.glPopMatrix();
+	}
+
+	private String getLiquidTextureSheetSafe(LiquidStack liquid) {
+		LiquidStack canon = liquid.canonical();
+		if(canon != null) {
+			String s = canon.getTextureSheet();
+			if(s != null) {
+				return s;
+			}
+		}
+		return "/terrain.png";
 	}
 
 	private DisplayLiquidList getListFromBuffer(LiquidStack stack, World world) {

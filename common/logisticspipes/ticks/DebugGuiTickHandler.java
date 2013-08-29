@@ -14,10 +14,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.concurrent.Callable;
 
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
@@ -31,7 +34,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 
+import logisticspipes.commands.chathelper.ChatColor;
+import logisticspipes.commands.chathelper.LPChatListener;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.OpenChatGui;
 import logisticspipes.network.packets.debuggui.DebugExpandPart;
 import logisticspipes.network.packets.debuggui.DebugInfoUpdate;
 import logisticspipes.network.packets.debuggui.DebugPanelOpen;
@@ -40,11 +46,14 @@ import logisticspipes.network.packets.debuggui.DebugTargetResponse;
 import logisticspipes.network.packets.debuggui.DebugTargetResponse.TargetMode;
 import logisticspipes.network.packets.debuggui.DebugTypePacket;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.util.EnumMovingObjectType;
@@ -172,7 +181,7 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 	}
 	
 	private boolean isPrimitive(Class<?> clazz) {
-		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class || clazz == WorldServer.class;
+		return clazz == Integer.class || clazz == Boolean.class || clazz == Double.class || clazz == Float.class || clazz == Long.class || clazz == UUID.class || clazz == Byte.class || clazz == String.class || clazz == ForgeDirection.class || clazz == WorldServer.class || clazz == ItemIdentifier.class || clazz == ItemIdentifierStack.class;
 	}
 	
 	private VarType resolveType(Object toInstect, VarType prev, String name, boolean extended, ParentVarType parent) {
@@ -278,6 +287,9 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 		if(val instanceof Object[])
 			return (Object[]) val;
 		int arrlength = Array.getLength(val);
+		if(arrlength > 10000) { //Limit to 10000 to avoid high system load (More being displayed also can't be handled by the user)
+			arrlength = 10000;
+		}
 		Object[] outputArray = new Object[arrlength];
 		for(int i = 0; i < arrlength; ++i) {
 			outputArray[i] = Array.get(val, i);
@@ -441,6 +453,7 @@ outer:
 
 	public void expandGuiAt(Integer[] tree, Player player) {
 		ServerGuiSetting info = serverInfo.get(player);
+		if(info == null) return;
 		VarType pos = info.var;
 		VarType prevPos = null;
 		for(int i=1;i<tree.length;i++) {
@@ -472,18 +485,39 @@ outer:
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
+
+	public void closeWatchingFrom(Player sender) {
+		serverInfo.remove(sender);
+	}
 	
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		if(!type.contains(TickType.SERVER)) return;
-		for(Player player:serverInfo.keySet()) {
-			try {
-				ServerGuiSetting setting = serverInfo.get(player);
-				LinkedList<Integer> l = new LinkedList<Integer>();
-				l.add(0);
-				setting.var = handleUpdate(setting.var, player, l, setting.base, null);
-			} catch(Exception e) {
-				e.printStackTrace();
+		Iterator<Entry<Player, ServerGuiSetting>> iterator = serverInfo.entrySet().iterator();
+		while(iterator.hasNext()) {
+			Entry<Player, ServerGuiSetting> entry = iterator.next();
+			Player player = entry.getKey();
+			boolean remove = false;
+			if(player instanceof EntityPlayer) {
+				if(((EntityPlayer)player).isDead) {
+					remove = true;
+				} else if(player instanceof EntityPlayerMP) {
+					if(((EntityPlayerMP)player).playerNetServerHandler.connectionClosed) {
+						remove = true;
+					}
+				}
+			}
+			if(!remove) {
+				try {
+					ServerGuiSetting setting = entry.getValue();
+					LinkedList<Integer> l = new LinkedList<Integer>();
+					l.add(0);
+					setting.var = handleUpdate(setting.var, player, l, setting.base, null);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			} else {
+				iterator.remove();
 			}
 		}
 	}
@@ -665,9 +699,9 @@ outer:
 		}
 	}
 
-	public void targetResponse(TargetMode mode, EntityPlayer player, Object[] additions) {
+	public void targetResponse(TargetMode mode, final EntityPlayer player, Object[] additions) {
 		if(mode == TargetMode.None) {
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Target Found"));
+			player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.RED + "No Target Found"));
 		} else if(mode == TargetMode.Block) {
 			int x = (Integer) additions[0];
 			int y = (Integer) additions[1];
@@ -675,21 +709,39 @@ outer:
 			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Checking Block at: x:" + x + " y:" + y + " z:" + z));
 			int id = player.worldObj.getBlockId(x, y, z);
 			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Found Block with Id: " + id));
-			TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
+			final TileEntity tile = player.worldObj.getBlockTileEntity(x, y, z);
 			if(tile == null) {
-				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No TileEntity found"));
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.RED + "No TileEntity found"));
 			} else {
-				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Starting Debuging of TileEntity: " + tile.getClass().getSimpleName()));
-				this.startWatchingOf(tile, (Player)player);
+				LPChatListener.addTask(new Callable<Boolean>(){
+					@Override
+					public Boolean call() throws Exception {
+						player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.GREEN + "Starting debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName()));
+						DebugGuiTickHandler.this.startWatchingOf(tile, (Player)player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						return true;
+					}
+				}, player);
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.AQUA + "Start debuging of TileEntity: " + ChatColor.BLUE + ChatColor.UNDERLINE + tile.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 			}
 		} else if(mode == TargetMode.Entity) {
 			int entityId = (Integer) additions[0];
-			Entity entitiy = player.worldObj.getEntityByID(entityId);
+			final Entity entitiy = player.worldObj.getEntityByID(entityId);
 			if(entitiy == null) {
-				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Entity found"));
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.RED + "No Entity found"));
 			} else {
-				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Starting Debuging of Entity: " + entitiy.getClass().getSimpleName()));
-				this.startWatchingOf(entitiy, (Player)player);
+				LPChatListener.addTask(new Callable<Boolean>(){
+					@Override
+					public Boolean call() throws Exception {
+						player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.GREEN + "Starting debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName()));
+						DebugGuiTickHandler.this.startWatchingOf(entitiy, (Player)player);
+						MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
+						return true;
+					}
+				}, player);
+				player.sendChatToPlayer(ChatMessageComponent.func_111066_d(ChatColor.AQUA + "Start debuging of Entity: " + ChatColor.BLUE + ChatColor.UNDERLINE + entitiy.getClass().getSimpleName() + ChatColor.AQUA + "? " + ChatColor.RESET + "<" + ChatColor.GREEN + "yes" + ChatColor.RESET + "/" + ChatColor.RED + "no" + ChatColor.RESET + ">"));
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) player);
 			}
 		}
 	}

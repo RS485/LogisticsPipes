@@ -12,11 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.nbt.NBTTagCompound;
-import buildcraft.transport.TileGenericPipe;
-import cpw.mods.fml.common.network.Player;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -37,6 +32,11 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
+import net.minecraft.nbt.NBTTagCompound;
+import buildcraft.transport.TileGenericPipe;
+import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport{
 
@@ -77,7 +77,14 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
-	private boolean _requestPartials = false;
+	public enum SupplyMode{
+		Partial,
+		Full,
+		Bulk50,
+		Bulk100,
+		Infinite
+	}
+	private SupplyMode _requestMode = SupplyMode.Bulk50;
 
 	public boolean pause = false;
 	
@@ -88,7 +95,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, getWorld(), getX(), getY(), getZ());
 //TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, getX(), getY(), getZ(), isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
 		}
 	}
 	
@@ -141,7 +148,22 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			//Reduce what I have and what have been requested already
 			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
 				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
-				if (haveCount != null){
+				if(haveCount==null)
+					haveCount=0;
+				int spaceAvailable=invUtil.roomForItem(item.getKey());
+				if(_requestMode==SupplyMode.Infinite){
+					item.setValue(Math.min(item.getKey().getMaxStackSize(),spaceAvailable));
+					continue;
+
+				}
+				if(spaceAvailable == 0 || 
+						( _requestMode==SupplyMode.Bulk50 && haveCount>item.getValue()/2) ||
+						( _requestMode==SupplyMode.Bulk100 && haveCount>=item.getValue()))
+				{
+					item.setValue(0);
+					continue;
+				}
+				if (haveCount >0){
 					item.setValue(item.getValue() - haveCount);
 					// so that 1 damaged item can't satisfy a request for 2 other damage values.
 					haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
@@ -165,7 +187,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 				
 				boolean success = false;
 
-				if(_requestPartials) {
+				if(_requestMode!=SupplyMode.Full) {
 					neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
 					if(neededCount > 0) {
 						success = true;
@@ -193,15 +215,25 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);	
 		dummyInventory.readFromNBT(nbttagcompound, "");
-		_requestPartials = nbttagcompound.getBoolean("requestpartials");
+		if(nbttagcompound.hasKey("requestmode")){
+			_requestMode=SupplyMode.values()[nbttagcompound.getShort("requestmode")];
+		}
+		if(nbttagcompound.hasKey("requestpartials")){
+			boolean oldPartials = nbttagcompound.getBoolean("requestpartials");
+			if(oldPartials)
+				_requestMode=SupplyMode.Partial;
+			else
+				_requestMode=SupplyMode.Full;
+		}
     }
 
 	@Override
     public void writeToNBT(NBTTagCompound nbttagcompound) {
     	super.writeToNBT(nbttagcompound);
     	dummyInventory.writeToNBT(nbttagcompound, "");
-    	nbttagcompound.setBoolean("requestpartials", _requestPartials);
-    }
+    	nbttagcompound.setShort("requestmode", (short) _requestMode.ordinal());
+//    	nbttagcompound.setBoolean("requestpartials", _requestPartials);
+	}
 	
 	private void decreaseRequested(ItemIdentifierStack item) {
 		int remaining = item.stackSize;
@@ -240,12 +272,12 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		delayThrottle();
 	}
 	
-	public boolean isRequestingPartials(){
-		return _requestPartials;
+	public SupplyMode isRequestingPartials(){
+		return _requestMode;
 	}
 	
-	public void setRequestingPartials(boolean value){
-		_requestPartials = value;
+	public void setRequestingPartials(SupplyMode value){
+		_requestMode = value;
 	}
 
 

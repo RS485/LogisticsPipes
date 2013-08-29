@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.asm.ModDependentMethod;
+import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.textures.Textures;
 import net.minecraft.entity.Entity;
@@ -30,6 +32,8 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	@Override
 	public ArrayList<ItemStack> getBlockDropped(World world, int x, int y, int z, int metadata, int fortune) {
 		ArrayList<ItemStack> result = super.getBlockDropped(world, x, y, z, metadata, fortune);
+		if(result == null)
+			return null;
 		for(int i=0;i<result.size();i++) {
 			ItemStack stack = result.get(i);
 			if(stack.itemID == LogisticsPipes.LogisticsBrokenItem.itemID) {
@@ -77,6 +81,7 @@ public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 	}
 	
 	@Override
+	@ModDependentMethodName(modId="ImmibisMicroblocks", newName="collisionRayTrace_ImmibisMicroblockTransformer", version="")
 	public MovingObjectPosition collisionRayTrace(World world, int x, int y, int z, Vec3 origin, Vec3 direction) {
 		TileEntity tile1 = world.getBlockTileEntity(x, y, z);
 		TileGenericPipe tileG = (TileGenericPipe) tile1;

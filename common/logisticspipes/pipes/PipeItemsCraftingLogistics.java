@@ -541,7 +541,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			template.addRequirement(liquid, amount, liquidTarget[i]);
 		}
 		
-		if(this.getUpgradeManager().hasByproductExtractor()) {
+		if(this.getUpgradeManager().hasByproductExtractor() && getByproductItem() != null) {
 			template.addByproduct(getByproductItem());
 		}
 		
@@ -1067,24 +1067,23 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	public void importFromCraftingTable(EntityPlayer player) {
-		final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
-		for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
-			for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
-				if (provider.importRecipe(tile.tile, _dummyInventory))
-					break;
-			}
-		}
-		
-		if(player == null) return;
-		
-		if (MainProxy.isClient(player.worldObj)) {
+		if (MainProxy.isClient(getWorld())) {
 			// Send packet asking for import
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImport.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToServer(packet);
 		} else{
+			final WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
+			for (final AdjacentTile tile : worldUtil.getAdjacentTileEntities(true)) {
+				for (ICraftingRecipeProvider provider : SimpleServiceLocator.craftingRecipeProviders) {
+					if (provider.importRecipe(tile.tile, _dummyInventory))
+						break;
+				}
+			}
 			// Send inventory as packet
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteImportBack.class).setInventory(_dummyInventory).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-			MainProxy.sendPacketToPlayer(packet, (Player)player);
+			if(player != null) {
+				MainProxy.sendPacketToPlayer(packet, (Player)player);
+			}
 			MainProxy.sendPacketToAllWatchingChunk(this.getX(), this.getZ(), MainProxy.getDimensionForWorld(getWorld()), packet);
 		}
 	}

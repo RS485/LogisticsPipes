@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.bs.BetterStorageProxy;
 import logisticspipes.proxy.cc.CCProxy;
@@ -14,15 +15,22 @@ import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
+import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
+import logisticspipes.proxy.mps.ModularPowersuitsProxy;
+import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
 import logisticspipes.utils.ItemIdentifier;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.Loader;
@@ -147,6 +155,48 @@ public class ProxyManager {
 				@Override public boolean isBetterStorageCrate(TileEntity tile) {return false;}
 			});
 			LogisticsPipes.log.info("Loaded BetterStorage DummyProxy");
+		}
+		
+		if(Loader.isModLoaded("NotEnoughItems")) {
+			SimpleServiceLocator.setNEIProxy(new NEIProxy());
+			LogisticsPipes.log.info("Loaded NotEnoughItems Proxy");
+		} else {
+			SimpleServiceLocator.setNEIProxy(new INEIProxy() {
+				@Override public int getWidthForList(List<String> data, FontRenderer fontRenderer) {return 0;}
+				@Override public List<String> getInfoForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return new ArrayList<String>(0);}
+				@Override public ItemStack getItemForPosition(World world, EntityPlayer player, MovingObjectPosition objectMouseOver) {return null;}
+			});
+			LogisticsPipes.log.info("Loaded NotEnoughItems DummyProxy");
+		}
+		
+		if(Loader.isModLoaded("mmmPowersuits")) {
+			SimpleServiceLocator.setMPSProxy(new ModularPowersuitsProxy());
+			LogisticsPipes.log.info("Loaded Modular Powersuits Proxy");
+		} else {
+			SimpleServiceLocator.setMPSProxy(new IModularPowersuitsProxy() {
+				@Override public boolean isMPSHelm(ItemStack stack) {return false;}
+				@Override public void initModules() {}
+				@Override public boolean hasActiveHUDModule(ItemStack stack) {return false;}
+				@Override public IHUDConfig getConfigFor(ItemStack itemStack) {
+					return new IHUDConfig() {
+						@Override public boolean isHUDSatellite() {return false;}
+						@Override public boolean isHUDProvider() {return false;}
+						@Override public boolean isHUDPowerJunction() {return false;}
+						@Override public boolean isHUDInvSysCon() {return false;}
+						@Override public boolean isHUDCrafting() {return false;}
+						@Override public boolean isHUDChassie() {return false;}
+						@Override public void setHUDChassie(boolean state) {}
+						@Override public void setHUDCrafting(boolean state) {}
+						@Override public void setHUDInvSysCon(boolean state) {}
+						@Override public void setHUDPowerJunction(boolean state) {}
+						@Override public void setHUDProvider(boolean state) {}
+						@Override public void setHUDSatellite(boolean state) {}
+					};
+				}
+				@Override public boolean isMPSHand(ItemStack stack) {return false;}
+				@Override public boolean hasHelmHUDInstalled(ItemStack stack) {return false;}
+			});
+			LogisticsPipes.log.info("Loaded Modular Powersuits DummyProxy");
 		}
 	}
 }

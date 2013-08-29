@@ -3,8 +3,8 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDButton;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayRenderer;
 import net.minecraft.client.Minecraft;
 
@@ -19,7 +19,7 @@ public abstract class BasicHUDGui implements IHeadUpDisplayRenderer {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, HUDConfig config) {
+	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, IHUDConfig config) {
 		for(IHUDButton button:buttons) {
 			GL11.glPushMatrix();
 			button.renderAlways();

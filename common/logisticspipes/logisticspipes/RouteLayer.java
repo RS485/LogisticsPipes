@@ -63,11 +63,11 @@ public class RouteLayer {
 		if (item.getDestinationUUID().equals(_router.getId())){
 			
 			if (!_transport.stillWantItem(item)){
-				_router.inboundItemArrived((RoutedEntityItem) item);
 				return getOrientationForItem(SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), true), null);
 			}
 			
 			item.setDoNotBuffer(true);
+			item.setArrived(true);
 			ForgeDirection o =_transport.itemArrived(item, blocked);
 			return o != null?o:ForgeDirection.UNKNOWN;
 		}

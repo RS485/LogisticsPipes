@@ -10,6 +10,7 @@ import java.util.List;
 import logisticspipes.api.IHUDArmor;
 import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;
 import logisticspipes.interfaces.IHeadUpDisplayRendererProvider;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -18,15 +19,21 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LaserData;
 import logisticspipes.routing.PipeRoutingConnectionType;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.MathVector;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumMovingObjectType;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraftforge.client.GuiIngameForge;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import cpw.mods.fml.client.FMLClientHandler;
@@ -37,6 +44,8 @@ public class LogisticsHUDRenderer {
 	private double lastXPos = 0;
 	private double lastYPos = 0;
 	private double lastZPos = 0;
+	
+	private int progress = 0;
 	
 	private ArrayList<IHeadUpDisplayBlockRendererProvider> providers = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
 	
@@ -149,7 +158,20 @@ public class LogisticsHUDRenderer {
 	}
 	
 	private boolean playerWearsHUD() {
-		return FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.inventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null && FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor && ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		return FMLClientHandler.instance().getClient().thePlayer != null
+				&& FMLClientHandler.instance().getClient().thePlayer.inventory != null
+				&& FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory != null
+				&& FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3] != null
+				&& checkItemStackForHUD(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+	}
+	
+	private boolean checkItemStackForHUD(ItemStack stack) {
+		if(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem() instanceof IHUDArmor) {
+			return ((IHUDArmor)FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3].getItem()).isEnabled(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		} else if(SimpleServiceLocator.mpsProxy.isMPSHelm(stack)) {
+			return SimpleServiceLocator.mpsProxy.hasActiveHUDModule(stack);
+		}
+		return false;
 	}
 	
 	private boolean displayCross = false;
@@ -185,7 +207,12 @@ public class LogisticsHUDRenderer {
 		}
 		boolean cursorHandled = false;
 		displayCross = false;
-		HUDConfig config = new HUDConfig(FMLClientHandler.instance().getClient().thePlayer.inventory.armorInventory[3]);
+		IHUDConfig config;
+		if(SimpleServiceLocator.mpsProxy.isMPSHelm(mc.thePlayer.inventory.armorInventory[3])) {
+			config = SimpleServiceLocator.mpsProxy.getConfigFor(mc.thePlayer.inventory.armorInventory[3]);
+		} else {
+			 config = new HUDConfig(mc.thePlayer.inventory.armorInventory[3]);
+		}
 		IHeadUpDisplayRendererProvider thisIsLast = null;
 		for(IHeadUpDisplayRendererProvider renderer:list) {
 			if(renderer.getRenderer() == null) continue;
@@ -204,7 +231,7 @@ public class LogisticsHUDRenderer {
 					if(pos.length == 2) {
 						if(renderer.getRenderer().cursorOnWindow(pos[0], pos[1])) {
 							renderer.getRenderer().handleCursor(pos[0], pos[1]);
-							if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
+							if(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) { //if(FMLClientHandler.instance().getClient().thePlayer.isSneaking()) {
 								thisIsLast = renderer;
 								displayCross = true;
 							}
@@ -225,9 +252,71 @@ public class LogisticsHUDRenderer {
 	        GL11.glDisable(GL11.GL_BLEND);
 	        GL11.glDisable(GL11.GL_DEPTH_TEST);
 	        displayOneView(thisIsLast, config, partialTick);
+	        GL11.glEnable(GL11.GL_BLEND);
+	        GL11.glEnable(GL11.GL_DEPTH_TEST);
 	        GL11.glPopMatrix();
 		}
 		
+		GL11.glPushMatrix();
+		MovingObjectPosition box = mc.objectMouseOver;
+		if(box != null && box.typeOfHit == EnumMovingObjectType.TILE) {
+			if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+				progress = Math.min(progress + 2, 100);
+			} else {
+				progress = Math.max(progress - 2, 0);
+			}
+			if(progress != 0) {
+				
+				List<String> textData = SimpleServiceLocator.neiProxy.getInfoForPosition(player.worldObj, player, box);
+				if(!textData.isEmpty()) {
+					double xCoord = box.blockX + 0.5D;
+					double yCoord = box.blockY + 0.5D;
+					double zCoord = box.blockZ + 0.5D;
+					
+					double x = xCoord - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);
+					double y = yCoord - player.prevPosY - ((player.posY - player.prevPosY) * partialTick);
+					double z = zCoord - player.prevPosZ - ((player.posZ - player.prevPosZ) * partialTick);
+					
+					GL11.glTranslatef((float) x, (float) y, (float) z);
+					GL11.glRotatef(90.0F, 1.0F, 0.0F, 0.0F);
+					GL11.glRotatef(getAngle(z, x) + 110F, 0.0F, 0.0F, 1.0F);
+					GL11.glRotatef(( -1) * getAngle(Math.hypot(x + 0.8, z + 0.8), y + 0.5) + 180, 1.0F, 0.0F, 0.0F);
+					
+					double dProgress = progress / 100D;
+					
+					GL11.glTranslated(0.4D * dProgress + 0.6D, -0.2D * dProgress - 0.6D, -0.0D);
+					
+					GL11.glScalef(0.01F, 0.01F, 1F);
+					
+					int heigth = Math.max(32, 10 * textData.size() + 15);
+					int width = Math.max(32, SimpleServiceLocator.neiProxy.getWidthForList(textData, mc.fontRenderer) + 15);
+					
+					GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 96);
+					BasicGuiHelper.drawGuiBackGround(mc, (int) (( -0.5 * (width - 32)) * dProgress) - 16, (int) (( -0.5 * (heigth - 32)) * dProgress) - 16, (int) ((0.5 * (width - 32)) * dProgress) + 16, (int) ((0.5 * (heigth - 32)) * dProgress) + 16, 0, false);
+					GL11.glColor4b((byte) 127, (byte) 127, (byte) 127, (byte) 127);
+					
+					if(progress == 100) {
+						GL11.glTranslated((int) (( -0.5 * (width - 32)) * dProgress) - 16, (int) (( -0.5 * (heigth - 32)) * dProgress) - 16, -0.0001D);
+						for(int i=0;i<textData.size();i++) {
+							mc.fontRenderer.drawString(textData.get(i), 28, 8 + i * 10, 0x000000);
+						}
+						
+						ItemStack item = SimpleServiceLocator.neiProxy.getItemForPosition(player.worldObj, player, box);
+						if(item != null) {
+							GL11.glScalef(1.5F, 1.5F, 0.0001F);
+							GL11.glScalef(0.8F, 0.8F, -1F);
+							List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>(1);
+							list.add(ItemIdentifierStack.GetFromStack(item));
+							BasicGuiHelper.renderItemIdentifierStackListIntoGui(list, null, 0, 5, 5, 1, 1, 18, 18, mc, false, false, true, true);
+						}
+					}
+				}
+			}
+		} else if(!Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
+			progress = 0;
+		}
+		GL11.glPopMatrix();
+
 		//Render Laser
         GL11.glDisable(GL11.GL_DEPTH_TEST);
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -363,7 +452,7 @@ public class LogisticsHUDRenderer {
 		}
 	}
 	
-	private void displayOneView(IHeadUpDisplayRendererProvider renderer, HUDConfig config, float partialTick) {
+	private void displayOneView(IHeadUpDisplayRendererProvider renderer, IHUDConfig config, float partialTick) {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		EntityPlayer player = mc.thePlayer;
 		double x = renderer.getX() + 0.5 - player.prevPosX - ((player.posX - player.prevPosX) * partialTick);

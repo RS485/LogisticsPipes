@@ -9,12 +9,15 @@
 package logisticspipes.routing;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 
+import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
@@ -44,17 +47,7 @@ public class PathFinder {
 	 * @param maxLength - The maximum recurse depth, i.e. the maximum length pipe that is supported
 	 * @return
 	 */
-	
-	public static HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength) {
-		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
-		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
-	}
-	
-	public static HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, int maxVisited, int maxLength, ForgeDirection side) {
-		PathFinder newSearch = new PathFinder(maxVisited, maxLength, null);
-		return newSearch.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), side);
-	}
-	
+		
 	public static HashMap<CoreRoutedPipe, ExitRoute> paintAndgetConnectedRoutingPipes(TileGenericPipe startPipe, ForgeDirection startOrientation, int maxVisited, int maxLength, IPaintPath pathPainter, EnumSet<PipeRoutingConnectionType> connectionType) {
 		PathFinder newSearch = new PathFinder(maxVisited, maxLength, pathPainter);
 		newSearch.setVisited.add(startPipe);
@@ -68,6 +61,18 @@ public class PathFinder {
 		return newSearch.getConnectedRoutingPipes((TileGenericPipe) entity, connectionType, startOrientation);
 	}
 	
+	public HashMap<CoreRoutedPipe, ExitRoute> result;
+	public PathFinder(TileGenericPipe startPipe, int maxVisited, int maxLength) {
+		this(maxVisited, maxLength, null);
+		result = this.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), ForgeDirection.UNKNOWN);
+	}
+	
+	public PathFinder(TileGenericPipe startPipe, int maxVisited, int maxLength, ForgeDirection side) {
+		this(maxVisited, maxLength, null);
+		result=this.getConnectedRoutingPipes(startPipe, EnumSet.allOf(PipeRoutingConnectionType.class), side);
+	}
+	
+	
 	private PathFinder(int maxVisited, int maxLength, IPaintPath pathPainter) {
 		this.maxVisited = maxVisited;
 		this.maxLength = maxLength;
@@ -80,6 +85,7 @@ public class PathFinder {
 	private final HashSet<TileGenericPipe> setVisited;
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
+	public List<ILogisticsPowerProvider> powerNodes;
 	
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
 		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<CoreRoutedPipe, ExitRoute>();
@@ -124,6 +130,7 @@ public class PathFinder {
 		//Visited is checked after, so we can reach the same target twice to allow to keep the shortest path
 		setVisited.add(startPipe);
 		
+		// first check specialPipeConnections (tesseracts, teleports, other connectors)
 		if(startPipe.pipe != null) {
 			List<TileGenericPipe> pipez = SimpleServiceLocator.specialpipeconnection.getConnectedPipes(startPipe);
 			for (TileGenericPipe specialpipe : pipez){
@@ -153,6 +160,12 @@ public class PathFinder {
 			TileEntity tile = startPipe.getTile(direction);
 			
 			if (tile == null) continue;
+			if (root && tile instanceof ILogisticsPowerProvider) {
+				if(this.powerNodes==null) {
+					powerNodes = new ArrayList<ILogisticsPowerProvider>();
+				}
+				powerNodes.add((ILogisticsPowerProvider) tile);
+			}
 			connections.add(new Pair<TileEntity, ForgeDirection>(tile, direction));
 		}
 		

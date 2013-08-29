@@ -170,7 +170,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 				return -1;
 			}
 			ItemStack removed = inv.getMultipleItems(item, wanted);
-			if(removed == null) continue;
+			if(removed == null || removed.stackSize == 0) continue;
 			int sent = removed.stackSize;
 			useEnergy(sent * neededEnergy());
 

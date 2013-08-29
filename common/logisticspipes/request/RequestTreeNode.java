@@ -751,14 +751,16 @@ outer:
 
 
 	protected void logFailedRequestTree(RequestLog log) {
-		for(RequestTreeNode node:this.subRequests) {
-			node.recurseFailedRequestTree();
-		}
+		Map<ItemIdentifier,Integer> missing = new HashMap<ItemIdentifier,Integer>();
 		for(RequestTreeNode node:this.subRequests) {
 			if(node instanceof RequestTree) {
-				((RequestTree)node).sendMissingMessage(log);
+				if(!node.isDone()) {
+					node.recurseFailedRequestTree();
+					node.buildMissingMap(missing);
+				}
 			}
 		}
+		log.handleMissingItems(missing);
 	}
 	
 	private void destroy() {

@@ -271,6 +271,10 @@ outer:
 		if(!_power.canUseEnergy(wanted * neededEnergy())) return -1;
 
 		ItemStack removed = inv.getMultipleItems(item, wanted);
+		if(removed == null || removed.stackSize == 0) {
+			_orderManager.sendFailed();
+			return 0;
+		}
 		int sent = removed.stackSize;
 		_power.useEnergy(sent * neededEnergy());
 

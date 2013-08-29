@@ -7,6 +7,7 @@ import java.io.IOException;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.routing.ExitRoute;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,7 +64,12 @@ public class StatUpdate extends CoordinatesPacket {
 		stat_lifetime_sent = pipe.stat_lifetime_sent;
 		stat_lifetime_recieved = pipe.stat_lifetime_recieved;
 		stat_lifetime_relayed = pipe.stat_lifetime_relayed;
-		server_routing_table_size = pipe.getRouter().getRouteTable().size();
+		int numentries = 0;
+		for(ExitRoute route : pipe.getRouter().getRouteTable()) {
+			if(route != null)
+				++numentries;
+		}
+		server_routing_table_size = numentries;
 	}
 	
 	@Override

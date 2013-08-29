@@ -20,6 +20,8 @@ import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
+import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
+import logisticspipes.proxy.interfaces.INEIProxy;
 import logisticspipes.proxy.interfaces.IThaumCraftProxy;
 import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
@@ -129,5 +131,15 @@ public final class SimpleServiceLocator {
 	public static ServerPacketBufferHandlerThread serverBufferHandler;
 	public static void setServerPacketBufferHandlerThread(ServerPacketBufferHandlerThread proxy) {
 		serverBufferHandler = proxy;
+	}
+	
+	public static INEIProxy neiProxy;
+	public static void setNEIProxy(INEIProxy proxy) {
+		neiProxy = proxy;
+	}
+	
+	public static IModularPowersuitsProxy mpsProxy;
+	public static void setMPSProxy(IModularPowersuitsProxy proxy) {
+		mpsProxy = proxy;
 	}
 }

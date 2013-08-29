@@ -8,7 +8,6 @@
 
 package logisticspipes.routing;
 
-import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 import java.util.UUID;
@@ -21,8 +20,7 @@ import net.minecraftforge.common.ForgeDirection;
 public interface IRouter {
 	public interface IRAction {
 		public boolean isInteresting(IRouter that);
-		public boolean doTo(IRouter that);
-		public void doneWith(IRouter that);
+		public void doTo(IRouter that);
 	}
 	public void destroy();
 	public void update(boolean fullRefresh);
@@ -39,7 +37,6 @@ public interface IRouter {
 	public boolean isInDim(int dimension);
 	public boolean isAt(int dimension, int xCoord, int yCoord, int zCoord);
 	public UUID getId();
-	public void inboundItemArrived(RoutedEntityItem routedEntityItem);
 	
 	public LogisticsModule getLogisticsModule();
 	public void clearPipeCache();
@@ -47,10 +44,17 @@ public interface IRouter {
 	public IRouter getRouter(ForgeDirection insertOrientation);
 	public int getSimpleID();
 
-	public boolean act(BitSet hasBeenProcessed, IRAction actor);
+	/**
+	 * 
+	 * @param hasBeenProcessed a bitset flagging which nodes have already been acted on 
+	 * (the router should set the bit for it's own id, then return true.
+	 * @param actor
+	 * the visitor
+	 * @return true if the bitset was cleared at some stage during the process, resulting in a potentially incomplete bitset.
+	 */
+	public void act(BitSet hasBeenProcessed, IRAction actor);
 	public void flagForRoutingUpdate();
 	public boolean checkAdjacentUpdate();
-	public void clearPrevAdjacent();
 	
 	/* Automated Disconnection */
 	public boolean isSideDisconneceted(ForgeDirection dir);
@@ -61,4 +65,7 @@ public interface IRouter {
 	public List<IRouter> getFilteringRouter();
 	
 	public boolean isValidCache();
+	
+	//force-update LSA version in the network
+	public void forceLsaUpdate();
 }

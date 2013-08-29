@@ -186,6 +186,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 			int itemsleft = itemsToExtract();
 			while(reply != null) {
 				int count = Math.min(itemsleft, item.getValue());
+				count = Math.min(count, item.getKey().getMaxStackSize());
 				if(reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
@@ -199,7 +200,9 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 					break;
 				}
 
-				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), item.getValue());
+				ItemStack stackToSend = invUtil.getMultipleItems(item.getKey(), count);
+				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				count = stackToSend.stackSize;
 				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;

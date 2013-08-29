@@ -180,14 +180,15 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			
 			ItemStack slot = targetUtil.getStackInSlot(i);
 			if (slot == null) continue;
-
+			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), true, jamList);
+			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(slotitem, true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();
 			while(reply != null) {
 				int count = Math.min(itemsleft, slot.stackSize);
+				count = Math.min(count, slotitem.getMaxStackSize());
 				if(reply.getValue2().maxNumberOfItems > 0) {
 					count = Math.min(count, reply.getValue2().maxNumberOfItems);
 				}
@@ -202,6 +203,8 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 				}
 
 				ItemStack stackToSend = targetUtil.decrStackSize(i, count);
+				if(stackToSend == null || stackToSend.stackSize == 0) break;
+				count = stackToSend.stackSize;
 				_itemSender.sendStack(stackToSend, reply, itemSendMode());
 				itemsleft -= count;
 				if(itemsleft <= 0) break;

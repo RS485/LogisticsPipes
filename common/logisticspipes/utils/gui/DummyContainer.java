@@ -160,7 +160,8 @@ public class DummyContainer extends Container{
 		
 		if(slot instanceof HandelableSlot) {
 			if(currentlyEquippedStack == null) {
-				return ((HandelableSlot)slot).getProvidedStack();
+				inventoryplayer.setItemStack(((HandelableSlot)slot).getProvidedStack());
+				return null;
 			}
 			return currentlyEquippedStack;
 		}
@@ -327,6 +328,15 @@ public class DummyContainer extends Container{
 		//Player "hotbar"
         for(int i1 = 0; i1 < 9; i1++) {
         	addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1, xOffset + i1 * 18, yOffset));
+        }
+	}
+
+	public void addRestrictedArmorForPlayerInventory(int xOffset, int yOffset) {
+		if (_playerInventory == null){
+			return;
+		}
+        for(int i1 = 0; i1 < 4; i1++) {
+        	addSlotToContainer(new UnmodifiableSlot(_playerInventory, i1 + 36, xOffset, yOffset - i1 * 18));
         }
 	}
 

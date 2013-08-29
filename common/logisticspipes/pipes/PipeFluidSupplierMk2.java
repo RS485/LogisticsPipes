@@ -88,6 +88,9 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 	@Override
 	public void throttledUpdateEntity() {
+		if (!isEnabled()){
+			return;
+		}
 		if (MainProxy.isClient(container.getWorld())) return;
 		super.throttledUpdateEntity();
 		if(dummyInventory.getStackInSlot(0) == null) return;

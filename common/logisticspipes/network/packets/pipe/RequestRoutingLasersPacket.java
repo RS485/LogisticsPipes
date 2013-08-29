@@ -39,6 +39,10 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 		if(tile == null) return;
 		if(tile.pipe instanceof CoreRoutedPipe) {
 			IRouter router = ((CoreRoutedPipe)tile.pipe).getRouter();
+
+			//this is here to allow players to manually trigger a network-wide LSA update
+			router.forceLsaUpdate();
+
 			List<ExitRoute> exits = router.getRouteTable();
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
 			for(ExitRoute exit:exits) {

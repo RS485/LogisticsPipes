@@ -90,6 +90,11 @@ public class AEInterfaceInventoryHandler extends SpecialInventoryHandler {
 	}
 
 	@Override
+	public ItemStack getMultipleItems(ItemIdentifier item, int count) {
+		return _tile.apiExtractNetworkItem(item.makeNormalStack(count), true);
+	}
+
+	@Override
 	public boolean containsItem(ItemIdentifier item) {
 		ItemStack result = _tile.apiExtractNetworkItem(item.unsafeMakeNormalStack(1), false);
 		return result != null;

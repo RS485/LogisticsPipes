@@ -84,9 +84,8 @@ public class RemoteOrderer extends Item {
 			if(MainProxy.isServer(par3EntityPlayer.worldObj)) {
 				int energyUse=0;
 				if(pipe.getWorld() != par3EntityPlayer.worldObj)
-					energyUse += 500;
-				energyUse += Math.abs(pipe.getX()-par3EntityPlayer.posX) + Math.abs(pipe.getY()-par3EntityPlayer.posY) + Math.abs(pipe.getZ()-par3EntityPlayer.posZ);
-				energyUse *= 5; // x5 converts from lp to mj energy cost.
+					energyUse += 2500;
+				energyUse += Math.sqrt(Math.pow(pipe.getX()-par3EntityPlayer.posX,2) + Math.pow(pipe.getY()-par3EntityPlayer.posY,2) + Math.pow(pipe.getZ()-par3EntityPlayer.posZ,2));
 				if(pipe.useEnergy(energyUse)) { 
 //TODO 			MainProxy.sendPacketToPlayer(new PacketInteger(NetworkConstants.REQUEST_GUI_DIMENSION, MainProxy.getDimensionForWorld(pipe.getWorld())).getPacket(), (Player)par3EntityPlayer);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestPipeDimension.class).setInteger(MainProxy.getDimensionForWorld(pipe.getWorld())), (Player)par3EntityPlayer);

@@ -39,6 +39,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 			if(r.matches(craftInv, getWorldObj())) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
+				break;
 			}
 		}
 	}
@@ -97,12 +98,22 @@ outer:
 		for(int i=0;i<9;i++) {
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, null);
-			if(left != null) inv.addCompressed(left);
+			if(left != null) {
+				left.stackSize = inv.addCompressed(left, false);
+				if(left.stackSize > 0) {
+					inv.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+				}
+			}
 		}
 		for(int i=0;i<fake.inventory.getSizeInventory();i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, null);
-			if(left != null) inv.addCompressed(left);
+			if(left != null) {
+				left.stackSize = inv.addCompressed(left, false);
+				if(left.stackSize > 0) {
+					inv.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+				}
+			}
 		}
 		return result;
 	}

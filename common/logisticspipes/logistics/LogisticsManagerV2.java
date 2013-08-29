@@ -221,14 +221,12 @@ public class LogisticsManagerV2 implements ILogisticsManagerV2 {
 		if(item.getItemStack() != null && item.getItemStack().getItem() instanceof LogisticsFluidContainer) {
 			Pair<Integer, Integer> bestReply = SimpleServiceLocator.logisticsFluidManager.getBestReply(SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item.getItemStack()), sourceRouter, item.getJamList());
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
-				item.setBufferCounter(0);
 				item.setDestination(bestReply.getValue1());
 			}
 			return item;
 		} else {
 			Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);	
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
-				item.setBufferCounter(0);
 				item.setDestination(bestReply.getValue1());
 				if (bestReply.getValue2().isPassive){
 					if (bestReply.getValue2().isDefault){

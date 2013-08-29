@@ -8,14 +8,11 @@
 
 package logisticspipes.transport;
 
-import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
@@ -29,21 +26,17 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.Pair;
-import net.minecraft.entity.item.EntityItem;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.transport.IPipe;
 import buildcraft.api.transport.IPipeTile;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
-import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
@@ -283,6 +276,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				}
 				//sneaky insertion
 				UpgradeManager manager = getPipe().getUpgradeManager();
+				boolean tookSome = false;
 				if(!manager.hasCombinedSneakyUpgrade()) {
 					ForgeDirection insertion = arrivingItem.output.getOpposite();
 					if(manager.hasSneakyUpgrade()) {
@@ -291,6 +285,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 					ItemStack added = InventoryHelper.getTransactorFor(tile).add(arrivingItem.getItemStack(), insertion, true);
 					
 					arrivingItem.getItemStack().stackSize -= added.stackSize;
+					if(added.stackSize > 0)
+						tookSome = true;
 					
 					if(arrivingItem instanceof IRoutedItem) {
 						IRoutedItem routed = (IRoutedItem) arrivingItem;
@@ -306,6 +302,8 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 						ItemStack added = InventoryHelper.getTransactorFor(tile).add(arrivingItem.getItemStack(), insertion, true);
 						
 						arrivingItem.getItemStack().stackSize -= added.stackSize;
+						if(added.stackSize > 0)
+							tookSome = true;
 						
 						//For InvSysCon
 						if(arrivingItem instanceof IRoutedItem) {
@@ -316,6 +314,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 						}
 						if(arrivingItem.getItemStack().stackSize <= 0) break;
 					}
+				}
+				if(arrivingItem.getItemStack().stackSize > 0 && tookSome && arrivingItem instanceof IRoutedItem) {
+					((IRoutedItem)arrivingItem).setBufferCounter(0);
 				}
 				
 				//LogisticsPipes end
@@ -346,6 +347,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	@Override
 	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if (MainProxy.isServer(getWorld()) && (data instanceof RoutedEntityItem) && ((RoutedEntityItem)data).getArrived()) {
+			getPipe().notifyOfItemArival((RoutedEntityItem) data);
+		}
 		return handleTileReached(data, tile);
 	}
 

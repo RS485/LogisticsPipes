@@ -1,15 +1,16 @@
 package logisticspipes.hud;
 
+import logisticspipes.interfaces.IHUDConfig;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
-public class HUDConfig {
+public class HUDConfig implements IHUDConfig {
 	
 	private NBTTagCompound configTag;
 	
 	public HUDConfig(ItemStack stack) {
 		this(stack.getTagCompound());
-		stack.setTagCompound(getTag());
+		stack.setTagCompound(configTag);
 	}
 	
 	public HUDConfig(NBTTagCompound tag) {
@@ -50,10 +51,6 @@ public class HUDConfig {
 	
 	public boolean isHUDSatellite() {
 		return configTag.getBoolean("HUDSatellite");
-	}
-	
-	public NBTTagCompound getTag() {
-		return configTag;
 	}
 	
 	public void setHUDChassie(boolean flag) {

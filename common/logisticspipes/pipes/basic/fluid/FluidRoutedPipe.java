@@ -13,24 +13,24 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.WorldUtil;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidHandler;
-import net.minecraftforge.fluids.FluidStack;
 import buildcraft.core.IMachine;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
 public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTravelingHook {
 
@@ -48,11 +48,11 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	}
 
 	@Override
-	public boolean logisitcsIsPipeConnected(TileEntity tile) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
 		if (tile instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tile;
 
-			if (liq.getTankInfo(ForgeDirection.UNKNOWN) != null && liq.getTankInfo(ForgeDirection.UNKNOWN).length > 0)
+			if (liq.getTankInfo(dir.getOpposite()) != null && liq.getTankInfo(dir.getOpposite()).length > 0)
 				return true;
 		}
 
@@ -78,7 +78,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 		if (tile instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tile;
 
-			if (liq.getTankInfo(ForgeDirection.UNKNOWN) != null && liq.getTankInfo(ForgeDirection.UNKNOWN).length > 0)
+			if (liq.getTankInfo(connection.getOpposite()) != null && liq.getTankInfo(connection.getOpposite()).length > 0)
 				return true;
 		}
 		if(tile instanceof TileGenericPipe) {
@@ -136,7 +136,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 				FluidTank tank = ((PipeFluidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
 				validDirections++;
 				if(tank.getFluid() == null) continue;
-				int filled = ((IFluidHandler)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getFluid(), true);
+				int filled = ((IFluidHandler)pair.getValue1()).fill(pair.getValue2().getOpposite(), tank.getFluid().copy(), true);
 				if(filled == 0) continue;
 				FluidStack drain = tank.drain(filled, true);
 				if(drain == null || filled != drain.amount) {
@@ -199,6 +199,9 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 	@Override
 	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if (MainProxy.isServer(getWorld()) && (data instanceof RoutedEntityItem) && ((RoutedEntityItem)data).getArrived()) {
+			notifyOfItemArival((RoutedEntityItem) data);
+		}
 		if(canInsertToTanks() && MainProxy.isServer(getWorld())) {
 			if(!(data instanceof IRoutedItem) || data.getItemStack() == null || !(data.getItemStack().getItem() instanceof LogisticsFluidContainer)) return false;
 			if(this.getRouter().getSimpleID() != ((IRoutedItem)data).getDestination()) return false;
@@ -212,7 +215,7 @@ public abstract class FluidRoutedPipe extends CoreRoutedPipe implements IItemTra
 					Pair<TileEntity,ForgeDirection> pair = adjTanks.get(i);
 					IFluidHandler tank = (IFluidHandler) pair.getValue1();
 					ForgeDirection dir = pair.getValue2();
-					filled = tank.fill(dir.getOpposite(), liquid, true);
+					filled = tank.fill(dir.getOpposite(), liquid.copy(), true);
 					liquid.amount -= filled;
 					if (liquid.amount != 0) continue;
 					return false;

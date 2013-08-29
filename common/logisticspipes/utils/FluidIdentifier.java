@@ -123,13 +123,24 @@ public class FluidIdentifier {
 		return free;
 	}
 	
-	public int getFreeSpaceInsideTank(FluidTankInfo tanks) {
+	private int getFreeSpaceInsideTank(FluidTankInfo tanks) {
 		FluidStack liquid = tanks.fluid;
 		if(liquid == null || liquid.fluidID <= 0) {
 			return tanks.capacity;
 		}
 		if(get(liquid) == this) {
 			return tanks.capacity - liquid.amount;
+		}
+		return 0;
+	}
+
+	public int getFreeSpaceInsideTank(IFluidTank tank) {
+		FluidStack liquid = tank.getFluid();
+		if(liquid == null || liquid.fluidID <= 0) {
+			return tank.getCapacity();
+		}
+		if(get(liquid) == this) {
+			return tank.getCapacity() - liquid.amount;
 		}
 		return 0;
 	}

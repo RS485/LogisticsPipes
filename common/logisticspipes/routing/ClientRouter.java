@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
@@ -117,11 +118,6 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public void inboundItemArrived(RoutedEntityItem routedEntityItem) {
-		//Not On Client Side
-	}
-
-	@Override
 	public LogisticsModule getLogisticsModule() {
 		CoreRoutedPipe pipe = this.getPipe();
 		if (pipe == null) return null;
@@ -144,8 +140,8 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean act(BitSet hasBeenProcessed, IRAction actor) {
-		return false;
+	public void act(BitSet hasBeenProcessed, IRAction actor) {
+		
 	}
 
 	@Override
@@ -156,11 +152,6 @@ public class ClientRouter implements IRouter {
 	@Override
 	public boolean checkAdjacentUpdate() {
 		return false;
-	}
-
-	@Override
-	public void clearPrevAdjacent() {
-		
 	}
 
 	@Override
@@ -191,5 +182,9 @@ public class ClientRouter implements IRouter {
 	@Override
 	public boolean isValidCache() {
 		return true;
+	}
+	
+	@Override
+	public void forceLsaUpdate() {
 	}
 }

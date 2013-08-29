@@ -1,6 +1,6 @@
 package logisticspipes.gui.hud;
 
-import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -67,7 +67,7 @@ public class HUDSatellite extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, HUDConfig config) {
+	public void renderHeadUpDisplay(double distance, boolean day, Minecraft mc, IHUDConfig config) {
 		if((pipe1 != null && pipe1.itemList.size() > 0) || (pipe2 != null && pipe2.itemList.size() > 0)) {
 			if(day) {
 	        	GL11.glColor4b((byte)64, (byte)64, (byte)64, (byte)64);
@@ -142,7 +142,7 @@ public class HUDSatellite extends BasicHUDGui {
 	}
 	
 	@Override
-	public boolean display(HUDConfig config) {
+	public boolean display(IHUDConfig config) {
 		return config.isHUDSatellite();
 	}
 

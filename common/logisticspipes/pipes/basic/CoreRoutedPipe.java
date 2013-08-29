@@ -13,13 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
@@ -37,7 +36,9 @@ import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequestItems;
+import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IAdjacentWorldAccess;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.ITrackStatistics;
@@ -74,6 +75,7 @@ import logisticspipes.ticks.QueuedTasks;
 import logisticspipes.ticks.WorldTickHandler;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.AdjacentTile;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
@@ -91,17 +93,16 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
-import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import buildcraft.core.utils.Utils;
-import buildcraft.transport.PipeTransport;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -929,7 +930,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		return false;
 	}
 	
-	public boolean logisitcsIsPipeConnected(TileEntity tile) {
+	public boolean logisitcsIsPipeConnected(TileEntity tile, ForgeDirection dir) {
 		return false;
 	}
 	
@@ -949,12 +950,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(getUpgradeManager().isSideDisconnected(side)) {
 			return false;
 		}
+		if(container != null && side != ForgeDirection.UNKNOWN && container.hasPlug(side)) {
+			return false;
+		}
 		if(!stillNeedReplace) {
 			if(getRouter().isSideDisconneceted(side) && !ignoreSystemDisconnection && !globalIgnoreConnectionDisconnection) {
 				return false;
 			}
 		}
-		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile)) && !disconnectPipe(tile, dir);
+		return (super.canPipeConnect(tile, dir) || logisitcsIsPipeConnected(tile, dir)) && !disconnectPipe(tile, dir);
 	}
 	
 	public void connectionUpdate() {
@@ -1027,8 +1031,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		return power;
 	}
 	
-	private <T> void addAll(List<T> list, List<T> add) {
-		for(T o:add) {
+	private <T> void addAll(List<ILogisticsPowerProvider> list, List<ILogisticsPowerProvider> list2) {
+		for(ILogisticsPowerProvider o:list2) {
 			if(!list.contains(o)) {
 				list.add(o);
 			}
@@ -1079,15 +1083,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(list == null) return false;
 		for(ILogisticsPowerProvider provider: list) {
 			if(provider.canUseEnergy(amount, providersToIgnore)) {
-				provider.useEnergy(amount, providersToIgnore);
-				if(sparkles){
-					int particlecount = amount;
-					if (particlecount > 10) {
-						particlecount = 10;
+				if(provider.useEnergy(amount, providersToIgnore)) {
+					if(sparkles) {
+						int particlecount = amount;
+						if (particlecount > 10) {
+							particlecount = 10;
+						}
+						MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), particlecount);
 					}
-					MainProxy.sendSpawnParticlePacket(Particles.GoldParticle, this.getX(), this.getY(), this.getZ(), this.getWorld(), particlecount);
+					return true;
 				}
-				return true;
 			}
 		}
 		return false;
@@ -1191,7 +1196,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
 		this._inTransitToMe.remove(routedEntityItem);		
-		//LogisticsPipes.log.info("Ariving: "+routedEntityItem.getIDStack().getItem().getFriendlyName());
+		if (this instanceof IRequireReliableTransport){
+			((IRequireReliableTransport)this).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
+		}
+		if (this instanceof IRequireReliableFluidTransport) {
+			ItemStack stack = routedEntityItem.getItemStack();
+			if(stack.getItem() instanceof LogisticsFluidContainer) {
+				FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack);
+				((IRequireReliableFluidTransport)this).liquidArrived(FluidIdentifier.get(liquid), liquid.amount);				
+			}
+		}
 	}
 
 	public int countOnRoute(ItemIdentifier it) {

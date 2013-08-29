@@ -237,7 +237,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	}
 
 	@Override
-	@Deprecated
 	public void setArrived(boolean flag) {
 		this.arrived = flag;
 	}

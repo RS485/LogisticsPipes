@@ -78,7 +78,7 @@ public class PipeFluidInsertion extends FluidRoutedPipe {
 			routed.setTransportMode(TransportMode.Passive);
 			this.queueRoutedItem(routed, dir);
 			nextSendMax[dir.ordinal()] = 100;
-			nextSendMin[dir.ordinal()] = 10;
+			nextSendMin[dir.ordinal()] = 5;
 		}
 	}
 

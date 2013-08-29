@@ -65,8 +65,8 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 		int freeSpace = -onTheWay;
 		for(Pair<TileEntity,ForgeDirection> pair:getAdjacentTanks(true)) {
 			FluidTank tank = ((PipeFluidTransportLogistics)this.transport).sideTanks[pair.getValue2().ordinal()];
-			freeSpace += ident.getFreeSpaceInsideTank((IFluidHandler)pair.getValue1(), pair.getValue2());
-			freeSpace += tank.getCapacity()-tank.getFluidAmount();
+			freeSpace += ident.getFreeSpaceInsideTank((IFluidHandler)pair.getValue1(), pair.getValue2().getOpposite());
+			freeSpace += ident.getFreeSpaceInsideTank(tank);
 			if(freeSpace >= stack.amount) {
 				return stack.amount;
 			}

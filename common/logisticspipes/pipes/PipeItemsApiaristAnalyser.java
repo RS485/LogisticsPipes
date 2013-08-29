@@ -52,8 +52,6 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 		if (this._transportLayer == null){
 			_transportLayer = new TransportLayer() {
 				@Override public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection blocked) {
-					item.setArrived(true);
-					getRouter().inboundItemArrived((RoutedEntityItem) item); //NOT TESTED
 					ForgeDirection pointed = getPointedOrientation();
 					if(blocked != null && blocked.equals(pointed))
 						return null;

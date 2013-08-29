@@ -3,10 +3,10 @@ package logisticspipes.pipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.logisticspipes.IRoutedItem;
-import logisticspipes.logisticspipes.PipeTransportLayer;
 import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
+import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
@@ -140,6 +140,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if(r.matches(craftInv, getWorld())) {
 				cache = r;
 				resultInv.setInventorySlotContents(0, r.getCraftingResult(craftInv));
+				break;
 			}
 		}
 	}
@@ -196,14 +197,34 @@ outer:
 		for(int i=0;i<9;i++) {
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, null);
-			if(left != null) inv.addCompressed(left);
+			if(left != null) {
+				left.stackSize = inv.addCompressed(left, false);
+				if(left.stackSize > 0) {
+					inv.dropItems(getWorld(), left, getX(), getY(), getZ());
+				}
+			}
 		}
 		for(int i=0;i<fake.inventory.getSizeInventory();i++) {
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, null);
-			if(left != null) inv.addCompressed(left);
+			if(left != null) {
+				left.stackSize = inv.addCompressed(left, false);
+				if(left.stackSize > 0) {
+					inv.dropItems(getWorld(), left, getX(), getY(), getZ());
+				}
+			}
 		}
 		return result;
+	}
+
+	public ItemStack getResultForClick() {
+		ItemStack result = getOutput();
+		if(result == null)
+			return null;
+		result.stackSize = inv.addCompressed(result, false);
+		if(result.stackSize > 0)
+			return result;
+		return null;
 	}
 
 	@Override
@@ -238,24 +259,30 @@ outer:
 	}
 
 	@Override
+	public boolean sharesInventoryWith(CoreRoutedPipe other){
+		return false;
+	}
+
+	@Override
 	public TransportLayer getTransportLayer() {
 		if (_transportLayer == null) {
-			_transportLayer = new PipeTransportLayer(this, this, getRouter()) {
+			_transportLayer = new TransportLayer() {
 				@Override
-				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+				public boolean stillWantItem(IRoutedItem item) {
+					PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
 					if(item.getItemStack() != null) {
 						ItemStack stack = item.getItemStack();
-						stack.stackSize = inv.addCompressed(stack);
+						stack.stackSize = inv.addCompressed(stack, false);
 						item.setItemStack(stack);
-						if(stack.stackSize == 0) {
-							PipeBlockRequestTable.this.notifyOfItemArival((RoutedEntityItem)item);
-							return null;
-						}
 					}
-					return super.itemArrived(item, denyed);
+					return false;
+				}
+				@Override
+				public ForgeDirection itemArrived(IRoutedItem item, ForgeDirection denyed) {
+					return null;
 				}
 			};
 		}
-		return super.getTransportLayer();
+		return _transportLayer;
 	}
 }

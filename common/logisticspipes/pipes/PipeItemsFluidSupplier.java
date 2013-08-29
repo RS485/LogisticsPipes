@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -15,6 +14,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.request.RequestTree;
+import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeTransportLogistics;
@@ -30,15 +30,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.fluids.FluidContainerRegistry;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.FluidContainerRegistry;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport, IItemTravelingHook{
 
@@ -51,11 +51,9 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			public boolean canPipeConnect(TileEntity tile, ForgeDirection dir) {
 				if(super.canPipeConnect(tile, dir)) return true;
 				if(tile instanceof TileGenericPipe) return false;
-				if (tile instanceof IFluidTank) {
-					IFluidTank liq = (IFluidTank) tile;
-					//TODO: check this change
-					//					if (liq.getTanks(ForgeDirection.UNKNOWN) != null && liq.getTanks(ForgeDirection.UNKNOWN).length > 0)
- 					if (liq.getCapacity() > 0)
+				if (tile instanceof IFluidHandler) {
+					IFluidHandler liq = (IFluidHandler) tile;
+					if (liq.getTankInfo(dir.getOpposite()) != null && liq.getTankInfo(dir.getOpposite()).length > 0)
 						return true;
 				}
 				return false;
@@ -96,6 +94,9 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	@Override
 	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if (MainProxy.isServer(getWorld()) && (data instanceof RoutedEntityItem) && ((RoutedEntityItem)data).getArrived()) {
+			notifyOfItemArival((RoutedEntityItem) data);
+		}
 		if (!(tile instanceof IFluidHandler)) return false;
 		if (tile instanceof TileGenericPipe) return false;
 		IFluidHandler container = (IFluidHandler) tile;
@@ -109,7 +110,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			orientation = getUpgradeManager().getSneakyOrientation();
 		}
 		while (data.getItemStack().stackSize > 0 && container.fill(orientation, liquidId, false) == liquidId.amount && this.useEnergy(5)) {
-			container.fill(orientation, liquidId, true);
+			container.fill(orientation, liquidId.copy(), true);
 			data.getItemStack().stackSize--;
 			if (data.getItemStack().itemID >= 0 && data.getItemStack().itemID < Item.itemsList.length){
 				Item item = Item.itemsList[data.getItemStack().itemID];
@@ -145,6 +146,10 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 		
 	@Override
 	public void throttledUpdateEntity() {
+		if (!isEnabled()){
+			return;
+		}
+
 		if (MainProxy.isClient(getWorld())) return;
 		super.throttledUpdateEntity();
 		WorldUtil worldUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());

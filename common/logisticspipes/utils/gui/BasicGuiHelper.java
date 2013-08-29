@@ -405,6 +405,14 @@ public class BasicGuiHelper {
 	
 	private static final ResourceLocation SLOT = new ResourceLocation("logisticspipes", "textures/gui/slot.png");
 	
+
+	public static void drawPlayerArmorBackground(Minecraft mc, int xOffset, int yOffset) {
+		//Player "armor"
+        for(int i1 = 0; i1 < 4; i1++) {
+        	drawSlotBackground(mc, xOffset - 1, yOffset - 1 - i1 * 18);
+        }
+	}
+
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		mc.renderEngine.func_110577_a(SLOT);

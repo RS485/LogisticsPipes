@@ -410,7 +410,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 				default:
 				}
 				//FIXME bind texture
-				//bindTextureByName(liquid.canonical().getTextureSheet());
+				//bindTextureByName(getLiquidTextureSheetSafe(liquid));
 				GL11.glCallList(list);
 				GL11.glPopMatrix();
 			}
@@ -430,7 +430,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 				int stage = (int) ((float) liquid.amount / (float) (liq.getInnerCapacity()) * (LIQUID_STAGES - 1));
 
 				//FIXME bind texture
-				//bindTextureByName(liquid.canonical().getTextureSheet());
+				//bindTextureByName(getLiquidTextureSheetSafe(liquid));
 				
 				if (above) {
 					GL11.glCallList(d.centerVertical[stage]);
@@ -447,6 +447,17 @@ public class LogisticsRenderPipe extends RenderPipe {
 		GL11.glPopMatrix();
 	}
 
+	private String getLiquidTextureSheetSafe(FluidStack liquid) {
+		LiquidStack canon = liquid.canonical();
+		if(canon != null) {
+			String s = canon.getTextureSheet();
+			if(s != null) {
+				return s;
+			}
+		}
+		return "/terrain.png";
+	}
+
 	private DisplayFluidList getListFromBuffer(FluidStack stack, World world) {
 
 		int liquidId = stack.itemID;
@@ -457,7 +468,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		return getDisplayFluidLists(liquidId, stack.itemMeta, world);
 	}
 
-	private DisplayFluidList getDisplayFluidLists(int liquidId, int meta, World world) {
+	private DisplayFluidList getDisplayFluidLists(int liquidId, final int meta, World world) {
 		if (displayFluidLists.containsKey(liquidId)) {
 			HashMap<Integer, DisplayFluidList> x = displayFluidLists.get(liquidId);
 			if (x.containsKey(meta))
@@ -469,11 +480,18 @@ public class LogisticsRenderPipe extends RenderPipe {
 		DisplayFluidList d = new DisplayFluidList();
 		displayFluidLists.get(liquidId).put(meta, d);
 
-		BlockInterface block = new BlockInterface();
+		BlockInterface block;
 
 		if (liquidId < Block.blocksList.length && Block.blocksList[liquidId] != null) {
+			block = new BlockInterface() {
+				@Override
+				public Icon getBlockTextureFromSide(int i) {
+					return baseBlock.getIcon(i, meta);
+				}
+			};
 			block.baseBlock = Block.blocksList[liquidId];
 		} else {
+			block = new BlockInterface();
 			block.baseBlock = Block.waterStill;
 			block.texture = Item.itemsList[liquidId].getIconFromDamage(meta);
 		}

@@ -22,7 +22,7 @@ public class LogisitcsFluidConnectionTransport extends PipeTransportFluids {
 		if (tile instanceof IFluidHandler) {
 			IFluidHandler liq = (IFluidHandler) tile;
 
-			if (liq.getTankInfo(side) != null && liq.getTankInfo(side).length > 0)
+			if (liq.getTankInfo(side.getOpposite()) != null && liq.getTankInfo(side.getOpposite()).length > 0)
 				return true;
 		}
 

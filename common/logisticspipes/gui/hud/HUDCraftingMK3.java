@@ -3,7 +3,7 @@ package logisticspipes.gui.hud;
 import java.util.ArrayList;
 import java.util.List;
 
-import logisticspipes.hud.HUDConfig;
+import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
@@ -21,7 +21,7 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 	}
 	
 	@Override
-	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, HUDConfig config) {
+	public void renderHeadUpDisplay(double d, boolean day, Minecraft mc, IHUDConfig config) {
 		int bufferSize = (pipe.bufferList.size() / 4) + 1;
 		if(pipe.bufferList.size() % 4 == 0) {
 			bufferSize--;
@@ -82,7 +82,7 @@ public class HUDCraftingMK3 extends BasicHUDGui {
 	}
 
 	@Override
-	public boolean display(HUDConfig config) {
+	public boolean display(IHUDConfig config) {
 		return config.isHUDCrafting() && ((pipe.getCraftingSigns().isEmpty() && pipe.getCraftedItems() != null) || pipe.bufferList.size() > 0 || pipe.displayList.size() > 0);
 	}
 

@@ -183,7 +183,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 				}
 			}
 		}
-		remove();
 	}
 
 	@Override

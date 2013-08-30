@@ -44,8 +44,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack par1ItemStack)
-	{
+	public String getUnlocalizedName(ItemStack par1ItemStack) {
 		FluidStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(par1ItemStack);
 		if(stack != null) {
 			String s = stack.getFluid().getUnlocalizedName();

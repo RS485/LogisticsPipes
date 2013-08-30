@@ -113,8 +113,8 @@ public class FluidContainerRenderer implements IItemRenderer {
 	public void doRenderFluid(FluidStack liquid, Minecraft mc, ItemRenderType type, Object[] data) {
 		GL11.glPushMatrix();
 		if(type == ItemRenderType.INVENTORY) {
-			GL11.glScaled(0.45, 0.75, 1);
-			GL11.glTranslated(10, 2.5, 0);
+			//GL11.glScalef(7f/16f, 13f/16f, 1f);
+			//GL11.glTranslatef(4.5f/(7f/16f), 1.5f/(13f/16f), 0f);
 		} else {
 			GL11.glScaled(0.45, 0.75, 0.45);
 			GL11.glTranslated(0, 0.09, 0);
@@ -130,20 +130,20 @@ public class FluidContainerRenderer implements IItemRenderer {
 
         GL11.glColor4f(f, f1, f2, 1.0F);
 
-        renderIcon(0, 0, liquid.getFluid().getIcon(), 16, 16, 0);
+        renderIcon(5, 2, liquid.getFluid().getIcon(), 6, 12, 0);
         GL11.glEnable(GL11.GL_LIGHTING);
 
 		GL11.glPopMatrix();
 	}
 
-    public void renderIcon(int par1, int par2, Icon par3Icon, int par4, int par5, double zLevel)
+    public void renderIcon(int x, int y, Icon par3Icon, int width, int height, double zLevel)
     {
         Tessellator tessellator = Tessellator.instance;
         tessellator.startDrawingQuads();
-        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + par5), zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + par5), zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMaxV());
-        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + 0), zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMinV());
-        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMinV());
+        tessellator.addVertexWithUV((double)(x + 0), (double)(y + height), zLevel, (double)par3Icon.getInterpolatedU(x), (double)par3Icon.getInterpolatedV(y+height));
+        tessellator.addVertexWithUV((double)(x + width), (double)(y + height), zLevel, (double)par3Icon.getInterpolatedU(x+width), (double)par3Icon.getInterpolatedV(y+height));
+        tessellator.addVertexWithUV((double)(x + width), (double)(y + 0), zLevel, (double)par3Icon.getInterpolatedU(x+width), (double)par3Icon.getInterpolatedV(y));
+        tessellator.addVertexWithUV((double)(x + 0), (double)(y + 0), zLevel, (double)par3Icon.getInterpolatedU(x), (double)par3Icon.getInterpolatedV(y));
         tessellator.draw();
     }
 

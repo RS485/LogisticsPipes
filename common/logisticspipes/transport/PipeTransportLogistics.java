@@ -246,8 +246,12 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		}
 	}
 	
-	//BC copy -- note, no overrride, so is called by 
+	//called from endReached, return false to let BC transport handle the item.
 	private boolean handleTileReached(TravelingItem arrivingItem, TileEntity tile) {
+		//((PipeTransportLogistics)pipe).markChunkModified(tile);
+		if (MainProxy.isServer(getWorld()) && (arrivingItem instanceof RoutedEntityItem) && ((RoutedEntityItem)arrivingItem).getArrived()) {
+			getPipe().notifyOfItemArival((RoutedEntityItem) arrivingItem);
+		}
 		boolean isSpecialConnectionInformationTransition = false;
 		if (!CoreProxy.proxy.isRenderWorld(getWorld())) {
 			if(SimpleServiceLocator.specialtileconnection.needsInformationTransition(tile)) {
@@ -258,12 +262,12 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		if (tile instanceof IPipeTile){
 			return false; // let the normal BC pipe passing mechanism run
 		} else if (tile instanceof IInventory) {
+			items.scheduleRemoval(arrivingItem);
 			if (!CoreProxy.proxy.isRenderWorld(getWorld())) {
 				//LogisticsPipes start
 				
 				// destroy the item on exit if it isn't exitable
 				if(!isSpecialConnectionInformationTransition && !isItemExitable(arrivingItem.getItemStack())) {
-					items.scheduleRemoval(arrivingItem);
 					return true;
 				}
 				//last chance for chassi to back out
@@ -323,8 +327,6 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 
 				if(arrivingItem.getItemStack().stackSize > 0) {
 					reverseItem(arrivingItem);
-				} else {
-					items.scheduleRemoval(arrivingItem); // all routed.
 				}
 			}
 			return true;// the item is handled
@@ -343,13 +345,14 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	protected void insertedItemStack(TravelingItem data, TileEntity tile) {}
 	
+	@Override
+	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
+		return super.canPipeConnect(tile, side) || SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
+	}
+
 	/* --- IItemTravelHook --- */
 	@Override
 	public boolean endReached(PipeTransportItems pipe, TravelingItem data, TileEntity tile) {
-		//((PipeTransportLogistics)pipe).markChunkModified(tile);
-		if (MainProxy.isServer(getWorld()) && (data instanceof RoutedEntityItem) && ((RoutedEntityItem)data).getArrived()) {
-			getPipe().notifyOfItemArival((RoutedEntityItem) data);
-		}
 		return handleTileReached(data, tile);
 	}
 
@@ -360,9 +363,4 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 
 	@Override
 	public void centerReached(PipeTransportItems pipe, TravelingItem data) {}
-
-	@Override
-	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
-		return super.canPipeConnect(tile, side) || SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
-	}
 }

@@ -200,7 +200,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	public PacketPayload getLogisticsNetworkPacket() {
-		PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass()}).toPayload(getX(), getY(), getZ(), new Object[] { container, transport });
+		PacketPayload payload = new TilePacketWrapper(new Class[] { container.getClass(), transport.getClass(), this.getClass()}).toPayload(getX(), getY(), getZ(), new Object[] { container, transport, this });
 
 		return payload;
 	}

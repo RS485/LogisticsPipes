@@ -158,8 +158,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 	
 	//FIXME:is this correct?
 	private static final ResourceLocation SIGN = new ResourceLocation("textures/item/sign.png");  
-	private static final ResourceLocation TERRAIN = new ResourceLocation("textures/terrain.png");  
-	private static final ResourceLocation ITEMS = new ResourceLocation("textures/gui/icons.png");  
+	private static final ResourceLocation BLOCKS = new ResourceLocation("textures/atlas/blocks.png");  
+	private static final ResourceLocation ITEMS = new ResourceLocation("textures/atlas/items.png");  
 	private void renderSign(PipeItemsCraftingLogistics pipe) {
 		float var10 = 0.6666667F;
         float var12 = 0.016666668F * var10;
@@ -195,7 +195,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	        	
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
-		        Minecraft.getMinecraft().renderEngine.func_110577_a(itemstack.getItemSpriteNumber() == 0 ? TERRAIN : ITEMS);
+		        Minecraft.getMinecraft().renderEngine.func_110577_a(itemstack.getItemSpriteNumber() == 0 ? BLOCKS : ITEMS);
 
 				GL11.glPushMatrix();
 				

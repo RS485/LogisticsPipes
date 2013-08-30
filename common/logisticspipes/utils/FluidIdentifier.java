@@ -215,7 +215,7 @@ public class FluidIdentifier {
 				takeNext = true;
 		}
 		rlock.unlock();
-		return first();
+		return null;
 	}
 	
 	public FluidIdentifier prev() {

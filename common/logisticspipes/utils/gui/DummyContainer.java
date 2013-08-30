@@ -248,13 +248,15 @@ public class DummyContainer extends Container{
 		
 		if (currentlyEquippedStack == null){
 			if (slot.getStack() != null && mouseButton == 1){
+				ItemStack tstack = slot.getStack();
 				if (isShift == 1){
-					slot.getStack().stackSize = Math.min(slot.getSlotStackLimit(), slot.getStack().stackSize * 2);
-					slot.inventory.onInventoryChanged();
+					tstack.stackSize = Math.min(slot.getSlotStackLimit(), tstack.stackSize * 2);
 				} else {
-					slot.getStack().stackSize/=2;
-					slot.inventory.onInventoryChanged();
+					tstack.stackSize /= 2;
+					if (tstack.stackSize <= 0)
+						tstack = null;
 				}
+				slot.putStack(tstack);
 			}else{
 				slot.putStack(null);
 			}
@@ -262,48 +264,44 @@ public class DummyContainer extends Container{
 		}
 		
 		if (!slot.getHasStack()){
-			slot.putStack(currentlyEquippedStack.copy());
+			ItemStack tstack = currentlyEquippedStack.copy();
 			if (mouseButton == 1) {
-				slot.getStack().stackSize = 1;
+				tstack.stackSize = 1;
 			}
-			if (slot.getStack().stackSize > slot.getSlotStackLimit()){
-				slot.getStack().stackSize = slot.getSlotStackLimit();
+			if (tstack.stackSize > slot.getSlotStackLimit()){
+				tstack.stackSize = slot.getSlotStackLimit();
 			}
-
-			slot.inventory.onInventoryChanged();
+			slot.putStack(tstack);
 			return currentlyEquippedStack;
 		}
 		
 		ItemIdentifier currentItem = ItemIdentifier.get(currentlyEquippedStack);
 		ItemIdentifier slotItem = ItemIdentifier.get(slot.getStack());
 		if (currentItem == slotItem){
+			ItemStack tstack = slot.getStack();
 			//Do manual shift-checking to play nice with NEI
 			int counter = isShift == 1?10:1;
 			if (mouseButton == 1)  {
-				if (slot.getStack().stackSize + counter <= slot.getSlotStackLimit()){
-					slot.getStack().stackSize += counter;
+				if (tstack.stackSize + counter <= slot.getSlotStackLimit()){
+					tstack.stackSize += counter;
 				} else {
-					slot.getStack().stackSize = slot.getSlotStackLimit();
+					tstack.stackSize = slot.getSlotStackLimit();
 				}
-				slot.inventory.onInventoryChanged();
-				return currentlyEquippedStack;
-			}
-			if (mouseButton == 0){
-				if (slot.getStack().stackSize - counter > 0){
-					slot.getStack().stackSize-=counter;	
-					slot.inventory.onInventoryChanged();
-				} else {
-					slot.putStack(null);
-				}
-				return currentlyEquippedStack;
+				slot.putStack(tstack);
+			} else if (mouseButton == 0){
+				tstack.stackSize -= counter;
+				if (tstack.stackSize <= 0)
+					tstack = null;
+				slot.putStack(tstack);
 			} 
-		} else {
-			slot.putStack(currentlyEquippedStack.copy());
-			if (slot.getStack().stackSize > slot.getSlotStackLimit()){
-				slot.getStack().stackSize = slot.getSlotStackLimit();
-				slot.inventory.onInventoryChanged();
-			}
+			return currentlyEquippedStack;
 		}
+
+		ItemStack tstack = currentlyEquippedStack.copy();
+		if (tstack.stackSize > slot.getSlotStackLimit()){
+			tstack.stackSize = slot.getSlotStackLimit();
+		}
+		slot.putStack(tstack);
 		return currentlyEquippedStack;
 	}
 	

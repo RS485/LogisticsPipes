@@ -111,7 +111,7 @@ public class EntitySparkleFX extends EntityFX
     }
 	
 	private static final ResourceLocation TEXTURE = new ResourceLocation("logisticspipes", "textures/particles/particles.png");
-	
+	private static final ResourceLocation field_110737_b = new ResourceLocation("textures/particle/particles.png");
 
     @Override
 	public void renderParticle(Tessellator var1, float var2, float var3, float var4, float var5, float var6, float var7)
@@ -144,7 +144,7 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
         GL11.glPopMatrix();
-        Minecraft.getMinecraft().renderEngine.func_110577_a(TEXTURE);//TODO: check -- was "/particles.png");, now LP-particles
+        Minecraft.getMinecraft().renderEngine.func_110577_a(field_110737_b);
         var1.startDrawingQuads();
     }
 

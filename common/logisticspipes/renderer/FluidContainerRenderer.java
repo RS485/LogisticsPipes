@@ -8,9 +8,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.RenderItem;
 import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.Icon;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.client.IItemRenderer;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -64,24 +68,12 @@ public class FluidContainerRenderer implements IItemRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (item.getItem() instanceof LogisticsFluidContainer) {
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
-			if (liquid == null) {
+			if (type != ItemRenderType.INVENTORY || liquid == null) {
 				doRenderItem(item, mc, type, data);
 				GL11.glPopMatrix();
 				return;
 			}
-			//FIXME
-			/*
-			ItemStack liquidItem = liquid.asItemStack();
-			GL11.glPushMatrix();
-			if(type == ItemRenderType.INVENTORY) {
-				GL11.glScaled(0.45, 0.75, 1);
-				GL11.glTranslated(10, 2.5, 0);
-			} else {
-				GL11.glScaled(0.45, 0.75, 0.45);
-				GL11.glTranslated(0, 0.09, 0);
-			}
-			doRenderItem(liquidItem, mc, type, data);
-			GL11.glPopMatrix();*/
+			doRenderFluid(liquid, mc, type, data);
 			doRenderItem(item, mc, type, data);
 		} else if(item.getItem() instanceof LogisticsItemCard) {
 			doRenderItem(item, mc, type, data);
@@ -117,6 +109,43 @@ public class FluidContainerRenderer implements IItemRenderer {
 		}
 		GL11.glPopMatrix();
 	}
+	
+	public void doRenderFluid(FluidStack liquid, Minecraft mc, ItemRenderType type, Object[] data) {
+		GL11.glPushMatrix();
+		if(type == ItemRenderType.INVENTORY) {
+			GL11.glScaled(0.45, 0.75, 1);
+			GL11.glTranslated(10, 2.5, 0);
+		} else {
+			GL11.glScaled(0.45, 0.75, 0.45);
+			GL11.glTranslated(0, 0.09, 0);
+		}
+        GL11.glDisable(GL11.GL_LIGHTING);
+        ResourceLocation resourcelocation = mc.renderEngine.func_130087_a(liquid.getFluid().getSpriteNumber());
+        mc.renderEngine.func_110577_a(resourcelocation);
+
+        int i1 = liquid.getFluid().getColor();
+        float f = (float)(i1 >> 16 & 255) / 255.0F;
+        float f1 = (float)(i1 >> 8 & 255) / 255.0F;
+        float f2 = (float)(i1 & 255) / 255.0F;
+
+        GL11.glColor4f(f, f1, f2, 1.0F);
+
+        renderIcon(0, 0, liquid.getFluid().getIcon(), 16, 16, 0);
+        GL11.glEnable(GL11.GL_LIGHTING);
+
+		GL11.glPopMatrix();
+	}
+
+    public void renderIcon(int par1, int par2, Icon par3Icon, int par4, int par5, double zLevel)
+    {
+        Tessellator tessellator = Tessellator.instance;
+        tessellator.startDrawingQuads();
+        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + par5), zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMaxV());
+        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + par5), zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMaxV());
+        tessellator.addVertexWithUV((double)(par1 + par4), (double)(par2 + 0), zLevel, (double)par3Icon.getMaxU(), (double)par3Icon.getMinV());
+        tessellator.addVertexWithUV((double)(par1 + 0), (double)(par2 + 0), zLevel, (double)par3Icon.getMinU(), (double)par3Icon.getMinV());
+        tessellator.draw();
+    }
 
 	public void doRenderItem(ItemStack itemstack, Minecraft mc, ItemRenderType type, Object[] data) {
 		useThis = false;

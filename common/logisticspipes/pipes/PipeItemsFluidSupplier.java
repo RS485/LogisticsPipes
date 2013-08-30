@@ -189,13 +189,15 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 				if (haveCount != null){
 					liquidId.setValue(liquidId.getValue() - haveCount);
 				}
-				for (Entry<ItemIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
-					if(requestedItem.getKey().getFluidIdentifier() == liquidId.getKey()) {
-						ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
-						FluidStack requestedFluidId = FluidContainerRegistry.getFluidForFilledItem(wantItem);
-						if (requestedFluidId == null) continue;
-						liquidId.setValue(liquidId.getValue() - requestedItem.getValue() * requestedFluidId.amount);
-					}
+			}
+			for (Entry<ItemIdentifier, Integer> requestedItem : _requestedItems.entrySet()){
+				ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
+				FluidStack requestedFluidId = FluidContainerRegistry.getFluidForFilledItem(wantItem);
+				if (requestedFluidId == null) continue;
+				FluidIdentifier requestedFluid = FluidIdentifier.get(requestedFluidId);
+				Integer want = wantFluids.get(requestedFluid);
+				if(want != null) {
+					wantFluids.put(requestedFluid, want - requestedItem.getValue() * requestedFluidId.amount);
 				}
 			}
 			

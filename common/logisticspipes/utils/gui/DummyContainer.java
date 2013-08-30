@@ -193,7 +193,7 @@ public class DummyContainer extends Container{
 			}
 			FluidIdentifier ident = null;
 			if(slot.getStack() != null) {
-				ident = ItemIdentifier.get(slot.getStack()).getFluidIdentifier();
+				ident = FluidIdentifier.get(ItemIdentifier.get(slot.getStack()));
 			}
 			if(mouseButton == 0) {
 				if(ident != null) {

@@ -525,10 +525,6 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 		return uniqueID;
 	}
 
-	public FluidIdentifier getFluidIdentifier() {
-		return FluidIdentifier.get(itemID, itemDamage);
-	}
-
 	public boolean equalsForCrafting(ItemIdentifier item) {
 		return this.itemID == item.itemID && (item.isDamagable() ? true : this.itemDamage == item.itemDamage);
 	}

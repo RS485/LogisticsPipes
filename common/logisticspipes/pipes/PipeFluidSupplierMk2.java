@@ -102,7 +102,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			
 			//How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
-			wantFluids.put(dummyInventory.getIDStackInSlot(0).getItem().getFluidIdentifier(), amount);
+			wantFluids.put(FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem()), amount);
 
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();

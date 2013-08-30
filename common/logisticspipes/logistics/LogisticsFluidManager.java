@@ -84,7 +84,7 @@ public class LogisticsFluidManager implements ILogisticsFluidManager {
 		}
 		TreeSet<ItemIdentifierStack> itemIdentifierStackList = new TreeSet<ItemIdentifierStack>();
 		for(Entry<FluidIdentifier, Integer> item:allAvailableItems.entrySet()) {
-			//itemIdentifierStackList.add(new ItemIdentifierStack(item.getKey(), item.getValue()));
+			itemIdentifierStackList.add(new ItemIdentifierStack(item.getKey().getItemIdentifier(), item.getValue()));
 		}
 		return itemIdentifierStackList;
 	}

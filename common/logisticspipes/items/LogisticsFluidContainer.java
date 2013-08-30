@@ -43,6 +43,19 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 		return 1;
 	}
 
+	@Override
+	public String getUnlocalizedName(ItemStack par1ItemStack)
+	{
+		FluidStack stack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(par1ItemStack);
+		if(stack != null) {
+			String s = stack.getFluid().getUnlocalizedName();
+			if(s != null) {
+				return s;
+			}
+		}
+		return super.getUnlocalizedName(par1ItemStack);
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	@SideOnly(Side.CLIENT)

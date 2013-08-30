@@ -428,8 +428,6 @@ public class LogisticsPipes {
 		
 		//init Fluids
 		FluidIdentifier.initFromForge(false);
-		FluidIdentifier.get(9, 0, "water");
-		FluidIdentifier.get(11, 0, "lava");
 
 		if (!FMLCommonHandler.instance().getModName().contains("MCPC") && ((Configs.WATCHDOG_CLIENT && isClient) || Configs.WATCHDOG_SERVER)) {
 			new Watchdog(isClient);

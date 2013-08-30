@@ -253,7 +253,7 @@ public class RequestHandler {
 			return;
 		}
 		
-		RequestTree.requestFluid(FluidIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage) , stack.stackSize, requester, new RequestLog() {
+		RequestTree.requestFluid(FluidIdentifier.get(stack.getItem()) , stack.stackSize, requester, new RequestLog() {
 			@Override
 			public void handleMissingItems(Map<ItemIdentifier,Integer> items) {
 				Collection<ItemIdentifierStack> coll = new ArrayList<ItemIdentifierStack>(items.size());

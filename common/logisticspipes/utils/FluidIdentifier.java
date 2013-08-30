@@ -1,115 +1,156 @@
 package logisticspipes.utils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import logisticspipes.LogisticsPipes;
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.proxy.SimpleServiceLocator;
-import net.minecraft.item.Item;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.FluidTankInfo;
-import net.minecraftforge.fluids.IFluidTank;
-import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
-
-import com.google.common.base.Objects;
+import net.minecraftforge.fluids.FluidTankInfo;
+import net.minecraftforge.fluids.IFluidHandler;
+import net.minecraftforge.fluids.IFluidTank;
 
 public class FluidIdentifier {
+	private final static ReadWriteLock dblock = new ReentrantReadWriteLock();
+	private final static Lock rlock = dblock.readLock();
+	private final static Lock wlock = dblock.writeLock();
 
-	private static class ItemKey implements Comparable<ItemKey>{
+	//map uniqueID -> FluidIdentifier
+	private final static HashMap<Integer, FluidIdentifier> _fluidIdentifierIdCache = new HashMap<Integer, FluidIdentifier>(256, 0.5f);
 
-		public int fluidID;
-		public int itemDamage;
-		
-		public ItemKey(int id, int d){
-			fluidID=id;
-			itemDamage=d;
-		}
-		
-		@Override 
-		public boolean equals(Object that){
-			if (!(that instanceof ItemKey))
-				return false;
-			ItemKey i = (ItemKey)that;
-			return this.fluidID== i.fluidID && this.itemDamage == i.itemDamage;
-			
-		}
-		
-		@Override
-		public int hashCode(){
-			//1000001 chosen because 1048576 is 2^20, moving the bits for the item ID to the top of the integer
-			// not exactly 2^20 was chosen so that when the has is used mod power 2, there arn't repeated collisions on things with the same damage id.
-			//return ((fluidID)*1000001)+itemDamage;
-			return Objects.hashCode(fluidID, itemDamage);
-		}
-		
-		@Override
-		public int compareTo(ItemKey o) {
-			if(fluidID==o.fluidID)
-				return itemDamage-o.itemDamage;
-			return fluidID-o.fluidID;
-		}
-	}
-	
-	private final static ConcurrentHashMap<ItemKey, FluidIdentifier> _liquidIdentifierCache = new ConcurrentHashMap<ItemKey, FluidIdentifier>();
-	
-	private final static ConcurrentSkipListSet<ItemKey> _liquidIdentifierKeyQueue = new ConcurrentSkipListSet<ItemKey>();
+	//for fluids with tags, map fluidID -> map tag -> FluidIdentifier 
+	private final static ArrayList<HashMap<FinalNBTTagCompound,FluidIdentifier>> _fluidIdentifierTagCache = new ArrayList<HashMap<FinalNBTTagCompound,FluidIdentifier>>(256);
+
+	//for fluids without tags, map fluidID -> FluidIdentifier
+	private final static ArrayList<FluidIdentifier> _fluidIdentifierCache = new ArrayList<FluidIdentifier>(256);
 	
 	public final int fluidID;
-	public final int itemMeta;
 	public final String name;
+	public final FinalNBTTagCompound tag;
+	public final int uniqueID;
 	
-	private FluidIdentifier(int fluidID, int itemMeta, String name) {
+	private FluidIdentifier(int fluidID, String name, FinalNBTTagCompound tag, int uniqueID) {
 		this.fluidID = fluidID;
-		this.itemMeta = itemMeta;
-		if(name == null) {
-			name = "";
-		}
 		this.name = name;
-		ItemKey key = new ItemKey(fluidID, itemMeta);
-		_liquidIdentifierCache.put(key, this);
-		if(this.isVaild()) {
-			_liquidIdentifierKeyQueue.add(key);
+		this.tag = tag;
+		this.uniqueID = uniqueID;
+	}
+
+	public static FluidIdentifier get(int fluidID, NBTTagCompound tag)	{
+		if(tag == null) {
+			rlock.lock();
+			if(fluidID < _fluidIdentifierCache.size()) {
+				FluidIdentifier unknownFluid = _fluidIdentifierCache.get(fluidID);
+				if(unknownFluid != null) {
+					rlock.unlock();
+					return unknownFluid;
+				}
+			}
+			rlock.unlock();
+			wlock.lock();
+			if(fluidID < _fluidIdentifierCache.size()) {
+				FluidIdentifier unknownFluid = _fluidIdentifierCache.get(fluidID);
+				if(unknownFluid != null) {
+					wlock.unlock();
+					return unknownFluid;
+				}
+			}
+			int id = getUnusedId();
+			FluidIdentifier unknownFluid = new FluidIdentifier(fluidID, FluidRegistry.getFluidName(fluidID), null, id);
+			while(_fluidIdentifierCache.size() <= fluidID)
+				_fluidIdentifierCache.add(null);
+			_fluidIdentifierCache.set(fluidID, unknownFluid);
+			_fluidIdentifierIdCache.put(id, unknownFluid);
+			wlock.unlock();
+			return(unknownFluid);
+		} else {
+			rlock.lock();
+			if(fluidID < _fluidIdentifierTagCache.size()) {
+				HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = _fluidIdentifierTagCache.get(fluidID);
+				if(fluidNBTList!=null){
+					FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
+					FluidIdentifier unknownFluid = fluidNBTList.get(tagwithfixedname);
+					if(unknownFluid!=null) {
+						rlock.unlock();
+						return unknownFluid;
+					}
+				}
+			}
+			rlock.unlock();
+			wlock.lock();
+			if(fluidID < _fluidIdentifierTagCache.size()) {
+				HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = _fluidIdentifierTagCache.get(fluidID);
+				if(fluidNBTList!=null){
+					FinalNBTTagCompound tagwithfixedname = new FinalNBTTagCompound(tag);
+					FluidIdentifier unknownFluid = fluidNBTList.get(tagwithfixedname);
+					if(unknownFluid!=null) {
+						wlock.unlock();
+						return unknownFluid;
+					}
+				}
+			}
+			while(_fluidIdentifierTagCache.size() <= fluidID)
+				_fluidIdentifierTagCache.add(null);
+			HashMap<FinalNBTTagCompound, FluidIdentifier> fluidNBTList = _fluidIdentifierTagCache.get(fluidID);
+			if(fluidNBTList == null) {
+				fluidNBTList = new HashMap<FinalNBTTagCompound, FluidIdentifier>(16, 0.5f);
+				_fluidIdentifierTagCache.set(fluidID, fluidNBTList);
+			}
+			FinalNBTTagCompound finaltag = new FinalNBTTagCompound((NBTTagCompound)tag.copy());
+			int id = getUnusedId();
+			FluidIdentifier unknownFluid = new FluidIdentifier(fluidID, FluidRegistry.getFluidName(fluidID), finaltag, id);
+			fluidNBTList.put(finaltag, unknownFluid);
+			_fluidIdentifierIdCache.put(id, unknownFluid);
+			wlock.unlock();
+			return(unknownFluid);
 		}
 	}
+
+	public static FluidIdentifier get(FluidStack stack) {
+		return get(stack.fluidID, stack.tag);
+	}
 	
+	public static FluidIdentifier get(ItemIdentifier stack) {
+		FluidStack f = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(stack.unsafeMakeNormalStack(1));
+		if(f == null)
+			return null;
+		return get(f);
+	}
+	
+	private static FluidIdentifier get(Fluid fluid) {
+		return get(fluid.getID(), null);
+	}
+	
+
+	private static int getUnusedId() {
+		int id = new Random().nextInt();
+		while(isIdUsed(id)) {
+			id = new Random().nextInt();
+		}
+		return id;
+	}
+	
+	private static boolean isIdUsed(int id) {
+		return _fluidIdentifierIdCache.containsKey(id);
+	}
+
 	public String getName() {
 		return name;
 	}
 	
-	public static FluidIdentifier get(FluidStack stack) {
-		if(stack.tag != null) {
-			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
-			new Exception().printStackTrace();
-		}
-		return get(stack.fluidID, 0);
-	}
-	
-	public static FluidIdentifier get(Fluid fluid, String name) {
-		/*if(fluid.extra != null) {
-			LogisticsPipes.log.warning("Found liquidStack with NBT tag. LP doesn't know how to handle it.");
-			new Exception().printStackTrace();
-		}*/
-		return get(fluid.getID(), 0);
-	}
-	
-	public static FluidIdentifier get(int fluidID, int itemMeta) {
-		return get(fluidID, itemMeta, "");
-	}
-	
-	public static FluidIdentifier get(int fluidID, int itemMeta, String name) {
-		if(_liquidIdentifierCache.containsKey(new ItemKey(fluidID, itemMeta))) {
-			return _liquidIdentifierCache.get(new ItemKey(fluidID, itemMeta));
-		}
-		return new FluidIdentifier(fluidID, itemMeta, name);
-	}
-	
 	public FluidStack makeFluidStack(int amount) {
-		return new FluidStack(fluidID, amount);
+		//FluidStack constructor does the tag.copy(), so this is safe
+		return new FluidStack(fluidID, amount, tag);
 	}
 	
 	public int getFreeSpaceInsideTank(IFluidHandler container, ForgeDirection dir) {
@@ -148,9 +189,9 @@ public class FluidIdentifier {
 	private static boolean init = false;
 	public static void initFromForge(boolean flag) {
 		if(init) return;
-		Map<String, Fluid> liquids = FluidRegistry.getRegisteredFluids();
-		for(Entry<String, Fluid> name: liquids.entrySet()) {
-			get(name.getValue(), name.getKey());
+		Map<String, Fluid> fluids = FluidRegistry.getRegisteredFluids();
+		for(Fluid fluid: fluids.values()) {
+			get(fluid);
 		}
 		if(flag) {
 			init = true;
@@ -159,47 +200,61 @@ public class FluidIdentifier {
 	
 	@Override
 	public String toString() {
-		return name + "/" + fluidID + ":" + itemMeta;
-	}
-	
-	public boolean isVaild() {
-		return Item.itemsList.length > fluidID && Item.itemsList[fluidID] != null;
+		return name + "/" + fluidID + ":" + tag.toString();
 	}
 	
 	public FluidIdentifier next() {
-		ItemKey key = new ItemKey(fluidID, itemMeta);
-		if(!_liquidIdentifierKeyQueue.contains(key)) return first();
-		key = _liquidIdentifierKeyQueue.higher(key);
-		if(key == null) {
-			return null;
+		rlock.lock();
+		boolean takeNext = false;
+		for(FluidIdentifier i : _fluidIdentifierCache) {
+			if(takeNext && i != null) {
+				rlock.unlock();
+				return i;
+			}
+			if(i == this)
+				takeNext = true;
 		}
-		return _liquidIdentifierCache.get(key);
+		rlock.unlock();
+		return first();
 	}
 	
 	public FluidIdentifier prev() {
-		ItemKey key = new ItemKey(fluidID, itemMeta);
-		if(!_liquidIdentifierKeyQueue.contains(key)) return last();
-		key = _liquidIdentifierKeyQueue.lower(key);
-		if(key == null) {
-			return null;
+		rlock.lock();
+		FluidIdentifier last = null;
+		for(FluidIdentifier i : _fluidIdentifierCache) {
+			if(i == this) {
+				rlock.unlock();
+				return last;
+			}
+			if(i != null) {
+				last = i;
+			}
 		}
-		return _liquidIdentifierCache.get(key);
+		rlock.unlock();
+		return last;
 	}
 	
 	public static FluidIdentifier first() {
-		ItemKey key = _liquidIdentifierKeyQueue.first();
-		if(key == null) {
-			return null;
+		rlock.lock();
+		for(FluidIdentifier i : _fluidIdentifierCache) {
+			if(i != null) {
+				rlock.unlock();
+				return i;
+			}
 		}
-		return _liquidIdentifierCache.get(key);
+		rlock.unlock();
+		return null;
 	}
 	
 	public static FluidIdentifier last() {
-		ItemKey key = _liquidIdentifierKeyQueue.last();
-		if(key == null) {
-			return null;
+		rlock.lock();
+		FluidIdentifier last = null;
+		for(FluidIdentifier i : _fluidIdentifierCache) {
+			if(i != null)
+				last = i;
 		}
-		return _liquidIdentifierCache.get(key);
+		rlock.unlock();
+		return last;
 	}
 
 	public ItemIdentifier getItemIdentifier() {

@@ -1142,7 +1142,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public FluidIdentifier getFluidMaterial(int slotnr) {
 		ItemIdentifierStack stack = _liquidInventory.getIDStackInSlot(slotnr);
 		if(stack == null) return null;
-		return stack.getItem().getFluidIdentifier();
+		return FluidIdentifier.get(stack.getItem());
 	}
 
 	/**

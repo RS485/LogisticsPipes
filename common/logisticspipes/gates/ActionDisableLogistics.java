@@ -8,13 +8,7 @@
 
 package logisticspipes.gates;
 
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.util.Icon;
-import logisticspipes.textures.Textures;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
-import buildcraft.api.core.IIconProvider;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
 public class ActionDisableLogistics extends LPAction{
 

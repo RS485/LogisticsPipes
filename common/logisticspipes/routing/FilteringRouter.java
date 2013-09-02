@@ -10,7 +10,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.pipes.PipeItemsFirewall;
-import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.utils.ItemIdentifier;
 import lombok.Getter;
 import net.minecraftforge.common.ForgeDirection;

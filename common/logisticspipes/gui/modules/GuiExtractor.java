@@ -23,8 +23,6 @@ import net.minecraftforge.common.ForgeDirection;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.transport.Pipe;
-
 public class GuiExtractor extends GuiWithPreviousGuiContainer {
 
 	//private final SneakyPipe _pipe;

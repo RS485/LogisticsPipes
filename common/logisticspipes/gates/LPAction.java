@@ -12,10 +12,8 @@ package logisticspipes.gates;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
 import logisticspipes.textures.Textures;
-import buildcraft.api.core.IIconProvider;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
-import buildcraft.core.triggers.ActionTriggerIconProvider;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 

@@ -3,15 +3,6 @@
  */
 package logisticspipes.textures;
 
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.imageio.ImageIO;
-
-import net.minecraft.client.Minecraft;
-
 public class OverlayManager {
 /*	public static BufferedImage generateOverlay(String bg, String fg) throws IOException
 	{

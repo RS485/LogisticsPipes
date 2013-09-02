@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;

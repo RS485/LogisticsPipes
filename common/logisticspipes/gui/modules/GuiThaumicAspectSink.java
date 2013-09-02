@@ -10,7 +10,6 @@ import logisticspipes.utils.gui.DummyContainer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
-import buildcraft.transport.Pipe;
 
 public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 	

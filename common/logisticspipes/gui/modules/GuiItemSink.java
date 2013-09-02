@@ -23,8 +23,6 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.transport.Pipe;
-
 public class GuiItemSink extends GuiWithPreviousGuiContainer {
 
 	private final ModuleItemSink _itemSink;

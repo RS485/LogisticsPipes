@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.textures.Textures;

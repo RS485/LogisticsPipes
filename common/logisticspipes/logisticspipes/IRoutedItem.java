@@ -18,7 +18,6 @@ import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 
 /**

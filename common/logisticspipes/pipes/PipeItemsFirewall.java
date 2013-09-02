@@ -1,9 +1,6 @@
 package logisticspipes.pipes;
 
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
@@ -18,7 +15,6 @@ import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;

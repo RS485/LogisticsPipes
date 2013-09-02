@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
@@ -15,7 +14,6 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
-import buildcraft.transport.Pipe;
 
 public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 

@@ -7,8 +7,6 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.core.DefaultProps;
-
 public class GuiCheckBox extends GuiButton {
 	
 	private boolean state = false;

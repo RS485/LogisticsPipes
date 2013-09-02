@@ -18,8 +18,6 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.transport.Pipe;
-
 public class GuiPassiveSupplier extends GuiWithPreviousGuiContainer {
 
 	private final ModulePassiveSupplier _supplier;

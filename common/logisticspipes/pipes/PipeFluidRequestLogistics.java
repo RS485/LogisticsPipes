@@ -11,7 +11,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraft.world.World;
 
 public class PipeFluidRequestLogistics extends FluidRoutedPipe implements IRequestFluid {
 

@@ -23,8 +23,6 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
-import buildcraft.transport.Pipe;
-
 public class GuiElectricManager extends GuiWithPreviousGuiContainer {
 
 	private final ModuleElectricManager _module;

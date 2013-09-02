@@ -3,8 +3,6 @@ package logisticspipes.ticks;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.LinkedList;
-import java.util.List;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.ItemIdentifier;
@@ -13,9 +11,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
-import buildcraft.api.core.Position;
 import buildcraft.core.ITileBufferHolder;
-import buildcraft.core.TileBuffer;
 import buildcraft.transport.TravelingItem;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;

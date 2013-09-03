@@ -5,13 +5,13 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
+import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
 
 import buildcraft.BuildCraftTransport;
-import buildcraft.transport.render.PipeItemRenderer;
 
-public class LogisticsPipeBlockRenderer extends PipeItemRenderer {
+public class LogisticsPipeBlockRenderer implements IItemRenderer {
 	private void renderBlockItem(RenderBlocks render, ItemStack item, float translateX, float translateY, float translateZ) {
 		Tessellator tessellator = Tessellator.instance;
 
@@ -59,6 +59,8 @@ public class LogisticsPipeBlockRenderer extends PipeItemRenderer {
 			return true;
 		case EQUIPPED:
 			return true;
+		case EQUIPPED_FIRST_PERSON:
+			return true;
 		case INVENTORY:
 			return true;
 		default:
@@ -78,6 +80,9 @@ public class LogisticsPipeBlockRenderer extends PipeItemRenderer {
 			renderBlockItem((RenderBlocks) data[0], item, -0.5f, -0.5f, -0.5f);
 			break;
 		case EQUIPPED:
+			renderBlockItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
+			break;
+		case EQUIPPED_FIRST_PERSON:
 			renderBlockItem((RenderBlocks) data[0], item, -0.4f, 0.50f, 0.35f);
 			break;
 		case INVENTORY:

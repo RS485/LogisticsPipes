@@ -246,7 +246,8 @@ outer:
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
 		toSortInv.readFromNBT(par1nbtTagCompound, "toSortInv");
-		cacheRecipe();
+		//TODO NPEs on world load
+		//cacheRecipe();
 	}
 
 	@Override

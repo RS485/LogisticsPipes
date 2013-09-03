@@ -145,7 +145,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 							m.visitCode();
 							Label l0 = new Label();
 							m.visitLabel(l0);
-							m.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisitcsASMHookClass", "callingClearedMethod", "()V");
+							m.visitMethodInsn(Opcodes.INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "callingClearedMethod", "()V");
 							Label l1 = new Label();
 							m.visitLabel(l1);
 							m.visitInsn(Opcodes.RETURN);

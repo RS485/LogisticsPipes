@@ -12,7 +12,7 @@ import org.objectweb.asm.MethodVisitor;
 
 public class LogisticsASMHelperClass {
 	
-	// if(!LogisitcsASMHookClass.continueCodeForCanReceivePipeObjects(o, item, container)) return false;
+	// if(!LogisticsASMHookClass.continueCodeForCanReceivePipeObjects(o, item, container)) return false;
 	public static void visitCanRecivePipeObject(MethodVisitor mv) {
 		Label l0 = new Label();
 		mv.visitLabel(l0);
@@ -21,7 +21,7 @@ public class LogisticsASMHelperClass {
 		mv.visitVarInsn(ALOAD, 2);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitFieldInsn(GETFIELD, "buildcraft/transport/PipeTransportItems", "container", "Lbuildcraft/transport/TileGenericPipe;");
-		mv.visitMethodInsn(INVOKESTATIC, "logisticspipes/asm/LogisitcsASMHookClass", "continueCodeForCanReceivePipeObjects", "(Lnet/minecraftforge/common/ForgeDirection;Lbuildcraft/api/transport/IPipedItem;Lbuildcraft/transport/TileGenericPipe;)Z");
+		mv.visitMethodInsn(INVOKESTATIC, "logisticspipes/asm/LogisticsASMHookClass", "continueCodeForCanReceivePipeObjects", "(Lnet/minecraftforge/common/ForgeDirection;Lbuildcraft/api/transport/IPipedItem;Lbuildcraft/transport/TileGenericPipe;)Z");
 		Label l1 = new Label();
 		mv.visitJumpInsn(IFNE, l1);
 		mv.visitInsn(ICONST_0);

@@ -5,5 +5,5 @@ import codechicken.nei.api.IOverlayHandler;
 
 public class DefaultOverlayHandler implements IOverlayHandler {
 	@Override
-	public void overlayRecipe(GuiContainer firstGui, IRecipeHandler recipe, int recipeIndex, boolean shift) {};
+	public void overlayRecipe(GuiContainer gui, IRecipeHandler recipe, int recipeIndex, boolean shift) {};
 }

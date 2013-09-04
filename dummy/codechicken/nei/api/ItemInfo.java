@@ -13,7 +13,7 @@ public class ItemInfo {
 		return null;
 	}
 
-	public static List<String> getText(ItemStack itemStack, World world, EntityPlayer player, MovingObjectPosition mop){
+	public static List<String> getText(ItemStack itemStack, World world, EntityPlayer player, MovingObjectPosition mop) {
 		return null;
 	}
 }

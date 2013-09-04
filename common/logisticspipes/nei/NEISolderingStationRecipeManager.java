@@ -1,5 +1,7 @@
 package logisticspipes.nei;
 
+import java.awt.Rectangle;
+
 import logisticspipes.gui.GuiSolderingStation;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
@@ -7,7 +9,7 @@ import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import codechicken.nei.NEIClientUtils;
+import codechicken.nei.NEIServerUtils;
 import codechicken.nei.PositionedStack;
 import codechicken.nei.recipe.ShapedRecipeHandler;
 
@@ -39,12 +41,18 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	@Override
 	public void loadCraftingRecipes(ItemStack result) {
 		for(SolderingStationRecipe recipe: SolderingStationRecipes.getRecipes()) {
-			if(NEIClientUtils.areStacksSameTypeCrafting(recipe.result, result)) {
+			if(NEIServerUtils.areStacksSameTypeCrafting(recipe.result, result)) {
 		        this.arecipes.add(getShape(recipe));
 			}
 		}
 	}
 	
+	@Override
+	public void loadTransferRects()
+	{
+		transferRects.add(new RecipeTransferRect(new Rectangle(101, 27, 24, 26), "solderingstation"));
+	}
+
 	@Override
 	public Class<? extends GuiContainer> getGuiClass()
 	{
@@ -60,7 +68,7 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	@Override
 	public String getGuiTexture()
 	{
-		return "/logisticspipes/gui/soldering_station.png";
+		return "logisticspipes:textures/gui/soldering_station_nei.png";
 	}
 
 
@@ -74,7 +82,7 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	public void loadUsageRecipes(ItemStack ingredient) {
 		for(SolderingStationRecipe recipe: SolderingStationRecipes.getRecipes()) {
 			for(ItemStack source : recipe.source) {
-				if(NEIClientUtils.areStacksSameTypeCrafting(source, ingredient)) {
+				if(NEIServerUtils.areStacksSameTypeCrafting(source, ingredient)) {
 			        this.arecipes.add(getShape(recipe));
 			        break;
 				}
@@ -86,7 +94,7 @@ public class NEISolderingStationRecipeManager extends ShapedRecipeHandler {
 	
 	@Override
 	public void loadCraftingRecipes(String outputId, Object... results) {
-		if(outputId.equals("crafting") && getClass() == NEISolderingStationRecipeManager.class) {
+		if(outputId.equals("solderingstation") && getClass() == NEISolderingStationRecipeManager.class) {
 			for(SolderingStationRecipe recipe: SolderingStationRecipes.getRecipes()) {
 				this.arecipes.add(getShape(recipe));
 			}

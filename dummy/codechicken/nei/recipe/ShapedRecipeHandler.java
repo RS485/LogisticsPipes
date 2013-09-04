@@ -9,21 +9,16 @@ import codechicken.nei.PositionedStack;
 
 public class ShapedRecipeHandler extends TemplateRecipeHandler {
 
-	public class CachedShapedRecipe extends CachedRecipe {
-		public ArrayList<PositionedStack> ingredients;
-		public PositionedStack result;
-		public CachedShapedRecipe(int i, int j, Object[] object, ItemStack result) {}
+    public class CachedShapedRecipe extends CachedRecipe
+    {
+        public ArrayList<PositionedStack> ingredients;
+        public PositionedStack result;
+        public CachedShapedRecipe(int width, int height, Object[] items, ItemStack out) {}
 	}
 
-	public Class<? extends GuiContainer> getGuiClass(){return null;}
+    @Override
+    public String getRecipeName(){return null;}
 
-	public String getRecipeName(){return null;}
-
-	public String getGuiTexture(){return null;}
-
-	public void loadCraftingRecipes(ItemStack result) {}
-
-	public boolean hasOverlay(GuiContainer gui, Container container, int recipe) {return false;}
-
-	public ArrayList<PositionedStack> getIngredientStacks(int recipeIndex) {return null;}
+    @Override
+    public String getGuiTexture(){return null;}
 }

@@ -11,8 +11,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
+import codechicken.core.gui.GuiDraw;
 import codechicken.nei.api.ItemInfo;
-import codechicken.nei.forge.GuiContainerManager;
 
 public class NEIProxy implements INEIProxy {
 	@Override
@@ -32,7 +32,7 @@ public class NEIProxy implements INEIProxy {
 	public int getWidthForList(List<String> textData, FontRenderer fontRenderer) {
 		int w = 0;
 		for (String s : textData) {
-            w = Math.max(w, GuiContainerManager.getStringWidthNoColours(fontRenderer, s)+22);
+			w = Math.max(w, GuiDraw.getStringWidthNoColours(fontRenderer, s)+22);
 		}
 		return w;
 	}

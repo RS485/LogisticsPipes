@@ -65,7 +65,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	public LogisticsPowerJunctionTileEntity() {
 		powerFramework = new PowerHandler(this, Type.STORAGE);
-		powerFramework.configure(0, 250, 1, 750);
+		powerFramework.configure(1, 250, 1000, 750); // never triggers doWork, as this is just an energy store, and tick does the actual work.
 		HUD = new HUDPowerJunction(this);
 	}
 	@Override
@@ -119,9 +119,24 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 			needMorePowerTriggerCheck=false;
 	}
 	
+	private void addStoredMJ() {
+		float space = freeSpace() / BuildCraftMultiplier;
+		float minrequest = 1.01f / BuildCraftMultiplier;	//we round down, so always ask for a bit over 1LP-equivalent
+		if(space < minrequest)
+			space = minrequest;
+		int availablelp = (int)(powerFramework.useEnergy(minrequest, space, false) * BuildCraftMultiplier);
+		if(availablelp > 0) {
+			float totake = (float)availablelp / BuildCraftMultiplier;
+			if(powerFramework.useEnergy(totake, totake, true) == totake) {
+				addEnergy(availablelp);
+			}
+		}
+	}
+
 	@Override
 	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
 		super.readFromNBT(par1nbtTagCompound);
+		powerFramework.readFromNBT(par1nbtTagCompound);
 		internalStorage = par1nbtTagCompound.getInteger("powerLevel");
 		if(par1nbtTagCompound.hasKey("needMorePowerTriggerCheck")) {
 			needMorePowerTriggerCheck = par1nbtTagCompound.getBoolean("needMorePowerTriggerCheck");
@@ -131,6 +146,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
 		super.writeToNBT(par1nbtTagCompound);
+		powerFramework.writeToNBT(par1nbtTagCompound);
 		par1nbtTagCompound.setInteger("powerLevel", internalStorage);
 		par1nbtTagCompound.setBoolean("needMorePowerTriggerCheck", needMorePowerTriggerCheck);
 	}
@@ -139,17 +155,12 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	public void updateEntity() {
 		super.updateEntity();
 		if(MainProxy.isServer(getWorld())) {
-			float energy = Math.min(powerFramework.getEnergyStored(), freeSpace() / BuildCraftMultiplier);
-			if(freeSpace() > 0 && energy == 0 && powerFramework.getEnergyStored() > 0) {
-				energy = 1;
+			if(freeSpace() > 0 && powerFramework.getEnergyStored() > 0) {
+				addStoredMJ();
 			}
-			if(powerFramework.useEnergy(energy, energy, false) == energy) {
-				powerFramework.useEnergy(energy, energy, true);
-				addEnergy(energy * BuildCraftMultiplier);
+			if(internalStorage != lastUpdateStorage) {
+				updateClients();
 			}
-		  	if(internalStorage != lastUpdateStorage) {
-		  		updateClients();
-		  	}
 		}
 		if(!init) {
 			if(MainProxy.isClient(getWorld())) {

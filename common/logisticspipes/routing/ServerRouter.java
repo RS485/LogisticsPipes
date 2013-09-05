@@ -145,10 +145,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	protected static LSA[] SharedLSADatabase = new LSA[0];
 
 	/** Map of router -> orientation for all known destinations **/
-	public List<ExitRoute> _routeTable = new ArrayList<ExitRoute>();
-	public List<ExitRoute> _routeCosts = new ArrayList<ExitRoute>();
-	public List<ILogisticsPowerProvider> _powerTable = new ArrayList<ILogisticsPowerProvider>();
-	public List<IRouter> _firewallRouter = new ArrayList<IRouter>();
+	public List<ExitRoute> _routeTable = Collections.unmodifiableList(new ArrayList<ExitRoute>());
+	public List<ExitRoute> _routeCosts = Collections.unmodifiableList(new ArrayList<ExitRoute>());
+	public List<ILogisticsPowerProvider> _powerTable = Collections.unmodifiableList(new ArrayList<ILogisticsPowerProvider>());
+	public List<IRouter> _firewallRouter = Collections.unmodifiableList(new ArrayList<IRouter>());
 	
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
 
@@ -780,7 +780,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public List<ILogisticsPowerProvider> getPowerProvider() {
-		return Collections.unmodifiableList(_powerTable);
+		return _powerTable;
 	}
 	
 	@Override
@@ -795,7 +795,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 
 	@Override
 	public List<IRouter> getFilteringRouter() {
-		return Collections.unmodifiableList(_firewallRouter);
+		return _firewallRouter;
 	}
 
 	@Override

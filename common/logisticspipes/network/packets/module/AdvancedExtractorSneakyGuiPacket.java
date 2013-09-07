@@ -8,10 +8,10 @@ import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
@@ -40,7 +40,7 @@ public class AdvancedExtractorSneakyGuiPacket extends IntegerCoordinatesPacket {
 			}
 			return;
 		}
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

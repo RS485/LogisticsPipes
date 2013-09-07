@@ -4,9 +4,9 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class InvSysConContentRequest extends CoordinatesPacket {
@@ -22,7 +22,7 @@ public class InvSysConContentRequest extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

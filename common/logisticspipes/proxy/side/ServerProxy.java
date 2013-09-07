@@ -4,11 +4,9 @@ import java.io.File;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.config.Configs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.UpdateName;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
@@ -50,15 +48,11 @@ public class ServerProxy implements IProxy {
 
 	@Override
 	public void registerTileEntities() {
-		GameRegistry.registerTileEntity(LogisticsSignTileEntity.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy");
-		GameRegistry.registerTileEntity(LogisticsSignTileEntity.class, "logisticspipes.blocks.LogisticsSignTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 		GameRegistry.registerTileEntity(LogisticsPowerJunctionTileEntity.class, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
-		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
-		}
+		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 	}
 
 	@Override
@@ -213,7 +207,7 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
-	public TileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
 		return getPipe(DimensionManager.getWorld(dimension), x, y, z);
 	}
 
@@ -227,7 +221,7 @@ public class ServerProxy implements IProxy {
 	 * @param z
 	 * @return
 	 */
-	protected static TileGenericPipe getPipe(World world, int x, int y, int z) {
+	protected static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
 		if(world == null) {
 			return null;
 		}
@@ -240,7 +234,7 @@ public class ServerProxy implements IProxy {
 			return null;
 		}
 
-		return (TileGenericPipe) tile;
+		return (LogisticsTileGenericPipe) tile;
 	}
 	// BuildCraft method end
 	@Override

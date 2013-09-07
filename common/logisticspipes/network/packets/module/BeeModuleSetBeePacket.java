@@ -10,12 +10,12 @@ import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class BeeModuleSetBeePacket extends CoordinatesPacket {
@@ -60,7 +60,7 @@ public class BeeModuleSetBeePacket extends CoordinatesPacket {
 				return;
 			}
 		} else {
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}

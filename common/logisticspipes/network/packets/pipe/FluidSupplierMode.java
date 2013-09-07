@@ -2,12 +2,12 @@ package logisticspipes.network.packets.pipe;
 
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.pipes.PipeItemsFluidSupplier;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
+import logisticspipes.pipes.PipeItemsFluidSupplier;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class FluidSupplierMode extends IntegerCoordinatesPacket {
@@ -23,7 +23,7 @@ public class FluidSupplierMode extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

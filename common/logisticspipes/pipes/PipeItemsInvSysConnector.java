@@ -36,7 +36,6 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair4;
 import logisticspipes.utils.PlayerCollectionList;
-
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;

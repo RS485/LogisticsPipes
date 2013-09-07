@@ -5,11 +5,11 @@ import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
@@ -26,7 +26,7 @@ public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if(MainProxy.isClient(player.worldObj)) {
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if (pipe == null) return;
 			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleApiaristAnalyser) {
 				((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2())).setExtractMode(getInteger());
@@ -45,7 +45,7 @@ public class ApiaristAnalyserMode extends Integer2CoordinatesPacket {
 				}
 				return;
 			}
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) return;
 			if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2()) instanceof ModuleApiaristAnalyser) {
 				((ModuleApiaristAnalyser)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getInteger2())).setExtractMode(getInteger());

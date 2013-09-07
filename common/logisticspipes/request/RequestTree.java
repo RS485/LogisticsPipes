@@ -9,17 +9,17 @@ import java.util.Map;
 
 import logisticspipes.interfaces.routing.IFluidProvider;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequestFluid;
+import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.LogisticsExtraPromise;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.FinalPair;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.FluidIdentifier;
 
 public class RequestTree extends RequestTreeNode {
 

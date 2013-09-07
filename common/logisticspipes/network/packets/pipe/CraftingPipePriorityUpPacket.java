@@ -3,8 +3,8 @@ package logisticspipes.network.packets.pipe;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 public class CraftingPipePriorityUpPacket extends CoordinatesPacket {
 
@@ -19,7 +19,7 @@ public class CraftingPipePriorityUpPacket extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if (pipe == null) {
 			return;
 		}

@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.LinkedList;
 
@@ -25,7 +25,7 @@ import buildcraft.api.transport.IPipe;
 import buildcraft.transport.Gate;
 import buildcraft.transport.Pipe;
 
-public class LogisticsTriggerProvider implements ITriggerProvider{
+public class LogisticsTriggerProvider implements ITriggerProvider {
 
 	@Override
 	public LinkedList<ITrigger> getPipeTriggers(IPipe pipe) {
@@ -42,7 +42,7 @@ public class LogisticsTriggerProvider implements ITriggerProvider{
 		if(pipe instanceof CoreRoutedPipe) {
 			LinkedList<ITrigger> triggers = new LinkedList<ITrigger>();
 			//Only show this conditional on Gates that can accept parameters
-			if (((Pipe) pipe).hasGate() && (((Pipe) pipe).gate.kind == Gate.GateKind.AND_4 ||((Pipe) pipe).gate.kind == Gate.GateKind.OR_4)) {
+			if (pipe.hasGate() && pipe instanceof Pipe && ((Pipe<?>) pipe).gate.kind == Gate.GateKind.AND_4 || ((Pipe<?>) pipe).gate.kind == Gate.GateKind.OR_4) {
 				triggers.add(BuildCraftProxy.LogisticsHasDestinationTrigger);
 			}
 			return triggers;

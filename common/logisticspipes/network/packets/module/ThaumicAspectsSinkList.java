@@ -8,12 +8,12 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class ThaumicAspectsSinkList extends NBTCoordinatesPacket {
@@ -43,7 +43,7 @@ public class ThaumicAspectsSinkList extends NBTCoordinatesPacket {
 			}
 			return;
 		}
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if (pipe == null) return;
 		if(pipe.pipe instanceof PipeLogisticsChassi && ((PipeLogisticsChassi)pipe.pipe).getModules() != null && ((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot()) instanceof ModuleThaumicAspectSink) {
 			((ModuleThaumicAspectSink)((PipeLogisticsChassi)pipe.pipe).getModules().getSubModule(getSlot())).readFromNBT(getTag());

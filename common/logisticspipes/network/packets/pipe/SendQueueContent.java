@@ -3,8 +3,8 @@ package logisticspipes.network.packets.pipe;
 import logisticspipes.interfaces.ISendQueueContentRecieiver;
 import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 public class SendQueueContent extends InventoryCoordinatesPacket {
 
@@ -19,7 +19,7 @@ public class SendQueueContent extends InventoryCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

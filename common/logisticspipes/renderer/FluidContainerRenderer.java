@@ -1,7 +1,7 @@
 package logisticspipes.renderer;
 
-import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.items.LogisticsFluidContainer;
+import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.Colors;
 import net.minecraft.client.Minecraft;

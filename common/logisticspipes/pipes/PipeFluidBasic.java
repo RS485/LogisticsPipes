@@ -4,7 +4,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFluidSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
-import net.minecraftforge.fluids.FluidTank;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
@@ -19,8 +18,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraftforge.common.ForgeDirection;
-import net.minecraftforge.fluids.IFluidHandler;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.fluids.IFluidHandler;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
@@ -27,7 +28,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.IPlayerTracker;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -63,17 +63,17 @@ public class LogisticsEventListener implements IPlayerTracker {
 		if(MainProxy.isServer(event.entityPlayer.worldObj)) {
 			if(event.action == Action.LEFT_CLICK_BLOCK) {
 				final TileEntity tile = event.entityPlayer.worldObj.getBlockTileEntity(event.x, event.y, event.z);
-				if(tile instanceof TileGenericPipe) {
-					if(((TileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
-						if(!((CoreRoutedPipe)((TileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
+				if(tile instanceof LogisticsTileGenericPipe) {
+					if(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
+						if(!((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
 							event.setCanceled(true);
 							event.entityPlayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission Denied"));
-							((TileGenericPipe)tile).scheduleNeighborChange();
+							((LogisticsTileGenericPipe)tile).scheduleNeighborChange();
 							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
-							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;
-							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).repeatFor = 10;
+							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;
+							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).repeatFor = 10;
 						} else {
-							((CoreRoutedPipe)((TileGenericPipe)tile).pipe).setDestroyByPlayer();
+							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).setDestroyByPlayer();
 						}
 					}
 				}

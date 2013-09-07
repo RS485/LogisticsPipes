@@ -20,6 +20,7 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
+
 import org.lwjgl.opengl.GL11;
 
 public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {

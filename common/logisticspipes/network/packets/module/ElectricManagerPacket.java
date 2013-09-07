@@ -4,11 +4,11 @@ import logisticspipes.modules.ModuleElectricManager;
 import logisticspipes.network.abstractpackets.Integer2CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class ElectricManagerPacket extends Integer2CoordinatesPacket {
@@ -25,7 +25,7 @@ public class ElectricManagerPacket extends Integer2CoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if(MainProxy.isClient(player.worldObj)) {
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}
@@ -44,7 +44,7 @@ public class ElectricManagerPacket extends Integer2CoordinatesPacket {
 				}
 				return;
 			}
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}

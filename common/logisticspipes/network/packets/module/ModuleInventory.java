@@ -8,11 +8,11 @@ import logisticspipes.interfaces.IModuleInventoryReceive;
 import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class ModuleInventory extends InventoryCoordinatesPacket {
@@ -32,7 +32,7 @@ public class ModuleInventory extends InventoryCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

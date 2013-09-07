@@ -3,8 +3,8 @@ package logisticspipes.network.packets.orderer;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.network.abstractpackets.InventoryCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 public class OrdererManagerContent extends InventoryCoordinatesPacket {
 
@@ -19,7 +19,7 @@ public class OrdererManagerContent extends InventoryCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe tile = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
 		if(tile == null) {
 			return;
 		}

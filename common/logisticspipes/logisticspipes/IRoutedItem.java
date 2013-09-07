@@ -12,13 +12,12 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import buildcraft.transport.TravelingItem;
-
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.ForgeDirection;
+import buildcraft.transport.TravelingItem;
 
 /**
  * This interface describes the actions that must be available on an item that is considered routed

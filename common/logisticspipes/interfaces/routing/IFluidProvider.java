@@ -3,8 +3,8 @@ package logisticspipes.interfaces.routing;
 import java.util.Map;
 
 import logisticspipes.request.FluidRequestTreeNode;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.FluidLogisticsPromise;
+import logisticspipes.routing.IRouter;
 import logisticspipes.utils.FluidIdentifier;
 
 public interface IFluidProvider {

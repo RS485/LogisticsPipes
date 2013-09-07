@@ -3,11 +3,11 @@ package logisticspipes.network.packets.orderer;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.request.RequestHandler;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import buildcraft.transport.TileGenericPipe;
 
 public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 
@@ -22,7 +22,7 @@ public class DiskMacroRequestPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

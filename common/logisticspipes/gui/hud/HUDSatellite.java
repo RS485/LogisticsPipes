@@ -1,8 +1,8 @@
 package logisticspipes.gui.hud;
 
 import logisticspipes.interfaces.IHUDConfig;
-import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
+import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
 import net.minecraft.client.Minecraft;

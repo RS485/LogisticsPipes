@@ -19,9 +19,11 @@ import logisticspipes.network.packets.block.SecurityStationCC;
 import logisticspipes.network.packets.block.SecurityStationCCIDs;
 import logisticspipes.network.packets.block.SecurityStationId;
 import logisticspipes.network.packets.block.SecurityStationOpenPlayer;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
+import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import net.minecraft.crash.CrashReportCategory;
@@ -35,8 +37,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.core.Position;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider {
@@ -320,18 +320,15 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	
 	private boolean useEnergy(int amount) {
 		for(int i=0;i<4;i++) {
-			Position pos = new Position(this);
-			pos.orientation = ForgeDirection.VALID_DIRECTIONS[i + 2];
-			pos.moveForwards(1);
-			TileEntity tile = this.getWorld().getBlockTileEntity((int)pos.x, (int)pos.y, (int)pos.z);
+			TileEntity tile = OrientationsUtil.getTileNextToThis(this, ForgeDirection.VALID_DIRECTIONS[i + 2]);
 			if(tile instanceof IRoutedPowerProvider) {
 				if(((IRoutedPowerProvider)tile).useEnergy(amount)) {
 					return true;
 				}
 			}
-			if(tile instanceof TileGenericPipe) {
-				if(((TileGenericPipe)tile).pipe instanceof IRoutedPowerProvider) {
-					if(((IRoutedPowerProvider)((TileGenericPipe)tile).pipe).useEnergy(amount)) {
+			if(tile instanceof LogisticsTileGenericPipe) {
+				if(((LogisticsTileGenericPipe)tile).pipe instanceof IRoutedPowerProvider) {
+					if(((IRoutedPowerProvider)((LogisticsTileGenericPipe)tile).pipe).useEnergy(amount)) {
 						return true;
 					}
 				}

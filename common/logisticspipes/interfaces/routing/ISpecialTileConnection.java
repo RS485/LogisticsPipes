@@ -3,8 +3,8 @@ package logisticspipes.interfaces.routing;
 import java.util.List;
 
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
 public interface ISpecialTileConnection {
 	public boolean init();

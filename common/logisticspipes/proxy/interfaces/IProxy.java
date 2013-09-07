@@ -1,10 +1,10 @@
 package logisticspipes.proxy.interfaces;
 
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 public interface IProxy {
@@ -21,5 +21,5 @@ public interface IProxy {
 	public void tick();
 	public void sendNameUpdateRequest(Player player);
 	public int getDimensionForWorld(World world);
-	public TileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player);
 }

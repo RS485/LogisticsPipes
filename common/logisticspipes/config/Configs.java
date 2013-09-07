@@ -75,7 +75,6 @@ public class Configs {
 	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
 
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
-	public static boolean LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = false;
 
 	public static boolean TOOLTIP_INFO = LogisticsPipes.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;
@@ -85,7 +84,6 @@ public class Configs {
 	public static boolean DISPLAY_POPUP = true;
 
 	// BlockID
-	public static int LOGISTICS_SIGN_ID = 1100;
 	public static int LOGISTICS_SOLID_BLOCK_ID = 1101;
 
 	// MultiThread
@@ -208,9 +206,6 @@ public class Configs {
 		LOGISTICSPIPE_INVSYSCON_ID = CONFIGURATION.getItem(
 				"logisticInvSysCon.id", LOGISTICSPIPE_INVSYSCON_ID,
 				"The item id for the inventory system connector pipe").getInt();
-		LOGISTICS_SIGN_ID = CONFIGURATION.getBlock("logisticsSignId",
-				LOGISTICS_SIGN_ID, "The ID of the LogisticsPipes Sign")
-				.getInt();
 		LOGISTICS_SOLID_BLOCK_ID = CONFIGURATION.getBlock(
 				"logisticsSolidBlockId", LOGISTICS_SOLID_BLOCK_ID,
 				"The ID of the LogisticsPipes Solid Block").getInt();
@@ -285,12 +280,6 @@ public class Configs {
 				LOGISTICS_POWER_USAGE_DISABLED,
 				"Disable the power usage trough LogisticsPipes").getBoolean(
 				false);
-		LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED = CONFIGURATION
-				.get(Configuration.CATEGORY_GENERAL,
-						"TileReplaceDisabled",
-						LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED,
-						"Diable the Replacement of the TileGenericPipe trough the LogisticsTileGenericPipe")
-				.getBoolean(false);
 
 		LOGISTICSCRAFTINGSIGNCREATOR_ID = CONFIGURATION.getItem(
 				"logisticsCraftingSignCreator.id",

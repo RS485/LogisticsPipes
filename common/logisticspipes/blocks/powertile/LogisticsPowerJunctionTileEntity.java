@@ -1,6 +1,5 @@
 package logisticspipes.blocks.powertile;
 
-import ic2.api.Direction;
 import ic2.api.energy.tile.IEnergySink;
 
 import java.util.List;
@@ -31,8 +30,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.IPowerReceptor;
+import buildcraft.api.power.PowerHandler;
 import buildcraft.api.power.PowerHandler.PowerReceiver;
 import buildcraft.api.power.PowerHandler.Type;
 import dan200.computer.api.IComputerAccess;

@@ -2,6 +2,7 @@ package logisticspipes.items;
 
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
@@ -10,7 +11,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.transport.Pipe;
-import buildcraft.transport.TileGenericPipe;
 
 public class CraftingSignCreator extends LogisticsItem {
 
@@ -28,10 +28,10 @@ public class CraftingSignCreator extends LogisticsItem {
 			return false;
 		}
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
-		if(!(tile instanceof TileGenericPipe)) {
+		if(!(tile instanceof LogisticsTileGenericPipe)) {
 			return false;
 		}
-		Pipe pipe = ((TileGenericPipe)tile).pipe;
+		Pipe pipe = ((LogisticsTileGenericPipe)tile).pipe;
 		if(pipe == null) {
 			return false;
 		}

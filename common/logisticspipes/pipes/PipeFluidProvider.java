@@ -16,16 +16,16 @@ import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.LogisticsFluidOrderManager;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTankInfo;
 import net.minecraftforge.fluids.IFluidHandler;
-import net.minecraftforge.fluids.FluidStack;
 import buildcraft.transport.PipeTransportFluids;
 import buildcraft.transport.TileGenericPipe;
 

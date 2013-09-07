@@ -7,11 +7,11 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
+import logisticspipes.textures.Textures;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.util.Icon;
-import logisticspipes.textures.Textures;
 import buildcraft.api.gates.ActionManager;
 import buildcraft.api.gates.IAction;
 import cpw.mods.fml.relauncher.Side;

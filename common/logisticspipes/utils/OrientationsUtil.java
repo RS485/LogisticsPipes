@@ -66,4 +66,33 @@ public class OrientationsUtil {
 		}
 		return ForgeDirection.UNKNOWN;
 	}
+	
+	public static TileEntity getTileNextToThis(TileEntity tile, ForgeDirection dir) {
+		int x = tile.xCoord;
+		int y = tile.yCoord;
+		int z = tile.zCoord;
+		switch(dir) {
+			case UP:
+				y = y + 1;
+				break;
+			case DOWN:
+				y = y - 1;
+				break;
+			case SOUTH:
+				z = z + 1;
+				break;
+			case NORTH:
+				z = z - 1;
+				break;
+			case EAST:
+				x = x + 1;
+				break;
+			case WEST:
+				x = x - 1;
+				break;
+			default:
+				break;
+		}
+		return tile.worldObj.getBlockTileEntity(x, y, z);
+	}
 }

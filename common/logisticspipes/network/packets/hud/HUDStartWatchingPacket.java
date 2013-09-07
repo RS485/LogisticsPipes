@@ -3,8 +3,8 @@ package logisticspipes.network.packets.hud;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 public class HUDStartWatchingPacket extends IntegerCoordinatesPacket {
 
@@ -19,7 +19,7 @@ public class HUDStartWatchingPacket extends IntegerCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

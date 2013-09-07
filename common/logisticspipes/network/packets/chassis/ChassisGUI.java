@@ -19,12 +19,12 @@ import logisticspipes.network.packets.modules.ItemSinkDefault;
 import logisticspipes.network.packets.modules.ProviderModuleInclude;
 import logisticspipes.network.packets.modules.ProviderModuleMode;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain = true)
@@ -52,7 +52,7 @@ public class ChassisGUI extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

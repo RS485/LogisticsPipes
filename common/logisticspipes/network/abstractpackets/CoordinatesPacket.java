@@ -5,13 +5,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain = true)
 @ToString
@@ -92,7 +92,7 @@ public abstract class CoordinatesPacket extends ModernPacket {
 	 * @param world
 	 * @return
 	 */
-	public TileGenericPipe getPipe(World world) {
-		return getTile(world, TileGenericPipe.class);
+	public LogisticsTileGenericPipe getPipe(World world) {
+		return getTile(world, LogisticsTileGenericPipe.class);
 	}
 }

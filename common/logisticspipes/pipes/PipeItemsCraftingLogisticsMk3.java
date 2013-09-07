@@ -26,9 +26,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.transport.TravelingItem;
 import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {

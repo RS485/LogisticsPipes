@@ -13,7 +13,6 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import logisticspipes.blocks.LogisticsSignBlock;
 import logisticspipes.blocks.LogisticsSolidBlock;
 import logisticspipes.commands.LogisticsPipesCommand;
 import logisticspipes.commands.chathelper.LPChatListener;
@@ -79,7 +78,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.InventoryUtilFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
@@ -207,7 +205,6 @@ public class LogisticsPipes {
 	public static Item LogisticsBrokenItem;
 	
 	// Logistics Blocks
-	public static Block LogisticsSign;
 	public static Block LogisticsSolidBlock;
 
 	public static Textures textures = new Textures();
@@ -240,10 +237,8 @@ public class LogisticsPipes {
 		if(event.getSide().equals(Side.CLIENT)) {
 			TickRegistry.registerTickHandler(new RenderTickHandler(), Side.CLIENT);
 		}
-		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
-			TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
-		}
+		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.SERVER);
+		TickRegistry.registerTickHandler(new WorldTickHandler(), Side.CLIENT);
 		TickRegistry.registerTickHandler(new QueuedTasks(), Side.SERVER);
 		if(event.getSide() == Side.CLIENT) {
 			SimpleServiceLocator.setClientPacketBufferHandlerThread(new ClientPacketBufferHandlerThread());
@@ -404,9 +399,6 @@ public class LogisticsPipes {
 		SolderingStationRecipes.loadRecipe();
 		
 		//Blocks
-		LogisticsSign = new LogisticsSignBlock(Configs.LOGISTICS_SIGN_ID);
-		GameRegistry.registerBlock(LogisticsSign, ItemBlock.class, null);
-		LogisticsSign.setUnlocalizedName("logisticsSign");
 		LogisticsSolidBlock = new LogisticsSolidBlock(Configs.LOGISTICS_SOLID_BLOCK_ID);
 		GameRegistry.registerBlock(LogisticsSolidBlock, LogisticsSolidBlockItem.class, null);
 		LogisticsSolidBlock.setUnlocalizedName("logisticsSolidBlock");

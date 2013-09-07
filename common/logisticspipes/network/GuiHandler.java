@@ -12,11 +12,11 @@ import logisticspipes.gui.GuiCardManager;
 import logisticspipes.gui.GuiChassiPipe;
 import logisticspipes.gui.GuiCraftingPipe;
 import logisticspipes.gui.GuiFirewall;
-import logisticspipes.gui.GuiFreqCardContent;
-import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiFluidBasic;
 import logisticspipes.gui.GuiFluidSupplierMk2Pipe;
 import logisticspipes.gui.GuiFluidSupplierPipe;
+import logisticspipes.gui.GuiFreqCardContent;
+import logisticspipes.gui.GuiInvSysConnector;
 import logisticspipes.gui.GuiLogisticsCraftingTable;
 import logisticspipes.gui.GuiPowerJunction;
 import logisticspipes.gui.GuiProviderPipe;
@@ -32,8 +32,8 @@ import logisticspipes.gui.modules.GuiApiaristAnalyser;
 import logisticspipes.gui.modules.GuiApiaristSink;
 import logisticspipes.gui.modules.GuiElectricManager;
 import logisticspipes.gui.modules.GuiExtractor;
-import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiFluidSupplier;
+import logisticspipes.gui.modules.GuiItemSink;
 import logisticspipes.gui.modules.GuiModBasedItemSink;
 import logisticspipes.gui.modules.GuiOreDictItemSink;
 import logisticspipes.gui.modules.GuiPassiveSupplier;
@@ -57,8 +57,8 @@ import logisticspipes.modules.ModuleAdvancedExtractor;
 import logisticspipes.modules.ModuleApiaristAnalyser;
 import logisticspipes.modules.ModuleApiaristSink;
 import logisticspipes.modules.ModuleElectricManager;
-import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleFluidSupplier;
+import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.modules.ModulePassiveSupplier;
@@ -73,9 +73,11 @@ import logisticspipes.network.packets.module.ThaumicAspectsSinkList;
 import logisticspipes.network.packets.modules.BeeModule;
 import logisticspipes.network.packets.modules.ExtractorModuleMode;
 import logisticspipes.network.packets.modules.ItemSinkDefault;
-import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.network.packets.pipe.FluidSupplierMode;
+import logisticspipes.network.packets.pipe.InvSysConResistance;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.PipeFluidBasic;
+import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.pipes.PipeFluidSatellite;
 import logisticspipes.pipes.PipeFluidSupplierMk2;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
@@ -88,10 +90,9 @@ import logisticspipes.pipes.PipeItemsSatelliteLogistics;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.PipeItemsSystemDestinationLogistics;
 import logisticspipes.pipes.PipeItemsSystemEntranceLogistics;
-import logisticspipes.pipes.PipeFluidBasic;
-import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CardManagmentInventory;
 import logisticspipes.utils.SimpleInventory;
@@ -104,7 +105,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
-import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.IGuiHandler;
 import cpw.mods.fml.common.network.Player;
@@ -120,11 +120,11 @@ public class GuiHandler implements IGuiHandler {
 		if(y != -1) {
 			tile = world.getBlockTileEntity(x, y, z);
 		}
-		TileGenericPipe pipe = null;
-		if(tile instanceof TileGenericPipe) {
-			pipe = (TileGenericPipe)tile;
+		LogisticsTileGenericPipe pipe = null;
+		if(tile instanceof LogisticsTileGenericPipe) {
+			pipe = (LogisticsTileGenericPipe)tile;
 		}
-		final TileGenericPipe fpipe = pipe;
+		final LogisticsTileGenericPipe fpipe = pipe;
 		
 		DummyContainer dummy;
 		int xOffset;
@@ -786,9 +786,9 @@ public class GuiHandler implements IGuiHandler {
 	public Object getClientGuiElement(int ID, EntityPlayer player, final World world, int x, int y, int z) {
 		
 		TileEntity tile = world.getBlockTileEntity(x, y, z);
-		TileGenericPipe pipe = null;
-		if(tile instanceof TileGenericPipe) {
-			pipe = (TileGenericPipe)tile;
+		LogisticsTileGenericPipe pipe = null;
+		if(tile instanceof LogisticsTileGenericPipe) {
+			pipe = (LogisticsTileGenericPipe)tile;
 		}
 		
 		if(ID == -1) {

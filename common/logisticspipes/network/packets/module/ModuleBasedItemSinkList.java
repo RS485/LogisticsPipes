@@ -8,13 +8,13 @@ import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 import logisticspipes.pipes.PipeLogisticsChassi;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
@@ -35,7 +35,7 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if(MainProxy.isClient(player.worldObj)) {
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}
@@ -52,7 +52,7 @@ public class ModuleBasedItemSinkList extends NBTCoordinatesPacket {
 					}
 				}
 			}
-			final TileGenericPipe pipe = this.getPipe(player.worldObj);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}

@@ -2,11 +2,9 @@ package logisticspipes.proxy.side;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.blocks.LogisticsSignTileEntity;
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity;
 import logisticspipes.blocks.powertile.LogisticsPowerJunctionTileEntity;
-import logisticspipes.config.Configs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipefxhandlers.PipeFXRenderHandler;
 import logisticspipes.pipefxhandlers.providers.EntityBlueSparkleFXProvider;
@@ -56,15 +54,11 @@ public class ClientProxy implements IProxy {
 
 	@Override
 	public void registerTileEntities() {
-		GameRegistry.registerTileEntity(LogisticsSignTileEntity.class, "net.minecraft.src.buildcraft.logisticspipes.blocks.LogisticsTileEntiy");
-		GameRegistry.registerTileEntity(LogisticsSignTileEntity.class, "logisticspipes.blocks.LogisticsSignTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSolderingTileEntity.class, "logisticspipes.blocks.LogisticsSolderingTileEntity");
 		GameRegistry.registerTileEntity(LogisticsPowerJunctionTileEntity.class, "logisticspipes.blocks.powertile.LogisticsPowerJuntionTileEntity");
 		GameRegistry.registerTileEntity(LogisticsSecurityTileEntity.class, "logisticspipes.blocks.LogisticsSecurityTileEntity");
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
-		if(!Configs.LOGISTICS_TILE_GENERIC_PIPE_REPLACEMENT_DISABLED) {
-			GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
-		}
+		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 		LogisticsRenderPipe lrp = new LogisticsRenderPipe();
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation(lrp);
@@ -150,7 +144,7 @@ public class ClientProxy implements IProxy {
 	}
 
 	@Override
-	public TileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
+	public LogisticsTileGenericPipe getPipeInDimensionAt(int dimension, int x, int y, int z, EntityPlayer player) {
 		return getPipe(DimensionManager.getWorld(dimension), x, y, z);
 	}
 
@@ -164,7 +158,7 @@ public class ClientProxy implements IProxy {
 	 * @param z
 	 * @return
 	 */
-	private static TileGenericPipe getPipe(World world, int x, int y, int z) {
+	private static LogisticsTileGenericPipe getPipe(World world, int x, int y, int z) {
 		if(world == null) {
 			return null;
 		}
@@ -173,11 +167,11 @@ public class ClientProxy implements IProxy {
 		}
 
 		final TileEntity tile = world.getBlockTileEntity(x, y, z);
-		if (!(tile instanceof TileGenericPipe)) {
+		if (!(tile instanceof LogisticsTileGenericPipe)) {
 			return null;
 		}
 
-		return (TileGenericPipe) tile;
+		return (LogisticsTileGenericPipe) tile;
 	}
 	// BuildCraft method end
 

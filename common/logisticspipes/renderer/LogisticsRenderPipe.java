@@ -65,6 +65,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		public int[] centerVertical = new int[LIQUID_STAGES];
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	public void renderTileEntityAt(TileEntity tileentity, double x, double y, double z, float f) {
 		super.renderTileEntityAt(tileentity, x, y, z, f);
@@ -72,7 +73,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		TileGenericPipe pipe = ((TileGenericPipe) tileentity);
 		if (pipe.pipe == null) return;
 		if (pipe.pipe.transport instanceof PipeFluidTransportLogistics) {
-			renderFluids(pipe.pipe, x, y, z);
+			renderFluids((Pipe<PipeFluidTransportLogistics>)pipe.pipe, x, y, z);
 		}
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			renderCraftingPipe((PipeItemsCraftingLogistics) pipe.pipe, x, y, z);
@@ -353,7 +354,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	}
 
 	//BC copy, except where marked with XXX
-	private void renderFluids(Pipe pipe, double x, double y, double z) {
+	private void renderFluids(Pipe<PipeFluidTransportLogistics> pipe, double x, double y, double z) {
 		//XXX PipeTransportFluids trans = pipe.transport;
 		PipeFluidTransportLogistics trans = (PipeFluidTransportLogistics)(pipe.transport);
 

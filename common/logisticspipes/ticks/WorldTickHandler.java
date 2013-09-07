@@ -3,18 +3,19 @@ package logisticspipes.ticks;
 import java.lang.reflect.Field;
 import java.util.EnumSet;
 import java.util.LinkedList;
+
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.BuildCraftTransport;
 import buildcraft.core.ITileBufferHolder;
-import buildcraft.transport.TravelingItem;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
@@ -22,13 +23,10 @@ public class WorldTickHandler implements ITickHandler {
 	
 	public static LinkedList<TileGenericPipe> clientPipesToReplace = new LinkedList<TileGenericPipe>();
 	public static LinkedList<TileGenericPipe> serverPipesToReplace = new LinkedList<TileGenericPipe>();
-	private Field entitiesToLoad = null;
-	private Field delayedEntitiesToLoad = null;
 	
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
 		LinkedList<TileGenericPipe> localList;
@@ -40,20 +38,6 @@ public class WorldTickHandler implements ITickHandler {
 			System.out.println("not client, not server ... what is " + type);
 			return;
 		}
-/*		if(entitiesToLoad == null || delayedEntitiesToLoad == null) {
-			try {
-				entitiesToLoad = PipeTransportItems.class.getDeclaredField("entitiesToLoad");
-				entitiesToLoad.setAccessible(true);
-				delayedEntitiesToLoad = PipeTransportItems.class.getDeclaredField("delayedEntitiesToLoad");
-				delayedEntitiesToLoad.setAccessible(true);
-			} catch (IllegalArgumentException e) {
-				e.printStackTrace();
-			} catch (NoSuchFieldException e) {
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				e.printStackTrace();
-			}
-		}*/
 		while(localList.size() > 0) {
 			//try {
 				TileGenericPipe tile = localList.get(0);
@@ -88,12 +72,6 @@ public class WorldTickHandler implements ITickHandler {
 						for(TravelingItem entity:((PipeTransportItems)newTile.pipe.transport).items) {
 							entity.setContainer(newTile);
 						}
-/*						for(TravelingItem entity:((List<TravelingItem>)entitiesToLoad.get(newTile.pipe.transport))) {
-							entity.setContainer(newTile);
-						}
-						for(TravelingItem entity:((List<TravelingItem>)delayedEntitiesToLoad.get(newTile.pipe.transport))) {
-							entity.setContainer(newTile);
-						}*/
 					}
 				}
 

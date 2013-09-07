@@ -1,4 +1,4 @@
-package logisticspipes.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import java.util.ArrayList;
 

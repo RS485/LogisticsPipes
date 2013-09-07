@@ -8,11 +8,11 @@ import logisticspipes.network.PacketPayload;
 import logisticspipes.network.TilePacketWrapper;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class PipeUpdate extends CoordinatesPacket {
@@ -32,7 +32,7 @@ public class PipeUpdate extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileGenericPipe tile = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
 		if(tile == null) {
 			return;
 		}
@@ -40,7 +40,7 @@ public class PipeUpdate extends CoordinatesPacket {
 			return;
 		}
 		//FIXME: does the old logic at tile.pipe need to be here?!
-		new TilePacketWrapper(new Class[] { TileGenericPipe.class, tile.pipe.transport.getClass(), tile.pipe.getClass() }).fromPayload(new Object[] { tile.pipe.container, tile.pipe.transport, tile.pipe }, getPayload());
+		new TilePacketWrapper(new Class[] { LogisticsTileGenericPipe.class, tile.pipe.transport.getClass(), tile.pipe.getClass() }).fromPayload(new Object[] { tile.pipe.container, tile.pipe.transport, tile.pipe }, getPayload());
 	}
 
 	@Override

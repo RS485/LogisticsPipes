@@ -13,12 +13,12 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.ExitRoute;
-import logisticspipes.routing.IRouter;
 import logisticspipes.routing.FluidLogisticsPromise;
+import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.FluidIdentifier;
 
 public class FluidRequestTreeNode {
 	

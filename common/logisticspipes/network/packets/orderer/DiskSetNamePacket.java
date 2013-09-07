@@ -3,9 +3,9 @@ package logisticspipes.network.packets.orderer;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.StringCoordinatesPacket;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
-import buildcraft.transport.TileGenericPipe;
 
 public class DiskSetNamePacket extends StringCoordinatesPacket {
 
@@ -20,7 +20,7 @@ public class DiskSetNamePacket extends StringCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

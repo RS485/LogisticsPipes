@@ -101,7 +101,7 @@ outer:
 			if(left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if(left.stackSize > 0) {
-					inv.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+					SimpleInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
 				}
 			}
 		}
@@ -111,7 +111,7 @@ outer:
 			if(left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if(left.stackSize > 0) {
-					inv.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+					SimpleInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
 				}
 			}
 		}

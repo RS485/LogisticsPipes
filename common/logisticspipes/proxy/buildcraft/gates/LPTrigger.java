@@ -1,4 +1,4 @@
-package logisticspipes.gates;
+package logisticspipes.proxy.buildcraft.gates;
 
 import logisticspipes.textures.Textures;
 import net.minecraft.client.renderer.texture.IconRegister;

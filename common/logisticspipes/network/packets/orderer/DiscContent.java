@@ -3,8 +3,8 @@ package logisticspipes.network.packets.orderer;
 import logisticspipes.network.abstractpackets.ItemPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsRequestLogisticsMk2;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 public class DiscContent extends ItemPacket {
 
@@ -19,7 +19,7 @@ public class DiscContent extends ItemPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe tile = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
 		if(tile == null) {
 			return;
 		}

@@ -4,9 +4,9 @@ import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 public class ItemSinkDefaultPacket extends IntegerCoordinatesPacket {
 
@@ -32,7 +32,7 @@ public class ItemSinkDefaultPacket extends IntegerCoordinatesPacket {
 			}
 			return;
 		}
-		final TileGenericPipe pipe = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if(pipe == null) {
 			return;
 		}

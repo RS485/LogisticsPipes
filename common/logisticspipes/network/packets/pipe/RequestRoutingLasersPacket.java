@@ -11,6 +11,7 @@ import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IPaintPath;
@@ -35,7 +36,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 	
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileGenericPipe tile = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
 		if(tile == null) return;
 		if(tile.pipe instanceof CoreRoutedPipe) {
 			IRouter router = ((CoreRoutedPipe)tile.pipe).getRouter();

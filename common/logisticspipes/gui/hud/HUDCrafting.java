@@ -8,6 +8,7 @@ import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import net.minecraft.client.Minecraft;
+
 import org.lwjgl.opengl.GL11;
 
 public class HUDCrafting extends BasicHUDGui {

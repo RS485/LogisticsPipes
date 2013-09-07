@@ -3,10 +3,10 @@ package logisticspipes.network.packets.pipe;
 import logisticspipes.network.abstractpackets.IntegerCoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeItemsInvSysConnector;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class InvSysConResistance extends IntegerCoordinatesPacket {
@@ -23,7 +23,7 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if(MainProxy.isClient(player.worldObj)) {
-			final TileGenericPipe pipe = this.getTile(player.worldObj, TileGenericPipe.class);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}
@@ -32,7 +32,7 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 				invCon.resistance = getInteger();
 			}
 		} else {
-			final TileGenericPipe pipe = this.getTile(player.worldObj, TileGenericPipe.class);
+			final LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 			if(pipe == null) {
 				return;
 			}

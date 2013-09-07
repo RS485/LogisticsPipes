@@ -8,6 +8,7 @@ import java.util.BitSet;
 import logisticspipes.network.BitSetHelper;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,7 +17,6 @@ import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class PipeFluidUpdate extends CoordinatesPacket {
@@ -81,7 +81,7 @@ public class PipeFluidUpdate extends CoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		TileGenericPipe pipe = this.getPipe(player.worldObj);
+		LogisticsTileGenericPipe pipe = this.getPipe(player.worldObj);
 		if (pipe == null || pipe.pipe == null) return;
 		if (!(pipe.pipe.transport instanceof PipeFluidTransportLogistics)) return;
 		renderCache = ((PipeFluidTransportLogistics) pipe.pipe.transport).renderCache;

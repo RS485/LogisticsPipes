@@ -31,6 +31,7 @@ import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
@@ -42,7 +43,6 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.common.ForgeDirection;
-import buildcraft.transport.TileGenericPipe;
 
 public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	
@@ -245,8 +245,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 		TileEntity tile = worldObj.getBlockTileEntity(_xCoord, _yCoord, _zCoord);
 		
-		if (!(tile instanceof TileGenericPipe)) return null;
-		TileGenericPipe pipe = (TileGenericPipe) tile;
+		if (!(tile instanceof LogisticsTileGenericPipe)) return null;
+		LogisticsTileGenericPipe pipe = (LogisticsTileGenericPipe) tile;
 		if (!(pipe.pipe instanceof CoreRoutedPipe)) return null;
 		_myPipeCache=new WeakReference<CoreRoutedPipe>((CoreRoutedPipe) pipe.pipe);
 

@@ -9,13 +9,13 @@ import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain = true)
 public class NEISetCraftingRecipe extends CoordinatesPacket {
@@ -33,8 +33,8 @@ public class NEISetCraftingRecipe extends CoordinatesPacket {
 		TileEntity tile = getTile(player.worldObj , TileEntity.class);
 		if(tile instanceof LogisticsCraftingTableTileEntity) {
 			((LogisticsCraftingTableTileEntity)tile).handleNEIRecipePacket(getContent());
-		} else if(tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
-			((PipeBlockRequestTable)((TileGenericPipe)tile).pipe).handleNEIRecipePacket(getContent());
+		} else if(tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe)tile).pipe instanceof PipeBlockRequestTable) {
+			((PipeBlockRequestTable)((LogisticsTileGenericPipe)tile).pipe).handleNEIRecipePacket(getContent());
 		}
 	}
 	

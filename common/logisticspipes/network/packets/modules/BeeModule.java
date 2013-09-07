@@ -9,11 +9,11 @@ import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.abstractpackets.NBTCoordinatesPacket;
 import logisticspipes.pipes.PipeItemsApiaristSink;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
-import buildcraft.transport.TileGenericPipe;
 
 @Accessors(chain=true)
 public class BeeModule extends NBTCoordinatesPacket {
@@ -45,7 +45,7 @@ public class BeeModule extends NBTCoordinatesPacket {
 
 	@Override
 	public void processPacket(EntityPlayer player) {
-		final TileGenericPipe tile = this.getPipe(player.worldObj);
+		final LogisticsTileGenericPipe tile = this.getPipe(player.worldObj);
 		if(tile == null) {
 			return;
 		}

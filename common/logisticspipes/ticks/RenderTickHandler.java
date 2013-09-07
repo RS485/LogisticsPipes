@@ -53,6 +53,7 @@ public class RenderTickHandler implements ITickHandler {
 	private int fullCounter = 0;
 	private Field ticks;
 	private Field wrapper;
+	private boolean init = false;
 
 	public RenderTickHandler() {
 		try {
@@ -96,6 +97,10 @@ public class RenderTickHandler implements ITickHandler {
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
+			}
+			if(!init) {
+				MainProxy.proxy.addRenderOverride();
+				init = true;
 			}
 		}
 	}

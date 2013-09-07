@@ -37,8 +37,6 @@ import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.common.registry.GameRegistry;
-//import logisticspipes.textures.LogisticsPipesTextureStatic;
-
 
 public class ClientProxy implements IProxy {
 	
@@ -66,6 +64,10 @@ public class ClientProxy implements IProxy {
 		if(brp instanceof RenderPipe) {
 			SimpleServiceLocator.buildCraftProxy.resetItemRotation((RenderPipe) brp);
 		}
+	}
+
+	@Override
+	public void addRenderOverride() {
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 	}
 

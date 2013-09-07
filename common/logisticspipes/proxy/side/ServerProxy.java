@@ -56,6 +56,9 @@ public class ServerProxy implements IProxy {
 	}
 
 	@Override
+	public void addRenderOverride() {}
+	
+	@Override
 	public EntityPlayer getClientPlayer() {
 		return null;
 	}

@@ -11,6 +11,7 @@ public interface IProxy {
 	public String getSide();
 	public World getWorld();
 	public void registerTileEntities();
+	public void addRenderOverride();
 	public EntityPlayer getClientPlayer();
 	public boolean isMainThreadRunning();
 	

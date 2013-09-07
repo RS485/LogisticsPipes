@@ -90,7 +90,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		if (itemID == null || aspectList.size() == 0) return false;
 		ItemStack item = itemID.makeNormalStack(1);
 		List<Integer> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagIDsForStack(item);
-		if (itemAspectList.size() == 0 || itemAspectList == null) return false;
+		if (itemAspectList == null || itemAspectList.size() == 0) return false;
 		for (int i = 0; i < itemAspectList.size(); i++) {
 			if (aspectList.contains(itemAspectList.get(i))) return true;
 		}

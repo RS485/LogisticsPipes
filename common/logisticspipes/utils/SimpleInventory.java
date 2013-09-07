@@ -24,6 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
+import net.minecraftforge.fluids.FluidRegistry;
 
 public class SimpleInventory implements IInventory, ISaveState{
 
@@ -32,15 +33,21 @@ public class SimpleInventory implements IInventory, ISaveState{
 	private final int _stackLimit;
 	private final HashMap<ItemIdentifier, Integer> _contentsMap;
 	private final HashSet<ItemIdentifier> _contentsUndamagedSet;
+	private final boolean isLiquidInvnetory;
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
-	
-	public SimpleInventory(int size, String name, int stackLimit){
+
+	public SimpleInventory(int size, String name, int stackLimit, boolean liquidInv) {
 		_contents = new ItemIdentifierStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
 		_contentsMap = new HashMap<ItemIdentifier, Integer>((int)(size * 1.5));
 		_contentsUndamagedSet = new HashSet<ItemIdentifier>((int)(size * 1.5));
+		isLiquidInvnetory = liquidInv;
+	}
+
+	public SimpleInventory(int size, String name, int stackLimit) {
+		this(size, name, stackLimit, false);
 	}
 	
 	@Override
@@ -98,6 +105,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 		if(itemstack == null) {
 			_contents[i] = null;
 		} else {
+			if(!isValidStack(itemstack)) {
+				if(LogisticsPipes.DEBUG) {
+					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
+				}
+				return;
+			}
 			_contents[i] = ItemIdentifierStack.GetFromStack(itemstack);
 		}
 		updateContents();
@@ -107,6 +120,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 		if(itemstack == null) {
 			_contents[i] = null;
 		} else {
+			if(!isValidStack(itemstack)) {
+				if(LogisticsPipes.DEBUG) {
+					new UnsupportedOperationException("Not valid for this Inventory: (" + itemstack + ")").printStackTrace();
+				}
+				return;
+			}
 			_contents[i] = itemstack;
 		}
 		updateContents();
@@ -151,7 +170,15 @@ public class SimpleInventory implements IInventory, ISaveState{
     		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
     		int index = nbttagcompound2.getInteger("index");
     		if(index < _contents.length) {
-    			_contents [index] = ItemIdentifierStack.GetFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound2));
+    			ItemIdentifierStack itemstack = ItemIdentifierStack.GetFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound2));
+    			if(!isValidStack(itemstack)) {
+    				FluidIdentifier fluid = FluidIdentifier.convertFromID(itemstack.getItem().itemID);
+    				if(fluid != null) {
+    					_contents [index] = fluid.getItemIdentifier().makeStack(1);
+    				}
+    			} else {
+    				_contents [index] = itemstack;
+    			}
     		} else {
     			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);
     		}
@@ -235,6 +262,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 	}
 	
 	private int tryAddToSlot(int i, ItemStack stack, int realstacklimit) {
+		if(!isValidStack(stack)) {
+			if(LogisticsPipes.DEBUG) {
+				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
+			}
+			return 0;
+		}
 		ItemIdentifierStack slot = _contents[i];
 		if(slot == null) {
 			_contents[i] = ItemIdentifierStack.GetFromStack(stack);
@@ -259,6 +292,12 @@ public class SimpleInventory implements IInventory, ISaveState{
 	
 	public int addCompressed(ItemStack stack, boolean ignoreMaxStackSize) {
 		if(stack == null) return 0;
+		if(!isValidStack(stack)) {
+			if(LogisticsPipes.DEBUG) {
+				new UnsupportedOperationException("Not valid for this Inventory: (" + stack + ")").printStackTrace();
+			}
+			return 0;
+		}
 		stack = stack.copy();
 
 		ItemIdentifier stackIdent = ItemIdentifier.get(stack);
@@ -380,4 +419,17 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 	}
 
+	private boolean isValidStack(ItemStack stack) {
+		if(isLiquidInvnetory) {
+			return FluidIdentifier.get(stack) != null;
+		}
+		return true;
+	}
+
+	private boolean isValidStack(ItemIdentifierStack stack) {
+		if(isLiquidInvnetory) {
+			return FluidIdentifier.get(stack.getItem()) != null;
+		}
+		return true;
+	}
 }

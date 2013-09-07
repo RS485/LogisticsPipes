@@ -25,9 +25,9 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.items.ItemParts;
 import logisticspipes.items.ItemUpgrade;
 import logisticspipes.items.LogisticsBrokenItem;
+import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsItem;
 import logisticspipes.items.LogisticsItemCard;
-import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.items.LogisticsNetworkManager;
 import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
@@ -75,8 +75,8 @@ import logisticspipes.ticks.ServerPacketBufferHandlerThread;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.ticks.Watchdog;
 import logisticspipes.ticks.WorldTickHandler;
-import logisticspipes.utils.InventoryUtilFactory;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.InventoryUtilFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -87,13 +87,8 @@ import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Mod;
-import cpw.mods.fml.common.Mod.FingerprintWarning;
-import cpw.mods.fml.common.Mod.Init;
+import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
-import cpw.mods.fml.common.Mod.PostInit;
-import cpw.mods.fml.common.Mod.PreInit;
-import cpw.mods.fml.common.Mod.ServerStarting;
-import cpw.mods.fml.common.Mod.ServerStopping;
 import cpw.mods.fml.common.event.FMLFingerprintViolationEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
@@ -224,7 +219,7 @@ public class LogisticsPipes {
 	public static Logger log;
 	public static Logger requestLog;
 	
-	@Init
+	@EventHandler
 	public void init(FMLInitializationEvent event) {
 		
 		RouterManager manager = new RouterManager();
@@ -275,7 +270,7 @@ public class LogisticsPipes {
 //		 + ".waila.WailaRegister.register");
 	}
 	
-	@PreInit
+	@EventHandler
 	public void preInit(FMLPreInitializationEvent evt) {
 		Configs.load(evt);
 		log = evt.getModLog();
@@ -304,7 +299,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.buildCraftProxy.replaceBlockGenericPipe();
 	}
 	
-	@PostInit
+	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
 		boolean isClient = event.getSide() == Side.CLIENT;
@@ -436,7 +431,7 @@ public class LogisticsPipes {
 		new VersionChecker();
 	}
 	
-	@ServerStopping
+	@EventHandler
 	public void cleanup(FMLServerStoppingEvent event) {
 		SimpleServiceLocator.routerManager.serverStopClean();
 		QueuedTasks.clearAllTasks();
@@ -449,12 +444,12 @@ public class LogisticsPipes {
 		}
 	}
 	
-	@ServerStarting
+	@EventHandler
 	public void registerCommands(FMLServerStartingEvent event) {
 		event.registerServerCommand(new LogisticsPipesCommand());
 	}
 	
-	@FingerprintWarning
+	@EventHandler
 	public void certificateWarning(FMLFingerprintViolationEvent warning) {
 		if(!DEBUG) {
 			System.out.println("[LogisticsPipes|Certificate] Certificate not correct");

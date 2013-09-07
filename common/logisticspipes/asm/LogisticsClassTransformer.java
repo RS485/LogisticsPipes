@@ -25,29 +25,10 @@ import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.Side;
 
 public class LogisticsClassTransformer implements IClassTransformer {
-
-	private abstract class LocalMethodVisitor extends MethodNode {
-
-		public LocalMethodVisitor(final int access, final String name, final String desc, final String signature, final String[] exceptions) {
-			super(access, name, desc, signature, exceptions);
-		}
-
-		@Override
-		public void visitCode() {
-			super.visitCode();
-			addCode(this);
-		}
-		
-		protected abstract void addCode(MethodNode node);
-	}
 	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		try {
-			if(name.equals("buildcraft.transport.PipeTransportItems")) {
-				//return handlePipeTransportItems(bytes);
-				return bytes;
-			}
 			if(!name.startsWith("logisticspipes.")) {
 				return bytes;
 			}
@@ -62,33 +43,6 @@ public class LogisticsClassTransformer implements IClassTransformer {
 			}
 			throw new RuntimeException(e);
 		}
-	}
-	
-	private byte[] handlePipeTransportItems(byte[] bytes) {
-		ClassNode node = new ClassNode();
-		ClassReader reader = new ClassReader(bytes);
-		reader.accept(node, 0);
-		boolean handled = false;
-		for(MethodNode m:node.methods) {
-			if(m.name.equals("canReceivePipeObjects")) {
-				MethodNode newM = new LocalMethodVisitor(m.access, m.name, m.desc, m.signature, m.exceptions.toArray(new String[0])) {
-					@Override
-					protected void addCode(MethodNode node) {
-						LogisticsASMHelperClass.visitCanRecivePipeObject(node);
-					}
-				};
-				m.accept(newM);
-				node.methods.set(node.methods.indexOf(m), newM);
-				handled = true;
-				break;
-			}
-		}
-		if(!handled) {
-			throw new RuntimeException("Method 'canReceivePipeObjects' from 'buildcraft.transport.PipeTransportItems' could not be found.");
-		}
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES);
-		node.accept(writer);
-		return writer.toByteArray();
 	}
 
 	@SuppressWarnings("unchecked")

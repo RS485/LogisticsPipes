@@ -66,7 +66,7 @@ public class FluidContainerRenderer implements IItemRenderer {
 		Minecraft mc = FMLClientHandler.instance().getClient();
 		if (item.getItem() instanceof LogisticsFluidContainer) {
 			FluidStack liquid = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(item);
-			if (type != ItemRenderType.INVENTORY || liquid == null) {
+			if ((type != ItemRenderType.INVENTORY && type != ItemRenderType.ENTITY) || liquid == null) {
 				doRenderItem(item, mc, type, data);
 				GL11.glPopMatrix();
 				return;
@@ -110,12 +110,10 @@ public class FluidContainerRenderer implements IItemRenderer {
 	
 	public void doRenderFluid(FluidStack liquid, Minecraft mc, ItemRenderType type, Object[] data) {
 		GL11.glPushMatrix();
-		if(type == ItemRenderType.INVENTORY) {
-			//GL11.glScalef(7f/16f, 13f/16f, 1f);
-			//GL11.glTranslatef(4.5f/(7f/16f), 1.5f/(13f/16f), 0f);
-		} else {
-			GL11.glScaled(0.45, 0.75, 0.45);
-			GL11.glTranslated(0, 0.09, 0);
+		if(type == ItemRenderType.ENTITY) {
+            GL11.glRotatef(((((EntityItem)data[1]).age) / 20.0F + ((EntityItem)data[1]).hoverStart) * (180F / (float)Math.PI), 0.0F, 1.0F, 0.0F);
+			GL11.glScaled(0.063, 0.065, 1);
+			GL11.glTranslated(-8, -4, -0.02);
 		}
         GL11.glDisable(GL11.GL_LIGHTING);
         ResourceLocation resourcelocation = mc.renderEngine.func_130087_a(liquid.getFluid().getSpriteNumber());
@@ -128,7 +126,18 @@ public class FluidContainerRenderer implements IItemRenderer {
 
         GL11.glColor4f(f, f1, f2, 1.0F);
 
-        renderIcon(5, 2, liquid.getFluid().getIcon(), 6, 12, 0);
+        Icon icon = liquid.getFluid().getIcon();
+        if(icon != null) {
+            renderIcon(5, 2, icon, 6, 12, 0);
+            if(type == ItemRenderType.ENTITY) {
+        		GL11.glPopMatrix();
+        		GL11.glPushMatrix();
+                GL11.glRotatef(((((EntityItem)data[1]).age) / 20.0F + ((EntityItem)data[1]).hoverStart) * (180F / (float)Math.PI) + 180, 0.0F, 1.0F, 0.0F);
+    			GL11.glScaled(0.063, 0.065, 1);
+    			GL11.glTranslated(-8, -4, -0.042);
+                renderIcon(5, 2, icon, 6, 12, 0);
+    		}      	
+        }
         GL11.glEnable(GL11.GL_LIGHTING);
 
 		GL11.glPopMatrix();

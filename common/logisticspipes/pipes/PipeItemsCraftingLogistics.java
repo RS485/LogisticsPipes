@@ -711,7 +711,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	
 	// from PipeItemsCraftingLogistics
 	protected SimpleInventory _dummyInventory = new SimpleInventory(11, "Requested items", 127);
-	protected SimpleInventory _liquidInventory = new SimpleInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1);
+	protected SimpleInventory _liquidInventory = new SimpleInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
 	
 	@TileNetworkData(staticSize=ItemUpgrade.MAX_LIQUID_CRAFTER)
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];

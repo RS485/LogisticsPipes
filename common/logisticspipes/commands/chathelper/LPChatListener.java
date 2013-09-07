@@ -62,21 +62,24 @@ public class LPChatListener implements IChatListener {
 	
 	@Override
 	public Packet3Chat clientChat(NetHandler handler, Packet3Chat message) {
-		if(message != null && message.message != null && message.message.equals("%LPCLEARCHAT%")) {
-			clearChat();
-			message.message = null;
-		}
-		if(message != null && message.message != null && message.message.equals("%LPSTORESENDMESSAGE%")) {
-			storeSendMessages();
-			message.message = null;
-		}
-		if(message != null && message.message != null && message.message.equals("%LPRESTORESENDMESSAGE%")) {
-			restoreSendMessages();
-			message.message = null;
-		}
-		if(message != null && message.message != null && message.message.startsWith("%LPADDTOSENDMESSAGE%")) {
-			addSendMessages(message.message.substring(20));
-			message.message = null;
+		if(message != null && message.message != null) {
+			String realMessage = ChatMessageComponent.func_111078_c(message.message).func_111068_a(true);
+			if(realMessage.equals("%LPCLEARCHAT%")) {
+				clearChat();
+				message.message = null;
+			}
+			if(realMessage.equals("%LPSTORESENDMESSAGE%")) {
+				storeSendMessages();
+				message.message = null;
+			}
+			if(realMessage.equals("%LPRESTORESENDMESSAGE%")) {
+				restoreSendMessages();
+				message.message = null;
+			}
+			if(realMessage.startsWith("%LPADDTOSENDMESSAGE%")) {
+				addSendMessages(realMessage.substring(20));
+				message.message = null;
+			}
 		}
 		return message;
 	}

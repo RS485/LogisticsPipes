@@ -77,7 +77,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 	
 	//from PipeFluidSupplierMk2
-	private SimpleInventory dummyInventory = new SimpleInventory(1, "Fluid to keep stocked", 127);
+	private SimpleInventory dummyInventory = new SimpleInventory(1, "Fluid to keep stocked", 127, true);
 	private int amount = 0;
 	
 	private final Map<FluidIdentifier, Integer> _requestedItems = new HashMap<FluidIdentifier, Integer>();
@@ -100,7 +100,8 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			
 			//How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<FluidIdentifier, Integer>();
-			wantFluids.put(FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem()), amount);
+			FluidIdentifier fIdent = FluidIdentifier.get(dummyInventory.getIDStackInSlot(0).getItem());
+			wantFluids.put(fIdent, amount);
 
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<FluidIdentifier, Integer>();
@@ -145,12 +146,12 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 				boolean success = false;
 
 				if(_requestPartials) {
-					countToRequest = RequestTree.requestFluidPartial(need, countToRequest, (IRequestFluid) this.container, null);
+					countToRequest = RequestTree.requestFluidPartial(need, countToRequest, (IRequestFluid) this, null);
 					if(countToRequest > 0) {
 						success = true;
 					}
 				} else {
-					success = RequestTree.requestFluid(need, countToRequest, (IRequestFluid) this.container, null);
+					success = RequestTree.requestFluid(need, countToRequest, (IRequestFluid) this, null);
 				}
 				
 				if (success){

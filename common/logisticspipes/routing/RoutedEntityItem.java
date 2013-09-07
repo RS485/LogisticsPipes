@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -20,9 +21,10 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
@@ -30,10 +32,10 @@ import net.minecraftforge.common.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 import buildcraft.BuildCraftCore;
 import buildcraft.api.core.Position;
-import buildcraft.transport.TravelingItem;
 import buildcraft.core.proxy.CoreProxy;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TravelingItem;
 
 public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 
@@ -52,6 +54,14 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	TransportMode _transportMode = TransportMode.Unknown;
 	
 	List<Integer> jamlist = new ArrayList<Integer>();
+	
+	private InsertionHandler LP_INSERTIONHANDLER = new InsertionHandler() {
+		@Override
+		public boolean canInsertItem(TravelingItem item, IInventory inv) {
+			if(item.getItemStack() != null && item.getItemStack().getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance)item.getItemStack().getItem()).canExistInNormalInventory(item.getItemStack())) return false;
+			return true;
+		}
+	};
 	
 	public RoutedEntityItem(TravelingItem entityItem) {
 		super(entityItem.id);
@@ -87,6 +97,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 			_transportMode = handler.transportMode;
 			handler.writeToNBT(tags);
 		}
+		this.setInsetionHandler(LP_INSERTIONHANDLER);
 	}
 	
 	@Override

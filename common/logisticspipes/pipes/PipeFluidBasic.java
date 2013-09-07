@@ -24,7 +24,7 @@ import net.minecraftforge.fluids.FluidStack;
 
 public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 	
-	public SimpleInventory filterInv = new SimpleInventory(1, "Dummy", 1);
+	public SimpleInventory filterInv = new SimpleInventory(1, "Dummy", 1, true);
 	private PlayerCollectionList guiOpenedBy = new PlayerCollectionList();
 	
 	public PipeFluidBasic(int itemID) {

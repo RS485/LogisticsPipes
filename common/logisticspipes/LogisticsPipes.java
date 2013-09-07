@@ -79,6 +79,7 @@ import logisticspipes.utils.InventoryUtilFactory;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.launchwrapper.IClassTransformer;
 import net.minecraft.launchwrapper.LaunchClassLoader;
 import net.minecraftforge.client.MinecraftForgeClient;
 import net.minecraftforge.common.MinecraftForge;
@@ -129,8 +130,17 @@ public class LogisticsPipes {
 
 	public LogisticsPipes() {
 		LaunchClassLoader loader = (LaunchClassLoader)LogisticsPipes.class.getClassLoader();
-		loader.registerTransformer("logisticspipes.asm.LogisticsClassTransformer");
-		PacketHandler.intialize(); //To load PacketClasses after the ClassTransformer
+		boolean found = false;
+		for(IClassTransformer transformer:loader.getTransformers()) {
+			if(transformer.getClass().getName().equals("logisticspipes.asm.LogisticsClassTransformer")) {
+				found = true;
+				break;
+			}
+		}
+		if(!found) {
+			throw new RuntimeException("LogisticsPipes could not find its classtransformer. If you are running MC from an IDE make sure to copy the 'LogisticsPipes_dummy.jar' to your mods folder. If you are running MC normal please report this as a bug at 'https://github.com/RS485/LogisticsPipes-Dev/issues'.");
+		}
+		PacketHandler.intialize();
 	}
 	
 	@Instance("LogisticsPipes|Main")

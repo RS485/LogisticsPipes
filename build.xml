@@ -321,6 +321,11 @@
 			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
 			<zipfileset src="${download.dir}/gson-${gson.version}.jar"/>
 			<rule pattern="com.google.gson.**" result="logisticspipes.com.google.gson.@1"/>
+
+			<manifest>
+				<attribute name="FMLCorePlugin" value="logisticspipes.asm.LogisticsPipesCoreLoader"/>
+				<attribute name="FMLCorePluginContainsMod" value="true"/>
+			</manifest>
 		</jarjar>
 
 		<echo message="Packing finished"/>
@@ -346,6 +351,8 @@
 				<attribute name="Implementation-Vendor" value="RS485"/>
 				<attribute name="Implementation-Title" value="LogisticsPipes"/>
 				<attribute name="Implementation-Version" value="${lp.version.full}"/>
+				<attribute name="FMLCorePlugin" value="logisticspipes.asm.LogisticsPipesCoreLoader"/>
+				<attribute name="FMLCorePluginContainsMod" value="true"/>
 			</manifest>
 		</jarjar>
 

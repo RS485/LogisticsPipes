@@ -293,7 +293,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 
 	@Override
-	public boolean isExistent() {
+	public boolean isHUDExistent() {
 		return getWorld().getBlockTileEntity(xCoord, yCoord, zCoord) == this;
 	}
 	
@@ -376,5 +376,9 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	@Override
 	public PowerReceiver getPowerReceiver(ForgeDirection side) {
 		return powerFramework.getPowerReceiver();
+	}
+	@Override
+	public boolean isHUDInvalid() {
+		return this.isInvalid();
 	}
 }

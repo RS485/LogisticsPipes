@@ -107,12 +107,12 @@ public class LogisticsHUDRenderer {
 		for(IHeadUpDisplayBlockRendererProvider provider:providers) {
 			if(MainProxy.getDimensionForWorld(provider.getWorld()) == MainProxy.getDimensionForWorld(FMLClientHandler.instance().getClient().theWorld)) {
 				double dis = Math.hypot(provider.getX() - x + 0.5,Math.hypot(provider.getY() - y + 0.5, provider.getZ() - z + 0.5));
-				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isInvalid() && provider.isExistent()) {
+				if(dis < Configs.LOGISTICS_HUD_RENDER_DISTANCE && dis > 0.75 && !provider.isHUDInvalid() && provider.isHUDExistent()) {
 					newList.add(new Pair<Double,IHeadUpDisplayRendererProvider>(dis,provider));
 					if(!list.contains(provider)) {
 						provider.startWatching();
 					}
-				} else if(provider.isInvalid() || !provider.isExistent()) {
+				} else if(provider.isHUDInvalid() || !provider.isHUDExistent()) {
 					remove.add(provider);
 				}
 			}
@@ -222,7 +222,7 @@ public class LogisticsHUDRenderer {
 					double x = renderer.getX() + 0.5 - player.posX;
 					double y = renderer.getY() + 0.5 - player.posY;
 					double z = renderer.getZ() + 0.5 - player.posZ;
-					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isExistent()))) {
+					if(Math.hypot(x,Math.hypot(y, z)) < 0.75 || (renderer instanceof IHeadUpDisplayBlockRendererProvider && (((IHeadUpDisplayBlockRendererProvider)renderer).isHUDInvalid() || !((IHeadUpDisplayBlockRendererProvider)renderer).isHUDExistent()))) {
 						refreshList(player.posX,player.posY,player.posZ);
 				        GL11.glPopMatrix();
 						break;

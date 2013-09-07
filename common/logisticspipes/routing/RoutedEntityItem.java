@@ -55,7 +55,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	
 	List<Integer> jamlist = new ArrayList<Integer>();
 	
-	private InsertionHandler LP_INSERTIONHANDLER = new InsertionHandler() {
+	private static InsertionHandler LP_INSERTIONHANDLER = new InsertionHandler() {
 		@Override
 		public boolean canInsertItem(TravelingItem item, IInventory inv) {
 			if(item.getItemStack() != null && item.getItemStack().getItem() instanceof IItemAdvancedExistance && !((IItemAdvancedExistance)item.getItemStack().getItem()).canExistInNormalInventory(item.getItemStack())) return false;

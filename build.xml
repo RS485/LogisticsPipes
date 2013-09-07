@@ -269,6 +269,9 @@
 				<replace file="${minecraftsrc.dir}/logisticspipes/LogisticsPipes.java" token="%------------CERTIFICATE-SUM-----------%" value='*/ certificateFingerprint="${fingerprint}", /*'/>
 			</then>
 		</if>
+
+		<!-- Copy dummy jar for MC in mcp -->
+		<copy todir="${mcp.dir}/jars/mods" file="${src.dir}/LogisticsPipes_dummy.jar"/>
 	</target>
 
 

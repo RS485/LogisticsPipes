@@ -36,7 +36,7 @@
 	<property name="forge.version"        value="9.10.0.837"/>
 	<property name="bc.version"           value="4.0.1"/>
 	<property name="forestry.version"     value="2.3.0.0"/>
-	<property name="ic2.version"          value="1.118.401-lf"/>
+	<property name="ic2.version"          value="2.0.143-experimental"/>
 	<property name="cc.version"           value="1.56"/>
 	<property name="thaumcraft.version.api" value="0.0.5"/>
 	<property name="thaumcraft.version.mod" value="3.0.4b"/>

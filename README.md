@@ -44,4 +44,4 @@ _Note: Developer builds are not always stable._
    * IndustrialCraft 2 API
    * Thaumcraft API
    * Thermal Expansion API
-5. Copy the LogisitcsPipes_dummy.jar into your projects "mods" folder so that the ClassTransformer can get loaded.
+5. Copy the LogisticsPipes_dummy.jar into your projects "mods" folder so that the ClassTransformer can get loaded.

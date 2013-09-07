@@ -327,7 +327,7 @@
 
 			<manifest>
 				<attribute name="FMLCorePlugin" value="logisticspipes.asm.LogisticsPipesCoreLoader"/>
-				<attribute name="FMLCorePluginContainsMod" value="true"/>
+				<attribute name="FMLCorePluginContainsFMLMod" value="true"/>
 			</manifest>
 		</jarjar>
 
@@ -355,7 +355,7 @@
 				<attribute name="Implementation-Title" value="LogisticsPipes"/>
 				<attribute name="Implementation-Version" value="${lp.version.full}"/>
 				<attribute name="FMLCorePlugin" value="logisticspipes.asm.LogisticsPipesCoreLoader"/>
-				<attribute name="FMLCorePluginContainsMod" value="true"/>
+				<attribute name="FMLCorePluginContainsFMLMod" value="true"/>
 			</manifest>
 		</jarjar>
 

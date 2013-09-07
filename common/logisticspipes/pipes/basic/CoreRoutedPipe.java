@@ -985,8 +985,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(stillNeedReplace) {
 			return null;
 		}
-		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>(this.getRouter().getPowerProvider());
-		addAll(list, getRoutedPowerProviders(this.getRouter(), new BitSet(ServerRouter.getBiggestSimpleID()+1), new ArrayList<IFilter>()));
+		IRouter thisrouter = this.getRouter();
+		if(thisrouter.getFilteringRouter().isEmpty()) {
+			return thisrouter.getPowerProvider();
+		}
+		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>(thisrouter.getPowerProvider());
+		addAll(list, getRoutedPowerProviders(thisrouter, new BitSet(ServerRouter.getBiggestSimpleID()+1), new ArrayList<IFilter>()));
 		return list;
 	}
 	

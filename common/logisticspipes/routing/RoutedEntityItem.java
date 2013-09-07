@@ -113,23 +113,31 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 				return null;
 			}
 
-			//FIXME: is this still needed?
-/*			if(container != null) {
+			if(container != null) {
 				//detect items spawning in the center of pipes and move them to the exit side
 				if(xCoord == container.xCoord + 0.5 && yCoord == container.yCoord + 0.25 && zCoord == container.zCoord + 0.5) {
-					position.orientation = dir;
 					//N, W and down need to move a tiny bit beyond the block end because vanilla uses floor(coord) to determine block x/y/z
 					if(dir == ForgeDirection.DOWN) {
-						position.moveForwards(0.251);
+						//position.moveForwards(0.251);
+						yCoord -= 0.251;
 					} else  if(dir == ForgeDirection.UP) {
-						position.moveForwards(0.75);
-					} else if(dir == ForgeDirection.NORTH || dir == ForgeDirection.WEST) {
-						position.moveForwards(0.501);
-					} else {
-						position.moveForwards(0.5);
+						//position.moveForwards(0.75);
+						yCoord += 0.75;
+					} else if(dir == ForgeDirection.NORTH) {
+						//position.moveForwards(0.501);
+						zCoord -= 0.501;
+					} else if(dir == ForgeDirection.WEST) {
+						//position.moveForwards(0.501);
+						xCoord -= 0.501;
+					} else if(dir == ForgeDirection.SOUTH) {
+						//position.moveForwards(0.5);
+						zCoord += 0.5;
+					} else if(dir == ForgeDirection.EAST) {
+						//position.moveForwards(0.5);
+						xCoord += 0.5;
 					}
 				}
-			}*/
+			}
 
 			Position motion = new Position(0, 0, 0, dir);
 			motion.moveForwards(0.1 + getSpeed() * 2F);

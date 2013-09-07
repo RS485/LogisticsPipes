@@ -55,7 +55,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	
 	private int internalStorage = 0;
   	private int lastUpdateStorage = 0;
-  	private int internalBuffer = 0;
+  	private double internalBuffer = 0;
 	
   	private boolean addedToEnergyNet = false;
 	
@@ -306,30 +306,24 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	@ModDependentMethod(modId="IC2")
-	public boolean acceptsEnergyFrom(TileEntity emitter, Direction direction) {
+	public boolean acceptsEnergyFrom(TileEntity tile, ForgeDirection dir) {
 		return true;
 	}
 
 	@Override
 	@ModDependentMethod(modId="IC2")
-	public boolean isAddedToEnergyNet() {
-		return addedToEnergyNet;
-	}
-
-	@Override
-	@ModDependentMethod(modId="IC2")
-	public int demandsEnergy() {
+	public double demandedEnergyUnits() {
 		if(!addedToEnergyNet) return 0;
 		if(internalBuffer > 0 && freeSpace() > 0) {
-			internalBuffer = injectEnergy(null, internalBuffer);
+			internalBuffer = injectEnergyUnits(null, internalBuffer);
 		}
 		return freeSpace();
 	}
 
 	@Override
 	@ModDependentMethod(modId="IC2")
-	public int injectEnergy(Direction directionFrom, int amount) {
-		int addAmount = Math.min(amount, freeSpace() / IC2Multiplier);
+	public double injectEnergyUnits(ForgeDirection directionFrom, double amount) {
+		int addAmount = Math.min((int)Math.floor(amount), freeSpace() / IC2Multiplier);
 		if(freeSpace() > 0 && addAmount == 0) {
 			addAmount = 1;
 		}

@@ -8,6 +8,7 @@ import ic2.api.item.Items;
 import ic2.api.recipe.Recipes;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -201,7 +202,9 @@ public class IC2Proxy implements IIC2Proxy {
 	*/
 	@Override
 	public void registerToEneryNet(TileEntity tile) {
-		MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent((IEnergyTile) tile));
+		if(MainProxy.isServer(tile.worldObj)) {
+			MinecraftForge.EVENT_BUS.post(new EnergyTileLoadEvent((IEnergyTile) tile));
+		}
 	}
 
 	/**
@@ -210,7 +213,9 @@ public class IC2Proxy implements IIC2Proxy {
 	*/
 	@Override
 	public void unregisterToEneryNet(TileEntity tile) {
-		MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile) tile));
+		if(MainProxy.isServer(tile.worldObj)) {
+			MinecraftForge.EVENT_BUS.post(new EnergyTileUnloadEvent((IEnergyTile) tile));
+		}
 	}
 
 	/**

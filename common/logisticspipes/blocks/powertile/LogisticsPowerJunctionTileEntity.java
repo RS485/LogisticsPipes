@@ -96,9 +96,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	}
 	
 	public void updateClients() {
-//TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), guiListener);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), guiListener);
-//TODO 	MainProxy.sendToPlayerList(new PacketPipeInteger(NetworkConstants.POWER_JUNCTION_POWER_LEVEL, xCoord, yCoord, zCoord, internalStorage).getPacket(), watcherList);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(PowerJunctionLevel.class).setInteger(internalStorage).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord), watcherList);
 		lastUpdateStorage = internalStorage;
 	}
@@ -271,13 +269,11 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 
 	@Override
 	public void startWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_START_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.HUD_STOP_WATCHING_BLOCK, xCoord, yCoord, zCoord).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopBlockWatchingPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 

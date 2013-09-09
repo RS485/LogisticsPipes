@@ -63,7 +63,7 @@ public class LPChatListener implements IChatListener {
 	@Override
 	public Packet3Chat clientChat(NetHandler handler, Packet3Chat message) {
 		if(message != null && message.message != null) {
-			String realMessage = ChatMessageComponent.createFromText(message.message).toStringWithFormatting(true);
+			String realMessage = ChatMessageComponent.createFromJson(message.message).toStringWithFormatting(true);
 			if(realMessage.equals("%LPCLEARCHAT%")) {
 				clearChat();
 				message.message = null;

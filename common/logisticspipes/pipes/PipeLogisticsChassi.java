@@ -464,7 +464,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public boolean handleClick(World world, int x, int y, int z, EntityPlayer entityplayer, SecuritySettings settings) {
 		if (entityplayer.getCurrentEquippedItem() == null) return false;
 
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, x, y, z) && entityplayer.isSneaking()) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && entityplayer.isSneaking() && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, x, y, z)) {
 			if(MainProxy.isServer(world)) {
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
@@ -472,6 +472,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 					entityplayer.sendChatToPlayer("Permission denied");
 				}
 			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, x, y, z);
 			return true;
 		}
 		

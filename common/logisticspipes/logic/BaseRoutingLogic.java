@@ -91,8 +91,9 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, worldObj, xCoord, yCoord, zCoord);
 			}
 			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, xCoord, yCoord, zCoord) && (settings == null || settings.openGui)) {
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, xCoord, yCoord, zCoord)) {
 			onWrenchClicked(entityplayer);
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, xCoord, yCoord, zCoord);
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {

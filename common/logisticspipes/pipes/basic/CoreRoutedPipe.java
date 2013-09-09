@@ -675,10 +675,12 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 		}
 		if(handleClick(world, i, j, k, entityplayer, settings)) return true;
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, i, j, k) && !(entityplayer.isSneaking())) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking() && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, i, j, k))) {
 			if(wrenchClicked(world, i, j, k, entityplayer, settings)) {
+				SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, i, j, k);
 				return true;
 			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, i, j, k);
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(world)) {

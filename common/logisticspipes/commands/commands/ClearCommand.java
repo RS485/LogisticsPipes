@@ -25,11 +25,11 @@ public class ClearCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		if(args.length <= 0 || !args[0].equalsIgnoreCase("all")) {
-			sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("%LPSTORESENDMESSAGE%"));
-			sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("%LPCLEARCHAT%"));
-			sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("%LPRESTORESENDMESSAGE%"));
+			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPSTORESENDMESSAGE%"));
+			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPCLEARCHAT%"));
+			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPRESTORESENDMESSAGE%"));
 		} else {
-			sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("%LPCLEARCHAT%"));
+			sender.sendChatToPlayer(ChatMessageComponent.createFromText("%LPCLEARCHAT%"));
 		}
 	}
 }

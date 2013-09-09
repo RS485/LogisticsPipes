@@ -260,7 +260,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			int graphic = ((int) (System.currentTimeMillis() / 250) % 5);
 			// GL11.glBindTexture(GL11.GL_TEXTURE_2D,
 			// this.mc.renderEngine.getTexture());
-			mc.renderEngine.func_110577_a(TEXTURE);
+			mc.renderEngine.bindTexture(TEXTURE);
 			Tessellator tesselator = Tessellator.instance;
 			tesselator.startDrawingQuads();
 			int xPosition = (xSize / 2) - 50;

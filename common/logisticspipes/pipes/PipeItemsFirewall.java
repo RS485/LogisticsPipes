@@ -57,7 +57,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 //TODO 			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket(), (Player) entityplayer);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 		}
 		return true;

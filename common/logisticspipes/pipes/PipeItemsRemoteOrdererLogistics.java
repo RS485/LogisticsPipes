@@ -31,9 +31,9 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 				if (settings == null || settings.openRequest) {
 					ItemStack orderer = entityplayer.getCurrentEquippedItem();
 					RemoteOrderer.connectToPipe(orderer, this);
-					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Connected to pipe"));
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Connected to pipe"));
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 				}
 			}
 			return true;

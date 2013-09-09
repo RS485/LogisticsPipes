@@ -41,7 +41,7 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float var1, int var2, int var3) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.func_110577_a(TEXTURE);
+		mc.renderEngine.bindTexture(TEXTURE);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);
@@ -56,7 +56,7 @@ public class GuiSolderingStation extends KraphtBaseGuiScreen {
 			iisl.add(iis);
 			BasicGuiHelper.renderItemIdentifierStackListIntoGui(iisl, null, 0, guiLeft + 141, guiTop + 47, 1, 1, 18, 18, mc, false, false);
 		}
-		mc.renderEngine.func_110577_a(TEXTURE);
+		mc.renderEngine.bindTexture(TEXTURE);
 		GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
 		for(int a=0;a<3;a++) {
 			for(int b=0;b<3;b++) {

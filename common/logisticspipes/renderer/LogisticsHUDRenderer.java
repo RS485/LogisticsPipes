@@ -187,7 +187,7 @@ public class LogisticsHUDRenderer {
 	        int width = res.getScaledWidth();
 	        int height = res.getScaledHeight();
 	        if (GuiIngameForge.renderCrosshairs && mc.ingameGUI != null) {
-		        mc.renderEngine.func_110577_a(TEXTURE);
+		        mc.renderEngine.bindTexture(TEXTURE);
 		        GL11.glColor4d(0.0D, 0.0D, 0.0D, 1.0D);
 		        GL11.glDisable(GL11.GL_BLEND);
 		        mc.ingameGUI.drawTexturedModalRect(width / 2 - 7, height / 2 - 7, 0, 0, 16, 16);

@@ -39,7 +39,7 @@ public class RequestHandler {
 	
 	public static void request(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe) {
 		if(!pipe.useEnergy(5)) {
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
 		RequestTree.request(ItemIdentifier.get(stack.getItem().itemID, stack.getItem().itemDamage, stack.getItem().tag).makeStack(stack.stackSize), pipe
@@ -137,7 +137,7 @@ public class RequestHandler {
 
 	public static void requestList(final EntityPlayer player, final List<ItemIdentifierStack> list, CoreRoutedPipe pipe) {
 		if(!pipe.useEnergy(5)) {
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
 		RequestTree.request(list, pipe, new RequestLog() {
@@ -166,7 +166,7 @@ public class RequestHandler {
 
 	public static void requestMacrolist(NBTTagCompound itemlist, CoreRoutedPipe requester, final EntityPlayer player) {
 		if(!requester.useEnergy(5)) {
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
 		NBTTagList list = itemlist.getTagList("inventar");
@@ -249,7 +249,7 @@ public class RequestHandler {
 
 	public static void requestFluid(final EntityPlayer player, final ItemIdentifierStack stack, CoreRoutedPipe pipe, IRequestFluid requester) {
 		if(!pipe.useEnergy(10)) {
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return;
 		}
 		

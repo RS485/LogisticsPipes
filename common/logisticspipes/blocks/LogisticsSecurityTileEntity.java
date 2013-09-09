@@ -197,7 +197,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			break;
 		case 2: //+
 			if(!useEnergy(10)) {
-				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+				player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 				return;
 			}
 			if(inv.getStackInSlot(0) == null) {
@@ -217,7 +217,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 			break;
 		case 3: //++
 			if(!useEnergy(640)) {
-				player.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+				player.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 				return;
 			}
 			ItemStack stack = new ItemStack(LogisticsPipes.LogisticsItemCard, 64, LogisticsItemCard.SEC_CARD);
@@ -252,7 +252,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 	public SecuritySettings getSecuritySettingsForPlayer(EntityPlayer entityplayer, boolean usePower) {
 		if(byPassed.contains(entityplayer)) return allowAll;
 		if(usePower && !useEnergy(10)) {
-			entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("No Energy"));
+			entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("No Energy"));
 			return new SecuritySettings("No Energy");
 		}
 		SecuritySettings setting = settingsList.get(entityplayer.username);

@@ -13,14 +13,14 @@
     "logoFile": "",
     "screenshots": [],
     "requiredMods": [
-        "Forge",
+        "Forge@[9.10.1.850,)",
         "BuildCraft|Core",
         "BuildCraft|Transport",
         "BuildCraft|Builders",
         "BuildCraft|Silicon"
     ],
     "dependencies": [
-        "Forge",
+        "Forge@[9.10.1.850,)",
         "BuildCraft|Core",
         "BuildCraft|Transport",
         "BuildCraft|Builders",

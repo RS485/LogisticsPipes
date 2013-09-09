@@ -47,7 +47,7 @@ public class PipeFluidBasic extends FluidRoutedPipe implements IFluidSink {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Fluid_Basic_ID, getWorld(), getX(), getY(), getZ());
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 		}
 		return true;

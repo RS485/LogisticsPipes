@@ -415,7 +415,7 @@ public class BasicGuiHelper {
 
     public static void drawSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.func_110577_a(SLOT);
+		mc.renderEngine.bindTexture(SLOT);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -431,7 +431,7 @@ public class BasicGuiHelper {
 
     public static void drawBigSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.func_110577_a(BIGSLOT);
+		mc.renderEngine.bindTexture(BIGSLOT);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -446,7 +446,7 @@ public class BasicGuiHelper {
 	
     public static void drawSmallSlotBackground(Minecraft mc, int x, int y) {
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.func_110577_a(SMALLSLOT);
+		mc.renderEngine.bindTexture(SMALLSLOT);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -463,7 +463,7 @@ public class BasicGuiHelper {
     public static void renderIconAt(Minecraft mc, int x, int y, float zLevel, Icon icon) {
     	if(icon == null) return;
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-    	mc.renderEngine.func_110577_a(ITEMS);
+    	mc.renderEngine.bindTexture(ITEMS);
 		
 		Tessellator var9 = Tessellator.instance;
         var9.startDrawingQuads();
@@ -476,7 +476,7 @@ public class BasicGuiHelper {
     
     public static void renderForestryBeeAt(Minecraft mc, int x, int y, float zLevel, String id) {
     	GL11.glDisable(GL11.GL_LIGHTING);
-    	mc.renderEngine.func_110577_a(ITEMS);
+    	mc.renderEngine.bindTexture(ITEMS);
     	
 		for (int i = 0; i < SimpleServiceLocator.forestryProxy.getRenderPassesForAlleleId(id); i++) {
 			Icon icon = SimpleServiceLocator.forestryProxy.getIconIndexForAlleleId(id, i);
@@ -511,7 +511,7 @@ public class BasicGuiHelper {
 		if(flag) {
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 		}
-		mc.renderEngine.func_110577_a(BACKGROUND);
+		mc.renderEngine.bindTexture(BACKGROUND);
 		
 		if(displayTop) {
 			//Top Side

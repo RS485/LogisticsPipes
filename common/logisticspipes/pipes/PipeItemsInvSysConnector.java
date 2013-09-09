@@ -208,7 +208,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_Inv_Sys_Connector_ID, getWorld(), getX(), getY(), getZ());
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 		}
 		return true;

@@ -107,7 +107,7 @@ import cpw.mods.fml.relauncher.Side;
 		name = "Logistics Pipes",
 		version = "%VERSION%",
 		/* %------------CERTIFICATE-SUM-----------% */
-		dependencies = "required-after:Forge@[6.5.0.0,);" +
+		dependencies = "required-after:Forge@[9.10.1.850,);" +
 				"required-after:BuildCraft|Core;" +
 				"required-after:BuildCraft|Transport;" +
 				"required-after:BuildCraft|Builders;" +

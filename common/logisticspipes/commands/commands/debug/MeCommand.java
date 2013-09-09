@@ -27,6 +27,6 @@ public class MeCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		DebugGuiTickHandler.instance().startWatchingOf(sender, (Player)sender);
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Starting SelfDebuging"));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Starting SelfDebuging"));
 	}
 }

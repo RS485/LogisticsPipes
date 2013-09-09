@@ -67,7 +67,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 					if(((LogisticsTileGenericPipe)tile).pipe instanceof CoreRoutedPipe) {
 						if(!((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).canBeDestroyedByPlayer(event.entityPlayer)) {
 							event.setCanceled(true);
-							event.entityPlayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission Denied"));
+							event.entityPlayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission Denied"));
 							((LogisticsTileGenericPipe)tile).scheduleNeighborChange();
 							event.entityPlayer.worldObj.markBlockForUpdate(tile.xCoord, tile.yCoord, tile.zCoord);
 							((CoreRoutedPipe)((LogisticsTileGenericPipe)tile).pipe).delayTo = System.currentTimeMillis() + 200;
@@ -130,8 +130,8 @@ public class LogisticsEventListener implements IPlayerTracker {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
 		}
 		if(VersionChecker.hasNewVersion) {
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
-			player.sendChatToPlayer(ChatMessageComponent.func_111066_d("Use \"/logisticspipes changelog\" to see a changelog."));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
+			player.sendChatToPlayer(ChatMessageComponent.createFromText("Use \"/logisticspipes changelog\" to see a changelog."));
 		}
 	}
 

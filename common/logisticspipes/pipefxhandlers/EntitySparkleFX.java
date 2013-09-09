@@ -121,7 +121,7 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDepthMask(false);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, this.blendmode);
-        Minecraft.getMinecraft().renderEngine.func_110577_a(TEXTURE);
+        Minecraft.getMinecraft().renderEngine.bindTexture(TEXTURE);
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 0.75F);
         int var8 = this.particle + this.particleAge / this.multiplier;
         float var9 = var8 % 8 / 8.0F;
@@ -144,7 +144,7 @@ public class EntitySparkleFX extends EntityFX
         GL11.glDisable(GL11.GL_BLEND);
         GL11.glDepthMask(true);
         GL11.glPopMatrix();
-        Minecraft.getMinecraft().renderEngine.func_110577_a(field_110737_b);
+        Minecraft.getMinecraft().renderEngine.bindTexture(field_110737_b);
         var1.startDrawingQuads();
     }
 

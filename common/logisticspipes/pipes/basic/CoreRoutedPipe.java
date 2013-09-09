@@ -765,7 +765,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				if (settings == null || settings.openUpgrades) {
 					getUpgradeManager().openGui(entityplayer, this);
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 				}
 			}
 			return true;
@@ -803,12 +803,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			return true;
 		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 			return true;
 		} else if(entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsNetworkMonitior) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 			return true;
 		}
@@ -825,7 +825,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				if (settings == null || settings.openGui) {
 					entityplayer.openGui(LogisticsPipes.instance, ((LogisticsGuiModule)getLogisticsModule()).getGuiHandlerID(), getWorld(), getX(), getY(), getZ());
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 				}
 			}
 			return true;

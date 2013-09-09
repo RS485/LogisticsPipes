@@ -116,8 +116,8 @@ public class FluidContainerRenderer implements IItemRenderer {
 			GL11.glTranslated(-8, -4, -0.02);
 		}
         GL11.glDisable(GL11.GL_LIGHTING);
-        ResourceLocation resourcelocation = mc.renderEngine.func_130087_a(liquid.getFluid().getSpriteNumber());
-        mc.renderEngine.func_110577_a(resourcelocation);
+        ResourceLocation resourcelocation = mc.renderEngine.getResourceLocation(liquid.getFluid().getSpriteNumber());
+        mc.renderEngine.bindTexture(resourcelocation);
 
         int i1 = liquid.getFluid().getColor();
         float f = (float)(i1 >> 16 & 255) / 255.0F;

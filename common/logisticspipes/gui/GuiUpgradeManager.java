@@ -62,7 +62,7 @@ public class GuiUpgradeManager extends KraphtBaseGuiScreen {
 				oldSlot.yDisplayPosition = newSlot.yDisplayPosition;
 			}
 		}
-		mc.renderEngine.func_110577_a(TEXTURE);
+		mc.renderEngine.bindTexture(TEXTURE);
 		if(!upgrade.hasCombinedSneakyUpgrade()) {
 			drawTexturedModalRect(guiLeft, guiTop, 0, 0, xSize, ySize);
 		} else {

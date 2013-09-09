@@ -27,7 +27,7 @@ public class TransferNamesCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Requesting Transfer"));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Requesting Transfer"));
     	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(RequestUpdateNamesPacket.class), (Player)sender);
     	MainProxy.proxy.sendNameUpdateRequest((Player)sender);
 	}

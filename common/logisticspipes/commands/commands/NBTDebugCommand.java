@@ -27,7 +27,7 @@ public class NBTDebugCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Trying to Enable NBTDebug"));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Trying to Enable NBTDebug"));
     	MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ActivatNBTDebug.class), (Player)sender);
 	}
 }

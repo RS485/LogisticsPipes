@@ -24,10 +24,10 @@ public class ChangelogCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-    	sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("The newest version is #" + VersionChecker.newVersion + "."));
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Changelog:"));
+    	sender.sendChatToPlayer(ChatMessageComponent.createFromText("The newest version is #" + VersionChecker.newVersion + "."));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Changelog:"));
     	for(String msg:VersionChecker.changeLog) {
-    		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(msg));
+    		sender.sendChatToPlayer(ChatMessageComponent.createFromText(msg));
     	}
 	}
 }

@@ -26,6 +26,6 @@ public class DumpCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		Watchdog.dump(false, false, true);
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Dump Created"));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Dump Created"));
 	}
 }

@@ -31,6 +31,6 @@ public class WatchCommand implements ICommandHandler {
 		LogisticsPipes.WATCHDOG = true;
 		Configs.WATCHDOG_CLIENT = true;
 		Configs.WATCHDOG_SERVER = true;
-    	sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Starting Watchdog"));
+    	sender.sendChatToPlayer(ChatMessageComponent.createFromText("Starting Watchdog"));
 	}
 }

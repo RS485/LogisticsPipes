@@ -26,10 +26,10 @@ public class VersionCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LogisticsPipes.MCVersion)));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText(String.format("LogisticsPipes %s for Minecraft %s.", LogisticsPipes.class.getAnnotation(Mod.class).version(), LogisticsPipes.MCVersion)));
     	if(VersionChecker.hasNewVersion) {
-    		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
-    		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Use \"/logisticspipes changelog\" to see a changelog."));
+    		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
+    		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Use \"/logisticspipes changelog\" to see a changelog."));
         }
 	}
 }

@@ -60,7 +60,7 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {	
 		GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-		mc.renderEngine.func_110577_a(SUPPLIER);
+		mc.renderEngine.bindTexture(SUPPLIER);
 		int j = guiLeft;
 		int k = guiTop;
 		drawTexturedModalRect(j, k, 0, 0, xSize, ySize);

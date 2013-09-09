@@ -67,7 +67,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 			if (settings == null || settings.openRequest) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 		}
 		return true;

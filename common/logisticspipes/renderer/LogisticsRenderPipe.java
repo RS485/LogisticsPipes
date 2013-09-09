@@ -170,7 +170,7 @@ public class LogisticsRenderPipe extends RenderPipe {
         GL11.glTranslatef(0.0F, -0.3125F, -0.31F);
         GL11.glRotatef(180, 0.0f, 1.0f, 0.0f);
         this.modelSign.signStick.showModel = false;
-		Minecraft.getMinecraft().renderEngine.func_110577_a(SIGN);
+		Minecraft.getMinecraft().renderEngine.bindTexture(SIGN);
 
         GL11.glPushMatrix();
         GL11.glScalef(var10, -var10, -var10);
@@ -198,7 +198,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 	        	
 		        IItemRenderer customRenderer = MinecraftForgeClient.getItemRenderer(itemstack, ItemRenderType.INVENTORY);
 		        
-		        Minecraft.getMinecraft().renderEngine.func_110577_a(itemstack.getItemSpriteNumber() == 0 ? BLOCKS : ITEMS);
+		        Minecraft.getMinecraft().renderEngine.bindTexture(itemstack.getItemSpriteNumber() == 0 ? BLOCKS : ITEMS);
 
 				GL11.glPushMatrix();
 				
@@ -422,7 +422,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 						break;
 					default:
 				}
-				func_110628_a(TextureMap.field_110575_b);
+				bindTexture(TextureMap.locationBlocksTexture);
 				FluidRenderer.setColorForFluidStack(fluidStack);
 				GL11.glCallList(list);
 				GL11.glPopMatrix();
@@ -438,7 +438,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 				//XXX int stage = (int) ((float) fluidStack.amount / (float) (trans.getCapacity()) * (LIQUID_STAGES - 1));
 				int stage = (int) ((float) fluidStack.amount / (float) (trans.getInnerCapacity()) * (LIQUID_STAGES - 1));
 
-				func_110628_a(TextureMap.field_110575_b);
+				bindTexture(TextureMap.locationBlocksTexture);
 				FluidRenderer.setColorForFluidStack(fluidStack);
 				
 				if (above) {

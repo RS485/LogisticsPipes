@@ -88,7 +88,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 	public void renderButton(boolean hover, boolean clicked) {
 		Minecraft minecraft = FMLClientHandler.instance().getClient();
         //GL11.glBindTexture(3553 /*GL_TEXTURE_2D*/, 
-        minecraft.renderEngine.func_110577_a(GUI); //TODO: check this change
+        minecraft.renderEngine.bindTexture(GUI); //TODO: check this change
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
         int k = !buttonEnabled() ? 0 : hover ? 2 : 1;
         
@@ -113,7 +113,7 @@ public abstract class BasicHUDButton implements IHUDButton {
 			GL11.glTranslatef(0.0F, 0.0F, 0.02F);
 		}
 		GL11.glTranslatef(0.0F, 0.0F, 0.001F);
-		minecraft.renderEngine.func_110577_a(ITEMS);
+		minecraft.renderEngine.bindTexture(ITEMS);
 	}
 
 	@Override

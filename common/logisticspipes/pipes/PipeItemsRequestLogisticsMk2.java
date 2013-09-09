@@ -31,7 +31,7 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 			if(settings == null || settings.openGui) {
 				openGui(entityplayer);
 			} else {
-				entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 			}
 		}
 		return true;

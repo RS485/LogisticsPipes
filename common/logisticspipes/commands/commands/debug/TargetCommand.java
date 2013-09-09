@@ -29,6 +29,6 @@ public class TargetCommand implements ICommandHandler {
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DebugAskForTarget.class), (Player) sender);
-		sender.sendChatToPlayer(ChatMessageComponent.func_111066_d("Asking for Target."));
+		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Asking for Target."));
 	}
 }

@@ -470,7 +470,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					((PipeLogisticsChassi)this.container.pipe).nextOrientation();
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 				}
 			}
 			return true;
@@ -481,7 +481,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				if (settings == null || settings.openGui) {
 					return tryInsertingModule(entityplayer);
 				} else {
-					entityplayer.sendChatToPlayer(ChatMessageComponent.func_111066_d("Permission denied"));
+					entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
 				}
 			}
 			return true;

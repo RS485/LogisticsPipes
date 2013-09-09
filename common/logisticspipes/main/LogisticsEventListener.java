@@ -2,11 +2,15 @@ package logisticspipes.main;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.GuiReopenPacket;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
@@ -14,12 +18,16 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatMessageComponent;
 import net.minecraft.world.ChunkCoordIntPair;
+import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -28,6 +36,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
+import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.IPlayerTracker;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -143,4 +152,41 @@ public class LogisticsEventListener implements IPlayerTracker {
 
 	@Override
 	public void onPlayerRespawn(EntityPlayer player) {}
+
+	@AllArgsConstructor
+	private static class GuiEntry {
+		@Getter
+		private final int xCoord;
+		@Getter
+		private final int yCoord;
+		@Getter
+		private final int zCoord;
+		@Getter
+		private final int guiID;
+		@Getter @Setter
+		private boolean isActive;
+	}
+	
+	private static Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
+
+	//Handle GuiRepoen
+	@ForgeSubscribe
+	public void onGuiOpen(GuiOpenEvent event) {
+		if(!guiPos.isEmpty()) {
+			if(event.gui == null) {
+				GuiEntry part = guiPos.peek();
+				if(part.isActive()) {
+					part = guiPos.poll();
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
+				}
+			} else {
+				GuiEntry part = guiPos.peek();
+				part.setActive(true);
+			}
+		}
+	}
+
+	public static void addGuiToReopen(int xCoord, int yCoord, int zCoord, int guiID) {
+		guiPos.add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
+	}
 }

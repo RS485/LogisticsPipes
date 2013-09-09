@@ -9,9 +9,9 @@
 package logisticspipes.gui;
 
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
+import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
-import logisticspipes.ticks.RenderTickHandler;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
@@ -188,7 +188,7 @@ public class GuiCraftingPipe extends GuiContainer implements IGuiIDHandlerProvid
 			return;
 		case 4:
 			_pipe.openAttachedGui(_player);
-			RenderTickHandler.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), getGuiID());
+			LogisticsEventListener.addGuiToReopen(_pipe.getX(), _pipe.getY(), _pipe.getZ(), getGuiID());
 			return;
 		case 20:
 			_pipe.priorityUp(_player);

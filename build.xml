@@ -44,7 +44,6 @@
 	<property name="lombok.version"       value="0.11.8"/>
 	<property name="jarjar.version"       value="1.4"/>
 	<property name="guava.version"        value="15.0-SNAPSHOT"/>
-	<property name="gson.version"         value="2.2.4"/>
 	<property name="lp.version"           value="0.7.4"/>
 
 	<!-- Targets -->
@@ -65,7 +64,6 @@
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}guava-${guava.version}.jar" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}gson-${gson.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}lombok-${lombok.version}.jar" dest="${download.dir}" usetimestamp="True"/>
 
 		<echo message="Download finished"/>
@@ -154,8 +152,7 @@
 		<echo message="Unpacking finished"/>
 
 		<copy file="${download.dir}/lombok-${lombok.version}.jar" todir="${mcp.dir}/lib"/>
-		<copy file="${download.dir}/gson-${gson.version}.jar" todir="${mcp.dir}/lib"/>
-
+		
 		<!-- Copy BC source -->
 		<copy todir="${minecraftsrc.dir}">
 			<fileset dir="${buildcraft.dir}/common">
@@ -322,8 +319,6 @@
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
 			<zipfileset src="${download.dir}/guava-${guava.version}.jar"/>
 			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
-			<zipfileset src="${download.dir}/gson-${gson.version}.jar"/>
-			<rule pattern="com.google.gson.**" result="logisticspipes.com.google.gson.@1"/>
 
 			<manifest>
 				<attribute name="FMLCorePlugin" value="logisticspipes.asm.LogisticsPipesCoreLoader"/>
@@ -346,8 +341,6 @@
 		<jarjar destfile="${jar.dir}/LogisticsPipes-MC${mc.version}-${lp.version.full}.jar" basedir="${classes.dir}/client">
 			<zipfileset src="${download.dir}/guava-${guava.version}.jar"/>
 			<rule pattern="com.google.common.**" result="logisticspipes.com.google.common.@1"/>
-			<zipfileset src="${download.dir}/gson-${gson.version}.jar"/>
-			<rule pattern="com.google.gson.**" result="logisticspipes.com.google.gson.@1"/>
 
 			<manifest>
 				<attribute name="Built-By" value="RS485-Jenkins"/>

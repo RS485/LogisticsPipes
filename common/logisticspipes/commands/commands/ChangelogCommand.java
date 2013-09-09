@@ -1,9 +1,9 @@
 package logisticspipes.commands.commands;
 
 import logisticspipes.commands.abstracts.ICommandHandler;
+import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.ticks.VersionChecker;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.util.ChatMessageComponent;
 
 public class ChangelogCommand implements ICommandHandler {
 	
@@ -24,10 +24,10 @@ public class ChangelogCommand implements ICommandHandler {
 	
 	@Override
 	public void executeCommand(ICommandSender sender, String[] args) {
-    	sender.sendChatToPlayer(ChatMessageComponent.createFromText("The newest version is #" + VersionChecker.newVersion + "."));
-		sender.sendChatToPlayer(ChatMessageComponent.createFromText("Changelog:"));
-    	for(String msg:VersionChecker.changeLog) {
-    		sender.sendChatToPlayer(ChatMessageComponent.createFromText(msg));
+		MorePageDisplay display = new MorePageDisplay(new String[] {"(The newest version is #" + VersionChecker.newVersion + ")", "< Changelog Page %/$ >"}, sender);
+		for(String msg:VersionChecker.changeLog) {
+    		display.append(msg);
     	}
+		display.display(sender);
 	}
 }

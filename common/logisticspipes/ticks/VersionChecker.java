@@ -12,7 +12,7 @@ import java.util.Scanner;
 import logisticspipes.LogisticsPipes;
 
 import com.google.gson.Gson;
-import com.google.gson.internal.LinkedTreeMap;
+import com.google.gson.internal.StringMap;
 
 public class VersionChecker extends Thread {
 
@@ -38,13 +38,13 @@ public class VersionChecker extends Thread {
 			String string = s.next();
 			s.close();
 			Gson gson = new Gson();
-			LinkedTreeMap part = gson.fromJson(string, LinkedTreeMap.class);
+			StringMap part = gson.fromJson(string, StringMap.class);
 			Boolean hasNew = (Boolean) part.get("new");
 			if(hasNew) {
 				VersionChecker.hasNewVersion = true;
 				VersionChecker.newVersion = Integer.toString(Double.valueOf(part.get("build").toString()).intValue());
 				LogisticsPipes.log.warning("New LogisticsPipes" + (LogisticsPipes.DEV_BUILD?"-Dev":"") + " version found: #" + Double.valueOf(part.get("build").toString()).intValue());
-				LinkedTreeMap changeLog = (LinkedTreeMap) part.get("changelog");
+				StringMap changeLog = (StringMap) part.get("changelog");
 				List<String> changeLogList = new ArrayList<String>();
 				if(changeLog != null) {
 					for(Object oVersion:changeLog.keySet()) {
@@ -52,7 +52,25 @@ public class VersionChecker extends Thread {
 						changeLogList.add(new StringBuilder(build).append(": ").toString());
 						List<String> sub = (List<String>) changeLog.get(build);
 						for(String msg:sub) {
-							changeLogList.add(msg);
+							if(msg.length() > 60) {
+								boolean first = true;
+								while(!msg.isEmpty()) {
+									int splitAt = msg.substring(0, Math.min(first ? 60 : 55, msg.length())).lastIndexOf(' ');
+									if(msg.length() < 60) {
+										splitAt = msg.length();
+									}
+									if(splitAt <= 0) {
+										splitAt = Math.min(first ? 60 : 55, msg.length());
+									} else if(msg.length() > 60 && splitAt < 40) {
+										splitAt = Math.min(first ? 60 : 55, msg.length());
+									}
+									changeLogList.add((first ? "" : "    ") + msg.substring(0, splitAt));
+									msg = msg.substring(splitAt);
+									first = false;
+								}
+							} else {
+								changeLogList.add(msg);
+							}
 						}
 					}
 				}

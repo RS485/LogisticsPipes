@@ -297,7 +297,7 @@ public class MorePageDisplay {
 				}
 			}
 		}
-		if( !all) clearscreen(sender, row - 3 - doneLines - linesub);
+		if( !all) clearscreen(sender, row - 2 - header.size() - doneLines - linesub);
 		if(all && count > content.size()) clearscreen(sender, count - content.size());
 		if( !flag) printLastLine(sender);
 		if(sender instanceof Player) MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OpenChatGui.class), (Player) sender);

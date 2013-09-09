@@ -326,8 +326,14 @@ public class BuildCraftProxy {
 		return true;// 		BuildCraftTransport.instance.maxItemsInPipes >= 1000;
 	}
 	
-	public boolean isWrenchEquipped(EntityPlayer entityplayer) {
-		return (entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench);
+	public boolean isWrenchEquipped(EntityPlayer entityplayer, int x, int y, int z) {
+		ItemStack equippedstack = entityplayer.getCurrentEquippedItem();
+		if(equippedstack == null)
+			return false;
+		Item equipped = equippedstack.getItem();
+		if(!(equipped instanceof IToolWrench))
+			return false;
+		return ((IToolWrench)equipped).canWrench(entityplayer, x, y, z);
 	}
 	
 	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {

@@ -753,9 +753,8 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				settings = station.getSecuritySettingsForPlayer(entityplayer, true);
 			}
 		}
-		
-				if(handleClick(entityplayer, settings)) return true;
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking())) {
+		if(handleClick(entityplayer, settings)) return true;
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, this.getX(), this.getY(), this.getZ()) && !(entityplayer.isSneaking())) {
 			if(wrenchClicked(entityplayer, settings)) {
 				return true;
 			}
@@ -793,7 +792,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
 			}
 			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, this.getX(), this.getY(), this.getZ()) && (settings == null || settings.openGui)) {
 			onWrenchClicked(entityplayer);
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {

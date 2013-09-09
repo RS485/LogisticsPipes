@@ -26,7 +26,7 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(getWorld().getWorldTime() % 10 != 0) return;
+		if(getWorld().getTotalWorldTime() % 10 != 0) return;
 		LinkedList<AdjacentTile> connected = this.getConnectedEntities();
 		for(AdjacentTile tile:connected) {
 			if(tile.tile instanceof IFluidHandler && !(tile.tile instanceof TileGenericPipe)) {

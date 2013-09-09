@@ -225,7 +225,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	@Override
 	public void enabledUpdateEntity() {
 		
-		if(getWorld().getWorldTime() % 6 == 0) {
+		if(getWorld().getTotalWorldTime() % 6 == 0) {
 			updateInv(null);
 		}
 		
@@ -233,7 +233,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			checkContentUpdate(null);
 		}
 		
-		if (!_orderManager.hasOrders() || getWorld().getWorldTime() % 6 != 0) return;
+		if (!_orderManager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();

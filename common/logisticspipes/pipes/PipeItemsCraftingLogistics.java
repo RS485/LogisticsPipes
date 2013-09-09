@@ -280,7 +280,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			checkContentUpdate();
 		}
 		
-		if (getWorld().getWorldTime() % 6 != 0) return;
+		if (getWorld().getTotalWorldTime() % 6 != 0) return;
 
 		waitingForCraft = false;
 		

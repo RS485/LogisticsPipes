@@ -39,7 +39,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 
 	@Override
 	public void enabledUpdateEntity() {
-		if (!manager.hasOrders() || getWorld().getWorldTime() % 6 != 0) return;
+		if (!manager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
 		
 		Pair3<FluidIdentifier, Integer, IRequestFluid> order = manager.getFirst();
 		int amountToSend = Math.min(order.getValue2(), 5000);

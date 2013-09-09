@@ -69,7 +69,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Override
 	public void enabledUpdateEntity() {
-		if(getWorld().getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if(getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}

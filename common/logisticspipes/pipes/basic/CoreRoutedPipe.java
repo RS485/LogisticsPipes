@@ -256,7 +256,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public abstract ItemSendMode getItemSendMode();
 	
 	private boolean checkTileEntity(boolean force) {
-		if(getWorld().getWorldTime() % 10 == 0 || force) {
+		if(getWorld().getTotalWorldTime() % 10 == 0 || force) {
 			if(!(this.container instanceof LogisticsTileGenericPipe)) {
 				TileEntity tile = getWorld().getBlockTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
@@ -359,7 +359,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		}
 		//update router before ticking logic/transport
-		getRouter().update(getWorld().getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getRouter().update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		getUpgradeManager().securityTick();
 		super.updateEntity();
 		
@@ -592,7 +592,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
-		if(getWorld().getWorldTime() % 10 != 0) return;
+		if(getWorld().getTotalWorldTime() % 10 != 0) return;
 		if(stillNeedReplace || _initialInit || router == null) return;
 		boolean flag;
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {
@@ -754,10 +754,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		}
 		if(handleClick(entityplayer, settings)) return true;
-		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, this.getX(), this.getY(), this.getZ()) && !(entityplayer.isSneaking())) {
+		if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && !(entityplayer.isSneaking()) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
 			if(wrenchClicked(entityplayer, settings)) {
+				SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 				return true;
 			}
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 		}
 		if(SimpleServiceLocator.buildCraftProxy.isUpgradeManagerEquipped(entityplayer) && !(entityplayer.isSneaking())) {
 			if(MainProxy.isServer(getWorld())) {
@@ -792,8 +794,9 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, getWorld(), getX(), getY(), getZ());
 			}
 			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, this.getX(), this.getY(), this.getZ()) && (settings == null || settings.openGui)) {
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui) && SimpleServiceLocator.buildCraftProxy.canWrench(entityplayer, this.getX(), this.getY(), this.getZ())) {
 			onWrenchClicked(entityplayer);
+			SimpleServiceLocator.buildCraftProxy.wrenchUsed(entityplayer, this.getX(), this.getY(), this.getZ());
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {
 			if(MainProxy.isServer(entityplayer.worldObj)) {

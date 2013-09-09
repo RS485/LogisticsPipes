@@ -325,17 +325,25 @@ public class BuildCraftProxy {
 		//TODO: where's this gone ....
 		return true;// 		BuildCraftTransport.instance.maxItemsInPipes >= 1000;
 	}
-	
-	public boolean isWrenchEquipped(EntityPlayer entityplayer, int x, int y, int z) {
-		ItemStack equippedstack = entityplayer.getCurrentEquippedItem();
-		if(equippedstack == null)
-			return false;
-		Item equipped = equippedstack.getItem();
-		if(!(equipped instanceof IToolWrench))
-			return false;
-		return ((IToolWrench)equipped).canWrench(entityplayer, x, y, z);
+
+
+	//IToolWrench interaction
+	public boolean isWrenchEquipped(EntityPlayer entityplayer) {
+		return (entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench);
 	}
-	
+
+	public boolean canWrench(EntityPlayer entityplayer, int x, int y, int z) {
+		if ((entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench))
+			return ((IToolWrench)entityplayer.getCurrentEquippedItem().getItem()).canWrench(entityplayer, x, y, z);
+		return false;
+	}
+
+	public void wrenchUsed(EntityPlayer entityplayer, int x, int y, int z) {
+		if ((entityplayer.getCurrentEquippedItem() != null) && (entityplayer.getCurrentEquippedItem().getItem() instanceof IToolWrench))
+			((IToolWrench)entityplayer.getCurrentEquippedItem().getItem()).wrenchUsed(entityplayer, x, y, z);
+	}
+
+
 	public boolean isUpgradeManagerEquipped(EntityPlayer entityplayer) {
 		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.itemID;
 	}

@@ -85,7 +85,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(getWorld().getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if(getWorld().getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}

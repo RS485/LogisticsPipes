@@ -66,7 +66,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	@Override
 	public void ignoreDisableUpdateEntity() {
 		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			getRouter(dir).update(getWorld().getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+			getRouter(dir).update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		}
 	}
 

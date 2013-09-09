@@ -66,7 +66,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
 		if(inv.isEmpty()) return;
-		if(getWorld().getWorldTime() % 6 != 0) return;
+		if(getWorld().getTotalWorldTime() % 6 != 0) return;
 		//Add from internal buffer
 		List<AdjacentTile> crafters = locateCrafters();
 		if(crafters.size() < 1) {sendBuffer();return;}

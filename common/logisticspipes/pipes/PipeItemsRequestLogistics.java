@@ -76,7 +76,7 @@ public class PipeItemsRequestLogistics extends CoreRoutedPipe implements IReques
 	
 	@Override
 	public void enabledUpdateEntity() {
-		if (this.worldObj.getWorldTime() % 1200 == 0){
+		if (this.worldObj.getTotalWorldTime() % 1200 == 0){
 			_history.addLast(SimpleServiceLocator.logisticsManager.getAvailableItems(getRouter().getIRoutersByCost()));
 			if (_history.size() > 20){
 				_history.removeFirst();

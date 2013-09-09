@@ -73,7 +73,7 @@ public class PipeLiquidSatellite extends LiquidRoutedPipe implements IRequestLiq
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		if(worldObj.getWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
+		if(worldObj.getTotalWorldTime() % 20 == 0 && localModeWatchers.size() > 0) {
 			updateInv(false);
 		}
 	}

@@ -39,7 +39,7 @@ public class PipeLiquidProvider extends LiquidRoutedPipe implements ILiquidProvi
 
 	@Override
 	public void enabledUpdateEntity() {
-		if (!manager.hasOrders() || worldObj.getWorldTime() % 6 != 0) return;
+		if (!manager.hasOrders() || worldObj.getTotalWorldTime() % 6 != 0) return;
 		
 		Pair3<LiquidIdentifier, Integer, IRequestLiquid> order = manager.getFirst();
 		int amountToSend = Math.min(order.getValue2(), 5000);

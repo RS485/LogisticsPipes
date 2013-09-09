@@ -250,7 +250,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 	public abstract ItemSendMode getItemSendMode();
 	
 	private boolean checkTileEntity(boolean force) {
-		if(worldObj.getWorldTime() % 10 == 0 || force) {
+		if(worldObj.getTotalWorldTime() % 10 == 0 || force) {
 			if(!(this.container instanceof LogisticsTileGenericPipe)) {
 				TileEntity tile = worldObj.getBlockTileEntity(getX(), getY(), getZ());
 				if(tile != this.container) {
@@ -352,7 +352,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 			}
 		}
 		//update router before ticking logic/transport
-		getRouter().update(worldObj.getWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
+		getRouter().update(worldObj.getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
 		getUpgradeManager().securityTick();
 		super.updateEntity();
 		ignoreDisableUpdateEntity();
@@ -516,7 +516,7 @@ public abstract class CoreRoutedPipe extends Pipe implements IRequestItems, IAdj
 
 	public void checkTexturePowered() {
 		if(Configs.LOGISTICS_POWER_USAGE_DISABLED) return;
-		if(worldObj.getWorldTime() % 10 != 0) return;
+		if(worldObj.getTotalWorldTime() % 10 != 0) return;
 		if(stillNeedReplace || _initialInit || router == null) return;
 		boolean flag;
 		if((flag = canUseEnergy(1)) != _textureBufferPowered) {

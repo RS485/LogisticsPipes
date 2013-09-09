@@ -36,7 +36,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent.Action;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
-import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.IPlayerTracker;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -154,6 +153,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 	public void onPlayerRespawn(EntityPlayer player) {}
 
 	@AllArgsConstructor
+	@SideOnly(Side.CLIENT)
 	private static class GuiEntry {
 		@Getter
 		private final int xCoord;
@@ -166,11 +166,13 @@ public class LogisticsEventListener implements IPlayerTracker {
 		@Getter @Setter
 		private boolean isActive;
 	}
-	
+
+	@SideOnly(Side.CLIENT)
 	private static Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
 
 	//Handle GuiRepoen
 	@ForgeSubscribe
+	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {
 		if(!guiPos.isEmpty()) {
 			if(event.gui == null) {
@@ -186,6 +188,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 		}
 	}
 
+	@SideOnly(Side.CLIENT)
 	public static void addGuiToReopen(int xCoord, int yCoord, int zCoord, int guiID) {
 		guiPos.add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
 	}

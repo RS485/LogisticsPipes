@@ -91,7 +91,7 @@ public abstract class BaseRoutingLogic extends PipeLogic{
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_RoutingStats_ID, worldObj, xCoord, yCoord, zCoord);
 			}
 			return true;
-		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer) && (settings == null || settings.openGui)) {
+		} else if (SimpleServiceLocator.buildCraftProxy.isWrenchEquipped(entityplayer, xCoord, yCoord, zCoord) && (settings == null || settings.openGui)) {
 			onWrenchClicked(entityplayer);
 			return true;
 		} else if (entityplayer.getCurrentEquippedItem().getItem() == LogisticsPipes.LogisticsRemoteOrderer && (settings == null || settings.openRequest)) {

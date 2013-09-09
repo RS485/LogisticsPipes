@@ -64,10 +64,6 @@ public class ClientProxy implements IProxy {
 		if(brp instanceof RenderPipe) {
 			SimpleServiceLocator.buildCraftProxy.resetItemRotation((RenderPipe) brp);
 		}
-	}
-
-	@Override
-	public void addRenderOverride() {
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 	}
 

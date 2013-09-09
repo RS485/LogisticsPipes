@@ -54,9 +54,6 @@ public class ServerProxy implements IProxy {
 		GameRegistry.registerTileEntity(LogisticsCraftingTableTileEntity.class, "logisticspipes.blocks.crafting.LogisticsCraftingTableTileEntity");
 		GameRegistry.registerTileEntity(LogisticsTileGenericPipe.class, LogisticsPipes.logisticsTileGenericPipeMapping);
 	}
-
-	@Override
-	public void addRenderOverride() {}
 	
 	@Override
 	public EntityPlayer getClientPlayer() {

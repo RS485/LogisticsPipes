@@ -46,6 +46,7 @@ public class LogisticsHUDRenderer {
 	private double lastZPos = 0;
 	
 	private int progress = 0;
+	private long last = 0;
 	
 	private ArrayList<IHeadUpDisplayBlockRendererProvider> providers = new ArrayList<IHeadUpDisplayBlockRendererProvider>();
 	
@@ -261,9 +262,9 @@ public class LogisticsHUDRenderer {
 		MovingObjectPosition box = mc.objectMouseOver;
 		if(box != null && box.typeOfHit == EnumMovingObjectType.TILE) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
-				progress = Math.min(progress + 2, 100);
+				progress = Math.min(progress + (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 100);
 			} else {
-				progress = Math.max(progress - 2, 0);
+				progress = Math.max(progress - (2 * Math.max(1, (int) Math.floor((System.currentTimeMillis() - last) / 50.0D))), 0);
 			}
 			if(progress != 0) {
 				
@@ -418,6 +419,7 @@ public class LogisticsHUDRenderer {
 			GL11.glPopMatrix();
 		}
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		last = System.currentTimeMillis();
 	}
 	
 	private void setColor(float i, EnumSet<PipeRoutingConnectionType> flags) {

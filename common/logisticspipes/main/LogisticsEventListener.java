@@ -169,12 +169,15 @@ public class LogisticsEventListener implements IPlayerTracker {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private static Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
+	private static Queue<GuiEntry> guiPos;
 
 	//Handle GuiRepoen
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {
+		if(guiPos == null) {
+			guiPos = new LinkedList<GuiEntry>();
+		}
 		if(!guiPos.isEmpty()) {
 			if(event.gui == null) {
 				GuiEntry part = guiPos.peek();
@@ -195,6 +198,9 @@ public class LogisticsEventListener implements IPlayerTracker {
 
 	@SideOnly(Side.CLIENT)
 	public static void addGuiToReopen(int xCoord, int yCoord, int zCoord, int guiID) {
+		if(guiPos == null) {
+			guiPos = new LinkedList<GuiEntry>();
+		}
 		guiPos.add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
 	}
 }

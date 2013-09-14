@@ -65,7 +65,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	
 	public RoutedEntityItem(TravelingItem entityItem) {
 		super(entityItem.id);
-		thisItem = ItemIdentifierStack.GetFromStack(entityItem.getItemStack());
+		thisItem = ItemIdentifierStack.getFromStack(entityItem.getItemStack());
 		container = entityItem.getContainer();
 		speed = entityItem.getSpeed();
 		item = entityItem.getItemStack();
@@ -166,7 +166,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 			if (SimpleServiceLocator.routerManager.isRouter(destinationint)){
 				IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableTransport){
-					((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(ItemIdentifierStack.GetFromStack(item));
+					((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(ItemIdentifierStack.getFromStack(item));
 				}
 				if (destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
 					if(item.getItem() instanceof LogisticsFluidContainer) {
@@ -192,7 +192,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		if (destinationint >= 0 && SimpleServiceLocator.routerManager.isRouter(destinationint)){
 			IRouter destinationRouter = SimpleServiceLocator.routerManager.getRouter(destinationint); 
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableTransport){
-				((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(ItemIdentifierStack.GetFromStack(item));
+				((IRequireReliableTransport)destinationRouter.getPipe()).itemLost(ItemIdentifierStack.getFromStack(item));
 			}
 			if (!arrived && destinationRouter.getPipe() != null && destinationRouter.getPipe() instanceof IRequireReliableFluidTransport) {
 				if(item.getItem() instanceof LogisticsFluidContainer) {

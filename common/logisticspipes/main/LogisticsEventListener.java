@@ -15,6 +15,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
@@ -180,11 +181,15 @@ public class LogisticsEventListener implements IPlayerTracker {
 				if(part.isActive()) {
 					part = guiPos.poll();
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
+					LogisticsGuiOverrenderer.getInstance().setActive(false);
 				}
 			} else {
 				GuiEntry part = guiPos.peek();
 				part.setActive(true);
 			}
+		}
+		if(event.gui == null) {
+			LogisticsGuiOverrenderer.getInstance().setActive(false);
 		}
 	}
 

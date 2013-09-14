@@ -15,18 +15,24 @@ import java.util.List;
 import java.util.Map.Entry;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IItemAdvancedExistance;
+import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.PipeBlockRequestTable;
+import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.utils.InventoryHelper;
+import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
+import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -247,7 +253,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	}
 	
 	//called from endReached, return false to let BC transport handle the item.
-	private boolean handleTileReached(TravelingItem arrivingItem, TileEntity tile) {
+	protected boolean handleTileReached(TravelingItem arrivingItem, TileEntity tile) {
 		//((PipeTransportLogistics)pipe).markChunkModified(tile);
 		if (MainProxy.isServer(getWorld()) && (arrivingItem instanceof RoutedEntityItem) && ((RoutedEntityItem)arrivingItem).getArrived()) {
 			getPipe().notifyOfItemArival((RoutedEntityItem) arrivingItem);
@@ -278,9 +284,39 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 						return true;
 					}
 				}
-				//sneaky insertion
 				UpgradeManager manager = getPipe().getUpgradeManager();
 				boolean tookSome = false;
+				if(manager.hasPatternUpgrade()) {
+					if(getPipe() instanceof PipeItemsSupplierLogistics) {
+						IInventory inv = (IInventory) tile;
+						if (inv instanceof ISidedInventory) inv = new SidedInventoryMinecraftAdapter((ISidedInventory) inv, ForgeDirection.UNKNOWN, false);
+						IInventoryUtil util = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
+						if(util instanceof ISpecialInsertion) {
+							PipeItemsSupplierLogistics pipe = (PipeItemsSupplierLogistics) getPipe();
+							ItemIdentifierStack stack = ItemIdentifierStack.getFromStack(arrivingItem.getItemStack());
+							int[] slots = pipe.getSlotsForItemIdentifier(stack.getItem());
+							for(int i:slots) {
+								ItemStack content = util.getStackInSlot(pipe.getInvSlotForSlot(i));
+								ItemStack toAdd = arrivingItem.getItemStack().copy();
+								toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, pipe.getAmountForSlot(i) - (content != null ? content.stackSize : 0)));
+								if(toAdd.stackSize > 0) {
+									int added = ((ISpecialInsertion) util).addToSlot(toAdd, pipe.getInvSlotForSlot(i));
+									arrivingItem.getItemStack().stackSize -= added;
+									if(added > 0) {
+										tookSome = true;
+									}
+								}
+							}
+							if(pipe.isLimited()) {
+								if(arrivingItem.getItemStack().stackSize > 0) {
+									reverseItem(arrivingItem);
+								}
+								return true;
+							}
+						}
+					}
+				}
+				//sneaky insertion
 				if(!manager.hasCombinedSneakyUpgrade()) {
 					ForgeDirection insertion = arrivingItem.output.getOpposite();
 					if(manager.hasSneakyUpgrade()) {

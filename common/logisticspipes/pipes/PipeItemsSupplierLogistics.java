@@ -19,6 +19,7 @@ import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.module.SupplierPipeLimitedPacket;
 import logisticspipes.network.packets.modules.SupplierPipeMode;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -32,8 +33,11 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import buildcraft.transport.TileGenericPipe;
 import cpw.mods.fml.common.network.Player;
@@ -43,7 +47,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	private boolean _lastRequestFailed = false;
 		
 	public PipeItemsSupplierLogistics(int itemID) {
-		super( itemID);
+		super(itemID);
 		throttleTime = 100;
 	}
 	
@@ -77,25 +81,38 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
-	public enum SupplyMode{
+	public enum SupplyMode {
 		Partial,
 		Full,
 		Bulk50,
 		Bulk100,
 		Infinite
 	}
+	
+	public enum PatternMode {
+		Partial,
+		Full,
+		Bulk50,
+		Bulk100
+	}
+	
 	private SupplyMode _requestMode = SupplyMode.Bulk50;
+	private PatternMode _patternMode = PatternMode.Bulk50;
+	@Getter
+	@Setter
+	private boolean isLimited = true;
 
 	public boolean pause = false;
+
+	public int[] slotArray = new int[9]; //TODO save
 	
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		//pause = true; //Pause until GUI is closed //TODO Find a way to handle this
 		if(MainProxy.isServer(entityplayer.worldObj)) {
-			//GuiProxy.openGuiSupplierPipe(entityplayer.inventory, dummyInventory, this);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SupplierPipe_ID, getWorld(), getX(), getY(), getZ());
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.SUPPLIER_PIPE_MODE_RESPONSE, getX(), getY(), getZ(), isRequestingPartials() ? 1 : 0).getPacket(), (Player)entityplayer);
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setInteger(isRequestingPartials().ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeMode.class).setHasPatternUpgrade(getUpgradeManager().hasPatternUpgrade()).setInteger((getUpgradeManager().hasPatternUpgrade() ? getPatternMode() : getSupplyMode()).ordinal()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SupplierPipeLimitedPacket.class).setLimited(isLimited()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)entityplayer);
 		}
 	}
 	
@@ -130,84 +147,150 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 			if (inv.getSizeInventory() < 1) continue;
 			IInventoryUtil invUtil = SimpleServiceLocator.inventoryUtilFactory.getInventoryUtil(inv);
 			
-			//How many do I want?
-			HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
-			
-			//How many do I have?
-			Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
-			//How many do I have?
-			HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
-			for (Entry<ItemIdentifier, Integer> item : have.entrySet()){
-				Integer n=haveUndamaged.get(item.getKey().getUndamaged());
-				if(n==null)
-					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue());
-				else
-					haveUndamaged.put(item.getKey().getUndamaged(), item.getValue()+n);
+			if(getUpgradeManager().hasPatternUpgrade()) {
+				createPatternRequest(invUtil);
+			} else {
+				createSupplyRequest(invUtil);
 			}
-			
-			//Reduce what I have and what have been requested already
-			for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
-				Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
-				if(haveCount==null)
-					haveCount=0;
-				int spaceAvailable=invUtil.roomForItem(item.getKey());
-				if(_requestMode==SupplyMode.Infinite){
-					item.setValue(Math.min(item.getKey().getMaxStackSize(),spaceAvailable));
-					continue;
 
-				}
-				if(spaceAvailable == 0 || 
-						( _requestMode==SupplyMode.Bulk50 && haveCount>item.getValue()/2) ||
-						( _requestMode==SupplyMode.Bulk100 && haveCount>=item.getValue()))
-				{
-					item.setValue(0);
-					continue;
-				}
-				if (haveCount >0){
-					item.setValue(item.getValue() - haveCount);
-					// so that 1 damaged item can't satisfy a request for 2 other damage values.
-					haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
-				}
-				Integer requestedCount =  _requestedItems.get(item.getKey());
-				if (requestedCount!=null){
-					item.setValue(item.getValue() - requestedCount);
-				}
+		}
+	}
+
+	private void createPatternRequest(IInventoryUtil invUtil) {
+		((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
+		for(int i=0;i < 9;i++) {
+			ItemIdentifierStack needed = dummyInventory.getIDStackInSlot(i);
+			if(needed == null) continue;
+			ItemStack stack = invUtil.getStackInSlot(slotArray[i]);
+			ItemIdentifierStack have = null;
+			if(stack != null) {
+				have = ItemIdentifierStack.getFromStack(stack);				
 			}
-			
-			((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
-
-			//Make request
-			for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
-				Integer amountRequested = need.getValue();
-				if (amountRequested==null || amountRequested < 1) continue;
-				int neededCount = amountRequested;
-				if(!useEnergy(10)) {
-					break;
-				}
-				
-				boolean success = false;
-
-				if(_requestMode!=SupplyMode.Full) {
-					neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
-					if(neededCount > 0) {
-						success = true;
-					}
-				} else {
-					success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
-				}
-				
-				if (success){
-					Integer currentRequest = _requestedItems.get(need.getKey());
-					if(currentRequest == null) {
-						_requestedItems.put(need.getKey(), neededCount);
-					} else {
-						_requestedItems.put(need.getKey(), currentRequest + neededCount);
-					}
-				} else {
+			int haveCount = 0;
+			if(have != null) {
+				if(have.getItem() != needed.getItem()) {
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
+					continue;
 				}
-				
+				haveCount = have.stackSize;
 			}
+			if( ( _patternMode==PatternMode.Bulk50 && haveCount > needed.stackSize/2) ||
+			    ( _patternMode==PatternMode.Bulk100 && haveCount >= needed.stackSize)) {
+				continue;
+			}
+			
+			
+			int neededCount = needed.stackSize - haveCount;
+			if(neededCount < 1) continue;
+			
+			ItemIdentifierStack toRequest = new ItemIdentifierStack(needed.getItem(), needed.stackSize - haveCount);
+			
+			if(!useEnergy(10)) {
+				break;
+			}
+			
+			boolean success = false;
+
+			if(_patternMode != PatternMode.Full) {
+				neededCount = RequestTree.requestPartial(toRequest, (IRequestItems) container.pipe);
+				if(neededCount > 0) {
+					success = true;
+				}
+			} else {
+				success = RequestTree.request(toRequest, (IRequestItems) container.pipe, null);
+			}
+			
+			if (success){
+				Integer currentRequest = _requestedItems.get(toRequest.getItem());
+				if(currentRequest == null) {
+					_requestedItems.put(toRequest.getItem(), neededCount);
+				} else {
+					_requestedItems.put(toRequest.getItem(), currentRequest + neededCount);
+				}
+			} else {
+				((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
+			}
+		}
+	}
+
+	private void createSupplyRequest(IInventoryUtil invUtil) {
+		//How many do I want?
+		HashMap<ItemIdentifier, Integer> needed = new HashMap<ItemIdentifier, Integer>(dummyInventory.getItemsAndCount());
+		
+		//How many do I have?
+		Map<ItemIdentifier, Integer> have = invUtil.getItemsAndCount();
+		//How many do I have?
+		HashMap<ItemIdentifier, Integer> haveUndamaged = new HashMap<ItemIdentifier, Integer>();
+		for (Entry<ItemIdentifier, Integer> item : have.entrySet()){
+			Integer n=haveUndamaged.get(item.getKey().getUndamaged());
+			if(n==null)
+				haveUndamaged.put(item.getKey().getUndamaged(), item.getValue());
+			else
+				haveUndamaged.put(item.getKey().getUndamaged(), item.getValue()+n);
+		}
+		
+		//Reduce what I have and what have been requested already
+		for (Entry<ItemIdentifier, Integer> item : needed.entrySet()){
+			Integer haveCount = haveUndamaged.get(item.getKey().getUndamaged());
+			if(haveCount==null)
+				haveCount=0;
+			int spaceAvailable=invUtil.roomForItem(item.getKey());
+			if(_requestMode==SupplyMode.Infinite){
+				item.setValue(Math.min(item.getKey().getMaxStackSize(),spaceAvailable));
+				continue;
+
+			}
+			if(spaceAvailable == 0 || 
+					( _requestMode==SupplyMode.Bulk50 && haveCount>item.getValue()/2) ||
+					( _requestMode==SupplyMode.Bulk100 && haveCount>=item.getValue()))
+			{
+				item.setValue(0);
+				continue;
+			}
+			if (haveCount >0){
+				item.setValue(item.getValue() - haveCount);
+				// so that 1 damaged item can't satisfy a request for 2 other damage values.
+				haveUndamaged.put(item.getKey().getUndamaged(),haveCount - item.getValue());
+			}
+			Integer requestedCount =  _requestedItems.get(item.getKey());
+			if (requestedCount!=null){
+				item.setValue(item.getValue() - requestedCount);
+			}
+		}
+		
+		((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(false);
+
+		//Make request
+		for (Entry<ItemIdentifier, Integer> need : needed.entrySet()){
+			Integer amountRequested = need.getValue();
+			if (amountRequested==null || amountRequested < 1) continue;
+			int neededCount = amountRequested;
+			if(!useEnergy(10)) {
+				break;
+			}
+			
+			boolean success = false;
+
+			if(_requestMode!=SupplyMode.Full) {
+				neededCount = RequestTree.requestPartial(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe);
+				if(neededCount > 0) {
+					success = true;
+				}
+			} else {
+				success = RequestTree.request(need.getKey().makeStack(neededCount), (IRequestItems) container.pipe, null);
+			}
+			
+			if (success){
+				Integer currentRequest = _requestedItems.get(need.getKey());
+				if(currentRequest == null) {
+					_requestedItems.put(need.getKey(), neededCount);
+				} else {
+					_requestedItems.put(need.getKey(), currentRequest + neededCount);
+				}
+			} else {
+				((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
+			}
+			
 		}
 	}
 
@@ -218,12 +301,21 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		if(nbttagcompound.hasKey("requestmode")){
 			_requestMode=SupplyMode.values()[nbttagcompound.getShort("requestmode")];
 		}
+		if(nbttagcompound.hasKey("patternmode")){
+			_patternMode=PatternMode.values()[nbttagcompound.getShort("patternmode")];
+		}
+		if(nbttagcompound.hasKey("limited")){
+			setLimited(nbttagcompound.getBoolean("limited"));
+		}
 		if(nbttagcompound.hasKey("requestpartials")){
 			boolean oldPartials = nbttagcompound.getBoolean("requestpartials");
 			if(oldPartials)
 				_requestMode=SupplyMode.Partial;
 			else
 				_requestMode=SupplyMode.Full;
+		}
+		for(int i=0;i<9;i++) {
+			slotArray[i] = nbttagcompound.getInteger("slotArray_" + i);
 		}
     }
 
@@ -232,7 +324,11 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
     	super.writeToNBT(nbttagcompound);
     	dummyInventory.writeToNBT(nbttagcompound, "");
     	nbttagcompound.setShort("requestmode", (short) _requestMode.ordinal());
-//    	nbttagcompound.setBoolean("requestpartials", _requestPartials);
+    	nbttagcompound.setShort("patternmode", (short) _patternMode.ordinal());
+    	nbttagcompound.setBoolean("limited", isLimited());
+    	for(int i=0;i<9;i++) {
+			nbttagcompound.setInteger("slotArray_" + i, slotArray[i]);
+		}
 	}
 	
 	private void decreaseRequested(ItemIdentifierStack item) {
@@ -272,13 +368,42 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		delayThrottle();
 	}
 	
-	public SupplyMode isRequestingPartials(){
+	public SupplyMode getSupplyMode() {
 		return _requestMode;
 	}
 	
-	public void setRequestingPartials(SupplyMode value){
-		_requestMode = value;
+	public void setSupplyMode(SupplyMode mode) {
+		_requestMode = mode;
+	}
+	
+	public PatternMode getPatternMode() {
+		return _patternMode;
+	}
+	
+	public void setPatternMode(PatternMode mode) {
+		_patternMode = mode;
 	}
 
-
+	public int[] getSlotsForItemIdentifier(ItemIdentifier item) {
+		int size = 0;
+		for(int i=0;i<9;i++) {
+			if(dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem() == item) size++;
+		}
+		int[] array = new int[size];
+		int pos = 0;
+		for(int i=0;i<9;i++) {
+			if(dummyInventory.getIDStackInSlot(i) != null && dummyInventory.getIDStackInSlot(i).getItem() == item) {
+				array[pos++] = i;
+			}
+		}
+		return array;
+	}
+	
+	public int getInvSlotForSlot(int i) {
+		return slotArray[i];
+	}
+	
+	public int getAmountForSlot(int i) {
+		return dummyInventory.getIDStackInSlot(i).stackSize;
+	}
 }

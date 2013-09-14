@@ -1184,7 +1184,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	public TravelingItem getQueuedForItemStack(ItemStack stack) {
 		for(TravelingItem item:queuedDataForUnroutedItems) {
-			if(ItemIdentifierStack.GetFromStack(item.getItemStack()).equals(ItemIdentifierStack.GetFromStack(stack))) {
+			if(ItemIdentifierStack.getFromStack(item.getItemStack()).equals(ItemIdentifierStack.getFromStack(stack))) {
 				queuedDataForUnroutedItems.remove(item);
 				return item;
 			}
@@ -1203,7 +1203,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public void notifyOfItemArival(RoutedEntityItem routedEntityItem) {
 		this._inTransitToMe.remove(routedEntityItem);		
 		if (this instanceof IRequireReliableTransport){
-			((IRequireReliableTransport)this).itemArrived(ItemIdentifierStack.GetFromStack(routedEntityItem.getItemStack()));
+			((IRequireReliableTransport)this).itemArrived(ItemIdentifierStack.getFromStack(routedEntityItem.getItemStack()));
 		}
 		if (this instanceof IRequireReliableFluidTransport) {
 			ItemStack stack = routedEntityItem.getItemStack();

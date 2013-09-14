@@ -110,7 +110,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 				}
 				return;
 			}
-			_contents[i] = ItemIdentifierStack.GetFromStack(itemstack);
+			_contents[i] = ItemIdentifierStack.getFromStack(itemstack);
 		}
 		updateContents();
 	}
@@ -169,7 +169,7 @@ public class SimpleInventory implements IInventory, ISaveState{
     		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
     		int index = nbttagcompound2.getInteger("index");
     		if(index < _contents.length) {
-    			ItemIdentifierStack itemstack = ItemIdentifierStack.GetFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound2));
+    			ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound2));
     			if(!isValidStack(itemstack)) {
     				FluidIdentifier fluid = FluidIdentifier.convertFromID(itemstack.getItem().itemID);
     				if(fluid != null) {
@@ -269,7 +269,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		}
 		ItemIdentifierStack slot = _contents[i];
 		if(slot == null) {
-			_contents[i] = ItemIdentifierStack.GetFromStack(stack);
+			_contents[i] = ItemIdentifierStack.getFromStack(stack);
 			_contents[i].stackSize = Math.min(_contents[i].stackSize, realstacklimit);
 			return _contents[i].stackSize;
 		}

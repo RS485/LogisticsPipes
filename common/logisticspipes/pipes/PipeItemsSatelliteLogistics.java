@@ -128,7 +128,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			if(inv != null) {
 				for(int i=0;i<inv.getSizeInventory();i++) {
 					if(inv.getStackInSlot(i) != null) {
-						addToList(ItemIdentifierStack.GetFromStack(inv.getStackInSlot(i)));
+						addToList(ItemIdentifierStack.getFromStack(inv.getStackInSlot(i)));
 					}
 				}
 			}

@@ -43,6 +43,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	private boolean hasByproductExtractor = false;
 	private UUID uuid = null;
 	private String uuidS = null;
+	private boolean hasPatternUpgrade = false;
 	
 	private boolean needsContainerPositionUpdate = false;
 	
@@ -97,6 +98,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		liquidCrafter = 0;
 		disconnectedSides.clear();
 		hasByproductExtractor = false;
+		hasPatternUpgrade = false;
 		for(int i=0;i<upgrades.length;i++) {
 			IPipeUpgrade upgrade = upgrades[i];
 			if(upgrade instanceof SneakyUpgrade && sneakyOrientation == ForgeDirection.UNKNOWN && !isCombinedSneakyUpgrade) {
@@ -113,6 +115,8 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 				liquidCrafter += inv.getStackInSlot(i).stackSize;
 			} else if(upgrade instanceof CraftingByproductUpgrade) {
 				hasByproductExtractor = true;
+			} else if(upgrade instanceof PatternUpgrade) {
+				hasPatternUpgrade = true;
 			}
 		}
 		liquidCrafter = Math.min(liquidCrafter, ItemUpgrade.MAX_LIQUID_CRAFTER);
@@ -331,5 +335,9 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	
 	public boolean hasByproductExtractor() {
 		return hasByproductExtractor;
+	}
+	
+	public boolean hasPatternUpgrade() {
+		return hasPatternUpgrade;
 	}
 }

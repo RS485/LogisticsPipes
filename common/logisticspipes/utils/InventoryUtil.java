@@ -14,10 +14,11 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
+import logisticspipes.interfaces.ISpecialInsertion;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
-public class InventoryUtil implements IInventoryUtil {
+public class InventoryUtil implements IInventoryUtil, ISpecialInsertion {
 
 	protected final IInventory _inventory;
 	private final boolean _hideOnePerStack;
@@ -178,5 +179,37 @@ public class InventoryUtil implements IInventoryUtil {
 	@Override
 	public ItemStack decrStackSize(int i, int j) {
 		return _inventory.decrStackSize(i, j);
+	}
+
+	@Override
+	public int addToSlot(ItemStack stack, int i) {
+		if(!_inventory.isItemValidForSlot(i, stack)) return 0;
+		int max = Math.min(stack.getMaxStackSize(), _inventory.getInventoryStackLimit());
+
+		ItemStack stackInSlot = _inventory.getStackInSlot(i);
+		if (stackInSlot == null) {
+			int wanted = Math.min(stack.stackSize, max);
+			stackInSlot = stack.copy();
+			stackInSlot.stackSize = wanted;
+			_inventory.setInventorySlotContents(i, stackInSlot);
+			return wanted;
+		}
+
+		if (ItemIdentifier.get(stackInSlot) != ItemIdentifier.get(stack)) {
+			return 0;
+		}
+
+		int toAdd = max - stackInSlot.stackSize;
+		if (toAdd < 0) {
+			return 0;
+		}
+
+		if (toAdd > stack.stackSize) {
+			toAdd = stack.stackSize;
+		}
+
+		stackInSlot.stackSize += toAdd;
+		_inventory.setInventorySlotContents(i, stackInSlot);
+		return toAdd;
 	}
 }

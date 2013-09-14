@@ -65,6 +65,7 @@ import logisticspipes.modules.ModulePassiveSupplier;
 import logisticspipes.modules.ModuleProvider;
 import logisticspipes.modules.ModuleTerminus;
 import logisticspipes.modules.ModuleThaumicAspectSink;
+import logisticspipes.network.packets.gui.GuiArgument;
 import logisticspipes.network.packets.module.ApiaristAnalyserMode;
 import logisticspipes.network.packets.module.ElectricManagetMode;
 import logisticspipes.network.packets.module.ModuleBasedItemSinkList;
@@ -219,15 +220,16 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_SupplierPipe_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
+				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_SupplierPipe_ID).setArgs(new Object[]{((PipeItemsSupplierLogistics)pipe.pipe).getUpgradeManager().hasPatternUpgrade(), ((PipeItemsSupplierLogistics)pipe.pipe).slotArray}), (Player)player);
 				dummy = new DummyContainer(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory());
 				dummy.addNormalSlotsForPlayerInventory(18, 97);
 				
 				xOffset = 72;
 				yOffset = 18;
 				
-				for (int row = 0; row < 3; row++){
-					for (int column = 0; column < 3; column++){
-						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);					
+				for (int row = 0; row < 3; row++) {
+					for (int column = 0; column < 3; column++) {
+						dummy.addDummySlot(column + row * 3, xOffset + column * 18, yOffset + row * 18);
 					}
 				}
 				return dummy;
@@ -843,7 +845,7 @@ public class GuiHandler implements IGuiHandler {
 				
 			case GuiIDs.GUI_SupplierPipe_ID:
 				if(pipe == null || pipe.pipe == null || !(pipe.pipe instanceof PipeItemsSupplierLogistics)) return null;
-				return new GuiSupplierPipe(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory(), (PipeItemsSupplierLogistics)pipe.pipe);
+				return new GuiSupplierPipe(player.inventory, ((PipeItemsSupplierLogistics)pipe.pipe).getDummyInventory(), (PipeItemsSupplierLogistics)pipe.pipe, (Boolean) args[0], (int[]) args[1]);
 				
 				/*** Modules ***/
 			case GuiIDs.GUI_Module_Extractor_ID:

@@ -9,6 +9,7 @@ import logisticspipes.pipes.upgrades.CombinedSneakyUpgrade;
 import logisticspipes.pipes.upgrades.CraftingByproductUpgrade;
 import logisticspipes.pipes.upgrades.FluidCraftingUpgrade;
 import logisticspipes.pipes.upgrades.IPipeUpgrade;
+import logisticspipes.pipes.upgrades.PatternUpgrade;
 import logisticspipes.pipes.upgrades.SpeedUpgrade;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeDOWN;
 import logisticspipes.pipes.upgrades.connection.ConnectionUpgradeEAST;
@@ -53,6 +54,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int ADVANCED_SAT_CRAFTINGPIPE = 21;
 	public static final int LIQUID_CRAFTING = 22;
 	public static final int CRAFTING_BYPRODUCT_EXTRACTOR = 23;
+	public static final int SUPPLIER_PATTERN = 24;
 	
 	//Values
 	public static final int MAX_LIQUID_CRAFTER = 3;
@@ -64,12 +66,6 @@ public class ItemUpgrade extends LogisticsItem {
 		private int id;
 		private Class<? extends IPipeUpgrade> upgradeClass;
 		private int textureIndex = -1;
-
-		private Upgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
-			this.id = id;
-			this.name = name;
-			this.upgradeClass = moduleClass;
-		}
 
 		private Upgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureIndex) {
 			this.id = id;
@@ -139,22 +135,7 @@ public class ItemUpgrade extends LogisticsItem {
 		registerUpgrade(ADVANCED_SAT_CRAFTINGPIPE, "Advanced Satellite Upgrade", AdvancedSatelliteUpgrade.class, 14);
 		registerUpgrade(LIQUID_CRAFTING, "Fluid Crafting Upgrade", FluidCraftingUpgrade.class, 15);
 		registerUpgrade(CRAFTING_BYPRODUCT_EXTRACTOR, "Crafting Byproduct Extraction Upgrade", CraftingByproductUpgrade.class, 16);
-	}
-	
-	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass) {
-		boolean flag = true;
-		for(Upgrade upgrade:upgrades) {
-			if(upgrade.getId() == id) {
-				flag = false;
-			}
-		}
-		if(!"".equals(name) && flag) {
-			upgrades.add(new Upgrade(id,name,moduleClass));
-		} else if(!flag) {
-			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (Id " + id + " already in use)");
-		} else {
-			throw new UnsupportedOperationException("Someting went wrong while registering a new Logistics Pipe Upgrade. (No name given)");
-		}
+		registerUpgrade(SUPPLIER_PATTERN, "Placement Rules Upgrade", PatternUpgrade.class, 17);
 	}
 	
 	public void registerUpgrade(int id, String name, Class<? extends IPipeUpgrade> moduleClass, int textureId) {
@@ -221,9 +202,9 @@ public class ItemUpgrade extends LogisticsItem {
 		}
 		return null;
 	}
+
 	@Override
-	public void registerIcons(IconRegister par1IconRegister)
-	{
+	public void registerIcons(IconRegister par1IconRegister) {
 		icons=new Icon[18];
 		icons[0]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyUP");
 		icons[1]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/SneakyDOWN");
@@ -245,8 +226,9 @@ public class ItemUpgrade extends LogisticsItem {
 		icons[14]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/Satelite");
 		icons[15]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/FluidCrafting");
 		icons[16]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/CraftingByproduct");
-		icons[17]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/UNKNOWN01");
+		icons[17]=par1IconRegister.registerIcon("logisticspipes:itemUpgrade/PlacementRules");
 	}
+
 	@Override
 	public Icon getIconFromDamage(int i) {
 
@@ -257,7 +239,6 @@ public class ItemUpgrade extends LogisticsItem {
 				}
 			}
 		}
-			
 		return icons[0];
 	}
 }

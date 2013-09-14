@@ -8,6 +8,7 @@ import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.List;
 
+import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.utils.ObfuscationHelper;
 import logisticspipes.utils.ObfuscationHelper.NAMES;
@@ -45,7 +46,7 @@ public class RenderTickHandler implements ITickHandler {
 	@Override
 	public void tickStart(EnumSet<TickType> type, Object... tickData) {
 		if(type.contains(TickType.RENDER)) {
-			if(LogisticsHUDRenderer.instance().displayRenderer()) {
+			if(LogisticsHUDRenderer.instance().displayRenderer() || LogisticsGuiOverrenderer.getInstance().isCompatibleGui()) {
 				try {
 					@SuppressWarnings("unchecked")
 					List<IScheduledTickHandler> old = (List<IScheduledTickHandler>) ticks.get(FMLCommonHandler.instance());
@@ -71,6 +72,9 @@ public class RenderTickHandler implements ITickHandler {
 				} catch(Exception e) {
 					e.printStackTrace();
 				}
+			}
+			if(LogisticsGuiOverrenderer.getInstance().isCompatibleGui()) {
+				LogisticsGuiOverrenderer.getInstance().preRender();
 			}
 		}
 	}
@@ -117,6 +121,8 @@ public class RenderTickHandler implements ITickHandler {
 				GL11.glPushMatrix();
 				LogisticsHUDRenderer.instance().renderPlayerDisplay(renderTicks);
 				GL11.glPopMatrix();
+			} else if(LogisticsGuiOverrenderer.getInstance().isCompatibleGui()) {
+				LogisticsGuiOverrenderer.getInstance().renderOverGui();
 			}
 		}
 	}

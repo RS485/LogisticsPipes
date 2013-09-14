@@ -260,7 +260,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 			
 			ItemStack module = inv.getStackInSlot(position);
 			List<ItemIdentifierStack> list = new ArrayList<ItemIdentifierStack>();
-			list.add(ItemIdentifierStack.GetFromStack(module));
+			list.add(ItemIdentifierStack.getFromStack(module));
 			GL11.glTranslatef(0.0F, 0.0F, -0.00005F);
 			if(!this.buttonEnabled() && !isSlotSelected(position)) {
 				GL11.glColor4b((byte)127, (byte)127, (byte)127, (byte)32);

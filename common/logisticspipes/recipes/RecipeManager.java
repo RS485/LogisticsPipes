@@ -794,6 +794,26 @@ public class RecipeManager {
 			Character.valueOf('P'), Item.paper
 		});
 		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 22), new Object[] { 
+			false, 
+			"RbR", 
+			"bCb", 
+			"RbR", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 2),
+			Character.valueOf('R'), Item.redstone, 
+			Character.valueOf('b'), Item.glassBottle, 
+		});
+		
+		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 23), new Object[] { 
+			false, 
+			"RgR", 
+			"gCg", 
+			"RgR", 
+			Character.valueOf('C'), new ItemStack(BuildCraftSilicon.redstoneChipset, 1, 1),
+			Character.valueOf('R'), Item.redstone, 
+			Character.valueOf('g'), BuildCraftCore.woodenGearItem, 
+		});
+		
 		craftingManager.addRecipe(new ItemStack(LogisticsPipes.UpgradeItem, 1, 10), new Object[] { 
 			false, 
 			"srs", 

@@ -300,10 +300,12 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 								ItemStack toAdd = arrivingItem.getItemStack().copy();
 								toAdd.stackSize = Math.min(toAdd.stackSize, Math.max(0, pipe.getAmountForSlot(i) - (content != null ? content.stackSize : 0)));
 								if(toAdd.stackSize > 0) {
-									int added = ((ISpecialInsertion) util).addToSlot(toAdd, pipe.getInvSlotForSlot(i));
-									arrivingItem.getItemStack().stackSize -= added;
-									if(added > 0) {
-										tookSome = true;
+									if(util.getSizeInventory() > pipe.getInvSlotForSlot(i)) {
+										int added = ((ISpecialInsertion) util).addToSlot(toAdd, pipe.getInvSlotForSlot(i));
+										arrivingItem.getItemStack().stackSize -= added;
+										if(added > 0) {
+											tookSome = true;
+										}
 									}
 								}
 							}

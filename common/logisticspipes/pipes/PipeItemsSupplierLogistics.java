@@ -161,6 +161,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 		for(int i=0;i < 9;i++) {
 			ItemIdentifierStack needed = dummyInventory.getIDStackInSlot(i);
 			if(needed == null) continue;
+			if(invUtil.getSizeInventory() <= slotArray[i]) continue;
 			ItemStack stack = invUtil.getStackInSlot(slotArray[i]);
 			ItemIdentifierStack have = null;
 			if(stack != null) {

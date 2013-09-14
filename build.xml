@@ -382,6 +382,7 @@
 	<target name="ci" depends="vars, init-msg, setup, package-sign"/>
 
 	<target name="test" depends="vars-test, init-msg, setup, compile, package-simple">
+		<!--
 		<delete dir="${test.dir}"/>
 		<mkdir dir="${test.dir}"/>
 		<get src="${downloadserver.full}mcpc-plus-1.6.2-R0.2-forge836-B54.jar" dest="${test.dir}/svr.jar" usetimestamp="True"/>
@@ -393,6 +394,7 @@
 		<exec dir="${test.dir}" executable="expect" osfamily="unix" failonerror="true">
 			<arg value="expect.tcl"/>
 		</exec>
+		-->
 	</target>
 
 </project>

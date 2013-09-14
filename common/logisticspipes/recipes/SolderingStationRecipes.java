@@ -95,20 +95,6 @@ public class SolderingStationRecipes {
 					null,
 					null }, 
 				new ItemStack(LogisticsPipes.LogisticsParts,1,2), null));
-		
-		if(!BuildCraftFactory.hopperDisabled) {
-			recipes.add(new SolderingStationRecipe(new ItemStack[]{
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						null,
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						new ItemStack(BuildCraftFactory.hopperBlock,1),
-						new ItemStack(BuildCraftFactory.hopperBlock,1) }, 
-					new ItemStack(LogisticsPipes.LogisticsParts,1,3), null));
-		}
 
 		recipes.add(new SolderingStationRecipe(new ItemStack[]{
 					new ItemStack(Block.hopperBlock,1),

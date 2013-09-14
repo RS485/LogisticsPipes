@@ -118,7 +118,6 @@ public class SlotFinderNumberPacket extends CoordinatesPacket {
 			if(pipe != null && pipe.pipe instanceof PipeItemsSupplierLogistics) {
 				((PipeItemsSupplierLogistics)pipe.pipe).slotArray[slot] = resultIndex;
 			}
-			player.sendChatToPlayer(ChatMessageComponent.createFromText("External SlotNumber is: " + resultIndex + " for: " + getSlot()));
 		}
 	}
 

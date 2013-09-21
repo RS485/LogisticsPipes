@@ -23,7 +23,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
 import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.logistics.LogisticsManagerV2;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
@@ -256,7 +256,7 @@ outer:
 			_orderManager.sendFailed();
 			return 0;
 		}
-		SinkReply reply = LogisticsManagerV2.canSink(dRtr, null, true, stack.getItem(), null, true, false);
+		SinkReply reply = LogisticsManager.canSink(dRtr, null, true, stack.getItem(), null, true, false);
 		boolean defersend = false;
 		if(reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 			if(reply.maxNumberOfItems < wanted) {

@@ -45,7 +45,7 @@ import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 
-public class LogisticsManagerV2 implements ILogisticsManagerV2 {
+public class LogisticsManager implements ILogisticsManager {
 
 	/**
 	 * Method used to check if a given stack has a destination.

@@ -31,7 +31,7 @@ import logisticspipes.items.LogisticsSolidBlockItem;
 import logisticspipes.items.RemoteOrderer;
 import logisticspipes.log.RequestLogFormator;
 import logisticspipes.logistics.LogisticsFluidManager;
-import logisticspipes.logistics.LogisticsManagerV2;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.network.GuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.pipes.PipeFluidSatellite;
@@ -230,7 +230,7 @@ public class LogisticsPipes {
 		SimpleServiceLocator.setRouterManager(manager);
 		SimpleServiceLocator.setDirectConnectionManager(manager);
 		SimpleServiceLocator.setSecurityStationManager(manager);
-		SimpleServiceLocator.setLogisticsManager(new LogisticsManagerV2());
+		SimpleServiceLocator.setLogisticsManager(new LogisticsManager());
 		SimpleServiceLocator.setInventoryUtilFactory(new InventoryUtilFactory());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialPipeConnection());
 		SimpleServiceLocator.setSpecialConnectionHandler(new SpecialTileConnection());

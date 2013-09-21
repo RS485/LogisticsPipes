@@ -13,7 +13,7 @@ import java.util.LinkedList;
 import logisticspipes.interfaces.ISecurityStationManager;
 import logisticspipes.interfaces.routing.IDirectConnectionManager;
 import logisticspipes.logistics.ILogisticsFluidManager;
-import logisticspipes.logistics.ILogisticsManagerV2;
+import logisticspipes.logistics.ILogisticsManager;
 import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
@@ -71,8 +71,8 @@ public final class SimpleServiceLocator {
 		routerManager = routerMngr;
 	}
 	
-	public static ILogisticsManagerV2 logisticsManager;
-	public static void setLogisticsManager(final ILogisticsManagerV2 logisticsMngr){
+	public static ILogisticsManager logisticsManager;
+	public static void setLogisticsManager(final ILogisticsManager logisticsMngr){
 		logisticsManager = logisticsMngr;
 	}
 	

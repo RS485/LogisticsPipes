@@ -34,7 +34,7 @@ import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.ItemUpgrade;
-import logisticspipes.logistics.LogisticsManagerV2;
+import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
 import logisticspipes.modules.LogisticsModule;
@@ -976,7 +976,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			
 			ItemIdentifierStack stack = lostItem.get();
 			if( hasOrder()) { 
-				SinkReply reply = LogisticsManagerV2.canSink(getRouter(), null, true, stack.getItem(), null, true,true);
+				SinkReply reply = LogisticsManager.canSink(getRouter(), null, true, stack.getItem(), null, true,true);
 				if(reply == null || reply.maxNumberOfItems <1) {
 					lostItem = _lostItems.poll();
 					//iterator.remove(); // if we have no space for this and nothing to do, don't bother re-requesting the item.

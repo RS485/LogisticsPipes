@@ -6,7 +6,7 @@ import java.util.List;
 import logisticspipes.commands.abstracts.ICommandHandler;
 import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.LPCommandException;
-import logisticspipes.commands.exception.PermissionDenyedException;
+import logisticspipes.commands.exception.PermissionDeniedException;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
@@ -45,7 +45,7 @@ public class LogisticsPipesCommand extends CommandBase {
 		try {
 			mainCommand.executeCommand(sender, arguments);
 		} catch(LPCommandException e) {
-			if(e instanceof PermissionDenyedException) {
+			if(e instanceof PermissionDeniedException) {
 				throw new CommandException("You are not allowed to execute that command now.");
 			} else if(e instanceof CommandNotFoundException) {
 				throw new CommandException("The command was not found");

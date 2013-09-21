@@ -9,7 +9,7 @@ import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.commands.exception.CommandNotFoundException;
 import logisticspipes.commands.exception.DublicatedCommandException;
 import logisticspipes.commands.exception.MissingArgumentException;
-import logisticspipes.commands.exception.PermissionDenyedException;
+import logisticspipes.commands.exception.PermissionDeniedException;
 import net.minecraft.command.ICommandSender;
 
 public abstract class SubCommandHandler implements ICommandHandler {
@@ -72,7 +72,7 @@ public abstract class SubCommandHandler implements ICommandHandler {
 			for(ICommandHandler handler:subCommands) {
 				if(Arrays.asList(handler.getNames()).contains(command)) {
 					if(!handler.isCommandUsableBy(sender)) {
-						throw new PermissionDenyedException();
+						throw new PermissionDeniedException();
 					}
 					String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
 					handler.executeCommand(sender, newArgs);

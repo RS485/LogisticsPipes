@@ -8,8 +8,8 @@
 
 package logisticspipes.gui;
 
+import logisticspipes.LogisticsEventListener;
 import logisticspipes.interfaces.IGuiIDHandlerProvider;
-import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.utils.gui.BasicGuiHelper;

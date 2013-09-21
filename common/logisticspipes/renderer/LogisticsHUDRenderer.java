@@ -7,8 +7,8 @@ import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import logisticspipes.Configs;
 import logisticspipes.api.IHUDArmor;
-import logisticspipes.config.Configs;
 import logisticspipes.hud.HUDConfig;
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.interfaces.IHeadUpDisplayBlockRendererProvider;

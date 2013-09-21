@@ -7,8 +7,8 @@ import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.utils.ObfuscationHelper;
 import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.server.integrated.IntegratedServer;

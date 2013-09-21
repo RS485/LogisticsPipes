@@ -1,7 +1,7 @@
 package logisticspipes.blocks.crafting;
 
+import logisticspipes.Configs;
 import logisticspipes.api.IRoutedPowerProvider;
-import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;

@@ -1,8 +1,7 @@
-package logisticspipes.config;
+package logisticspipes;
 
 import java.io.File;
 
-import logisticspipes.LogisticsPipes;
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;

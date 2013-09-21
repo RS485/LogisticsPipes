@@ -3,8 +3,8 @@ package logisticspipes.pipes;
 import java.util.BitSet;
 import java.util.UUID;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.RouteLayer;
 import logisticspipes.logisticspipes.RouteLayerFirewall;

@@ -2,10 +2,10 @@ package logisticspipes.proxy;
 
 import java.util.WeakHashMap;
 
+import logisticspipes.Configs;
+import logisticspipes.LogisticsEventListener;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.blocks.crafting.FakePlayer;
-import logisticspipes.config.Configs;
-import logisticspipes.main.LogisticsEventListener;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.network.packets.pipe.ParticleFX;

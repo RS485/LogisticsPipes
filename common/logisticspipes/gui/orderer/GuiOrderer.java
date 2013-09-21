@@ -14,7 +14,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import logisticspipes.config.Configs;
+import logisticspipes.Configs;
 import logisticspipes.gui.popup.GuiRequestPopup;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;

@@ -24,11 +24,11 @@ import java.util.UUID;
 import java.util.concurrent.Callable;
 import java.util.concurrent.PriorityBlockingQueue;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
-import logisticspipes.config.Configs;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;

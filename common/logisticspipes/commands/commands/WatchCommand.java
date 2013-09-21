@@ -1,8 +1,8 @@
 package logisticspipes.commands.commands;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.commands.abstracts.ICommandHandler;
-import logisticspipes.config.Configs;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.ticks.Watchdog;
 import net.minecraft.command.ICommandSender;

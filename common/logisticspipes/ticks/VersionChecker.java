@@ -9,8 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;

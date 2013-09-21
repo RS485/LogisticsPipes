@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.config.Configs;
 import logisticspipes.items.ItemLogisticsPipe;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipes.PipeBlockRequestTable;

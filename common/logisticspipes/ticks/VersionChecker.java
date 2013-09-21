@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 
 import com.google.gson.Gson;
 import com.google.gson.internal.StringMap;
@@ -28,6 +29,9 @@ public class VersionChecker extends Thread {
 	@Override
 	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
 	public void run() {
+		if (!Configs.CHECK_FOR_UPDATES){
+			return;
+		}
 		try {
 			if(LogisticsPipes.VERSION.equals("%"+"VERSION%:%DEBUG"+"%")) return;
 			if(LogisticsPipes.VERSION.contains("-")) return;

@@ -8,6 +8,7 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 
 import logisticspipes.LogisticsPipes;
+import logisticspipes.config.Configs;
 import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.GuiReopenPacket;
@@ -138,7 +139,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 		if(MainProxy.isServer(player.worldObj)) {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
 		}
-		if(VersionChecker.hasNewVersion) {
+		if(Configs.CHECK_FOR_UPDATES && VersionChecker.hasNewVersion) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Use \"/logisticspipes changelog\" to see a changelog."));
 		}

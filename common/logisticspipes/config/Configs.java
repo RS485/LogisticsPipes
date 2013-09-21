@@ -97,6 +97,8 @@ public class Configs {
 	public static int POWER_USAGE_MULTIPLIER = 1;
 	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
+	public static boolean CHECK_FOR_UPDATES = true;
+
 	public static void load(FMLPreInitializationEvent event) {
 		File configFile = new File(event.getModConfigurationDirectory(), "LogisticsPipes.cfg");
 		CONFIGURATION = new Configuration(configFile);
@@ -373,6 +375,13 @@ public class Configs {
 		LOGISTICSPIPE_REQUEST_TABLE_ID = CONFIGURATION.getItem(
 				"logisticsPipeRequestTable.id", LOGISTICSPIPE_REQUEST_TABLE_ID,
 				"The item id for the request table").getInt();
+
+		CHECK_FOR_UPDATES = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"checkForUpdates",
+						CHECK_FOR_UPDATES,
+						"Should LogisticsPipes check for updates?")
+				.getBoolean(false);
 
 		CONFIGURATION.save();
 	}

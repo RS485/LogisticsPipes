@@ -3,7 +3,7 @@
 Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.
 
 Look into the [Minecraft Forum Thread](http://www.minecraftforum.net/topic/1831791-) for more information.
-We advice anyone to go there, who is not a developer.
+We advise anyone who is not a developer to go there.
 
 You are free to use this mod in your modpack, because its released under the MMPL.
 

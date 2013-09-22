@@ -51,6 +51,9 @@ import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.Pipe;
 
@@ -95,19 +98,13 @@ public class ItemModule extends LogisticsItem {
 		private String name;
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
+		@SideOnly(Side.CLIENT)
 		private Icon moduleIcon = null;
 
 		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass) {
 			this.id = id;
 			this.name = name;
 			this.moduleClass = moduleClass;
-		}
-
-		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass, Icon textureIndex) {
-			this.id = id;
-			this.name = name;
-			this.moduleClass = moduleClass;
-			this.moduleIcon = textureIndex;
 		}
 
 		private LogisticsModule getILogisticsModule() {
@@ -145,7 +142,8 @@ public class ItemModule extends LogisticsItem {
 		private Icon getIcon() {
 			return moduleIcon;
 		}
-		
+
+		@SideOnly(Side.CLIENT)
 		private void registerModuleIcon(IconRegister par1IconRegister) {
 			if(moduleClass == null) {
 				this.moduleIcon = par1IconRegister.registerIcon("logisticspipes:" + getUnlocalizedName().replace("item.","") + "/blank");
@@ -295,6 +293,7 @@ public class ItemModule extends LogisticsItem {
 	}
 
 	@Override
+	@SideOnly(Side.CLIENT)
 	public void registerIcons(IconRegister par1IconRegister) {
 		if(modules.size()<=0) return;
 		for(Module module:modules) {

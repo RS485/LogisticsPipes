@@ -7,6 +7,8 @@ We advise anyone who is not a developer to go there.
 
 You are free to use this mod in your modpack, because its released under the MMPL.
 
+If you want to understand the sheer amount of changes we have made to the source, you can use [Gource](https://code.google.com/p/gource/)
+
 Credits for the code go to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
 Credits for the idea and basic code go to Krapht.
 

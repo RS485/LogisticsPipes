@@ -282,10 +282,12 @@ public class RequestTreeNode {
 	private boolean checkProvider() {
 		
 		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
+		if(thisPipe == null) return false;
 		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
 			if(this.isDone()) {
 				break;
 			}
+			if(provider.getValue1() == null || provider.getValue1().getRouter() == null || provider.getValue1().getRouter().getPipe() == null) continue; 
 			if(!thisPipe.sharesInventoryWith(provider.getValue1().getRouter().getPipe())) {
 				provider.getValue1().canProvide(this, root.getAllPromissesFor(provider.getValue1(), this.getStackItem()), provider.getValue2());
 			}

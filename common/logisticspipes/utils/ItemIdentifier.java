@@ -20,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -427,10 +426,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			map.put("value", getArrayAsMap(((NBTTagIntArray)nbt).intArray));
 			return map;
 		} else if(nbt instanceof NBTTagList) {
-			Field fList = ObfuscationHelper.getDeclaredField(NAMES.tagList);
-			fList.setAccessible(true);
-			List internal = (List) fList.get(nbt);
-			
+			List internal = ((NBTTagList)nbt).tagList;
 			HashMap<Integer, Object> content = new HashMap<Integer, Object>();
 			int i = 1;
 			for(Object object:internal) {
@@ -445,10 +441,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 			map.put("value", content);
 			return map;
 		} else if(nbt instanceof NBTTagCompound) {
-			HashMap internal = new HashMap();
-			Field fMap = ObfuscationHelper.getDeclaredField(NAMES.tagMap);
-			fMap.setAccessible(true);
-			internal = (HashMap) fMap.get(nbt);
+			Map internal = ((NBTTagCompound)nbt).tagMap;
 			HashMap<Object, Object> content = new HashMap<Object, Object>();
 			HashMap<Integer, Object> keys = new HashMap<Integer, Object>();
 			int i = 1;
@@ -569,10 +562,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 					return ret;
 			}
 		} else if(nbt instanceof NBTTagCompound) {
-			Field fMap = ObfuscationHelper.getDeclaredField(NAMES.tagMap);
-			fMap.setAccessible(true);
-			@SuppressWarnings("unchecked")
-			Map<String, NBTBase> internal = (Map<String, NBTBase>) fMap.get(nbt);
+			Map<String, NBTBase> internal = ((NBTTagCompound)nbt).tagMap;
 			for(Entry<String, NBTBase> e : internal.entrySet()) {
 				String k = e.getKey();
 				NBTBase v = e.getValue();

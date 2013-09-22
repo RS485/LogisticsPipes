@@ -14,7 +14,10 @@ public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	
 	@Override
 	public String[] getASMTransformerClass() {
-		return new String[]{"logisticspipes.asm.LogisticsClassTransformer"};
+		return new String[]{
+				"logisticspipes.asm.LogisticsClassTransformer",
+				"logisticspipes.asm.LogisticsAccessTransformer"
+				};
 	}
 	
 	@Override

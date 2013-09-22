@@ -29,9 +29,6 @@ public class VersionChecker extends Thread {
 	@Override
 	@SuppressWarnings({ "resource", "rawtypes", "unchecked" })
 	public void run() {
-		if (!Configs.CHECK_FOR_UPDATES){
-			return;
-		}
 		try {
 			if(LogisticsPipes.VERSION.equals("%"+"VERSION%:%DEBUG"+"%")) return;
 			if(LogisticsPipes.VERSION.contains("-")) return;
@@ -41,6 +38,7 @@ public class VersionChecker extends Thread {
 			Scanner s = new Scanner(inputStream).useDelimiter("\\A");
 			String string = s.next();
 			s.close();
+			if(!Configs.CHECK_FOR_UPDATES) return;
 			Gson gson = new Gson();
 			StringMap part = gson.fromJson(string, StringMap.class);
 			Boolean hasNew = (Boolean) part.get("new");
@@ -81,9 +79,13 @@ public class VersionChecker extends Thread {
 				VersionChecker.changeLog = changeLogList;
 			}
 		} catch(MalformedURLException e) {
-			e.printStackTrace();
+			if (Configs.CHECK_FOR_UPDATES){
+				e.printStackTrace();
+			}
 		} catch(IOException e) {
-			e.printStackTrace();
+			if (Configs.CHECK_FOR_UPDATES){
+				e.printStackTrace();
+			}
 		}
 	}
 }

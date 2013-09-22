@@ -3,14 +3,11 @@ package logisticspipes.ticks;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MonitorInfo;
 import java.lang.management.ThreadInfo;
-import java.lang.reflect.Field;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
-import logisticspipes.utils.ObfuscationHelper;
-import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.server.integrated.IntegratedServer;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -20,23 +17,12 @@ public class Watchdog extends Thread {
 	private static long timeStempServer = 0;
 	private static long timeStempClient = 0;
 	private final boolean isClient;
-	private Field isGamePaused = null;
 	
 	public Watchdog(boolean isClient) {
 		super("LP Watchdog");
 		this.setDaemon(true);
 		this.start();
 		this.isClient = isClient;
-		if(isClient) {
-			try {
-				isGamePaused = ObfuscationHelper.getDeclaredField(NAMES.isGamePausedServer, IntegratedServer.class);
-				isGamePaused.setAccessible(true);
-			} catch(NoSuchFieldException e) {
-				e.printStackTrace();
-			} catch(SecurityException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 
 	public static void tickServer() {
@@ -56,13 +42,7 @@ public class Watchdog extends Thread {
 				boolean serverPaused = false;
 				if(FMLCommonHandler.instance().getMinecraftServerInstance() != null) {
 					if(FMLCommonHandler.instance().getMinecraftServerInstance() instanceof IntegratedServer) {
-						try {
-							serverPaused = isGamePaused.getBoolean(FMLCommonHandler.instance().getMinecraftServerInstance());
-						} catch(IllegalArgumentException e) {
-							e.printStackTrace();
-						} catch(IllegalAccessException e) {
-							e.printStackTrace();
-						}
+						serverPaused = ((IntegratedServer)FMLCommonHandler.instance().getMinecraftServerInstance()).isGamePaused;
 					}
 					if(FMLCommonHandler.instance().getMinecraftServerInstance().isServerStopped()) {
 						timeStempServer = 0;

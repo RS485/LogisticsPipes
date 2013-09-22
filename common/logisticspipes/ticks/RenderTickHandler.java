@@ -1,8 +1,6 @@
 package logisticspipes.ticks;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.EnumSet;
@@ -10,8 +8,6 @@ import java.util.List;
 
 import logisticspipes.renderer.LogisticsGuiOverrenderer;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.utils.ObfuscationHelper;
-import logisticspipes.utils.ObfuscationHelper.NAMES;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 
@@ -78,18 +74,6 @@ public class RenderTickHandler implements ITickHandler {
 			}
 		}
 	}
-	
-	private Method getSetupCameraTransformMethod() throws NoSuchMethodException {
-		Minecraft mc = FMLClientHandler.instance().getClient();
-		Class<?> start = mc.entityRenderer.getClass();
-		while(!start.equals(Object.class)) {
-			try {
-				return ObfuscationHelper.getDeclaredMethod(NAMES.setupCameraTransform, start, float.class, int.class);
-			} catch(Exception e) {}
-			start = start.getSuperclass();
-		}
-		throw new NoSuchMethodException("Can't find setupCameraTransform or a to display HUD");
-	}
 
 	@Override
 	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
@@ -99,22 +83,8 @@ public class RenderTickHandler implements ITickHandler {
 				GL11.glPushMatrix();
 				Minecraft mc = FMLClientHandler.instance().getClient();
 				//Orientation
-				try {
-					Method camera = getSetupCameraTransformMethod();
-					camera.setAccessible(true);
-					camera.invoke(mc.entityRenderer, new Object[]{tickData[0],1});
-					ActiveRenderInfo.updateRenderInfo(mc.thePlayer, mc.gameSettings.thirdPersonView == 2);
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
+				mc.entityRenderer.setupCameraTransform((Float)tickData[0], 1);
+				ActiveRenderInfo.updateRenderInfo(mc.thePlayer, mc.gameSettings.thirdPersonView == 2);
 				LogisticsHUDRenderer.instance().renderWorldRelative(renderTicks, (Float) tickData[0]);
 				mc.entityRenderer.setupOverlayRendering();
 				GL11.glPopMatrix();

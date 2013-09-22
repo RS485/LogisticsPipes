@@ -51,6 +51,9 @@ import net.minecraft.world.World;
 
 import org.lwjgl.input.Keyboard;
 
+import buildcraft.transport.BlockGenericPipe;
+import buildcraft.transport.Pipe;
+
 public class ItemModule extends LogisticsItem {
 
 	//PASSIVE MODULES
@@ -250,6 +253,12 @@ public class ItemModule extends LogisticsItem {
 		if(MainProxy.isServer(par2EntityPlayer.worldObj)) {
 			TileEntity tile = par3World.getBlockTileEntity(par4, par5, par6);
 			if(tile instanceof LogisticsTileGenericPipe) {
+				if (par2EntityPlayer.username.equals("ComputerCraft")) { //Allow turtle to place modules in pipes.
+					Pipe<?> pipe = BlockGenericPipe.getPipe(par3World, par4, par5, par6);
+					if (BlockGenericPipe.isValid(pipe)){
+						pipe.blockActivated(par2EntityPlayer);
+					}
+				}
 				return true;
 			}
 			openConfigGui(par1ItemStack, par2EntityPlayer, par3World);

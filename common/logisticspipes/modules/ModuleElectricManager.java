@@ -74,8 +74,7 @@ public class ModuleElectricManager extends LogisticsGuiModule implements IClient
 	}
 	public void setDischargeMode(boolean isDischargeMode){
 		_dischargeMode = isDischargeMode;
-//TODO 	MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ELECTRIC_MANAGER_STATE, getX(), getY(), getZ(), slot, isDischargeMode() ? 1 : 0).getPacket(), localModeWatchers);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ElectricManagetMode.class).setInteger(slot).setInteger(isDischargeMode() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ElectricManagetMode.class).setInteger(slot).setInteger(isDischargeMode() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
 	@Override

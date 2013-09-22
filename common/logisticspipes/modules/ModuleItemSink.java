@@ -61,8 +61,7 @@ public class ModuleItemSink extends LogisticsGuiModule implements IClientInforma
 	}
 	public void setDefaultRoute(boolean isDefaultRoute){
 		_isDefaultRoute = isDefaultRoute;
-//TODO 	MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ITEM_SINK_STATUS, getX(), getY(), getZ(), slot, isDefaultRoute() ? 1 : 0).getPacket(), localModeWatchers);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(slot).setInteger(isDefaultRoute() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(ItemSinkDefault.class).setInteger2(slot).setInteger(isDefaultRoute() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
 	@Override

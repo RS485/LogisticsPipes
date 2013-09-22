@@ -238,8 +238,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 
 	public void setItemsIncluded(boolean flag) {
 		_itemsIncluded = flag;
-//TODO 	MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_RESPONSE, getX(), getY(), getZ(), slot, areItemsIncluded() ? 1 : 0).getPacket(), localModeWatchers);
-		MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
+		if(!localModeWatchers.isEmpty()) MainProxy.sendToPlayerList(PacketHandler.getPacket(AdvancedExtractorInclude.class).setInteger2(slot).setInteger(areItemsIncluded() ? 1 : 0).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}
 
 	@Override

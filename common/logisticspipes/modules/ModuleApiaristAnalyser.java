@@ -188,14 +188,11 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	public void modeChanged() {
 		if(_world != null) {
 			if(MainProxy.isServer(_world.getWorld())) {
-//TODO 			MainProxy.sendToPlayerList(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), localModeWatchers);
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			} else {
-//TODO 			MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}
 		} else {
-//TODO 		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		}
 	}
@@ -211,7 +208,6 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 	@Override
 	public void startWatching(EntityPlayer player) {
 		localModeWatchers.add(player);
-//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.APIRARIST_ANALYZER_EXTRACTMODE, getX(), getY(), getZ(), slot, getExtractMode()).getPacket(), (Player)player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ApiaristAnalyserMode.class).setInteger2(slot).setInteger(getExtractMode()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 	}
 

@@ -201,7 +201,7 @@ public class PathFinder {
 			
 			if (tile == null) continue;
 			
-			if (tile instanceof TileGenericPipe && (isDirectConnection || SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile, direction, true))) {
+			if (tile instanceof TileGenericPipe && ((TileGenericPipe)tile).pipe != null && (isDirectConnection || SimpleServiceLocator.buildCraftProxy.checkPipesConnections(startPipe, tile, direction, true))) {
 				TileGenericPipe currentPipe = (TileGenericPipe) tile;
 				if (setVisited.contains(tile)) {
 					//Don't go where we have been before

@@ -169,14 +169,17 @@ public class SimpleInventory implements IInventory, ISaveState{
     		NBTTagCompound nbttagcompound2 = (NBTTagCompound) nbttaglist.tagAt(j);
     		int index = nbttagcompound2.getInteger("index");
     		if(index < _contents.length) {
-    			ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(ItemStack.loadItemStackFromNBT(nbttagcompound2));
-    			if(!isValidStack(itemstack)) {
-    				FluidIdentifier fluid = FluidIdentifier.convertFromID(itemstack.getItem().itemID);
-    				if(fluid != null) {
-    					_contents [index] = fluid.getItemIdentifier().makeStack(1);
-    				}
-    			} else {
-    				_contents [index] = itemstack;
+    			ItemStack stack = ItemStack.loadItemStackFromNBT(nbttagcompound2);
+    			if(stack != null) {
+					ItemIdentifierStack itemstack = ItemIdentifierStack.getFromStack(stack);
+					if(!isValidStack(itemstack)) {
+						FluidIdentifier fluid = FluidIdentifier.convertFromID(itemstack.getItem().itemID);
+						if(fluid != null) {
+							_contents [index] = fluid.getItemIdentifier().makeStack(1);
+						}
+					} else {
+						_contents [index] = itemstack;
+					}
     			}
     		} else {
     			LogisticsPipes.log.severe("SimpleInventory: java.lang.ArrayIndexOutOfBoundsException: " + index + " of " + _contents.length);

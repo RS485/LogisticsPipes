@@ -98,7 +98,6 @@ public class ItemModule extends LogisticsItem {
 		private String name;
 		private int id;
 		private Class<? extends LogisticsModule> moduleClass;
-		@SideOnly(Side.CLIENT)
 		private Icon moduleIcon = null;
 
 		private Module(int id, String name, Class<? extends LogisticsModule> moduleClass) {

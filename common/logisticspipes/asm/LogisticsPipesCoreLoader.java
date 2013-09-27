@@ -5,7 +5,7 @@ import java.util.Map;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 
-@MCVersion(value="1.6.2")
+@MCVersion("1.6.2")
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	@Override
 	public String[] getLibraryRequestClass() {

@@ -3,9 +3,7 @@ package logisticspipes.asm;
 import java.util.Map;
 
 import cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import cpw.mods.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 
-@MCVersion("1.6.2")
 public class LogisticsPipesCoreLoader implements IFMLLoadingPlugin {
 	@Override
 	public String[] getLibraryRequestClass() {

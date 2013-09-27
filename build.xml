@@ -34,7 +34,7 @@
 	<property name="antcont.version"      value="1.0b3"/>
 	<property name="mc.version"           value="1.6.2"/>
 	<property name="forge.version"        value="9.10.1.850"/>
-	<property name="forge.setup.version"  value="1"/> <!-- Change to regenerate Forge setup -->
+	<property name="forge.setup.version"  value="2"/> <!-- Change to regenerate Forge setup -->
 	<property name="bc.version"           value="4.0.2"/>
 	<property name="forestry.version"     value="2.3.0.0"/>
 	<property name="ic2.version"          value="2.0.143-experimental"/>
@@ -85,7 +85,7 @@
 			</fileset>
 		</unzip>
 
-		<copy file="${src.dir}/resources/lp_at.cfg" todir="${forge.dir}/accesstransformers"/>
+		<copy file="${src.dir}/resources/lp_at_${mc.version}.cfg" todir="${forge.dir}/accesstransformers"/>
 
 		<!-- Set executable permission on forge's *.sh -->
 		<chmod dir="${forge.dir}" perm="a+rx" includes="**.sh"/>

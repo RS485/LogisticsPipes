@@ -15,9 +15,7 @@ import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -121,8 +119,6 @@ public class RequestTreeNode {
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
-			extra.relayPoints = new LinkedList<IRelayItem>();
-			extra.relayPoints.addAll(promise.relayPoints);
 			extrapromises.add(extra);
 		}
 		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
@@ -312,7 +308,6 @@ public class RequestTreeNode {
 		Collections.sort(validSources, new workWeightedSorter(1.0));
 		
 		List<Pair<IProvideItems,List<IFilter>>> providers = new LinkedList<Pair<IProvideItems,List<IFilter>>>();
-		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validSources) {
 			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
@@ -323,19 +318,7 @@ public class RequestTreeNode {
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
 					used.set(r.root.getSimpleID());
 				}
-				if(r.destination instanceof IFilteringRouter) {
-					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
-				}
 			}
-		}
-		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
-			filters.add(filter);
-			for(ExitRoute router:((IFilteringRouter)r.destination).getRouters()) {
-				providers.addAll(getProviders(router.destination, item, used, filters));
-			}
-			filters.remove(filter);
 		}
 		return providers;
 	}
@@ -554,11 +537,7 @@ outer:
 			if(setsAbleToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
 				//LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
-				List<IRelayItem> relays = new LinkedList<IRelayItem>();
-				for(IFilter filter:crafter.getValue2()) {
-					relays.add(filter);
-				}
-				LogisticsPromise job = template.generatePromise(setsAbleToCraft, relays);
+				LogisticsPromise job = template.generatePromise(setsAbleToCraft);
 				if(job.numberOfItems!=setsAbleToCraft*this.setSize)
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				treeNode.addPromise(job);
@@ -588,7 +567,6 @@ outer:
 
 	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations, BitSet layer, List<IFilter> filters) {
 		List<Pair<CraftingTemplate,List<IFilter>>> crafters = new ArrayList<Pair<CraftingTemplate,List<IFilter>>>(validDestinations.size());
-		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
 		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
 			CoreRoutedPipe pipe = r.destination.getPipe();
@@ -605,18 +583,7 @@ outer:
 						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
 					}
 				}
-				if(r.destination instanceof IFilteringRouter) {
-					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
-				}
 			}
-		}
-		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
-			filters.add(filter);
-			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(itemToCraft,((IFilteringRouter)r.destination).getRouters(), used, filters);
-			filters.remove(filter);
-			crafters.addAll(list);
 		}
 		// don't need to sort, as a sorted list is passed in and List guarantees order preservation
 //		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
@@ -744,7 +711,7 @@ outer:
 			new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 		}
 
-		this.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
+		this.addPromise(template.generatePromise(nCraftingSetsNeeded));
 
 		for(RequestTreeNode subNode : this.subRequests) {
 			subNode.recurseFailedRequestTree();

@@ -27,7 +27,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import logisticspipes.Configs;
 import logisticspipes.api.ILogisticsPowerProvider;
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -139,7 +138,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	public List<ExitRoute> _routeTable = Collections.unmodifiableList(new ArrayList<ExitRoute>());
 	public List<ExitRoute> _routeCosts = Collections.unmodifiableList(new ArrayList<ExitRoute>());
 	public List<ILogisticsPowerProvider> _powerTable = Collections.unmodifiableList(new ArrayList<ILogisticsPowerProvider>());
-	public List<IRouter> _firewallRouter = Collections.unmodifiableList(new ArrayList<IRouter>());
+	//public List<IRouter> _firewallRouter = Collections.unmodifiableList(new ArrayList<IRouter>());
 	
 	private EnumSet<ForgeDirection> _routedExits = EnumSet.noneOf(ForgeDirection.class);
 
@@ -302,14 +301,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		if (thisPipe == null) return false;
 		HashMap<CoreRoutedPipe, ExitRoute> adjacent;
 		List<ILogisticsPowerProvider> power;
-		PathFinder finder;
-		if(thisPipe instanceof PipeItemsFirewall) {
-			finder = new PathFinder(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH, ((PipeItemsFirewall)thisPipe).getRouterSide(this));
-			power = new ArrayList<ILogisticsPowerProvider>();
-		} else {
-			finder=new PathFinder(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH);
-			power = finder.powerNodes;
-		}
+		PathFinder finder = new PathFinder(thisPipe.container, Configs.LOGISTICS_DETECTION_COUNT, Configs.LOGISTICS_DETECTION_LENGTH);
+		power = finder.powerNodes;
 		adjacent = finder.result;
 		
 		for(CoreRoutedPipe pipe : adjacent.keySet()) {
@@ -384,7 +377,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			HashMap<IRouter, ExitRoute> adjacentRouter = new HashMap<IRouter, ExitRoute>();
 			EnumSet<ForgeDirection> routedexits = EnumSet.noneOf(ForgeDirection.class);
 			for(Entry<CoreRoutedPipe,ExitRoute> pipe:adjacent.entrySet()) {
-				adjacentRouter.put(pipe.getKey().getRouter(pipe.getValue().insertOrientation), pipe.getValue());
+				adjacentRouter.put(pipe.getKey().getRouter(), pipe.getValue());
 				if(pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRouteTo) || pipe.getValue().connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 					routedexits.add(pipe.getValue().exitOrientation);
 			}
@@ -477,7 +470,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			powerTable = new ArrayList<ILogisticsPowerProvider>(_powerAdjacent);
 		else 
 			powerTable = new ArrayList<ILogisticsPowerProvider>(5);
-		ArrayList<IRouter> firewallRouter = new ArrayList<IRouter>();
 		
 		//space and time inefficient, a bitset with 3 bits per node would save a lot but makes the main iteration look like a complete mess
 		ArrayList<EnumSet<PipeRoutingConnectionType>> closedSet = new ArrayList<EnumSet<PipeRoutingConnectionType>>(getBiggestSimpleID());
@@ -507,10 +499,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		while ((lowestCostNode = candidatesCost.poll()) != null){
 			if(!lowestCostNode.hasActivePipe())
 				continue;
-
-			if(lowestCostNode.destination instanceof IFilteringRouter) {
-				firewallRouter.add(lowestCostNode.destination);
-			}
 			
 			//if the node does not have any flags not in the closed set, check it
 			EnumSet<PipeRoutingConnectionType> lowestCostClosedFlags = closedSet.get(lowestCostNode.destination.getSimpleID());
@@ -587,7 +575,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 			}
 			node.root = this.getRouter(hop.exitOrientation); // replace the root with this, rather than the first hop.
 			node.exitOrientation = hop.exitOrientation;
-			node.insertOrientation = hop.insertOrientation;
+			//node.insertOrientation = hop.insertOrientation;
 			while (node.destination.getSimpleID() >= routeTable.size()) // the array will not expand, as it is init'd to contain enough elements
 				routeTable.add(null);
 			
@@ -608,8 +596,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				_lastLSAVersion[simpleID] = version_to_update_to;
 				_powerTable = Collections.unmodifiableList(powerTable);
 				_routeTable = Collections.unmodifiableList(routeTable);
-				_routeCosts = Collections.unmodifiableList(routeCosts); 
-				_firewallRouter = Collections.unmodifiableList(firewallRouter);
+				_routeCosts = Collections.unmodifiableList(routeCosts);
 			}
 			SharedLSADatabasereadLock.unlock();
 		}
@@ -782,11 +769,6 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	@Override
 	public boolean isSideDisconneceted(ForgeDirection dir) {
 		return ForgeDirection.UNKNOWN != dir && sideDisconnected[dir.ordinal()];
-	}
-
-	@Override
-	public List<IRouter> getFilteringRouter() {
-		return _firewallRouter;
 	}
 
 	@Override

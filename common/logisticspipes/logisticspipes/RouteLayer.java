@@ -6,9 +6,7 @@
 
 package logisticspipes.logisticspipes;
 
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -37,19 +35,7 @@ public class RouteLayer {
 		
 		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back		
 		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination()) || item.getArrived())){
-			if(!item.isItemRelayed()) {
-				item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
-			} else {
-				int destination = item.getDestination();
-				for(ExitRoute node:_router.getIRoutersByCost()) {
-					if(node.destination instanceof IFilteringRouter) {
-						if(((IFilteringRouter)node.destination).isIdforOtherSide(destination)) {
-							item.replaceRelayID(node.destination.getSimpleID());
-							break;
-						}
-					}
-				}
-			}
+			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
 		}
 		
 		item.checkIDFromUUID();

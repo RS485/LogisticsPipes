@@ -1,12 +1,10 @@
 package logisticspipes.pipes;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.logisticspipes.ExtractionMode;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
@@ -21,6 +19,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
@@ -83,7 +82,7 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode) {
+	public void sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
@@ -93,22 +92,14 @@ public class PipeItemsApiaristAnalyser extends CoreRoutedPipe implements IInvent
 				itemToSend.setTransportMode(TransportMode.Passive);
 			}
 		}
-		List<IRelayItem> list = new LinkedList<IRelayItem>();
-		if(reply.getValue3() != null) {
-			for(IFilter filter:reply.getValue3()) {
-				list.add(filter);
-			}
-		}
-		itemToSend.addRelayPoints(list);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
+	public void sendStack(ItemStack stack, int destination, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
-		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 

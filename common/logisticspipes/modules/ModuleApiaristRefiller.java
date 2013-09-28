@@ -6,14 +6,13 @@ import java.util.List;
 import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.inventory.IInventory;
@@ -100,7 +99,7 @@ public class ModuleApiaristRefiller extends LogisticsModule {
 		if(reinsertBee(stack[0], sinv, direction))
 			return;
 
-		Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
+		Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 		if(reply == null) return;
 		_power.useEnergy(20);
 		sinv.extractItem(true, direction, 1);

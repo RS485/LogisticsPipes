@@ -62,7 +62,6 @@ public interface IRouter {
 	
 	public void clearInterests();
 	public List<ILogisticsPowerProvider> getPowerProvider();
-	public List<IRouter> getFilteringRouter();
 	
 	public boolean isValidCache();
 	

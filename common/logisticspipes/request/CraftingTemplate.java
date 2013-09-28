@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.routing.LogisticsPromise;
@@ -68,12 +67,11 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		_byproduct.add(stack);
 	}
 	
-	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
+	public LogisticsPromise generatePromise(int nResultSets) {
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = _result.getItem();
 		promise.numberOfItems = _result.stackSize * nResultSets;
 		promise.sender = _crafter;
-		promise.relayPoints = relays;
 		return promise;
 	}
 	

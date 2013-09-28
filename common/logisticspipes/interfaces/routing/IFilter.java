@@ -2,7 +2,7 @@ package logisticspipes.interfaces.routing;
 
 import logisticspipes.utils.ItemIdentifier;
 
-public interface IFilter extends IRelayItem {
+public interface IFilter {
 	boolean isBlocked();
 	boolean isFilteredItem(ItemIdentifier item);
 	boolean blockProvider();

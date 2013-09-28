@@ -29,7 +29,6 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -91,7 +90,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
@@ -126,7 +125,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
 	
-	public final LinkedList<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> _extras = new LinkedList<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>>();
+	public final LinkedList<Pair<ItemIdentifierStack, IRequestItems>> _extras = new LinkedList<Pair<ItemIdentifierStack, IRequestItems>>();
 	private boolean init = false;
 	private boolean doContentUpdate = true;
 	
@@ -306,7 +305,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && (_orderManager.hasOrders() || !_extras.isEmpty())) {
-			Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> nextOrder;
+			Pair<ItemIdentifierStack, IRequestItems> nextOrder;
 			boolean processingOrder=false;
 			if(_orderManager.hasOrders()){
 				nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
@@ -351,7 +350,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
 					item.setDestination(nextOrder.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
-					item.addRelayPoints(nextOrder.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
 					if(_orderManager.hasOrders()){
@@ -378,7 +376,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	private void removeExtras(int numToSend, ItemIdentifier item) {
-		Iterator<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> i = _extras.iterator();
+		Iterator<Pair<ItemIdentifierStack, IRequestItems>> i = _extras.iterator();
 		while(i.hasNext()){
 			ItemIdentifierStack e = i.next().getValue1();
 			if(e.getItem()== item) {
@@ -400,7 +398,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(_extras == null)
 			return 0;
 		int count = 0;
-		for(Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> e : _extras){
+		for(Pair<ItemIdentifierStack, IRequestItems> e : _extras){
 			count += e.getValue1().stackSize;
 		}
 		return count;
@@ -434,7 +432,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			if(filter.isBlocked() == filter.isFilteredItem(requestedItem.getUndamaged()) || filter.blockProvider()) return;
 		}
 		int remaining = 0;
-		for(Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> extra:_extras){
+		for(Pair<ItemIdentifierStack, IRequestItems> extra:_extras){
 			if(extra.getValue1().getItem()==requestedItem){
 				remaining += extra.getValue1().stackSize;
 			}
@@ -447,11 +445,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
 		promise.sender = this;
 		promise.provided = true;
-		List<IRelayItem> relays = new LinkedList<IRelayItem>();
-		for(IFilter filter:filters) {
-			relays.add(filter);
-		}
-		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 
@@ -553,14 +546,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if (promise instanceof LogisticsExtraPromise) {
 			removeExtras(promise.numberOfItems, promise.item);
 		}
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
 	}
 
 	@Override
 	public void registerExtras(LogisticsPromise promise) {		
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
-		_extras.add(new Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>(stack,null,null));
+		_extras.add(new Pair<ItemIdentifierStack, IRequestItems>(stack,null));
 		LogisticsPipes.requestLog.info(stack.stackSize + " extras registered");
 	}
 

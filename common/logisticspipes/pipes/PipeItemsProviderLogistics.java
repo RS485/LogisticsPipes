@@ -27,7 +27,6 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
@@ -55,7 +54,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
@@ -134,7 +133,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		return 1;
 	}
 	
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
 		ItemIdentifier item = stack.getItem();
 		
 		WorldUtil wUtil = new WorldUtil(getWorld(), getX(), getY(), getZ());
@@ -177,7 +176,6 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, removed);
 			routedItem.setDestination(destination);
 			routedItem.setTransportMode(TransportMode.Active);
-			routedItem.addRelayPoints(relays);
 			super.queueRoutedItem(routedItem, tile.orientation);
 			
 			_orderManager.sendSuccessfull(sent, defersend);
@@ -237,13 +235,13 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
-		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
+		Pair<ItemIdentifierStack,IRequestItems> firstOrder = null;
+		Pair<ItemIdentifierStack,IRequestItems> order = null;
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _orderManager.peekAtTopRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), this.getWorld(), 3);
 			stacksleft -= 1;
@@ -270,17 +268,12 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 		promise.item = tree.getStackItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
 		promise.sender = this;
-		List<IRelayItem> relays = new LinkedList<IRelayItem>();
-		for(IFilter filter:filters) {
-			relays.add(filter);
-		}
-		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 	
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
 	}
 

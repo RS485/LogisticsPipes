@@ -11,8 +11,6 @@ package logisticspipes.pipes.basic;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +30,6 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -61,10 +57,8 @@ import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.PermissionException;
@@ -611,7 +605,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
-		} else if ((router != null) && getRouter(connection).isRoutedExit(connection)) {
+		} else if ((router != null) && getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
 		} else {
@@ -709,10 +703,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		}
 		return router;
-	}
-	
-	public IRouter getRouter(ForgeDirection dir) {
-		return getRouter();
 	}
 	
 	public boolean isEnabled(){
@@ -987,62 +977,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(stillNeedReplace) {
 			return null;
 		}
-		IRouter thisrouter = this.getRouter();
-		if(thisrouter.getFilteringRouter().isEmpty()) {
-			return thisrouter.getPowerProvider();
-		}
-		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>(thisrouter.getPowerProvider());
-		addAll(list, getRoutedPowerProviders(thisrouter, new BitSet(ServerRouter.getBiggestSimpleID()+1), new ArrayList<IFilter>()));
-		return list;
-	}
-	
-	private List<ILogisticsPowerProvider> getRoutedPowerProviders(IRouter router, BitSet layer, List<IFilter> filters) {
-		List<ILogisticsPowerProvider> power = new LinkedList<ILogisticsPowerProvider>();
-		List<IRouter> routersIndex = router.getFilteringRouter();
-		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
-		for (IRouter r:routersIndex) {
-			ExitRoute e = router.getDistanceTo(r);
-			if (e!=null) {
-				validSources.add(e);
-			}
-		}
-		Collections.sort(validSources, new workWeightedSorter(1.0));
-		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
-		BitSet used = (BitSet) layer.clone();
-		for(ExitRoute r : validSources) {
-			if(r.containsFlag(PipeRoutingConnectionType.canPowerFrom) && !used.get(r.destination.getSimpleID())) {
-				if(r.destination instanceof IFilteringRouter) {
-					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
-				}
-			}
-		}
-		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
-			filters.add(filter);
-			boolean canPassPower = true;
-			for(IFilter f:filters) {
-				if(f.blockPower()) canPassPower = false;
-			}
-			IRouter center = r.destination.getRouter(ForgeDirection.UNKNOWN);
-			if(center != null) {
-				if(canPassPower) {
-					addAll(power, center.getPowerProvider());
-				}
-				List<ILogisticsPowerProvider> list = getRoutedPowerProviders(center, used, filters);
-				addAll(power, list);
-			}
-			filters.remove(filter);
-		}
-		return power;
-	}
-	
-	private <T> void addAll(List<ILogisticsPowerProvider> list, List<ILogisticsPowerProvider> list2) {
-		for(ILogisticsPowerProvider o:list2) {
-			if(!list.contains(o)) {
-				list.add(o);
-			}
-		}
+		return this.getRouter().getPowerProvider();
 	}
 	
 	@Override

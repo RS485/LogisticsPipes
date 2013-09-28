@@ -174,11 +174,6 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<IRouter> getFilteringRouter() {
-		return null;
-	}
-
-	@Override
 	public boolean isValidCache() {
 		return true;
 	}

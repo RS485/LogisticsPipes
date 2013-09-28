@@ -9,7 +9,6 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -18,7 +17,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
@@ -98,7 +97,7 @@ public class ModuleApiaristAnalyser extends LogisticsGuiModule implements IClien
 				ItemStack item = inv.getStackInSlot(i);
 				if (SimpleServiceLocator.forestryProxy.isBee(item)) {
 					if (SimpleServiceLocator.forestryProxy.isAnalysedBee(item)) {
-						Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
+						Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(item), true, new ArrayList<Integer>());
 						if (reply == null)
 							continue;
 						if (_power.useEnergy(6)) {

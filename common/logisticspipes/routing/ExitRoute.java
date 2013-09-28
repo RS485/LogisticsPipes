@@ -8,8 +8,12 @@
 
 package logisticspipes.routing;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
+import java.util.List;
 
+import logisticspipes.interfaces.routing.IFilter;
 import net.minecraftforge.common.ForgeDirection;
 
 /**
@@ -17,19 +21,20 @@ import net.minecraftforge.common.ForgeDirection;
  */
 public class ExitRoute implements Comparable<ExitRoute>{
 	public ForgeDirection exitOrientation;
-	public ForgeDirection insertOrientation;
+	//public ForgeDirection insertOrientation;
 	public int distanceToDestination;
 	public final int destinationDistanceToRoot;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
 	public final IRouter destination;
-	public IRouter root;	
+	public IRouter root;
+	public List<IFilter> filters = Collections.unmodifiableList(new ArrayList<IFilter>(0));
 	
 	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails)
 	{
 		this.destination = destination;
 		this.root = source;
 		this.exitOrientation = exitOrientation;
-		this.insertOrientation = insertOrientation;
+		//this.insertOrientation = insertOrientation;
 		this.connectionDetails = connectionDetails;
 		if(connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
 			this.distanceToDestination=metric;
@@ -50,7 +55,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		this.root = other.root;
 		this.destination = other.destination;
 		this.exitOrientation = other.exitOrientation;
-		this.insertOrientation = other.insertOrientation;
+		//this.insertOrientation = other.insertOrientation;
 		this.distanceToDestination=other.distanceToDestination;
 		this.destinationDistanceToRoot=other.destinationDistanceToRoot;
 		this.connectionDetails = other.connectionDetails;
@@ -64,7 +69,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	    if ( !(aThat instanceof ExitRoute) ) return false;
 	    ExitRoute that = (ExitRoute)aThat;
 		return this.exitOrientation.equals(that.exitOrientation) && 
-				this.insertOrientation.equals(that.insertOrientation) && 
+				//this.insertOrientation.equals(that.insertOrientation) && 
 				this.connectionDetails.equals(that.connectionDetails) && 
 				this.distanceToDestination==that.distanceToDestination &&
 				this.destinationDistanceToRoot==that.destinationDistanceToRoot;
@@ -72,7 +77,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	
 	@Override
 	public String toString() {
-		return "{" + this.exitOrientation.name() + "," + this.insertOrientation.name() + "," + distanceToDestination +  "," + destinationDistanceToRoot + ", ConnectionDetails: " + connectionDetails + "}";
+		return "{" + this.exitOrientation.name() + "," + /*this.insertOrientation.name() + "," + */distanceToDestination +  "," + destinationDistanceToRoot + ", ConnectionDetails: " + connectionDetails + "}";
 	}
 
 	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {
@@ -119,12 +124,12 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		}
 		if(connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
 		{
-			this.insertOrientation = node.insertOrientation;
+			//this.insertOrientation = node.insertOrientation;
 			this.destinationDistanceToRoot=node.destinationDistanceToRoot;
 		}
 		else
 		{
-			this.insertOrientation = current.insertOrientation;
+			//this.insertOrientation = current.insertOrientation;
 			this.destinationDistanceToRoot=current.destinationDistanceToRoot;
 		}
 		this.connectionDetails.addAll(node.connectionDetails);

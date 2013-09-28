@@ -75,7 +75,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			}
 		}, connectionType);
 		for(CoreRoutedPipe connectedPipe: map.keySet()) {
-			IRouter newRouter = connectedPipe.getRouter(map.get(connectedPipe).insertOrientation);
+			IRouter newRouter = connectedPipe.getRouter();
 			connectedRouters.remove(newRouter);
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
 			Iterator<IRouter> iRouter = connectedRouters.iterator();
@@ -83,7 +83,7 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				IRouter router = iRouter.next();
 				ExitRoute exit = newRouter.getDistanceTo(router);
 				if(exit == null) continue;
-				if(exit.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
+				//if(exit.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
 				iRouter.remove();
 				if(!routers.containsKey(exit.exitOrientation)) {
 					routers.put(exit.exitOrientation, new ArrayList<IRouter>());

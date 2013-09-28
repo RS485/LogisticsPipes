@@ -3,7 +3,6 @@ package logisticspipes.proxy.ae;
 import java.util.List;
 
 import logisticspipes.interfaces.routing.ICraftItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.request.RequestTree;
@@ -50,13 +49,12 @@ public class AECraftingTemplate extends CraftingTemplate {
 	}
 	
 	@Override 
-	public LogisticsPromise generatePromise(int nResultSets, List<IRelayItem> relays) {
+	public LogisticsPromise generatePromise(int nResultSets) {
 		InterfaceCraftingResponse response = _interface.requestCrafting(_result.unsafeMakeNormalStack(), true);
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = ItemIdentifier.get(response.Request);
 		promise.numberOfItems = response.Request.stackSize;
 		promise.sender = _crafter;
-		promise.relayPoints = relays;
 		return promise;
 	}
 

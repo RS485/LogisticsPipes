@@ -25,7 +25,6 @@ import logisticspipes.network.packets.block.SecurityStationAuthorizedList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
 
 
@@ -98,37 +97,6 @@ public class RouterManager implements IRouterManager, IDirectConnectionManager, 
 								return r2;
 					r = new ServerRouter(UUid, dimension, xCoord, yCoord, zCoord);
 					
-					int rId= r.getSimpleID();
-					if(_routersServer.size()>rId)
-						_routersServer.set(rId, r);
-					else {
-						_routersServer.ensureCapacity(rId+1);
-						while(_routersServer.size()<=rId)
-							_routersServer.add(null);
-						_routersServer.set(rId, r);
-					}
-					this._uuidMap.put(r.getId(), r.getSimpleID());
-				}
-			}
-		}
-		return r;
-	}
-
-	@Override
-	public IRouter getOrCreateFirewallRouter(UUID UUid, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir, IRouter[] otherRouters) {
-		IRouter r = null;
-		int id=this.getIDforUUID(UUid);
-		if(id>0)
-			this.getRouter(id);
-		if (r == null || !r.isAt(dimension, xCoord, yCoord, zCoord)){
-			if(MainProxy.isClient()) {
-				r = new ClientRouter(UUid, dimension, xCoord, yCoord, zCoord);
-				synchronized (_routersClient) {
-					_routersClient.add(r);
-				}
-			} else {
-				synchronized (_routersServer) {
-					r = new FilteringRouter(UUid, dimension, xCoord, yCoord, zCoord, dir, otherRouters);
 					int rId= r.getSimpleID();
 					if(_routersServer.size()>rId)
 						_routersServer.set(rId, r);

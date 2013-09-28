@@ -3,6 +3,7 @@ package logisticspipes.network.packets.pipe;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 import logisticspipes.network.abstractpackets.CoordinatesPacket;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -65,8 +66,8 @@ public class StatUpdate extends CoordinatesPacket {
 		stat_lifetime_recieved = pipe.stat_lifetime_recieved;
 		stat_lifetime_relayed = pipe.stat_lifetime_relayed;
 		int numentries = 0;
-		for(ExitRoute route : pipe.getRouter().getRouteTable()) {
-			if(route != null)
+		for(List<ExitRoute> route : pipe.getRouter().getRouteTable()) {
+			if(route != null && !route.isEmpty())
 				++numentries;
 		}
 		server_routing_table_size = numentries;

@@ -8,10 +8,12 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.Pair;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -58,19 +60,19 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ForgeDirection getExitFor(int id) {
+	public List<ExitRoute> getExitsFor(int id) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return ForgeDirection.UNKNOWN;
+		return null;
 	}
 
 	@Override
-	public ArrayList<ExitRoute> getRouteTable() {
+	public ArrayList<List<ExitRoute>> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new  ArrayList<ExitRoute>();
+		return new ArrayList<List<ExitRoute>>();
 	}
 
 	@Override
@@ -129,7 +131,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ILogisticsPowerProvider> getPowerProvider() {
+	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider() {
 		return null;
 	}
 
@@ -164,7 +166,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ExitRoute getDistanceTo(IRouter r) {
+	public List<ExitRoute> getDistanceTo(IRouter r) {
 		return null;
 	}
 

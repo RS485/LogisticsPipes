@@ -7,6 +7,7 @@
 package logisticspipes.logisticspipes;
 
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -62,6 +63,11 @@ public class RouteLayer {
 			return ForgeDirection.UNKNOWN;
 		}
 		//Which direction should we send it
-		return _router.getExitFor(item.getDestination());
+		for(ExitRoute route:_router.getExitsFor(item.getDestination())) {
+			if(route.filters.isEmpty()) {
+				return route.exitOrientation;
+			}
+		}
+		return ForgeDirection.UNKNOWN;
 	}
 }

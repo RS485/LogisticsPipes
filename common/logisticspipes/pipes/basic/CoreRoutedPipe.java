@@ -30,6 +30,7 @@ import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -74,6 +75,7 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
@@ -449,10 +451,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		List<ExitRoute> table = r.getRouteTable();
+		List<List<ExitRoute>> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
-			if(table.get(i)!=null)
-			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i) + " distance)");
+			if(table.get(i) != null) {
+				if(table.get(i).size() > 0) {
+					System.out.println(i + " -> " + table.get(i).get(0).destination.getSimpleID());
+					for(ExitRoute route:table.get(i)) {
+						System.out.println("\t\t via " + route.exitOrientation + "(" + route.distanceToDestination + " distance)");
+					}
+				}
+			}
 		}
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
@@ -461,9 +469,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		System.out.println(Arrays.toString(container.pipeConnectionsBuffer));
 		System.out.println();
 		System.out.println("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~");
-		System.out.println(r.getPipe().getRoutedPowerProviders());
 		System.out.println(r.getPowerProvider());
+		System.out.println();
+		System.out.println("################END#################");
 		refreshConnectionAndRender(true);
+		System.out.print("");
+		sr.CreateRouteTable(Integer.MAX_VALUE);
 	}
 // end FromBaseRoutingLogic
 	
@@ -970,7 +981,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	/* Power System */
 
-	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
+	public List<Pair<ILogisticsPowerProvider,List<IFilter>>> getRoutedPowerProviders() {
 		if(MainProxy.isClient(getWorld())) {
 			return null;
 		}
@@ -996,10 +1007,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(amount == 0) return true;
 		if(providersToIgnore !=null && providersToIgnore.contains(this))
 			return false;
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		List<Pair<ILogisticsPowerProvider,List<IFilter>>> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount, providersToIgnore)) {
+outer:
+		for(Pair<ILogisticsPowerProvider,List<IFilter>> provider: list) {
+			for(IFilter filter:provider.getValue2()) {
+				if(filter.blockPower()) continue outer;
+			}
+			if(provider.getValue1().canUseEnergy(amount, providersToIgnore)) {
 				return true;
 			}
 		}
@@ -1020,11 +1035,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(providersToIgnore.contains(this))
 			return false;
 		providersToIgnore.add(this);
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		List<Pair<ILogisticsPowerProvider,List<IFilter>>> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount, providersToIgnore)) {
-				if(provider.useEnergy(amount, providersToIgnore)) {
+outer:
+		for(Pair<ILogisticsPowerProvider,List<IFilter>> provider: list) {
+			for(IFilter filter:provider.getValue2()) {
+				if(filter.blockPower()) continue outer;
+			}
+			if(provider.getValue1().canUseEnergy(amount, providersToIgnore)) {
+				if(provider.getValue1().useEnergy(amount, providersToIgnore)) {
 					if(sparkles) {
 						int particlecount = amount;
 						if (particlecount > 10) {

@@ -279,7 +279,7 @@ public class RequestTreeNode {
 		
 		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
 		if(thisPipe == null) return false;
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem(), new BitSet(ServerRouter.getBiggestSimpleID()))) {
 			if(this.isDone()) {
 				break;
 			}
@@ -291,7 +291,7 @@ public class RequestTreeNode {
 		return this.isDone();
 	}
 
-	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(IRouter destination, ItemIdentifier item, BitSet layer, List<IFilter> filters) {
+	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(IRouter destination, ItemIdentifier item, BitSet layer) {
 
 		// get all the routers
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item);
@@ -301,8 +301,8 @@ public class RequestTreeNode {
 
 			if(!r.isValidCache()) continue; //Skip Routers without a valid pipe
 
-			ExitRoute e = destination.getDistanceTo(r);
-			if (e!=null) validSources.add(e);
+			List<ExitRoute> e = destination.getDistanceTo(r);
+			if (e!=null) validSources.addAll(e);
 		}
 		// closer providers are good
 		Collections.sort(validSources, new workWeightedSorter(1.0));
@@ -314,7 +314,7 @@ public class RequestTreeNode {
 				CoreRoutedPipe pipe = r.destination.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();
-					list.addAll(filters);
+					list.addAll(r.filters);
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
 					used.set(r.root.getSimpleID());
 				}
@@ -332,12 +332,16 @@ public class RequestTreeNode {
 			if(extraPromise.numberOfItems == 0)
 				continue;
 			boolean valid = false;
-			ExitRoute source = extraPromise.sender.getRouter().getRouteTable().get(this.target.getRouter().getSimpleID());
-			if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-				for(ExitRoute node:this.target.getRouter().getIRoutersByCost()) {
-					if(node.destination == extraPromise.sender.getRouter()) {
-						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-							valid = true;
+			List<ExitRoute> sources = extraPromise.sender.getRouter().getRouteTable().get(this.target.getRouter().getSimpleID());
+outer:
+			for(ExitRoute source:sources) {
+				if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+					for(ExitRoute node:this.target.getRouter().getIRoutersByCost()) {
+						if(node.destination == extraPromise.sender.getRouter()) {
+							if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+								valid = true;
+								break outer;
+							}
 						}
 					}
 				}
@@ -360,8 +364,8 @@ public class RequestTreeNode {
 
 			if(!r.isValidCache()) continue; //Skip Routers without a valid pipe
 
-			ExitRoute e = this.target.getRouter().getDistanceTo(r);
-			if (e!=null) validSources.add(e);
+			List<ExitRoute> e = this.target.getRouter().getDistanceTo(r);
+			if (e!=null) validSources.addAll(e);
 		}
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);

@@ -13,8 +13,10 @@ import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.utils.Pair;
 import net.minecraftforge.common.ForgeDirection;
 
 public interface IRouter {
@@ -28,9 +30,9 @@ public interface IRouter {
 	
 	public boolean isRoutedExit(ForgeDirection connection);
 	public boolean hasRoute(int id);
-	public ForgeDirection getExitFor(int id);
+	public List<ExitRoute> getExitsFor(int id);
 	
-	public List<ExitRoute> getRouteTable();
+	public List<List<ExitRoute>> getRouteTable();
 	public List<ExitRoute> getIRoutersByCost();
 	public CoreRoutedPipe getPipe();
 	public CoreRoutedPipe getCachedPipe();
@@ -58,10 +60,10 @@ public interface IRouter {
 	
 	/* Automated Disconnection */
 	public boolean isSideDisconneceted(ForgeDirection dir);
-	public ExitRoute getDistanceTo(IRouter r);
+	public List<ExitRoute> getDistanceTo(IRouter r);
 	
 	public void clearInterests();
-	public List<ILogisticsPowerProvider> getPowerProvider();
+	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider();
 	
 	public boolean isValidCache();
 	

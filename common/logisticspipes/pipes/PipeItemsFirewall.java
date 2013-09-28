@@ -86,7 +86,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		return null;
 	}
 	
-	public IFilter getFilter(final UUID id, final int simpleid) {
+	public IFilter getFilter() {
 		return new IFilter() {
 			@Override
 			public boolean isBlocked() {

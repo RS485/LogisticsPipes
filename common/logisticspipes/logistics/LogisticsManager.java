@@ -62,9 +62,13 @@ public class LogisticsManager implements ILogisticsManager {
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
-			ExitRoute e = sourceRouter.getDistanceTo(r);
-			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-				validDestinations.add(e);
+			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
+			if (exits!=null) {
+				for(ExitRoute e:exits) {
+					if(e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+						validDestinations.add(e);
+				}
+			}
 		}
 		Collections.sort(validDestinations);
 		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), null, allowDefault);
@@ -111,6 +115,10 @@ public class LogisticsManager implements ILogisticsManager {
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 
 			if(used.get(candidateRouter.destination.getSimpleID())) continue;
+			
+			for(IFilter filter:candidateRouter.filters) {
+				if(filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) continue;
+			}
 
 			used.set(candidateRouter.destination.getSimpleID());
 			
@@ -149,7 +157,6 @@ public class LogisticsManager implements ILogisticsManager {
 		return result;
 	}
 	
-		
 	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result, boolean activeRequest, boolean allowDefault) {
 
 		SinkReply reply = null;
@@ -193,9 +200,13 @@ public class LogisticsManager implements ILogisticsManager {
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
-			ExitRoute e = sourceRouter.getDistanceTo(r);
-			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-				validDestinations.add(e);
+			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
+			if (exits!=null) {
+				for(ExitRoute e:exits) {
+					if(e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+						validDestinations.add(e);
+				}
+			}
 		}
 		Collections.sort(validDestinations);
 		if(item.getItemStack() != null && item.getItemStack().getItem() instanceof LogisticsFluidContainer) {

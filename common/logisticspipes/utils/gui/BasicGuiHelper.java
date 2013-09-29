@@ -66,48 +66,44 @@ public class BasicGuiHelper {
 		renderItemIdentifierStackListIntoGui(_allItems, IItemSearch, page, left, top, columns, items, xSize, ySize, mc, displayAmount, forcenumber, true, false);
 	}
 
-	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left , int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color, boolean disableEffect) {
+	public static void renderItemIdentifierStackListIntoGui(List<ItemIdentifierStack> _allItems, IItemSearch IItemSearch, int page, int left, int top, int columns, int items, int xSize, int ySize, Minecraft mc, boolean displayAmount, boolean forcenumber, boolean color, boolean disableEffect) {
 		GL11.glPushMatrix();
 		int ppi = 0;
 		int column = 0;
 		int row = 0;
 		FontRenderer fontRenderer = mc.fontRenderer;
 		RenderItem renderItem = new RenderItem();
-	    RenderBlocks renderBlocks = new RenderBlocks();
+		RenderBlocks renderBlocks = new RenderBlocks();
 		renderItem.renderWithColor = color;
-		for(ItemIdentifierStack itemStack : _allItems) {
+		for(ItemIdentifierStack itemStack: _allItems) {
 			if(itemStack == null) {
 				column++;
-				if (column >= columns){
+				if(column >= columns) {
 					row++;
 					column = 0;
 				}
 				ppi++;
-				continue;	
+				continue;
 			}
 			ItemIdentifier item = itemStack.getItem();
-			if(IItemSearch!= null && !IItemSearch.itemSearched(item)) continue;
+			if(IItemSearch != null && !IItemSearch.itemSearched(item)) continue;
 			ppi++;
 			
-			if (ppi <= items * page) continue;
-			if (ppi > items * (page+1)) continue;
+			if(ppi <= items * page) continue;
+			if(ppi > items * (page + 1)) continue;
 			ItemStack st = itemStack.unsafeMakeNormalStack();
 			int x = left + xSize * column;
 			int y = top + ySize * row;
-
-			GL11.glDisable(2896 /*GL_LIGHTING*/);
-			//GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
+			
+			GL11.glDisable(GL11.GL_LIGHTING);
 			
 			if(st != null && itemStack.getItem().isValid()) {
 				if(disableEffect) {
-					if (st != null)
-			        {
-			            if (!ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y))
-			            {
-			            	renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
-			            }
-			        }
-
+					if(st != null) {
+						if( !ForgeHooksClient.renderInventoryItem(renderBlocks, mc.renderEngine, st, renderItem.renderWithColor, renderItem.zLevel, x, y)) {
+							renderItem.renderItemIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
+						}
+					}
 				} else {
 					GL11.glTranslated(0, 0, 3.0);
 					renderItem.renderItemAndEffectIntoGUI(fontRenderer, mc.renderEngine, st, x, y);
@@ -115,44 +111,36 @@ public class BasicGuiHelper {
 				}
 			}
 			
-	        //GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-			GL11.glEnable(2896 /*GL_LIGHTING*/);
+			GL11.glEnable(GL11.GL_LIGHTING);
 			
 			if(displayAmount) {
 				String s;
-				if (st.stackSize == 1 && !forcenumber){
+				if(st.stackSize == 1 && !forcenumber) {
 					s = "";
-				} else if (st.stackSize < 1000) {
+				} else if(st.stackSize < 1000) {
 					s = st.stackSize + "";
-				} else if (st.stackSize < 100000){
+				} else if(st.stackSize < 100000) {
 					s = st.stackSize / 1000 + "K";
-				} else if (st.stackSize < 1000000){
+				} else if(st.stackSize < 1000000) {
 					s = "0M" + st.stackSize / 100000;
 				} else {
 					s = st.stackSize / 1000000 + "M";
 				}
-					
-				GL11.glDisable(2896 /*GL_LIGHTING*/);
+				
+				GL11.glDisable(GL11.GL_LIGHTING);
 				GL11.glTranslated(0.0D, 0.0D, 100.0D);
-				try {
-					drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-					GL11.glTranslated(0.0D, 0.0D, -100.0D);
-				} catch (Exception e) {
-					GL11.glTranslated(0.0D, 0.0D, -100.0D);
-					GL11.glDisable(2929 /*GL_DEPTH_TEST*/);
-					fontRenderer.drawStringWithShadow(s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
-					GL11.glEnable(2929 /*GL_DEPTH_TEST*/);
-				}
-				GL11.glEnable(2896 /*GL_LIGHTING*/);
+				drawStringWithShadow(fontRenderer, s, x + 16 - fontRenderer.getStringWidth(s), y + 8, 0xFFFFFF);
+				GL11.glTranslated(0.0D, 0.0D, -100.0D);
+				GL11.glEnable(GL11.GL_LIGHTING);
 			}
-
+			
 			column++;
-			if (column >= columns){
+			if(column >= columns) {
 				row++;
 				column = 0;
 			}
 		}
-		GL11.glDisable(2896 /*GL_LIGHTING*/);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPopMatrix();
 	}
 	
@@ -166,45 +154,19 @@ public class BasicGuiHelper {
      * @throws IllegalAccessException 
      * @throws NoSuchFieldException 
      */
-    private static int drawStringWithShadow(FontRenderer fontRenderer,String par1Str, int par2, int par3, int par4) throws Exception {
-    	Method a = getObfuMethod(fontRenderer.getClass(), "c", "resetStyles");
-    	a.setAccessible(true);
-    	a.invoke(fontRenderer);
-
-    	Field b = getObfuField(fontRenderer.getClass(), "m", "bidiFlag");
-    	b.setAccessible(true);
-        if (((Boolean)b.get(fontRenderer)).booleanValue())
-        {	
-        	Method c = getObfuMethod(fontRenderer.getClass(), "c", "bidiReorder", String.class);
-        	c.setAccessible(true);
-        	par1Str = (String)c.invoke(fontRenderer, par1Str);
-        }
-        Method d = getObfuMethod(fontRenderer.getClass(), "b", "renderString", String.class, int.class, int.class, int.class, boolean.class);
-        d.setAccessible(true);
-        int var5 = ((Integer)d.invoke(fontRenderer, par1Str, par2 + 1, par3 + 1, par4, true)).intValue();
-
+	private static int drawStringWithShadow(FontRenderer fontRenderer, String par1Str, int par2, int par3, int par4) {
+		fontRenderer.resetStyles();
+		if(fontRenderer.bidiFlag) {
+			par1Str = fontRenderer.bidiReorder(par1Str);
+		}
+		int var5 = fontRenderer.renderString(par1Str, par2 + 1, par3 + 1, par4, true);
+		
 		GL11.glTranslated(0.0D, 0.0D, 1.0D);
-        var5 = Math.max(var5, ((Integer)d.invoke(fontRenderer, par1Str, par2, par3, par4, false)).intValue());
+		var5 = Math.max(var5, fontRenderer.renderString(par1Str, par2, par3, par4, false));
 		GL11.glTranslated(0.0D, 0.0D, -1.0D);
 		
-        return var5;
-    }
-    
-    private static Field getObfuField(Class<?> clazz, String name1, String name2) throws SecurityException, NoSuchFieldException {
-    	try {
-    		return clazz.getDeclaredField(name1);
-    	} catch(Exception e) {
-    		return clazz.getDeclaredField(name2);
-    	}
-    }
-    
-    private static Method getObfuMethod(Class<?> clazz, String name1, String name2, Class<?>... objects) throws NoSuchMethodException, SecurityException {
-    	try {
-        	return clazz.getDeclaredMethod(name1, objects);
-    	} catch(Exception e) {
-    		return clazz.getDeclaredMethod(name2, objects);
-    	}
-    }
+		return var5;
+	}
     
 	private static float zLevel;
 	

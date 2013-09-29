@@ -522,6 +522,10 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 						matches = true;
 						break;
 					}
+					//if(filter.containsAll(lowestCostNode.filters)) {
+					//	matches = true;
+					//	break;
+					//}
 				}
 				if(matches) {
 					continue;
@@ -782,21 +786,41 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	@Override
-	public List<ExitRoute> getExitsFor(int id) {
-		return this.getRouteTable().get(id);
+	public ForgeDirection getExitFor(int id, boolean active, ItemIdentifier type) {
+		if(this.getRouteTable().get(id) == null) return ForgeDirection.UNKNOWN;
+outer:
+		for(ExitRoute exit: this.getRouteTable().get(id)) {
+			if(exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+				for(IFilter filter:exit.filters) {
+					if(!active) {
+						if(filter.blockRouting() || filter.isBlocked() == filter.isFilteredItem(type)) continue outer;
+					} else  {
+						if((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) continue outer;
+					}
+				}
+				return exit.exitOrientation;
+			}
+		}
+		return ForgeDirection.UNKNOWN;
 	}
 	
 	@Override
-	public boolean hasRoute(int id) {
+	public boolean hasRoute(int id, boolean active, ItemIdentifier type) {
 		if (!SimpleServiceLocator.routerManager.isRouterUnsafe(id,false)) return false;
-		if(getRouteTable().size()<=id)
+		if(getRouteTable().size() <= id)
 			return false;
 		List<ExitRoute> source = this.getRouteTable().get(id);
 		if(source == null) return false;
-		if(source.isEmpty()) return false;
-		if(source.size() == 1) return source.get(0).containsFlag(PipeRoutingConnectionType.canRouteTo);
-		for(ExitRoute route:source) {
-			if(route.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+outer:
+		for(ExitRoute exit: source) {
+			if(exit.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+				for(IFilter filter:exit.filters) {
+					if(!active) {
+						if(filter.blockRouting() || filter.isBlocked() == filter.isFilteredItem(type)) continue outer;
+					} else  {
+						if((filter.blockProvider() && filter.blockCrafting()) || filter.isBlocked() == filter.isFilteredItem(type)) continue outer;
+					}
+				}
 				return true;
 			}
 		}
@@ -832,6 +856,8 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		ticksUntillNextInventoryCheck=REFRESH_TIME;
 		if(iterated++%this.simpleID==0)
 			ticksUntillNextInventoryCheck++; // randomly wait 1 extra tick - just so that every router doesn't tick at the same time
+		if(iterated >= ServerRouter.getBiggestSimpleID())
+			iterated = 0;
 		CoreRoutedPipe pipe = getPipe();
 		if(pipe==null)
 			return;

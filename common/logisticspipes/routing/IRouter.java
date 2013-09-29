@@ -16,6 +16,7 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraftforge.common.ForgeDirection;
 
@@ -29,8 +30,8 @@ public interface IRouter {
 	public void updateInterests(); // calls getInterests on the attached pipe, and updates the global cache.
 	
 	public boolean isRoutedExit(ForgeDirection connection);
-	public boolean hasRoute(int id);
-	public List<ExitRoute> getExitsFor(int id);
+	public boolean hasRoute(int id, boolean active, ItemIdentifier type);
+	public ForgeDirection getExitFor(int id, boolean active, ItemIdentifier type);
 	
 	public List<List<ExitRoute>> getRouteTable();
 	public List<ExitRoute> getIRoutersByCost();

@@ -52,7 +52,9 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 					if(!routers.containsKey(e.exitOrientation)) {
 						routers.put(e.exitOrientation, new ArrayList<IRouter>());
 					}
-					routers.get(e.exitOrientation).add(e.destination);
+					if(!routers.get(e.exitOrientation).contains(e.destination)) {
+						routers.get(e.exitOrientation).add(e.destination);
+					}
 				}
 			}
 			ArrayList<LaserData> lasers = new ArrayList<LaserData>();
@@ -85,13 +87,15 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 				IRouter router = iRouter.next();
 				List<ExitRoute> exit = newRouter.getDistanceTo(router);
 				if(exit == null) continue;
-				//if(exit.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
 				iRouter.remove();
 				for(ExitRoute e:exit) {
+					if(e.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
 					if(!routers.containsKey(e.exitOrientation)) {
 						routers.put(e.exitOrientation, new ArrayList<IRouter>());
 					}
-					routers.get(e.exitOrientation).add(e.destination);
+					if(!routers.get(e.exitOrientation).contains(e.destination)) {
+						routers.get(e.exitOrientation).add(e.destination);
+					}
 				}
 			}
 			for(ForgeDirection exitDir: routers.keySet()) {

@@ -79,7 +79,7 @@ public class GuiFirewall extends KraphtBaseGuiScreen {
 			}
 		}
 		mc.fontRenderer.drawString("Filtered items are:", guiLeft + 125, guiTop + 8, 0x404040);
-		mc.fontRenderer.drawString("Providering:", guiLeft + 138, guiTop + 41, 0x404040);
+		mc.fontRenderer.drawString("Providing:", guiLeft + 144, guiTop + 41, 0x404040);
 		mc.fontRenderer.drawString("Crafting:", guiLeft + 146, guiTop + 74, 0x404040);
 		mc.fontRenderer.drawString("Sorting:", guiLeft + 150, guiTop + 107, 0x404040);
 		mc.fontRenderer.drawString("Powerflow:", guiLeft + 142, guiTop + 141, 0x404040);

@@ -24,7 +24,7 @@ public class Pair4<T1, T2, T3, T4> extends Pair3<T1, T2, T3> {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(!(o instanceof Pair3)) return false;
+		if(!(o instanceof Pair4)) return false;
 		return  ((_value1 == null && ((Pair4<?, ?, ?, ?>)o)._value1 == null) || (_value1 != null && _value1.equals(((Pair4<?, ?, ?, ?>)o)._value1))) && 
 				((_value2 == null && ((Pair4<?, ?, ?, ?>)o)._value2 == null) || (_value2 != null && _value2.equals(((Pair4<?, ?, ?, ?>)o)._value2))) && 
 				((_value3 == null && ((Pair4<?, ?, ?, ?>)o)._value3 == null) || (_value3 != null && _value3.equals(((Pair4<?, ?, ?, ?>)o)._value3))) && 

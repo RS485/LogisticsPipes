@@ -13,6 +13,7 @@ import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.Pair;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
@@ -52,7 +53,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean hasRoute(int id) {
+	public boolean hasRoute(int id, boolean flag, ItemIdentifier item) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -60,11 +61,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ExitRoute> getExitsFor(int id) {
+	public ForgeDirection getExitFor(int id, boolean flag, ItemIdentifier item) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return null;
+		return ForgeDirection.UNKNOWN;
 	}
 
 	@Override

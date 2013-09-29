@@ -21,6 +21,7 @@ import net.minecraftforge.common.ForgeDirection;
  */
 public class ExitRoute implements Comparable<ExitRoute>{
 	public ForgeDirection exitOrientation;
+	public ForgeDirection insertOrientation;
 	public int distanceToDestination;
 	public final int destinationDistanceToRoot;
 	public final EnumSet<PipeRoutingConnectionType> connectionDetails;
@@ -28,11 +29,11 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	public IRouter root;
 	public List<IFilter> filters = Collections.unmodifiableList(new ArrayList<IFilter>(0));
 	
-	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails)
-	{
+	public ExitRoute(IRouter source, IRouter destination, ForgeDirection exitOrientation, ForgeDirection insertOrientation, int metric, EnumSet<PipeRoutingConnectionType> connectionDetails) {
 		this.destination = destination;
 		this.root = source;
 		this.exitOrientation = exitOrientation;
+		this.insertOrientation = insertOrientation;
 		this.connectionDetails = connectionDetails;
 		if(connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
 			this.distanceToDestination=metric;
@@ -46,16 +47,6 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		}
 	}
 
-
-	public ExitRoute(ExitRoute other) {
-		this.root = other.root;
-		this.destination = other.destination;
-		this.exitOrientation = other.exitOrientation;
-		this.distanceToDestination=other.distanceToDestination;
-		this.destinationDistanceToRoot=other.destinationDistanceToRoot;
-		this.connectionDetails = other.connectionDetails;
-	}
-
 	@Override
 	public boolean equals(Object aThat) {
 	    //check for self-comparison
@@ -64,6 +55,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	    if ( !(aThat instanceof ExitRoute) ) return false;
 	    ExitRoute that = (ExitRoute)aThat;
 		return this.exitOrientation.equals(that.exitOrientation) && 
+				this.insertOrientation.equals(that.insertOrientation) && 
 				this.connectionDetails.equals(that.connectionDetails) && 
 				this.distanceToDestination==that.distanceToDestination && 
 				this.destinationDistanceToRoot==that.destinationDistanceToRoot && 
@@ -72,7 +64,7 @@ public class ExitRoute implements Comparable<ExitRoute>{
 	
 	@Override
 	public String toString() {
-		return "{" + this.exitOrientation.name() + "," + /*this.insertOrientation.name() + "," + */distanceToDestination +  "," + destinationDistanceToRoot + ", ConnectionDetails: " + connectionDetails + ", " + this.filters + "}";
+		return "{" + this.exitOrientation.name() + "," + this.insertOrientation.name() + "," + distanceToDestination +  "," + destinationDistanceToRoot + ", ConnectionDetails: " + connectionDetails + ", " + this.filters + "}";
 	}
 
 	public void removeFlags(EnumSet<PipeRoutingConnectionType> flags) {
@@ -106,32 +98,4 @@ public class ExitRoute implements Comparable<ExitRoute>{
 		filter.addAll(filterB);
 		this.filters = Collections.unmodifiableList(filter);
 	}
-	
-	/*
-	public ExitRoute(ExitRoute current, ExitRoute node) {
-		this.root = current.root;
-		this.destination = current.destination;
-		this.connectionDetails = EnumSet.copyOf(current.connectionDetails);		
-		
-		if(node.connectionDetails.contains(PipeRoutingConnectionType.canRouteTo)) {
-			this.distanceToDestination=node.distanceToDestination;
-			this.exitOrientation = node.exitOrientation;
-		}
-		else{
-			this.exitOrientation = current.exitOrientation;
-			this.distanceToDestination=current.distanceToDestination;
-		}
-		if(connectionDetails.contains(PipeRoutingConnectionType.canRequestFrom))
-		{
-			//this.insertOrientation = node.insertOrientation;
-			this.destinationDistanceToRoot=node.destinationDistanceToRoot;
-		}
-		else
-		{
-			//this.insertOrientation = current.insertOrientation;
-			this.destinationDistanceToRoot=current.destinationDistanceToRoot;
-		}
-		this.connectionDetails.addAll(node.connectionDetails);
-	}
-	*/
 }

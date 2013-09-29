@@ -729,9 +729,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			CoreRoutedPipe satPipe = satellite;
 			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null || satPipe.isFluidPipe()) continue;
 			IRouter satRouter = satPipe.getRouter();
-			List<ExitRoute> route = getRouter().getDistanceTo(satRouter);
-			//TODO check connection details
-			if(route != null && !route.isEmpty()) {
+			List<ExitRoute> routes = getRouter().getDistanceTo(satRouter);
+			if(routes != null && !routes.isEmpty()) {
+				boolean filterFree = false;
+				for(ExitRoute route: routes) {
+					if(route.filters.isEmpty()) {
+						filterFree = true;
+						break;
+					}
+				}
+				if(!filterFree) continue;
 				if(x == -1) {
 					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
 						closestIdFound = satellite.satelliteId;
@@ -763,9 +770,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			CoreRoutedPipe satPipe = satellite;
 			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null || !satPipe.isFluidPipe()) continue;
 			IRouter satRouter = satPipe.getRouter();
-			List<ExitRoute> route = getRouter().getDistanceTo(satRouter);
-			//TODO check connection details
-			if(route != null && !route.isEmpty()) {
+			List<ExitRoute> routes = getRouter().getDistanceTo(satRouter);
+			if(routes != null && !routes.isEmpty()) {
+				boolean filterFree = false;
+				for(ExitRoute route: routes) {
+					if(route.filters.isEmpty()) {
+						filterFree = true;
+						break;
+					}
+				}
+				if(!filterFree) continue;
 				if(x == -1) {
 					if (!prev && satellite.satelliteId > liquidSatelliteId && satellite.satelliteId < closestIdFound) {
 						closestIdFound = satellite.satelliteId;

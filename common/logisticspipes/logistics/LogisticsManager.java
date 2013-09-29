@@ -277,12 +277,16 @@ public class LogisticsManager implements ILogisticsManager {
 		for(int i = 0; i < ServerRouter.getBiggestSimpleID(); i++)
 			items.add(new HashMap<ItemIdentifier, Integer>());
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+outer:
 		for(ExitRoute r: validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if (!(r.destination.getPipe() instanceof IProvideItems)) continue;
+			for(IFilter filter:r.filters) {
+				if(filter.blockProvider()) continue outer;
+			}
 			IProvideItems provider = (IProvideItems) r.destination.getPipe();
-			provider.getAllItems(items.get(r.destination.getSimpleID()), new ArrayList<IFilter>(0));
+			provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
 			used.set(r.destination.getSimpleID(), true);
 		}
 		//TODO: Fix this doubly nested list
@@ -308,16 +312,24 @@ public class LogisticsManager implements ILogisticsManager {
 	public LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+outer:
 		for (ExitRoute r : validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(r.destination.getSimpleID())) continue;
 			if (!(r.destination.getPipe() instanceof ICraftItems)) continue;
+			for(IFilter filter:r.filters) {
+				if(filter.blockCrafting()) continue outer;
+			}
 			ICraftItems crafter = (ICraftItems) r.destination.getPipe();
 			List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
 			if(craftedItems != null) {
+outer2:
 				for(ItemIdentifierStack craftedItem:craftedItems) {
-					if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())){
+					if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())) {
+						for(IFilter filter:r.filters) {
+							if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getItem())) continue outer2;
+						}
 						craftableItems.add(craftedItem.getItem());
 					}
 				}

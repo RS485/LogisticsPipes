@@ -279,7 +279,7 @@ public class RequestTreeNode {
 		
 		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
 		if(thisPipe == null) return false;
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem(), new BitSet(ServerRouter.getBiggestSimpleID()))) {
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem())) {
 			if(this.isDone()) {
 				break;
 			}
@@ -291,7 +291,7 @@ public class RequestTreeNode {
 		return this.isDone();
 	}
 
-	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(IRouter destination, ItemIdentifier item, BitSet layer) {
+	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(IRouter destination, ItemIdentifier item) {
 
 		// get all the routers
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item);
@@ -308,15 +308,13 @@ public class RequestTreeNode {
 		Collections.sort(validSources, new workWeightedSorter(1.0));
 		
 		List<Pair<IProvideItems,List<IFilter>>> providers = new LinkedList<Pair<IProvideItems,List<IFilter>>>();
-		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validSources) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
 				CoreRoutedPipe pipe = r.destination.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();
 					list.addAll(r.filters);
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
-					used.set(r.root.getSimpleID());
 				}
 			}
 		}
@@ -370,7 +368,7 @@ outer:
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);
 		
-		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStackItem(),validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
+		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStackItem(), validSources);
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		Iterator<Pair<CraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
@@ -569,21 +567,19 @@ outer:
 		}
 	}
 
-	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations, BitSet layer, List<IFilter> filters) {
+	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations) {
 		List<Pair<CraftingTemplate,List<IFilter>>> crafters = new ArrayList<Pair<CraftingTemplate,List<IFilter>>>(validDestinations.size());
-		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
 			CoreRoutedPipe pipe = r.destination.getPipe();
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
 				if (pipe instanceof ICraftItems){
-					used.set(r.destination.getSimpleID());
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting(itemToCraft);
 					if(craftable!=null) {
-						for(IFilter filter: filters) {
+						for(IFilter filter: r.filters) {
 							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultItem().getUndamaged()) || filter.blockCrafting()) continue;
 						}
 						List<IFilter> list = new LinkedList<IFilter>();
-						list.addAll(filters);
+						list.addAll(r.filters);
 						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
 					}
 				}

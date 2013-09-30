@@ -29,7 +29,6 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.items.ItemModule;
 import logisticspipes.logisticspipes.ChassiModule;
@@ -65,6 +64,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
@@ -285,7 +285,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, Pair3<Integer, SinkReply, List<IFilter>> reply, ItemSendMode mode) {
+	public void sendStack(ItemStack stack, Pair<Integer, SinkReply> reply, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(reply.getValue1());
 		if (reply.getValue2().isPassive){
@@ -295,22 +295,14 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 				itemToSend.setTransportMode(TransportMode.Passive);
 			}
 		}
-		List<IRelayItem> list = new LinkedList<IRelayItem>();
-		if(reply.getValue3() != null) {
-			for(IFilter filter:reply.getValue3()) {
-				list.add(filter);
-			}
-		}
-		itemToSend.addRelayPoints(list);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 
 	@Override
-	public void sendStack(ItemStack stack, int destination, ItemSendMode mode, List<IRelayItem> relays) {
+	public void sendStack(ItemStack stack, int destination, ItemSendMode mode) {
 		IRoutedItem itemToSend = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stack);
 		itemToSend.setDestination(destination);
 		itemToSend.setTransportMode(TransportMode.Active);
-		itemToSend.addRelayPoints(relays);
 		super.queueRoutedItem(itemToSend, getPointedOrientation(), mode);
 	}
 

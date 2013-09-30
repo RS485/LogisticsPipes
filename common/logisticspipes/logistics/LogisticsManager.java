@@ -19,9 +19,7 @@ import java.util.Map.Entry;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.items.LogisticsFluidContainer;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
@@ -64,12 +62,16 @@ public class LogisticsManager implements ILogisticsManager {
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
-			ExitRoute e = sourceRouter.getDistanceTo(r);
-			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-				validDestinations.add(e);
+			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
+			if (exits!=null) {
+				for(ExitRoute e:exits) {
+					if(e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+						validDestinations.add(e);
+				}
+			}
 		}
 		Collections.sort(validDestinations);
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,allowDefault);
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, sourceRouter, validDestinations, true, routerIDsToExclude, new BitSet(ServerRouter.getBiggestSimpleID()), null, allowDefault);
 
 		if (search.getValue2() == null) return null;
 
@@ -90,23 +92,18 @@ public class LogisticsManager implements ILogisticsManager {
 	@Override
 	public Pair3<Integer, SinkReply, List<IFilter>> hasDestinationWithMinPriority(ItemIdentifier stack, int sourceRouter, boolean excludeSource, FixedPriority priority) {
 		if (!SimpleServiceLocator.routerManager.isRouter(sourceRouter)) return null;
-		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);
+		Pair3<Integer, SinkReply, List<IFilter>> search = getBestReply(stack, SimpleServiceLocator.routerManager.getRouter(sourceRouter), SimpleServiceLocator.routerManager.getRouter(sourceRouter).getIRoutersByCost(), excludeSource, new ArrayList<Integer>(), new BitSet(ServerRouter.getBiggestSimpleID()), null, true);
 		if (search.getValue2() == null) return null;
 		if (search.getValue2().fixedPriority.ordinal() < priority.ordinal()) return null;
 		return search;
 	}
 
 
-	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, List<IFilter> filters, Pair3<Integer, SinkReply, List<IFilter>> result, boolean allowDefault){
-		List<ExitRoute> firewall = new LinkedList<ExitRoute>();
+	private Pair3<Integer, SinkReply, List<IFilter>> getBestReply(ItemIdentifier stack, IRouter sourceRouter, List<ExitRoute> validDestinations, boolean excludeSource, List<Integer> jamList, BitSet layer, Pair3<Integer, SinkReply, List<IFilter>> result, boolean allowDefault) {
 		BitSet used = (BitSet) layer.clone();
 
 		if(result == null) {
 			result = new Pair3<Integer, SinkReply, List<IFilter>>(null, null, null);
-		}
-		
-		for(IFilter filter:filters) {
-			if(filter.isBlocked() == filter.isFilteredItem(stack.getUndamaged()) || filter.blockRouting()) return result;
 		}
 		
 		for (ExitRoute candidateRouter : validDestinations){
@@ -118,12 +115,12 @@ public class LogisticsManager implements ILogisticsManager {
 			if(!candidateRouter.containsFlag(PipeRoutingConnectionType.canRouteTo)) continue;
 
 			if(used.get(candidateRouter.destination.getSimpleID())) continue;
+			
+			for(IFilter filter:candidateRouter.filters) {
+				if(filter.blockRouting() || (filter.isBlocked() == filter.isFilteredItem(stack))) continue;
+			}
 
 			used.set(candidateRouter.destination.getSimpleID());
-
-			if(candidateRouter.destination instanceof IFilteringRouter) {
-				firewall.add(candidateRouter);
-			}
 			
 			SinkReply reply = canSink(candidateRouter.destination,sourceRouter,excludeSource,stack,result.getValue2(), false,allowDefault);
 					
@@ -132,7 +129,6 @@ public class LogisticsManager implements ILogisticsManager {
 				result.setValue1(candidateRouter.destination.getSimpleID());
 				result.setValue2(reply);
 				List<IFilter> list = new LinkedList<IFilter>();
-				list.addAll(filters);
 				result.setValue3(list);
 				continue;
 			}
@@ -141,7 +137,6 @@ public class LogisticsManager implements ILogisticsManager {
 				result.setValue1(candidateRouter.destination.getSimpleID());
 				result.setValue2(reply);
 				List<IFilter> list = new LinkedList<IFilter>();
-				list.addAll(filters);
 				result.setValue3(list);
 				continue;
 			}
@@ -150,18 +145,11 @@ public class LogisticsManager implements ILogisticsManager {
 				result.setValue1(candidateRouter.destination.getSimpleID());
 				result.setValue2(reply);
 				List<IFilter> list = new LinkedList<IFilter>();
-				list.addAll(filters);
 				result.setValue3(list);
 				continue;
 			}
 		}
-		for(ExitRoute n:firewall) {
-			IFilter filter = ((IFilteringRouter)n.destination).getFilter();
-			filters.add(filter);
-			result = getBestReply(stack, sourceRouter, ((IFilteringRouter)n.destination).getRouters(), excludeSource, jamList, used, filters, result,allowDefault);
-			filters.remove(filter);
-		}
-		if(filters.isEmpty() && result.getValue1() != null) {
+		if(result.getValue1() != null) {
 			CoreRoutedPipe pipe = SimpleServiceLocator.routerManager.getRouterUnsafe(result.getValue1(),false).getPipe();
 			pipe.useEnergy(result.getValue2().energyUse);
 			MainProxy.sendSpawnParticlePacket(Particles.BlueParticle, pipe.getX(), pipe.getY(), pipe.getZ(), pipe.getWorld(), 10);
@@ -169,7 +157,6 @@ public class LogisticsManager implements ILogisticsManager {
 		return result;
 	}
 	
-		
 	public static SinkReply canSink(IRouter destination, IRouter sourceRouter, boolean excludeSource,ItemIdentifier stack,SinkReply result, boolean activeRequest, boolean allowDefault) {
 
 		SinkReply reply = null;
@@ -213,9 +200,13 @@ public class LogisticsManager implements ILogisticsManager {
 		List<ExitRoute> validDestinations = new ArrayList<ExitRoute>(); // get the routing table 
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
-			ExitRoute e = sourceRouter.getDistanceTo(r);
-			if (e!=null && e.containsFlag(PipeRoutingConnectionType.canRouteTo))
-				validDestinations.add(e);
+			List<ExitRoute> exits = sourceRouter.getDistanceTo(r);
+			if (exits!=null) {
+				for(ExitRoute e:exits) {
+					if(e.containsFlag(PipeRoutingConnectionType.canRouteTo))
+						validDestinations.add(e);
+				}
+			}
 		}
 		Collections.sort(validDestinations);
 		if(item.getItemStack() != null && item.getItemStack().getItem() instanceof LogisticsFluidContainer) {
@@ -225,7 +216,7 @@ public class LogisticsManager implements ILogisticsManager {
 			}
 			return item;
 		} else {
-			Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>(), null,true);	
+			Pair3<Integer, SinkReply, List<IFilter>> bestReply = getBestReply(item.getIDStack().getItem(), sourceRouter, validDestinations, excludeSource, item.getJamList(), new BitSet(ServerRouter.getBiggestSimpleID()), null, true);	
 			if (bestReply.getValue1() != null && bestReply.getValue1() != 0){
 				item.setDestination(bestReply.getValue1());
 				if (bestReply.getValue2().isPassive){
@@ -237,13 +228,6 @@ public class LogisticsManager implements ILogisticsManager {
 				} else {
 					item.setTransportMode(TransportMode.Active);
 				}
-				List<IRelayItem> list = new LinkedList<IRelayItem>();
-				if(bestReply.getValue3() != null) {
-					for(IFilter filter:bestReply.getValue3()) {
-						list.add(filter);
-					}
-				}
-				item.addRelayPoints(list);
 			}
 			return item;
 		}
@@ -292,29 +276,19 @@ public class LogisticsManager implements ILogisticsManager {
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<Map<ItemIdentifier, Integer>>(ServerRouter.getBiggestSimpleID());
 		for(int i = 0; i < ServerRouter.getBiggestSimpleID(); i++)
 			items.add(new HashMap<ItemIdentifier, Integer>());
-		List<ExitRoute> filterpipes = new ArrayList<ExitRoute>();
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+outer:
 		for(ExitRoute r: validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
-			if (!(r.destination.getPipe() instanceof IProvideItems)) {
-				if(r.destination instanceof IFilteringRouter) {
-					used.set(r.destination.getSimpleID(), true);
-					filterpipes.add(r);
-				}
-				continue;
+			if (!(r.destination.getPipe() instanceof IProvideItems)) continue;
+			for(IFilter filter:r.filters) {
+				if(filter.blockProvider()) continue outer;
 			}
-
 			IProvideItems provider = (IProvideItems) r.destination.getPipe();
-			provider.getAllItems(items.get(r.destination.getSimpleID()), new ArrayList<IFilter>(0));
+			provider.getAllItems(items.get(r.destination.getSimpleID()), r.filters);
 			used.set(r.destination.getSimpleID(), true);
 		}
-		for(ExitRoute n:filterpipes) {
-			List<IFilter> list = new LinkedList<IFilter>();
-			list.add(((IFilteringRouter)n.destination).getFilter());
-			handleAvailableSubFiltering(n, items, list, used);
-		}
-		
 		//TODO: Fix this doubly nested list
 		HashMap<ItemIdentifier, Integer> allAvailableItems = new HashMap<ItemIdentifier, Integer>();
 		for(Map<ItemIdentifier, Integer> allItems:items) {
@@ -330,33 +304,6 @@ public class LogisticsManager implements ILogisticsManager {
 		return allAvailableItems;
 	}
 
-	private void handleAvailableSubFiltering(ExitRoute route, List<Map<ItemIdentifier, Integer>> items, List<IFilter> filters, BitSet layer) {
-		List<ExitRoute> filterpipes = new ArrayList<ExitRoute>();
-		BitSet used = (BitSet) layer.clone();
-		for(ExitRoute n:((IFilteringRouter)route.destination).getRouters()) {
-			if(n == null) continue;
-			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
-			if(used.get(n.destination.getSimpleID())) continue;
-
-			if (!(n.destination.getPipe() instanceof IProvideItems)) {
-				if(n.destination instanceof IFilteringRouter) {
-					used.set(n.destination.getSimpleID(), true);
-					filterpipes.add(n);
-				}
-				continue;
-			}
-			IProvideItems provider = (IProvideItems) n.destination.getPipe();
-			provider.getAllItems(items.get(route.destination.getSimpleID()), filters);
-			used.set(n.destination.getSimpleID(), true);
-		}
-		for(ExitRoute n:filterpipes) {
-			IFilter filter = ((IFilteringRouter)n.destination).getFilter();
-			filters.add(filter);
-			handleAvailableSubFiltering(n, items, filters, used);
-			filters.remove(filter);
-		}
-	}
-
 	/**
 	 * @param validDestinations a List of ExitRoute of valid destinations.
 	 * @return LinkedList with ItemIdentifier 
@@ -364,77 +311,31 @@ public class LogisticsManager implements ILogisticsManager {
 	@Override
 	public LinkedList<ItemIdentifier> getCraftableItems(List<ExitRoute> validDestinations) {
 		LinkedList<ItemIdentifier> craftableItems = new LinkedList<ItemIdentifier>();
-		List<ExitRoute> filterpipes = new ArrayList<ExitRoute>();
 		BitSet used = new BitSet(ServerRouter.getBiggestSimpleID());
+outer:
 		for (ExitRoute r : validDestinations){
 			if(r == null) continue;
 			if(!r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
 			if(used.get(r.destination.getSimpleID())) continue;
-
-			if (!(r.destination.getPipe() instanceof ICraftItems)) {
-				if(r.destination instanceof IFilteringRouter) {
-					used.set(r.destination.getSimpleID(), true);
-					filterpipes.add(r);
-				}
-				continue;
+			if (!(r.destination.getPipe() instanceof ICraftItems)) continue;
+			for(IFilter filter:r.filters) {
+				if(filter.blockCrafting()) continue outer;
 			}
-
 			ICraftItems crafter = (ICraftItems) r.destination.getPipe();
 			List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
 			if(craftedItems != null) {
+outer2:
 				for(ItemIdentifierStack craftedItem:craftedItems) {
-					if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())){
+					if (craftedItem != null && !craftableItems.contains(craftedItem.getItem())) {
+						for(IFilter filter:r.filters) {
+							if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getItem())) continue outer2;
+						}
 						craftableItems.add(craftedItem.getItem());
 					}
 				}
 			}
 			used.set(r.destination.getSimpleID(), true);
 		}
-		for(ExitRoute n:filterpipes) {
-			List<IFilter> list = new LinkedList<IFilter>();
-			list.add(((IFilteringRouter)n.destination).getFilter());
-			handleCraftableItemsSubFiltering(n, craftableItems, list, used);
-		}
 		return craftableItems;
-	}
-
-	private void handleCraftableItemsSubFiltering(ExitRoute route, LinkedList<ItemIdentifier> craftableItems, List<IFilter> filters, BitSet layer) {
-		if(!route.containsFlag(PipeRoutingConnectionType.canRequestFrom)) return;
-		List<ExitRoute> filterpipes = new ArrayList<ExitRoute>();
-		BitSet used = (BitSet) layer.clone();
-outer:
-		for(ExitRoute n:((IFilteringRouter)route.destination).getRouters()) {
-			if(n == null) continue;
-			if(!n.containsFlag(PipeRoutingConnectionType.canRequestFrom)) continue;
-			if(used.get(n.destination.getSimpleID())) continue;
-
-			if (!(n.destination.getPipe() instanceof ICraftItems)) {
-				if(n.destination instanceof IFilteringRouter) {
-					used.set(n.destination.getSimpleID(), true);
-					filterpipes.add(n);
-				}
-				continue;
-			}
-
-			ICraftItems crafter = (ICraftItems) n.destination.getPipe();
-			List<ItemIdentifierStack> craftedItems = crafter.getCraftedItems();
-			for(ItemIdentifierStack craftedItem:craftedItems){
-				if(craftedItem != null) {
-					for(IFilter filter:filters) {
-						if(filter.isBlocked() == filter.isFilteredItem(craftedItem.getItem().getUndamaged()) || filter.blockCrafting()) continue outer;
-					}
-					if (!craftableItems.contains(craftedItem.getItem())){
-						craftableItems.add(craftedItem.getItem());
-					}
-				}
-			}
-			used.set(n.destination.getSimpleID(), true);
-		}
-		for(ExitRoute n:filterpipes) {
-			IFilter filter = ((IFilteringRouter)n.destination).getFilter();
-			filters.add(filter);
-			handleCraftableItemsSubFiltering(n, craftableItems, filters, used);
-			filters.remove(filter);
-		}
 	}
 }

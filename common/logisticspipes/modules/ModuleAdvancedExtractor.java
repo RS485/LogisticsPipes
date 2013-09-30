@@ -18,7 +18,6 @@ import logisticspipes.interfaces.IModuleWatchReciver;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.ISneakyDirectionReceiver;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
@@ -33,7 +32,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
@@ -180,7 +179,7 @@ public class ModuleAdvancedExtractor extends LogisticsGuiModule implements ISnea
 			if(!CanExtract(item.getKey().makeNormalStack(item.getValue())))
 				continue;
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
+			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(item.getKey(), true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();

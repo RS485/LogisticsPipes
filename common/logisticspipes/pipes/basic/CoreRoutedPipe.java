@@ -11,8 +11,6 @@ package logisticspipes.pipes.basic;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -33,7 +31,6 @@ import logisticspipes.interfaces.ISecurityProvider;
 import logisticspipes.interfaces.IWatchingHandler;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -61,10 +58,8 @@ import logisticspipes.proxy.buildcraft.gates.ActionDisableLogistics;
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.renderer.LogisticsHUDRenderer;
-import logisticspipes.request.RequestTree.workWeightedSorter;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.routing.RoutedEntityItem;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.security.PermissionException;
@@ -80,6 +75,7 @@ import logisticspipes.utils.InventoryHelper;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.OrientationsUtil;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
@@ -455,10 +451,16 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		}
 		System.out.println();
 		System.out.println("*******EXIT ROUTE TABLE*************");
-		List<ExitRoute> table = r.getRouteTable();
+		List<List<ExitRoute>> table = r.getRouteTable();
 		for (int i=0; i < table.size(); i++){			
-			if(table.get(i)!=null)
-			System.out.println(i + " -> " + r.getSimpleID() + " via " + table.get(i).exitOrientation + "(" + table.get(i) + " distance)");
+			if(table.get(i) != null) {
+				if(table.get(i).size() > 0) {
+					System.out.println(i + " -> " + table.get(i).get(0).destination.getSimpleID());
+					for(ExitRoute route:table.get(i)) {
+						System.out.println("\t\t via " + route.exitOrientation + "(" + route.distanceToDestination + " distance)");
+					}
+				}
+			}
 		}
 		System.out.println();
 		System.out.println("++++++++++CONNECTIONS+++++++++++++++");
@@ -467,9 +469,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		System.out.println(Arrays.toString(container.pipeConnectionsBuffer));
 		System.out.println();
 		System.out.println("~~~~~~~~~~~~~~~POWER~~~~~~~~~~~~~~~~");
-		System.out.println(r.getPipe().getRoutedPowerProviders());
 		System.out.println(r.getPowerProvider());
+		System.out.println();
+		System.out.println("################END#################");
 		refreshConnectionAndRender(true);
+		System.out.print("");
+		sr.CreateRouteTable(Integer.MAX_VALUE);
 	}
 // end FromBaseRoutingLogic
 	
@@ -611,7 +616,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 
 		if (connection == ForgeDirection.UNKNOWN){
 			return getCenterTexture();
-		} else if ((router != null) && getRouter(connection).isRoutedExit(connection)) {
+		} else if ((router != null) && getRouter().isRoutedExit(connection)) {
 			return getRoutedTexture(connection);
 			
 		} else {
@@ -709,10 +714,6 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			}
 		}
 		return router;
-	}
-	
-	public IRouter getRouter(ForgeDirection dir) {
-		return getRouter();
 	}
 	
 	public boolean isEnabled(){
@@ -980,69 +981,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	/* Power System */
 
-	public List<ILogisticsPowerProvider> getRoutedPowerProviders() {
+	public List<Pair<ILogisticsPowerProvider,List<IFilter>>> getRoutedPowerProviders() {
 		if(MainProxy.isClient(getWorld())) {
 			return null;
 		}
 		if(stillNeedReplace) {
 			return null;
 		}
-		IRouter thisrouter = this.getRouter();
-		if(thisrouter.getFilteringRouter().isEmpty()) {
-			return thisrouter.getPowerProvider();
-		}
-		List<ILogisticsPowerProvider> list = new ArrayList<ILogisticsPowerProvider>(thisrouter.getPowerProvider());
-		addAll(list, getRoutedPowerProviders(thisrouter, new BitSet(ServerRouter.getBiggestSimpleID()+1), new ArrayList<IFilter>()));
-		return list;
-	}
-	
-	private List<ILogisticsPowerProvider> getRoutedPowerProviders(IRouter router, BitSet layer, List<IFilter> filters) {
-		List<ILogisticsPowerProvider> power = new LinkedList<ILogisticsPowerProvider>();
-		List<IRouter> routersIndex = router.getFilteringRouter();
-		List<ExitRoute> validSources = new ArrayList<ExitRoute>(); // get the routing table 
-		for (IRouter r:routersIndex) {
-			ExitRoute e = router.getDistanceTo(r);
-			if (e!=null) {
-				validSources.add(e);
-			}
-		}
-		Collections.sort(validSources, new workWeightedSorter(1.0));
-		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
-		BitSet used = (BitSet) layer.clone();
-		for(ExitRoute r : validSources) {
-			if(r.containsFlag(PipeRoutingConnectionType.canPowerFrom) && !used.get(r.destination.getSimpleID())) {
-				if(r.destination instanceof IFilteringRouter) {
-					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
-				}
-			}
-		}
-		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
-			filters.add(filter);
-			boolean canPassPower = true;
-			for(IFilter f:filters) {
-				if(f.blockPower()) canPassPower = false;
-			}
-			IRouter center = r.destination.getRouter(ForgeDirection.UNKNOWN);
-			if(center != null) {
-				if(canPassPower) {
-					addAll(power, center.getPowerProvider());
-				}
-				List<ILogisticsPowerProvider> list = getRoutedPowerProviders(center, used, filters);
-				addAll(power, list);
-			}
-			filters.remove(filter);
-		}
-		return power;
-	}
-	
-	private <T> void addAll(List<ILogisticsPowerProvider> list, List<ILogisticsPowerProvider> list2) {
-		for(ILogisticsPowerProvider o:list2) {
-			if(!list.contains(o)) {
-				list.add(o);
-			}
-		}
+		return this.getRouter().getPowerProvider();
 	}
 	
 	@Override
@@ -1061,10 +1007,14 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(amount == 0) return true;
 		if(providersToIgnore !=null && providersToIgnore.contains(this))
 			return false;
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		List<Pair<ILogisticsPowerProvider,List<IFilter>>> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount, providersToIgnore)) {
+outer:
+		for(Pair<ILogisticsPowerProvider,List<IFilter>> provider: list) {
+			for(IFilter filter:provider.getValue2()) {
+				if(filter.blockPower()) continue outer;
+			}
+			if(provider.getValue1().canUseEnergy(amount, providersToIgnore)) {
 				return true;
 			}
 		}
@@ -1085,11 +1035,15 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		if(providersToIgnore.contains(this))
 			return false;
 		providersToIgnore.add(this);
-		List<ILogisticsPowerProvider> list = getRoutedPowerProviders();
+		List<Pair<ILogisticsPowerProvider,List<IFilter>>> list = getRoutedPowerProviders();
 		if(list == null) return false;
-		for(ILogisticsPowerProvider provider: list) {
-			if(provider.canUseEnergy(amount, providersToIgnore)) {
-				if(provider.useEnergy(amount, providersToIgnore)) {
+outer:
+		for(Pair<ILogisticsPowerProvider,List<IFilter>> provider: list) {
+			for(IFilter filter:provider.getValue2()) {
+				if(filter.blockPower()) continue outer;
+			}
+			if(provider.getValue1().canUseEnergy(amount, providersToIgnore)) {
+				if(provider.getValue1().useEnergy(amount, providersToIgnore)) {
 					if(sparkles) {
 						int particlecount = amount;
 						if (particlecount > 10) {

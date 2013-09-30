@@ -15,9 +15,7 @@ import java.util.TreeSet;
 
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IFilteringRouter;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
@@ -121,8 +119,6 @@ public class RequestTreeNode {
 			extra.item = promise.item;
 			extra.numberOfItems = more;
 			extra.sender = promise.sender;
-			extra.relayPoints = new LinkedList<IRelayItem>();
-			extra.relayPoints.addAll(promise.relayPoints);
 			extrapromises.add(extra);
 		}
 		if(promise.numberOfItems <= 0) throw new IllegalArgumentException("zero count ... again");
@@ -283,7 +279,7 @@ public class RequestTreeNode {
 		
 		CoreRoutedPipe thisPipe = this.target.getRouter().getCachedPipe();
 		if(thisPipe == null) return false;
-		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem(), new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>())) {
+		for(Pair<IProvideItems, List<IFilter>> provider : getProviders(this.target.getRouter(), this.getStackItem())) {
 			if(this.isDone()) {
 				break;
 			}
@@ -295,7 +291,7 @@ public class RequestTreeNode {
 		return this.isDone();
 	}
 
-	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(IRouter destination, ItemIdentifier item, BitSet layer, List<IFilter> filters) {
+	private static List<Pair<IProvideItems,List<IFilter>>> getProviders(IRouter destination, ItemIdentifier item) {
 
 		// get all the routers
 		BitSet routersIndex = ServerRouter.getRoutersInterestedIn(item);
@@ -305,37 +301,22 @@ public class RequestTreeNode {
 
 			if(!r.isValidCache()) continue; //Skip Routers without a valid pipe
 
-			ExitRoute e = destination.getDistanceTo(r);
-			if (e!=null) validSources.add(e);
+			List<ExitRoute> e = destination.getDistanceTo(r);
+			if (e!=null) validSources.addAll(e);
 		}
 		// closer providers are good
 		Collections.sort(validSources, new workWeightedSorter(1.0));
 		
 		List<Pair<IProvideItems,List<IFilter>>> providers = new LinkedList<Pair<IProvideItems,List<IFilter>>>();
-		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
-		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validSources) {
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
 				CoreRoutedPipe pipe = r.destination.getPipe();
 				if (pipe instanceof IProvideItems) {
 					List<IFilter> list = new LinkedList<IFilter>();
-					list.addAll(filters);
+					list.addAll(r.filters);
 					providers.add(new Pair<IProvideItems,List<IFilter>>((IProvideItems)pipe, list));
-					used.set(r.root.getSimpleID());
-				}
-				if(r.destination instanceof IFilteringRouter) {
-					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
 				}
 			}
-		}
-		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
-			filters.add(filter);
-			for(ExitRoute router:((IFilteringRouter)r.destination).getRouters()) {
-				providers.addAll(getProviders(router.destination, item, used, filters));
-			}
-			filters.remove(filter);
 		}
 		return providers;
 	}
@@ -349,12 +330,16 @@ public class RequestTreeNode {
 			if(extraPromise.numberOfItems == 0)
 				continue;
 			boolean valid = false;
-			ExitRoute source = extraPromise.sender.getRouter().getRouteTable().get(this.target.getRouter().getSimpleID());
-			if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
-				for(ExitRoute node:this.target.getRouter().getIRoutersByCost()) {
-					if(node.destination == extraPromise.sender.getRouter()) {
-						if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
-							valid = true;
+			List<ExitRoute> sources = extraPromise.sender.getRouter().getRouteTable().get(this.target.getRouter().getSimpleID());
+outer:
+			for(ExitRoute source:sources) {
+				if(source != null && source.containsFlag(PipeRoutingConnectionType.canRouteTo)) {
+					for(ExitRoute node:this.target.getRouter().getIRoutersByCost()) {
+						if(node.destination == extraPromise.sender.getRouter()) {
+							if(node.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
+								valid = true;
+								break outer;
+							}
 						}
 					}
 				}
@@ -377,13 +362,13 @@ public class RequestTreeNode {
 
 			if(!r.isValidCache()) continue; //Skip Routers without a valid pipe
 
-			ExitRoute e = this.target.getRouter().getDistanceTo(r);
-			if (e!=null) validSources.add(e);
+			List<ExitRoute> e = this.target.getRouter().getDistanceTo(r);
+			if (e!=null) validSources.addAll(e);
 		}
 		workWeightedSorter wSorter = new workWeightedSorter(0); // distance doesn't matter, because ingredients have to be delivered to the crafter, and we can't tell how long that will take.
 		Collections.sort(validSources, wSorter);
 		
-		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStackItem(),validSources, new BitSet(ServerRouter.getBiggestSimpleID()), new LinkedList<IFilter>());
+		List<Pair<CraftingTemplate, List<IFilter>>> allCraftersForItem = getCrafters(this.getStackItem(), validSources);
 		
 		// if you have a crafter which can make the top treeNode.getStack().getItem()
 		Iterator<Pair<CraftingTemplate, List<IFilter>>> iterAllCrafters = allCraftersForItem.iterator();
@@ -554,11 +539,7 @@ outer:
 			if(setsAbleToCraft>0) { // sanity check, as creating 0 sized promises is an exception. This should never be hit.
 				//LogisticsPipes.log.info("crafting : " + setsToCraft + "sets of " + treeNode.getStack().getItem().getFriendlyName());
 				//if we got here, we can at least some of the remaining amount
-				List<IRelayItem> relays = new LinkedList<IRelayItem>();
-				for(IFilter filter:crafter.getValue2()) {
-					relays.add(filter);
-				}
-				LogisticsPromise job = template.generatePromise(setsAbleToCraft, relays);
+				LogisticsPromise job = template.generatePromise(setsAbleToCraft);
 				if(job.numberOfItems!=setsAbleToCraft*this.setSize)
 					throw new IllegalStateException("generatePromises not creating the promisesPromised; this is goign to end badly.");
 				treeNode.addPromise(job);
@@ -586,37 +567,23 @@ outer:
 		}
 	}
 
-	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations, BitSet layer, List<IFilter> filters) {
+	private static List<Pair<CraftingTemplate,List<IFilter>>> getCrafters(ItemIdentifier itemToCraft, List<ExitRoute> validDestinations) {
 		List<Pair<CraftingTemplate,List<IFilter>>> crafters = new ArrayList<Pair<CraftingTemplate,List<IFilter>>>(validDestinations.size());
-		List<ExitRoute> firewalls = new LinkedList<ExitRoute>();
-		BitSet used = (BitSet) layer.clone();
 		for(ExitRoute r : validDestinations) {
 			CoreRoutedPipe pipe = r.destination.getPipe();
-			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom) && !used.get(r.destination.getSimpleID())) {
+			if(r.containsFlag(PipeRoutingConnectionType.canRequestFrom)) {
 				if (pipe instanceof ICraftItems){
-					used.set(r.destination.getSimpleID());
 					CraftingTemplate craftable = ((ICraftItems)pipe).addCrafting(itemToCraft);
 					if(craftable!=null) {
-						for(IFilter filter: filters) {
+						for(IFilter filter: r.filters) {
 							if(filter.isBlocked() == filter.isFilteredItem(craftable.getResultItem().getUndamaged()) || filter.blockCrafting()) continue;
 						}
 						List<IFilter> list = new LinkedList<IFilter>();
-						list.addAll(filters);
+						list.addAll(r.filters);
 						crafters.add(new Pair<CraftingTemplate, List<IFilter>>(craftable, list));
 					}
 				}
-				if(r.destination instanceof IFilteringRouter) {
-					firewalls.add(r);
-					used.set(r.destination.getSimpleID());
-				}
 			}
-		}
-		for(ExitRoute r:firewalls) {
-			IFilter filter = ((IFilteringRouter)r.destination).getFilter();
-			filters.add(filter);
-			List<Pair<CraftingTemplate,List<IFilter>>> list = getCrafters(itemToCraft,((IFilteringRouter)r.destination).getRouters(), used, filters);
-			filters.remove(filter);
-			crafters.addAll(list);
 		}
 		// don't need to sort, as a sorted list is passed in and List guarantees order preservation
 //		Collections.sort(crafters,new CraftingTemplate.PairPrioritizer());
@@ -744,7 +711,7 @@ outer:
 			new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 		}
 
-		this.addPromise(template.generatePromise(nCraftingSetsNeeded, new ArrayList<IRelayItem>()));
+		this.addPromise(template.generatePromise(nCraftingSetsNeeded));
 
 		for(RequestTreeNode subNode : this.subRequests) {
 			subNode.recurseFailedRequestTree();

@@ -7,12 +7,10 @@
 package logisticspipes.routing;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
 import logisticspipes.interfaces.IItemAdvancedExistance;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
 import logisticspipes.items.LogisticsFluidContainer;
@@ -48,8 +46,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	int bufferCounter = 0;
 	
 	boolean arrived;
-	
-	LinkedList<Integer> relays = new LinkedList<Integer>();
 	
 	TransportMode _transportMode = TransportMode.Unknown;
 	
@@ -182,7 +178,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		destinationUUID = null;
 		_doNotBuffer = false;
 		arrived = false;
-		relays.clear();
 		_transportMode = TransportMode.Unknown;
 	}
 	
@@ -205,11 +200,7 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 
 	@Override
 	public int getDestination() {
-		if(relays.isEmpty()) {
-			return this.destinationint;
-		} else {
-			return relays.getLast();
-		}
+		return this.destinationint;
 	}
 
 	@Override
@@ -350,34 +341,8 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		routed.arrived = arrived;
 		routed._transportMode = _transportMode;
 		routed.jamlist.addAll(jamlist);
-		routed.relays.addAll(relays);
 		routed.thisItem = this.thisItem;
 		return routed;
-	}
-
-	@Override
-	public void addRelayPoints(List<IRelayItem> relays) {
-		if(relays != null) {
-			for(IRelayItem relay:relays) {
-				this.relays.add(relay.getSimpleID());
-			}
-		}
-	}
-
-	@Override
-	public void itemRelayed() {
-		relays.removeLast();
-	}
-
-	@Override
-	public boolean isItemRelayed() {
-		return !relays.isEmpty();
-	}
-
-	@Override
-	public void replaceRelayID(int newId) {
-		relays.removeLast();
-		relays.addLast(newId);
 	}
 
 	@Override
@@ -400,7 +365,6 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 		thisItem = result.thisItem;
 		_doNotBuffer = result._doNotBuffer;
 		arrived = result.arrived;
-		relays = result.relays;
 		_transportMode = result._transportMode;
 		jamlist = result.jamlist;
 	}

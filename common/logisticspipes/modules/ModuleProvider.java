@@ -21,7 +21,6 @@ import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.logistics.LogisticsManager;
 import logisticspipes.logisticspipes.ExtractionMode;
@@ -40,7 +39,7 @@ import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
@@ -148,13 +147,13 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		checkUpdate(null);
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
-		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> firstOrder = null;
-		Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>> order = null;
+		Pair<ItemIdentifierStack,IRequestItems> firstOrder = null;
+		Pair<ItemIdentifierStack,IRequestItems> order = null;
 		while (itemsleft > 0 && stacksleft > 0 && _orderManager.hasOrders() && (firstOrder == null || firstOrder != order)) {
 			if(firstOrder == null)
 				firstOrder = order;
 			order = _orderManager.peekAtTopRequest();
-			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID(), order.getValue3());
+			int sent = sendStack(order.getValue1(), itemsleft, order.getValue2().getRouter().getSimpleID());
 			if(sent < 0) break;
 			MainProxy.sendSpawnParticlePacket(Particles.VioletParticle, getX(), getY(), getZ(), _world.getWorld(), 3);
 			stacksleft -= 1;
@@ -190,13 +189,12 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 		promise.item = tree.getStackItem();
 		promise.numberOfItems = Math.min(canProvide, tree.getMissingItemCount());
 		promise.sender = (IProvideItems) _itemSender;
-		promise.relayPoints = new LinkedList<IRelayItem>(filters);
 		tree.addPromise(promise);
 	}
 
 	@Override
 	public void fullFill(LogisticsPromise promise, IRequestItems destination) {
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 	}
 
 	private int getAvailableItemCount(ItemIdentifier item) {
@@ -235,7 +233,7 @@ outer:
 	
 	// returns -1 on perminatly failed, don't try another stack this tick
 	// returns 0 on "unable to do this delivery"
-	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination, List<IRelayItem> relays) {
+	private int sendStack(ItemIdentifierStack stack, int maxCount, int destination) {
 		ItemIdentifier item = stack.getItem();
 		IInventoryUtil inv = _invProvider.getPointedInventory(_extractionMode,true);
 		if (inv == null) {
@@ -278,7 +276,7 @@ outer:
 		int sent = removed.stackSize;
 		_power.useEnergy(sent * neededEnergy());
 
-		_itemSender.sendStack(removed, destination, itemSendMode(), relays);
+		_itemSender.sendStack(removed, destination, itemSendMode());
 		_orderManager.sendSuccessfull(sent, defersend);
 		return sent;
 	}

@@ -44,14 +44,18 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			//this is here to allow players to manually trigger a network-wide LSA update
 			router.forceLsaUpdate();
 
-			List<ExitRoute> exits = router.getRouteTable();
+			List<List<ExitRoute>> exits = router.getRouteTable();
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
-			for(ExitRoute exit:exits) {
+			for(List<ExitRoute> exit:exits) {
 				if(exit == null) continue;
-				if(!routers.containsKey(exit.exitOrientation)) {
-					routers.put(exit.exitOrientation, new ArrayList<IRouter>());
+				for(ExitRoute e:exit) {
+					if(!routers.containsKey(e.exitOrientation)) {
+						routers.put(e.exitOrientation, new ArrayList<IRouter>());
+					}
+					if(!routers.get(e.exitOrientation).contains(e.destination)) {
+						routers.get(e.exitOrientation).add(e.destination);
+					}
 				}
-				routers.get(exit.exitOrientation).add(exit.destination);
 			}
 			ArrayList<LaserData> lasers = new ArrayList<LaserData>();
 			firstPipe = true;
@@ -75,20 +79,24 @@ public class RequestRoutingLasersPacket extends CoordinatesPacket {
 			}
 		}, connectionType);
 		for(CoreRoutedPipe connectedPipe: map.keySet()) {
-			IRouter newRouter = connectedPipe.getRouter(map.get(connectedPipe).insertOrientation);
+			IRouter newRouter = connectedPipe.getRouter();
 			connectedRouters.remove(newRouter);
 			HashMap<ForgeDirection, ArrayList<IRouter>> routers = new HashMap<ForgeDirection, ArrayList<IRouter>>();
 			Iterator<IRouter> iRouter = connectedRouters.iterator();
 			while(iRouter.hasNext()) {
 				IRouter router = iRouter.next();
-				ExitRoute exit = newRouter.getDistanceTo(router);
+				List<ExitRoute> exit = newRouter.getDistanceTo(router);
 				if(exit == null) continue;
-				if(exit.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
 				iRouter.remove();
-				if(!routers.containsKey(exit.exitOrientation)) {
-					routers.put(exit.exitOrientation, new ArrayList<IRouter>());
+				for(ExitRoute e:exit) {
+					if(e.exitOrientation.equals(map.get(connectedPipe).insertOrientation)) continue;
+					if(!routers.containsKey(e.exitOrientation)) {
+						routers.put(e.exitOrientation, new ArrayList<IRouter>());
+					}
+					if(!routers.get(e.exitOrientation).contains(e.destination)) {
+						routers.get(e.exitOrientation).add(e.destination);
+					}
 				}
-				routers.get(exit.exitOrientation).add(exit.destination);
 			}
 			for(ForgeDirection exitDir: routers.keySet()) {
 				handleRouteInDirection(connectedPipe.container, exitDir, routers.get(exitDir), lasers, map.get(connectedPipe).connectionDetails);

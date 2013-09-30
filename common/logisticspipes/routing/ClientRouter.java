@@ -8,10 +8,13 @@ import java.util.UUID;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.api.ILogisticsPowerProvider;
+import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.Pair;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeDirection;
@@ -50,7 +53,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public boolean hasRoute(int id) {
+	public boolean hasRoute(int id, boolean flag, ItemIdentifier item) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -58,7 +61,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ForgeDirection getExitFor(int id) {
+	public ForgeDirection getExitFor(int id, boolean flag, ItemIdentifier item) {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
@@ -66,11 +69,11 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ArrayList<ExitRoute> getRouteTable() {
+	public ArrayList<List<ExitRoute>> getRouteTable() {
 		if(LogisticsPipes.DEBUG) {
 			throw new UnsupportedOperationException("noClientRouting");
 		}
-		return new  ArrayList<ExitRoute>();
+		return new ArrayList<List<ExitRoute>>();
 	}
 
 	@Override
@@ -129,7 +132,7 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public List<ILogisticsPowerProvider> getPowerProvider() {
+	public List<Pair<ILogisticsPowerProvider, List<IFilter>>> getPowerProvider() {
 		return null;
 	}
 
@@ -164,18 +167,13 @@ public class ClientRouter implements IRouter {
 	}
 
 	@Override
-	public ExitRoute getDistanceTo(IRouter r) {
+	public List<ExitRoute> getDistanceTo(IRouter r) {
 		return null;
 	}
 
 	@Override
 	public void clearInterests() {
 		
-	}
-
-	@Override
-	public List<IRouter> getFilteringRouter() {
-		return null;
 	}
 
 	@Override

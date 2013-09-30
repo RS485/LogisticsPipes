@@ -32,4 +32,15 @@ public class Pair<T1, T2> {
 	public void setValue2(T2 value2) {
 		_value2 = value2;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(!(o instanceof Pair)) return false;
+		return  ((_value1 == null && ((Pair<?, ?>)o)._value1 == null) || (_value1 != null && _value1.equals(((Pair<?, ?>)o)._value1))) && 
+				((_value2 == null && ((Pair<?, ?>)o)._value2 == null) || (_value2 != null && _value2.equals(((Pair<?, ?>)o)._value2)));
+	}
+
+	public Pair<T1, T2> copy() {
+		return new Pair<T1, T2>(_value1, _value2);
+	}
 }

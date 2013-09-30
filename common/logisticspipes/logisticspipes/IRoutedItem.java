@@ -12,7 +12,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
@@ -46,10 +45,10 @@ public interface IRoutedItem{
 	public void setDestination(int destination);
 	public void clearDestination();
 	
-	public void addRelayPoints(List<IRelayItem> relays);
-	public void itemRelayed();
-	public boolean isItemRelayed();
-	public void replaceRelayID(int newId);
+	//public void addRelayPoints(List<IRelayItem> relays);
+	//public void itemRelayed();
+	//public boolean isItemRelayed();
+	//public void replaceRelayID(int newId);
 	
 //	public boolean isPassive();
 //	public void setPassive(boolean isPassive);

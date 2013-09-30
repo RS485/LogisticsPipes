@@ -29,7 +29,6 @@ import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.IOrderManagerContentReceiver;
 import logisticspipes.interfaces.routing.ICraftItems;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.interfaces.routing.IRequireReliableTransport;
@@ -91,7 +90,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
@@ -126,7 +125,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	private final HUDCrafting HUD = new HUDCrafting(this);
 	
-	public final LinkedList<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> _extras = new LinkedList<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>>();
+	public final LinkedList<Pair<ItemIdentifierStack, IRequestItems>> _extras = new LinkedList<Pair<ItemIdentifierStack, IRequestItems>>();
 	private boolean init = false;
 	private boolean doContentUpdate = true;
 	
@@ -266,7 +265,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!init) {
 			if(MainProxy.isClient(getWorld())) {
 				if(FMLClientHandler.instance().getClient() != null && FMLClientHandler.instance().getClient().thePlayer != null && FMLClientHandler.instance().getClient().thePlayer.sendQueue != null){
-//TODO 				MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_CRAFTING_PIPE_UPDATE, getX(), getY(), getZ()).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestCraftingPipeUpdatePacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 				}
 			}
@@ -306,7 +304,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		int itemsleft = itemsToExtract();
 		int stacksleft = stacksToExtract();
 		while (itemsleft > 0 && stacksleft > 0 && (_orderManager.hasOrders() || !_extras.isEmpty())) {
-			Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> nextOrder;
+			Pair<ItemIdentifierStack, IRequestItems> nextOrder;
 			boolean processingOrder=false;
 			if(_orderManager.hasOrders()){
 				nextOrder = _orderManager.peekAtTopRequest(); // fetch but not remove.
@@ -351,7 +349,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 					IRoutedItem item = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(this.container, stackToSend);
 					item.setDestination(nextOrder.getValue2().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
-					item.addRelayPoints(nextOrder.getValue3());
 					super.queueRoutedItem(item, tile.orientation);
 					_orderManager.sendSuccessfull(stackToSend.stackSize, false);
 					if(_orderManager.hasOrders()){
@@ -378,7 +375,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	private void removeExtras(int numToSend, ItemIdentifier item) {
-		Iterator<Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>> i = _extras.iterator();
+		Iterator<Pair<ItemIdentifierStack, IRequestItems>> i = _extras.iterator();
 		while(i.hasNext()){
 			ItemIdentifierStack e = i.next().getValue1();
 			if(e.getItem()== item) {
@@ -400,7 +397,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(_extras == null)
 			return 0;
 		int count = 0;
-		for(Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> e : _extras){
+		for(Pair<ItemIdentifierStack, IRequestItems> e : _extras){
 			count += e.getValue1().stackSize;
 		}
 		return count;
@@ -434,7 +431,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			if(filter.isBlocked() == filter.isFilteredItem(requestedItem.getUndamaged()) || filter.blockProvider()) return;
 		}
 		int remaining = 0;
-		for(Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>> extra:_extras){
+		for(Pair<ItemIdentifierStack, IRequestItems> extra:_extras){
 			if(extra.getValue1().getItem()==requestedItem){
 				remaining += extra.getValue1().stackSize;
 			}
@@ -447,11 +444,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		promise.numberOfItems = Math.min(remaining, tree.getMissingItemCount());
 		promise.sender = this;
 		promise.provided = true;
-		List<IRelayItem> relays = new LinkedList<IRelayItem>();
-		for(IFilter filter:filters) {
-			relays.add(filter);
-		}
-		promise.relayPoints = relays;
 		tree.addPromise(promise);
 	}
 
@@ -553,14 +545,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if (promise instanceof LogisticsExtraPromise) {
 			removeExtras(promise.numberOfItems, promise.item);
 		}
-		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination, promise.relayPoints);
+		_orderManager.addOrder(new ItemIdentifierStack(promise.item, promise.numberOfItems), destination);
 		MainProxy.sendSpawnParticlePacket(Particles.WhiteParticle, getX(), getY(), getZ(), this.getWorld(), 2);
 	}
 
 	@Override
 	public void registerExtras(LogisticsPromise promise) {		
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
-		_extras.add(new Pair3<ItemIdentifierStack, IRequestItems, List<IRelayItem>>(stack,null,null));
+		_extras.add(new Pair<ItemIdentifierStack, IRequestItems>(stack,null));
 		LogisticsPipes.requestLog.info(stack.stackSize + " extras registered");
 	}
 
@@ -596,13 +588,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	@Override
 	public void startWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
@@ -610,7 +600,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), oldList).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(oldList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -634,7 +623,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		if(!oldList.equals(all)) {
 			oldList.clear();
 			oldList.addAll(all);
-//TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.ORDER_MANAGER_CONTENT, getX(), getY(), getZ(), all).getPacket(), localModeWatchers);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(OrdererManagerContent.class).setIdentList(all).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}
@@ -741,8 +729,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			CoreRoutedPipe satPipe = satellite;
 			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null || satPipe.isFluidPipe()) continue;
 			IRouter satRouter = satPipe.getRouter();
-			ExitRoute route = getRouter().getDistanceTo(satRouter);
-			if(route != null) {
+			List<ExitRoute> routes = getRouter().getDistanceTo(satRouter);
+			if(routes != null && !routes.isEmpty()) {
+				boolean filterFree = false;
+				for(ExitRoute route: routes) {
+					if(route.filters.isEmpty()) {
+						filterFree = true;
+						break;
+					}
+				}
+				if(!filterFree) continue;
 				if(x == -1) {
 					if (!prev && satellite.satelliteId > satelliteId && satellite.satelliteId < closestIdFound) {
 						closestIdFound = satellite.satelliteId;
@@ -774,8 +770,16 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			CoreRoutedPipe satPipe = satellite;
 			if(satPipe == null || satPipe.stillNeedReplace() || satPipe.getRouter() == null || !satPipe.isFluidPipe()) continue;
 			IRouter satRouter = satPipe.getRouter();
-			ExitRoute route = getRouter().getDistanceTo(satRouter);
-			if(route != null) {
+			List<ExitRoute> routes = getRouter().getDistanceTo(satRouter);
+			if(routes != null && !routes.isEmpty()) {
+				boolean filterFree = false;
+				for(ExitRoute route: routes) {
+					if(route.filters.isEmpty()) {
+						filterFree = true;
+						break;
+					}
+				}
+				if(!filterFree) continue;
 				if(x == -1) {
 					if (!prev && satellite.satelliteId > liquidSatelliteId && satellite.satelliteId < closestIdFound) {
 						closestIdFound = satellite.satelliteId;
@@ -804,12 +808,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void setNextSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeNextSatellite.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(false, -1);
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 
@@ -827,12 +829,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void setPrevSatellite(EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipePrevSatellite.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToServer(packet);
 		} else {
 			satelliteId = getNextConnectSatelliteId(true, -1);
 			final CoordinatesPacket packet = PacketHandler.getPacket(CPipeSatelliteId.class).setPipeId(satelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
-//TODO Must be handled manualy
 			MainProxy.sendPacketToPlayer(packet, (Player)player);
 		}
 	}
@@ -959,7 +959,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		if (MainProxy.isServer(entityplayer.worldObj)) {
-//TODO 		MainProxy.sendPacketToPlayer(new PacketGuiArgument(NetworkConstants.GUI_ARGUMENT_PACKET, GuiIDs.GUI_CRAFTINGPIPE_ID, ).getPacket(),  (Player) entityplayer);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(GuiArgument.class).setGuiID(GuiIDs.GUI_CRAFTINGPIPE_ID).setArgs(new Object[]{((CoreRoutedPipe)this.container.pipe).getUpgradeManager().isAdvancedSatelliteCrafter(), ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().getFluidCrafter(), amount, ((CoreRoutedPipe)this.container.pipe).getUpgradeManager().hasByproductExtractor()}),  (Player) entityplayer);
 			entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_CRAFTINGPIPE_ID, getWorld(), getX(), getY(), getZ());
 		}
@@ -1008,7 +1007,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			} else if(player instanceof EntityPlayerSP) {
 				((EntityPlayerSP)player).closeScreen();
 			}
-//TODO		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_OPEN_CONNECTED_GUI, getX(), getY(), getZ()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeOpenConnectedGuiPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			return;
 		}
@@ -1090,7 +1088,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	public void handleStackMove(int number) {
 		if(MainProxy.isClient(this.getWorld())) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_STACK_MOVE,getX(),getY(),getZ(),number).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeStackMovePacket.class).setInteger(number).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		}
 		ItemStack stack = _dummyInventory.getStackInSlot(number);
@@ -1108,10 +1105,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void priorityUp(EntityPlayer player) {
 		priority++;
 		if(MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_UP, getX(), getY(), getZ()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityUpPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, getX(), getY(), getZ(), priority).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		}
 	}
@@ -1119,10 +1114,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void priorityDown(EntityPlayer player) {
 		priority--;
 		if(MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.CRAFTING_PIPE_PRIORITY_DOWN, getX(), getY(), getZ()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePriorityDownPacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else if(player != null && MainProxy.isServer(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PRIORITY, getX(), getY(), getZ(), priority).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPriority.class).setInteger(priority).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		}
 	}
@@ -1164,52 +1157,43 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	public void setNextSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, getX(), getY(), getZ(), i).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipeNextAdvancedSatellitePacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(false, i);
-//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, getX(), getY(), getZ(), i, advancedSatelliteIdArray[i]).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		}
 	}
 
 	public void setPrevSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, getX(), getY(), getZ(), i).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(CraftingPipePrevAdvancedSatellitePacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			advancedSatelliteIdArray[i] = getNextConnectSatelliteId(true, i);
-//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.CRAFTING_PIPE_SATELLITE_ID_ADVANCED, getX(), getY(), getZ(), i, advancedSatelliteIdArray[i]).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(advancedSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		}
 	}
 
 	public void changeFluidAmount(int change, int slot, EntityPlayer player) {
 		if (MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, getX(), getY(), getZ(), slot, change).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(change).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			amount[slot] += change;
 			if(amount[slot] <= 0) {
 				amount[slot] = 0;
 			}
-//TODO 		MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_AMOUNT, getX(), getY(), getZ(), slot, amount[slot]).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAmount.class).setInteger2(slot).setInteger(amount[slot]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		}
 	}
 
 	public void setPrevFluidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_PREV_SATELLITE_ADVANCED, getX(), getY(), getZ(), i).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatellitePrevPacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectFluidSatelliteId(true, i);
-//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, getX(), getY(), getZ(), i, liquidSatelliteId).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectFluidSatelliteId(true, i);
-//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, getX(), getY(), getZ(), i, liquidSatelliteIdArray[i]).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 			}
 		}
@@ -1217,16 +1201,13 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 	public void setNextFluidSatellite(EntityPlayer player, int i) {
 		if (MainProxy.isClient(player.worldObj)) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_NEXT_SATELLITE_ADVANCED, getX(), getY(), getZ(), i).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidCraftingPipeAdvancedSatelliteNextPacket.class).setInteger(i).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		} else {
 			if(i == -1) {
 				liquidSatelliteId = getNextConnectFluidSatelliteId(false, i);
-//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, getX(), getY(), getZ(), i, liquidSatelliteId).getPacket(), (Player)player);		
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteId).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 			} else {
 				liquidSatelliteIdArray[i] = getNextConnectFluidSatelliteId(false, i);
-//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.LIQUID_CRAFTING_PIPE_SATELLITE_ID_ADVANCED, getX(), getY(), getZ(), i, liquidSatelliteIdArray[i]).getPacket(), (Player)player);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidCraftingAdvancedSatelliteId.class).setInteger2(i).setInteger(liquidSatelliteIdArray[i]).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 			}
 		}

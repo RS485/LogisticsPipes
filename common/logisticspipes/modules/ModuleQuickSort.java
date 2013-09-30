@@ -9,7 +9,6 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISendRoutedItem;
 import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
@@ -17,7 +16,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.item.ItemStack;
@@ -101,7 +100,7 @@ public class ModuleQuickSort extends LogisticsModule {
 					continue;
 				
 				LinkedList<Integer> jamList =  new LinkedList<Integer>();
-				Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(item.getKey(), false, jamList);
+				Pair<Integer, SinkReply> reply = _itemSender.hasDestination(item.getKey(), false, jamList);
 				if (reply == null) {
 					if(lastStackLookedAt == lastSuceededStack) {
 						stalled = true;
@@ -176,7 +175,7 @@ public class ModuleQuickSort extends LogisticsModule {
 	
 			// begin duplicate code
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
+			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(slot), false, jamList);
 			if (reply == null) {
 				if(lastStackLookedAt == lastSuceededStack) {
 					stalled = true;

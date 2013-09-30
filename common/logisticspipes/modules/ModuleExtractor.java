@@ -26,6 +26,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.Pair;
 import logisticspipes.utils.Pair3;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
@@ -160,7 +161,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 		if (realInventory instanceof ISpecialInventory && !targetUtil.isSpecialInventory()){
 			ItemStack[] stack = ((ISpecialInventory) realInventory).extractItem(false, extractOrientation, 1);
 			if (stack == null || stack.length < 1 || stack[0] == null || stack[0].stackSize == 0) return;
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
+			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(ItemIdentifier.get(stack[0]), true, new ArrayList<Integer>());
 			if (reply == null) return;
 			ItemStack[] stacks = ((ISpecialInventory) realInventory).extractItem(true, extractOrientation, 1);
 			if (stacks == null || stacks.length < 1 || stacks[0] == null || stacks[0].stackSize == 0) {
@@ -181,7 +182,7 @@ public class ModuleExtractor extends LogisticsGuiModule implements ISneakyDirect
 			if (slot == null) continue;
 			ItemIdentifier slotitem = ItemIdentifier.get(slot);
 			List<Integer> jamList = new LinkedList<Integer>();
-			Pair3<Integer, SinkReply, List<IFilter>> reply = _itemSender.hasDestination(slotitem, true, jamList);
+			Pair<Integer, SinkReply> reply = _itemSender.hasDestination(slotitem, true, jamList);
 			if (reply == null) continue;
 
 			int itemsleft = itemsToExtract();

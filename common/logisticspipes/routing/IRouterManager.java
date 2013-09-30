@@ -17,7 +17,6 @@ import net.minecraftforge.common.ForgeDirection;
 public interface IRouterManager {
 	int getIDforUUID(UUID id);
 	public IRouter getOrCreateRouter(UUID routerUUid, int dimension, int xCoord, int yCoord, int zCoord, boolean forceCreateDuplicateAtCoordinate);
-	public IRouter getOrCreateFirewallRouter(UUID id, int dimension, int xCoord, int yCoord, int zCoord, ForgeDirection dir, IRouter[] otherRouters);
 	public IRouter getRouter(int id);
 	public boolean isRouter(int id);
 	public void removeRouter(int id);

@@ -10,6 +10,7 @@ package logisticspipes.routing;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,9 +19,13 @@ import java.util.Map.Entry;
 
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
+import logisticspipes.interfaces.routing.IFilter;
+import logisticspipes.network.packets.pipe.FireWallFlag;
+import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.utils.OneList;
 import logisticspipes.utils.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
@@ -84,7 +89,7 @@ public class PathFinder {
 	private final HashSet<TileGenericPipe> setVisited;
 	private final IPaintPath pathPainter;
 	private int pipesVisited;
-	public List<ILogisticsPowerProvider> powerNodes;
+	public List<Pair<ILogisticsPowerProvider,List<IFilter>>> powerNodes;
 	
 	private HashMap<CoreRoutedPipe, ExitRoute> getConnectedRoutingPipes(TileGenericPipe startPipe, EnumSet<PipeRoutingConnectionType> connectionFlags, ForgeDirection side) {
 		HashMap<CoreRoutedPipe, ExitRoute> foundPipes = new HashMap<CoreRoutedPipe, ExitRoute>();
@@ -161,9 +166,14 @@ public class PathFinder {
 			if (tile == null) continue;
 			if (root && tile instanceof ILogisticsPowerProvider) {
 				if(this.powerNodes==null) {
-					powerNodes = new ArrayList<ILogisticsPowerProvider>();
+					powerNodes = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
 				}
-				powerNodes.add((ILogisticsPowerProvider) tile);
+				//If we are a FireWall pipe add our filter to the pipes
+				if(startPipe.pipe instanceof PipeItemsFirewall && root) {
+					powerNodes.add(new Pair<ILogisticsPowerProvider,List<IFilter>>((ILogisticsPowerProvider) tile, new OneList<IFilter>(((PipeItemsFirewall)startPipe.pipe).getFilter())));
+				} else {
+					powerNodes.add(new Pair<ILogisticsPowerProvider,List<IFilter>>((ILogisticsPowerProvider) tile, Collections.unmodifiableList(new ArrayList<IFilter>(0))));
+				}
 			}
 			connections.add(new Pair<TileEntity, ForgeDirection>(tile, direction));
 		}
@@ -262,10 +272,16 @@ public class PathFinder {
 		}
 		setVisited.remove(startPipe);
 		if(startPipe.pipe instanceof CoreRoutedPipe){ // ie, has the recursion returned to the pipe it started from?
-			for(ExitRoute e:foundPipes.values())
+			for(ExitRoute e:foundPipes.values()) {
 				e.root=((CoreRoutedPipe)startPipe.pipe).getRouter();
+			}
 		}
-				
+		//If we are a FireWall pipe add our filter to the pipes
+		if(startPipe.pipe instanceof PipeItemsFirewall && root) {
+			for(ExitRoute e:foundPipes.values()) {
+				e.filters = new OneList<IFilter>(((PipeItemsFirewall)startPipe.pipe).getFilter());
+			}
+		}
 		return foundPipes;
 	}
 }

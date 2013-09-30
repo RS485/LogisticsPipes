@@ -3,36 +3,26 @@ package logisticspipes.pipes;
 import java.util.BitSet;
 import java.util.UUID;
 
-import logisticspipes.Configs;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.logisticspipes.RouteLayer;
-import logisticspipes.logisticspipes.RouteLayerFirewall;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.routing.IRouter;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.SimpleInventory;
-import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
-import net.minecraftforge.common.ForgeDirection;
 import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 
-	private IRouter[] routers = new IRouter[7];
-	private String[] routerIds = new String[ForgeDirection.VALID_DIRECTIONS.length];
-	
 	public SimpleInventory inv = new SimpleInventory(6 * 6, "Filter Inv", 1);
 	private boolean blockProvider = false;
 	private boolean blockCrafer = false;
@@ -54,7 +44,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		if(MainProxy.isServer(getWorld())) {
 			if (settings == null || settings.openGui) {
 				entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_FIREWALL, getWorld(), getX(), getY(), getZ());
-//TODO 			MainProxy.sendPacketToPlayer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket(), (Player) entityplayer);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player) entityplayer);
 			} else {
 				entityplayer.sendChatToPlayer(ChatMessageComponent.createFromText("Permission denied"));
@@ -64,105 +53,8 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void ignoreDisableUpdateEntity() {
-		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			getRouter(dir).update(getWorld().getTotalWorldTime() % Configs.LOGISTICS_DETECTION_FREQUENCY == _delayOffset || _initialInit);
-		}
-	}
-
-	@Override
-	public void invalidate() {
-		for(int i=0;i<6;i++) {
-			if(routers[i] != null) {
-				routers[i].destroy();
-				routers[i] = null;
-			}
-		}
-		routers[6] = null;
-		super.invalidate();
-	}
-	
-	@Override
-	public void onChunkUnload() {
-		for(int i=0;i<6;i++) {
-			if(routers[i] != null) {
-				routers[i].clearPipeCache();
-				routers[i].clearInterests();
-			}
-		}
-		super.onChunkUnload();
-	}
-	
-	private void createRouters() {
-		synchronized (routerIdLock) {
-			if (routerId == null || routerId == ""){
-				routerId = UUID.randomUUID().toString();
-			}
-			router = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerId), MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), ForgeDirection.UNKNOWN, routers);
-			for(ForgeDirection dir:ForgeDirection.VALID_DIRECTIONS) {
-				if (routerIds[dir.ordinal()] == null || routerIds[dir.ordinal()].isEmpty()) {
-					routerIds[dir.ordinal()] = UUID.randomUUID().toString();
-				}
-				routers[dir.ordinal()] = SimpleServiceLocator.routerManager.getOrCreateFirewallRouter(UUID.fromString(routerIds[dir.ordinal()]), MainProxy.getDimensionForWorld(getWorld()), getX(), getY(), getZ(), dir, routers);
-			}
-			routers[6] = router;
-		}
-	}
-
-	@Override
-	public IRouter getRouter(ForgeDirection dir) {
-		if(stillNeedReplace) {
-			System.out.println("Hey, don't get routers for pipes that aren't ready");
-			new Throwable().printStackTrace();
-		}
-		if(router == null){
-			createRouters();
-		}
-		if(dir.ordinal() < routers.length) {
-			return routers[dir.ordinal()];
-		}
-		//this should never happen
-		return super.getRouter();
-	}
-	
-	@Override
-	public IRouter getRouter() {
-		if(stillNeedReplace) {
-			System.out.println("Hey, don't get routers for pipes that aren't ready");
-			new Throwable().printStackTrace();
-		}
-		if(router == null){
-			createRouters();
-		}
-		return router;
-	}
-	
-	@Override
-	public RouteLayer getRouteLayer(){
-		if (_routeLayer == null){
-			_routeLayer = new RouteLayerFirewall(getRouter(), getTransportLayer());
-		}
-		return _routeLayer;
-	}
-	
-	public ForgeDirection getRouterSide(IRouter router) {
-		for(ForgeDirection dir: ForgeDirection.VALID_DIRECTIONS) {
-			if(getRouter(dir) == router) {
-				return dir;
-			}
-		}
-		return ForgeDirection.UNKNOWN;
-	}
-
-	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
 		super.writeToNBT(nbttagcompound);
-		
-		synchronized (routerIdLock) {
-			for(int i=0;i<routerIds.length;i++) {
-				nbttagcompound.setString("routerId" + i, routerIds[i]);
-			}
-		}
 		inv.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("blockProvider", blockProvider);
 		nbttagcompound.setBoolean("blockCrafer", blockCrafer);
@@ -174,12 +66,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		super.readFromNBT(nbttagcompound);
-		
-		synchronized (routerIdLock) {
-			for(int i=0;i<routerIds.length;i++) {
-				routerIds[i] = nbttagcompound.getString("routerId" + i);
-			}
-		}
 		inv.readFromNBT(nbttagcompound);
 		blockProvider = nbttagcompound.getBoolean("blockProvider");
 		blockCrafer = nbttagcompound.getBoolean("blockCrafer");
@@ -200,7 +86,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		return null;
 	}
 	
-	public IFilter getFilter(final UUID id, final int simpleid) {
+	public IFilter getFilter() {
 		return new IFilter() {
 			@Override
 			public boolean isBlocked() {
@@ -223,16 +109,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 			}
 
 			@Override
-			public UUID getUUID() {
-				return id;
-			}
-
-			@Override
-			public int getSimpleID() {
-				return simpleid;
-			}
-
-			@Override
 			public boolean blockRouting() {
 				return blockSorting;
 			}
@@ -250,7 +126,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockProvider(boolean blockProvider) {
 		this.blockProvider = blockProvider;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
@@ -260,7 +135,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockCrafer(boolean blockCrafer) {
 		this.blockCrafer = blockCrafer;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
@@ -270,7 +144,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockSorting(boolean blockSorting) {
 		this.blockSorting = blockSorting;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
@@ -280,7 +153,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlockPower(boolean blockPower) {
 		this.blockPower = blockPower;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
@@ -290,7 +162,6 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setBlocking(boolean isBlocking) {
 		this.isBlocking = isBlocking;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeBitSet(NetworkConstants.FIREWALL_FLAG_SET, getX(), getY(), getZ(), getFlags()).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 	
@@ -315,13 +186,5 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	@Override
 	public boolean hasGenericInterests() {
 		return true;
-	}
-
-	@Override
-	protected void addRouterCrashReport(CrashReportCategory crashReportCategory) {
-		for(int i=0; i<7;i++) {
-			ForgeDirection dir = ForgeDirection.getOrientation(i);
-			crashReportCategory.addCrashSection("Router (" + dir.toString() + ")", this.getRouter(dir));
-		}
 	}
 }

@@ -135,11 +135,14 @@ public class FluidRequestTreeNode {
 		for (int i = routersIndex.nextSetBit(0); i >= 0; i = routersIndex.nextSetBit(i+1)) {
 			IRouter r = SimpleServiceLocator.routerManager.getRouterUnsafe(i,false);
 			if(r.getPipe() instanceof IFluidProvider){
-				ExitRoute e = target.getRouter().getDistanceTo(r);
+				List<ExitRoute> e = target.getRouter().getDistanceTo(r);
 				if (e!=null) {
-					CoreRoutedPipe pipe = e.destination.getPipe();
-					if (pipe instanceof IFluidProvider){
-						providers.add((IFluidProvider)pipe);
+					for(ExitRoute route: e) {
+						if(!route.filters.isEmpty()) continue;
+						CoreRoutedPipe pipe = route.destination.getPipe();
+						if (pipe instanceof IFluidProvider){
+							providers.add((IFluidProvider)pipe);
+						}
 					}
 				}
 			}

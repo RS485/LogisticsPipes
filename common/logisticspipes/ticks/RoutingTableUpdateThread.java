@@ -7,6 +7,8 @@ import logisticspipes.Configs;
 public class RoutingTableUpdateThread extends Thread {
 	
 	private static PriorityBlockingQueue<Runnable> updateCalls = new PriorityBlockingQueue<Runnable>();
+	
+	private static Long average = 0L;
 
 	public RoutingTableUpdateThread(int i) {
 		super("LogisticsPipes RoutingTableUpdateThread #" + i);
@@ -27,13 +29,28 @@ public class RoutingTableUpdateThread extends Thread {
 		return updateCalls.size();
 	}
 	
+	public static long getAverage() {
+		synchronized(average) {
+			return average;
+		}
+	}
+	
 	@Override
 	public void run() {
 		Runnable item = null;
 		// take blocks until things are available, no need to check
 		try {
 			while((item = updateCalls.take()) != null) {
+				long starttime = System.nanoTime();
 				item.run();
+				long took = System.nanoTime() - starttime;
+				synchronized(average) {
+					if(average == 0) {
+						average = took;
+					} else {
+						average = ((average * 999L) + took) / 1000L;
+					}
+				}
 			}
 		} catch (InterruptedException e) {
 			

@@ -9,16 +9,13 @@
 package logisticspipes.routing;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import logisticspipes.interfaces.IChangeListener;
-import logisticspipes.interfaces.routing.IRelayItem;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.Pair;
-import logisticspipes.utils.Pair3;
 import net.minecraft.world.World;
 
 
@@ -31,7 +28,7 @@ public class LogisticsOrderManager {
 	}
 	
 	//private LinkedList<LogisticsRequest> _orders = new LinkedList<LogisticsRequest>();
-	private LinkedList<Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>>> _orders = new LinkedList<Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>>>();
+	private LinkedList<Pair<ItemIdentifierStack,IRequestItems>> _orders = new LinkedList<Pair<ItemIdentifierStack,IRequestItems>>();
 	private IChangeListener listener = null;
 	
 	private void listen() {
@@ -63,7 +60,7 @@ public class LogisticsOrderManager {
 		return _orders.size() > 0;
 	}
 	
-	public Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> peekAtTopRequest(){
+	public Pair<ItemIdentifierStack,IRequestItems> peekAtTopRequest(){
 		return _orders.getFirst();
 	}
 	
@@ -90,15 +87,15 @@ public class LogisticsOrderManager {
 		listen();
 	}
 
-	public void addOrder(ItemIdentifierStack stack, IRequestItems requester, List<IRelayItem> relays) {
-		for (Pair3<ItemIdentifierStack,IRequestItems,List<IRelayItem>> request : _orders){
+	public void addOrder(ItemIdentifierStack stack, IRequestItems requester) {
+		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			if (request.getValue1().getItem() == stack.getItem() && request.getValue2() == requester) {
 				stack.stackSize += request.getValue1().stackSize;
 				_orders.remove(request);
 				break;
 			}
 		}
-		_orders.addLast(new Pair3<ItemIdentifierStack,IRequestItems, List<IRelayItem>>(stack, requester, relays));
+		_orders.addLast(new Pair<ItemIdentifierStack,IRequestItems>(stack, requester));
 		listen();
 	}
 	

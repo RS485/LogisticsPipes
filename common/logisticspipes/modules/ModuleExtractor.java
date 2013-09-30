@@ -29,7 +29,7 @@ import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;

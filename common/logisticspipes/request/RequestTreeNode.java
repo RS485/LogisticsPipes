@@ -32,7 +32,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 
 public class RequestTreeNode {
 
@@ -602,9 +602,9 @@ outer:
 				failed = true;
 			}			
 		}
-		List<Pair3<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSets);
+		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSets);
 		ArrayList<FluidRequestTreeNode>lastFluidNode = new ArrayList<FluidRequestTreeNode>(liquids.size());
-		for(Pair3<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
+		for(Triplet<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
 			FluidRequestTreeNode node = new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 			lastFluidNode.add(node);
 			if(!node.isDone()) {
@@ -660,8 +660,8 @@ outer:
 					failed = true;
 				}			
 			}
-			List<Pair3<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(workSets);
-			for(Pair3<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
+			List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(workSets);
+			for(Triplet<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
 				FluidRequestTreeNode node = new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 				newFluidChildren.add(node);
 				if(!node.isDone()) {
@@ -705,9 +705,9 @@ outer:
 			new RequestTreeNode(template, stack.getValue1(), stack.getValue2(), this, RequestTree.defaultRequestFlags);
 		}
 
-		List<Pair3<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSetsNeeded);
+		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> liquids = template.getComponentFluid(nCraftingSetsNeeded);
 
-		for(Pair3<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
+		for(Triplet<FluidIdentifier, Integer, IRequestFluid> liquid:liquids) {
 			new FluidRequestTreeNode(liquid.getValue1(), liquid.getValue2(), liquid.getValue3(), this);
 		}
 

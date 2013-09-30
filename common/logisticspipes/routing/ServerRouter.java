@@ -37,7 +37,7 @@ import logisticspipes.ticks.RoutingTableUpdateThread;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.OneList;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -66,7 +66,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 	
 	protected class LSA {
-		public HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> neighboursWithMetric;
+		public HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> neighboursWithMetric;
 		public List<Pair<ILogisticsPowerProvider,List<IFilter>>> power;
 	}
 	
@@ -202,7 +202,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		this._zCoord = zCoord;
 		clearPipeCache();
 		_myLsa = new LSA();
-		_myLsa.neighboursWithMetric = new HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>();
+		_myLsa.neighboursWithMetric = new HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>();
 		_myLsa.power = new ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>>();
 		SharedLSADatabasewriteLock.lock(); // any time after we claim the SimpleID, the database could be accessed at that index
 		simpleID = claimSimpleID();
@@ -431,9 +431,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 	}
 
 	private void SendNewLSA() {
-		HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> neighboursWithMetric = new HashMap<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>();
+		HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> neighboursWithMetric = new HashMap<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>();
 		for (Entry<IRouter, ExitRoute> adjacent : _adjacentRouter.entrySet()){
-			neighboursWithMetric.put(adjacent.getKey(), new Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters));
+			neighboursWithMetric.put(adjacent.getKey(), new Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>(adjacent.getValue().distanceToDestination, adjacent.getValue().connectionDetails, adjacent.getValue().filters));
 		}
 		ArrayList<Pair<ILogisticsPowerProvider,List<IFilter>>> power = null;
 		if(_powerAdjacent != null){
@@ -561,9 +561,9 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 				}
 			}
 			
-		    Iterator<Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>> it = lsa.neighboursWithMetric.entrySet().iterator();
+		    Iterator<Entry<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>>> it = lsa.neighboursWithMetric.entrySet().iterator();
 		    while (it.hasNext()) {
-		    	Entry<IRouter, Pair3<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> newCandidate = it.next();
+		    	Entry<IRouter, Triplet<Integer, EnumSet<PipeRoutingConnectionType>, List<IFilter>>> newCandidate = it.next();
 				/*
 		    	EnumSet<PipeRoutingConnectionType> newCandidateClosedFlags = closedSet.get(newCandidate.getKey().getSimpleID());
 				if(newCandidateClosedFlags == null)

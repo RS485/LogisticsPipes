@@ -38,7 +38,7 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
 import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
-import logisticspipes.utils.tuples.Pair4;
+import logisticspipes.utils.tuples.Quartet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -55,7 +55,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	
 	private boolean init = false;
 	//list of Itemdentifier, amount, destinationsimpleid, transportmode
-	private LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Pair4<ItemIdentifier,Integer,Integer,TransportMode>>();
+	private LinkedList<Quartet<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Quartet<ItemIdentifier,Integer,Integer,TransportMode>>();
 	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
 	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
@@ -128,7 +128,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 			ItemStack stack = inv.getStackInSlot(i);
 			if(stack != null) {
 				ItemIdentifier ident = ItemIdentifier.get(stack);
-				for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
+				for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 					if(pair.getValue1() == ident) {
 						int tosend = Math.min(pair.getValue2(), stack.stackSize);
 						if(!useEnergy(6)) break;
@@ -191,7 +191,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	public Set<ItemIdentifierStack> getExpectedItems() {
 		// got to be a TreeMap, because a TreeSet doesn't have the ability to retrieve the key.
 		TreeMap<ItemIdentifierStack,?> list = new TreeMap<ItemIdentifierStack,Integer>();
-		for(Pair4<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
+		for(Quartet<ItemIdentifier,Integer,Integer,TransportMode> pair:destination) {
 			ItemIdentifierStack currentStack = new ItemIdentifierStack(pair.getValue1(), pair.getValue2());
 			Entry<ItemIdentifierStack,?> entry = list.ceilingEntry(currentStack);
 			if(entry!=null && entry.getKey().getItem().uniqueID == currentStack.getItem().uniqueID){
@@ -314,7 +314,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	@Override
 	public void addItem(ItemIdentifier item, int amount, int destinationId, TransportMode mode) {
 		if(item != null && destinationId >= 0) {
-			destination.addLast(new Pair4<ItemIdentifier,Integer,Integer,TransportMode>(item, amount, destinationId, mode));
+			destination.addLast(new Quartet<ItemIdentifier,Integer,Integer,TransportMode>(item, amount, destinationId, mode));
 			updateContentListener();
 		}
 	}

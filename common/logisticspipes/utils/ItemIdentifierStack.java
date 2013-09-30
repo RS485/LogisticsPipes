@@ -17,7 +17,7 @@ import java.util.LinkedList;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -150,9 +150,9 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		return list;
 	}
 
-	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue) {
+	public static LinkedList<ItemIdentifierStack> getListSendQueue(LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue) {
 		LinkedList<ItemIdentifierStack> list = new LinkedList<ItemIdentifierStack>();
-		for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> part:_sendQueue) {
+		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> part:_sendQueue) {
 			if(part == null) {
 				list.add(null);
 			} else {

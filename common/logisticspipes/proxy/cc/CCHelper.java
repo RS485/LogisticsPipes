@@ -10,8 +10,8 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
-import logisticspipes.utils.tuples.Pair4;
+import logisticspipes.utils.tuples.Triplet;
+import logisticspipes.utils.tuples.Quartet;
 
 public class CCHelper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -38,16 +38,16 @@ public class CCHelper {
 			return map;
 		} else if(input instanceof ItemIdentifier) {
 			return ((ItemIdentifier)input).getId();
-		} else if(input instanceof Pair4) {
-			Pair4 pair = (Pair4) input;
+		} else if(input instanceof Quartet) {
+			Quartet pair = (Quartet) input;
 			Map map = new HashMap();
 			map.put(1,getAnswer(pair.getValue1()));
 			map.put(2,getAnswer(pair.getValue2()));
 			map.put(3,getAnswer(pair.getValue3()));
 			map.put(4,getAnswer(pair.getValue4()));
 			return map;
-		} else if(input instanceof Pair3) {
-			Pair3 pair = (Pair3) input;
+		} else if(input instanceof Triplet) {
+			Triplet pair = (Triplet) input;
 			Map map = new HashMap();
 			map.put(1,getAnswer(pair.getValue1()));
 			map.put(2,getAnswer(pair.getValue2()));

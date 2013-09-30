@@ -19,7 +19,7 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
@@ -41,7 +41,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 	public void enabledUpdateEntity() {
 		if (!manager.hasOrders() || getWorld().getTotalWorldTime() % 6 != 0) return;
 		
-		Pair3<FluidIdentifier, Integer, IRequestFluid> order = manager.getFirst();
+		Triplet<FluidIdentifier, Integer, IRequestFluid> order = manager.getFirst();
 		int amountToSend = Math.min(order.getValue2(), 5000);
 		for(Pair<TileEntity, ForgeDirection> pair:getAdjacentTanks(false)) {
 			if(amountToSend <= 0) break;
@@ -90,7 +90,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IFluidProvider
 			}
 		}
 		//Reduce Ordered
-		for(Pair3<FluidIdentifier, Integer, IRequestFluid> pair: manager.getAll()) {
+		for(Triplet<FluidIdentifier, Integer, IRequestFluid> pair: manager.getAll()) {
 			if(map.containsKey(pair.getValue1())) {
 				int result = map.get(pair.getValue1()) - pair.getValue2();
 				if(result > 0) {

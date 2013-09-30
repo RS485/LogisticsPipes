@@ -19,7 +19,7 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 
 
 public class CraftingTemplate implements Comparable<CraftingTemplate>{
@@ -27,7 +27,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	protected ItemIdentifierStack _result;
 	protected ICraftItems _crafter;
 	protected ArrayList<Pair<ItemIdentifierStack, IRequestItems>> _required = new ArrayList<Pair<ItemIdentifierStack, IRequestItems>>(9);
-	protected ArrayList<Pair3<FluidIdentifier, Integer, IRequestFluid>> _requiredFluid = new ArrayList<Pair3<FluidIdentifier, Integer, IRequestFluid>>();
+	protected ArrayList<Triplet<FluidIdentifier, Integer, IRequestFluid>> _requiredFluid = new ArrayList<Triplet<FluidIdentifier, Integer, IRequestFluid>>();
 	protected ArrayList<ItemIdentifierStack> _byproduct = new ArrayList<ItemIdentifierStack>(9);
 	private final int priority;
 	
@@ -48,13 +48,13 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 
 	public void addRequirement(FluidIdentifier liquid, Integer amount, IRequestFluid crafter) {
-		for(Pair3<FluidIdentifier, Integer, IRequestFluid> i : _requiredFluid) {
+		for(Triplet<FluidIdentifier, Integer, IRequestFluid> i : _requiredFluid) {
 			if(i.getValue1() == liquid && i.getValue3() == crafter) {
 				i.setValue2(i.getValue2() + amount);
 				return;
 			}
 		}
-		_requiredFluid.add(new Pair3<FluidIdentifier, Integer, IRequestFluid>(liquid, amount, crafter));
+		_requiredFluid.add(new Triplet<FluidIdentifier, Integer, IRequestFluid>(liquid, amount, crafter));
 	}
 	
 	public void addByproduct(ItemIdentifierStack stack) {
@@ -123,12 +123,12 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		return stacks;
 	}
 
-	protected List<Pair3<FluidIdentifier, Integer, IRequestFluid>> getComponentFluid(int nCraftingSetsNeeded) {
-		List<Pair3<FluidIdentifier, Integer, IRequestFluid>> stacks = new ArrayList<Pair3<FluidIdentifier, Integer, IRequestFluid>>(_requiredFluid.size());
+	protected List<Triplet<FluidIdentifier, Integer, IRequestFluid>> getComponentFluid(int nCraftingSetsNeeded) {
+		List<Triplet<FluidIdentifier, Integer, IRequestFluid>> stacks = new ArrayList<Triplet<FluidIdentifier, Integer, IRequestFluid>>(_requiredFluid.size());
 		
 		// for each thing needed to satisfy this promise
-		for(Pair3<FluidIdentifier, Integer, IRequestFluid> stack : _requiredFluid) {
-			stacks.add(new Pair3<FluidIdentifier, Integer, IRequestFluid>(stack.getValue1(),stack.getValue2()*nCraftingSetsNeeded,stack.getValue3()));
+		for(Triplet<FluidIdentifier, Integer, IRequestFluid> stack : _requiredFluid) {
+			stacks.add(new Triplet<FluidIdentifier, Integer, IRequestFluid>(stack.getValue1(),stack.getValue2()*nCraftingSetsNeeded,stack.getValue3()));
 		}
 		return stacks;
 	}

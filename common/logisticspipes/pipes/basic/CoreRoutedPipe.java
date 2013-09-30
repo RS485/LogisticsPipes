@@ -78,7 +78,7 @@ import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.WorldUtil;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -148,7 +148,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	
 	public int server_routing_table_size = 0;
 	
-	protected final LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Pair3<IRoutedItem, ForgeDirection, ItemSendMode>>();
+	protected final LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>> _sendQueue = new LinkedList<Triplet<IRoutedItem, ForgeDirection, ItemSendMode>>();
 	
 	protected final ArrayList<TravelingItem> queuedDataForUnroutedItems = new ArrayList<TravelingItem>();
 	
@@ -202,12 +202,12 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	}
 	
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from) {
-		_sendQueue.addLast(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
+		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, ItemSendMode.Normal));
 		sendQueueChanged(false);
 	}
 
 	public void queueRoutedItem(IRoutedItem routedItem, ForgeDirection from, ItemSendMode mode) {
-		_sendQueue.addLast(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
+		_sendQueue.addLast(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routedItem, from, mode));
 		sendQueueChanged(false);
 	}
 	/** 
@@ -330,7 +330,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 				stillNeedReplace = false;
 				getWorld().notifyBlockChange(getX(), getY(), getZ(), getWorld().getBlockId(getX(), getY(), getZ()));
 				/* TravelingItems are just held by a pipe, they don't need to know their world
-				 * for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
+				 * for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> item : _sendQueue) {
 					//assign world to any entityitem we created in readfromnbt
 					item.getValue1().getTravelingItem().setWorld(getWorld());
 				}*/
@@ -369,7 +369,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		_initialInit = false;
 		if (!_sendQueue.isEmpty()){
 			if(getItemSendMode() == ItemSendMode.Normal || !SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
-				Pair3<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
+				Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
 				sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 				_sendQueue.removeFirst();
 				if(SimpleServiceLocator.buildCraftProxy.checkMaxItems()) {
@@ -385,7 +385,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			} else if(getItemSendMode() == ItemSendMode.Fast) {
 				for(int i=0;i < 16;i++) {
 					if (!_sendQueue.isEmpty()){
-						Pair3<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
+						Triplet<IRoutedItem, ForgeDirection, ItemSendMode> itemToSend = _sendQueue.getFirst();
 						sendRoutedItem(itemToSend.getValue1(), itemToSend.getValue2());
 						_sendQueue.removeFirst();
 					}
@@ -656,7 +656,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		nbttagcompound.setCompoundTag("upgradeManager", upgradeNBT);
 
 		NBTTagList sendqueue = new NBTTagList();
-		for(Pair3<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
+		for(Triplet<IRoutedItem, ForgeDirection, ItemSendMode> p : _sendQueue) {
 			NBTTagCompound tagentry = new NBTTagCompound();
 			NBTTagCompound tagentityitem = new NBTTagCompound();
 			p.getValue1().getTravelingItem().writeToNBT(tagentityitem);
@@ -694,7 +694,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 			IRoutedItem routeditem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(entity);
 			ForgeDirection from = ForgeDirection.values()[tagentry.getByte("from")];
 			ItemSendMode mode = ItemSendMode.values()[tagentry.getByte("mode")];
-			_sendQueue.add(new Pair3<IRoutedItem, ForgeDirection, ItemSendMode>(routeditem, from, mode));
+			_sendQueue.add(new Triplet<IRoutedItem, ForgeDirection, ItemSendMode>(routeditem, from, mode));
 		}
 	}
 	

@@ -6,22 +6,22 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Triplet;
 
 public class LogisticsFluidOrderManager {
 	
-	private LinkedList<Pair3<FluidIdentifier, Integer, IRequestFluid>> queue = new LinkedList<Pair3<FluidIdentifier, Integer, IRequestFluid>>();
+	private LinkedList<Triplet<FluidIdentifier, Integer, IRequestFluid>> queue = new LinkedList<Triplet<FluidIdentifier, Integer, IRequestFluid>>();
 	
 	public void add(FluidLogisticsPromise promise, IRequestFluid destination) {
 		if(promise.amount < 0) throw new RuntimeException("The amount can't be less than zero");
-		queue.addLast(new Pair3<FluidIdentifier, Integer, IRequestFluid>(promise.liquid, promise.amount, destination));
+		queue.addLast(new Triplet<FluidIdentifier, Integer, IRequestFluid>(promise.liquid, promise.amount, destination));
 	}
 
 	public boolean hasOrders() {
 		return !queue.isEmpty();
 	}
 
-	public Pair3<FluidIdentifier, Integer, IRequestFluid> getFirst() {
+	public Triplet<FluidIdentifier, Integer, IRequestFluid> getFirst() {
 		return queue.getFirst();
 	}
 
@@ -41,7 +41,7 @@ public class LogisticsFluidOrderManager {
 		queue.removeFirst();
 	}
 
-	public List<Pair3<FluidIdentifier, Integer, IRequestFluid>> getAll() {
+	public List<Triplet<FluidIdentifier, Integer, IRequestFluid>> getAll() {
 		return Collections.unmodifiableList(queue);
 	}
 }

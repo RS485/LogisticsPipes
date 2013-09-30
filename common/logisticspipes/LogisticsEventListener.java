@@ -168,25 +168,23 @@ public class LogisticsEventListener implements IPlayerTracker {
 	}
 
 	@SideOnly(Side.CLIENT)
-	private static Queue<GuiEntry> guiPos;
+	@Getter(lazy=true)
+	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();;
 
 	//Handle GuiRepoen
 	@ForgeSubscribe
 	@SideOnly(Side.CLIENT)
 	public void onGuiOpen(GuiOpenEvent event) {
-		if(guiPos == null) {
-			guiPos = new LinkedList<GuiEntry>();
-		}
-		if(!guiPos.isEmpty()) {
+		if(!getGuiPos().isEmpty()) {
 			if(event.gui == null) {
-				GuiEntry part = guiPos.peek();
+				GuiEntry part = getGuiPos().peek();
 				if(part.isActive()) {
-					part = guiPos.poll();
+					part = getGuiPos().poll();
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiReopenPacket.class).setGuiID(part.getGuiID()).setPosX(part.getXCoord()).setPosY(part.getYCoord()).setPosZ(part.getZCoord()));
 					LogisticsGuiOverrenderer.getInstance().setActive(false);
 				}
 			} else {
-				GuiEntry part = guiPos.peek();
+				GuiEntry part = getGuiPos().peek();
 				part.setActive(true);
 			}
 		}
@@ -197,9 +195,6 @@ public class LogisticsEventListener implements IPlayerTracker {
 
 	@SideOnly(Side.CLIENT)
 	public static void addGuiToReopen(int xCoord, int yCoord, int zCoord, int guiID) {
-		if(guiPos == null) {
-			guiPos = new LinkedList<GuiEntry>();
-		}
-		guiPos.add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
+		getGuiPos().add(new GuiEntry(xCoord, yCoord, zCoord, guiID, false));
 	}
 }

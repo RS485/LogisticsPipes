@@ -5,8 +5,8 @@ import java.util.List;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 
 public interface ISendRoutedItem {

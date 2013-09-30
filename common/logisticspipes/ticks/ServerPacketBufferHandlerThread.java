@@ -17,7 +17,7 @@ import java.util.zip.GZIPOutputStream;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.BufferTransfer;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.network.packet.Packet250CustomPayload;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;

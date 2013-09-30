@@ -17,9 +17,9 @@ import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.Pair3;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import logisticspipes.utils.tuples.Pair3;
 
 public interface ILogisticsManager {
 

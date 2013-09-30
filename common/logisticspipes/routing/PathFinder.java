@@ -26,7 +26,7 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.OneList;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;

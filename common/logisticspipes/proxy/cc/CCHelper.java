@@ -9,9 +9,9 @@ import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.Pair;
-import logisticspipes.utils.Pair3;
-import logisticspipes.utils.Pair4;
+import logisticspipes.utils.tuples.Pair;
+import logisticspipes.utils.tuples.Pair3;
+import logisticspipes.utils.tuples.Pair4;
 
 public class CCHelper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })

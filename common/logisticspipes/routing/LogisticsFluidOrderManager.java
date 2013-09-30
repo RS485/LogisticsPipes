@@ -6,7 +6,7 @@ import java.util.List;
 
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.Pair3;
+import logisticspipes.utils.tuples.Pair3;
 
 public class LogisticsFluidOrderManager {
 	

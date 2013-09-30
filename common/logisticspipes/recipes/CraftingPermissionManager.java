@@ -12,7 +12,7 @@ import java.util.Map;
 
 import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.Pair;
+import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ContainerPlayer;
 import net.minecraft.inventory.InventoryCrafting;

@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.network.SendNBTTagCompound;
 import logisticspipes.pipes.basic.CoreRoutedPipe.ItemSendMode;
+import logisticspipes.utils.tuples.Pair3;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

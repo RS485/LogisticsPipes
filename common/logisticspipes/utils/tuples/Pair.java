@@ -1,4 +1,4 @@
-package logisticspipes.utils;
+package logisticspipes.utils.tuples;
 
 import lombok.Data;
 

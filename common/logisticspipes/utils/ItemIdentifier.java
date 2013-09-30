@@ -11,6 +11,7 @@ package logisticspipes.utils;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -80,7 +81,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 	private final static ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>> _itemIdentifierTagCache = new ConcurrentHashMap<ItemKey, ConcurrentHashMap<FinalNBTTagCompound,ItemIdentifier>>(1024, 0.5f, 1);
 	
 	private final static ConcurrentHashMap<ItemKey, ItemIdentifier> _itemIdentifierCache = new ConcurrentHashMap<ItemKey, ItemIdentifier>(4096, 0.5f, 1);
-	private final static ConcurrentHashMap<ItemIdentifier,Integer> _badTags = new ConcurrentHashMap<ItemIdentifier,Integer>(128, 0.75f, 1);
+	private final static HashSet<ItemIdentifier> _badTags = new HashSet<ItemIdentifier>(128, 0.75f);
 	
 	//array of mod names, used for id -> name, 0 is unknown
 	private final static ArrayList<String> _modNameList = new ArrayList<String>();
@@ -532,12 +533,10 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 
 	private static void checkNBTbadness(ItemIdentifier item, NBTBase nbt) {
 		if((item.getMaxStackSize() > 1 || LogisticsPipes.DEBUG) && nbt.getName().isEmpty()) {
-			Integer badTag=_badTags.get(item.getIgnoringNBT());
-			if(badTag==null){
-				_badTags.put(item.getIgnoringNBT(), 1);
-				LogisticsPipes.log.warning("Bad item " + item.getDebugName() + " : Root NBTTag has no name");
-			} else{
-				_badTags.put(item.getIgnoringNBT(), badTag+1);
+			if (!_badTags.contains(item.getIgnoringNBT())) {
+				_badTags.add(item.getIgnoringNBT());
+				LogisticsPipes.log.warning("Bad item " + item.getDebugName()
+						+ " : Root NBTTag has no name");
 			}
 		}
 		try {

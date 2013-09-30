@@ -1,5 +1,6 @@
 package logisticspipes.proxy;
 
+import java.io.File;
 import java.util.WeakHashMap;
 
 import logisticspipes.Configs;
@@ -25,6 +26,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.server.FMLServerHandler;
 
 public class MainProxy {
 	
@@ -188,6 +190,10 @@ public class MainProxy {
 	
 	public static EntityPlayer getFakePlayer(TileEntity tile) {
 		return new FakePlayer(tile);
+	}
+
+	public static File getLPFolder() {
+		return new File(DimensionManager.getCurrentSaveRootDirectory(), "LogisticsPipes");
 	}
 }
 

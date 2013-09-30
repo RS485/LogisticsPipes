@@ -9,7 +9,9 @@ import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Icon;
 import net.minecraft.world.IBlockAccess;
@@ -245,5 +247,13 @@ public class LogisticsSolidBlock extends BlockContainer {
 			return icons[0];
 		}
 	}
-	
+
+	@Override
+	public void onBlockPlacedBy(World par1World, int x, int y, int z, EntityLivingBase par5EntityLivingBase, ItemStack par6ItemStack) {
+		TileEntity tile = par1World.getBlockTileEntity(x, y, z);
+		if(tile instanceof LogisticsCraftingTableTileEntity) {
+			((LogisticsCraftingTableTileEntity)tile).placedBy(par5EntityLivingBase);
+		}
+		super.onBlockPlacedBy(par1World, x, y, z, par5EntityLivingBase, par6ItemStack);
+	}
 }

@@ -131,7 +131,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	public void cacheRecipe() {
 		cache = null;
 		resultInv.clearInventorySlotContents(0);
-		AutoCraftingInventory craftInv = new AutoCraftingInventory();
+		AutoCraftingInventory craftInv = new AutoCraftingInventory("");//TODO
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
@@ -173,15 +173,16 @@ outer:
 			//Not enough material
 			return null;
 		}
-		AutoCraftingInventory crafter = new AutoCraftingInventory();
+		AutoCraftingInventory crafter = new AutoCraftingInventory("");//TODO
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];
 			if(j != -1) crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
 		}
+		if(!cache.matches(crafter, getWorld())) return null; //Fix MystCraft
 		ItemStack result = cache.getCraftingResult(crafter);
 		if(result == null) return null;
 		if(!ItemIdentifier.get(resultInv.getStackInSlot(0)).equalsWithoutNBT(ItemIdentifier.get(result))) return null;
-		crafter = new AutoCraftingInventory();
+		crafter = new AutoCraftingInventory("");//TODO
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];
 			if(j != -1) crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));

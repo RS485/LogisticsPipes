@@ -8,6 +8,7 @@ import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.SimpleInventory;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.SlotCrafting;
@@ -23,6 +24,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 	public SimpleInventory resultInv = new SimpleInventory(1, "Crafting Result", 1);
 	private IRecipe cache;
 	private EntityPlayer fake;
+	private String placedBy = "";
 	
 	public LogisticsCraftingTableTileEntity() {
 		matrix.addListener(this);
@@ -31,7 +33,7 @@ public class LogisticsCraftingTableTileEntity extends TileEntity implements ISim
 	public void cacheRecipe() {
 		cache = null;
 		resultInv.clearInventorySlotContents(0);
-		AutoCraftingInventory craftInv = new AutoCraftingInventory();
+		AutoCraftingInventory craftInv = new AutoCraftingInventory(placedBy);
 		for(int i=0; i<9;i++) {
 			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
 		}
@@ -73,7 +75,7 @@ outer:
 			//Not enough material
 			return null;
 		}
-		AutoCraftingInventory crafter = new AutoCraftingInventory();
+		AutoCraftingInventory crafter = new AutoCraftingInventory(placedBy);
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];
 			if(j != -1) crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
@@ -84,7 +86,7 @@ outer:
 		if(!resultInv.getIDStackInSlot(0).getItem().equalsWithoutNBT(ItemIdentifier.get(result))) return null;
 		if(!wanted.equalsWithoutNBT(resultInv.getIDStackInSlot(0).getItem())) return null;
 		if(!power.useEnergy(Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE)) return null;
-		crafter = new AutoCraftingInventory();
+		crafter = new AutoCraftingInventory(placedBy);
 		for(int i=0;i<9;i++) {
 			int j = toUse[i];
 			if(j != -1) crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));
@@ -142,6 +144,7 @@ outer:
 		super.readFromNBT(par1nbtTagCompound);
 		inv.readFromNBT(par1nbtTagCompound, "inv");
 		matrix.readFromNBT(par1nbtTagCompound, "matrix");
+		placedBy = par1nbtTagCompound.getString("placedBy");
 		cacheRecipe();
 	}
 
@@ -150,6 +153,7 @@ outer:
 		super.writeToNBT(par1nbtTagCompound);
 		inv.writeToNBT(par1nbtTagCompound, "inv");
 		matrix.writeToNBT(par1nbtTagCompound, "matrix");
+		par1nbtTagCompound.setString("placedBy", placedBy);
 	}
 
 	@Override
@@ -212,5 +216,11 @@ outer:
 			}
 		}
 		return true;
+	}
+
+	public void placedBy(EntityLivingBase par5EntityLivingBase) {
+		if(par5EntityLivingBase instanceof EntityPlayer) {
+			placedBy = par5EntityLivingBase.getEntityName();
+		}
 	}
 }

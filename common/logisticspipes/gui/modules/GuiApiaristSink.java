@@ -295,9 +295,9 @@ public class GuiApiaristSink extends GuiWithPreviousGuiContainer {
 		@Override
 		public boolean displayToolTip() {
 			if(slotNumber == 0) {
-				return setting.firstBee != "" && drawSlotBackground();
+				return !setting.firstBee.isEmpty() && drawSlotBackground();
 			} else {
-				return setting.secondBee != "" && drawSlotBackground();
+				return !setting.secondBee.isEmpty() && drawSlotBackground();
 			}
 		}
 

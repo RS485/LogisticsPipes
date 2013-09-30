@@ -363,7 +363,7 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean itemSearched(ItemIdentifier item) {
-		if(searchinput1 == "" && searchinput2 == "") return true;
+		if(searchinput1.isEmpty() && searchinput2.isEmpty()) return true;
 		if(isSearched(item.getFriendlyName().toLowerCase(),(searchinput1 + searchinput2).toLowerCase())) return true;
 		if(isSearched(String.valueOf(item.itemID),(searchinput1 + searchinput2))) return true;
 		//Enchantment? Enchantment!

@@ -230,7 +230,7 @@ public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenC
 
 	public void handleOpenSecurityPlayer(EntityPlayer player, String string) {
 		SecuritySettings setting = settingsList.get(string);
-		if(setting == null && string != "" && string != null) {
+		if(setting == null && string != null && !string.isEmpty()) {
 			setting = new SecuritySettings(string);
 			settingsList.put(string, setting);
 		}

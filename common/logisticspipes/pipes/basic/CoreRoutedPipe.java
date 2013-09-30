@@ -637,7 +637,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 		super.writeToNBT(nbttagcompound);
 		
 		synchronized (routerIdLock) {
-			if (routerId == null || routerId == ""){
+			if (routerId == null || routerId.isEmpty()){
 				if(router != null)
 					routerId = router.getId().toString();
 				else

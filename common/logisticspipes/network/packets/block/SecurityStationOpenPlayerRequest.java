@@ -22,7 +22,7 @@ public class SecurityStationOpenPlayerRequest extends StringCoordinatesPacket {
 	public void processPacket(EntityPlayer player) {
 		LogisticsSecurityTileEntity tile = this.getTile(player.worldObj, LogisticsSecurityTileEntity.class);
 		if(tile != null) {
-			if(getString() != null || getString() != "") {
+			if(getString() != null && !getString().isEmpty()) {
 				tile.handleOpenSecurityPlayer(player, getString());
 			}
 		}

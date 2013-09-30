@@ -910,7 +910,7 @@ outer:
 		}
 		interests.remove(this);
 		if(interests.isEmpty())
-			_globalSpecificInterests.remove(interests);
+			_globalSpecificInterests.remove(p2);
 		
 	}
 

@@ -1,9 +1,6 @@
 package logisticspipes.recipes;
 
-import logisticspipes.proxy.MainProxy;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class LPShapelessOreRecipe extends ShapelessOreRecipe {

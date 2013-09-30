@@ -1,8 +1,6 @@
 package logisticspipes.pipes;
 
 import java.util.BitSet;
-import java.util.UUID;
-
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;

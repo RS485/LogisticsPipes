@@ -11,8 +11,6 @@ package logisticspipes.routing;
 import java.util.List;
 import java.util.UUID;
 
-import net.minecraftforge.common.ForgeDirection;
-
 
 public interface IRouterManager {
 	int getIDforUUID(UUID id);

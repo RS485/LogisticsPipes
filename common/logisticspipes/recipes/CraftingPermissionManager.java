@@ -10,12 +10,8 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import logisticspipes.blocks.crafting.AutoCraftingInventory;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ContainerPlayer;
-import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 

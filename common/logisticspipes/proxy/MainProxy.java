@@ -26,7 +26,6 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.network.PacketDispatcher;
 import cpw.mods.fml.common.network.Player;
 import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.server.FMLServerHandler;
 
 public class MainProxy {
 	

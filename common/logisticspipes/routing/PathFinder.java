@@ -20,7 +20,6 @@ import java.util.Map.Entry;
 import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IDirectRoutingConnection;
 import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.network.packets.pipe.FireWallFlag;
 import logisticspipes.pipes.PipeItemsFirewall;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.fluid.LogisticsFluidConnectorPipe;

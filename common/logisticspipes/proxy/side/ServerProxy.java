@@ -183,7 +183,7 @@ public class ServerProxy implements IProxy {
 				String itemPart = category.substring(10);
 				String metaPart = "0";
 				if(itemPart.contains(".")) {
-					String[] itemPartSplit = itemPart.split(".");
+					String[] itemPartSplit = itemPart.split("\\.");
 					itemPart = itemPartSplit[0];
 					metaPart = itemPartSplit[1];
 				}

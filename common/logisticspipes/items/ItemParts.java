@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 
 public class ItemParts extends LogisticsItem {
-	private static Icon[] _icons;
+	private Icon[] _icons;
 	public ItemParts(int par1) {
 		super(par1);
 		this.setHasSubtypes(true);

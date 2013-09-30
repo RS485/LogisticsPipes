@@ -60,7 +60,7 @@ public class ItemUpgrade extends LogisticsItem {
 	public static final int MAX_LIQUID_CRAFTER = 3;
 
 	List<Upgrade> upgrades = new ArrayList<Upgrade>();
-	private static Icon[] icons;
+	private Icon[] icons;
 	private class Upgrade {
 		private String name;
 		private int id;

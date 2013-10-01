@@ -98,6 +98,8 @@ public class Configs {
 	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
 	public static boolean CHECK_FOR_UPDATES = true;
+	
+	public static boolean EASTER_EGGS = true;
 
 	public static void load(FMLPreInitializationEvent event) {
 		File configFile = new File(event.getModConfigurationDirectory(), "LogisticsPipes.cfg");
@@ -381,6 +383,13 @@ public class Configs {
 						"checkForUpdates",
 						CHECK_FOR_UPDATES,
 						"Should LogisticsPipes check for updates?")
+				.getBoolean(false);
+		
+		EASTER_EGGS = CONFIGURATION
+				.get(Configuration.CATEGORY_GENERAL,
+						"easterEggs",
+						EASTER_EGGS,
+						"Do you fancy easter eggs?")
 				.getBoolean(false);
 
 		CONFIGURATION.save();

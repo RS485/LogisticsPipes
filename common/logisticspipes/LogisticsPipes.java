@@ -9,6 +9,7 @@
 package logisticspipes;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -301,6 +302,15 @@ public class LogisticsPipes {
 		}
 		SimpleServiceLocator.setBuildCraftProxy(new BuildCraftProxy());
 		SimpleServiceLocator.buildCraftProxy.replaceBlockGenericPipe();
+
+		if (Configs.EASTER_EGGS) {
+			Calendar calendar = Calendar.getInstance();
+			int day = calendar.get(Calendar.DAY_OF_MONTH);
+			int month = calendar.get(Calendar.MONTH);
+			if (month == Calendar.OCTOBER && day == 1) { //GUIpsp's birthday.
+				Item.slimeBall.setTextureName("logisticspipes:eastereggs/guipsp");
+			}
+		}
 	}
 	
 	@EventHandler

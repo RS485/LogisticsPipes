@@ -153,7 +153,6 @@ public class LogisticsEventListener implements IPlayerTracker {
 	public void onPlayerRespawn(EntityPlayer player) {}
 
 	@AllArgsConstructor
-	@SideOnly(Side.CLIENT)
 	private static class GuiEntry {
 		@Getter
 		private final int xCoord;
@@ -167,9 +166,8 @@ public class LogisticsEventListener implements IPlayerTracker {
 		private boolean isActive;
 	}
 
-	@SideOnly(Side.CLIENT)
 	@Getter(lazy=true)
-	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();;
+	private static final Queue<GuiEntry> guiPos = new LinkedList<GuiEntry>();
 
 	//Handle GuiRepoen
 	@ForgeSubscribe

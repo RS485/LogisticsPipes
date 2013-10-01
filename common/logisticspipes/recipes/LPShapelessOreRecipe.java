@@ -1,6 +1,11 @@
 package logisticspipes.recipes;
 
+import logisticspipes.Configs;
+import logisticspipes.proxy.MainProxy;
+import logisticspipes.proxy.SimpleServiceLocator;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 public class LPShapelessOreRecipe extends ShapelessOreRecipe {
@@ -12,34 +17,38 @@ public class LPShapelessOreRecipe extends ShapelessOreRecipe {
 		this.dependent = dependent;
 		dependent.addStack(result);
 	}
-/*
+
 	@Override
 	public ItemStack getCraftingResult(InventoryCrafting inv) {
-		String name = CraftingPermissionManager.getPlayerName(inv);
-		if(name == null || name.equals("")) return null;
-		if(!CraftingPermissionManager.isAllowedFor(dependent, name)) {
-			return null;
+		if(Configs.ENABLE_RESEARCH_SYSTEM) {
+			String name = SimpleServiceLocator.craftingPermissionManager.getPlayerName(inv);
+			if(name == null || name.equals("")) return null;
+			if(!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
+				return null;
+			}
 		}
 		return super.getCraftingResult(inv);
 	}
 
 	@Override
 	public boolean matches(InventoryCrafting inv, World world) {
-		String name = CraftingPermissionManager.getPlayerName(inv);
-		if(name == null || name.equals("")) return false;
-		if(!CraftingPermissionManager.isAllowedFor(dependent, name)) {
-			return false;
+		if(Configs.ENABLE_RESEARCH_SYSTEM) {
+			String name = SimpleServiceLocator.craftingPermissionManager.getPlayerName(inv);
+			if(name == null || name.equals("")) return false;
+			if(!SimpleServiceLocator.craftingPermissionManager.isAllowedFor(dependent, name)) {
+				return false;
+			}
 		}
 		return super.matches(inv, world);
 	}
 
 	@Override
 	public ItemStack getRecipeOutput() {
-		if(MainProxy.isClient()) {
-			if(!CraftingPermissionManager.clientSidePermission.contains(dependent)) {
+		if(MainProxy.isClient() && Configs.ENABLE_RESEARCH_SYSTEM) {
+			if(!SimpleServiceLocator.craftingPermissionManager.clientSidePermission.contains(dependent)) {
 				return null;
 			}
 		}
 		return super.getRecipeOutput();
-	}//*/
+	}
 }

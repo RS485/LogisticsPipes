@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
-import logisticspipes.recipes.CraftingPermissionManager;
+import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.ItemIdentifier;
 import net.minecraft.tileentity.TileEntity;
@@ -94,7 +94,7 @@ public class WorldTickHandler implements ITickHandler {
 		FluidIdentifier.initFromForge(true);
 		if(type.contains(TickType.SERVER)) {
 			HudUpdateTick.tick();
-			CraftingPermissionManager.tick();
+			SimpleServiceLocator.craftingPermissionManager.tick();
 			if(LogisticsPipes.WATCHDOG) {
 				Watchdog.tickServer();
 			}

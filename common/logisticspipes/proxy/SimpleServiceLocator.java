@@ -27,6 +27,7 @@ import logisticspipes.proxy.interfaces.IThermalExpansionProxy;
 import logisticspipes.proxy.specialconnection.SpecialPipeConnection;
 import logisticspipes.proxy.specialconnection.SpecialTileConnection;
 import logisticspipes.proxy.specialtankhandler.SpecialTankHandler;
+import logisticspipes.recipes.CraftingPermissionManager;
 import logisticspipes.routing.IRouterManager;
 import logisticspipes.ticks.ClientPacketBufferHandlerThread;
 import logisticspipes.ticks.ServerPacketBufferHandlerThread;
@@ -141,5 +142,10 @@ public final class SimpleServiceLocator {
 	public static IModularPowersuitsProxy mpsProxy;
 	public static void setMPSProxy(IModularPowersuitsProxy proxy) {
 		mpsProxy = proxy;
+	}
+	
+	public static CraftingPermissionManager craftingPermissionManager;
+	public static void setCraftingPermissionManager(CraftingPermissionManager manager) {
+		craftingPermissionManager = manager;
 	}
 }

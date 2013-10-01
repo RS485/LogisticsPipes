@@ -7,9 +7,8 @@ import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportFluids;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
-//import buildcraft.transport.pipes.PipeLogicGold;
 
-public class LogisticsFluidConnectorPipe extends Pipe {
+public class LogisticsFluidConnectorPipe extends Pipe<LogisitcsFluidConnectionTransport> {
 
 	public LogisticsFluidConnectorPipe(int itemID) {
 		super(new LogisitcsFluidConnectionTransport(),  itemID);

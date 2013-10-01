@@ -262,7 +262,7 @@ public class BuildCraftProxy {
 	 * @return the pipe
 	 */
 	@SuppressWarnings("unchecked")
-	public static ItemPipe registerPipe(int key, Class<? extends Pipe> clas) {
+	public static ItemPipe registerPipe(int key, Class<? extends Pipe<?>> clas) {
 		ItemPipe item = new ItemLogisticsPipe(key, clas);
 
 		Map<Integer, Class<? extends Pipe>> pipes = null;
@@ -279,7 +279,7 @@ public class BuildCraftProxy {
 		
 		pipes.put(item.itemID, clas);
 
-		Pipe dummyPipe = BlockGenericPipe.createPipe(item.itemID);
+		Pipe<?> dummyPipe = BlockGenericPipe.createPipe(item.itemID);
 		if (dummyPipe != null) {
 			item.setPipeIconIndex(dummyPipe.getIconIndexForItem());
 			TransportProxy.proxy.setIconProviderFromPipe(item, dummyPipe);
@@ -288,11 +288,11 @@ public class BuildCraftProxy {
 		return item;
 	}
 	
-	protected Item createPipe(int defaultID, Class <? extends Pipe> clas, String descr, Side side) {
+	protected Item createPipe(int defaultID, Class <? extends Pipe<?>> clas, String descr, Side side) {
 		ItemPipe res = registerPipe (defaultID, clas);
 		res.setCreativeTab(LogisticsPipes.LPCreativeTab);
 		res.setUnlocalizedName(clas.getSimpleName());
-		Pipe pipe = BlockGenericPipe.createPipe(res.itemID);
+		Pipe<?> pipe = BlockGenericPipe.createPipe(res.itemID);
 		if(pipe instanceof CoreRoutedPipe) {
 			res.setPipeIconIndex(((CoreRoutedPipe)pipe).getTextureType(ForgeDirection.UNKNOWN).normal);
 		}
@@ -365,7 +365,7 @@ public class BuildCraftProxy {
 		}
 	}
 
-	public static void replaceBlockGenericPipe() {
+	public void replaceBlockGenericPipe() {
 		if(Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
 			Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] = null;
 			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(BuildCraftTransport.genericPipeBlock.blockID);

@@ -136,6 +136,7 @@ public class LogisticsEventListener implements IPlayerTracker {
 	public void onPlayerLogin(EntityPlayer player) {
 		if(MainProxy.isServer(player.worldObj)) {
 			SimpleServiceLocator.securityStationManager.sendClientAuthorizationList(player);
+			SimpleServiceLocator.craftingPermissionManager.sendCraftingPermissionsToPlayer(player);
 		}
 		if(VersionChecker.hasNewVersion) {
 			player.sendChatToPlayer(ChatMessageComponent.createFromText("Your LogisticsPipes version is outdated. The newest version is #" + VersionChecker.newVersion + "."));

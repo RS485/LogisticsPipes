@@ -74,6 +74,7 @@ public class Configs {
 	public static int LOGISTICS_HUD_RENDER_DISTANCE = 15;
 
 	public static boolean LOGISTICS_POWER_USAGE_DISABLED = false;
+	public static boolean ENABLE_RESEARCH_SYSTEM = false;
 
 	public static boolean TOOLTIP_INFO = LogisticsPipes.DEBUG;
 	public static boolean MANDATORY_CARPENTER_RECIPES = true;

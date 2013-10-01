@@ -10,25 +10,30 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
+import logisticspipes.blocks.crafting.AutoCraftingInventory;
+import logisticspipes.network.PacketHandler;
+import logisticspipes.network.packets.CraftingPermissionPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.tuples.Pair;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.ContainerPlayer;
+import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
+import cpw.mods.fml.common.network.Player;
 
 public class CraftingPermissionManager {
-	
-	public static EnumSet<CraftingDependency> clientSidePermission;
-	static {
+	private Map<String, Pair<Long, EnumSet<CraftingDependency>>> serverCache = new HashMap<String, Pair<Long, EnumSet<CraftingDependency>>>();
+	private int tick = 0;
+	public EnumSet<CraftingDependency> clientSidePermission;
+
+	public CraftingPermissionManager() {
 		clientSidePermission = EnumSet.noneOf(CraftingDependency.class);
 		clientSidePermission.add(CraftingDependency.Basic);
 	}
-	
-	private static Map<String, Pair<Long, EnumSet<CraftingDependency>>> serverCache = new HashMap<String, Pair<Long, EnumSet<CraftingDependency>>>();
-	/*
-	public static String getPlayerName(InventoryCrafting inv) {
-		//TODO Access Transformer
+
+	public String getPlayerName(InventoryCrafting inv) {
 		if(inv.eventHandler instanceof ContainerPlayer) {
-			//TODO Access Transformer
 			EntityPlayer player = ((ContainerPlayer)inv.eventHandler).thePlayer;
 			return player.getEntityName();
 		} else if (inv instanceof AutoCraftingInventory) {
@@ -36,19 +41,16 @@ public class CraftingPermissionManager {
 		}
 		return "";
 	}
-	*/
-	public static boolean isAllowedFor(CraftingDependency dependent, String name) {
+
+	public boolean isAllowedFor(CraftingDependency dependent, String name) {
 		if(MainProxy.isClient()) {
-			return CraftingPermissionManager.clientSidePermission.contains(dependent);
+			return clientSidePermission.contains(dependent);
 		} else {
 			EnumSet<CraftingDependency> set = getEnumSet(name);
 			return set.contains(dependent);
 		}
 	}
-	
-	private static int tick = 0;
-	
-	public static void tick() {
+	public void tick() {
 		if(tick++ % 100 != 0) return;
 		tick = 1;
 		for(String name: serverCache.keySet()) {
@@ -60,7 +62,7 @@ public class CraftingPermissionManager {
 		}
 	}
 	
-	public static EnumSet<CraftingDependency> getEnumSet(String name) {
+	public EnumSet<CraftingDependency> getEnumSet(String name) {
 		if(!serverCache.containsKey(name)) {
 			load(name);
 		}
@@ -68,7 +70,7 @@ public class CraftingPermissionManager {
 		return serverCache.get(name).getValue2();
 	}
 	
-	public static void load(String name) {
+	public void load(String name) {
 		try {
 			File lpFolder = MainProxy.getLPFolder();
 			File playerFile = new File(lpFolder, name + "_craft.dat");
@@ -83,11 +85,11 @@ public class CraftingPermissionManager {
 			}
 			serverCache.put(name, new Pair<Long, EnumSet<CraftingDependency>>(System.currentTimeMillis(), enumSet));
 		} catch(Exception e) {
-			serverCache.put(name, new Pair<Long, EnumSet<CraftingDependency>>(System.currentTimeMillis(), EnumSet.noneOf(CraftingDependency.class)));
+			serverCache.put(name, new Pair<Long, EnumSet<CraftingDependency>>(System.currentTimeMillis(), EnumSet.of(CraftingDependency.Basic)));
 		}
 	}
 	
-	public static void modify(String name, EnumSet<CraftingDependency> enumSet) {
+	public void modify(String name, EnumSet<CraftingDependency> enumSet) {
 		serverCache.get(name).setValue1(System.currentTimeMillis());
 		serverCache.get(name).setValue2(enumSet);
 		try {
@@ -103,5 +105,10 @@ public class CraftingPermissionManager {
 		} catch(IOException e) {
 			throw new RuntimeException(e);
 		}
+	}
+	
+	public void sendCraftingPermissionsToPlayer(EntityPlayer player) {
+		EnumSet<CraftingDependency> set = getEnumSet(player.getEntityName());
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(CraftingPermissionPacket.class).setEnumSet(set), (Player)player);
 	}
 }

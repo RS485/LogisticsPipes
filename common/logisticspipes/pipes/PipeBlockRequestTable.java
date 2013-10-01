@@ -200,7 +200,7 @@ outer:
 			if(left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if(left.stackSize > 0) {
-					inv.dropItems(getWorld(), left, getX(), getY(), getZ());
+					SimpleInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
 			}
 		}
@@ -210,7 +210,7 @@ outer:
 			if(left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if(left.stackSize > 0) {
-					inv.dropItems(getWorld(), left, getX(), getY(), getZ());
+					SimpleInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
 			}
 		}

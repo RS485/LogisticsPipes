@@ -36,41 +36,8 @@ public class LogisticsCraftingTable implements ICraftingRecipeProvider {
 			newStack.stackSize=1;
 			inventory.setInventorySlotContents(i, newStack);
 		}
-
-		// Compact
 		
-		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-			final ItemIdentifierStack itemInSlot = inventory.getIDStackInSlot(i);
-			if (itemInSlot == null) {
-				continue;
-			}
-			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
-				final ItemIdentifierStack stackInOtherSlot = inventory.getIDStackInSlot(j);
-				if (stackInOtherSlot == null) {
-					continue;
-				}
-				if (itemInSlot == stackInOtherSlot) {
-					itemInSlot.stackSize += stackInOtherSlot.stackSize;
-					inventory.clearInventorySlotContents(j);
-				}
-			}
-			inventory.setInventorySlotContents(i, itemInSlot);
-		}
-		
-
-		for (int i = 0; i < inventory.getSizeInventory() - 2; i++) {
-			if (inventory.getStackInSlot(i) != null) {
-				continue;
-			}
-			for (int j = i + 1; j < inventory.getSizeInventory() - 2; j++) {
-				if (inventory.getStackInSlot(j) == null) {
-					continue;
-				}
-				inventory.setInventorySlotContents(i, inventory.getStackInSlot(j));
-				inventory.clearInventorySlotContents(j);
-				break;
-			}
-		}
+		inventory.compact_first_9();
 		
 		return true;
 	}

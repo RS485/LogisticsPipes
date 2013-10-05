@@ -234,48 +234,56 @@ public class DebugGuiTickHandler implements ITickHandler, Serializable, TreeExpa
 			int field = 0;
 			int method = 0;
 			while(!clazz.equals(Object.class)) {
-				Field[] fields = clazz.getDeclaredFields();
-				for(int i=0;i<fields.length;i++) {
-					Field f = fields[i];
-					try {
-						f.setAccessible(true);
-						Object content = f.get(toInstect);
-						VarType tmp = null;
-						if(prev instanceof ExtendedVarType) {
-							FieldPart part = ((ExtendedVarType)prev).objectType.get(i);
-							if(part != null) {
-								tmp = part.type;
+				try {
+					Field[] fields = clazz.getDeclaredFields();
+					for(int i=0;i<fields.length;i++) {
+						Field f = fields[i];
+						try {
+							f.setAccessible(true);
+							Object content = f.get(toInstect);
+							VarType tmp = null;
+							if(prev instanceof ExtendedVarType) {
+								FieldPart part = ((ExtendedVarType)prev).objectType.get(i);
+								if(part != null) {
+									tmp = part.type;
+								}
 							}
+							VarType subType = resolveType(content, tmp, f.getName(), false, type);
+							FieldPart fieldPart = new FieldPart();
+							fieldPart.field = f;
+							fieldPart.name = f.getName();
+							fieldPart.type = subType;
+							subType.i = field;
+							type.objectType.put(field++, fieldPart);
+						} catch(Exception e) {
+							e.printStackTrace();
 						}
-						VarType subType = resolveType(content, tmp, f.getName(), false, type);
-						FieldPart fieldPart = new FieldPart();
-						fieldPart.field = f;
-						fieldPart.name = f.getName();
-						fieldPart.type = subType;
-						subType.i = field;
-						type.objectType.put(field++, fieldPart);
-					} catch(Exception e) {
-						e.printStackTrace();
 					}
+				} catch(NoClassDefFoundError e) {
+					e.printStackTrace(); //Don't crash if there is a Field of an unknown type
 				}
-				Method[] methods = clazz.getDeclaredMethods();
-				for(int i=0;i<methods.length;i++) {
-					Method m = methods[i];
-					try {
-						m.setAccessible(true);
-						MethodPart methodPart = new MethodPart();
-						methodPart.method = m;
-						methodPart.name = m.getName();
-						methodPart.i = method;
-						List<String> params = new ArrayList<String>();
-						for(Class<?> par:m.getParameterTypes()) {
-							params.add(par.getSimpleName());
+				try {
+					Method[] methods = clazz.getDeclaredMethods();
+					for(int i=0;i<methods.length;i++) {
+						Method m = methods[i];
+						try {
+							m.setAccessible(true);
+							MethodPart methodPart = new MethodPart();
+							methodPart.method = m;
+							methodPart.name = m.getName();
+							methodPart.i = method;
+							List<String> params = new ArrayList<String>();
+							for(Class<?> par:m.getParameterTypes()) {
+								params.add(par.getSimpleName());
+							}
+							methodPart.param = params.toArray(new String[]{});
+							type.methodType.put(method++, methodPart);
+						} catch(Exception e) {
+							e.printStackTrace();
 						}
-						methodPart.param = params.toArray(new String[]{});
-						type.methodType.put(method++, methodPart);
-					} catch(Exception e) {
-						e.printStackTrace();
 					}
+				} catch(NoClassDefFoundError e) {
+					e.printStackTrace(); //Don't crash if there is a Method with an unknown type
 				}
 				clazz = clazz.getSuperclass();
 			}

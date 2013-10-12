@@ -119,7 +119,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded CC DummyProxy");
 		}
 		
-		if(false && Loader.isModLoaded("Thaumcraft")) {
+		if(Loader.isModLoaded("Thaumcraft")) {
 			SimpleServiceLocator.setThaumCraftProxy(new ThaumCraftProxy());
 			LogisticsPipes.log.info("Loaded Thaumcraft Proxy");
 		} else {

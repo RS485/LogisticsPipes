@@ -6,11 +6,9 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.item.ItemStack;
 
 public interface IThaumCraftProxy {
-	public void renderAspectAt(Object etag, int x, int y, GuiScreen gui);
-	public Object getTagsForStack(ItemStack stack);
-	public List<Integer> getListOfTagIDsForStack(ItemStack stack);
+	public boolean isScannedObject(ItemStack stack, String playerName);
+	public List<String> getListOfTagsForStack(ItemStack stack);
 	public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui);
-	public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui);
-	public String getNameForTagID(int id);
+	public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui);
 	public abstract void addCraftingRecipes();
 }

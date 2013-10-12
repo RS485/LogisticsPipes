@@ -38,7 +38,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	private IRoutedPowerProvider _power;
 	private IWorldProvider _world;
 	
-	public final List<Integer> aspectList = new LinkedList<Integer>();
+	public final List<String> aspectList = new LinkedList<String>();
 	
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 
@@ -89,7 +89,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	private boolean isOfInterest(ItemIdentifier itemID) {
 		if (itemID == null || aspectList.size() == 0) return false;
 		ItemStack item = itemID.makeNormalStack(1);
-		List<Integer> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagIDsForStack(item);
+		List<String> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagsForStack(item);
 		if (itemAspectList == null || itemAspectList.size() == 0) return false;
 		for (int i = 0; i < itemAspectList.size(); i++) {
 			if (aspectList.contains(itemAspectList.get(i))) return true;
@@ -108,19 +108,19 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	@Override
 	public void readFromNBT(NBTTagCompound nbttagcompound) {
 		aspectList.clear();
-		int size = nbttagcompound.getInteger("aspectListSize");
+		int size = nbttagcompound.getInteger("aspectTagListSize");
 		if (size <= 0) return;
 		for (int i = 0; i < size; i++) {
-			aspectList.add(nbttagcompound.getInteger("aspect" + i));
+			aspectList.add(nbttagcompound.getString("aspectTag" + i));
 		}
 	}
 
 	@Override
 	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setInteger("aspectListSize", aspectList.size());
+		nbttagcompound.setInteger("aspectTagListSize", aspectList.size());
 		if (aspectList.size() <= 0) return;
 		for (int i = 0; i < aspectList.size(); i++) {
-			nbttagcompound.setInteger("aspect" + i, aspectList.get(i));
+			nbttagcompound.setString("aspectTag" + i, aspectList.get(i));
 		}
 	}
 
@@ -129,7 +129,6 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		localModeWatchers.add(player);
 		NBTTagCompound nbt = new NBTTagCompound();
 		writeToNBT(nbt);
-//TODO 	MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), (Player)player);		
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 	}
 
@@ -142,12 +141,10 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 		if(MainProxy.isServer(_world.getWorld())) {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-//TODO 		MainProxy.sendToPlayerList(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket(), localModeWatchers);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		} else {
 			NBTTagCompound nbt = new NBTTagCompound();
 			writeToNBT(nbt);
-//TODO 		MainProxy.sendPacketToServer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, getX(), getY(), getZ(), slot, nbt).getPacket());	
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		}
 	}
@@ -160,7 +157,8 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 			info.add("none");
 		}
 		for (int i = 0; i < aspectList.size(); i++) {
-			info.add(" - " + SimpleServiceLocator.thaumCraftProxy.getNameForTagID(aspectList.get(i)));
+			//info.add(" - " + SimpleServiceLocator.thaumCraftProxy.getNameForTagID(aspectList.get(i)));
+			info.add(" - " + aspectList.get(i));
 		}
 		return info;
 	}
@@ -171,7 +169,7 @@ public class ModuleThaumicAspectSink extends LogisticsGuiModule implements IClie
 	}
 
 	public void handleItem(ItemStack stack) {
-		List<Integer> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagIDsForStack(stack);
+		List<String> itemAspectList = SimpleServiceLocator.thaumCraftProxy.getListOfTagsForStack(stack);
 		if (itemAspectList == null) return;
 		boolean listChanged = false;
 		for (int i = 0; i < itemAspectList.size(); i++) {

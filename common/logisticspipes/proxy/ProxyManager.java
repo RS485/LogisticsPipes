@@ -124,13 +124,11 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded Thaumcraft Proxy");
 		} else {
 			SimpleServiceLocator.setThaumCraftProxy(new IThaumCraftProxy() {
+				@Override public boolean isScannedObject(ItemStack stack, String playerName) {return false;}
+				@Override public List<String> getListOfTagsForStack(ItemStack stack) {return null;}
 				@Override public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {}
-				@Override public void renderAspectAt(Object etag, int x, int y, GuiScreen gui) {}
-				@Override public Object getTagsForStack(ItemStack stack) {return null;}
-				@Override public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {}
-				@Override public List<Integer> getListOfTagIDsForStack(ItemStack stack) {return null;}
-				@Override public String getNameForTagID(int id) {return null;}
-				@Override public void addCraftingRecipes() {return;}
+				@Override public void renderAspectsInGrid(List<String> eTags, int x, int y, int legnth, int width, GuiScreen gui) {}
+				@Override public void addCraftingRecipes() {}
 			});
 			LogisticsPipes.log.info("Loaded Thaumcraft DummyProxy");
 		}

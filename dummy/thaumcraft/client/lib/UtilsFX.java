@@ -1,10 +1,9 @@
 package thaumcraft.client.lib;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiScreen;
-import thaumcraft.api.EnumTag;
+import thaumcraft.api.aspects.Aspect;
 
 public class UtilsFX {
-	public static void drawTag(Minecraft mc, int x, int y, EnumTag tag, int amount, GuiScreen gui, boolean back, boolean bw) {}
-	public static void drawTag(Minecraft mc, int x, int y, EnumTag tag, int amount, int bonus, GuiScreen gui, boolean back, boolean bw, float opacity) {}
+	public static void drawTag(int x, int y, Aspect aspect, float amt, int bonus, double z) {}
+	public static void bindTexture(String texture) {}
+	public static void drawTexturedQuadFull(int par1, int par2, double zLevel) {}
 }

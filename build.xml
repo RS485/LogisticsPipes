@@ -34,13 +34,12 @@
 	<property name="antcont.version"      value="1.0b3"/>
 	<property name="mc.version"           value="1.6.2"/>
 	<property name="forge.version"        value="9.10.1.850"/>
-	<property name="forge.setup.version"  value="5"/> <!-- Change to regenerate Forge setup -->
+	<property name="forge.setup.version"  value="6"/> <!-- Change to regenerate Forge setup -->
 	<property name="bc.version"           value="4.0.2"/>
 	<property name="forestry.version"     value="2.3.0.0"/>
 	<property name="ic2.version"          value="2.0.143-experimental"/>
 	<property name="cc.version"           value="1.56"/>
-	<property name="thaumcraft.version.api" value="0.0.5"/>
-	<property name="thaumcraft.version.mod" value="3.0.4b"/>
+	<property name="thaumcraft.version"   value="4.0.0"/>
 	<property name="te.version"           value="2.3.0"/>
 	<property name="lombok.version"       value="0.11.8"/>
 	<property name="jarjar.version"       value="1.4"/>
@@ -60,7 +59,7 @@
 		<get src="${downloadserver.full}forestry-api-${forestry.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}industrialcraft-2-api_${ic2.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ComputerCraftAPI${cc.version}.zip" dest="${download.dir}" usetimestamp="True"/>
-		<get src="${downloadserver.full}ThaumcraftApi-${thaumcraft.version.api}-for-${thaumcraft.version.mod}.zip" dest="${download.dir}" usetimestamp="True"/>
+		<get src="${downloadserver.full}Thaumcraft${thaumcraft.version}-API.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ThermalExpansion-API-${te.version}.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}ant-contrib-${antcont.version}-bin.zip" dest="${download.dir}" usetimestamp="True"/>
 		<get src="${downloadserver.full}jarjar-${jarjar.version}.jar" dest="${download.dir}" usetimestamp="True"/>
@@ -142,7 +141,7 @@
 
 		<unzip dest="${thaumcraft.dir}" failOnEmptyArchive="true">
 			<fileset dir="${download.dir}">
-				<include name="ThaumcraftApi-${thaumcraft.version.api}-for-${thaumcraft.version.mod}.zip"/>
+				<include name="Thaumcraft${thaumcraft.version}-API.zip"/>
 			</fileset>
 		</unzip>
 
@@ -372,10 +371,6 @@
 	<target name="vars-test">
 		<property name="lp.version.full" value="0.0.0.0"/>
 		<property name="DEBUG"           value="true"/>
-	</target>
-
-	<target name="dev">
-		<property name="src.dir"              value="src_dev"/>
 	</target>
 
 	<target name="main" depends="vars, init-msg, setup, package-simple"/>

@@ -1,5 +1,5 @@
-lib
-sign
+lib/**
+sign/**
 build/**
 output/**
 download/**

@@ -14,10 +14,12 @@ import net.minecraft.item.crafting.CraftingManager;
 
 import org.lwjgl.opengl.GL11;
 
-import thaumcraft.api.EnumTag;
-import thaumcraft.api.ObjectTags;
 import thaumcraft.api.ThaumcraftApiHelper;
+import thaumcraft.api.aspects.Aspect;
+import thaumcraft.api.aspects.AspectList;
 import thaumcraft.client.lib.UtilsFX;
+import thaumcraft.common.Thaumcraft;
+import thaumcraft.common.lib.research.ScanManager;
 import buildcraft.BuildCraftSilicon;
 import cpw.mods.fml.client.FMLClientHandler;
 
@@ -25,7 +27,7 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	
 	public ThaumCraftProxy() {
 		try {
-			Class<?> tcConfig = Class.forName("thaumcraft.common.Config");
+			Class<?> tcConfig = Class.forName("thaumcraft.common.config.ConfigItems");
 			itemShard = (Item)tcConfig.getField("itemShard").get((Object)null);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -54,14 +56,14 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	@Override
 	public void renderAspectsDown(ItemStack item, int x, int y, GuiScreen gui) {
 		GL11.glPushMatrix();
-		Minecraft mc = FMLClientHandler.instance().getClient();
-		ObjectTags tags = getTagsForStack(item);
+		AspectList tags = getTagsForStack(item);
 		tags = ThaumcraftApiHelper.getBonusObjectTags(item, tags);
 		if (tags != null) {
 			int index = 0;
-			for (EnumTag tag : tags.getAspectsSorted()) {
+			for (Aspect tag : tags.getAspectsSortedAmount()) {
+				if (tag == null) continue;
 				int yPos = y + index * 18;
-				UtilsFX.drawTag(mc, x, yPos, tag, tags.getAmount(tag), gui, true, false);
+	            renderAspectAt(tag, x, yPos, gui, tags.getAmount(tag));
 				index++;
 			}
 		}
@@ -73,14 +75,13 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param stack The stack to get ObjectTags for.
 	 * @return ObjectTags containing all of the aspects for stack.
 	 */
-	@Override
-	public ObjectTags getTagsForStack(ItemStack stack) {
-		if (stack == null) return new ObjectTags();
-		ObjectTags ot = ThaumcraftApiHelper.getObjectTags(stack);
+	public AspectList getTagsForStack(ItemStack stack) {
+		if (stack == null) return new AspectList();
+		AspectList ot = ThaumcraftApiHelper.getObjectAspects(stack);
 		ot = ThaumcraftApiHelper.getBonusObjectTags(stack, ot);
 		return ot;
 	}
-
+	
 	/**
 	 * Used to render a icon of an aspect at a give x and y on top of a given GuiScreen.
 	 * @param etag The EnumTag (aspect) to render
@@ -88,13 +89,30 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param y
 	 * @param gui The gui to render on.
 	 */
-	@Override
-	public void renderAspectAt(Object etag, int x, int y, GuiScreen gui) {
-		if (!(etag instanceof EnumTag)) return;
-		GL11.glPushMatrix();
+	public void renderAspectAt(Aspect tag, int x, int y, GuiScreen gui, int amount) {
+		if(!(tag instanceof Aspect)) return;
 		Minecraft mc = FMLClientHandler.instance().getClient();
-		UtilsFX.drawTag(mc, x, y, (EnumTag)etag, 1, gui, true, false);
+		UtilsFX.bindTexture("textures/aspects/_back.png");
+		GL11.glPushMatrix();
+		GL11.glEnable(3042);
+		GL11.glBlendFunc(770, 771);
+		GL11.glTranslated(x - 2, y - 2, 0.0D);
+		GL11.glScaled(1.25D, 1.25D, 0.0D);
+		UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
+		GL11.glDisable(3042);
 		GL11.glPopMatrix();
+		if(Thaumcraft.proxy.playerKnowledge.hasDiscoveredAspect(mc.thePlayer.username, tag)) {
+			UtilsFX.drawTag(x, y, tag, amount, 0, gui.zLevel);
+		} else {
+			UtilsFX.bindTexture("textures/aspects/_unknown.png");
+			GL11.glPushMatrix();
+			GL11.glEnable(3042);
+			GL11.glBlendFunc(770, 771);
+			GL11.glTranslated(x, y, 0.0D);
+			UtilsFX.drawTexturedQuadFull(0, 0, gui.zLevel);
+			GL11.glDisable(3042);
+			GL11.glPopMatrix();
+		}
 	}
 
 
@@ -110,14 +128,14 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @param gui The GuiScreen to render on.
 	 */
 	@Override
-	public void renderAspectsInGrid(List<Integer> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {
+	public void renderAspectsInGrid(List<String> etagIDs, int x, int y, int legnth, int width, GuiScreen gui) {
 		if (etagIDs.size() == 0) return;
 		int xshift = x;
 		int yshift = y;
 		int currentListIndex = 0;
 		for (int i = 0; i < width; i++) {
 			for (int j = 0; j < legnth; j++) {
-				renderAspectAt(EnumTag.get(etagIDs.get(currentListIndex)), xshift, yshift, gui);
+				renderAspectAt(Aspect.getAspect(etagIDs.get(currentListIndex)), xshift, yshift, gui, 0);
 				currentListIndex += 1;
 				if(currentListIndex == etagIDs.size()) return;
 				xshift += 18;
@@ -134,28 +152,17 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 	 * @return An Integer list of aspect IDs.
 	 */
 	@Override
-	public List<Integer> getListOfTagIDsForStack(ItemStack stack) {
+	public List<String> getListOfTagsForStack(ItemStack stack) {
 		if (stack == null) return null;
-		List<Integer> list = new LinkedList<Integer>();
-		ObjectTags tags = getTagsForStack(stack);
-		EnumTag[] tagArray = tags.getAspectsSorted();
+		List<String> list = new LinkedList<String>();
+		AspectList tags = getTagsForStack(stack);
+		Aspect[] tagArray = tags.getAspectsSorted();
 		if (tagArray.length == 0 || tagArray == null) return null;
 		for (int i = 0; i < tagArray.length; i++) {
 			if (tagArray[i] == null) continue;
-			int ID = tagArray[i].id;
-			list.add(ID);
+			list.add(tagArray[i].getTag());
 		}
 		return list;
-	}
-
-	/**
-	 * Used to get name for given aspect ID.
-	 * @param id The id to get name for.
-	 * @return String of the aspect name.
-	 */
-	@Override
-	public String getNameForTagID(int id) {
-		return EnumTag.get(id).name;
 	}
 
 	@Override
@@ -177,4 +184,10 @@ public class ThaumCraftProxy implements IThaumCraftProxy {
 		
 	}
 	
+	@Override
+	public boolean isScannedObject(ItemStack stack, String playerName) {
+		String h = ScanManager.generateItemHash(stack.itemID, stack.getItemDamage());
+		List<String> list = Thaumcraft.proxy.getScannedObjects().get(playerName);
+		return (list != null) && (list.contains("@" + h) || list.contains("#" + h));
+	}
 }

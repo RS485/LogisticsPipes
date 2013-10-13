@@ -367,8 +367,9 @@ public class BuildCraftProxy {
 
 	public void replaceBlockGenericPipe() {
 		if(Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
+			BlockGenericPipe original = (BlockGenericPipe) Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID];
 			Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] = null;
-			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(BuildCraftTransport.genericPipeBlock.blockID);
+			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(original, BuildCraftTransport.genericPipeBlock.blockID);
 		}
 	}
 }

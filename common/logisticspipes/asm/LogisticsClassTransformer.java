@@ -275,9 +275,9 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		for(MethodNode method:node.methods) {
-			if(method.name.equals("<init>") && method.desc.equals("(Llogisticspipes/LogisticsPipes;I)V")) return bytes;
+			if(method.name.equals("<init>") && method.desc.equals("(Lbuildcraft/transport/BlockGenericPipe;I)V")) return bytes;
 		}
-		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Llogisticspipes/LogisticsPipes;I)V", null, null);
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Lbuildcraft/transport/BlockGenericPipe;I)V", null, null);
 		mv.visitCode();
 		Label l0 = new Label();
 		mv.visitLabel(l0);
@@ -351,7 +351,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		Label l13 = new Label();
 		mv.visitLabel(l13);
 		mv.visitLocalVariable("this", "Lnet/minecraft/block/Block;", null, l0, l13, 0);
-		mv.visitLocalVariable("mod", "Llogisticspipes/LogisticsPipes;", null, l0, l13, 1);
+		mv.visitLocalVariable("original", "Lbuildcraft/transport/BlockGenericPipe;", null, l0, l13, 1);
 		mv.visitLocalVariable("idToOverwrite", "I", null, l0, l13, 2);
 		mv.visitMaxs(7, 3);
 		mv.visitEnd();
@@ -365,16 +365,16 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		for(MethodNode method:node.methods) {
-			if(method.name.equals("<init>") && method.desc.equals("(Llogisticspipes/LogisticsPipes;I)V")) return bytes;
+			if(method.name.equals("<init>") && method.desc.equals("(Lbuildcraft/transport/BlockGenericPipe;I)V")) return bytes;
 		}
-		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Llogisticspipes/LogisticsPipes;I)V", null, null);
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Lbuildcraft/transport/BlockGenericPipe;I)V", null, null);
 		mv.visitCode();
 		Label l0 = new Label();
 		mv.visitLabel(l0);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitVarInsn(ILOAD, 2);
-		mv.visitMethodInsn(INVOKESPECIAL, "net/minecraft/block/Block", "<init>", "(Llogisticspipes/LogisticsPipes;I)V");
+		mv.visitMethodInsn(INVOKESPECIAL, "net/minecraft/block/Block", "<init>", "(Lbuildcraft/transport/BlockGenericPipe;I)V");
 		Label l1 = new Label();
 		mv.visitLabel(l1);
 		mv.visitVarInsn(ALOAD, 0);
@@ -386,7 +386,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		Label l3 = new Label();
 		mv.visitLabel(l3);
 		mv.visitLocalVariable("this", "Lnet/minecraft/block/BlockContainer;", null, l0, l3, 0);
-		mv.visitLocalVariable("instance", "Llogisticspipes/LogisticsPipes;", null, l0, l3, 1);
+		mv.visitLocalVariable("original", "Lbuildcraft/transport/BlockGenericPipe;", null, l0, l3, 1);
 		mv.visitLocalVariable("i", "I", null, l0, l3, 2);
 		mv.visitMaxs(3, 3);
 		mv.visitEnd();
@@ -400,16 +400,16 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		ClassReader reader = new ClassReader(bytes);
 		reader.accept(node, 0);
 		for(MethodNode method:node.methods) {
-			if(method.name.equals("<init>") && method.desc.equals("(Llogisticspipes/LogisticsPipes;I)V")) return bytes;
+			if(method.name.equals("<init>") && method.desc.equals("(Lbuildcraft/transport/BlockGenericPipe;I)V")) return bytes;
 		}
-		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Llogisticspipes/LogisticsPipes;I)V", null, null);
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Lbuildcraft/transport/BlockGenericPipe;I)V", null, null);
 		mv.visitCode();
 		Label l0 = new Label();
 		mv.visitLabel(l0);
 		mv.visitVarInsn(ALOAD, 0);
 		mv.visitVarInsn(ALOAD, 1);
 		mv.visitVarInsn(ILOAD, 2);
-		mv.visitMethodInsn(INVOKESPECIAL, "net/minecraft/block/BlockContainer", "<init>", "(Llogisticspipes/LogisticsPipes;I)V");
+		mv.visitMethodInsn(INVOKESPECIAL, "net/minecraft/block/BlockContainer", "<init>", "(Lbuildcraft/transport/BlockGenericPipe;I)V");
 		Label l1 = new Label();
 		mv.visitLabel(l1);
 		mv.visitVarInsn(ALOAD, 0);
@@ -421,7 +421,7 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		Label l3 = new Label();
 		mv.visitLabel(l3);
 		mv.visitLocalVariable("this", "Lbuildcraft/transport/BlockGenericPipe;", null, l0, l3, 0);
-		mv.visitLocalVariable("instance", "Llogisticspipes/LogisticsPipes;", null, l0, l3, 1);
+		mv.visitLocalVariable("original", "Lbuildcraft/transport/BlockGenericPipe;", null, l0, l3, 1);
 		mv.visitLocalVariable("i", "I", null, l0, l3, 2);
 		mv.visitMaxs(3, 3);
 		mv.visitEnd();

@@ -4,7 +4,7 @@
          }
      }
  
-+    public Block(logisticspipes.LogisticsPipes mod, int idToOverwrite) {
++    public Block(buildcraft.transport.BlockGenericPipe original, int idToOverwrite) {
 +        this.stepSound = soundPowderFootstep;
 +        this.blockParticleGravity = 1.0F;
 +        this.slipperiness = 0.6F;

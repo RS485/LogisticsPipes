@@ -4,8 +4,8 @@
          this.isBlockContainer = true;
      }
  
-+    public BlockContainer(logisticspipes.LogisticsPipes instance, int i) {
-+        super(instance, i);
++    public BlockContainer(buildcraft.transport.BlockGenericPipe original, int i) {
++        super(original, i);
 +        this.isBlockContainer = true;
 +    }
 +

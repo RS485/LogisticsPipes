@@ -220,6 +220,11 @@
 		</exec>
 
 		<echo message="Regenerated MD5s"/>
+
+		<echo message="Patching"/>
+		<patch patchfile="${src.dir}/patches/Block.java.patch" originalfile="${minecraftsrc.dir}/net/minecraft/block/Block.java"/>
+		<patch patchfile="${src.dir}/patches/BlockContainer.java.patch" originalfile="${minecraftsrc.dir}/net/minecraft/block/BlockContainer.java"/>
+		<patch patchfile="${src.dir}/patches/BlockGenericPipe.java.patch" originalfile="${minecraftsrc.dir}/buildcraft/transport/BlockGenericPipe.java"/>
 	</target>
 
 
@@ -300,6 +305,10 @@
 		<copy todir="${classes.dir}/client">
 			<fileset dir="${mcp.dir}/reobf/minecraft"/>
 		</copy>
+
+		<!-- Delete patched Classes -->
+		<delete dir="${classes.dir}/client/net"/>
+		<delete dir="${classes.dir}/client/buildcraft"/>
 
 		<!-- Copy mcmod.info -->
 		<copy todir="${classes.dir}/client">

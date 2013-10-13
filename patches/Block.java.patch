@@ -1,0 +1,19 @@
+--- A/net/minecraft/block/Block.java
++++ B/net/minecraft/block/Block.java
+@@ -361,6 +361,16 @@
+         }
+     }
+ 
++    public Block(logisticspipes.LogisticsPipes mod, int idToOverwrite) {
++        this.stepSound = soundPowderFootstep;
++        this.blockParticleGravity = 1.0F;
++        this.slipperiness = 0.6F;
++        this.blockMaterial = Material.glass;
++        this.setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
++        this.blockID = idToOverwrite;
++        blocksList[idToOverwrite] = this;
++    }
++    
+     /**
+      * This method is called on a block after all other blocks gets already created. You can use it to reference and
+      * configure something on the block that needs the others ones.

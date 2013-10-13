@@ -1,0 +1,14 @@
+--- A/net/minecraft/block/BlockContainer.java
++++ B/net/minecraft/block/BlockContainer.java
+@@ -12,6 +12,11 @@
+         this.isBlockContainer = true;
+     }
+ 
++    public BlockContainer(logisticspipes.LogisticsPipes instance, int i) {
++        super(instance, i);
++        this.isBlockContainer = true;
++    }
++
+     /**
+      * Called whenever the block is added into the world. Args: world, x, y, z
+      */

@@ -1,14 +1,35 @@
 package logisticspipes.asm;
 
+import static org.objectweb.asm.Opcodes.AASTORE;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.BIPUSH;
+import static org.objectweb.asm.Opcodes.FCONST_0;
+import static org.objectweb.asm.Opcodes.FCONST_1;
+import static org.objectweb.asm.Opcodes.GETSTATIC;
+import static org.objectweb.asm.Opcodes.ICONST_1;
+import static org.objectweb.asm.Opcodes.ICONST_M1;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INSTANCEOF;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.PUTFIELD;
+import static org.objectweb.asm.Opcodes.RETURN;
+
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import logisticspipes.LogisticsPipes;
 import net.minecraft.launchwrapper.IClassTransformer;
+import net.minecraft.launchwrapper.LaunchClassLoader;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
@@ -25,14 +46,42 @@ import cpw.mods.fml.common.versioning.VersionRange;
 import cpw.mods.fml.relauncher.Side;
 
 public class LogisticsClassTransformer implements IClassTransformer {
+
+	private List<String> interfacesToClearA = new ArrayList<String>();
+	private List<String> interfacesToClearB = new ArrayList<String>();
+	private LaunchClassLoader cl = (LaunchClassLoader)LogisticsClassTransformer.class.getClassLoader();
+	private Field negativeResourceCache;
+	private Field invalidClasses;
+	
+	public LogisticsClassTransformer() {
+		try {
+			negativeResourceCache = LaunchClassLoader.class.getDeclaredField("negativeResourceCache");
+			negativeResourceCache.setAccessible(true);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		try {
+			invalidClasses = LaunchClassLoader.class.getDeclaredField("invalidClasses");
+			invalidClasses.setAccessible(true);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@Override
 	public byte[] transform(String name, String transformedName, byte[] bytes) {
 		try {
-			if(!name.startsWith("logisticspipes.")) {
-				return bytes;
+			clearNegativeInterfaceCache();
+			if(transformedName.equals("net.minecraft.block.Block")) {
+				return addBlockOverwriteContructor(bytes);
 			}
-			if(name.equals("logisticspipes.asm.LogisticsASMHelperClass")) { //Don't check the helper class
+			if(transformedName.equals("net.minecraft.block.BlockContainer")) {
+				return addBlockContainerOverwriteContructor(bytes);
+			}
+			if(transformedName.equals("buildcraft.transport.BlockGenericPipe")) {
+				return addBlockGenericPipeOverwriteContructor(bytes);
+			}
+			if(!name.startsWith("logisticspipes.")) {
 				return bytes;
 			}
 			return handleLPTransformation(bytes);
@@ -42,6 +91,40 @@ public class LogisticsClassTransformer implements IClassTransformer {
 				return bytes;
 			}
 			throw new RuntimeException(e);
+		}
+	}
+
+	public void clearNegativeInterfaceCache() {
+		//Remove previously not found Classes to Fix ClassNotFound Exceptions for Interfaces.
+		//TODO remove in future version when everybody starts using a ClassTransformer system for Interfaces.
+		if(negativeResourceCache != null) {
+			if(!interfacesToClearA.isEmpty()) {
+				handleField(negativeResourceCache, interfacesToClearA);
+			}
+		}
+		if(invalidClasses != null) {
+			if(!interfacesToClearB.isEmpty()) {
+				handleField(invalidClasses, interfacesToClearB);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private void handleField(Field field, List<String> toClear) {
+		try {
+			Set<String> set = (Set<String>) field.get(cl);
+			Iterator<String> it = toClear.iterator();
+			while(it.hasNext()) {
+				String content = it.next();
+				if(set.contains(content)) {
+					set.remove(content);
+					it.remove();
+				}
+			}
+		} catch(Exception e) {
+			if(LogisticsPipes.DEBUG) { //For better Debugging
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -62,6 +145,8 @@ public class LogisticsClassTransformer implements IClassTransformer {
 						}
 						for(int i=0;i<modId.size();i++) {
 							if(!Loader.isModLoaded(modId.get(i))) {
+								interfacesToClearA.add(interfacePath.get(i));
+								interfacesToClearB.add(interfacePath.get(i));
 								for(String inter:node.interfaces) {
 									if(inter.replace("/", ".").equals(interfacePath.get(i))) {
 										node.interfaces.remove(inter);
@@ -180,6 +265,166 @@ public class LogisticsClassTransformer implements IClassTransformer {
 		if(!changed && methodsToRemove.isEmpty() && fieldsToRemove.isEmpty()) {
 			return bytes;
 		}
+		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+	
+	public byte[] addBlockOverwriteContructor(byte[] bytes) {
+		ClassNode node = new ClassNode();
+		ClassReader reader = new ClassReader(bytes);
+		reader.accept(node, 0);
+		for(MethodNode method:node.methods) {
+			if(method.name.equals("<init>") && method.desc.equals("(Llogisticspipes/LogisticsPipes;I)V")) return bytes;
+		}
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Llogisticspipes/LogisticsPipes;I)V", null, null);
+		mv.visitCode();
+		Label l0 = new Label();
+		mv.visitLabel(l0);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitMethodInsn(INVOKESPECIAL, "java/lang/Object", "<init>", "()V");
+		Label l1 = new Label();
+		mv.visitLabel(l1);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(ICONST_1);
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_72030_cd", "Z"); //blockConstructorCalled
+		Label l2 = new Label();
+		mv.visitLabel(l2);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(ICONST_1);
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_72027_ce", "Z"); //enableStats
+		Label l3 = new Label();
+		mv.visitLabel(l3);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(ICONST_M1);
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "silk_check_meta", "I"); //silk_check_meta
+		Label l4 = new Label();
+		mv.visitLabel(l4);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitTypeInsn(INSTANCEOF, "net/minecraft/block/ITileEntityProvider");
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "isTileProvider", "Z"); //isTileProvider
+		Label l5 = new Label();
+		mv.visitLabel(l5);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETSTATIC, "net/minecraft/block/Block", "field_71966_d", "Lnet/minecraft/block/StepSound;"); //soundPowderFootstep
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_72020_cn", "Lnet/minecraft/block/StepSound;"); //stepSound
+		Label l6 = new Label();
+		mv.visitLabel(l6);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(FCONST_1);
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_72017_co", "F"); //blockParticleGravity
+		Label l7 = new Label();
+		mv.visitLabel(l7);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitLdcInsn(new Float("0.6"));
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_72016_cq", "F"); //slipperiness
+		Label l8 = new Label();
+		mv.visitLabel(l8);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitFieldInsn(GETSTATIC, "net/minecraft/block/material/Material", "field_76264_q", "Lnet/minecraft/block/material/Material;"); //glass
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_72018_cp", "Lnet/minecraft/block/material/Material;"); //blockMaterial
+		Label l9 = new Label();
+		mv.visitLabel(l9);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(FCONST_0);
+		mv.visitInsn(FCONST_0);
+		mv.visitInsn(FCONST_0);
+		mv.visitInsn(FCONST_1);
+		mv.visitInsn(FCONST_1);
+		mv.visitInsn(FCONST_1);
+		mv.visitMethodInsn(INVOKEVIRTUAL, "net/minecraft/block/Block", "func_71905_a", "(FFFFFF)V"); //setBlockBounds
+		Label l10 = new Label();
+		mv.visitLabel(l10);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ILOAD, 2);
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/Block", "field_71990_ca", "I"); //blockID
+		Label l11 = new Label();
+		mv.visitLabel(l11);
+		mv.visitFieldInsn(GETSTATIC, "net/minecraft/block/Block", "field_71973_m", "[Lnet/minecraft/block/Block;"); //blocksList
+		mv.visitVarInsn(ILOAD, 2);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(AASTORE);
+		Label l12 = new Label();
+		mv.visitLabel(l12);
+		mv.visitInsn(RETURN);
+		Label l13 = new Label();
+		mv.visitLabel(l13);
+		mv.visitLocalVariable("this", "Lnet/minecraft/block/Block;", null, l0, l13, 0);
+		mv.visitLocalVariable("mod", "Llogisticspipes/LogisticsPipes;", null, l0, l13, 1);
+		mv.visitLocalVariable("idToOverwrite", "I", null, l0, l13, 2);
+		mv.visitMaxs(7, 3);
+		mv.visitEnd();
+		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+	
+	public byte[] addBlockContainerOverwriteContructor(byte[] bytes) {
+		ClassNode node = new ClassNode();
+		ClassReader reader = new ClassReader(bytes);
+		reader.accept(node, 0);
+		for(MethodNode method:node.methods) {
+			if(method.name.equals("<init>") && method.desc.equals("(Llogisticspipes/LogisticsPipes;I)V")) return bytes;
+		}
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Llogisticspipes/LogisticsPipes;I)V", null, null);
+		mv.visitCode();
+		Label l0 = new Label();
+		mv.visitLabel(l0);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitVarInsn(ILOAD, 2);
+		mv.visitMethodInsn(INVOKESPECIAL, "net/minecraft/block/Block", "<init>", "(Llogisticspipes/LogisticsPipes;I)V");
+		Label l1 = new Label();
+		mv.visitLabel(l1);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitInsn(ICONST_1);
+		mv.visitFieldInsn(PUTFIELD, "net/minecraft/block/BlockContainer", "field_72025_cg", "Z"); //isBlockContainer
+		Label l2 = new Label();
+		mv.visitLabel(l2);
+		mv.visitInsn(RETURN);
+		Label l3 = new Label();
+		mv.visitLabel(l3);
+		mv.visitLocalVariable("this", "Lnet/minecraft/block/BlockContainer;", null, l0, l3, 0);
+		mv.visitLocalVariable("instance", "Llogisticspipes/LogisticsPipes;", null, l0, l3, 1);
+		mv.visitLocalVariable("i", "I", null, l0, l3, 2);
+		mv.visitMaxs(3, 3);
+		mv.visitEnd();
+		ClassWriter writer = new ClassWriter(0);
+		node.accept(writer);
+		return writer.toByteArray();
+	}
+	
+	public byte[] addBlockGenericPipeOverwriteContructor(byte[] bytes) {
+		ClassNode node = new ClassNode();
+		ClassReader reader = new ClassReader(bytes);
+		reader.accept(node, 0);
+		for(MethodNode method:node.methods) {
+			if(method.name.equals("<init>") && method.desc.equals("(Llogisticspipes/LogisticsPipes;I)V")) return bytes;
+		}
+		MethodVisitor mv = node.visitMethod(ACC_PUBLIC, "<init>", "(Llogisticspipes/LogisticsPipes;I)V", null, null);
+		mv.visitCode();
+		Label l0 = new Label();
+		mv.visitLabel(l0);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitVarInsn(ALOAD, 1);
+		mv.visitVarInsn(ILOAD, 2);
+		mv.visitMethodInsn(INVOKESPECIAL, "net/minecraft/block/BlockContainer", "<init>", "(Llogisticspipes/LogisticsPipes;I)V");
+		Label l1 = new Label();
+		mv.visitLabel(l1);
+		mv.visitVarInsn(ALOAD, 0);
+		mv.visitIntInsn(BIPUSH, 97);
+		mv.visitFieldInsn(PUTFIELD, "buildcraft/transport/BlockGenericPipe", "renderAxis", "C");
+		Label l2 = new Label();
+		mv.visitLabel(l2);
+		mv.visitInsn(RETURN);
+		Label l3 = new Label();
+		mv.visitLabel(l3);
+		mv.visitLocalVariable("this", "Lbuildcraft/transport/BlockGenericPipe;", null, l0, l3, 0);
+		mv.visitLocalVariable("instance", "Llogisticspipes/LogisticsPipes;", null, l0, l3, 1);
+		mv.visitLocalVariable("i", "I", null, l0, l3, 2);
+		mv.visitMaxs(3, 3);
+		mv.visitEnd();
 		ClassWriter writer = new ClassWriter(0);
 		node.accept(writer);
 		return writer.toByteArray();

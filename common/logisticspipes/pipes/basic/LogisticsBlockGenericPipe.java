@@ -25,7 +25,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class LogisticsBlockGenericPipe extends BlockGenericPipe {
 
 	public LogisticsBlockGenericPipe(int i) {
-		super(i);
+		super(LogisticsPipes.instance, i);
 	}
 
 	@Override

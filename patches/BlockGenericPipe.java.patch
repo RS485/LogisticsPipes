@@ -1,5 +1,5 @@
---- A/buildcraft/transport/BlockGenericPipe.java
-+++ B/buildcraft/transport/BlockGenericPipe.java
+--- BlockGenericPipe.java	2013-10-13 19:01:46.021476683 +0200
++++ BlockGenericPipe2.java	2013-10-13 19:13:14.467301850 +0200
 @@ -73,6 +73,10 @@
  		super(i, Material.glass);
  	}

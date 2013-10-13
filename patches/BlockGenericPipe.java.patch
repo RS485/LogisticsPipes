@@ -1,4 +1,4 @@
-﻿--- A/buildcraft/transport/BlockGenericPipe.java
+--- A/buildcraft/transport/BlockGenericPipe.java
 +++ B/buildcraft/transport/BlockGenericPipe.java
 @@ -73,6 +73,10 @@
  		super(i, Material.glass);

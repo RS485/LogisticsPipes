@@ -34,7 +34,7 @@
 	<property name="antcont.version"      value="1.0b3"/>
 	<property name="mc.version"           value="1.6.2"/>
 	<property name="forge.version"        value="9.10.1.850"/>
-	<property name="forge.setup.version"  value="6"/> <!-- Change to regenerate Forge setup -->
+	<property name="forge.setup.version"  value="7"/> <!-- Change to regenerate Forge setup -->
 	<property name="bc.version"           value="4.0.2"/>
 	<property name="forestry.version"     value="2.3.0.0"/>
 	<property name="ic2.version"          value="2.0.143-experimental"/>
@@ -210,10 +210,6 @@
 
 		<echo message="Copied dummy files"/>
 
-		<echo message="Patching"/>
-		<patch patchfile="${src.dir}/patches/Block.java.patch" originalfile="${minecraftsrc.dir}/net/minecraft/block/Block.java"/>
-		<patch patchfile="${src.dir}/patches/BlockContainer.java.patch" originalfile="${minecraftsrc.dir}/net/minecraft/block/BlockContainer.java"/>
-
 		<!-- Refresh MD5 -->
 		<exec dir="${mcp.dir}" executable="cmd" osfamily="windows" failonerror="true">
 			<arg line="/c updatemd5.bat -f --client"/>
@@ -304,9 +300,6 @@
 		<copy todir="${classes.dir}/client">
 			<fileset dir="${mcp.dir}/reobf/minecraft"/>
 		</copy>
-
-		<!-- Delete patched Classes -->
-		<delete dir="${classes.dir}/client/net"/>
 
 		<!-- Copy mcmod.info -->
 		<copy todir="${classes.dir}/client">

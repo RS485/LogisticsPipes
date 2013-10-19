@@ -367,9 +367,20 @@ public class BuildCraftProxy {
 
 	public void replaceBlockGenericPipe() {
 		if(Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] == BuildCraftTransport.genericPipeBlock) {
-			BlockGenericPipe original = (BlockGenericPipe) Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID];
+			LogisticsPipes.log.info("BlockGenericPipe was found with ID: " + BuildCraftTransport.genericPipeBlock.blockID);
 			Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] = null;
-			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(original, BuildCraftTransport.genericPipeBlock.blockID);
+			
+			//Force IDfix to ignore this block
+			Block coalBlock = Block.coalBlock;
+			Block.coalBlock = null;
+			
+			BuildCraftTransport.genericPipeBlock = new LogisticsBlockGenericPipe(BuildCraftTransport.genericPipeBlock.blockID);
+
+			Block.coalBlock = coalBlock; //Restore the coalBlock
+			
+			LogisticsPipes.log.info("LogisticsBlockGenericPipe was added at ID: " + BuildCraftTransport.genericPipeBlock.blockID);
+		} else {
+			throw new UnsupportedOperationException("[LogisticsPipes|Main] Could not find BlockGenericPipe with ID: " + BuildCraftTransport.genericPipeBlock.blockID + ". We found " + Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID] != null ? Block.blocksList[BuildCraftTransport.genericPipeBlock.blockID].getClass().getName() : "null");
 		}
 	}
 }

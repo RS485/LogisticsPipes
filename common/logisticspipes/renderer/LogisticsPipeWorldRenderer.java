@@ -9,9 +9,9 @@ import buildcraft.api.core.IIconProvider;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.IPipeRenderState;
 import buildcraft.transport.PipeRenderState;
-import buildcraft.transport.render.PipeWorldRenderer;
+import buildcraft.transport.render.PipeRendererWorld;
 
-public class LogisticsPipeWorldRenderer extends PipeWorldRenderer {
+public class LogisticsPipeWorldRenderer extends PipeRendererWorld {
 
 	@Override
 	public void renderPipe(RenderBlocks renderblocks, IBlockAccess iblockaccess, BlockGenericPipe block, IPipeRenderState renderState, int x, int y, int z) {

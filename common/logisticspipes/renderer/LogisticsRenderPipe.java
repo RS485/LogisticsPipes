@@ -36,15 +36,15 @@ import org.lwjgl.opengl.GL11;
 
 import buildcraft.BuildCraftCore;
 import buildcraft.BuildCraftCore.RenderMode;
+import buildcraft.core.CoreConstants;
 import buildcraft.core.render.FluidRenderer;
 import buildcraft.core.render.RenderEntityBlock;
-import buildcraft.core.render.RenderEntityBlock.BlockInterface;
-import buildcraft.core.utils.Utils;
+import buildcraft.core.render.RenderEntityBlock.RenderInfo;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.render.RenderPipe;
+import buildcraft.transport.render.PipeRendererTESR;
 
-public class LogisticsRenderPipe extends RenderPipe {
+public class LogisticsRenderPipe extends PipeRendererTESR {
 
 	final static private int LIQUID_STAGES = 40;
 
@@ -476,7 +476,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		DisplayFluidList d = new DisplayFluidList();
 		displayFluidLists.put(liquidId, d);
 
-		BlockInterface block = new BlockInterface();
+		RenderInfo block = new RenderInfo();
 
 		Fluid fluid = FluidRegistry.getFluid(liquidId);
 		if (fluid.getBlockID() > 0) {
@@ -486,7 +486,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 		}
 		block.texture = fluid.getStillIcon();
 
-		float size = Utils.pipeMaxPos - Utils.pipeMinPos;
+		float size = CoreConstants.PIPE_MAX_POS - CoreConstants.PIPE_MIN_POS;
 
 		// render size
 
@@ -499,12 +499,12 @@ public class LogisticsRenderPipe extends RenderPipe {
 			GL11.glNewList(d.sideHorizontal[s], 4864 /* GL_COMPILE */);
 
 			block.minX = 0.0F;
-			block.minZ = Utils.pipeMinPos + 0.01F;
+			block.minZ = CoreConstants.PIPE_MIN_POS + 0.01F;
 
 			block.maxX = block.minX + size / 2F + 0.01F;
 			block.maxZ = block.minZ + size - 0.02F;
 
-			block.minY = Utils.pipeMinPos + 0.01F;
+			block.minY = CoreConstants.PIPE_MIN_POS + 0.01F;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 
 			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
@@ -516,7 +516,7 @@ public class LogisticsRenderPipe extends RenderPipe {
 			d.sideVertical[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.sideVertical[s], 4864 /* GL_COMPILE */);
 
-			block.minY = Utils.pipeMaxPos - 0.01;
+			block.minY = CoreConstants.PIPE_MAX_POS - 0.01;
 			block.maxY = 1;
 
 			block.minX = 0.5 - (size / 2 - 0.01) * ratio;
@@ -534,13 +534,13 @@ public class LogisticsRenderPipe extends RenderPipe {
 			d.centerHorizontal[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.centerHorizontal[s], 4864 /* GL_COMPILE */);
 
-			block.minX = Utils.pipeMinPos + 0.01;
-			block.minZ = Utils.pipeMinPos + 0.01;
+			block.minX = CoreConstants.PIPE_MIN_POS + 0.01;
+			block.minZ = CoreConstants.PIPE_MIN_POS + 0.01;
 
 			block.maxX = block.minX + size - 0.02;
 			block.maxZ = block.minZ + size - 0.02;
 
-			block.minY = Utils.pipeMinPos + 0.01;
+			block.minY = CoreConstants.PIPE_MIN_POS + 0.01;
 			block.maxY = block.minY + (size - 0.02F) * ratio;
 
 			RenderEntityBlock.INSTANCE.renderBlock(block, world, 0, 0, 0, false, true);
@@ -552,8 +552,8 @@ public class LogisticsRenderPipe extends RenderPipe {
 			d.centerVertical[s] = GLAllocation.generateDisplayLists(1);
 			GL11.glNewList(d.centerVertical[s], 4864 /* GL_COMPILE */);
 
-			block.minY = Utils.pipeMinPos + 0.01;
-			block.maxY = Utils.pipeMaxPos - 0.01;
+			block.minY = CoreConstants.PIPE_MIN_POS + 0.01;
+			block.maxY = CoreConstants.PIPE_MAX_POS - 0.01;
 
 			block.minX = 0.5 - (size / 2 - 0.02) * ratio;
 			block.maxX = 0.5 + (size / 2 - 0.02) * ratio;

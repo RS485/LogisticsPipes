@@ -28,4 +28,9 @@ public class TriggerCrafting extends LPTrigger implements ITriggerPipe {
 		return "Pipe Waiting for Crafting";
 	}
 
+	@Override
+	public boolean requiresParameter() {
+		return false;
+	}
+
 }

@@ -10,8 +10,8 @@ import logisticspipes.proxy.cc.interfaces.CCType;
 import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
-import logisticspipes.utils.tuples.Triplet;
 import logisticspipes.utils.tuples.Quartet;
+import logisticspipes.utils.tuples.Triplet;
 
 public class CCHelper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })

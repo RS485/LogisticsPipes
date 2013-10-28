@@ -107,10 +107,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
 import buildcraft.api.inventory.ISpecialInventory;
+import buildcraft.core.CoreConstants;
 import buildcraft.core.network.TileNetworkData;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
+import buildcraft.transport.TransportConstants;
 import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.common.network.Player;
@@ -364,10 +365,10 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 
 					Position p = new Position(tile.tile.xCoord, tile.tile.yCoord, tile.tile.zCoord, tile.orientation);
 					LogisticsPipes.requestLog.info(stackToSend.stackSize + " extras dropped, " + countExtras() + " remaining");
- 					Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, p.orientation.getOpposite());
+ 					Position entityPos = new Position(p.x + 0.5, p.y + CoreConstants.PIPE_MIN_POS, p.z + 0.5, p.orientation.getOpposite());
 					entityPos.moveForwards(0.5);
 					TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-					entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+					entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 					((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
 				}
 			}

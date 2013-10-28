@@ -31,7 +31,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 import buildcraft.transport.TileGenericPipe;
-import buildcraft.transport.render.RenderPipe;
+import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.ClientRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -61,8 +61,8 @@ public class ClientProxy implements IProxy {
 		ClientRegistry.bindTileEntitySpecialRenderer(LogisticsTileGenericPipe.class, lrp);
 		SimpleServiceLocator.buildCraftProxy.resetItemRotation(lrp);
 		Object brp = TileEntityRenderer.instance.specialRendererMap.get(TileGenericPipe.class);
-		if(brp instanceof RenderPipe) {
-			SimpleServiceLocator.buildCraftProxy.resetItemRotation((RenderPipe) brp);
+		if(brp instanceof PipeRendererTESR) {
+			SimpleServiceLocator.buildCraftProxy.resetItemRotation((PipeRendererTESR) brp);
 		}
 		RenderingRegistry.registerBlockHandler(new LogisticsPipeWorldRenderer());
 	}

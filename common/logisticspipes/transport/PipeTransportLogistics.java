@@ -39,10 +39,11 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.transport.IPipeTile;
+import buildcraft.core.CoreConstants;
 import buildcraft.core.proxy.CoreProxy;
-import buildcraft.core.utils.Utils;
 import buildcraft.transport.IItemTravelingHook;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TransportConstants;
 import buildcraft.transport.TravelingItem;
 
 public class PipeTransportLogistics extends PipeTransportItems implements IItemTravelingHook {
@@ -102,7 +103,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				if (currentTimeOut > 0){
 					next.getValue().setValue1(currentTimeOut - 1);
 				} else {
-					TravelingItem item = new TravelingItem(this.getPipe().getX()+ 0.5F, this.getPipe().getY() + Utils.getPipeFloorOf(next.getKey()) - 0.1, this.getPipe().getZ() + 0.5, next.getKey());
+					TravelingItem item = new TravelingItem(this.getPipe().getX()+ 0.5F, this.getPipe().getY() + CoreConstants.PIPE_MIN_POS - 0.1, this.getPipe().getZ() + 0.5, next.getKey());
 					IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.CreateRoutedItem(item);
 					routedItem.setDoNotBuffer(true);
 					routedItem.setBufferCounter(next.getValue().getValue2() + 1);
@@ -242,9 +243,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			float multiplyerSpeed = 1.0F + (0.2F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			float multiplyerPower = 1.0F + (0.3F * getPipe().getUpgradeManager().getSpeedUpgradeCount());
 			
-			float add = Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerPower) - item.getSpeed();
+			float add = Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerPower) - item.getSpeed();
 			if(getPipe().useEnergy((int)(add * 25+0.5))) {
-				item.setSpeed(Math.min(Math.max(item.getSpeed(), Utils.pipeNormalSpeed * defaultBoost * multiplyerSpeed), 1.0F));
+				item.setSpeed(Math.min(Math.max(item.getSpeed(), TransportConstants.PIPE_NORMAL_SPEED * defaultBoost * multiplyerSpeed), 1.0F));
 			}
 		}
 		if (MainProxy.isClient(getWorld())) {

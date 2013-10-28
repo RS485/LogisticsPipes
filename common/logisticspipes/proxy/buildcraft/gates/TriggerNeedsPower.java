@@ -39,5 +39,10 @@ public class TriggerNeedsPower extends LPTrigger{
 			return LSTE.hasWork;
 		}
 		return false;
+	}
+
+	@Override
+	public boolean requiresParameter() {
+		return false;
 	}	
 }

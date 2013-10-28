@@ -4,9 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import cpw.mods.fml.client.FMLClientHandler;
-import cpw.mods.fml.common.network.Player;
-
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.GuiSupplierPipe;
 import logisticspipes.network.PacketHandler;
@@ -19,6 +16,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import net.minecraft.entity.player.EntityPlayer;
+import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.common.network.Player;
 
 @Accessors(chain=true)
 public class SupplierPipeLimitedPacket extends CoordinatesPacket {

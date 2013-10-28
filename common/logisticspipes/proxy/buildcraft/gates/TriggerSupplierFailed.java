@@ -44,4 +44,9 @@ public class TriggerSupplierFailed extends LPTrigger implements ITriggerPipe{
 		return false;
 	}
 
+	@Override
+	public boolean requiresParameter() {
+		return false;
+	}
+
 }

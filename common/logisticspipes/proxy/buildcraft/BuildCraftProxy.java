@@ -87,7 +87,7 @@ import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
 import buildcraft.transport.TravelingItem;
-import buildcraft.transport.render.RenderPipe;
+import buildcraft.transport.render.PipeRendererTESR;
 import cpw.mods.fml.relauncher.Side;
 
 public class BuildCraftProxy {
@@ -348,9 +348,9 @@ public class BuildCraftProxy {
 		return entityplayer != null && entityplayer.getCurrentEquippedItem() != null && entityplayer.getCurrentEquippedItem().itemID == LogisticsPipes.LogisticsUpgradeManager.itemID;
 	}
 	
-	public void resetItemRotation(RenderPipe renderer) {
+	public void resetItemRotation(PipeRendererTESR renderer) {
 		try {
-			Field f = RenderPipe.class.getDeclaredField("dummyEntityItem");
+			Field f = PipeRendererTESR.class.getDeclaredField("dummyEntityItem");
 			f.setAccessible(true);
 			EntityItem item = (EntityItem) f.get(renderer);
 			item.hoverStart = 0;

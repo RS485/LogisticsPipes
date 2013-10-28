@@ -4,8 +4,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import logisticspipes.LogisticsPipes;
 import logisticspipes.Configs;
+import logisticspipes.LogisticsPipes;
 import logisticspipes.nei.LoadingHelper;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import net.minecraft.entity.player.EntityPlayer;

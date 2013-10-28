@@ -94,7 +94,7 @@ import buildcraft.BuildCraftTransport;
 import buildcraft.api.core.IIconProvider;
 import buildcraft.api.core.Position;
 import buildcraft.api.gates.IAction;
-import buildcraft.core.utils.Utils;
+import buildcraft.core.CoreConstants;
 import buildcraft.transport.Pipe;
 import buildcraft.transport.PipeTransportItems;
 import buildcraft.transport.TileGenericPipe;
@@ -217,7 +217,7 @@ public abstract class CoreRoutedPipe extends Pipe<PipeTransportLogistics> implem
 	public int sendQueueChanged(boolean force) {return 0;}
 	
 	private void sendRoutedItem(IRoutedItem routedItem, ForgeDirection from){
-		Position p = new Position(this.getX() + 0.5F, this.getY() + Utils.getPipeFloorOf(routedItem.getItemStack()), this.getZ() + 0.5F, from);
+		Position p = new Position(this.getX() + 0.5F, this.getY() + CoreConstants.PIPE_MIN_POS, this.getZ() + 0.5F, from);
 		if(from == ForgeDirection.DOWN) {
 			p.moveForwards(0.24F);
 		} else if(from == ForgeDirection.UP) {

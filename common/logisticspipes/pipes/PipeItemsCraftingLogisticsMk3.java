@@ -26,8 +26,9 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.ForgeDirection;
 import buildcraft.api.core.Position;
-import buildcraft.core.utils.Utils;
+import buildcraft.core.CoreConstants;
 import buildcraft.transport.PipeTransportItems;
+import buildcraft.transport.TransportConstants;
 import buildcraft.transport.TravelingItem;
 import cpw.mods.fml.common.network.Player;
 
@@ -107,9 +108,9 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 			ItemStack stackToSend = inv.getStackInSlot(i);
 			if(stackToSend==null) continue;
 			Position p = new Position(container.xCoord, container.yCoord, container.zCoord, null);
-			Position entityPos = new Position(p.x + 0.5, p.y + Utils.getPipeFloorOf(stackToSend), p.z + 0.5, ForgeDirection.UNKNOWN);
+			Position entityPos = new Position(p.x + 0.5, p.y + CoreConstants.PIPE_MIN_POS, p.z + 0.5, ForgeDirection.UNKNOWN);
 			TravelingItem entityItem = new TravelingItem(entityPos.x, entityPos.y, entityPos.z, stackToSend);
-			entityItem.setSpeed(Utils.pipeNormalSpeed * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
+			entityItem.setSpeed(TransportConstants.PIPE_NORMAL_SPEED * Configs.LOGISTICS_DEFAULTROUTED_SPEED_MULTIPLIER);
 			((PipeTransportItems) transport).injectItem(entityItem, entityPos.orientation);
 			inv.clearInventorySlotContents(i);
 			break;

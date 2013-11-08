@@ -31,6 +31,7 @@ public class LogisticsPipesHUDModule extends PowerModuleBase implements ITogglea
 		return "Add the LogisitcsPipes HUD Glasses to your helmet to see more about what your LP network is up to.";
 	}
 	
+	@Override
 	@ModDependentMethodName(modId="mmmPowersuits", newName="getDataName", version="[0.7.1-561,)")
 	public String getName() {
 		return NAME;

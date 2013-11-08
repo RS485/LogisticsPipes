@@ -158,10 +158,12 @@ public class FluidContainerRenderer implements IItemRenderer {
 		useThis = false;
 		if (renderItem == null) {
 			renderItem = new RenderItem() {
+				@Override
 				public boolean shouldBob() {
 					return false;
 				};
 
+				@Override
 				public boolean shouldSpreadItems() {
 					return false;
 				};

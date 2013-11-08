@@ -37,6 +37,7 @@ public class LogisticsPipesHUDConfigModule extends PowerModuleBase implements IR
 		return "Add the LogisitcsPipes HUD Config tool to configure your HUD glasses settings.";
 	}
 
+	@Override
 	@ModDependentMethodName(modId="mmmPowersuits", newName="getDataName", version="[0.7.1-561,)")
 	public String getName() {
 		return NAME;

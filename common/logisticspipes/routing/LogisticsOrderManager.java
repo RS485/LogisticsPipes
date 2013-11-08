@@ -49,7 +49,7 @@ public class LogisticsOrderManager {
 	private static void addToList(ItemIdentifierStack stack, LinkedList<ItemIdentifierStack> list) {
 		for(ItemIdentifierStack ident:list) {
 			if(ident.getItem().equals(stack.getItem())) {
-				ident.stackSize += stack.stackSize;
+				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
 			}
 		}
@@ -65,8 +65,8 @@ public class LogisticsOrderManager {
 	}
 	
 	public void sendSuccessfull(int number, boolean defersend) {
-		_orders.getFirst().getValue1().stackSize -= number;
-		if (_orders.getFirst().getValue1().stackSize <= 0){
+		_orders.getFirst().getValue1().setStackSize(_orders.getFirst().getValue1().getStackSize() - number);
+		if (_orders.getFirst().getValue1().getStackSize() <= 0){
 			_orders.removeFirst();
 		} else if(defersend) {
 			_orders.add(_orders.removeFirst());
@@ -90,7 +90,7 @@ public class LogisticsOrderManager {
 	public void addOrder(ItemIdentifierStack stack, IRequestItems requester) {
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			if (request.getValue1().getItem() == stack.getItem() && request.getValue2() == requester) {
-				stack.stackSize += request.getValue1().stackSize;
+				stack.setStackSize(stack.getStackSize() + request.getValue1().getStackSize());
 				_orders.remove(request);
 				break;
 			}
@@ -103,7 +103,7 @@ public class LogisticsOrderManager {
 		int itemCount = 0;
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
 			if (request.getValue1().getItem() != item) continue;
-			itemCount += request.getValue1().stackSize;
+			itemCount += request.getValue1().getStackSize();
 		}
 		return itemCount;
 	}
@@ -111,7 +111,7 @@ public class LogisticsOrderManager {
 	public int totalItemsCountInAllOrders(){
 		int itemCount = 0;
 		for (Pair<ItemIdentifierStack,IRequestItems> request : _orders){
-			itemCount += request.getValue1().stackSize;
+			itemCount += request.getValue1().getStackSize();
 		}
 		return itemCount;
 	}

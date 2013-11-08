@@ -105,7 +105,7 @@ public class RequestTreeNode {
 	}
 	
 	public int getMissingItemCount() {
-		return request.stackSize - promiseItemCount;
+		return request.getStackSize() - promiseItemCount;
 	}
 	
 	public void addPromise(LogisticsPromise promise) {
@@ -622,7 +622,7 @@ outer:
 			this.lastCrafterTried = template;
 			//figure out how many we can actually get
 			for(int i = 0; i < stacks.size(); i++) {
-				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / (stacks.get(i).getValue1().stackSize / nCraftingSets));
+				workSetsAvailable = Math.min(workSetsAvailable, lastNode.get(i).getPromiseItemCount() / (stacks.get(i).getValue1().getStackSize() / nCraftingSets));
 			}
 			
 			for(int i = 0; i < liquids.size(); i++) {
@@ -634,7 +634,7 @@ outer:
 		for(ItemIdentifierStack stack:template.getByproduct()) {
 			LogisticsExtraPromise extra = new LogisticsExtraPromise();
 			extra.item = stack.getItem();
-			extra.numberOfItems = stack.stackSize * workSetsAvailable;
+			extra.numberOfItems = stack.getStackSize() * workSetsAvailable;
 			extra.sender = template.getCrafter();
 			extra.provided = false;
 			byproducts.add(extra);
@@ -681,7 +681,7 @@ outer:
 		for(ItemIdentifierStack stack:template.getByproduct()) {
 			LogisticsExtraPromise extra = new LogisticsExtraPromise();
 			extra.item = stack.getItem();
-			extra.numberOfItems = stack.stackSize * workSets;
+			extra.numberOfItems = stack.getStackSize() * workSets;
 			extra.sender = template.getCrafter();
 			extra.provided = false;
 			byproducts.add(extra);

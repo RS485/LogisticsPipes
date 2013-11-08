@@ -173,18 +173,18 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 					((PipeItemsSupplierLogistics)this.container.pipe).setRequestFailed(true);
 					continue;
 				}
-				haveCount = have.stackSize;
+				haveCount = have.getStackSize();
 			}
-			if( ( _patternMode==PatternMode.Bulk50 && haveCount > needed.stackSize/2) ||
-			    ( _patternMode==PatternMode.Bulk100 && haveCount >= needed.stackSize)) {
+			if( ( _patternMode==PatternMode.Bulk50 && haveCount > needed.getStackSize()/2) ||
+			    ( _patternMode==PatternMode.Bulk100 && haveCount >= needed.getStackSize())) {
 				continue;
 			}
 			
 			
-			int neededCount = needed.stackSize - haveCount;
+			int neededCount = needed.getStackSize() - haveCount;
 			if(neededCount < 1) continue;
 			
-			ItemIdentifierStack toRequest = new ItemIdentifierStack(needed.getItem(), needed.stackSize - haveCount);
+			ItemIdentifierStack toRequest = new ItemIdentifierStack(needed.getItem(), needed.getStackSize() - haveCount);
 			
 			if(!useEnergy(10)) {
 				break;
@@ -333,7 +333,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 	
 	private void decreaseRequested(ItemIdentifierStack item) {
-		int remaining = item.stackSize;
+		int remaining = item.getStackSize();
 		//see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
 		if (count != null) {
@@ -405,6 +405,6 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 	
 	public int getAmountForSlot(int i) {
-		return dummyInventory.getIDStackInSlot(i).stackSize;
+		return dummyInventory.getIDStackInSlot(i).getStackSize();
 	}
 }

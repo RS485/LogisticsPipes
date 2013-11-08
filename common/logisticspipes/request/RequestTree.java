@@ -179,7 +179,7 @@ public class RequestTree extends RequestTreeNode {
 			Integer count = messages.get(item);
 			if(count == null)
 				count = 0;
-			count += stack.stackSize;
+			count += stack.getStackSize();
 			messages.put(item, count);
 			RequestTree node = new RequestTree(stack, requester, tree, requestFlags);
 			isDone = isDone && node.isDone();
@@ -203,7 +203,7 @@ public class RequestTree extends RequestTreeNode {
 		if(!simulateOnly &&(tree.isDone() || ((tree.getPromiseItemCount() > 0) && acceptPartial))) {
 			tree.fullFillAll();
 			if(log != null) {
-				log.handleSucessfullRequestOf(item.getItem(), item.stackSize);
+				log.handleSucessfullRequestOf(item.getItem(), item.getStackSize());
 			}
 			return tree.getPromiseItemCount();
 		} else {
@@ -221,7 +221,7 @@ public class RequestTree extends RequestTreeNode {
 	}
 
 	public static boolean request(ItemIdentifierStack item, IRequestItems requester, RequestLog log) {
-		return request( item, requester, log, false, false,true,false,defaultRequestFlags) == item.stackSize;
+		return request( item, requester, log, false, false,true,false,defaultRequestFlags) == item.getStackSize();
 	}
 	
 	public static int requestPartial(ItemIdentifierStack item, IRequestItems requester) {

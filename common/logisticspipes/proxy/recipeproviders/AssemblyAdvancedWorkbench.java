@@ -49,7 +49,7 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 					continue;
 				}
 				if (itemInSlot == stackInOtherSlot.getItem()) {
-					stackInSlot.stackSize += stackInOtherSlot.stackSize;
+					stackInSlot.setStackSize(stackInSlot.getStackSize() + stackInOtherSlot.getStackSize());
 					inventory.setInventorySlotContents(i,stackInSlot);
 					inventory.clearInventorySlotContents(j);
 				}

@@ -313,7 +313,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			} else {
 				nextOrder = _extras.getFirst(); // fetch but not remove.
 			}
-			int maxtosend = Math.min(itemsleft, nextOrder.getValue1().stackSize);
+			int maxtosend = Math.min(itemsleft, nextOrder.getValue1().getStackSize());
 			maxtosend = Math.min(nextOrder.getValue1().getItem().getMaxStackSize(), maxtosend);
 			// retrieve the new crafted items
 			ItemStack extracted = null;
@@ -340,7 +340,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			ItemIdentifier extractedID = ItemIdentifier.get(extracted);
 			while (extracted.stackSize > 0) {
 				int numtosend = Math.min(extracted.stackSize, extractedID.getMaxStackSize());
-				numtosend = Math.min(numtosend, nextOrder.getValue1().stackSize); 
+				numtosend = Math.min(numtosend, nextOrder.getValue1().getStackSize()); 
 				if(numtosend == 0)
 					break;
 				stacksleft -= 1;
@@ -380,14 +380,14 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		while(i.hasNext()){
 			ItemIdentifierStack e = i.next().getValue1();
 			if(e.getItem()== item) {
-				if(numToSend >= e.stackSize) {
-					numToSend -= e.stackSize;
+				if(numToSend >= e.getStackSize()) {
+					numToSend -= e.getStackSize();
 					i.remove();
 					if(numToSend == 0) {
 						return;
 					}
 				} else {
-					e.stackSize -= numToSend;
+					e.setStackSize(e.getStackSize() - numToSend);
 					break;
 				}
 			}
@@ -399,7 +399,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			return 0;
 		int count = 0;
 		for(Pair<ItemIdentifierStack, IRequestItems> e : _extras){
-			count += e.getValue1().stackSize;
+			count += e.getValue1().getStackSize();
 		}
 		return count;
 	}
@@ -434,7 +434,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		int remaining = 0;
 		for(Pair<ItemIdentifierStack, IRequestItems> extra:_extras){
 			if(extra.getValue1().getItem()==requestedItem){
-				remaining += extra.getValue1().stackSize;
+				remaining += extra.getValue1().getStackSize();
 			}
 				
 		}
@@ -501,7 +501,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 		//Check all materials
 		for (int i = 0; i < 9; i++){
 			ItemIdentifierStack resourceStack = getMaterials(i);
-			if (resourceStack == null || resourceStack.stackSize == 0) continue;
+			if (resourceStack == null || resourceStack.getStackSize() == 0) continue;
 			template.addRequirement(resourceStack, target[i]);
 		}
 		
@@ -554,7 +554,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	public void registerExtras(LogisticsPromise promise) {		
 		ItemIdentifierStack stack = new ItemIdentifierStack(promise.item,promise.numberOfItems);
 		_extras.add(new Pair<ItemIdentifierStack, IRequestItems>(stack,null));
-		LogisticsPipes.requestLog.info(stack.stackSize + " extras registered");
+		LogisticsPipes.requestLog.info(stack.getStackSize() + " extras registered");
 	}
 
 	@Override
@@ -984,8 +984,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 				}
 			}
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
-			if(received < stack.stackSize) {
-				stack.stackSize -= received;
+			if(received < stack.getStackSize()) {
+				stack.setStackSize(stack.getStackSize() - received);
 				_lostItems.add(new DelayedGeneric<ItemIdentifierStack>(stack,5000));
 			}
 			lostItem = _lostItems.poll();

@@ -34,7 +34,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 			c=o1._item.uniqueID-o2._item.uniqueID;
 			if(c!=0) return c;
 
-			return o2.stackSize-o1.stackSize;
+			return o2.getStackSize()-o1.getStackSize();
 		}		
 	}
 	public static class itemComparitor implements Comparator<ItemIdentifierStack>{
@@ -60,7 +60,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 		
 	}
 	private final ItemIdentifier _item;
-	public int stackSize;
+	private int stackSize;
 	
 	public static ItemIdentifierStack getFromStack(ItemStack stack){
 		return new ItemIdentifierStack(ItemIdentifier.get(stack), stack.stackSize);
@@ -68,21 +68,35 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	
 	public ItemIdentifierStack(ItemIdentifier item, int stackSize){
 		_item = item;
-		this.stackSize = stackSize;
+		this.setStackSize(stackSize);
 	}
 	
 	public ItemIdentifier getItem(){
 		return _item;
 	}
 
+	/**
+	 * @return the stackSize
+	 */
+	public int getStackSize() {
+		return stackSize;
+	}
+
+	/**
+	 * @param stackSize the stackSize to set
+	 */
+	public void setStackSize(int stackSize) {
+		this.stackSize = stackSize;
+	}
+
 	public ItemStack unsafeMakeNormalStack(){
-		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
+		ItemStack stack = new ItemStack(_item.itemID, this.getStackSize(), _item.itemDamage);
 		stack.setTagCompound(_item.tag);
 		return stack;
 	}
 
 	public ItemStack makeNormalStack(){
-		ItemStack stack = new ItemStack(_item.itemID, this.stackSize, _item.itemDamage);
+		ItemStack stack = new ItemStack(_item.itemID, this.getStackSize(), _item.itemDamage);
 		if(_item.tag != null) {
 			stack.setTagCompound((NBTTagCompound)_item.tag.copy());
 		}
@@ -93,33 +107,33 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	public boolean equals(Object object) {
 		if(object instanceof ItemIdentifierStack) {
 			ItemIdentifierStack stack = (ItemIdentifierStack)object;
-			return stack._item.equals(this._item) && stack.stackSize == this.stackSize;
+			return stack._item.equals(this._item) && stack.getStackSize() == this.getStackSize();
 		}
 		return false;
 	}
 	
 	@Override
 	public int hashCode() {
-		return _item.hashCode() ^ (1023 * this.stackSize);
+		return _item.hashCode() ^ (1023 * this.getStackSize());
 	}
 
 	@Override
 	public String toString() {
-		return new StringBuilder(Integer.toString(stackSize)).append("x ").append(_item.toString()).toString();
+		return new StringBuilder(Integer.toString(getStackSize())).append("x ").append(_item.toString()).toString();
 	}
 	
 	@Override
 	public ItemIdentifierStack clone() {
-		return new ItemIdentifierStack(_item, stackSize);
+		return new ItemIdentifierStack(_item, getStackSize());
 	}
 	
 	public String getFriendlyName() {
-		return stackSize + " " + _item.getFriendlyName();
+		return getStackSize() + " " + _item.getFriendlyName();
 	}
 	
 	public void write(DataOutputStream data) throws IOException {
 		data.writeInt(_item.itemID);
-		data.writeInt(stackSize);
+		data.writeInt(getStackSize());
 		data.writeInt(_item.itemDamage);
 		SendNBTTagCompound.writeNBTTagCompound(_item.tag, data);
 	}
@@ -159,7 +173,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 				boolean added = false;
 				for(ItemIdentifierStack stack:list) {
 					if(stack.getItem().equals(ItemIdentifierStack.getFromStack(part.getValue1().getItemStack()).getItem())) {
-						stack.stackSize += part.getValue1().getItemStack().stackSize;
+						stack.setStackSize(stack.getStackSize() + part.getValue1().getItemStack().stackSize);
 						added = true;
 						break;
 					}
@@ -176,7 +190,7 @@ public final class ItemIdentifierStack implements Comparable<ItemIdentifierStack
 	public int compareTo(ItemIdentifierStack o) {
 		int c= _item.compareTo(o._item);
 		if(c==0)
-			return stackSize-o.stackSize;
+			return getStackSize()-o.getStackSize();
 		return c;
 	}
 }

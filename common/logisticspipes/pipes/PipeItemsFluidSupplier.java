@@ -255,7 +255,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
     }
 	
 	private void decreaseRequested(ItemIdentifierStack item) {
-		int remaining = item.stackSize;
+		int remaining = item.getStackSize();
 		//see if we can get an exact match
 		Integer count = _requestedItems.get(item.getItem());
 		if (count != null) {

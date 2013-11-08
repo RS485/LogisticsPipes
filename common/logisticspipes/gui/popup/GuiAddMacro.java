@@ -268,10 +268,10 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 						for(ItemIdentifierStack stack:macroItems) {
 							if(stack.getItem().equals(item)) {
 								if(mousebutton == 0 || wheelup != 0) {
-									stack.stackSize += 1 + (wheelup != 0 ? wheelup - 1: 0);
+									stack.setStackSize(stack.getStackSize() + (1 + (wheelup != 0 ? wheelup - 1: 0)));
 								} else if(mousebutton == 1 || wheeldown != 0) {
-									stack.stackSize -= 1 + (wheeldown != 0 ? wheeldown - 1: 0);
-									if(stack.stackSize <= 0) {
+									stack.setStackSize(stack.getStackSize() - (1 + (wheeldown != 0 ? wheeldown - 1: 0)));
+									if(stack.getStackSize() <= 0) {
 										macroItems.remove(stack);
 									}
 								}
@@ -446,7 +446,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					if(stack.getItem().tag != null) {
 						itemNBT.setCompoundTag("nbt", stack.getItem().tag);
 					}
-					itemNBT.setInteger("amount", stack.stackSize);
+					itemNBT.setInteger("amount", stack.getStackSize());
 					inventar.appendTag(itemNBT);
 				}
 

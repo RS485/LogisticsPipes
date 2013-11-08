@@ -114,7 +114,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private void addToList(ItemIdentifierStack stack) {
 		for(ItemIdentifierStack ident:itemList) {
 			if(ident.getItem().equals(stack.getItem())) {
-				ident.stackSize += stack.stackSize;
+				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
 			}
 		}
@@ -290,10 +290,10 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 			ItemIdentifierStack stack = iterator.next();
 			int received = RequestTree.requestPartial(stack, (CoreRoutedPipe) container.pipe);
 			if(received > 0) {
-				if(received == stack.stackSize) {
+				if(received == stack.getStackSize()) {
 					iterator.remove();
 				} else {
-					stack.stackSize -= received;
+					stack.setStackSize(stack.getStackSize() - received);
 				}
 			}
 		}

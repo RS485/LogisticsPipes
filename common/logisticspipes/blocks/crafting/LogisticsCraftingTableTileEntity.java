@@ -65,7 +65,7 @@ outer:
 				item = inv.getIDStackInSlot(j);
 				if(item == null) continue;
 				if(ident.equalsForCrafting(item.getItem())) {
-					if(item.stackSize > used[j]) {
+					if(item.getStackSize() > used[j]) {
 						used[j]++;
 						toUse[i] = j;
 						continue outer;

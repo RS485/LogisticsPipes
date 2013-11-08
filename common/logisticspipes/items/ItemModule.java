@@ -338,8 +338,8 @@ public class ItemModule extends LogisticsItem {
 								for(int pos=0;pos < inv.getSizeInventory();pos++) {
 									ItemIdentifierStack stack = inv.getIDStackInSlot(pos);
 									if(stack != null) {
-										if(stack.stackSize > 1) {
-											list.add("  " + stack.stackSize+"x " + stack.getFriendlyName());
+										if(stack.getStackSize() > 1) {
+											list.add("  " + stack.getStackSize()+"x " + stack.getFriendlyName());
 										} else {
 											list.add("  " + stack.getFriendlyName());
 										}

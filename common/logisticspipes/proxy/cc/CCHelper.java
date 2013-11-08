@@ -63,7 +63,7 @@ public class CCHelper {
 			ItemIdentifierStack mes = (ItemIdentifierStack) input;
 			Map map = new HashMap();
 			map.put(1,getAnswer(mes.getItem()));
-			map.put(2,getAnswer(mes.stackSize));
+			map.put(2,getAnswer(mes.getStackSize()));
 			return map;
 		}
 		return checkForAnnotations(input);

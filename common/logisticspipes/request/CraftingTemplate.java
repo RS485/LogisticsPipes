@@ -40,7 +40,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	public void addRequirement(ItemIdentifierStack stack, IRequestItems crafter) {
 		for(Pair<ItemIdentifierStack, IRequestItems> i : _required) {
 			if(i.getValue1().getItem() == stack.getItem() && i.getValue2() == crafter) {
-				i.getValue1().stackSize += stack.stackSize;
+				i.getValue1().setStackSize(i.getValue1().getStackSize() + stack.getStackSize());
 				return;
 			}
 		}
@@ -60,7 +60,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	public void addByproduct(ItemIdentifierStack stack) {
 		for(ItemIdentifierStack i : _byproduct) {
 			if(i.getItem() == stack.getItem()) {
-				i.stackSize += stack.stackSize;
+				i.setStackSize(i.getStackSize() + stack.getStackSize());
 				return;
 			}
 		}
@@ -70,7 +70,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	public LogisticsPromise generatePromise(int nResultSets) {
 		LogisticsPromise promise = new LogisticsPromise();
 		promise.item = _result.getItem();
-		promise.numberOfItems = _result.stackSize * nResultSets;
+		promise.numberOfItems = _result.getStackSize() * nResultSets;
 		promise.sender = _crafter;
 		return promise;
 	}
@@ -100,7 +100,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 	}
 
 	public int getResultStackSize() {
-		return _result.stackSize;
+		return _result.getStackSize();
 	}
 	
 	ItemIdentifier getResultItem() {
@@ -117,7 +117,7 @@ public class CraftingTemplate implements Comparable<CraftingTemplate>{
 		// for each thing needed to satisfy this promise
 		for(Pair<ItemIdentifierStack,IRequestItems> stack : _required) {
 			Pair<ItemIdentifierStack, IRequestItems> pair = new Pair<ItemIdentifierStack, IRequestItems>(stack.getValue1().clone(),stack.getValue2());
-			pair.getValue1().stackSize *= nCraftingSetsNeeded;
+			pair.getValue1().setStackSize(pair.getValue1().getStackSize() * nCraftingSetsNeeded);
 			stacks.add(pair);
 		}
 		return stacks;

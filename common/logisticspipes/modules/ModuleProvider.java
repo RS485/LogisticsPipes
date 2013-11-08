@@ -246,7 +246,7 @@ outer:
 			_orderManager.sendFailed();
 			return 0;
 		}
-		int wanted = Math.min(available, stack.stackSize);
+		int wanted = Math.min(available, stack.getStackSize());
 		wanted = Math.min(wanted, maxCount);
 		wanted = Math.min(wanted, item.getMaxStackSize());
 		IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);

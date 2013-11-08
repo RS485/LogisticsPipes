@@ -81,14 +81,14 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 					insertion = getUpgradeManager().getSneakyOrientation();
 				}
 				ItemIdentifierStack toadd = slot.clone();
-				toadd.stackSize = Math.min(toadd.stackSize, toadd.getItem().getMaxStackSize());
-				toadd.stackSize = Math.min(toadd.stackSize, ((IInventory)tile.tile).getInventoryStackLimit());
+				toadd.setStackSize(Math.min(toadd.getStackSize(), toadd.getItem().getMaxStackSize()));
+				toadd.setStackSize(Math.min(toadd.getStackSize(), ((IInventory)tile.tile).getInventoryStackLimit()));
 				ItemStack added = InventoryHelper.getTransactorFor(tile.tile).add(toadd.makeNormalStack(), insertion, true);
-				slot.stackSize -= added.stackSize;
+				slot.setStackSize(slot.getStackSize() - added.stackSize);
 				if(added.stackSize != 0) {
 					change = true;
 				}
-				if(slot.stackSize <= 0) {
+				if(slot.getStackSize() <= 0) {
 					inv.clearInventorySlotContents(i);
 				} else {
 					inv.setInventorySlotContents(i, slot);

@@ -1173,7 +1173,7 @@ outer:
 		for(Iterator<IRoutedItem> iter = _inTransitToMe.iterator();iter.hasNext();) {
 			IRoutedItem next = iter.next();
 			if(next.getIDStack().getItem() == it)
-				count += next.getIDStack().stackSize;
+				count += next.getIDStack().getStackSize();
 		}
 		return count;
 	}

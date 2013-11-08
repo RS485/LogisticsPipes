@@ -145,7 +145,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 			int available = inv.itemCount(item);
 			if (available == 0) continue;
 			
-			int wanted = Math.min(available, stack.stackSize);
+			int wanted = Math.min(available, stack.getStackSize());
 			wanted = Math.min(wanted, maxCount);
 			wanted = Math.min(wanted, item.getMaxStackSize());
 			IRouter dRtr = SimpleServiceLocator.routerManager.getRouterUnsafe(destination,false);

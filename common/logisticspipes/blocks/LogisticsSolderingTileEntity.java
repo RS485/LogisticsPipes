@@ -297,10 +297,10 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 			if(!content.getItem().equals(toAdd)) {
 				return false;
 			}
-			if(content.stackSize + toAdd.stackSize > content.getItem().getMaxStackSize()) {
+			if(content.getStackSize() + toAdd.stackSize > content.getItem().getMaxStackSize()) {
 				return false;
 			}
-			toAdd.stackSize += content.stackSize;
+			toAdd.stackSize += content.getStackSize();
 		}
 
 		//dummy

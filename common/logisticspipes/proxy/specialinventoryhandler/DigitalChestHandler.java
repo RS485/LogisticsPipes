@@ -57,7 +57,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return 0;
 		if(content.getItem() != itemIdent) return 0;
-		return content.stackSize - (_hideOnePerStack?1:0);
+		return content.getStackSize() - (_hideOnePerStack?1:0);
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		HashMap<ItemIdentifier, Integer> map = new HashMap<ItemIdentifier, Integer>();
 		ItemIdentifierStack content = getContents();
 		if(content != null) {
-			map.put(content.getItem(), content.stackSize - (_hideOnePerStack?1:0));
+			map.put(content.getItem(), content.getStackSize() - (_hideOnePerStack?1:0));
 		}
 		return map;
 	}
@@ -108,7 +108,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return 0;
 		if(content.getItem() != itemIdent) return 0;
-		return _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.stackSize;
+		return _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.getStackSize();
 	}
 
 	@Override
@@ -117,7 +117,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		ItemIdentifierStack content = getContents();
 		if(content == null) return null;
 		if(content.getItem() != itemIdent) return null;
-		if(content.stackSize < count) return null;
+		if(content.getStackSize() < count) return null;
 
 		//set up the finished stack to return
 		ItemStack resultstack = content.makeNormalStack();
@@ -158,7 +158,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		for(int i = 0; i < 3; i++) {
 			ItemStack stack = ((IInventory)_tile).getStackInSlot(i);
 			if(stack != null && ItemIdentifier.get(stack) == dataIdent.getItem()) {
-				dataIdent.stackSize += stack.stackSize;
+				dataIdent.setStackSize(dataIdent.getStackSize() + stack.stackSize);
 			}
 		}
 		return dataIdent;
@@ -174,7 +174,7 @@ public class DigitalChestHandler extends SpecialInventoryHandler {
 		if(content.getItem() != itemIdent) return st;
 
 		if(!doAdd) {
-			int space = _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.stackSize;
+			int space = _tile.getMaxItemCount() + 3 * itemIdent.getMaxStackSize() - content.getStackSize();
 			st.stackSize = Math.max(Math.min(space, stack.stackSize), 0);
 			return st;
 		}

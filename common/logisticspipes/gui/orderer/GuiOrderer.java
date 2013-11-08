@@ -608,8 +608,8 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 	public void handleKeyboardInputSub() {
 		if(Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 			if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-				if(selectedItem != null && selectedItem.stackSize != 0) {
-					requestCount = selectedItem.stackSize;
+				if(selectedItem != null && selectedItem.getStackSize() != 0) {
+					requestCount = selectedItem.getStackSize();
 				}
 			} else if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
 				requestCount = 1;

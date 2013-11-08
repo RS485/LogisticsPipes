@@ -98,7 +98,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	private void addToList(ItemIdentifierStack stack) {
 		for(ItemIdentifierStack ident:itemList) {
 			if(ident.getItem().equals(stack.getItem())) {
-				ident.stackSize += stack.stackSize;
+				ident.setStackSize(ident.getStackSize() + stack.getStackSize());
 				return;
 			}
 		}

@@ -130,7 +130,6 @@ public class RequestHandler {
 			if (_availableItems.containsKey(item)) continue;
 			_allItems.add(item.makeStack(0));
 		}
-//TODO	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
 	}
 	
@@ -243,7 +242,6 @@ public class RequestHandler {
 
 	public static void refreshFluid(EntityPlayer player, CoreRoutedPipe pipe) {
 		TreeSet<ItemIdentifierStack> _allItems = SimpleServiceLocator.logisticsFluidManager.getAvailableFluid(pipe.getRouter().getIRoutersByCost());
-//TODO 	MainProxy.sendPacketToPlayer(new PacketRequestGuiContent(NetworkConstants.ORDERER_CONTENT_ANSWER, _allItems).getPacket(), (Player)player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OrdererContent.class).setIdentSet(_allItems), (Player)player);
 	}
 

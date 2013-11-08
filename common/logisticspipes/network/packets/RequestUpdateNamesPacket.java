@@ -48,7 +48,6 @@ public class RequestUpdateNamesPacket extends ModernPacket {
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(true);
 		for(ItemIdentifier item:identList) {
-//TODO 		MainProxy.sendCompressedPacketToServer((Packet250CustomPayload) new PacketNameUpdatePacket(NetworkConstants.UPDATE_NAMES, item).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(UpdateName.class).setIdent(item).setName(item.getFriendlyName()));
 		}
 		SimpleServiceLocator.clientBufferHandler.setPause(false);

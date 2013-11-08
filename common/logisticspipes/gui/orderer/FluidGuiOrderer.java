@@ -30,7 +30,6 @@ public class FluidGuiOrderer extends GuiOrderer {
 				editsearchb = false;
 			}
 			clickWasButton = true;
-//TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit( NetworkConstants.LIQUID_REQUEST_SUBMIT, xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SubmitFluidRequestPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			refreshItems();
 		} else {
@@ -63,7 +62,6 @@ public class FluidGuiOrderer extends GuiOrderer {
 	
 	@Override
 	public void refreshItems() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_LIQUID_REFRESH_REQUEST, xCoord, yCoord, zCoord, dimension).getPacket());		
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestFluidOrdererRefreshPacket.class).setInteger(dimension).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 	}
 

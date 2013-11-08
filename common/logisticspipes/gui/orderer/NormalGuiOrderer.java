@@ -49,7 +49,6 @@ public class NormalGuiOrderer extends GuiOrderer {
 				integer = 3;
 			}
 			integer += (dimension * 10);
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ORDERER_REFRESH_REQUEST,xCoord,yCoord,zCoord,integer).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(OrdererRefreshRequestPacket.class).setInteger(integer).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 	}
 

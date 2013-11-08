@@ -92,7 +92,6 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 	@Override
 	protected void actionPerformed(GuiButton button) {
 		if(button.id < 4) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SECURITY_CARD, _tile.xCoord, _tile.yCoord, _tile.zCoord, button.id).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityCardPacket.class).setInteger(button.id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 4) {
 			if (searchinput1+searchinput2 != null && ((searchinput1+searchinput2).length() != 0)) {
@@ -101,24 +100,19 @@ public class GuiSecurityStation extends KraphtBaseGuiScreen implements PlayerLis
 		} else if(button.id == 5) {
 			_tile.allowCC = !_tile.allowCC;
 			refreshCheckBoxes();
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_CC, _tile.xCoord, _tile.yCoord, _tile.zCoord, _tile.allowCC?1:0).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationCC.class).setInteger(_tile.allowCC?1:0).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 6) {
 			this.setSubGui(new GuiEditCCAccessTable(_tile));
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_CC_IDS, _tile.xCoord, _tile.yCoord, _tile.zCoord).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRequestCCIdsPacket.class).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 7) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SECURITY_AUTHORIZATION, _tile.xCoord, _tile.yCoord, _tile.zCoord, 1).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAuthorizationPacket.class).setInteger(1).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 			authorized = true;
 		} else if (button.id == 8) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SECURITY_AUTHORIZATION, _tile.xCoord, _tile.yCoord, _tile.zCoord, 0).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAuthorizationPacket.class).setInteger(0).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 			authorized = false;
 		} else if(button.id == 9) {
 			_tile.allowAutoDestroy = !_tile.allowAutoDestroy;
 			refreshCheckBoxes();
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.SET_SECURITY_DESTROY, _tile.xCoord, _tile.yCoord, _tile.zCoord, _tile.allowAutoDestroy?1:0).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityStationAutoDestroy.class).setInteger(_tile.allowAutoDestroy?1:0).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else {
 			super.actionPerformed(button);

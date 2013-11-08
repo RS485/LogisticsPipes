@@ -183,7 +183,6 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		case 2: {
 			Integer id = Integer.valueOf(searchinput1 + searchinput2);
 			_tile.excludedCC.remove(id);
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.REMOVE_CC_ID, _tile.xCoord, _tile.yCoord, _tile.zCoord, id).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRemoveCCIdPacket.class).setInteger(id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 			} break;
 		case 3: {
@@ -192,7 +191,6 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 				_tile.excludedCC.add(id);
 				Collections.sort(_tile.excludedCC);
 			}
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADD_CC_ID, _tile.xCoord, _tile.yCoord, _tile.zCoord, id).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityAddCCIdPacket.class).setInteger(id).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 			} break;
 		case 4:

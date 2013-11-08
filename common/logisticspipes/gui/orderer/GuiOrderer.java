@@ -531,7 +531,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 		clickWasButton = true;
 		
 		if (guibutton.id == 0 && selectedItem != null){
-//TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit(NetworkConstants.REQUEST_SUBMIT,xCoord,yCoord,zCoord,dimension,selectedItem.getItem(),requestCount).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 			refreshItems();
 		} else if (guibutton.id == 1){
@@ -563,7 +562,6 @@ public abstract class GuiOrderer extends KraphtBaseGuiScreen implements IItemSea
 			Configs.DISPLAY_POPUP = button.change();
 			Configs.savePopupState();
 		} else if (guibutton.id == 13 && selectedItem != null){
-//TODO 		MainProxy.sendPacketToServer(new PacketRequestSubmit(NetworkConstants.REQUEST_COMPONENTS, xCoord,yCoord,zCoord,dimension,selectedItem.getItem(), requestCount).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestComponentPacket.class).setDimension(dimension).setStack(selectedItem.getItem().makeStack(requestCount)).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 		}
 		

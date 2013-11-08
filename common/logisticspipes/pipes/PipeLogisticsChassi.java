@@ -387,7 +387,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			}
 		}
 		if(MainProxy.isServer()) {
-//TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_MODULE_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), localModeWatchers);
 			if(!localModeWatchers.isEmpty()) {
 				MainProxy.sendToPlayerList(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 			}
@@ -420,7 +419,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 		if(!init) {
 			init = true;
 			if(MainProxy.isClient(this.getWorld())) {
-//TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.REQUEST_PIPE_UPDATE, getX(), getY(), getZ()).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestPipeUpdatePacket.class).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 			}
 		}
@@ -548,13 +546,11 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	@Override
 	public void startWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 		HUD.stopWatching();
 	}
@@ -563,9 +559,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if(mode == 1) {
 			localModeWatchers.add(player);
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.CHASSIE_PIPE_MODULE_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(_moduleInventory)).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ChassiePipeModuleContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(_moduleInventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
-//TODO 		MainProxy.sendPacketToPlayer(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListSendQueue(_sendQueue)).getPacket(), (Player)player);
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(SendQueueContent.class).setIdentList(ItemIdentifierStack.getListSendQueue(_sendQueue)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 		} else {
 			super.playerStartWatching(player, mode);
@@ -594,7 +588,6 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 			} else {
 				if(localModeWatchers != null && localModeWatchers.size()>0) {
 					LinkedList<ItemIdentifierStack> items = ItemIdentifierStack.getListSendQueue(_sendQueue);				
-//TODO 				MainProxy.sendCompressedToPlayerList(new PacketPipeInvContent(NetworkConstants.SEND_QUEUE_CONTENT, getX(), getY(), getZ(), items).getPacket(), localModeWatchers);
 					MainProxy.sendToPlayerList(PacketHandler.getPacket(SendQueueContent.class).setIdentList(items).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 					return items.size();
 				}

@@ -34,7 +34,6 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 				if(dummy.getModule() instanceof ISneakyDirectionReceiver) {
 					final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) dummy.getModule();
 					module.setSneakyDirection(ForgeDirection.getOrientation(value));
-//TODO 				MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getPosX(), getPosY(), getPosZ(), -1, module.getSneakyDirection().ordinal()).getPacket(), (Player) player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				}
 			}
@@ -55,7 +54,6 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule() instanceof ISneakyDirectionReceiver) {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule();
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
-//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getPosX(), getPosY(), getPosZ(), -1, module.getSneakyDirection().ordinal()).getPacket(), (Player) player);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(-1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}
@@ -63,7 +61,6 @@ public class ExtractorModuleDirectionPacket extends IntegerCoordinatesPacket {
 			if(piperouted.getLogisticsModule().getSubModule(slot - 1) instanceof ISneakyDirectionReceiver) {
 				final ISneakyDirectionReceiver module = (ISneakyDirectionReceiver) piperouted.getLogisticsModule().getSubModule(slot - 1);
 				module.setSneakyDirection(ForgeDirection.getOrientation(value));
-//TODO 			MainProxy.sendPacketToPlayer(new PacketModuleInteger(NetworkConstants.EXTRACTOR_MODULE_RESPONSE, getPosX(), getPosY(), getPosZ(), slot - 1, module.getSneakyDirection().ordinal()).getPacket(), (Player) player);
 				MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ExtractorModuleMode.class).setInteger2(slot - 1).setInteger(module.getSneakyDirection().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 				return;
 			}

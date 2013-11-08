@@ -32,7 +32,6 @@ public class ProviderPipeNextModePacket extends CoordinatesPacket {
 		}
 		final PipeItemsProviderLogistics providerpipe = (PipeItemsProviderLogistics) pipe.pipe;
 		providerpipe.nextExtractionMode();
-//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.PROVIDER_PIPE_MODE_CONTENT, getPosX(), getPosY(), getPosZ(), logic.getExtractionMode().ordinal()).getPacket(), (Player) player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ProviderPipeMode.class).setInteger(providerpipe.getExtractionMode().ordinal()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 	}
 }

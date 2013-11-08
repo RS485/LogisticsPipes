@@ -80,7 +80,6 @@ public class GuiFluidSupplierPipe extends GuiContainer implements IGuiIDHandlerP
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.getX(), logic.getY(), logic.getZ(), (logic.isRequestingPartials() ? 1 : 0)).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);

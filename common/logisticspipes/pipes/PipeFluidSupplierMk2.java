@@ -257,7 +257,6 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		if(amount <= 0) {
 			amount = 0;
 		}
-//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, xCoord, yCoord, zCoord, amount).getPacket(), (Player)player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(amount).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), (Player)player);
 	}
 }

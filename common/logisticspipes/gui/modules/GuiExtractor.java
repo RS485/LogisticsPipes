@@ -69,10 +69,8 @@ public class GuiExtractor extends GuiWithPreviousGuiContainer {
 		_directionReceiver.setSneakyDirection(ForgeDirection.getOrientation(guibutton.id));
 		
 		if(slot >= 0) {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, pipe.getX(), pipe.getY(), pipe.getZ(), _directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		} else {
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.EXTRACTOR_MODULE_DIRECTION_SET, 0, -1, _directionReceiver.getZ(), _directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).getPacket());	
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ExtractorModuleDirectionPacket.class).setInteger(_directionReceiver.getSneakyDirection().ordinal() + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(_directionReceiver.getZ()));
 		}
 		

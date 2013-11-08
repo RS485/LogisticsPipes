@@ -243,7 +243,6 @@ public class LogisticsSolderingTileEntity extends TileEntity implements IPowerRe
 	public void updateEntity() {
 		if(MainProxy.isClient(getWorld())) {
 			if(!init) {
-//TODO 			MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.ROTATION_REQUEST, xCoord, yCoord, zCoord).getPacket());
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestRotationPacket.class).setPosX(xCoord).setPosY(yCoord).setPosZ(zCoord));
 				init = true;
 			}

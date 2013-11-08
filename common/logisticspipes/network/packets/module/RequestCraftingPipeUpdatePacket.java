@@ -30,7 +30,6 @@ public class RequestCraftingPipeUpdatePacket extends CoordinatesPacket {
 			return;
 		}
 		if( !(pipe.pipe instanceof CoreRoutedPipe)) return;
-//TODO 	MainProxy.sendPacketToPlayer(new PacketPipeUpdate(NetworkConstants.PIPE_UPDATE, getPosX(), getPosY(), getPosZ(), ((CoreRoutedPipe) pipe.pipe).getLogisticsNetworkPacket()).getPacket(), (Player) player);
 		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(PipeUpdate.class).setPayload(((CoreRoutedPipe) pipe.pipe).getLogisticsNetworkPacket()).setPosX(getPosX()).setPosY(getPosY()).setPosZ(getPosZ()), (Player) player);
 		if(pipe.pipe instanceof PipeItemsCraftingLogistics) {
 			if(pipe.pipe instanceof PipeItemsCraftingLogistics) {

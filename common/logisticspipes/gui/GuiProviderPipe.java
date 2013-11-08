@@ -64,11 +64,9 @@ public class GuiProviderPipe extends GuiContainer implements IGuiIDHandlerProvid
 		if (guibutton.id == 0){
 			logic.setFilterExcluded(!logic.isExcludeFilter());
 			((GuiButton)buttonList.get(0)).displayString = logic.isExcludeFilter() ? "Exclude" : "Include";
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_CHANGE_INCLUDE, logic.getX(), logic.getY(), logic.getZ()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeIncludePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		} else if (guibutton.id  == 1){
 			logic.nextExtractionMode();
-//TODO 		MainProxy.sendPacketToServer(new PacketCoordinates(NetworkConstants.PROVIDER_PIPE_NEXT_MODE, logic.getX(), logic.getY(), logic.getZ()).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(ProviderPipeNextModePacket.class).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		super.actionPerformed(guibutton);

@@ -50,19 +50,15 @@ public class GuiAdvancedExtractor extends GuiWithPreviousGuiContainer {
 			case 0:
 				_advancedExtractor.setItemsIncluded(!_advancedExtractor.areItemsIncluded());
 				if(slot >= 0) {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, pipe.getX(), pipe.getY(), pipe.getZ(), (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_INCLUDED_SET, 0, -1, 0, (_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).getPacket());	
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorIncludePacket.class).setInteger((_advancedExtractor.areItemsIncluded() ? 1 : 0) + (slot * 10)).setPosX(0).setPosY(-1).setPosZ(0));
 				}
 				break;
 			case 1:
 				if(slot >= 0) {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, pipe.getX(), pipe.getY(), pipe.getZ(), slot).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 				} else {
-//TODO 				MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.ADVANCED_EXTRACTOR_MODULE_SNEAKY_GUI, _advancedExtractor.getX(), -1, _advancedExtractor.getZ(), slot).getPacket());
 					MainProxy.sendPacketToServer(PacketHandler.getPacket(AdvancedExtractorSneakyGuiPacket.class).setInteger(slot).setPosX(_advancedExtractor.getX()).setPosY(-1).setPosZ(_advancedExtractor.getZ()));
 				}
 				break;

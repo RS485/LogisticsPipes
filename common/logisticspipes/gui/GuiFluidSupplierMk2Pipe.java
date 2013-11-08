@@ -41,7 +41,6 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 		this.logic = logic;
 		xSize = 184;
 		ySize = 176;
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.getX(), this.logic.getY(), this.logic.getZ(), 0).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(0).setPosX(this.logic.getX()).setPosY(this.logic.getY()).setPosZ(this.logic.getZ()));
 	}
 	
@@ -89,14 +88,12 @@ public class GuiFluidSupplierMk2Pipe extends GuiContainer implements IGuiIDHandl
 		if (guibutton.id == 0){
 			logic.setRequestingPartials(!logic.isRequestingPartials());
 			((GuiButton)buttonList.get(0)).displayString = logic.isRequestingPartials() ? "Yes" : "No";
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_PARTIALS, logic.getX(), logic.getY(), logic.getZ(), (logic.isRequestingPartials() ? 1 : 0)).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierMode.class).setInteger((logic.isRequestingPartials() ? 1 : 0)).setPosX(logic.getX()).setPosY(logic.getY()).setPosZ(logic.getZ()));
 		}
 		if((guibutton.id % 10 == 0 || guibutton.id % 10 == 1) && guibutton.id / 10 < 5 && guibutton.id / 10 > 0) {
 			int change = 1;
 			if(guibutton.id % 10 == 1) change = -1;
 			change *= Math.pow(10, guibutton.id / 10 - 1);
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.LIQUID_SUPPLIER_LIQUID_AMOUNT, this.logic.getX(), this.logic.getY(), this.logic.getZ(), change).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(change).setPosX(this.logic.getX()).setPosY(this.logic.getY()).setPosZ(this.logic.getZ()));
 		}
 		super.actionPerformed(guibutton);

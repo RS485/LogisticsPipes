@@ -56,35 +56,30 @@ public class GuiSecurityStationPopup extends SubGuiScreen {
 			refreshCheckBoxes();
 			NBTTagCompound nbt = new NBTTagCompound();
 			activeSetting.writeToNBT(nbt);
-//TODO 		MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 1) {
 			activeSetting.openRequest = !activeSetting.openRequest;
 			refreshCheckBoxes();
 			NBTTagCompound nbt = new NBTTagCompound();
 			activeSetting.writeToNBT(nbt);
-//TODO 		MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 2) {
 			activeSetting.openUpgrades = !activeSetting.openUpgrades;
 			refreshCheckBoxes();
 			NBTTagCompound nbt = new NBTTagCompound();
 			activeSetting.writeToNBT(nbt);
-//TODO 		MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 3) {
 			activeSetting.openNetworkMonitor = !activeSetting.openNetworkMonitor;
 			refreshCheckBoxes();
 			NBTTagCompound nbt = new NBTTagCompound();
 			activeSetting.writeToNBT(nbt);
-//TODO 		MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 4) {
 			activeSetting.removePipes = !activeSetting.removePipes;
 			refreshCheckBoxes();
 			NBTTagCompound nbt = new NBTTagCompound();
 			activeSetting.writeToNBT(nbt);
-//TODO 		MainProxy.sendPacketToServer(new PacketNBT(NetworkConstants.SAVE_SECURITY_PLAYER, _tile.xCoord, _tile.yCoord, _tile.zCoord, nbt).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(SaveSecurityPlayerPacket.class).setTag(nbt).setPosX(_tile.xCoord).setPosY(_tile.yCoord).setPosZ(_tile.zCoord));
 		} else if(button.id == 5) {
 			this.exitGui();

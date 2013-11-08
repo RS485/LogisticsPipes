@@ -165,7 +165,6 @@ public class GuiInvSysConnector extends KraphtBaseGuiScreen {
 			}
 		} else if(button.id == 5) {
 			pipe.resistance = localresistance;
-//TODO 		MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.INC_SYS_CON_RESISTANCE, pipe.getX(), pipe.getY(), pipe.getZ(), pipe.resistance).getPacket());
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		}
 	}

@@ -121,7 +121,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		if(!itemList.equals(oldList) || force) {
 			oldList.clear();
 			oldList.addAll(itemList);
-//TODO 		MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), itemList).getPacket(), localModeWatchers);
 			MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(itemList).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 		}
 	}
@@ -140,13 +139,11 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 
 	@Override
 	public void startWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_START_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	@Override
 	public void stopWatching() {
-//TODO 	MainProxy.sendPacketToServer(new PacketPipeInteger(NetworkConstants.HUD_STOP_WATCHING, getX(), getY(), getZ(), 1).getPacket());
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopWatchingPacket.class).setInteger(1).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 	

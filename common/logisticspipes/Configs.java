@@ -94,7 +94,7 @@ public class Configs {
 	public static boolean WATCHDOG_SERVER 	= false;
 	public static int WATCHDOG_TIMEOUT		= 60000;
 
-	public static int POWER_USAGE_MULTIPLIER = 1;
+	public static double POWER_USAGE_MULTIPLIER = 1;
 	public static int LOGISTICS_CRAFTING_TABLE_POWER_USAGE = 250;
 
 	public static boolean CHECK_FOR_UPDATES = true;
@@ -357,13 +357,13 @@ public class Configs {
 		POWER_USAGE_MULTIPLIER = CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer",
 				POWER_USAGE_MULTIPLIER, "A Multiplyer for the power usage.")
-				.getInt();
+				.getDouble(POWER_USAGE_MULTIPLIER);
 
-		if (POWER_USAGE_MULTIPLIER < 1) {
+		if (POWER_USAGE_MULTIPLIER <= 0) {
 			POWER_USAGE_MULTIPLIER = 1;
 			CONFIGURATION.get(Configuration.CATEGORY_GENERAL,
 					"powerUsageMultiplyer", POWER_USAGE_MULTIPLIER,
-					"A Multiplyer for the power usage.").set("1");
+					"A Multiplyer for the power usage.").set(1);
 		}
 
 		LOGISTICS_CRAFTING_TABLE_POWER_USAGE = Math

@@ -72,7 +72,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 		if(providersToIgnore!=null && providersToIgnore.contains(this))
 			return false;
 		if(canUseEnergy(amount,null)) {
-			internalStorage -= (amount * Configs.POWER_USAGE_MULTIPLIER);
+			internalStorage -= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) - 0.5D);
 			if(internalStorage<MAX_STORAGE/2)
 				needMorePowerTriggerCheck=true;
 			return true;
@@ -84,7 +84,7 @@ public class LogisticsPowerJunctionTileEntity extends TileEntity implements IPow
 	public boolean canUseEnergy(int amount, List<Object> providersToIgnore) {
 		if(providersToIgnore!=null && providersToIgnore.contains(this))
 			return false;
-		return internalStorage >= (amount * Configs.POWER_USAGE_MULTIPLIER);
+		return internalStorage >= (int) ((amount * Configs.POWER_USAGE_MULTIPLIER) - 0.5D);
 	}	
 	@Override
 	public boolean useEnergy(int amount) {

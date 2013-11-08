@@ -2,6 +2,7 @@ package logisticspipes.utils;
 
 import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsItemCard;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -9,7 +10,7 @@ import net.minecraft.nbt.NBTTagCompound;
 
 public class CardManagmentInventory implements IInventory {
 	
-	SimpleInventory inv = new SimpleInventory(4, "", 1);
+	ItemIdentifierInventory inv = new ItemIdentifierInventory(4, "", 1);
 	
 	@Override
 	public int getSizeInventory() {

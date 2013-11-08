@@ -16,7 +16,7 @@ import logisticspipes.api.ILogisticsPowerProvider;
 import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraftforge.common.ForgeDirection;
 

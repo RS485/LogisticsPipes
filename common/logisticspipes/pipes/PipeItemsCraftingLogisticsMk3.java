@@ -18,8 +18,8 @@ import logisticspipes.transport.CraftingPipeMk3Transport;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -34,7 +34,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2 implements ISimpleInventoryEventHandler, IChestContentReceiver {
 	
-	public SimpleInventory inv = new SimpleInventory(16, "Buffer", 127);
+	public ItemIdentifierInventory inv = new ItemIdentifierInventory(16, "Buffer", 127);
 	
 	public List<ItemIdentifierStack> bufferList = new LinkedList<ItemIdentifierStack>();
 	private HUDCraftingMK3 HUD = new HUDCraftingMK3(this);
@@ -143,7 +143,7 @@ public class PipeItemsCraftingLogisticsMk3 extends PipeItemsCraftingLogisticsMk2
 	}
 
 	@Override
-	public void InventoryChanged(SimpleInventory inventory) {
+	public void InventoryChanged(IInventory inventory) {
 //TODO 	MainProxy.sendToPlayerList(new PacketPipeInvContent(NetworkConstants.PIPE_CHEST_CONTENT, getX(), getY(), getZ(), ItemIdentifierStack.getListFromInventory(inv, true)).getPacket(), localModeWatchers);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ChestContent.class).setIdentList(ItemIdentifierStack.getListFromInventory(inv, true)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}

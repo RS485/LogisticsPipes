@@ -2,7 +2,7 @@ package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -15,7 +15,7 @@ public class SolderingStation implements ICraftingRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
+	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
 		if (!(tile instanceof LogisticsSolderingTileEntity))
 			return false;
 

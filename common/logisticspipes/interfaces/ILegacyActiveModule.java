@@ -7,7 +7,7 @@ import logisticspipes.interfaces.routing.IFilter;
 import logisticspipes.interfaces.routing.IRequestItems;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public interface ILegacyActiveModule {
 	void registerPreviousLegacyModules(List<ILegacyActiveModule> previousModules);

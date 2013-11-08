@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -57,7 +57,7 @@ public class RollingMachine implements ICraftingRecipeProvider {
 
 
 	@Override
-	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
+	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
 		if (!tileRollingMachineClass.isInstance(tile))
 			return false;
 

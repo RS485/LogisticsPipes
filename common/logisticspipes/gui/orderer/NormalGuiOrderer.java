@@ -3,8 +3,8 @@ package logisticspipes.gui.orderer;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.orderer.OrdererRefreshRequestPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 

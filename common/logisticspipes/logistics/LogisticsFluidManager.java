@@ -15,7 +15,7 @@ import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.PipeRoutingConnectionType;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

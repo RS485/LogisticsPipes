@@ -7,8 +7,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;

@@ -9,7 +9,7 @@
 package logisticspipes.routing;
 
 import logisticspipes.interfaces.routing.IProvideItems;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public class LogisticsPromise {
 	public ItemIdentifier item;

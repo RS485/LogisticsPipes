@@ -96,9 +96,9 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.basic.LogisticsTileGenericPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CardManagmentInventory;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -713,14 +713,14 @@ public class GuiHandler implements IGuiHandler {
 					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
 //TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.getX(), pipe.getY(), pipe.getZ(), slot, nbt).getPacket(), (Player)player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ModuleBasedItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				} else {
 					dummy = new DummyModuleContainer(player, z);
 					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleModBasedItemSink)) return null;
-					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					((DummyModuleContainer)dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
@@ -733,14 +733,14 @@ public class GuiHandler implements IGuiHandler {
 					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
 //TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.THAUMICASPECTSINKLIST, pipe.getX(), pipe.getY(), pipe.getZ(), slot, nbt).getPacket(), (Player)player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ThaumicAspectsSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				} else {
 					dummy = new DummyModuleContainer(player, z);
 					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleThaumicAspectSink)) return null;
-					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					((DummyModuleContainer)dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
@@ -753,14 +753,14 @@ public class GuiHandler implements IGuiHandler {
 					((CoreRoutedPipe)pipe.pipe).getLogisticsModule().getSubModule(slot).writeToNBT(nbt);
 //TODO 				MainProxy.sendPacketToPlayer(new PacketModuleNBT(NetworkConstants.MODBASEDITEMSINKLIST, pipe.xCoord, pipe.yCoord, pipe.zCoord, slot, nbt).getPacket(), (Player)player);
 					MainProxy.sendPacketToPlayer(PacketHandler.getPacket(OreDictItemSinkList.class).setSlot(slot).setTag(nbt).setPosX(pipe.xCoord).setPosY(pipe.yCoord).setPosZ(pipe.zCoord), (Player)player);
-					dummy = new DummyContainer(player.inventory, new SimpleInventory(1, "TMP", 1));
+					dummy = new DummyContainer(player.inventory, new ItemIdentifierInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 				} else {
 					dummy = new DummyModuleContainer(player, z);
 					if(!(((DummyModuleContainer)dummy).getModule() instanceof ModuleOreDictItemSink)) return null;
-					((DummyModuleContainer)dummy).setInventory(new SimpleInventory(1, "TMP", 1));
+					((DummyModuleContainer)dummy).setInventory(new ItemIdentifierInventory(1, "TMP", 1));
 					dummy.addDummySlot(0, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;

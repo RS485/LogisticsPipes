@@ -25,7 +25,7 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.utils.OrientationsUtil;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -41,7 +41,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class LogisticsSecurityTileEntity extends TileEntity implements IGuiOpenControler, ISecurityProvider {
 	
-	public SimpleInventory inv = new SimpleInventory(1, "ID Slots", 64);
+	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "ID Slots", 64);
 	private PlayerCollectionList listener = new PlayerCollectionList();
 	private UUID secId = null;
 	private Map<String, SecuritySettings> settingsList = new HashMap<String, SecuritySettings>();

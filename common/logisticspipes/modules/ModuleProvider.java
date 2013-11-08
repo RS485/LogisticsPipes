@@ -37,11 +37,11 @@ import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsOrderManager;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
@@ -63,7 +63,7 @@ public class ModuleProvider extends LogisticsGuiModule implements ILegacyActiveM
 	
 	private List<ILegacyActiveModule> _previousLegacyModules = new LinkedList<ILegacyActiveModule>();
 
-	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
+	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	
 	protected final int ticksToAction = 6;
 	protected int currentTick = 0;

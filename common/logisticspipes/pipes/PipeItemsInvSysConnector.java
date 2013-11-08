@@ -32,12 +32,12 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.TransportInvConnection;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.InventoryHelper;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Quartet;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
@@ -56,7 +56,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IDirectR
 	private boolean init = false;
 	//list of Itemdentifier, amount, destinationsimpleid, transportmode
 	private LinkedList<Quartet<ItemIdentifier,Integer,Integer,TransportMode>> destination = new LinkedList<Quartet<ItemIdentifier,Integer,Integer,TransportMode>>();
-	public SimpleInventory inv = new SimpleInventory(1, "Freq. card", 1);
+	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq. card", 1);
 	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<ItemIdentifierStack>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<ItemIdentifierStack>();

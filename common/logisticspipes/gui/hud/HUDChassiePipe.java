@@ -9,10 +9,10 @@ import logisticspipes.interfaces.IHUDModuleHandler;
 import logisticspipes.logisticspipes.ChassiModule;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.pipes.PipeLogisticsChassi;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
 
@@ -24,7 +24,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	
 	private final PipeLogisticsChassi pipe;
 	private final ChassiModule module;
-	private final SimpleInventory moduleInventory;
+	private final ItemIdentifierInventory moduleInventory;
 	
 	private int selected = -1;
 	private int modulePage = 0;
@@ -32,7 +32,7 @@ public class HUDChassiePipe extends BasicHUDGui {
 	private int xCursor;
 	private int yCursor;
 	
-	public HUDChassiePipe(PipeLogisticsChassi pipeLogisticsChassi, ChassiModule _module, SimpleInventory _moduleInventory) {
+	public HUDChassiePipe(PipeLogisticsChassi pipeLogisticsChassi, ChassiModule _module, ItemIdentifierInventory _moduleInventory) {
 		this.pipe = pipeLogisticsChassi;
 		this.module = _module;
 		this.moduleInventory = _moduleInventory;
@@ -216,10 +216,10 @@ public class HUDChassiePipe extends BasicHUDGui {
 	
 	private class ItemButton extends BasicHUDButton {
 		
-		private SimpleInventory inv;
+		private ItemIdentifierInventory inv;
 		private int position;
 		
-		public ItemButton(SimpleInventory inv, int position,int x, int y, int width, int heigth) {
+		public ItemButton(ItemIdentifierInventory inv, int position,int x, int y, int width, int heigth) {
 			super("item." + position, x, y, width, heigth);
 			this.inv = inv;
 			this.position = position;

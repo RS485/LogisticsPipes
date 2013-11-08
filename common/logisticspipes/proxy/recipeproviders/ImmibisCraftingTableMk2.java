@@ -3,8 +3,8 @@ package logisticspipes.proxy.recipeproviders;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
 import logisticspipes.utils.CraftingUtil;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
@@ -35,7 +35,7 @@ public class ImmibisCraftingTableMk2 implements ICraftingRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
+	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
 		try {
 			if(tileAutoCraftingMk2.isInstance(tile)) {
 				

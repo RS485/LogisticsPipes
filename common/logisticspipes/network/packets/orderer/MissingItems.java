@@ -10,7 +10,7 @@ import logisticspipes.Configs;
 import logisticspipes.asm.ClientSideOnlyMethodContent;
 import logisticspipes.gui.orderer.GuiOrderer;
 import logisticspipes.network.abstractpackets.ModernPacket;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

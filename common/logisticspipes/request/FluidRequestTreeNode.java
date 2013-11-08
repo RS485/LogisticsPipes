@@ -17,8 +17,8 @@ import logisticspipes.routing.FluidLogisticsPromise;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.ServerRouter;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class FluidRequestTreeNode {
 	

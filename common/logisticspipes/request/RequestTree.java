@@ -18,8 +18,8 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.utils.FinalPair;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class RequestTree extends RequestTreeNode {
 

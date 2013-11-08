@@ -62,12 +62,12 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.ticks.HudUpdateTick;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.InventoryHelper;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Triplet;
 import net.minecraft.entity.player.EntityPlayer;
@@ -88,7 +88,7 @@ import cpw.mods.fml.common.network.Player;
 public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISimpleInventoryEventHandler, IInventoryProvider, ISendRoutedItem, IProvideItems, IWorldProvider, IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver {
 
 	private final ChassiModule _module;
-	private final SimpleInventory _moduleInventory;
+	private final ItemIdentifierInventory _moduleInventory;
 	private boolean switchOrientationOnTick = true;
 	private boolean init = false;
 
@@ -105,7 +105,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 
 	public PipeLogisticsChassi(int itemID) {
 		super(itemID);
-		_moduleInventory = new SimpleInventory(getChassiSize(), "Chassi pipe", 1);
+		_moduleInventory = new ItemIdentifierInventory(getChassiSize(), "Chassi pipe", 1);
 		_moduleInventory.addListener(this);
 		_module = new ChassiModule(getChassiSize(), this);
 		HUD = new HUDChassiePipe(this, _module, _moduleInventory);
@@ -353,7 +353,7 @@ public abstract class PipeLogisticsChassi extends CoreRoutedPipe implements ISim
 	}
 
 	@Override
-	public void InventoryChanged(SimpleInventory inventory) {
+	public void InventoryChanged(IInventory inventory) {
 		boolean reInitGui = false;
 		for (int i = 0; i < inventory.getSizeInventory(); i++){
 			ItemStack stack = inventory.getStackInSlot(i);

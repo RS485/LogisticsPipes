@@ -2,7 +2,7 @@ package logisticspipes.request;
 
 import java.util.Map;
 
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public interface RequestLog {
 	public void handleMissingItems(Map<ItemIdentifier,Integer> items);

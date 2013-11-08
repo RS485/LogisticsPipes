@@ -1,7 +1,7 @@
 package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.factory.TileAutoWorkbench;
@@ -13,7 +13,7 @@ public class AutoWorkbench implements ICraftingRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
+	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
 		if (!(tile instanceof TileAutoWorkbench))
 			return false;
 

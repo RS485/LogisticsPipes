@@ -3,7 +3,7 @@ package logisticspipes.interfaces;
 import java.util.Map;
 import java.util.Set;
 
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 
 public interface IInventoryUtil {

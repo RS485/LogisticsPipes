@@ -23,7 +23,7 @@ import logisticspipes.proxy.mps.ModularPowersuitsProxy;
 import logisticspipes.proxy.nei.NEIProxy;
 import logisticspipes.proxy.te.ThermalExpansionProxy;
 import logisticspipes.proxy.thaumcraft.ThaumCraftProxy;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;

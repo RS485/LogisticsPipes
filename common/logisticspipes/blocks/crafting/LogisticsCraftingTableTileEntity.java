@@ -5,9 +5,9 @@ import logisticspipes.api.IRoutedPowerProvider;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.CraftingUtil;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -19,9 +19,9 @@ import net.minecraft.tileentity.TileEntity;
 
 public class LogisticsCraftingTableTileEntity extends TileEntity implements ISimpleInventoryEventHandler, IInventory {
 	
-	public SimpleInventory inv = new SimpleInventory(18, "Crafting Resources", 64);
-	public SimpleInventory matrix = new SimpleInventory(9, "Crafting Matrix", 1);
-	public SimpleInventory resultInv = new SimpleInventory(1, "Crafting Result", 1);
+	public ItemIdentifierInventory inv = new ItemIdentifierInventory(18, "Crafting Resources", 64);
+	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
+	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
 	private IRecipe cache;
 	private EntityPlayer fake;
 	private String placedBy = "";
@@ -104,7 +104,7 @@ outer:
 			if(left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if(left.stackSize > 0) {
-					SimpleInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+					ItemIdentifierInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
 				}
 			}
 		}
@@ -114,7 +114,7 @@ outer:
 			if(left != null) {
 				left.stackSize = inv.addCompressed(left, false);
 				if(left.stackSize > 0) {
-					SimpleInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
+					ItemIdentifierInventory.dropItems(worldObj, left, xCoord, yCoord, zCoord);
 				}
 			}
 		}
@@ -126,7 +126,7 @@ outer:
 	}
 
 	@Override
-	public void InventoryChanged(SimpleInventory inventory) {
+	public void InventoryChanged(IInventory inventory) {
 		if(inventory == matrix) {
 			cacheRecipe();
 		}

@@ -32,7 +32,7 @@ import logisticspipes.request.RequestTree;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;

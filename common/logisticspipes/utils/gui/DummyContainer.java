@@ -16,7 +16,7 @@ import logisticspipes.pipes.PipeLogisticsChassi;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.Colors;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;

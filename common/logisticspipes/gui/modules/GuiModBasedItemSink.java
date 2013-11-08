@@ -3,10 +3,10 @@ package logisticspipes.gui.modules;
 import logisticspipes.modules.ModuleModBasedItemSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
@@ -14,7 +14,7 @@ import net.minecraft.inventory.IInventory;
 public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 	
 	private final ModuleModBasedItemSink _itemSink;
-	private final SimpleInventory tmpInv;
+	private final ItemIdentifierInventory tmpInv;
 	private String name = "";
 
 	private int mouseX = 0;
@@ -25,7 +25,7 @@ public class GuiModBasedItemSink extends GuiWithPreviousGuiContainer {
 		
 		_itemSink = itemSink;
 		
-		tmpInv = new SimpleInventory(1, "Analyse Slot", 1);
+		tmpInv = new ItemIdentifierInventory(1, "Analyse Slot", 1);
 		
 		DummyContainer dummy = new DummyContainer(playerInventory, tmpInv);
 		dummy.addDummySlot(0, 7, 8);

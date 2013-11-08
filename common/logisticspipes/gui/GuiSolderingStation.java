@@ -5,10 +5,10 @@ import java.util.List;
 
 import logisticspipes.blocks.LogisticsSolderingTileEntity;
 import logisticspipes.network.GuiIDs;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;

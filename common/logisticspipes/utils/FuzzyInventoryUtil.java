@@ -3,6 +3,8 @@ package logisticspipes.utils;
 import java.util.Set;
 import java.util.TreeSet;
 
+import logisticspipes.utils.item.ItemIdentifier;
+
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 

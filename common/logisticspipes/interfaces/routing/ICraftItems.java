@@ -12,8 +12,8 @@ import java.util.List;
 
 import logisticspipes.request.CraftingTemplate;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 
 public interface ICraftItems extends IProvideItems, IRequestItems{
 	void registerExtras(LogisticsPromise promise);

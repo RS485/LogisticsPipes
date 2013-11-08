@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.utils;
+package logisticspipes.utils.item;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;

@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISpecialInsertion;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 

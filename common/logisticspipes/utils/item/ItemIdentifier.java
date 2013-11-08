@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.utils;
+package logisticspipes.utils.item;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.FinalNBTTagCompound;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
@@ -560,6 +561,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier> {
 					return ret;
 			}
 		} else if(nbt instanceof NBTTagCompound) {
+			@SuppressWarnings("unchecked")
 			Map<String, NBTBase> internal = ((NBTTagCompound)nbt).tagMap;
 			for(Entry<String, NBTBase> e : internal.entrySet()) {
 				String k = e.getKey();

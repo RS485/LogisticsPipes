@@ -16,11 +16,11 @@ import logisticspipes.network.packets.block.SolderingStationProgress;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.recipes.SolderingStationRecipes;
 import logisticspipes.recipes.SolderingStationRecipes.SolderingStationRecipe;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -39,7 +39,7 @@ import buildcraft.api.power.PowerHandler.Type;
 public class LogisticsSolderingTileEntity extends TileEntity implements IPowerReceptor, ISpecialInventory, IGuiOpenControler, IRotationProvider {
 	
 	private PowerHandler provider;
-	private SimpleInventory inv = new SimpleInventory(12, "Soldering Inventory", 64);
+	private ItemIdentifierInventory inv = new ItemIdentifierInventory(12, "Soldering Inventory", 64);
 	public int heat = 0;
 	public int progress = 0;
 	public boolean hasWork = false;

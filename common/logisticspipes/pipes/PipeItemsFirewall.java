@@ -13,8 +13,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ChatMessageComponent;
@@ -22,7 +22,7 @@ import cpw.mods.fml.common.network.Player;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 
-	public SimpleInventory inv = new SimpleInventory(6 * 6, "Filter Inv", 1);
+	public ItemIdentifierInventory inv = new ItemIdentifierInventory(6 * 6, "Filter Inv", 1);
 	private boolean blockProvider = false;
 	private boolean blockCrafer = false;
 	private boolean blockSorting = false;

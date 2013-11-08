@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.textures.provider.LPActionTriggerIconProvider;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.ItemStack;
 import buildcraft.api.gates.ITriggerParameter;
 import buildcraft.transport.ITriggerPipe;

@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import logisticspipes.routing.ExitRoute;
 import logisticspipes.routing.IRouter;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;

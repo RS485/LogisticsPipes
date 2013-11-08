@@ -5,10 +5,10 @@ import java.util.ArrayList;
 import logisticspipes.modules.ModuleOreDictItemSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.SmallGuiButton;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
@@ -18,7 +18,7 @@ import net.minecraftforge.oredict.OreDictionary;
 public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 
 	private final ModuleOreDictItemSink _itemSink;
-	private final SimpleInventory tmpInv;
+	private final ItemIdentifierInventory tmpInv;
 
 	private int mouseX = 0;
 	private int mouseY = 0;
@@ -28,7 +28,7 @@ public class GuiOreDictItemSink extends GuiWithPreviousGuiContainer {
 
 		_itemSink = itemSink;
 
-		tmpInv = new SimpleInventory(1, "Analyse Slot", 1);
+		tmpInv = new ItemIdentifierInventory(1, "Analyse Slot", 1);
 
 		DummyContainer dummy = new DummyContainer(playerInventory, tmpInv);
 		dummy.addDummySlot(0, 7, 8);

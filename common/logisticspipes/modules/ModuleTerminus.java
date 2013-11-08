@@ -21,12 +21,12 @@ import logisticspipes.network.packets.hud.HUDStartModuleWatchingPacket;
 import logisticspipes.network.packets.module.ModuleInventory;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -37,7 +37,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleTerminus extends LogisticsGuiModule implements IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, ISimpleInventoryEventHandler, IModuleInventoryReceive {
 
-	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Terminated items", 1);
+	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Terminated items", 1);
 	
 
 
@@ -166,7 +166,7 @@ public class ModuleTerminus extends LogisticsGuiModule implements IClientInforma
 	}
 
 	@Override
-	public void InventoryChanged(SimpleInventory inventory) {
+	public void InventoryChanged(IInventory inventory) {
 //TODO 	MainProxy.sendToPlayerList(new PacketModuleInvContent(NetworkConstants.MODULE_INV_CONTENT, getX(), getY(), getZ(), slot, ItemIdentifierStack.getListFromInventory(inventory)).getPacket(), localModeWatchers);
 		MainProxy.sendToPlayerList(PacketHandler.getPacket(ModuleInventory.class).setSlot(slot).setIdentList(ItemIdentifierStack.getListFromInventory(inventory)).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), localModeWatchers);
 	}

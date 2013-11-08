@@ -14,8 +14,8 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -25,8 +25,8 @@ import net.minecraftforge.common.ForgeDirection;
 
 public class UpgradeManager implements ISimpleInventoryEventHandler {
 
-	private SimpleInventory inv = new SimpleInventory(9, "UpgradeInventory", 16);
-	private SimpleInventory sneakyInv = new SimpleInventory(9, "SneakyUpgradeInventory", 1);
+	private ItemIdentifierInventory inv = new ItemIdentifierInventory(9, "UpgradeInventory", 16);
+	private ItemIdentifierInventory sneakyInv = new ItemIdentifierInventory(9, "SneakyUpgradeInventory", 1);
 	private IPipeUpgrade[] upgrades = new IPipeUpgrade[8];
 	private IPipeUpgrade[] sneakyUpgrades = new IPipeUpgrade[9];
 	private CoreRoutedPipe pipe;
@@ -79,7 +79,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 	}
 	
 	@Override
-	public void InventoryChanged(SimpleInventory inventory) {
+	public void InventoryChanged(IInventory inventory) {
 		boolean needUpdate = false;
 		for(int i=0;i<inv.getSizeInventory() - 1;i++) {
 			ItemStack item = inv.getStackInSlot(i);
@@ -280,7 +280,7 @@ public class UpgradeManager implements ISimpleInventoryEventHandler {
 		return false;
 	}
 	
-	private boolean insertIntInv(EntityPlayer entityplayer, SimpleInventory inv, int sub) {
+	private boolean insertIntInv(EntityPlayer entityplayer, ItemIdentifierInventory inv, int sub) {
 		for(int i=0;i<inv.getSizeInventory() - sub;i++) {
 			ItemStack item = inv.getStackInSlot(i);
 			if(item == null) {

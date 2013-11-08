@@ -29,10 +29,10 @@ import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.entity.player.EntityPlayer;
@@ -77,7 +77,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 
 	// import from PipeItemsSupplierLogistics
 	
-	private SimpleInventory dummyInventory = new SimpleInventory(9, "Items to keep stocked", 127);
+	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(9, "Items to keep stocked", 127);
 	
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<ItemIdentifier, Integer>();
 	
@@ -117,7 +117,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 	
 	/*** GUI ***/
-	public SimpleInventory getDummyInventory() {
+	public ItemIdentifierInventory getDummyInventory() {
 		return dummyInventory;
 	}
 

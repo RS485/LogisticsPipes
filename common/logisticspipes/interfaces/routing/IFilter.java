@@ -1,6 +1,6 @@
 package logisticspipes.interfaces.routing;
 
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IFilter {
 	boolean isBlocked();

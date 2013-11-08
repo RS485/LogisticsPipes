@@ -7,7 +7,7 @@ import java.util.List;
 import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsCraftingLogistics;
 import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;

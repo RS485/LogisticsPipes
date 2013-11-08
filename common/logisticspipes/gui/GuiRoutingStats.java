@@ -11,10 +11,10 @@ package logisticspipes.gui;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.routing.IRouter;
-import logisticspipes.utils.ItemIdentifier;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.entity.player.EntityPlayer;
 
 public class GuiRoutingStats extends KraphtBaseGuiScreen {

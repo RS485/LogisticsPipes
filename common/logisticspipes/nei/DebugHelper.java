@@ -10,7 +10,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import logisticspipes.Configs;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;

@@ -6,9 +6,9 @@ import java.util.List;
 import logisticspipes.interfaces.IHUDButton;
 import logisticspipes.interfaces.IHUDModuleRenderer;
 import logisticspipes.modules.ModuleAdvancedExtractor;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.hud.BasicHUDButton;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraftforge.common.ForgeDirection;
 

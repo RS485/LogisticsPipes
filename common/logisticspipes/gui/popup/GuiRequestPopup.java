@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.SubGuiScreen;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 

@@ -17,8 +17,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.FluidIdentifier;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
@@ -77,7 +77,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 	
 	//from PipeFluidSupplierMk2
-	private SimpleInventory dummyInventory = new SimpleInventory(1, "Fluid to keep stocked", 127, true);
+	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(1, "Fluid to keep stocked", 127, true);
 	private int amount = 0;
 	
 	private final Map<FluidIdentifier, Integer> _requestedItems = new HashMap<FluidIdentifier, Integer>();

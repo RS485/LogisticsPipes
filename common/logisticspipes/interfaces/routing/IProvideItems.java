@@ -14,7 +14,7 @@ import java.util.Map;
 import logisticspipes.request.RequestTreeNode;
 import logisticspipes.routing.IRouter;
 import logisticspipes.routing.LogisticsPromise;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 
 public interface IProvideItems {
 	public void canProvide(RequestTreeNode tree, int donePromisses, List<IFilter> filter);

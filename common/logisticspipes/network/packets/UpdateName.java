@@ -7,7 +7,7 @@ import java.io.IOException;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

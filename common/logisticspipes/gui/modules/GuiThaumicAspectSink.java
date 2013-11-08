@@ -4,9 +4,9 @@ import logisticspipes.modules.ModuleThaumicAspectSink;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.gui.BasicGuiHelper;
 import logisticspipes.utils.gui.DummyContainer;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.inventory.IInventory;
@@ -14,14 +14,14 @@ import net.minecraft.inventory.IInventory;
 public class GuiThaumicAspectSink extends GuiWithPreviousGuiContainer {
 	
 	private final ModuleThaumicAspectSink _module;
-	private final SimpleInventory tmpInv;
+	private final ItemIdentifierInventory tmpInv;
 	
 	public GuiThaumicAspectSink(IInventory playerInventory, CoreRoutedPipe pipe, ModuleThaumicAspectSink itemSink, GuiScreen previousGui, int slot) {
 		super(null, pipe, previousGui);
 		
 		_module = itemSink;
 		
-		tmpInv = new SimpleInventory(1, "Aspect Reader", 1);
+		tmpInv = new ItemIdentifierInventory(1, "Aspect Reader", 1);
 		
 		DummyContainer dummy = new DummyContainer(playerInventory, tmpInv);
 		dummy.addDummySlot(0, 79, 8);

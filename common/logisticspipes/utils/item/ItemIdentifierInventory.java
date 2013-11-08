@@ -6,7 +6,7 @@
  * http://www.mod-buildcraft.com/MMPL-1.0.txt
  */
 
-package logisticspipes.utils;
+package logisticspipes.utils.item;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -17,6 +17,8 @@ import java.util.Map;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.ISaveState;
 import logisticspipes.proxy.MainProxy;
+import logisticspipes.utils.FluidIdentifier;
+import logisticspipes.utils.ISimpleInventoryEventHandler;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -25,7 +27,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 
-public class SimpleInventory implements IInventory, ISaveState{
+public class ItemIdentifierInventory implements IInventory, ISaveState {
 
 	private ItemIdentifierStack[] _contents;
 	private final String _name;
@@ -36,7 +38,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 	
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<ISimpleInventoryEventHandler>(); 
 
-	public SimpleInventory(int size, String name, int stackLimit, boolean liquidInv) {
+	public ItemIdentifierInventory(int size, String name, int stackLimit, boolean liquidInv) {
 		_contents = new ItemIdentifierStack[size];
 		_name = name;
 		_stackLimit = stackLimit;
@@ -45,7 +47,7 @@ public class SimpleInventory implements IInventory, ISaveState{
 		isLiquidInvnetory = liquidInv;
 	}
 
-	public SimpleInventory(int size, String name, int stackLimit) {
+	public ItemIdentifierInventory(int size, String name, int stackLimit) {
 		this(size, name, stackLimit, false);
 	}
 	

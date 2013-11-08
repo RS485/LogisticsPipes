@@ -88,13 +88,13 @@ import logisticspipes.utils.AdjacentTile;
 import logisticspipes.utils.DelayedGeneric;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.IHavePriority;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.block.Block;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -699,8 +699,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 	
 	// from PipeItemsCraftingLogistics
-	protected SimpleInventory _dummyInventory = new SimpleInventory(11, "Requested items", 127);
-	protected SimpleInventory _liquidInventory = new SimpleInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
+	protected ItemIdentifierInventory _dummyInventory = new ItemIdentifierInventory(11, "Requested items", 127);
+	protected ItemIdentifierInventory _liquidInventory = new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true);
 	
 	@TileNetworkData(staticSize=ItemUpgrade.MAX_LIQUID_CRAFTER)
 	protected int[] amount = new int[ItemUpgrade.MAX_LIQUID_CRAFTER];
@@ -1144,11 +1144,11 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	 * 
 	 * @return the dummy inventory
 	 */
-	public SimpleInventory getDummyInventory() {
+	public ItemIdentifierInventory getDummyInventory() {
 		return _dummyInventory;
 	}
 
-	public SimpleInventory getFluidInventory() {
+	public ItemIdentifierInventory getFluidInventory() {
 		return _liquidInventory;
 	}
 	

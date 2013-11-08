@@ -5,7 +5,7 @@ import logisticspipes.network.packets.orderer.RequestFluidOrdererRefreshPacket;
 import logisticspipes.network.packets.orderer.SubmitFluidRequestPacket;
 import logisticspipes.pipes.PipeFluidRequestLogistics;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.entity.player.EntityPlayer;
 

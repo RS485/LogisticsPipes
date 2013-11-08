@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeSet;
 
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;

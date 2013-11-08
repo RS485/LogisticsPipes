@@ -11,10 +11,10 @@ import logisticspipes.logisticspipes.IInventoryProvider;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.proxy.MainProxy;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,7 +24,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 
 public class ModuleFluidSupplier extends LogisticsGuiModule implements IClientInformationProvider {
 	
-	private final SimpleInventory _filterInventory = new SimpleInventory(9, "Requested liquids", 1);
+	private final ItemIdentifierInventory _filterInventory = new ItemIdentifierInventory(9, "Requested liquids", 1);
 
 
 

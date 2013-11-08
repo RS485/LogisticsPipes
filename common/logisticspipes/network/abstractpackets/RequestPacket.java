@@ -5,7 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 import logisticspipes.network.packets.orderer.RequestSubmitPacket;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

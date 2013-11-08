@@ -7,8 +7,8 @@ import java.util.Map;
 
 import logisticspipes.proxy.cc.interfaces.CCCommand;
 import logisticspipes.proxy.cc.interfaces.CCType;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import logisticspipes.utils.tuples.Quartet;
 import logisticspipes.utils.tuples.Triplet;

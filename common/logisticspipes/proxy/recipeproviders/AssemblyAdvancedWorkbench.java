@@ -1,9 +1,9 @@
 package logisticspipes.proxy.recipeproviders;
 
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import buildcraft.silicon.TileAdvancedCraftingTable;
@@ -15,7 +15,7 @@ public class AssemblyAdvancedWorkbench implements ICraftingRecipeProvider {
 	}
 
 	@Override
-	public boolean importRecipe(TileEntity tile, SimpleInventory inventory) {
+	public boolean importRecipe(TileEntity tile, ItemIdentifierInventory inventory) {
 		if (!(tile instanceof TileAdvancedCraftingTable))
 			return false;
 

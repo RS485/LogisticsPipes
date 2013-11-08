@@ -20,7 +20,7 @@ import logisticspipes.proxy.interfaces.IProxy;
 import logisticspipes.renderer.LogisticsPipeWorldRenderer;
 import logisticspipes.renderer.LogisticsRenderPipe;
 import logisticspipes.textures.Textures;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;

@@ -6,9 +6,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import logisticspipes.proxy.SimpleServiceLocator;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.KraphtBaseGuiScreen.Colors;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

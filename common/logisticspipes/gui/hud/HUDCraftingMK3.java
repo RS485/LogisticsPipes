@@ -5,8 +5,8 @@ import java.util.List;
 
 import logisticspipes.interfaces.IHUDConfig;
 import logisticspipes.pipes.PipeItemsCraftingLogisticsMk3;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.gui.BasicGuiHelper;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import net.minecraft.client.Minecraft;
 
 import org.lwjgl.opengl.GL11;

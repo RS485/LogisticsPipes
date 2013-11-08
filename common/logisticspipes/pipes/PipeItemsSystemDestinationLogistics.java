@@ -10,14 +10,14 @@ import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.SimpleInventory;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
-	public SimpleInventory inv = new SimpleInventory(1, "Freq Slot", 1);
+	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq Slot", 1);
 	
 	public PipeItemsSystemDestinationLogistics(int itemID) {
 		super(itemID);

@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import logisticspipes.network.SendNBTTagCompound;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;

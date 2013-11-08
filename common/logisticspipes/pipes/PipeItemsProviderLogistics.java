@@ -52,13 +52,13 @@ import logisticspipes.routing.LogisticsPromise;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.AdjacentTile;
-import logisticspipes.utils.ItemIdentifier;
-import logisticspipes.utils.ItemIdentifierStack;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.SidedInventoryMinecraftAdapter;
-import logisticspipes.utils.SimpleInventory;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.WorldUtil;
+import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
+import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -441,7 +441,7 @@ outer:
 	}
 
 	// import from logic
-	private SimpleInventory providingInventory = new SimpleInventory(9, "Items to provide (or empty for all)", 1);
+	private ItemIdentifierInventory providingInventory = new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1);
 	private boolean _filterIsExclude;
 	private ExtractionMode _extractionMode = ExtractionMode.Normal;
 
@@ -458,7 +458,7 @@ outer:
 	}
 	
 	/*** GUI ***/
-	public SimpleInventory getprovidingInventory() {
+	public ItemIdentifierInventory getprovidingInventory() {
 		return providingInventory;
 	}
 

@@ -7,7 +7,7 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.items.ItemModule;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
-import logisticspipes.utils.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifier;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.CraftingManager;

@@ -18,6 +18,7 @@ import logisticspipes.proxy.buildcraft.BuildCraftProxy;
 import logisticspipes.proxy.interfaces.IBetterStorageProxy;
 import logisticspipes.proxy.interfaces.ICCProxy;
 import logisticspipes.proxy.interfaces.ICraftingRecipeProvider;
+import logisticspipes.proxy.interfaces.IFactorizationProxy;
 import logisticspipes.proxy.interfaces.IForestryProxy;
 import logisticspipes.proxy.interfaces.IIC2Proxy;
 import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
@@ -147,5 +148,10 @@ public final class SimpleServiceLocator {
 	public static CraftingPermissionManager craftingPermissionManager;
 	public static void setCraftingPermissionManager(CraftingPermissionManager manager) {
 		craftingPermissionManager = manager;
+	}
+	
+	public static IFactorizationProxy factorizationProxy;
+	public static void setFactorizationProxy(IFactorizationProxy proxy) {
+		factorizationProxy = proxy;
 	}
 }

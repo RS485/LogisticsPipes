@@ -392,7 +392,9 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 	
 	@Override
 	public boolean canPipeConnect(TileEntity tile, ForgeDirection side) {
-		return super.canPipeConnect(tile, side) || SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile);
+		return super.canPipeConnect(tile, side)
+				|| SimpleServiceLocator.betterStorageProxy.isBetterStorageCrate(tile)
+				|| SimpleServiceLocator.factorizationProxy.isBarral(tile);
 	}
 
 	/* --- IItemTravelHook --- */

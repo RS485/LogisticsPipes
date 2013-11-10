@@ -36,7 +36,13 @@ public abstract class PowerModuleBase implements IPowerModule {
 
 
 	@Override
-	public String getName() {
+	public String getDataName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getLocalizedName() {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -5,7 +5,6 @@ import logisticspipes.proxy.interfaces.IModularPowersuitsProxy;
 import net.machinemuse.api.ModuleManager;
 import net.machinemuse.powersuits.item.ItemPowerArmorHelmet;
 import net.machinemuse.powersuits.item.ItemPowerFist;
-import net.machinemuse.utils.MuseItemUtils;
 import net.minecraft.item.ItemStack;
 
 public class ModularPowersuitsProxy implements IModularPowersuitsProxy {
@@ -30,12 +29,12 @@ public class ModularPowersuitsProxy implements IModularPowersuitsProxy {
 
 	@Override
 	public boolean hasActiveHUDModule(ItemStack stack) {
-		return MuseItemUtils.itemHasActiveModule(stack, LogisticsPipesHUDModule.NAME);
+		return ModuleManager.itemHasActiveModule(stack, LogisticsPipesHUDModule.NAME);
 	}
 
 	@Override
 	public boolean hasHelmHUDInstalled(ItemStack stack) {
-		return MuseItemUtils.tagHasModule(MuseItemUtils.getMuseItemTag(stack), LogisticsPipesHUDModule.NAME);
+		return ModuleManager.itemHasModule(stack, LogisticsPipesHUDModule.NAME);
 	}
 
 	IHUDConfig dummy = new IHUDConfig() {

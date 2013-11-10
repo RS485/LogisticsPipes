@@ -8,7 +8,9 @@ public interface IPowerModule {
 
 	public abstract String getCategory();
 
-	public abstract String getName();
+	public abstract String getDataName();
+	
+	public abstract String getLocalizedName();
 
 	public abstract String getDescription();
 

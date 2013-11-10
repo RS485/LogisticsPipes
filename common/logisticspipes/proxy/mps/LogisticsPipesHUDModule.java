@@ -3,7 +3,6 @@ package logisticspipes.proxy.mps;
 import java.util.Collections;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.ModDependentMethodName;
 import net.machinemuse.api.IModularItem;
 import net.machinemuse.api.moduletrigger.IToggleableModule;
 import net.machinemuse.powersuits.common.ModularPowersuits;
@@ -32,13 +31,12 @@ public class LogisticsPipesHUDModule extends PowerModuleBase implements ITogglea
 	}
 	
 	@Override
-	@ModDependentMethodName(modId="mmmPowersuits", newName="getDataName", version="[0.7.1-561,)")
-	public String getName() {
+	public String getDataName() {
 		return NAME;
 	}
 	
-	@ModDependentMethodName(modId="mmmPowersuits", newName="getLocalizedName", version="[0.7.1-561,)")
-	public String getDisplayName() {
+	@Override
+	public String getLocalizedName() {
 		return NAME;
 	}
 	

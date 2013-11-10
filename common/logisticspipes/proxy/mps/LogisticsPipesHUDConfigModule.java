@@ -3,7 +3,6 @@ package logisticspipes.proxy.mps;
 import java.util.Collections;
 
 import logisticspipes.LogisticsPipes;
-import logisticspipes.asm.ModDependentMethodName;
 import logisticspipes.items.ItemHUDArmor;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.proxy.MainProxy;
@@ -38,13 +37,12 @@ public class LogisticsPipesHUDConfigModule extends PowerModuleBase implements IR
 	}
 
 	@Override
-	@ModDependentMethodName(modId="mmmPowersuits", newName="getDataName", version="[0.7.1-561,)")
-	public String getName() {
+	public String getDataName() {
 		return NAME;
 	}
 	
-	@ModDependentMethodName(modId="mmmPowersuits", newName="getLocalizedName", version="[0.7.1-561,)")
-	public String getDisplayName() {
+	@Override
+	public String getLocalizedName() {
 		return NAME;
 	}
 	

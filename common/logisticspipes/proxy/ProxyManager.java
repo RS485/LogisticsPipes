@@ -167,7 +167,7 @@ public class ProxyManager {
 			LogisticsPipes.log.info("Loaded NotEnoughItems DummyProxy");
 		}
 		
-		if(Loader.isModLoaded("mmmPowersuits")) {
+		if(Loader.isModLoaded("powersuits")) {
 			SimpleServiceLocator.setMPSProxy(new ModularPowersuitsProxy());
 			LogisticsPipes.log.info("Loaded Modular Powersuits Proxy");
 		} else {

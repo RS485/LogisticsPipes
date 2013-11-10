@@ -16,7 +16,7 @@ public class EntrencsTransport extends PipeTransportLogistics {
 	
 	@Override
 	public ForgeDirection resolveDestination(TravelingItem data) {
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(data);
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
 		if(routedItem.getDestination() < 0 || routedItem.getArrived()) {
 			if(pipe.getLocalFreqUUID() != null) {
 				if(pipe.useEnergy(5)) {

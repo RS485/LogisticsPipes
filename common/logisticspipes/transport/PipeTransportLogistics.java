@@ -20,7 +20,6 @@ import logisticspipes.interfaces.IItemAdvancedExistance;
 import logisticspipes.interfaces.ISpecialInsertion;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.pipefxhandlers.Particles;
-import logisticspipes.pipes.PipeBlockRequestTable;
 import logisticspipes.pipes.PipeItemsSupplierLogistics;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.pipes.upgrades.UpgradeManager;
@@ -125,15 +124,22 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			iterator.remove();
 		}
 	}
-	
+
+	@Override
+	public void injectItem(TravelingItem item, ForgeDirection inputOrientation) {
+		super.injectItem(SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(item), inputOrientation);
+	}
+
+	@Override
+	protected void reverseItem(TravelingItem item) {
+		super.reverseItem(SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(item));
+	}
+
 	@Override
 	public ForgeDirection resolveDestination(TravelingItem data) {
 		
 		if(data != null && data.getItemStack() != null) {
 			getPipe().relayedItem(data.getItemStack().stackSize);
-		if(this.container.pipe instanceof PipeBlockRequestTable) {
-			System.out.print("");
-		}
 		}
 		
 		ForgeDirection blocked = null;
@@ -141,7 +147,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 		if(!(data instanceof IRoutedItem) && data != null) {
 			TravelingItem result = getPipe().getQueuedForItemStack(data.getItemStack());
 			if(result != null) {
-				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(data);
+				IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
 				if(routedItem instanceof RoutedEntityItem && result instanceof RoutedEntityItem) {
 					((RoutedEntityItem)routedItem).useInformationFrom((RoutedEntityItem)result);
 					blocked = data.input.getOpposite();
@@ -151,7 +157,7 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 			}
 		}
 		
-		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetOrCreateRoutedItem(data);
+		IRoutedItem routedItem = SimpleServiceLocator.buildCraftProxy.GetRoutedItem(data);
 		ForgeDirection value;
 		if(this.getPipe().stillNeedReplace()){
 			routedItem.setDoNotBuffer(false);
@@ -180,8 +186,6 @@ public class PipeTransportLogistics extends PipeTransportItems implements IItemT
 				return ForgeDirection.UNKNOWN;
 			}
 		}
-		
-		readjustSpeed(routedItem.getTravelingItem());
 		
 		return value;
 	}

@@ -83,6 +83,7 @@ import buildcraft.core.utils.Utils;
 import buildcraft.transport.BlockGenericPipe;
 import buildcraft.transport.ItemPipe;
 import buildcraft.transport.Pipe;
+import buildcraft.transport.PipeTransportItems.TravelerSet;
 import buildcraft.transport.TileGenericPipe;
 import buildcraft.transport.TransportProxy;
 import buildcraft.transport.TransportProxyClient;
@@ -170,13 +171,11 @@ public class BuildCraftProxy {
 		InvUtils.dropItems(world, stack, x, y, z);
 	}
 
-	public IRoutedItem GetOrCreateRoutedItem(TravelingItem itemData) {
-		if (!isRoutedItem(itemData)){
-			RoutedEntityItem newItem = new RoutedEntityItem(itemData);
-			itemData = newItem;
-			return newItem;
+	public RoutedEntityItem GetOrCreateRoutedItem(TravelingItem itemData) {
+		if (!isRoutedItem(itemData)) {
+			return new RoutedEntityItem(itemData);
 		}
-		return (IRoutedItem) itemData; 
+		return (RoutedEntityItem) itemData; 
 	}
 	
 	public boolean isRoutedItem(TravelingItem item) {
@@ -188,8 +187,7 @@ public class BuildCraftProxy {
 	}
 	
 	public IRoutedItem CreateRoutedItem(TravelingItem item) {
-		RoutedEntityItem newItem = new RoutedEntityItem(item);
-		return newItem;
+		return new RoutedEntityItem(item);
 	}
 
 	public IRoutedItem CreateRoutedItem(TileEntity container, ItemStack payload) {

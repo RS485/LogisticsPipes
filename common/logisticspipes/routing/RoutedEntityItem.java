@@ -61,10 +61,12 @@ public class RoutedEntityItem extends TravelingItem implements IRoutedItem {
 	
 	public RoutedEntityItem(TravelingItem entityItem) {
 		super(entityItem.id);
+		NBTTagCompound nbt = new NBTTagCompound("tag");
+		entityItem.writeToNBT(nbt);
+		readFromNBT(nbt);
 		thisItem = ItemIdentifierStack.getFromStack(entityItem.getItemStack());
 		container = entityItem.getContainer();
-		speed = entityItem.getSpeed();
-		item = entityItem.getItemStack();
+		
 		if(container != null && container.worldObj != null) {
 			delay = 10*20 + container.worldObj.getTotalWorldTime(); //10 seconds, it should be delivered by then
 		} else {

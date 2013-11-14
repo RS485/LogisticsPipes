@@ -185,7 +185,7 @@
 			<fileset dir="${thaumcraft.dir}"/>
 		</copy>
 
-		<echo message="Copied TE API"/>
+		<echo message="Copied ThaumCraft API"/>
 
 		<!-- Copy Dummy classes source -->
 		<copy todir="${minecraftsrc.dir}">
